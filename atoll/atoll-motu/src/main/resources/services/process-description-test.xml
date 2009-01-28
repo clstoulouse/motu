@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!-- Exemplary process configuration document for a test process. -->
+	<!-- The implementation is based on version 0.4.0 of the OGC Web Processing Service Specification. -->
+<wps:ProcessDescriptions xmlns:wps="http://www.opengeospatial.net/wps" xmlns:ows="http://www.opengis.net/ows" xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:deegree="http://www.deegree.org/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps ..\wpsDescribeProcess.xsd">
+	<wps:ProcessDescription processVersion="1" storeSupported="false" statusSupported="false">
+		<!-- deegreeParams are for internal configuration of the deegree framework-->
+		<deegree:deegreeParams>
+			<deegree:responsibleClass>fr.cls.atoll.motu.TestProcess</deegree:responsibleClass>
+		</deegree:deegreeParams>
+		<ows:Identifier>Test</ows:Identifier>
+		<ows:Title>Test process for a test purpose</ows:Title>
+		<ows:Abstract>This process computes some mathematical calculuus for testing purposes.</ows:Abstract>
+		<ows:Metadata xlink:title="GML" />
+		<!-- BEGIN OF DATAINPUTS -->
+		<!-- the DataInputs section describes the process inputs for the implementation. -->
+		<wps:DataInputs>
+			<!-- An Input element refers to a single input -->
+			<wps:Input>
+				<!-- The ows:Identifier is the connection between the implementing class and the data input. Therefore a case sensitive use is mandatory. -->
+				<ows:Identifier>paramA</ows:Identifier>
+				<!--Title and abstract are for documentation and metadata purposes. -->
+				<ows:Title>First parameter of service</ows:Title>
+				<ows:Abstract>The parameter is used to define a value for the calculuss test.</ows:Abstract>				
+				<wps:LiteralData>
+					<ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.0:Integer">Integer</ows:DataType>
+					<ows:AllowedValues>
+						<ows:Range ows:rangeClosure="closed">
+							<ows:MinimumValue>1</ows:MinimumValue>
+							<ows:MaximumValue>101</ows:MaximumValue>
+						</ows:Range>
+					</ows:AllowedValues>
+				</wps:LiteralData>
+				<wps:MinimumOccurs>0</wps:MinimumOccurs>
+			</wps:Input>
+		</wps:DataInputs>
+		<!-- END OF DATAINPUTS -->
+		<!-- BEGIN OF PROCESSOUTPUTS-->
+		<wps:ProcessOutputs>
+			<!-- A process may define several outputs-->
+			<wps:Output>
+				<ows:Identifier>Result of the calculuus</ows:Identifier>
+				<ows:Title>Result</ows:Title>
+				<ows:Abstract>Contains the result of the calculuus</ows:Abstract>
+				<!-- The data type of the process output -->
+				<wps:ComplexOutput defaultSchema="http://schemas.opengis.net/gml/3.0.0/base/gml.xsd">
+				</wps:ComplexOutput>
+			</wps:Output>
+		</wps:ProcessOutputs>
+		<!-- END OF PROCESSOUTPUTS-->
+	</wps:ProcessDescription>
+</wps:ProcessDescriptions>
