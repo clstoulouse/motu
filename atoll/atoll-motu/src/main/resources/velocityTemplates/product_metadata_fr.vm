@@ -1,0 +1,264 @@
+##----------------------------------------------------------------------------------
+## WARNING : Macro are prefixed by template file name because of the bug in Velocity when
+## there are the same macro name in different Template. 
+## In case several templates have a common macro name, 
+## the result can be amazing (among others, execution mixes up the same macro with the same name)
+##----------------------------------------------------------------------------------
+
+## -------------------------------------------- printAssociateService --------------------------------
+#macro(product_metadata_fr_printAssociateService)
+	#set($images_dir = "${product.getHpptServerDocumentRoot()}/atoll-motuservlet/images")
+	#set ($imgSuiv = "<img class=suiv2 src=${images_dir}/suiv2.gif>&nbsp;&nbsp;&nbsp;")
+	#set ($pageSiteWeb = ${productMetaData.getPageSiteWebURL()})
+	#set ($LAS = ${productMetaData.getLASViewingServiceURL()})
+	#set ($FTP = ${productMetaData.getFTPServiceURL()})
+	#set ($bulletinSite = ${productMetaData.getBulletinSiteURL()})
+	
+	<h2>Services associés</h2>
+##	<ul>
+		#if ($product.isProductDownloadable()) 
+			<p> $imgSuiv
+			<a href=?action=productdownloadhome&service=${service.getName()}&product=${productMetaData.getProductId()}>
+			Service de téléchargement et d'extraction
+			</a>	
+			</p>			
+		#end
+		#if (!$product.isProductAlongTrack()) 
+			<p> $imgSuiv
+			Interface Opendap:&nbsp;&nbsp;&nbsp;
+			<a href=${product.getLocationData()}.dds>dds</a>&nbsp;&nbsp;&nbsp;
+			<a href=${product.getLocationData()}.das>das</a>&nbsp;&nbsp;&nbsp;
+			<a href=${product.getLocationData()}.html>Data resquest form</a>				
+			</p>
+		#end
+		#if($LAS != "")
+			<p> $imgSuiv
+			<a href=${LAS}>Service de visualisation LAS</a>
+			</p>
+		#end
+		#if($bulletinSite != "")
+			<p> $imgSuiv
+			<a href=${bulletinSite}>Service de visualisation Bulletin</a>
+			</p>
+		#end
+		#if($FTP != "")
+			<p> $imgSuiv
+			<a href=${FTP}>Téléchargement FTP</a>
+			</p>
+		#end
+		#if($pageSiteWeb != "")
+			<p> $imgSuiv
+			<a href=${pageSiteWeb}>Informations produit</a>
+			</p>			
+		#end
+##	</ul>
+#end
+## -------------------------------------------- printTemporalCoverage --------------------------------
+#macro(product_metadata_fr_printTemporalCoverage)
+	<p></p>
+	#if($productMetaData.hasTimeAxis())
+		<ul class="puce2">
+			<li><b>Début (${productMetaData.getTimeAxis().getName()}):</b>&nbsp&nbsp;$productMetaData.getTimeAxisMinValueAsString()</li>
+			<li><b>Fin (${productMetaData.getTimeAxis().getName()}):</b>&nbsp&nbsp;$productMetaData.getTimeAxisMaxValueAsString()</li>
+		</ul>
+	#else
+	<p>Aucune couverture géographique.</p>
+	#end
+		
+#end
+
+## -------------------------------------------- printGeoCoverageTH --------------------------------
+#macro(product_metadata_fr_printGeoCoverageTH)
+	#set($xLib = "")
+	#set($yLib = "")
+	#if ($product.hasGeoXAxisWithLonEquivalence())
+		#set($xLib = "(x)")	
+	#end
+	#if ($product.hasGeoYAxisWithLatEquivalence())
+		#set($yLib = "(y)")	
+	#end
+	<tr>
+		<th></th>			
+		#if($productMetaData.hasLatAxis())
+			<th>${productMetaData.getLatAxis().getName()} $yLib</th>			
+		#elseif($productMetaData.hasGeoYAxis())
+			#if ($product.hasGeoYAxisWithLatEquivalence())
+				<th>${productMetaData.getGeoYAxisAsLat(${product}).getName()} $yLib</th>			
+            #else				
+				<th>${productMetaData.getGeoYAxis().getName()}</th>			
+			#end
+		#end
+		
+		#if($productMetaData.hasLonAxis())
+			<th>${productMetaData.getLonAxis().getName()} $xLib</th>			
+		#elseif($productMetaData.hasGeoXAxis())
+			#if ($product.hasGeoXAxisWithLonEquivalence())
+				<th>${productMetaData.getGeoXAxisAsLon(${product}).getName()} $xLib</th>			
+            #else				
+				<th>${productMetaData.getGeoXAxis().getName()}</th>			
+			#end
+		#end
+		#if($productMetaData.hasZAxis())
+			<th>${productMetaData.getZAxis().getName()}</th>			
+		#end
+	</tr>
+		
+#end
+## -------------------------------------------- printGeoCoverageTD --------------------------------
+#macro(product_metadata_fr_printGeoCoverageTD)
+	<tr>
+		<td><b>min. </b></td>		
+		##if lat axis and geoY axis with lat equivalence, don't get lat min. value, it's to slow 
+		## because in lat axis can have also time dimension.
+		#if(($productMetaData.hasLatAxis()) && (!$product.hasGeoYAxisWithLatEquivalence()))
+			<td class ="right">$productMetaData.getLatAxisMinValueAsString()</td>
+		#end
+		##if lon axis and geoX axis with lon equivalence, don't get lon min. value, it's to slow 
+		## because in lon axis can have also time dimension.
+		#if(($productMetaData.hasLonAxis()) && (!$product.hasGeoXAxisWithLonEquivalence()))
+			<td class ="right">$productMetaData.getLonAxisMinValueAsString()</td>
+		#end
+		#if($productMetaData.hasGeoXAxis())
+			#if ($product.hasGeoXAxisWithLonEquivalence())
+				<td class ="right">$productMetaData.getGeoXAxisMinValueAsLonString(${product})</td>
+            #else				
+				<td class ="right">$productMetaData.getGeoXAxisMinValueAsString()</td>
+			#end
+		#end
+		#if($productMetaData.hasGeoYAxis())
+			#if ($product.hasGeoYAxisWithLatEquivalence())
+				<td class ="right">$productMetaData.getGeoYAxisMinValueAsLatString(${product})</td>
+            #else				
+				<td class ="right">$productMetaData.getGeoYAxisMinValueAsString()</td>
+			#end
+		#end
+				
+		#if($productMetaData.hasZAxis())
+			<td class ="right">$productMetaData.getZAxisMinValueAsString()</td>
+		#end
+	</tr>
+	<tr>
+		<td><b>max. </b></td>		
+		##if lat axis and geoY axis with lat equivalence, don't get lat max. value, it's to slow 
+		## because in lat axis can have also time dimension.
+		#if(($productMetaData.hasLatAxis()) && (!$product.hasGeoYAxisWithLatEquivalence()))
+			<td class ="right">$productMetaData.getLatAxisMaxValueAsString()</td>
+		#end
+		##if lon axis and geoX axis with lon equivalence, don't get lon max. value, it's to slow 
+		## because in lon axis can have also time dimension.
+		#if(($productMetaData.hasLonAxis()) && (!$product.hasGeoXAxisWithLonEquivalence()))
+			<td class ="right">$productMetaData.getLonAxisMaxValueAsString()</td>
+		#end
+		#if($productMetaData.hasGeoXAxis())
+			#if ($product.hasGeoXAxisWithLonEquivalence())
+				<td class ="right">$productMetaData.getGeoXAxisMaxValueAsLonString(${product})</td>
+            #else				
+				<td class ="right">$productMetaData.getGeoXAxisMaxValueAsString()</td>
+			#end
+		#end
+		#if($productMetaData.hasGeoYAxis())
+			#if ($product.hasGeoYAxisWithLatEquivalence())
+				<td class ="right">$productMetaData.getGeoYAxisMaxValueAsLatString(${product})</td>
+            #else				
+				<td class ="right">$productMetaData.getGeoYAxisMaxValueAsString()</td>
+			#end
+		#end
+		#if($productMetaData.hasZAxis())
+			<td class ="right">$productMetaData.getZAxisMaxValueAsString()</td>
+		#end
+	</tr>
+		
+#end
+## -------------------------------------------- printGeoCoverage --------------------------------
+#macro(product_metadata_fr_printGeoCoverage)
+		#if ($productMetaData.getCoordinateAxes() == false)
+			<p>Pas de couverture géographique.</p>
+		#elseif ( $productMetaData.hasGeographicalAxis() == false )
+			<p>Pas de couverture géographique.</p>
+		#else		
+			<table class="encadre" width="60%" border="0" cellspacing="2" cellpadding="5">
+			#product_metadata_fr_printGeoCoverageTH()
+			#product_metadata_fr_printGeoCoverageTD()
+			</table>
+		#end
+	<p></p>	
+#end
+
+## -------------------------------------------- printParameter --------------------------------
+#macro(product_metadata_fr_printParameter)
+	
+	#set( $quickLook = ${productMetaData.getQuickLook(${parameterMetadata})})
+	<li><strong>$parameterMetadata.getName()</strong></li>
+	<table class="noborder" width="90%" cellspacing="2">
+#*		
+		<th style="text-align:left">Description</th>
+		#if( $quickLook != "")
+			<th>Quicklook</th>
+		#end	
+*#		
+		<tr>
+			<td valign="top">$parameterMetadata.getLabel() </td>
+			<td style="text-align:center">				
+			#if( $quickLook != "")
+				<img src=${quickLook} alt="${parameterMetadata.getName()} quicklook" border="1" align="center">
+			#end			
+			</td>
+		</tr>				
+	</table>
+		
+	<table class="encadre" width="80%" border="0" cellspacing="2">
+		<tr>
+			<th>Nom standard</th>
+			<th>Unité</th>
+			<th>Dimensions</th>
+		</tr>
+		<tr>
+			<td>
+			#if($parameterMetadata.getStandardName().equals(""))
+				-
+			#else					
+				$parameterMetadata.getStandardName()			
+			#end
+			</td>
+			<td>
+			$parameterMetadata.getUnit()
+			#if(!$parameterMetadata.getUnitLong().equals(""))
+				(${parameterMetadata.getUnitLong()})					
+			#end
+			</td>
+			<td>
+			#if($parameterMetadata.hasDimensions())
+				$parameterMetadata.getDimensionsAsString()
+			#else
+				Scalaire			
+			#end
+			</td>
+		</tr>
+	</table>
+	<p>&nbsp;</p>
+	
+#end
+## -------------------------------------------- main --------------------------------
+#set($productMetaData = $product.getProductMetaData())
+
+<h1>$productMetaData.getTitle()</h1>
+
+#product_metadata_fr_printAssociateService()
+
+<h2>Métadonnées générales</h2>
+
+<h3>Couverture géographique</h3>
+#product_metadata_fr_printGeoCoverage()
+
+<h3>Couverture temporelle</h3>
+#product_metadata_fr_printTemporalCoverage()
+
+<h2>Métadonnées par variable</h2>
+#set ($listParameterMetadata = $productMetaData.getParameterMetaDatas() )
+<ul>
+#foreach( $parameterMetadata in $listParameterMetadata )	
+	#product_metadata_fr_printParameter()
+#end
+</ul>		
+
+

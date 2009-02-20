@@ -1,0 +1,50 @@
+<?xml version="1.0" standalone="yes"?>
+<project basedir="." default="generate">
+
+	<!-- =================================================================== -->
+	<!-- Initialisation de toutes les variables                              -->
+	<!-- =================================================================== -->
+	<property name="project.dir" value="../../../.." />
+	<property name="src.dir" value="${project.dir}/src/main/java" />
+
+	<!--
+	<import file="${project.dir}/../cls-commons-config/build.xml" optional="true" />
+	<import file="${project.dir}/../../cls-commons-config/build.xml" optional="true" />
+	-->		    	
+
+	<property name="schema.path" value="fr/cls/atoll/motu/tds/server" />
+	<property name="schema.package" value="fr.cls.atoll.motu.tds.server" />
+	<property name="schema.xsdfile" value="InvCatalog.1.0.2.xsd" />
+	<property name="schema.xjbfile" value="binding.xjb" />
+
+
+	<path id="classpath">
+		<fileset dir="${project.dir}/../../cls-commons-config/lib/jaxb" includes="*.jar" />
+	</path>
+
+	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask" classpathref="classpath" />
+			
+	<!-- =================================================================== -->
+	<!-- Génération des classes JAVA en utilisant JAXB                       -->
+	<!-- =================================================================== -->
+
+	<target name="generate">
+		<xjc schema="${schema.xsdfile}" binding="${schema.xjbfile}" target="${src.dir}" package="${schema.package}" removeOldOutput="no">
+			<produces dir="${src.dir}" />
+		</xjc>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- Suppression classes JAVA générées par JAXB                          -->
+	<!-- =================================================================== -->
+
+	<target name="clean">
+        <delete>
+            <fileset dir="${src.dir}/${schema.path}">
+				<include name="**/**"/>
+            </fileset>
+        </delete>
+	</target>
+
+</project>
+

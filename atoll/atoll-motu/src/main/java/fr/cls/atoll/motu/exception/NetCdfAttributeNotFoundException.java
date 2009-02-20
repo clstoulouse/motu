@@ -1,0 +1,82 @@
+/**
+ * 
+ */
+package fr.cls.atoll.motu.exception;
+
+import org.apache.log4j.Logger;
+
+import ucar.nc2.Variable;
+
+// CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
+
+/**
+ * Exception class for NetCDF attribute 'not found' exception.
+ * 
+ * @author $Author: dearith $
+ * @version $Revision: 1.1 $ - $Date: 2009-02-20 13:00:25 $
+ * 
+ */
+public class NetCdfAttributeNotFoundException extends MotuExceptionBase {
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = Logger.getLogger(NetCdfAttributeNotFoundException.class);
+
+    private static final long serialVersionUID = -1;
+
+    /**
+     * @param attrName name of the 'not found' attribute.
+     */
+    public NetCdfAttributeNotFoundException(String attrName) {
+        super("NetCdf attribute not found.");
+        this.attrName = attrName;
+        this.netCdfVariable = null;
+        notifyLogException();
+    }
+
+    /**
+     * @param netCdfVariable NetCDF variable that causes the exception
+     * @param attrName name of the 'not found' attribute.
+     */
+    public NetCdfAttributeNotFoundException(Variable netCdfVariable, String attrName) {
+        super("NetCdf attribute not found.");
+        this.netCdfVariable = netCdfVariable;
+        this.attrName = attrName;
+        notifyLogException();
+    }
+
+    /**
+     * writes exception information into the log.
+     */
+    public void notifyLogException() {
+
+        super.notifyLogException();
+        LOG.warn(notifyException());
+    }
+
+    /**
+     * @return exception information.
+     */
+    public String notifyException() {
+        StringBuffer stringBuffer = new StringBuffer();
+
+        stringBuffer.append(super.notifyException());
+        if (netCdfVariable != null) {
+            stringBuffer.append(String.format("\nNetCdf variable name: %s\n", netCdfVariable.getName()));
+        }
+        stringBuffer.append(String.format("\nAttribute name: %s\n", attrName));
+        return stringBuffer.toString();
+    }
+
+    /**
+     * NetCDF varialbe whose attribute is not found.
+     */
+    final private Variable netCdfVariable;
+
+    /**
+     * NetCDF attribute which causes the exception.
+     */
+    final private String attrName;
+
+}
+// CSON: MultipleStringLiterals

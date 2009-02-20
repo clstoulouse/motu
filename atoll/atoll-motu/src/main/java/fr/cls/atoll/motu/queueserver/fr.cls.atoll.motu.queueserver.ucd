@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editmodel:ClassDiagramEditModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:editmodel="editmodel.xmi" xmlns:options="options.xmi" id="fr.cls.atoll.motu.queueserver" metadata="uml2-1.0" initialized="true" tag="100" key="32303036313030332061746F6C6C2D6D6F7475">
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.1/@sourceConnections.6" name="QueueManagement" location="50,686" size="280,169" id="fr.cls.atoll.motu.queueserver/QueueManagement" runTimeClassModel="countHighPriority,threadPoolExecutor,priorityBlockingQueue,QueueManagement(Lfr.cls.atoll.motu.configuration.QueueType;),countLowPriority">
+    <children xsi:type="editmodel:CompartmentEditModel" size="216,54">
+      <children xsi:type="editmodel:AttributeEditModel" name="countHighPriority" id="fr.cls.atoll.motu.queueserver/QueueManagement#countHighPriority"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="countLowPriority" id="fr.cls.atoll.motu.queueserver/QueueManagement#countLowPriority"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="priorityBlockingQueue" id="java.lang/Runnable@priorityBlockingQueue+fr.cls.atoll.motu.queueserver/QueueManagement@|java.lang/Runnable#priorityBlockingQueue"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="threadPoolExecutor" id="fr.cls.atoll.motu.queueserver/QueueManagement#threadPoolExecutor"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="257,18">
+      <children xsi:type="editmodel:MethodEditModel" name="QueueManagement" id="fr.cls.atoll.motu.queueserver/QueueManagement#QueueManagement(Lfr.cls.atoll.motu.configuration.QueueType;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:AssociationEditModel" autoLocated="true" id="fr.cls.atoll.motu.queueserver/QueueServerManagement@queueServerManagement+fr.cls.atoll.motu.queueserver/QueueManagement@queueManagement" source="//@children.0" target="//@children.1" targetEnd="//@children.0/@sourceConnections.0/@children.1" label="//@children.0/@sourceConnections.0/@children.2" sourceEnd="//@children.0/@sourceConnections.0/@children.0" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" name="queueManagement" location="280,42" id="fr.cls.atoll.motu.queueserver/QueueServerManagement@queueServerManagement+fr.cls.atoll.motu.queueserver/QueueManagement@queueManagement|fr.cls.atoll.motu.queueserver/QueueManagement#queueManagement" attachSource="true" multiplicityLabel="//@children.0/@sourceConnections.0/@children.0/@children.1" roleLabel="//@children.0/@sourceConnections.0/@children.0/@children.0" aggregationKind="Composition" navigable="true">
+        <children xsi:type="editmodel:LabelEditModel" name=" - queueManagement" location="337,707" size="101,14" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="0..1" location="337,735" size="18,14" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+      </children>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="queueServerManagement" location="0,487" id="fr.cls.atoll.motu.queueserver/QueueServerManagement@queueServerManagement+fr.cls.atoll.motu.queueserver/QueueManagement@queueManagement|fr.cls.atoll.motu.queueserver/QueueServerManagement#queueServerManagement">
+        <children xsi:type="editmodel:QualifierAttributeEditModel" name="key" location="352,717" size="32,23" id=""/>
+      </children>
+      <children xsi:type="editmodel:WireLabelEditModel" size="0,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Naturel" methodSorter="Naturel" innerClassSorter="Naturel" showPrivateAttributes="true" showProtectedAttributes="true" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showProtectedMethods="true" showPublicMethods="true" showPackageMethods="true" showPrivateMethods="true" showStaticMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true" showMethods="true" showAttributes="true" showLiterals="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.0/@sourceConnections.0" name="QueueServerManagement" location="379,241" size="544,529" id="fr.cls.atoll.motu.queueserver/QueueServerManagement" runTimeClassModel="init(),isQueueManagementEmpty(),queueServerConfig,clearQueueManagement(),queueManagementContainsValue(Lfr.cls.atoll.motu.queueserver.QueueManagement;),sortQueuesByDataThreshold(),getQueue(F),queueManagementKeySet(),instance,queueManagementSize(),getInstance(),getQueuesConfig(),tHREADPOOL_LIGHT_ID,putQueueManagement(Ljava.lang.Object;Lfr.cls.atoll.motu.queueserver.QueueManagement;),QueueServerManagement(),setQueueManagement(Ljava.util.Map;),hIGH_PRIORITY_VALUE,removeQueueManagement(Ljava.lang.Object;),createQueuesManagement(),queueManagement,getQueueManagement(),lOW_PRIORITY_VALUE,queueManagementValues(),queueManagementContainsKey(Ljava.lang.Object;),getQueueManagement(Ljava.lang.Object;),tHREADPOOL_BULKY_ID">
+    <children xsi:type="editmodel:CompartmentEditModel" size="192,90">
+      <children xsi:type="editmodel:AttributeEditModel" name="hIGH_PRIORITY_VALUE" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#hIGH_PRIORITY_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="instance" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#instance"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="lOW_PRIORITY_VALUE" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#lOW_PRIORITY_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="queueServerConfig" id="fr.cls.atoll.motu.configuration/QueueServerType@queueServerConfig+fr.cls.atoll.motu.queueserver/QueueServerManagement@|fr.cls.atoll.motu.configuration/QueueServerType#queueServerConfig"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="tHREADPOOL_BULKY_ID" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#tHREADPOOL_BULKY_ID"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="tHREADPOOL_LIGHT_ID" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#tHREADPOOL_LIGHT_ID"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="246,126">
+      <children xsi:type="editmodel:MethodEditModel" name="QueueServerManagement" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#QueueServerManagement()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="clearQueueManagement" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#clearQueueManagement()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="createQueuesManagement" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#createQueuesManagement()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getInstance" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#getInstance()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getQueue" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#getQueue(F)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getQueueManagement" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#getQueueManagement(Lfr.cls.atoll.motu.configuration.QueueType;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getQueueManagement" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#getQueueManagement()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getQueuesConfig" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#getQueuesConfig()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="init" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#init()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="isQueueManagementEmpty" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#isQueueManagementEmpty()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="putQueueManagement" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#putQueueManagement(Lfr.cls.atoll.motu.configuration.QueueType;Lfr.cls.atoll.motu.queueserver.QueueManagement;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="queueManagementContainsKey" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#queueManagementContainsKey(Lfr.cls.atoll.motu.configuration.QueueType;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="queueManagementContainsValue" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#queueManagementContainsValue(Lfr.cls.atoll.motu.queueserver.QueueManagement;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="queueManagementKeySet" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#queueManagementKeySet()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="queueManagementSize" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#queueManagementSize()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="queueManagementValues" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#queueManagementValues()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="removeQueueManagement" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#removeQueueManagement(Lfr.cls.atoll.motu.configuration.QueueType;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="setQueueManagement" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#setQueueManagement(Ljava.util.Map;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="sortQueuesByDataThreshold" id="fr.cls.atoll.motu.queueserver/QueueServerManagement#sortQueuesByDataThreshold()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" id="fr.cls.atoll.motu.queueserver/QueueServerManagement->fr.cls.atoll.motu.queueserver/QueueThresholdComparator" source="//@children.1" target="//@children.2" targetEnd="//@children.1/@sourceConnections.0/@children.2" label="//@children.1/@sourceConnections.0/@children.0" sourceEnd="//@children.1/@sourceConnections.0/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" size="0,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="20,16" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="288,114"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:AssociationEditModel" autoLocated="true" id="fr.cls.atoll.motu.configuration/QueueServerType@queueServerConfig+fr.cls.atoll.motu.queueserver/QueueServerManagement@" source="//@children.1" target="//@children.3" targetEnd="//@children.1/@sourceConnections.1/@children.2" label="//@children.1/@sourceConnections.1/@children.0" sourceEnd="//@children.1/@sourceConnections.1/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" size="0,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="543,424" id="fr.cls.atoll.motu.configuration/QueueServerType@queueServerConfig+fr.cls.atoll.motu.queueserver/QueueServerManagement@|fr.cls.atoll.motu.queueserver/QueueServerManagement#" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="queueServerConfig" location="0,61" id="fr.cls.atoll.motu.configuration/QueueServerType@queueServerConfig+fr.cls.atoll.motu.queueserver/QueueServerManagement@|fr.cls.atoll.motu.configuration/QueueServerType#queueServerConfig" multiplicityLabel="//@children.1/@sourceConnections.1/@children.2/@children.1" roleLabel="//@children.1/@sourceConnections.1/@children.2/@children.0" navigable="true">
+        <children xsi:type="editmodel:LabelEditModel" name=" - queueServerConfig" location="814,471" size="104,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="0..1" location="900,499" size="18,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+      </children>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="fr.cls.atoll.motu.queueserver/QueueServerManagement->fr.cls.atoll.motu.queueserver/QueueThresholdComparator" source="//@children.1" target="//@children.2" targetEnd="//@children.1/@sourceConnections.2/@children.2" label="//@children.1/@sourceConnections.2/@children.0" sourceEnd="//@children.1/@sourceConnections.2/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«import»" size="41,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="0,10" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="278,115"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" id="fr.cls.atoll.motu.queueserver/QueueServerManagement->fr.cls.atoll.motu.configuration/QueueServerType" source="//@children.1" target="//@children.3" targetEnd="//@children.1/@sourceConnections.3/@children.2" label="//@children.1/@sourceConnections.3/@children.0" sourceEnd="//@children.1/@sourceConnections.3/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«import»" size="41,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="543,415" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="0,67"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="fr.cls.atoll.motu.queueserver/QueueServerManagement->fr.cls.atoll.motu.queueserver/QueueThresholdComparator" source="//@children.1" target="//@children.2" targetEnd="//@children.1/@sourceConnections.4/@children.2" label="//@children.1/@sourceConnections.4/@children.0" sourceEnd="//@children.1/@sourceConnections.4/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" size="0,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="15,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="288,100"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="fr.cls.atoll.motu.queueserver/QueueServerManagement->fr.cls.atoll.motu.queueserver/QueueThresholdComparator" source="//@children.1" target="//@children.2" targetEnd="//@children.1/@sourceConnections.5/@children.2" label="//@children.1/@sourceConnections.5/@children.0" sourceEnd="//@children.1/@sourceConnections.5/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" size="0,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="0,16" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="248,115"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="fr.cls.atoll.motu.queueserver/QueueServerManagement->fr.cls.atoll.motu.queueserver/QueueManagement" source="//@children.1" target="//@children.0" targetEnd="//@children.1/@sourceConnections.6/@children.2" label="//@children.1/@sourceConnections.6/@children.0" sourceEnd="//@children.1/@sourceConnections.6/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«import»" size="41,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="0,467" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="280,11"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="fr.cls.atoll.motu.queueserver/QueueServerManagement->fr.cls.atoll.motu.queueserver/QueueThresholdComparator" source="//@children.1" target="//@children.2" targetEnd="//@children.1/@sourceConnections.7/@children.2" label="//@children.1/@sourceConnections.7/@children.0" sourceEnd="//@children.1/@sourceConnections.7/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" size="0,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="5,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="288,110"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="fr.cls.atoll.motu.queueserver/QueueServerManagement->fr.cls.atoll.motu.queueserver/QueueThresholdComparator" source="//@children.1" target="//@children.2" targetEnd="//@children.1/@sourceConnections.8/@children.2" label="//@children.1/@sourceConnections.8/@children.0" sourceEnd="//@children.1/@sourceConnections.8/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" size="0,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="0,14" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="258,115"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Naturel" methodSorter="Naturel" innerClassSorter="Naturel" showPrivateAttributes="true" showProtectedAttributes="true" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showProtectedMethods="true" showPublicMethods="true" showPackageMethods="true" showPrivateMethods="true" showStaticMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true" showMethods="true" showAttributes="true" showLiterals="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.1/@sourceConnections.0 //@children.1/@sourceConnections.2 //@children.1/@sourceConnections.4 //@children.1/@sourceConnections.5 //@children.1/@sourceConnections.7 //@children.1/@sourceConnections.8" name="QueueThresholdComparator" location="50,50" size="288,115" id="fr.cls.atoll.motu.queueserver/QueueThresholdComparator" runTimeClassModel="QueueThresholdComparator(),compare(Lfr.cls.atoll.motu.configuration.QueueType;Lfr.cls.atoll.motu.configuration.QueueType;)">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="265,36">
+      <children xsi:type="editmodel:MethodEditModel" name="QueueThresholdComparator" id="fr.cls.atoll.motu.queueserver/QueueThresholdComparator#QueueThresholdComparator()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="compare" id="fr.cls.atoll.motu.queueserver/QueueThresholdComparator#compare(Lfr.cls.atoll.motu.configuration.QueueType;Lfr.cls.atoll.motu.configuration.QueueType;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Naturel" methodSorter="Naturel" innerClassSorter="Naturel" showPrivateAttributes="true" showProtectedAttributes="true" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showProtectedMethods="true" showPublicMethods="true" showPackageMethods="true" showPrivateMethods="true" showStaticMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true" showMethods="true" showAttributes="true" showLiterals="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.1/@sourceConnections.1 //@children.1/@sourceConnections.3" name="QueueServerType" location="709,431" size="367,223" id="fr.cls.atoll.motu.configuration/QueueServerType" runTimeClassModel="getMaxPoolAuth(),setMaxPoolAuth(Ljava.lang.Short;),maxPoolAnonymous,getMaxPoolAnonymous(),setMaxPoolAnonymous(Ljava.lang.Short;),maxPoolAuth,queues,getQueues()">
+    <children xsi:type="editmodel:CompartmentEditModel" size="149,36">
+      <children xsi:type="editmodel:AttributeEditModel" name="maxPoolAnonymous" id="fr.cls.atoll.motu.configuration/QueueServerType#maxPoolAnonymous"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="maxPoolAuth" id="fr.cls.atoll.motu.configuration/QueueServerType#maxPoolAuth"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="queues" id="fr.cls.atoll.motu.configuration/QueueType@queues+fr.cls.atoll.motu.configuration/QueueServerType@|fr.cls.atoll.motu.configuration/QueueType#queues"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="212,90">
+      <children xsi:type="editmodel:MethodEditModel" name="getMaxPoolAnonymous" id="fr.cls.atoll.motu.configuration/QueueServerType#getMaxPoolAnonymous()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getMaxPoolAuth" id="fr.cls.atoll.motu.configuration/QueueServerType#getMaxPoolAuth()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getQueues" id="fr.cls.atoll.motu.configuration/QueueServerType#getQueues()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="setMaxPoolAnonymous" id="fr.cls.atoll.motu.configuration/QueueServerType#setMaxPoolAnonymous(Ljava.lang.Short;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="setMaxPoolAuth" id="fr.cls.atoll.motu.configuration/QueueServerType#setMaxPoolAuth(Ljava.lang.Short;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Naturel" methodSorter="Naturel" innerClassSorter="Naturel" showPrivateAttributes="true" showProtectedAttributes="true" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showProtectedMethods="true" showPublicMethods="true" showPackageMethods="true" showPrivateMethods="true" showStaticMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true" showMethods="true" showAttributes="true" showLiterals="true"/>
+  </children>
+  <diagramOptions xsi:type="options:ClassDiagramOptions" properties="wireOptions=7" autoName="false"/>
+  <boardSetting snapToGeometry="true" gridEnabled="true" gridSpacing="10,10" gridOrigin="0,0" rulerUnit="pixel">
+    <leftRuler/>
+    <topRuler/>
+  </boardSetting>
+  <classDiagramPreferences xsi:type="editmodel:UMLClassDiagramPreference" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Naturel" methodSorter="Naturel" showClassStereotype="true" showPackageStereotype="true" innerClassSorter="Naturel" showPrivateAttributes="true" showProtectedAttributes="true" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showProtectedMethods="true" showPublicMethods="true" showPackageMethods="true" showPrivateMethods="true" showStaticMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showInterfaceStereotype="true" showAssociationMember="true" showMethods="true" showAttributes="true" showLiterlas="true"/>
+</editmodel:ClassDiagramEditModel>

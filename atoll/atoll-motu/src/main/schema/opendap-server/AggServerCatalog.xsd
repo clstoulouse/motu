@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.unidata.ucar.edu/thredds" xmlns:thredds="http://www.unidata.ucar.edu/thredds" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <xs:include schemaLocation="InvCatalog.0.6.xsd"/>
+  <xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+  <xs:simpleType name="AggregationType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="JoinNew"/>
+      <xs:enumeration value="Union"/>
+      <xs:enumeration value="JoinExisting"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="VariableType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="byte"/>
+      <xs:enumeration value="short"/>
+      <xs:enumeration value="int"/>
+      <xs:enumeration value="float"/>
+      <xs:enumeration value="double"/>
+      <xs:enumeration value="String"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="aggregation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="thredds:fileAccess"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="thredds:variable"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="thredds:fileScan"/>
+      </xs:sequence>
+      <xs:attribute name="aggType" use="required" type="thredds:AggregationType"/>
+      <xs:attribute name="serviceName"/>
+      <xs:attribute name="varName"/>
+      <xs:attribute name="varType" type="thredds:VariableType"/>
+      <xs:attribute name="varUnit"/>
+      <xs:attribute name="dateFormat"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fileAccess">
+    <xs:complexType>
+      <xs:attribute name="urlPath" use="required"/>
+      <xs:attribute name="serviceName"/>
+      <xs:attribute name="coord"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fileScan">
+    <xs:complexType>
+      <xs:attribute name="dirPath" use="required"/>
+      <xs:attribute name="scanMinutes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="variable">
+    <xs:complexType>
+      <xs:attribute name="name" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="any" mixed="true">
+    <xs:sequence>
+      <xs:any minOccurs="0" maxOccurs="unbounded" processContents="strict"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
