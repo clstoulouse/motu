@@ -3,8 +3,12 @@
  */
 package fr.cls.atoll.motu.intfce;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -35,13 +39,27 @@ import jj2000.j2k.util.MathUtil;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 
+import ucar.ma2.StructureData;
 import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
+import ucar.nc2.ft.FeatureCollection;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.TrajectoryFeature;
+import ucar.nc2.ft.TrajectoryFeatureCollection;
+import ucar.nc2.ft.point.writer.CFPointObWriter;
+import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
+import ucar.unidata.geoloc.EarthLocation;
 import fr.cls.atoll.motu.MyAuthenticator;
 import fr.cls.atoll.motu.configuration.ConfigService;
 import fr.cls.atoll.motu.configuration.MotuConfig;
@@ -60,7 +78,7 @@ import fr.cls.commons.util.NumberUtilities;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-02-20 13:01:43 $
+ * @version $Revision: 1.2 $ - $Date: 2009-03-12 13:17:21 $
  * 
  */
 public class TestIntfce {
@@ -219,11 +237,13 @@ public class TestIntfce {
         // productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
-        // productExtractDiversity();
-        testProjection();
+        productExtractDiversity();
+        //testProjection();
         // testJason2Local();
         // testProjection2();
         // testReadFromListe();
+        
+        //testFeatures();
 
         // try {
         // String date = NetCdfReader.getDateAsGMTString(0, "days since 0000-01-01 00:00");
@@ -293,8 +313,15 @@ public class TestIntfce {
         // String locationData = "http://opendap-dt.aviso.oceanobs.com/thredds/dodsC/" + productId;
         // String productId = "dt_upd_med_tp_sla_vfec_19920925_19920930_20050914.nc";
         // String locationData = "C:/BratData/netCDF/" + productId;
-        String productId = "J2.nc";
+        String productId = "extlink_source.h5";
         String locationData = "C:/Documents and Settings/dearith/" + productId;
+        
+        try {
+            NetcdfDataset.acquireDataset(locationData, null);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return productInformationFromLocationData(locationData);
     }
 
@@ -1048,8 +1075,10 @@ public class TestIntfce {
     }
 
     public static void productExtractDiversity() {
-        String productId = "Test_Galapagos_20070901_ssh.nc";
-        String locationData = "J:/dev/" + productId;
+        //String productId = "Test_Galapagos_20070901_ssh.nc";
+        //String locationData = "J:/dev/" + productId;
+        String productId = "dt_upd_global_merged_msla_h_20050831_20050831_20060206.nc";
+        String locationData = "C:/BratData/hangzhou/" + productId;
 
         // String productId = "mercatorPsy3v1R1v_arc_mean_20060628_R20060712_1170678793644.nc";
         // String locationData = "C:/apache-tomcat-5.5.16/webapps/motu-file-extract/" + productId;
@@ -1064,8 +1093,8 @@ public class TestIntfce {
         // second element is end date (optional)
         // if only start date is set, end date equals start date
         List<String> listTemporalCoverage = new ArrayList<String>();
-        listTemporalCoverage.add("2007-09-01");
-        listTemporalCoverage.add("2007-09-01");
+        //listTemporalCoverage.add("2007-09-01");
+        //listTemporalCoverage.add("2007-09-01");
 
         // add Lat/Lon criteria
         // first element is low latitude
@@ -1073,10 +1102,10 @@ public class TestIntfce {
         // third element is high latitude
         // fourth element is high longitude
         List<String> listLatLonCoverage = new ArrayList<String>();
-        listLatLonCoverage.add("-10");
-        listLatLonCoverage.add("-50");
-        listLatLonCoverage.add("10");
-        listLatLonCoverage.add("-30");
+        listLatLonCoverage.add("-1");
+        listLatLonCoverage.add("0");
+        listLatLonCoverage.add("1");
+        listLatLonCoverage.add("359.99999");
 
         // add depth (Z) criteria
         // first element is low depth
@@ -1188,7 +1217,8 @@ public class TestIntfce {
         // add variable to extract
         // listVar.add("salinity");
         // listVar.add("temperature");
-        listVar.add("ssh");
+        //listVar.add("ssh");
+        listVar.add("ext_link/win_speed_alt");
 
         // add temporal criteria
         // first element is start date
@@ -1243,9 +1273,9 @@ public class TestIntfce {
         //String locationData = "C:/Java/dev/atoll-motu/" + productId;
         //String productId = "JA2_IPN_2PTP010_001_20081009_070651_20081009_080304";
         //String locationData = "C:/data/jason-2/igdr/StandardDataset/" + productId;
-        //String productId = "J2.h5";
+        //String productId = "extlink_source.h5";
         //String locationData = "C:/Documents and Settings/dearith/" + productId;
-        String productId = "testHDF5.h5";
+        String productId = "TestHDF5.h5";
         String locationData = "C:/" + productId;
 
         Product product = productInformationFromLocationData(locationData);
@@ -1804,4 +1834,106 @@ public class TestIntfce {
         
     }
     
+    public static void testFeatures() {
+        String location = "C:/BratData/testFeatures.nc";
+        File  file = new File(location);
+        try {
+            CFPointObWriter.rewritePointFeatureDataset(location, "C:/TEMP/" + file.getName(), true);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }    
+    
+    public static boolean rewriteTrajectoryFeatureDataset(String fileIn, String fileOut, boolean inMemory) throws IOException {
+        System.out.println("Rewrite2 .nc files from " + fileIn + " to " + fileOut + " inMemory= " + inMemory);
+
+        long start = System.currentTimeMillis();
+
+        // do it in memory for speed
+        NetcdfFile ncfile = inMemory ? NetcdfFile.openInMemory(fileIn) : NetcdfFile.open(fileIn);
+        NetcdfDataset ncd = new NetcdfDataset(ncfile);
+
+        Formatter errlog = new Formatter();
+        FeatureDataset fd = FeatureDatasetFactoryManager.wrap(FeatureType.ANY_POINT, ncd, null, errlog);
+        if (fd == null) return false;
+
+        if (fd instanceof FeatureDatasetPoint) {
+          TestIntfce.writeTrajectoryFeatureCollection((FeatureDatasetPoint) fd, fileOut);
+          fd.close();
+          long took = System.currentTimeMillis() - start;
+          System.out.println(" that took " + (took - start) + " msecs");
+          return true;
+        }
+
+        return false;
+
+      }
+
+      /**
+       * Write a ucar.nc2.ft.PointFeatureCollection in CF point format.
+       *
+       * @param pfDataset find the first PointFeatureCollection, and write all data from it
+       * @param fileOut   write to this netcdf-3 file
+       * @return number of records written
+       * @throws IOException on read/write error, or if no PointFeatureCollection in pfDataset
+       */
+      public static int writeTrajectoryFeatureCollection(FeatureDatasetPoint pfDataset, String fileOut) throws IOException {
+        // extract the TrajectoryFeatureCollection
+          TrajectoryFeatureCollection pointFeatureCollection = null;
+        List<FeatureCollection> featureCollectionList = pfDataset.getPointFeatureCollectionList();
+        for (FeatureCollection featureCollection : featureCollectionList) {
+          if (featureCollection instanceof TrajectoryFeatureCollection)
+            pointFeatureCollection = (TrajectoryFeatureCollection) featureCollection;
+        }
+        if (null == pointFeatureCollection)
+          throw new IOException("There is no PointFeatureCollection in  " + pfDataset.getLocation());
+
+        long start = System.currentTimeMillis();
+
+        FileOutputStream fos = new FileOutputStream(fileOut);
+        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(fos, 10000));
+        WriterCFPointObsDataset writer = null;
+
+        /* LOOK BAD
+        List<VariableSimpleIF> dataVars = new ArrayList<VariableSimpleIF>();
+        ucar.nc2.NetcdfFile ncfile = pfDataset.getNetcdfFile();
+        if ((ncfile == null) || !(ncfile instanceof NetcdfDataset))  {
+          dataVars.addAll(pfDataset.getDataVariables());
+        } else {
+          NetcdfDataset ncd = (NetcdfDataset) ncfile;
+          for (VariableSimpleIF vs : pfDataset.getDataVariables()) {
+            if (ncd.findCoordinateAxis(vs.getName()) == null)
+              dataVars.add(vs);
+          }
+        } */
+
+        int count = 0;
+        pointFeatureCollection.resetIteration();
+        while (pointFeatureCollection.hasNext()) {
+          PointFeature pointFeature = (PointFeature) pointFeatureCollection.next();
+          StructureData data = pointFeature.getData();
+          if (count == 0) {
+            EarthLocation loc = pointFeature.getLocation(); // LOOK we dont know this until we see the obs
+            String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters"; // LOOK units may be wrong
+            writer = new WriterCFPointObsDataset(out, pfDataset.getGlobalAttributes(), altUnits);
+            writer.writeHeader(pfDataset.getDataVariables(), -1);
+          }
+          writer.writeRecord(pointFeature, data);
+          count++;
+        }
+
+        writer.finish();
+        out.flush();
+        out.close();
+
+        long took = System.currentTimeMillis() - start;
+        System.out.printf("Write %d records from %s to %s took %d msecs %n", count, pfDataset.getLocation(), fileOut, took);
+        return count;
+      }    
 }
+
+
+
+

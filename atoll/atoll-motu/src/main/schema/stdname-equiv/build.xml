@@ -13,7 +13,7 @@
 	<property name="schema.xsdfile" value="sdtnameequiv.xsd" />
 				
 	<path id="classpath">
-		<fileset dir="${project.dir}/../cls-commons-config/lib/jaxb" includes="*.jar" />
+		<fileset dir="${project.dir}/../../cls-commons-config/lib/jaxb" includes="*.jar" />
 	</path>
 
 	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask" classpathref="classpath" />
