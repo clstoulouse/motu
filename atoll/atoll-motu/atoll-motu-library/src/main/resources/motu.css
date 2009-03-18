@@ -1,0 +1,275 @@
+
+IMG.suiv2
+{
+	src=http://www.aviso.oceanobs.com/images/icones/suiv2.gif width=18 height=14 alt=\"\" border=0
+    FONT: 11pt "Arial", "Helvetica", sans-serif
+}
+UL
+{
+    FONT: 11pt "Arial", "Helvetica", sans-serif
+}
+OL
+{
+    FONT: 11pt "Arial", "Helvetica", sans-serif
+}
+DL
+{
+    FONT: 11pt "Arial", "Helvetica", sans-serif
+}
+STRONG
+{
+    FONT-WEIGHT: bold
+}
+B
+{
+    FONT-WEIGHT: bold
+}
+EM
+{
+    FONT-STYLE: italic
+}
+I
+{
+    FONT-STYLE: italic
+}
+.shortspace
+{
+    MARGIN-BOTTOM: 10px
+}
+.noPaddingTop
+{
+    PADDING-TOP: 0px
+}
+.chapeau-fr
+{
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 12pt;
+    MARGIN-LEFT: 100px;
+    COLOR: #008080
+}
+.chapeau-en
+{
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 12pt;
+    COLOR: #000080;
+    MARGIN-RIGHT: 100px
+}
+.francais
+{
+    MARGIN-LEFT: 100px;
+    COLOR: #008080
+}
+.english
+{
+    COLOR: #000080;
+    MARGIN-RIGHT: 100px
+}
+.actudate
+{
+    FONT-SIZE: 9pt;
+    COLOR: #666666
+}
+.actutitre
+{
+    FONT-WEIGHT: bold;
+    COLOR: #000000
+}
+.actutheme
+{
+    COLOR: #000000;
+    FONT-STYLE: italic
+}
+.imgtitre
+{
+    FONT: bold italic 9pt "Arial", "Helvetica", sans-serif;
+    COLOR: #333333
+}
+.navigactu
+{
+    FONT: italic 8pt "Arial", "Helvetica", sans-serif;
+    TEXT-ALIGN: center
+}
+.faDate
+{
+    FONT-WEIGHT: bold
+}
+.faTheme
+{
+    FONT-WEIGHT: bold
+}
+.faTitre
+{
+    FONT: bold 13pt sans-serif;
+    COLOR: #000099;
+    PADDING-TOP: 10px
+}
+.faChapeau
+{
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 11pt;
+    COLOR: #339900
+}
+.ldTexte
+{
+    COLOR: #000000
+}
+.ldNote
+{
+    FONT-SIZE: 10pt;
+    COLOR: #333333;
+    FONT-STYLE: italic
+}
+.newsencadre
+{
+    BORDER-RIGHT: #517ba8 2px solid;
+    BORDER-TOP: #517ba8 2px solid;
+    BORDER-LEFT: #517ba8 2px solid;
+    BORDER-BOTTOM: #517ba8 2px solid;
+    BACKGROUND-COLOR: #dceef8
+}
+.newsreferences
+{
+    BACKGROUND-COLOR: #e9f7fe
+}
+H1.newsletter
+{
+    COLOR: #4b504e
+}
+UL
+{
+    LIST-STYLE-IMAGE: url(/images/icones/puce1.gif)
+}
+UL.puce1
+{
+    LIST-STYLE-IMAGE: url(/images/icones/puce1.gif)
+}
+UL.puce2
+{
+    LIST-STYLE-IMAGE: url(/images/icones/puce2.gif)
+}
+UL.puce3
+{
+    LIST-STYLE-IMAGE: url(/images/icones/puce3.gif)
+}
+UL.puce4
+{
+    LIST-STYLE-IMAGE: url(/images/icones/puce4.gif)
+}
+.bandeau
+{
+    BACKGROUND-COLOR: #000080;
+    TEXT-ALIGN: center
+}
+A:link
+{
+    COLOR: #cc6633
+}
+A:visited
+{
+    COLOR: #336699
+}
+A:hover
+{
+    TEXT-DECORATION: none
+}
+.chapeau A:hover
+{
+    FONT-STYLE: normal
+}
+TH
+{
+    FONT: bold 11pt "Arial", "Helvetica", sans-serif
+}
+TD
+{
+    FONT: 11pt "Arial", "Helvetica", sans-serif
+}
+TD.freres
+{
+    FONT: 10pt "Arial", "Helvetica", sans-serif;
+    TEXT-ALIGN: right
+}
+TD.parents
+{
+    FONT: 10pt "Arial", "Helvetica", sans-serif;
+    TEXT-ALIGN: left
+}
+TD.lettre
+{
+    FONT: bold 20pt "Arial", "Helvetica", sans-serif;
+    COLOR: #000099
+}
+TD.alphabet
+{
+    FONT-WEIGHT: bold;
+    TEXT-ALIGN: right
+}
+TD.mot
+{
+    BORDER-RIGHT: #000099 2px solid;
+    FONT-WEIGHT: bold;
+    COLOR: #000099;
+    TEXT-ALIGN: right
+}
+TD.menu
+{
+    TEXT-ALIGN: center
+}
+TD.right
+{
+    TEXT-ALIGN: right
+}
+TABLE.encadre
+{
+    BORDER-RIGHT: #000099 2px solid;
+    BORDER-TOP: #000099 2px solid;
+    BORDER-LEFT: #000099 2px solid;
+    BORDER-BOTTOM: #000099 2px solid;
+    BORDER-COLLAPSE: collapse
+}
+.encadre TD
+{
+    BORDER-RIGHT: #000099 1px solid;
+    BORDER-TOP: #000099 1px solid;
+    BORDER-LEFT: #000099 1px solid;
+    BORDER-BOTTOM: #000099 1px solid;
+    BORDER-COLLAPSE: collapse;
+    BACKGROUND-COLOR: #f8f8ff
+}
+.encadre TH
+{
+    BORDER-RIGHT: #000099 1px solid;
+    BORDER-TOP: #000099 1px solid;
+    BORDER-LEFT: #000099 1px solid;
+    BORDER-BOTTOM: #000099 1px solid;
+    BORDER-COLLAPSE: collapse;
+    BACKGROUND-COLOR: #91cdff;
+    TEXT-ALIGN: center
+}
+.encadre HR
+{
+    BACKGROUND: #000099;
+    BORDER-TOP-STYLE: none;
+    BORDER-RIGHT-STYLE: none;
+    BORDER-LEFT-STYLE: none;
+    HEIGHT: 1px;
+    BORDER-BOTTOM-STYLE: none
+}
+#bordBasClair
+{
+    BORDER-BOTTOM: #8a8ad2 1px solid
+}
+TABLE.noborder
+{
+    BORDER-TOP-STYLE: none;
+    BORDER-RIGHT-STYLE: none;
+    BORDER-LEFT-STYLE: none;
+    BORDER-BOTTOM-STYLE: none
+}
+.noborder TD
+{
+    BORDER-TOP-STYLE: none;
+    BORDER-RIGHT-STYLE: none;
+    BORDER-LEFT-STYLE: none;
+    BORDER-BOTTOM-STYLE: none
+}

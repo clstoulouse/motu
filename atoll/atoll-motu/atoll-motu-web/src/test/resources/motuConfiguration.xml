@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<!--
+	urlSite="http://rdp2-jaune.cls.fr:8380/thredds/dodsC"
+	urlSite="http://opendap.mercator-ocean.fr/thredds/dodsC"
+	urlSite="http://opendap-dt.aviso.oceanobs.com/thredds/dodsC"
+	urlSite="http://opendap-nrt.aviso.oceanobs.com/thredds/dodsC"
+	http://opendap-dev.cls.fr:8280/thredds/dodsC/catalogConfig.xml
+-->
+
+<!-- defaultService :
+	The service name when no service are specified.
+-->
+<!-- useProxy :
+	True if a proxy is used between Motu and the opendaps, false otherwise.
+	Default value is false.
+-->
+<!-- proxyHost :
+	Name of the proxy. Ignored if useProxy is false.
+	Default value is proxy.cls.fr).
+-->
+<!-- proxyPort :
+	Name of the proxy. Ignored if useProxy is false.
+	Default value is 8080).
+-->
+<!-- dataBlockSize :
+	The number for data in Ko that can be read in the same time.
+-->
+<!-- maxSizePerFile :
+	The number for data in Megabytes that can be written and download 
+	for a Netcdf file.
+-->
+<!-- extractionPath :
+	The absolute path where to extract (write) files.
+-->
+<!-- downloadHttpUrl :
+	Http virtual path corresponding to the attribute <extractionPath>.
+-->
+<!-- httpDocumentRoot :
+	Document root of the servlet server.
+-->
+<motuConfig defaultService="aviso" proxyLogin=""
+	proxyPwd="" useAuthentication="false" dataBlockSize="512000"
+	maxSizePerFile="1024"
+	extractionPath="c:/temp/motu-extract"
+	downloadHttpUrl="http://atoll-qt2.cls.fr:31080/motu-extract"
+	httpDocumentRoot="http://atoll-qt2.cls.fr"
+	cleanExtractionFileInterval="10"
+	cleanRequestInterval="60"
+	runGCInterval="10">
+
+	<!--===========================================-->
+	<!--                     Motu validation TDS        		-->
+	<!--===========================================-->
+
+	<configService defaultLanguage="UK"
+		description="Motu data" group="Aviso"
+		httpBaseRef="http://www.aviso.oceanobs.com" name="Motu"
+		veloTemplatePrefix="generic">
+		<catalog name="catalog.xml" type="tds"
+			urlSite="http://atoll-qt3.cls.fr:41080/thredds"/>
+	</configService>
+
+	<!--===========================================-->
+	<!--                     Mercator TDS         -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR" description="Ocean data"
+		group="Mercator" httpBaseRef="http://www.mercator-ocean.fr"
+		name="Mercator" veloTemplatePrefix="mercator">
+		<catalog name="catalog.xml" type="tds"
+			urlSite="http://opendap.mercator-ocean.fr/thredds" />
+	</configService>
+
+	<!--===========================================-->
+	<!--                     Aviso TDS        		-->
+	<!--===========================================-->
+	<!--=====================   Aviso TDS  NRT et DT  =================-->
+	<configService defaultLanguage="UK"
+		description="Motu data" group="Aviso"
+		httpBaseRef="http://www.aviso.oceanobs.com" name="Motu"
+		veloTemplatePrefix="motu">
+		<catalog name="catalog.xml" type="tds"
+			urlSite="http://atoll-qt3.cls.fr:41080/thredds"/>
+	</configService>
+
+	<!--===========================================-->
+	<!--      QUEUE SERVER CONFIG      -->
+	<!--===========================================-->
+
+	<queueServerConfig maxPoolAnonymous="10" maxPoolAuth="1" defaultPriority="2">
+
+		<queues id="queue1" description="light queue" batch="false">
+			<maxThreads>1</maxThreads>
+			<maxPoolSize>10</maxPoolSize>
+			<dataThreshold>75.0</dataThreshold>
+			<lowPriorityWaiting>1</lowPriorityWaiting>
+		</queues>
+		
+		<queues id="queue2" description="bulk queue" batch="false">
+			<maxThreads>1</maxThreads>
+			<maxPoolSize>10</maxPoolSize>
+			<dataThreshold>1024</dataThreshold>
+			<lowPriorityWaiting>2</lowPriorityWaiting>
+		</queues>
+		
+		<queues id="queue3" description="batch light queue" batch="true">
+			<maxThreads>1</maxThreads>
+			<maxPoolSize>-1</maxPoolSize>
+			<dataThreshold>75.0</dataThreshold>
+			<lowPriorityWaiting>1</lowPriorityWaiting>
+		</queues>
+		
+		<queues id="queue4" description="batch bulk queue" batch="true">
+			<maxThreads>1</maxThreads>
+			<maxPoolSize>-1</maxPoolSize>
+			<dataThreshold>1024</dataThreshold>
+			<lowPriorityWaiting>2</lowPriorityWaiting>
+		</queues>
+
+	</queueServerConfig>
+
+
+</motuConfig>
+

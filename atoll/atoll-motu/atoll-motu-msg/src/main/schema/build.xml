@@ -1,0 +1,63 @@
+<?xml version="1.0" standalone="yes"?>
+<project basedir="." default="generate">
+
+	<!-- =================================================================== -->
+	<!-- Initialisation de toutes les variables                              -->
+	<!-- =================================================================== -->
+		    	
+	<property name="project.dir" value="../../.." />
+	<property name="m2repository.dir" value="${user.home}/.m2/repository" />
+	<property name="src.dir" value="${project.dir}/src/main/java" />
+
+	<property name="schema.path" value="fr/cls/atoll/motumsg/xml" />
+	<property name="schema.package" value="fr.cls.atoll.motumsg.xml" />
+	<property name="schema.xsdfile" value="atoll-motu-msg.xsd" />
+	<property name="schema.xsdpath" value="${basedir}" />
+	<property name="schema.xjbfile" value="atoll-motu-msg.xjb" />
+				
+	<path id="classpath">
+		<fileset dir="${project.dir}/../cls-commons-config/lib/jaxb" includes="*.jar" />
+		<pathelement location="${m2repository.dir}/javax/xml/defaultvalueplugin/1.0/defaultvalueplugin-1.0.jar"/>
+	</path>
+
+	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask" classpathref="classpath" />
+			
+	<!-- =================================================================== -->
+	<!-- Génération des classes JAVA en utilisant JAXB                       -->
+	<!-- =================================================================== -->
+
+	<target name="generate" depends="clean">
+		<!-- 
+		<xjc schema="${schema.xsdfile}" binding="${schema.xjbfile}" target="${src.dir}" package="${schema.package}" removeOldOutput="no">
+			<produces dir="${src.dir}"/>
+		</xjc>
+		-->
+		<xjc  target="${src.dir}" binding="${schema.xjbfile}"  package="${schema.package}" removeOldOutput="no">
+			<schema dir="${schema.xsdpath}" includes="${schema.xsdfile}" />
+<!--
+			<binding dir="${basedir}">
+		        <include name="*.xml"/>
+		        <include name="*.xjb"/>
+		      </binding>
+-->			
+			<arg value="-extension"/>
+			<arg value="-Xdefault-value"/>
+			<produces dir="${src.dir}" />
+		</xjc>
+		
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- Suppression classes JAVA générées par JAXB                          -->
+	<!-- =================================================================== -->
+
+	<target name="clean">
+        <delete>
+            <fileset dir="${src.dir}/${schema.path}">
+				<include name="**/**"/>
+            </fileset>
+        </delete>
+	</target>
+
+</project>
+

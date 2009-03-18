@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">	
+	<parent>
+		<artifactId>atoll-motu</artifactId>
+		<groupId>cls.atoll</groupId>
+		<version>2.0.0-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cls.atoll.motu</groupId>
+	<artifactId>atoll-motu-msg</artifactId>	
+	<packaging>jar</packaging>
+	<version>2.0.0-SNAPSHOT</version>	
+	<name>ATOLL Motu Messages</name>
+	<scm>
+		<connection>scm:cvs:pserver:@cvsserver.cls.fr:/home/cvs/REPOSITORIES/mvn-atoll:atoll/atoll-motu/atoll-motu-msg</connection>
+    </scm>
+	<description>This package holds the messages exchanged by the published services.</description>
+	<dependencies>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.9</version>
+		</dependency>
+
+	</dependencies>
+</project>
+

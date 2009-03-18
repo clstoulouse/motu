@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editmodel:ClassDiagramEditModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:editmodel="editmodel.xmi" xmlns:options="options.xmi" size="6447,1991" id="fr.cls.atoll.motu.exception" metadata="uml2-1.0" initialized="true" zoom="0.5" tag="100" key="32303036303731332061746F6C6C2D6D6F7475">
+  <children xsi:type="editmodel:ClassEditModel" name="MotuInvalidDepthRangeException" location="674,1194" size="291,241" id="fr.cls.atoll.motu.exception/MotuInvalidDepthRangeException" runTimeClassModel="invalidRange,getValidRange(),getInvalidRangeAsString(),notifyException(),MotuInvalidDepthRangeException(DDDD),notifyLogException(),validRange,getValidRangeAsString(),MotuInvalidDepthRangeException([D[DLjava.lang.Throwable;),MotuInvalidDepthRangeException([D[D),MotuInvalidDepthRangeException(DDDDLjava.lang.Throwable;),getInvalidRange()">
+    <children xsi:type="editmodel:CompartmentEditModel" size="125,54"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="808,180">
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidDepthRangeException" id="fr.cls.atoll.motu.exception/MotuInvalidDepthRangeException#MotuInvalidDepthRangeException(DDDD)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidDepthRangeException" id="fr.cls.atoll.motu.exception/MotuInvalidDepthRangeException#MotuInvalidDepthRangeException(DDDDLjava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidDepthRangeException" id="fr.cls.atoll.motu.exception/MotuInvalidDepthRangeException#MotuInvalidDepthRangeException([D[DLjava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidDepthRangeException" id="fr.cls.atoll.motu.exception/MotuInvalidDepthRangeException#MotuInvalidDepthRangeException([D[D)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyLogException" id="fr.cls.atoll.motu.exception/MotuInvalidDepthRangeException#notifyLogException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyException" id="fr.cls.atoll.motu.exception/MotuInvalidDepthRangeException#notifyException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getInvalidRange" id="fr.cls.atoll.motu.exception/MotuInvalidDepthRangeException#getInvalidRange()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getInvalidRangeAsString" id="fr.cls.atoll.motu.exception/MotuInvalidDepthRangeException#getInvalidRangeAsString()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getValidRange" id="fr.cls.atoll.motu.exception/MotuInvalidDepthRangeException#getValidRange()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getValidRangeAsString" id="fr.cls.atoll.motu.exception/MotuInvalidDepthRangeException#getValidRangeAsString()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="fr.cls.atoll.motu.exception/MotuExceptionBase&lt;-fr.cls.atoll.motu.exception/MotuInvalidDepthRangeException" source="//@children.0" target="//@children.13/@sourceConnections.0" targetEnd="//@children.0/@sourceConnections.0/@children.1" sourceEnd="//@children.0/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="145,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPublicMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.13/@sourceConnections.0" name="MotuExceptionBase" location="755,65" size="254,157" id="fr.cls.atoll.motu.exception/MotuExceptionBase" runTimeClassModel="notifyException(),notifyLogException(),MotuExceptionBase(Ljava.lang.String;Ljava.lang.Throwable;),MotuExceptionBase(Ljava.lang.String;),MotuExceptionBase(Ljava.lang.Throwable;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="125,18"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="319,90">
+      <children xsi:type="editmodel:MethodEditModel" name="MotuExceptionBase" id="fr.cls.atoll.motu.exception/MotuExceptionBase#MotuExceptionBase(Ljava.lang.String;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuExceptionBase" id="fr.cls.atoll.motu.exception/MotuExceptionBase#MotuExceptionBase(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuExceptionBase" id="fr.cls.atoll.motu.exception/MotuExceptionBase#MotuExceptionBase(Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyLogException" id="fr.cls.atoll.motu.exception/MotuExceptionBase#notifyLogException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyException" id="fr.cls.atoll.motu.exception/MotuExceptionBase#notifyException()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPublicMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="MotuInvalidDepthException" location="1339,970" size="242,219" id="fr.cls.atoll.motu.exception/MotuInvalidDepthException" runTimeClassModel="MotuInvalidDepthException(Ljava.lang.String;Ljava.lang.Throwable;),getDepth(),notifyException(),MotuInvalidDepthException(D),notifyLogException(),getDepthString(),depthString,depth,MotuInvalidDepthException(DLjava.lang.Throwable;),getDepthAsString(),MotuInvalidDepthException(Ljava.lang.String;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="125,54"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="339,162">
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidDepthException" id="fr.cls.atoll.motu.exception/MotuInvalidDepthException#MotuInvalidDepthException(Ljava.lang.String;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidDepthException" id="fr.cls.atoll.motu.exception/MotuInvalidDepthException#MotuInvalidDepthException(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidDepthException" id="fr.cls.atoll.motu.exception/MotuInvalidDepthException#MotuInvalidDepthException(DLjava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidDepthException" id="fr.cls.atoll.motu.exception/MotuInvalidDepthException#MotuInvalidDepthException(D)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyLogException" id="fr.cls.atoll.motu.exception/MotuInvalidDepthException#notifyLogException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyException" id="fr.cls.atoll.motu.exception/MotuInvalidDepthException#notifyException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDepthString" id="fr.cls.atoll.motu.exception/MotuInvalidDepthException#getDepthString()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDepth" id="fr.cls.atoll.motu.exception/MotuInvalidDepthException#getDepth()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDepthAsString" id="fr.cls.atoll.motu.exception/MotuInvalidDepthException#getDepthAsString()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="fr.cls.atoll.motu.exception/MotuExceptionBase&lt;-fr.cls.atoll.motu.exception/MotuInvalidDepthException" source="//@children.2" target="//@children.13/@sourceConnections.0" targetEnd="//@children.2/@sourceConnections.0/@children.1" sourceEnd="//@children.2/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="120,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPublicMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="MotuInvalidLatitudeException" location="874,883" size="268,233" id="fr.cls.atoll.motu.exception/MotuInvalidLatitudeException" runTimeClassModel="MotuInvalidLatitudeException(Ljava.lang.String;),lat,MotuInvalidLatitudeException(Ljava.lang.String;Ljava.lang.Throwable;),notifyException(),notifyLogException(),latString,MotuInvalidLatitudeException(D),MotuInvalidLatitudeException(DLjava.lang.Throwable;),getLatAsString(),getLatString(),getLat()">
+    <children xsi:type="editmodel:CompartmentEditModel" size="125,54"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="333,162">
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidLatitudeException" id="fr.cls.atoll.motu.exception/MotuInvalidLatitudeException#MotuInvalidLatitudeException(Ljava.lang.String;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidLatitudeException" id="fr.cls.atoll.motu.exception/MotuInvalidLatitudeException#MotuInvalidLatitudeException(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidLatitudeException" id="fr.cls.atoll.motu.exception/MotuInvalidLatitudeException#MotuInvalidLatitudeException(DLjava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidLatitudeException" id="fr.cls.atoll.motu.exception/MotuInvalidLatitudeException#MotuInvalidLatitudeException(D)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyLogException" id="fr.cls.atoll.motu.exception/MotuInvalidLatitudeException#notifyLogException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyException" id="fr.cls.atoll.motu.exception/MotuInvalidLatitudeException#notifyException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getLatString" id="fr.cls.atoll.motu.exception/MotuInvalidLatitudeException#getLatString()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getLat" id="fr.cls.atoll.motu.exception/MotuInvalidLatitudeException#getLat()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getLatAsString" id="fr.cls.atoll.motu.exception/MotuInvalidLatitudeException#getLatAsString()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="fr.cls.atoll.motu.exception/MotuExceptionBase&lt;-fr.cls.atoll.motu.exception/MotuInvalidLatitudeException" source="//@children.3" target="//@children.13/@sourceConnections.0" targetEnd="//@children.3/@sourceConnections.0/@children.1" sourceEnd="//@children.3/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="133,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPublicMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="NetCdfAttributeNotFoundException" location="145,784" size="187,141" id="fr.cls.atoll.motu.exception/NetCdfAttributeNotFoundException" runTimeClassModel="notifyException(),notifyLogException(),NetCdfAttributeNotFoundException(Lucar.nc2.Variable;Ljava.lang.String;),NetCdfAttributeNotFoundException(Ljava.lang.String;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="137,54"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="420,72">
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfAttributeNotFoundException" id="fr.cls.atoll.motu.exception/NetCdfAttributeNotFoundException#NetCdfAttributeNotFoundException(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfAttributeNotFoundException" id="fr.cls.atoll.motu.exception/NetCdfAttributeNotFoundException#NetCdfAttributeNotFoundException(Lucar.nc2.Variable;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyLogException" id="fr.cls.atoll.motu.exception/NetCdfAttributeNotFoundException#notifyLogException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyException" id="fr.cls.atoll.motu.exception/NetCdfAttributeNotFoundException#notifyException()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="fr.cls.atoll.motu.exception/MotuExceptionBase&lt;-fr.cls.atoll.motu.exception/NetCdfAttributeNotFoundException" source="//@children.4" target="//@children.13/@sourceConnections.0" targetEnd="//@children.4/@sourceConnections.0/@children.1" sourceEnd="//@children.4/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="93,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPublicMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="NetCdfVariableNotFoundException" location="1869,524" size="191,111" id="fr.cls.atoll.motu.exception/NetCdfVariableNotFoundException" runTimeClassModel="notifyException(),notifyLogException(),NetCdfVariableNotFoundException(Ljava.lang.String;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="125,36"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="284,54">
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfVariableNotFoundException" id="fr.cls.atoll.motu.exception/NetCdfVariableNotFoundException#NetCdfVariableNotFoundException(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyLogException" id="fr.cls.atoll.motu.exception/NetCdfVariableNotFoundException#notifyLogException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyException" id="fr.cls.atoll.motu.exception/NetCdfVariableNotFoundException#notifyException()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="fr.cls.atoll.motu.exception/MotuExceptionBase&lt;-fr.cls.atoll.motu.exception/NetCdfVariableNotFoundException" source="//@children.5" target="//@children.13/@sourceConnections.0" targetEnd="//@children.5/@sourceConnections.0/@children.1" sourceEnd="//@children.5/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="95,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPublicMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="NetCdfVariableException" location="1689,988" size="232,207" id="fr.cls.atoll.motu.exception/NetCdfVariableException" runTimeClassModel="notifyException(),NetCdfVariableException(Lucar.nc2.Variable;Ljava.lang.Throwable;),NetCdfVariableException(Ljava.lang.Throwable;),notifyLogException(),getNetCdfVariable(),NetCdfVariableException(Lucar.nc2.Variable;Ljava.lang.String;),netCdfVariable,NetCdfVariableException(Ljava.lang.String;Ljava.lang.Throwable;),NetCdfVariableException(Ljava.lang.String;),NetCdfVariableException(Lucar.nc2.Variable;Ljava.lang.String;Ljava.lang.Throwable;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="137,36"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="479,162">
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfVariableException" id="fr.cls.atoll.motu.exception/NetCdfVariableException#NetCdfVariableException(Ljava.lang.String;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfVariableException" id="fr.cls.atoll.motu.exception/NetCdfVariableException#NetCdfVariableException(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfVariableException" id="fr.cls.atoll.motu.exception/NetCdfVariableException#NetCdfVariableException(Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfVariableException" id="fr.cls.atoll.motu.exception/NetCdfVariableException#NetCdfVariableException(Lucar.nc2.Variable;Ljava.lang.String;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfVariableException" id="fr.cls.atoll.motu.exception/NetCdfVariableException#NetCdfVariableException(Lucar.nc2.Variable;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfVariableException" id="fr.cls.atoll.motu.exception/NetCdfVariableException#NetCdfVariableException(Lucar.nc2.Variable;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyLogException" id="fr.cls.atoll.motu.exception/NetCdfVariableException#notifyLogException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyException" id="fr.cls.atoll.motu.exception/NetCdfVariableException#notifyException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getNetCdfVariable" id="fr.cls.atoll.motu.exception/NetCdfVariableException#getNetCdfVariable()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="fr.cls.atoll.motu.exception/MotuExceptionBase&lt;-fr.cls.atoll.motu.exception/NetCdfVariableException" source="//@children.6" target="//@children.13/@sourceConnections.0" targetEnd="//@children.6/@sourceConnections.0/@children.1" sourceEnd="//@children.6/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="115,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPublicMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="MotuException" location="840,519" size="153,121" id="fr.cls.atoll.motu.exception/MotuException" runTimeClassModel="MotuException(Ljava.lang.Throwable;),MotuException(Ljava.lang.String;Ljava.lang.Throwable;),MotuException(Ljava.lang.String;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="125,18"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="294,54">
+      <children xsi:type="editmodel:MethodEditModel" name="MotuException" id="fr.cls.atoll.motu.exception/MotuException#MotuException(Ljava.lang.String;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuException" id="fr.cls.atoll.motu.exception/MotuException#MotuException(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuException" id="fr.cls.atoll.motu.exception/MotuException#MotuException(Ljava.lang.Throwable;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="fr.cls.atoll.motu.exception/MotuExceptionBase&lt;-fr.cls.atoll.motu.exception/MotuException" source="//@children.7" target="//@children.13/@sourceConnections.0" targetEnd="//@children.7/@sourceConnections.0/@children.1" sourceEnd="//@children.7/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="76,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPublicMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="MotuNotImplementedException" location="389,739" size="224,121" id="fr.cls.atoll.motu.exception/MotuNotImplementedException" runTimeClassModel="MotuNotImplementedException(Ljava.lang.Throwable;),MotuNotImplementedException(Ljava.lang.String;Ljava.lang.Throwable;),MotuNotImplementedException(Ljava.lang.String;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="125,18"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="369,54">
+      <children xsi:type="editmodel:MethodEditModel" name="MotuNotImplementedException" id="fr.cls.atoll.motu.exception/MotuNotImplementedException#MotuNotImplementedException(Ljava.lang.String;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuNotImplementedException" id="fr.cls.atoll.motu.exception/MotuNotImplementedException#MotuNotImplementedException(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuNotImplementedException" id="fr.cls.atoll.motu.exception/MotuNotImplementedException#MotuNotImplementedException(Ljava.lang.Throwable;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="fr.cls.atoll.motu.exception/MotuExceptionBase&lt;-fr.cls.atoll.motu.exception/MotuNotImplementedException" source="//@children.8" target="//@children.13/@sourceConnections.0" targetEnd="//@children.8/@sourceConnections.0/@children.1" sourceEnd="//@children.8/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="111,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPublicMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="NetCdfAttributeException" location="1115,476" size="332,359" id="fr.cls.atoll.motu.exception/NetCdfAttributeException" runTimeClassModel="NetCdfAttributeException(Lucar.nc2.Variable;Ljava.lang.Throwable;),NetCdfAttributeException(Lucar.nc2.Variable;Ljava.lang.String;Ljava.lang.Throwable;),NetCdfAttributeException(Ljava.lang.String;),notifyException(),NetCdfAttributeException(Lucar.nc2.Variable;Lucar.nc2.Attribute;Ljava.lang.Throwable;),getNetCdfVariable(),netCdfAttribute,NetCdfAttributeException(Ljava.lang.String;Ljava.lang.Throwable;),NetCdfAttributeException(Lucar.nc2.Attribute;Ljava.lang.String;),getNetCdfAttribute(),NetCdfAttributeException(Lucar.nc2.Attribute;Ljava.lang.String;Ljava.lang.Throwable;),NetCdfAttributeException(Lucar.nc2.Variable;Lucar.nc2.Attribute;Ljava.lang.String;Ljava.lang.Throwable;),NetCdfAttributeException(Lucar.nc2.Variable;Lucar.nc2.Attribute;Ljava.lang.String;),NetCdfAttributeException(Lucar.nc2.Variable;Ljava.lang.String;),NetCdfAttributeException(Ljava.lang.Throwable;),notifyLogException(),netCdfVariable,NetCdfAttributeException(Lucar.nc2.Attribute;Ljava.lang.Throwable;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="139,54"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="617,288">
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfAttributeException" id="fr.cls.atoll.motu.exception/NetCdfAttributeException#NetCdfAttributeException(Ljava.lang.String;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfAttributeException" id="fr.cls.atoll.motu.exception/NetCdfAttributeException#NetCdfAttributeException(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfAttributeException" id="fr.cls.atoll.motu.exception/NetCdfAttributeException#NetCdfAttributeException(Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfAttributeException" id="fr.cls.atoll.motu.exception/NetCdfAttributeException#NetCdfAttributeException(Lucar.nc2.Attribute;Ljava.lang.String;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfAttributeException" id="fr.cls.atoll.motu.exception/NetCdfAttributeException#NetCdfAttributeException(Lucar.nc2.Attribute;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfAttributeException" id="fr.cls.atoll.motu.exception/NetCdfAttributeException#NetCdfAttributeException(Lucar.nc2.Attribute;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfAttributeException" id="fr.cls.atoll.motu.exception/NetCdfAttributeException#NetCdfAttributeException(Lucar.nc2.Variable;Lucar.nc2.Attribute;Ljava.lang.String;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfAttributeException" id="fr.cls.atoll.motu.exception/NetCdfAttributeException#NetCdfAttributeException(Lucar.nc2.Variable;Lucar.nc2.Attribute;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfAttributeException" id="fr.cls.atoll.motu.exception/NetCdfAttributeException#NetCdfAttributeException(Lucar.nc2.Variable;Lucar.nc2.Attribute;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfAttributeException" id="fr.cls.atoll.motu.exception/NetCdfAttributeException#NetCdfAttributeException(Lucar.nc2.Variable;Ljava.lang.String;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfAttributeException" id="fr.cls.atoll.motu.exception/NetCdfAttributeException#NetCdfAttributeException(Lucar.nc2.Variable;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfAttributeException" id="fr.cls.atoll.motu.exception/NetCdfAttributeException#NetCdfAttributeException(Lucar.nc2.Variable;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyLogException" id="fr.cls.atoll.motu.exception/NetCdfAttributeException#notifyLogException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyException" id="fr.cls.atoll.motu.exception/NetCdfAttributeException#notifyException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getNetCdfAttribute" id="fr.cls.atoll.motu.exception/NetCdfAttributeException#getNetCdfAttribute()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getNetCdfVariable" id="fr.cls.atoll.motu.exception/NetCdfAttributeException#getNetCdfVariable()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="fr.cls.atoll.motu.exception/MotuExceptionBase&lt;-fr.cls.atoll.motu.exception/NetCdfAttributeException" source="//@children.9" target="//@children.13/@sourceConnections.0" targetEnd="//@children.9/@sourceConnections.0/@children.1" sourceEnd="//@children.9/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="166,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPublicMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="MotuInvalidDateRangeException" location="509,869" size="231,237" id="fr.cls.atoll.motu.exception/MotuInvalidDateRangeException" runTimeClassModel="invalidRange,getValidRange(),MotuInvalidDateRangeException([Ljava.util.Date;[Ljava.util.Date;),getInvalidRangeAsString(),MotuInvalidDateRangeException(Ljava.util.Date;Ljava.util.Date;Ljava.util.Date;Ljava.util.Date;),notifyException(),notifyLogException(),validRange,MotuInvalidDateRangeException(Ljava.util.Date;Ljava.util.Date;Ljava.util.Date;Ljava.util.Date;Ljava.lang.Throwable;),getValidRangeAsString(),MotuInvalidDateRangeException([Ljava.util.Date;[Ljava.util.Date;Ljava.lang.Throwable;),getInvalidRange()">
+    <children xsi:type="editmodel:CompartmentEditModel" size="125,54"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="762,180">
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidDateRangeException" id="fr.cls.atoll.motu.exception/MotuInvalidDateRangeException#MotuInvalidDateRangeException(Ljava.util.Date;Ljava.util.Date;Ljava.util.Date;Ljava.util.Date;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidDateRangeException" id="fr.cls.atoll.motu.exception/MotuInvalidDateRangeException#MotuInvalidDateRangeException(Ljava.util.Date;Ljava.util.Date;Ljava.util.Date;Ljava.util.Date;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidDateRangeException" id="fr.cls.atoll.motu.exception/MotuInvalidDateRangeException#MotuInvalidDateRangeException([Ljava.util.Date;[Ljava.util.Date;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidDateRangeException" id="fr.cls.atoll.motu.exception/MotuInvalidDateRangeException#MotuInvalidDateRangeException([Ljava.util.Date;[Ljava.util.Date;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyLogException" id="fr.cls.atoll.motu.exception/MotuInvalidDateRangeException#notifyLogException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyException" id="fr.cls.atoll.motu.exception/MotuInvalidDateRangeException#notifyException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getInvalidRange" id="fr.cls.atoll.motu.exception/MotuInvalidDateRangeException#getInvalidRange()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getInvalidRangeAsString" id="fr.cls.atoll.motu.exception/MotuInvalidDateRangeException#getInvalidRangeAsString()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getValidRange" id="fr.cls.atoll.motu.exception/MotuInvalidDateRangeException#getValidRange()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getValidRangeAsString" id="fr.cls.atoll.motu.exception/MotuInvalidDateRangeException#getValidRangeAsString()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" id="fr.cls.atoll.motu.exception/MotuExceptionBase&lt;-fr.cls.atoll.motu.exception/MotuInvalidDateRangeException" source="//@children.10" target="//@children.13/@sourceConnections.0" targetEnd="//@children.10/@sourceConnections.0/@children.1" sourceEnd="//@children.10/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="194,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="-1351,-840"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPublicMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="MotuExceedingCapacityException" location="34,1045" size="170,211" id="fr.cls.atoll.motu.exception/MotuExceedingCapacityException" runTimeClassModel="MotuExceedingCapacityException(D),MotuExceedingCapacityException(DD),notifyException(),getMaxAsString(),actual,notifyLogException(),max,getActualAsString()">
+    <children xsi:type="editmodel:CompartmentEditModel" size="125,54"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="345,144">
+      <children xsi:type="editmodel:MethodEditModel" name="MotuExceedingCapacityException" id="fr.cls.atoll.motu.exception/MotuExceedingCapacityException#MotuExceedingCapacityException(D)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuExceedingCapacityException" id="fr.cls.atoll.motu.exception/MotuExceedingCapacityException#MotuExceedingCapacityException(DD)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyLogException" id="fr.cls.atoll.motu.exception/MotuExceedingCapacityException#notifyLogException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyException" id="fr.cls.atoll.motu.exception/MotuExceedingCapacityException#notifyException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getActual" id="fr.cls.atoll.motu.exception/MotuExceedingCapacityException#getActual()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getActualAsString" id="fr.cls.atoll.motu.exception/MotuExceedingCapacityException#getActualAsString()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getMax" id="fr.cls.atoll.motu.exception/MotuExceedingCapacityException#getMax()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getMaxAsString" id="fr.cls.atoll.motu.exception/MotuExceedingCapacityException#getMaxAsString()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="fr.cls.atoll.motu.exception/MotuExceptionBase&lt;-fr.cls.atoll.motu.exception/MotuExceedingCapacityException" source="//@children.11" target="//@children.13/@sourceConnections.0" targetEnd="//@children.11/@sourceConnections.0/@children.1" sourceEnd="//@children.11/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="85,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPublicMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="MotuInvalidLongitudeException" location="1519,530" size="242,235" id="fr.cls.atoll.motu.exception/MotuInvalidLongitudeException" runTimeClassModel="getLonString(),notifyException(),getLonAsString(),notifyLogException(),MotuInvalidLongitudeException(D),MotuInvalidLongitudeException(DLjava.lang.Throwable;),lon,MotuInvalidLongitudeException(Ljava.lang.String;),lonString,getLon(),MotuInvalidLongitudeException(Ljava.lang.String;Ljava.lang.Throwable;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="125,54"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="345,162">
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidLongitudeException" id="fr.cls.atoll.motu.exception/MotuInvalidLongitudeException#MotuInvalidLongitudeException(Ljava.lang.String;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidLongitudeException" id="fr.cls.atoll.motu.exception/MotuInvalidLongitudeException#MotuInvalidLongitudeException(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidLongitudeException" id="fr.cls.atoll.motu.exception/MotuInvalidLongitudeException#MotuInvalidLongitudeException(DLjava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidLongitudeException" id="fr.cls.atoll.motu.exception/MotuInvalidLongitudeException#MotuInvalidLongitudeException(D)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyLogException" id="fr.cls.atoll.motu.exception/MotuInvalidLongitudeException#notifyLogException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyException" id="fr.cls.atoll.motu.exception/MotuInvalidLongitudeException#notifyException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getLonString" id="fr.cls.atoll.motu.exception/MotuInvalidLongitudeException#getLonString()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getLon" id="fr.cls.atoll.motu.exception/MotuInvalidLongitudeException#getLon()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getLonAsString" id="fr.cls.atoll.motu.exception/MotuInvalidLongitudeException#getLonAsString()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="fr.cls.atoll.motu.exception/MotuExceptionBase&lt;-fr.cls.atoll.motu.exception/MotuInvalidLongitudeException" source="//@children.12" target="//@children.13/@sourceConnections.0" targetEnd="//@children.12/@sourceConnections.0/@children.1" sourceEnd="//@children.12/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="120,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPublicMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="MotuInvalidDateException" location="269,442" size="182,233" id="fr.cls.atoll.motu.exception/MotuInvalidDateException" runTimeClassModel="notifyException(),notifyLogException(),getDateAsString(),MotuInvalidDateException(Ljava.lang.String;),MotuInvalidDateException(Ljava.lang.String;Ljava.lang.Throwable;),MotuInvalidDateException(Ljava.util.Date;),getDate(),date,dateString,MotuInvalidDateException(Ljava.util.Date;Ljava.lang.Throwable;),getDateString()">
+    <children xsi:type="editmodel:CompartmentEditModel" size="125,54"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="323,162">
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidDateException" id="fr.cls.atoll.motu.exception/MotuInvalidDateException#MotuInvalidDateException(Ljava.lang.String;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidDateException" id="fr.cls.atoll.motu.exception/MotuInvalidDateException#MotuInvalidDateException(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidDateException" id="fr.cls.atoll.motu.exception/MotuInvalidDateException#MotuInvalidDateException(Ljava.util.Date;Ljava.lang.Throwable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="MotuInvalidDateException" id="fr.cls.atoll.motu.exception/MotuInvalidDateException#MotuInvalidDateException(Ljava.util.Date;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyLogException" id="fr.cls.atoll.motu.exception/MotuInvalidDateException#notifyLogException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="notifyException" id="fr.cls.atoll.motu.exception/MotuInvalidDateException#notifyException()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDateString" id="fr.cls.atoll.motu.exception/MotuInvalidDateException#getDateString()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDate" id="fr.cls.atoll.motu.exception/MotuInvalidDateException#getDate()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDateAsString" id="fr.cls.atoll.motu.exception/MotuInvalidDateException#getDateAsString()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" targetConnections="//@children.4/@sourceConnections.0 //@children.8/@sourceConnections.0 //@children.0/@sourceConnections.0 //@children.11/@sourceConnections.0 //@children.7/@sourceConnections.0 //@children.3/@sourceConnections.0 //@children.9/@sourceConnections.0 //@children.12/@sourceConnections.0 //@children.2/@sourceConnections.0 //@children.6/@sourceConnections.0 //@children.5/@sourceConnections.0 //@children.10/@sourceConnections.0" autoLocated="true" id="fr.cls.atoll.motu.exception/MotuExceptionBase&lt;-fr.cls.atoll.motu.exception/MotuInvalidDateException" source="//@children.13" target="//@children.1" targetEnd="//@children.13/@sourceConnections.0/@children.1" sourceEnd="//@children.13/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="90,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="127,157" anchorKind="FixedAtEdge"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPublicMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAssociationMember="true"/>
+  </children>
+  <diagramOptions xsi:type="options:ClassDiagramOptions" properties="wireOptions=3" autoName="false"/>
+  <boardSetting snapToGeometry="true" gridEnabled="true" gridSpacing="10,10" gridOrigin="0,0" rulerUnit="pixel">
+    <leftRuler/>
+    <topRuler/>
+  </boardSetting>
+  <classDiagramPreferences xsi:type="editmodel:UMLClassDiagramPreference" attributeSorter="Natural" methodSorter="Natural" showClassStereotype="true" showPackageStereotype="true" innerClassSorter="Natural" showPublicAttributes="true" showPublicMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showInterfaceStereotype="true" showAttributeProperty="true" showAssociationMember="true"/>
+</editmodel:ClassDiagramEditModel>

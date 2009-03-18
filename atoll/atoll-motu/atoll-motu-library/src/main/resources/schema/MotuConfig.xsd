@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<!-- ===================  -->
+	<!-- Motu configuration   -->
+	<!-- ===================  -->
+	<xs:element name="motuConfig">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" minOccurs="0"
+					name="configService" type="configService">
+				</xs:element>
+				<xs:element name="queueServerConfig"
+					type="queueServerType" maxOccurs="1" minOccurs="1">
+				</xs:element>
+			</xs:sequence>
+			<!-- defaultService :
+				The service name when no service are specified.
+			-->
+			<xs:attribute name="defaultService" type="xs:string"
+				default="aviso_nrt" />
+			<!-- useAuthentication
+				True if users have to be authenticated, false otherwise.
+				Default value is false.
+			-->
+			<xs:attribute name="useAuthentication" type="xs:boolean"
+				default="false" />
+			<xs:attribute name="authFilePath" type="xs:string"
+				use="optional">
+				<xs:annotation>
+					<xs:documentation>
+						Path to the file that contains authentification
+						data (login, pwd).
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<!-- useProxy :
+				True if a proxy is used between Motu and the opendaps, false otherwise.
+				Default value is false.
+			-->
+			<xs:attribute name="useProxy" type="xs:boolean"
+				default="false" />
+			<!-- proxyLogin :
+				Login to connect to the proxy
+			-->
+			<xs:attribute name="proxyLogin" type="xs:string" />
+			<!-- proxyPwd :
+				Password to connect to the proxy
+			-->
+			<xs:attribute name="proxyPwd" type="xs:string" />
+			<!-- proxyHost :
+				Name of the proxy. Ignored if useProxy is false.
+				Default value is proxy.cls.fr).
+			-->
+			<xs:attribute name="proxyHost" type="xs:string"
+				default="proxy.cls.fr" />
+			<!-- proxyPort :
+				Name of the proxy. Ignored if useProxy is false.
+				Default value is 8080).
+			-->
+			<xs:attribute name="proxyPort" type="xs:string"
+				default="8080" />
+			<!-- dataBlockSize :
+				The number for data in Kilobytes that can be read in the same time.
+			-->
+			<xs:attribute name="dataBlockSize" type="xs:integer"
+				default="2048" />
+			<!-- maxSizePerFile :
+				The number for data in Megabytes that can be written and download 
+				for a Netcdf file.
+			-->
+			<xs:attribute name="maxSizePerFile" type="xs:integer"
+				default="1024" />
+			<!-- extractionPath :
+				The absolute path where to extract (write) files.
+			-->
+			<xs:attribute name="extractionPath" type="xs:string"
+				use="required" />
+			<!-- downloadHttpUrl :
+				Http virtual path corresponding to the attribute <extractionPath>.
+			-->
+			<xs:attribute name="downloadHttpUrl" type="xs:string"
+				use="required" />
+			<!-- httpDocumentRoot :
+				http url of the document root of the servlet server.
+			-->
+			<xs:attribute name="httpDocumentRoot" type="xs:string"
+				use="required" />
+			<xs:attribute name="cleanRequestInterval" default="60">
+				<xs:annotation>
+					<xs:documentation>
+						The waiting period admitted to keep the status
+						response of an extraction data request. Value is
+						stated in minutes.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="1" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="cleanExtractionFileInterval"
+				default="60">
+				<xs:annotation>
+					<xs:documentation>
+						The waiting period admitted to keep the file
+						that results of an extraction data request.
+						Value is stated in minutes.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="1" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="extractionFilePatterns" type="xs:string"
+				default=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$">
+				<xs:annotation>
+					<xs:documentation>
+						Patterns (as regular expression) that match
+						extraction file to delete.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="extractionFileCacheSize" default="0">
+				<xs:annotation>
+					<xs:documentation>
+						The maximum value allowed to the cache during
+						extraction. Beyond this value, the older
+						extracted files are quite frequently deleted
+						until the maximum value is raised. The frequency
+						corresponds to the runCleanInterval attribute.
+						Value is stated in mega-bytes (Mo). Value must
+						be positive or zero. If value is zero: no
+						delete.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="0" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="runCleanInterval" default="1">
+				<xs:annotation>
+					<xs:documentation>
+						The interval period to run clean request and
+						extraction file. Value is stated in minutes.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="1" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="runGCInterval" default="0">
+				<xs:annotation>
+					<xs:documentation>
+						The interval period to force run garbage
+						collector Value is stated in minutes and must
+						bue positive or zero. If value is zero: no
+						force.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="0" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+
+	</xs:element>
+
+
+	<!-- ===================  -->
+	<!-- Service description   -->
+	<!-- ===================  -->
+
+	<xs:complexType name="configService">
+		<xs:sequence>
+			<!-- catalog :
+				catalog description.
+			-->
+			<xs:element name="catalog" type="catalogService" />
+		</xs:sequence>
+		<!-- name :
+			name of the service.
+		-->
+		<xs:attribute name="name" type="xs:string" />
+		<!-- description :
+			description of the service.
+		-->
+		<xs:attribute name="description" type="xs:string" />
+		<!-- group :
+			group (category) of the service.
+		-->
+		<xs:attribute name="group" type="xs:string" />
+		<!-- defaultgroupService :
+			set if this service is the default for the group.
+			default value is false.
+		-->
+		<xs:attribute name="defaultGroupService" type="xs:boolean"
+			default="false" />
+		<!-- veloTemplatePrefix :
+			velocity template prefix name.
+		-->
+		<xs:attribute name="veloTemplatePrefix" type="xs:string" />
+		<!-- httpBaseRef:
+			Http base reference of the service site.
+		-->
+		<xs:attribute name="httpBaseRef" type="xs:string" />
+		<!-- defaultLanguage:
+			Default language used (can be UK or FR)
+		-->
+		<xs:attribute name="defaultLanguage" type="xs:string"
+			default="UK" />
+	</xs:complexType>
+
+	<!-- =================================  -->
+	<!-- Catalog description for a service  -->
+	<!-- =================================  -->
+
+	<xs:complexType name="catalogService">
+		<!-- name :
+			catalog file name.
+		-->
+		<xs:attribute name="name" type="xs:string" />
+		<!-- urlSite :
+			url base of the catalog.
+		-->
+		<xs:attribute name="urlSite" type="xs:string" />
+		<!-- type :
+			catalog type (ie. opendap).
+		-->
+		<xs:attribute name="type" type="xs:string" />
+	</xs:complexType>
+
+
+
+	<!-- ===================  -->
+	<!-- Queue  description   -->
+	<!-- ===================  -->
+
+	<xs:complexType name="queueType">
+		<xs:annotation>
+			<xs:documentation>A Queue Settings</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="maxPoolSize" minOccurs="0" maxOccurs="1"
+				default="-1">
+				<xs:annotation>
+					<xs:documentation>
+						The maximum requests number allowed in the queue
+						(requests that have been shelved or are in
+						progress in the queue). A negative or zero value
+						means 'unlimited'
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:short">
+						<xs:minInclusive value="-1" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="maxThreads" minOccurs="0" maxOccurs="1"
+				default="1">
+				<xs:annotation>
+					<xs:documentation>
+						The maximum simultaneous number of requests
+						(threads) the queue have to process..
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:unsignedShort">
+						<xs:minInclusive value="1" />
+						<xs:maxInclusive value="10" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="dataThreshold" minOccurs="1"
+				maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Amount of extracted data this queue stands for.
+						Requests those amount of extracted data is
+						beyond this value (in MegaBytes) are not stored
+						in this queue.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:float">
+						<xs:minInclusive value="1.0" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="lowPriorityWaiting" minOccurs="1"
+				maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The waiting period admitted to the low priority
+						requests. Beyond this period, low requests have
+						high priority. Value is stated in minutes.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:short">
+						<xs:minInclusive value="1" />
+						<xs:maxInclusive value="15" />
+					</xs:restriction>
+				</xs:simpleType>
+
+			</xs:element>
+		</xs:all>
+		<xs:attribute name="id" type="xs:string" use="required" />
+		<xs:attribute name="description" type="xs:string" />
+		<xs:attribute name="batch" type="xs:boolean" default="false">
+			<xs:annotation>
+				<xs:documentation>
+					Batch queue are used to undegrounded job.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<!-- ===================  -->
+	<!-- Queue server description   -->
+	<!-- ===================  -->
+
+	<xs:complexType name="queueServerType">
+		<xs:annotation>
+			<xs:documentation>Queue Server Settings</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element minOccurs="1" maxOccurs="unbounded"
+				name="queues" type="queueType">
+			</xs:element>
+		</xs:sequence>
+
+		<xs:attribute name="defaultPriority" default="2">
+			<xs:annotation>
+				<xs:documentation>
+					The default priority
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:short">
+					<xs:minInclusive value="1" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+
+		<xs:attribute name="maxPoolAnonymous" default="10">
+			<xs:annotation>
+				<xs:documentation>
+					The maximum requests number allowed for a same
+					anonymous user. A negative or zero value means
+					'unlimited'
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:short">
+					<xs:minInclusive value="-1" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="maxPoolAuth" default="1">
+			<xs:annotation>
+				<xs:documentation>
+					The maximum requests number allowed for a same
+					authenticated user. A negative or zero value means
+					'unlimited'
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:short">
+					<xs:minInclusive value="-1" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+
+	</xs:complexType>
+</xs:schema>

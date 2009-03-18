@@ -1,0 +1,28 @@
+<!ENTITY % catalogDTD SYSTEM "InvCatalog.0.6.dtd">
+%catalogDTD;
+<!ENTITY % AggregationType "JoinNew | Union | JoinExisting">
+<!ENTITY % VariableType "byte | short | int | float | double | String">
+<!ELEMENT aggregation (fileAccess*, variable*, fileScan*)>
+<!ATTLIST aggregation
+	aggType (%AggregationType;) #REQUIRED
+	serviceName CDATA #IMPLIED
+	varName CDATA #IMPLIED
+	varType (%VariableType;) #IMPLIED
+	varUnit CDATA #IMPLIED
+	dateFormat CDATA #IMPLIED
+>
+<!ELEMENT fileAccess EMPTY>
+<!ATTLIST fileAccess
+	urlPath CDATA #REQUIRED
+	serviceName CDATA #IMPLIED
+	coord CDATA #IMPLIED
+>
+<!ELEMENT fileScan EMPTY>
+<!ATTLIST fileScan
+	dirPath CDATA #REQUIRED
+	scanMinutes CDATA #IMPLIED
+>
+<!ELEMENT variable EMPTY>
+<!ATTLIST variable
+	name CDATA #REQUIRED
+>

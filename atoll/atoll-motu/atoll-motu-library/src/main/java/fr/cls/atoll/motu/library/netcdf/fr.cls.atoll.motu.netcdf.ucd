@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editmodel:ClassDiagramEditModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:editmodel="editmodel.xmi" xmlns:options="options.xmi" name="fr.cls.atoll.motu.netcdf_2" size="2145,4277" id="fr.cls.atoll.motu.netcdf" metadata="uml2-1.0" initialized="true" scrolledX="537" scrolledY="234" tag="100" key="32303036303731332061746F6C6C2D6D6F7475">
+  <children xsi:type="editmodel:ClassEditModel" name="CoordSysBuilderYXLatLon" location="740,1040" size="1024,193" id="fr.cls.atoll.motu.netcdf/CoordSysBuilderYXLatLon" runTimeClassModel="addCoordinateSystemsAttr(Lucar.nc2.dataset.NetcdfDataset;Ljava.lang.String;Ljava.util.List;),coordinateTransform,CoordSysBuilderYXLatLon(),addLatAxisTypeAttr(Lucar.nc2.dataset.NetcdfDataset;Lucar.nc2.Variable;),addCoordinateTransformVariable(Lucar.nc2.dataset.NetcdfDataset;Ljava.lang.String;Ljava.util.List;Ljava.util.List;),makeCoordinateTransformVariable(Lucar.nc2.dataset.NetcdfDataset;Lucar.nc2.dataset.CoordinateTransform;),addLonAxisTypeAttr(Lucar.nc2.dataset.NetcdfDataset;Lucar.nc2.Variable;),augmentDataset(Lucar.nc2.dataset.NetcdfDataset;Lucar.nc2.util.CancelTask;),addCoordinateSystems(Lucar.nc2.dataset.NetcdfDataset;Lucar.nc2.dataset.VariableDS;Lucar.nc2.dataset.VariableDS;)">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="1001,144">
+      <children xsi:type="editmodel:MethodEditModel" name="CoordSysBuilderYXLatLon" id="fr.cls.atoll.motu.netcdf/CoordSysBuilderYXLatLon#CoordSysBuilderYXLatLon()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="addCoordinateSystems" id="fr.cls.atoll.motu.netcdf/CoordSysBuilderYXLatLon#addCoordinateSystems(Lucar.nc2.dataset.NetcdfDataset;Lucar.nc2.dataset.VariableDS;Lucar.nc2.dataset.VariableDS;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="addCoordinateSystemsAttr" id="fr.cls.atoll.motu.netcdf/CoordSysBuilderYXLatLon#addCoordinateSystemsAttr(Lucar.nc2.dataset.NetcdfDataset;Ljava.lang.String;Ljava.util.List;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="addCoordinateTransformVariable" id="fr.cls.atoll.motu.netcdf/CoordSysBuilderYXLatLon#addCoordinateTransformVariable(Lucar.nc2.dataset.NetcdfDataset;Ljava.lang.String;Ljava.util.List;Ljava.util.List;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="addLatAxisTypeAttr" id="fr.cls.atoll.motu.netcdf/CoordSysBuilderYXLatLon#addLatAxisTypeAttr(Lucar.nc2.dataset.NetcdfDataset;Lucar.nc2.Variable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="addLonAxisTypeAttr" id="fr.cls.atoll.motu.netcdf/CoordSysBuilderYXLatLon#addLonAxisTypeAttr(Lucar.nc2.dataset.NetcdfDataset;Lucar.nc2.Variable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="augmentDataset" id="fr.cls.atoll.motu.netcdf/CoordSysBuilderYXLatLon#augmentDataset(Lucar.nc2.dataset.NetcdfDataset;Lucar.nc2.util.CancelTask;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="makeCoordinateTransformVariable" id="fr.cls.atoll.motu.netcdf/CoordSysBuilderYXLatLon#makeCoordinateTransformVariable(Lucar.nc2.dataset.NetcdfDataset;Lucar.nc2.dataset.CoordinateTransform;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPrivateAttributes="true" showProtectedAttributes="true" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showProtectedMethods="true" showPublicMethods="true" showPackageMethods="true" showPrivateMethods="true" showStaticMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true" showAssociationMember="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="NetCdfWriter" location="1100,30" size="600,895" id="fr.cls.atoll.motu.netcdf/NetCdfWriter" runTimeClassModel="parseOriginAndShape3DimForWriting([I),writeVariablesToFile([Ljava.lang.String;),finish([Ljava.lang.String;),addShapes(Lucar.nc2.Variable;),writeVariables(Lucar.nc2.dt.grid.GeoGrid;Lucar.nc2.dt.grid.GeoGrid;Lucar.nc2.dt.grid.GridDataset;),getNcfile(),writeDependentVariables(Lucar.nc2.Variable;Lucar.nc2.dt.grid.GridDataset;),writeDependentVariables(Lucar.nc2.dt.grid.GeoGrid;Lucar.nc2.dt.grid.GridDataset;),create([Ljava.lang.String;),setValidMinMaxVarAttributes(Lucar.nc2.Variable;Lucar.ma2.MAMath.MinMax;),parseOriginAndShapeForWriting(Lucar.nc2.Variable;),parseOriginAndShape2DimForWriting([I),writeDimensions(Lucar.nc2.dt.grid.GeoGrid;),parseOriginAndShape([ILucar.ma2.DataType;),variables,writeDimension(Lucar.nc2.Dimension;),writeVariableData(Lucar.nc2.Variable;Lucar.ma2.Array;),writeVariableData(Lucar.nc2.Variable;[ILucar.ma2.Array;),parseOriginAndShape4Dim([II),writeDimensions(Ljava.util.Collection;),getMinMaxSkipMissingData(Lucar.nc2.dt.grid.GeoGrid;Lucar.nc2.Variable;),bYTES_IN_MEGABYTES,resetAmountDataSize(),ncfile,setDim(Lucar.nc2.Variable;Lucar.nc2.Dimension;),setValidMinMaxVarAttributes(Lucar.nc2.Variable;DD),removeValidMinMaxVarAttributes(Lucar.nc2.Variable;),amountDataSize,NetCdfWriter(Ljava.lang.String;Z),writeVariables(Ljava.util.Collection;),getUniqueNetCdfFileName(Ljava.lang.String;),parseOriginAndShape2Dim([II),isReadByBlock(Lucar.nc2.Variable;),nETCDF_FILE_EXTENSION,parseOriginAndShape1Dim([II),bYTES_IN_KILOBYTES,writeDimensions(Ljava.util.List;),parseOriginAndShape(Lucar.nc2.Variable;),writeVariables(Ljava.util.List;Lucar.nc2.dt.grid.GeoGrid;Lucar.nc2.dt.grid.GridDataset;),parseOriginAndShape1DimForWriting([I),writeGlobalAttribute(Lucar.nc2.Attribute;),getMinMaxSkipMissingDataByBlock(Lucar.nc2.dt.grid.GeoGrid;Lucar.nc2.Variable;),isReadByBlock([ILucar.ma2.DataType;),getMinMaxSkipMissingData(Lucar.nc2.dt.grid.GeoGrid;Lucar.nc2.Variable;Lucar.ma2.MAMath.MinMax;),writeGlobalAttributes(Ljava.util.List;),parseOriginAndShape3Dim([II),writeAttribute(Ljava.lang.String;Lucar.nc2.Attribute;),copyAttributes(Lucar.nc2.Variable;Lucar.nc2.Variable;),writeVariable(Lucar.nc2.Variable;[Ljava.lang.String;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="180,90">
+      <children xsi:type="editmodel:AttributeEditModel" name="amountDataSize" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#amountDataSize"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="577,1062">
+      <children xsi:type="editmodel:MethodEditModel" name="getNcfile" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#getNcfile()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfWriter" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#NetCdfWriter(Ljava.lang.String;Z)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="writeDimension" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#writeDimension(Lucar.nc2.Dimension;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="writeGlobalAttribute" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#writeGlobalAttribute(Lucar.nc2.Attribute;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="writeAttribute" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#writeAttribute(Ljava.lang.String;Lucar.nc2.Attribute;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="writeVariables" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#writeVariables(Ljava.util.List;Lucar.nc2.dt.grid.GeoGrid;Lucar.nc2.dt.grid.GridDataset;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="removeValidMinMaxVarAttributes" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#removeValidMinMaxVarAttributes(Lucar.nc2.Variable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="setValidMinMaxVarAttributes" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#computeValidMinMaxVarAttributes(Lucar.nc2.dataset.CoordinateAxis;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="setValidMinMaxVarAttributes" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#setValidMinMaxVarAttributes(Lucar.nc2.Variable;DD)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="countVarSize" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#countVarSize([ILucar.ma2.DataType;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="writeVariables" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#writeVariables(Lucar.nc2.dt.grid.GeoGrid;Lucar.nc2.dt.grid.GeoGrid;Lucar.nc2.dt.grid.GridDataset;Ljava.util.Map&lt;String,Variable>;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="countVarSize" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#countVarSize(Lucar.ma2.DataType;Ljava.util.List;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="addShapes" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#addShapes(Lucar.nc2.Variable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="writeDependentVariables" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#writeDependentVariables(Lucar.nc2.dt.grid.GeoGrid;Lucar.nc2.dt.grid.GridDataset;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="writeDependentVariables" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#writeDependentVariables(Lucar.nc2.Variable;Lucar.nc2.dt.grid.GridDataset;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="writeVariables" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#writeVariables(Ljava.util.Collection;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="writeDimensions" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#writeDimensions(Lucar.nc2.dt.grid.GeoGrid;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="create" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#create([Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="parseOriginAndShape1DimForWriting" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#parseOriginAndShape1DimForWriting([I)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="countVarElementData" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#countVarElementData([I)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="writeVariableData" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#writeVariableData(Lucar.nc2.Variable;[ILucar.ma2.Array;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="parseOriginAndShape4Dim" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#parseOriginAndShape4Dim([II)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="writeVariableData" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#writeVariableData(Lucar.nc2.Variable;[ILucar.ma2.Array;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="parseOriginAndShape1Dim" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#parseOriginAndShape1Dim([II)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="isReadByBlock" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#isReadByBlock(Lucar.nc2.Variable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getMinMaxSkipMissingData" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#getMinMaxSkipMissingData(Lucar.nc2.dt.grid.GeoGrid;Lucar.nc2.Variable;Lucar.ma2.MAMath.MinMax;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getMinMaxSkipMissingData" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#getMinMaxSkipMissingData(Lucar.nc2.dataset.CoordinateAxis;Lucar.ma2.MAMath.MinMax;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getMinMaxSkipMissingDataByBlock" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#getMinMaxSkipMissingDataByBlock(Lucar.nc2.dt.grid.GeoGrid;Lucar.nc2.Variable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="copyAttributes" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#copyAttributes(Lucar.nc2.Variable;Lucar.nc2.Variable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="parseOriginAndShape" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#parseOriginAndShape(Lucar.nc2.Variable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="writeGlobalAttributes" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#writeGlobalAttributes(Ljava.util.List;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="parseOriginAndShapeForWriting" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#parseOriginAndShapeForWriting(Lucar.nc2.Variable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="parseOriginAndShape2DimForWriting" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#parseOriginAndShape2DimForWriting([I)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="writeDimensions" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#writeDimensions(Ljava.util.List;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="writeVariableByBlock" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#writeVariableByBlock(Lucar.nc2.Variable;[I)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="writeVariable" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#writeVariable(Lucar.nc2.Variable;[Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="parseOriginAndShape2Dim" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#parseOriginAndShape2Dim([II)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="isReadByBlock" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#isReadByBlock([ILucar.ma2.DataType;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getUniqueNetCdfFileName" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#getUniqueNetCdfFileName(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="resetAmountDataSize" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#resetAmountDataSize()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="setDim" id="fr.cls.atoll.motu.netcdf/NetCdfWriter#setDim(Lucar.nc2.Variable;Lucar.nc2.Dimension;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:AssociationEditModel" autoLocated="true" id="ucar.nc2/NetcdfFileWriteable@ncfile+fr.cls.atoll.motu.netcdf/NetCdfWriter@" source="//@children.1" target="//@children.3" targetEnd="//@children.1/@sourceConnections.0/@children.2" label="//@children.1/@sourceConnections.0/@children.0" sourceEnd="//@children.1/@sourceConnections.0/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" size="0,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="0,639" id="ucar.nc2/NetcdfFileWriteable@ncfile+fr.cls.atoll.motu.netcdf/NetCdfWriter@|fr.cls.atoll.motu.netcdf/NetCdfWriter#" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="ncfile" location="271,59" id="ucar.nc2/NetcdfFileWriteable@ncfile+fr.cls.atoll.motu.netcdf/NetCdfWriter@|ucar.nc2/NetcdfFileWriteable#ncfile" multiplicityLabel="//@children.1/@sourceConnections.0/@children.2/@children.1" roleLabel="//@children.1/@sourceConnections.0/@children.2/@children.0" navigable="true">
+        <children xsi:type="editmodel:LabelEditModel" name=" # ncfile" location="1028,648" size="38,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="1" location="1028,676" size="6,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+      </children>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showPublicMethods="true" showStaticMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true" showAssociationMember="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="NetCdfReader" location="124,68" size="575,2713" id="fr.cls.atoll.motu.netcdf/NetCdfReader" runTimeClassModel="parseDate(Ljava.lang.String;),init(),gLOBALATTRIBUTE_CONVENTIONS,gLOBALATTRIBUTE_TIME_MIN,parseDate(Ljava.lang.String;Ljava.lang.String;),vARIABLEATTRIBUTE_DEPTH_STANDARD_NAME_VALUE,gEOY_NAMES,getStandardLonAsString(D),vARIABLEATTRIBUTE_STANDARD_NAME,getStringValue(Lucar.nc2.Variable;Lucar.nc2.Attribute;),dATE_TO_STRING_DEFAULT,isClosed(),getRootVariables(),vARIABLEATTRIBUTE_GEOY_STANDARD_NAME_VALUE,getGeoXAxis(),getCoordinateSystems(),findLatitudeIgnoreCase(),gLOBALATTRIBUTE_SOURCE,getVariable(Ljava.lang.String;),open(),vARIABLEATTRIBUTE_X_AXIS_VALUE,gLOBALATTRIBUTE_HISTORY,gLOBALATTRIBUTE_FILETYPE,gLOBALATTRIBUTE_LONGITUDE_MAX,gEOXY_DECIMALFORMAT,lATITUDE_NAMES,vARIABLEATTRIBUTE_VALID_MAX,gLOBALATTRIBUTE_COMMENT,getStandardZAsString(D),getDoubleValue(Lucar.nc2.Variable;Ljava.lang.String;),hasGeoXAxisWithLonEquivalence(),vARIABLEATTRIBUTE_TIME_STANDARD_NAME_VALUE,dATETIME_FORMAT,vARIABLEATTRIBUTE_AXIS,vARIABLEATTRIBUTE_TIME_LONG_NAME_VALUE,hasGeoLatAxis(),getLongNameAttributeValue(Lucar.nc2.dataset.CoordinateAxis;),getGrid(Ljava.lang.String;[I[I),getLatAsString(D),getCoordinateVariables(Lucar.nc2.Variable;),getStandardNameAttributeValue(Lucar.nc2.dataset.CoordinateAxis;),getVariables(Lucar.nc2.Group;),getVariables(),hasGeoXYAxisWithLonLatEquivalence(),getGrid(Lucar.nc2.Variable;),gLOBALATTRIBUTE_CREATEDBY,getNormalizeLatAsString(D),getAttribute(Lucar.nc2.Variable;Ljava.lang.String;),controlAxes(),dATETIME_TO_STRING_DEFAULT,getGeoYAxis(),getDateAsGMTString(DLjava.lang.String;),gLOBALATTRIBUTE_LATITUDE_MIN,getAttributes(Lucar.nc2.Group;),vARIABLEATTRIBUTE_LAT_LONG_NAME_VALUE,getRootVariable(Ljava.lang.String;),lONGITUDE_NAMES,getGrid(Ljava.lang.String;Ljava.lang.String;),vARIABLEATTRIBUTE_MISSINGVALUE,gLOBALATTRIBUTE_JULIAN_DAY_UNIT,findLatitudeIgnoreCase(Ljava.util.List;),vARIABLEATTRIBUTE_LON_LONG_NAME_VALUE,vARIABLEATTRIBUTE_DEPTH_LONG_NAME_VALUE,unconvertLon(Ljava.lang.String;),gLOBALATTRIBUTE_REFERENCES,getStandardGeoXYAsString(DLucar.nc2.units.SimpleUnit;),vARIABLEATTRIBUTE_GEOZ_STANDARD_NAME_VALUE,vARIABLEATTRIBUTE_GEOZ_LONG_NAME_VALUE,getLonAsString(D),getGrid(Ljava.lang.String;),vARIABLEATTRIBUTE_GEOX_STANDARD_NAME_VALUE,getLonNormal(D),gLOBALATTRIBUTE_LATITUDE_MAX,getDoubleValue(Lucar.nc2.Variable;Lucar.nc2.Attribute;),close(),containsAll(Ljava.util.List;Ljava.util.List;),getCoordinateAxis(Ljava.lang.String;),gLOBALATTRIBUTE_NORTHING,getStandardZAsFmtString(DLjava.lang.String;),lATLON_DECIMALFORMAT,getDate(DLjava.lang.String;),netcdfDataset,locationData,unconvertLat(Ljava.lang.String;),open(Ljava.lang.String;),z_ZEROVALUE,vARIABLEATTRIBUTE_LONG_NAME,getNormalizeLon360AsString(D),gLOBALATTRIBUTE_CONVENTIONS_VALUE,getStandardZAsString(DLjava.lang.String;),initializeMissingData(Lucar.ma2.Array;F),initializeMissingData(Lucar.nc2.Variable;Lucar.ma2.Array;),getStringValue(Lucar.nc2.Attribute;),getStringValue(Ljava.lang.String;),gLOBALATTRIBUTE_Z_MIN,NetCdfReader(Ljava.lang.String;),gLOBALATTRIBUTE_EASTING,getDateAsIsoString(DLjava.lang.String;),gLOBALATTRIBUTE_Z_MAX,getCoordinateAxes(),getDoubleValue(Ljava.lang.String;Ljava.lang.String;),dATE_FORMAT,getStandardGeoXYAsString(DLjava.lang.String;),getStandardLatAsString(D),getCoordinateAxis(Lucar.nc2.dataset.AxisType;),z_DECIMALFORMAT,getAttribute(Ljava.lang.String;),getLatNormal(D),gLOBALATTRIBUTE_INSTITUTION,vARIABLEATTRIBUTE_LON_STANDARD_NAME_VALUE,getDimensionList(),gLOBALATTRIBUTE_ORIGINALNAME,getNormalizeLonAsString(D),reOpen(),hasGeoYAxisWithLatEquivalence(),vARIABLEATTRIBUTE_GEOY_LONG_NAME_VALUE,getDate(Ljava.util.Date;Ljava.lang.String;),vARIABLEATTRIBUTE_GEOX_LONG_NAME_VALUE,getAxisAttributeValue(Lucar.nc2.dataset.CoordinateAxis;),getAttribute(Ljava.lang.String;Ljava.lang.String;),vARIABLEATTRIBUTE_VALID_MIN,getStringValue(Lucar.nc2.Variable;Ljava.lang.String;),gEOX_NAMES,findLongitudeIgnoreCase(Ljava.util.List;),vARIABLEATTRIBUTE_Y_AXIS_VALUE,hasGeoXAxis(),hasGeoLonAxis(),hasGeoXYDimensions(Ljava.util.List;),getStandardGeoXYAsString(D),hasGeoYAxis(),vARIABLEATTRIBUTE_DOWN_NAME_VALUE,getStandardZAsString(DLucar.nc2.units.SimpleUnit;),initializeMissingData(Lucar.ma2.Array;D),getGeoLatAxis(),vARIABLEATTRIBUTE_LAT_STANDARD_NAME_VALUE,NetCdfReader(),getDateAsGMTNoZeroTimeString(Ljava.util.Date;),vARIABLEATTRIBUTE_TIME_AXIS_VALUE,gLOBALATTRIBUTE_LONGITUDE_MIN,getStringValue(Ljava.lang.String;Ljava.lang.String;),getGeoLonAxis(),getAttributes(),findLongitudeIgnoreCase(),vARIABLEATTRIBUTE_FILEVALUE,gLOBALATTRIBUTE_TITLE,getDateAsGMTNoZeroTimeString(DLjava.lang.String;),gLOBALATTRIBUTE_TIME_MAX,unconvertDepth(Ljava.lang.String;),vARIABLEATTRIBUTE_Z_AXIS_VALUE">
+    <children xsi:type="editmodel:CompartmentEditModel" size="337,1098">
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_CONVENTIONS_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_CONVENTIONS_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="lATITUDE_NAMES" id="fr.cls.atoll.motu.netcdf/NetCdfReader#lATITUDE_NAMES"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_SOURCE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_SOURCE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_VALID_MIN" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_VALID_MIN"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_STANDARD_NAME" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_STANDARD_NAME"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_TIME_MAX" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_TIME_MAX"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_LAT_STANDARD_NAME_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_LAT_STANDARD_NAME_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="dATE_FORMAT" id="fr.cls.atoll.motu.netcdf/NetCdfReader#dATE_FORMAT"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_CONVENTIONS" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_CONVENTIONS"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_NORTHING" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_NORTHING"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_VALID_MAX" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_VALID_MAX"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_GEOX_STANDARD_NAME_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_GEOX_STANDARD_NAME_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_MISSINGVALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_MISSINGVALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_DEPTH_LONG_NAME_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_DEPTH_LONG_NAME_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_FILEVALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_FILEVALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="lATLON_DECIMALFORMAT" id="fr.cls.atoll.motu.netcdf/NetCdfReader#lATLON_DECIMALFORMAT"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_LONG_NAME" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_LONG_NAME"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_DOWN_NAME_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_DOWN_NAME_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_TITLE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_TITLE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_LONGITUDE_MAX" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_LONGITUDE_MAX"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="dATETIME_FORMAT" id="fr.cls.atoll.motu.netcdf/NetCdfReader#dATETIME_FORMAT"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_TIME_AXIS_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_TIME_AXIS_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_LON_LONG_NAME_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_LON_LONG_NAME_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_ORIGINALNAME" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_ORIGINALNAME"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_Z_AXIS_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_Z_AXIS_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_REFERENCES" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_REFERENCES"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_Z_MAX" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_Z_MAX"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_X_AXIS_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_X_AXIS_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_GEOZ_LONG_NAME_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_GEOZ_LONG_NAME_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="dATETIME_TO_STRING_DEFAULT" id="fr.cls.atoll.motu.netcdf/NetCdfReader#dATETIME_TO_STRING_DEFAULT"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="locationData" id="fr.cls.atoll.motu.netcdf/NetCdfReader#locationData"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_TIME_STANDARD_NAME_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_TIME_STANDARD_NAME_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_CREATEDBY" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_CREATEDBY"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_COMMENT" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_COMMENT"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_TIME_MIN" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_TIME_MIN"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gEOXY_DECIMALFORMAT" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gEOXY_DECIMALFORMAT"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_TIME_LONG_NAME_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_TIME_LONG_NAME_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_AXIS" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_AXIS"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_LON_STANDARD_NAME_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_LON_STANDARD_NAME_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_GEOZ_STANDARD_NAME_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_GEOZ_STANDARD_NAME_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_LATITUDE_MIN" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_LATITUDE_MIN"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_LAT_LONG_NAME_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_LAT_LONG_NAME_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_Z_MIN" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_Z_MIN"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_GEOY_STANDARD_NAME_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_GEOY_STANDARD_NAME_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="z_DECIMALFORMAT" id="fr.cls.atoll.motu.netcdf/NetCdfReader#z_DECIMALFORMAT"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_HISTORY" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_HISTORY"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_LATITUDE_MAX" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_LATITUDE_MAX"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_GEOX_LONG_NAME_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_GEOX_LONG_NAME_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="z_ZEROVALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#z_ZEROVALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_DEPTH_STANDARD_NAME_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_DEPTH_STANDARD_NAME_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_LONGITUDE_MIN" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_LONGITUDE_MIN"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gEOX_NAMES" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gEOX_NAMES"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_FILETYPE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_FILETYPE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_JULIAN_DAY_UNIT" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_JULIAN_DAY_UNIT"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gEOY_NAMES" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gEOY_NAMES"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="dATE_TO_STRING_DEFAULT" id="fr.cls.atoll.motu.netcdf/NetCdfReader#dATE_TO_STRING_DEFAULT"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_EASTING" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_EASTING"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="lONGITUDE_NAMES" id="fr.cls.atoll.motu.netcdf/NetCdfReader#lONGITUDE_NAMES"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_GEOY_LONG_NAME_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_GEOY_LONG_NAME_VALUE"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="gLOBALATTRIBUTE_INSTITUTION" id="fr.cls.atoll.motu.netcdf/NetCdfReader#gLOBALATTRIBUTE_INSTITUTION"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="vARIABLEATTRIBUTE_Y_AXIS_VALUE" id="fr.cls.atoll.motu.netcdf/NetCdfReader#vARIABLEATTRIBUTE_Y_AXIS_VALUE"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="552,1566">
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfReader" id="fr.cls.atoll.motu.netcdf/NetCdfReader#NetCdfReader()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="NetCdfReader" id="fr.cls.atoll.motu.netcdf/NetCdfReader#NetCdfReader(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="init" id="fr.cls.atoll.motu.netcdf/NetCdfReader#init()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getCoordinateSystems" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getCoordinateSystems()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="controlAxes" id="fr.cls.atoll.motu.netcdf/NetCdfReader#controlAxes()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getCoordinateAxes" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getCoordinateAxes()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDimensionList" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getDimensionList()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getRootVariable" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getRootVariable(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getVariable" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getVariable(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getRootVariables" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getRootVariables()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getVariables" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getVariables(Lucar.nc2.Group;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getVariables" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getVariables()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getAttributes" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getAttributes()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getAttributes" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getAttributes(Lucar.nc2.Group;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getAttribute" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getAttribute(Ljava.lang.String;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getAttribute" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getAttribute(Lucar.nc2.Variable;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getAttribute" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getAttribute(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getGrid" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getGrid(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getGrid" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getGrid(Lucar.nc2.Variable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getGrid" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getGrid(Ljava.lang.String;[I[I)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getGrid" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getGrid(Ljava.lang.String;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getCoordinateAxis" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getCoordinateAxis(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="reOpen" id="fr.cls.atoll.motu.netcdf/NetCdfReader#reOpen()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="open" id="fr.cls.atoll.motu.netcdf/NetCdfReader#open(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="open" id="fr.cls.atoll.motu.netcdf/NetCdfReader#open()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="isClosed" id="fr.cls.atoll.motu.netcdf/NetCdfReader#isClosed()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="close" id="fr.cls.atoll.motu.netcdf/NetCdfReader#close()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDoubleValue" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getDoubleValue(Ljava.lang.String;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDoubleValue" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getDoubleValue(Lucar.nc2.Variable;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDoubleValue" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getDoubleValue(Lucar.nc2.Variable;Lucar.nc2.Attribute;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStringValue" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getStringValue(Ljava.lang.String;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStringValue" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getStringValue(Lucar.nc2.Variable;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStringValue" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getStringValue(Lucar.nc2.Variable;Lucar.nc2.Attribute;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStringValue" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getStringValue(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStringValue" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getStringValue(Lucar.nc2.Attribute;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDate" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getDate(DLjava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDate" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getDate(Ljava.util.Date;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDateAsIsoString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getDateAsIsoString(DLjava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDateAsGMTString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getDateAsGMTString(DLjava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDateAsGMTNoZeroTimeString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getDateAsGMTNoZeroTimeString(DLjava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDateAsGMTNoZeroTimeString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getDateAsGMTNoZeroTimeString(Ljava.util.Date;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getLatAsString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getLatAsString(D)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getLatNormal" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getLatNormal(D)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStandardLatAsString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getStandardLatAsString(D)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getNormalizeLatAsString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getNormalizeLatAsString(D)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getLonAsString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getLonAsString(D)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getLonNormal" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getLonNormal(D)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStandardLonAsString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getStandardLonAsString(D)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getNormalizeLonAsString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getNormalizeLonAsString(D)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getNormalizeLon360AsString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getNormalizeLon360AsString(D)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStandardGeoXYAsString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getStandardGeoXYAsString(D)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStandardGeoXYAsString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getStandardGeoXYAsString(DLucar.nc2.units.SimpleUnit;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStandardGeoXYAsString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getStandardGeoXYAsString(DLjava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStandardZAsString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getStandardZAsString(D)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStandardZAsFmtString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getStandardZAsFmtString(DLjava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStandardZAsString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getStandardZAsString(DLucar.nc2.units.SimpleUnit;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStandardZAsString" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getStandardZAsString(DLjava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="parseDate" id="fr.cls.atoll.motu.netcdf/NetCdfReader#parseDate(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="parseDate" id="fr.cls.atoll.motu.netcdf/NetCdfReader#parseDate(Ljava.lang.String;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="unconvertLon" id="fr.cls.atoll.motu.netcdf/NetCdfReader#unconvertLon(Ljava.lang.String;Z)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="unconvertLat" id="fr.cls.atoll.motu.netcdf/NetCdfReader#unconvertLat(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="unconvertDepth" id="fr.cls.atoll.motu.netcdf/NetCdfReader#unconvertDepth(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getAxisAttributeValue" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getAxisAttributeValue(Lucar.nc2.dataset.CoordinateAxis;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getLongNameAttributeValue" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getLongNameAttributeValue(Lucar.nc2.dataset.CoordinateAxis;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStandardNameAttributeValue" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getStandardNameAttributeValue(Lucar.nc2.dataset.CoordinateAxis;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getCoordinateAxis" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getCoordinateAxis(Lucar.nc2.dataset.AxisType;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getGeoXAxis" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getGeoXAxis()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getGeoYAxis" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getGeoYAxis()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getGeoLatAxis" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getGeoLatAxis()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getGeoLonAxis" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getGeoLonAxis()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="hasGeoXAxis" id="fr.cls.atoll.motu.netcdf/NetCdfReader#hasGeoXAxis()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="hasGeoYAxis" id="fr.cls.atoll.motu.netcdf/NetCdfReader#hasGeoYAxis()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="hasGeoLatAxis" id="fr.cls.atoll.motu.netcdf/NetCdfReader#hasGeoLatAxis()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="hasGeoLonAxis" id="fr.cls.atoll.motu.netcdf/NetCdfReader#hasGeoLonAxis()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="hasGeoXYAxisWithLonLatEquivalence" id="fr.cls.atoll.motu.netcdf/NetCdfReader#hasGeoXYAxisWithLonLatEquivalence()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="hasGeoYAxisWithLatEquivalence" id="fr.cls.atoll.motu.netcdf/NetCdfReader#hasGeoYAxisWithLatEquivalence()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="hasGeoXAxisWithLonEquivalence" id="fr.cls.atoll.motu.netcdf/NetCdfReader#hasGeoXAxisWithLonEquivalence()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="hasGeoXYDimensions" id="fr.cls.atoll.motu.netcdf/NetCdfReader#hasGeoXYDimensions(Ljava.util.List;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="findLongitudeIgnoreCase" id="fr.cls.atoll.motu.netcdf/NetCdfReader#findLongitudeIgnoreCase(Ljava.util.List;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="findLongitudeIgnoreCase" id="fr.cls.atoll.motu.netcdf/NetCdfReader#findLongitudeIgnoreCase()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="findLatitudeIgnoreCase" id="fr.cls.atoll.motu.netcdf/NetCdfReader#findLatitudeIgnoreCase(Ljava.util.List;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="findLatitudeIgnoreCase" id="fr.cls.atoll.motu.netcdf/NetCdfReader#findLatitudeIgnoreCase()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getCoordinateVariables" id="fr.cls.atoll.motu.netcdf/NetCdfReader#getCoordinateVariables(Lucar.nc2.Variable;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="containsAll" id="fr.cls.atoll.motu.netcdf/NetCdfReader#containsAll(Ljava.util.List;Ljava.util.List;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="initializeMissingData" id="fr.cls.atoll.motu.netcdf/NetCdfReader#initializeMissingData(Lucar.nc2.Variable;Lucar.ma2.Array;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="initializeMissingData" id="fr.cls.atoll.motu.netcdf/NetCdfReader#initializeMissingData(Lucar.ma2.Array;D)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="initializeMissingData" id="fr.cls.atoll.motu.netcdf/NetCdfReader#initializeMissingData(Lucar.ma2.Array;F)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:AssociationEditModel" autoLocated="true" id="ucar.nc2.dataset/NetcdfDataset@netcdfDataset+fr.cls.atoll.motu.netcdf/NetCdfReader@" source="//@children.2" target="//@children.4" targetEnd="//@children.2/@sourceConnections.0/@children.2" label="//@children.2/@sourceConnections.0/@children.0" sourceEnd="//@children.2/@sourceConnections.0/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" size="0,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="575,104" id="ucar.nc2.dataset/NetcdfDataset@netcdfDataset+fr.cls.atoll.motu.netcdf/NetCdfReader@|fr.cls.atoll.motu.netcdf/NetCdfReader#" attachSource="true" roleLabel="//@children.2/@sourceConnections.0/@children.1/@children.0">
+        <children xsi:type="editmodel:LabelEditModel" location="706,151" size="0,14" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+      </children>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="netcdfDataset" location="119,42" id="ucar.nc2.dataset/NetcdfDataset@netcdfDataset+fr.cls.atoll.motu.netcdf/NetCdfReader@|ucar.nc2.dataset/NetcdfDataset#netcdfDataset" multiplicityLabel="//@children.2/@sourceConnections.0/@children.2/@children.1" roleLabel="//@children.2/@sourceConnections.0/@children.2/@children.0" navigable="true">
+        <children xsi:type="editmodel:LabelEditModel" name=" - netcdfDataset" location="665,151" size="78,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="0..1" location="725,179" size="18,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+      </children>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showProtectedMethods="true" showPublicMethods="true" showPackageMethods="true" showPrivateMethods="true" showStaticMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true" showAssociationMember="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.1/@sourceConnections.0" name="NetcdfFileWriteable" location="750,610" size="271,118" id="ucar.nc2/NetcdfFileWriteable">
+    <children xsi:type="editmodel:CompartmentEditModel" size="185,108"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="660,630"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.2/@sourceConnections.0" name="NetcdfDataset" location="750,130" size="271,86" id="ucar.nc2.dataset/NetcdfDataset">
+    <children xsi:type="editmodel:CompartmentEditModel" size="268,252"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="674,1296"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="257,123"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural"/>
+  </children>
+  <diagramOptions xsi:type="options:ClassDiagramOptions" properties="wireOptions=2" autoName="false"/>
+  <boardSetting snapToGeometry="true" gridEnabled="true" gridSpacing="10,10" gridOrigin="0,0" rulerUnit="pixel">
+    <leftRuler/>
+    <topRuler/>
+  </boardSetting>
+  <classDiagramPreferences xsi:type="editmodel:UMLClassDiagramPreference" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" showClassStereotype="true" showPackageStereotype="true" innerClassSorter="Natural" showPrivateAttributes="true" showProtectedAttributes="true" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showProtectedMethods="true" showPublicMethods="true" showPackageMethods="true" showPrivateMethods="true" showStaticMethods="true" showProtectedInnerClasses="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showPrivateInnerClasses="true" showStaticInnerClasses="true" showInterfaceStereotype="true" showAttributeProperty="true" showAssociationMember="true"/>
+</editmodel:ClassDiagramEditModel>

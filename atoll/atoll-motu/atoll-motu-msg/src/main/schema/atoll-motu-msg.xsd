@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema attributeFormDefault="unqualified"
+	elementFormDefault="qualified"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.0">
+
+
+	<xsd:simpleType name="errorType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Motu error codes enumeration
+			</xsd:documentation>
+			<xsd:appinfo>
+				<jaxb:typesafeEnumClass name="ErrorType" />
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:unsignedShort">
+			<xsd:enumeration value="0">
+				<xsd:annotation>
+					<xsd:documentation>No error</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember name="OK" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						System error or Fatal error due to bad
+						configuration
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember name="SYSTEM" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="2">
+				<xsd:annotation>
+					<xsd:documentation>
+						Inconsistency parameters
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember name="INCONSISTENCY" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="3">
+				<xsd:annotation>
+					<xsd:documentation>
+						Date is invalid or insconsistent
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember name="INVALID_DATE" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="4">
+				<xsd:annotation>
+					<xsd:documentation>
+						Latitude is invalid or inconsistent
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember
+							name="INVALID_LATITUDE" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="5">
+				<xsd:annotation>
+					<xsd:documentation>
+						Longitude is invalid or inconsistent
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember
+							name="INVALID_LONGITUDE" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="6">
+				<xsd:annotation>
+					<xsd:documentation>
+						Date range is invalid or inconsistent
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember
+							name="INVALID_DATE_RANGE" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="7">
+				<xsd:annotation>
+					<xsd:documentation>
+						Amount of extracted data exceed allowed capacity
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember
+							name="EXCEEDING_CAPACITY" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="8">
+				<xsd:annotation>
+					<xsd:documentation>
+						Latitude/Longitude bounding box is invalid or
+						inconsistent
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember
+							name="INVALID_LAT_LON_RANGE" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="9">
+				<xsd:annotation>
+					<xsd:documentation>
+						Depth (Z dimension) range is invalid or
+						inconsistent
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember
+							name="INVALID_DEPTH_RANGE" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="10">
+				<xsd:annotation>
+					<xsd:documentation>
+						Request can't succeed because a function is not
+						implemented
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember name="NOT_IMPLEMENTED" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="11">
+				<xsd:annotation>
+					<xsd:documentation>
+						Error occurs during NetCDF variable processing
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember name="NETCDF_VARIABLE" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="12">
+				<xsd:annotation>
+					<xsd:documentation>
+						No variable found. Request doesn't contain any
+						variable
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember name="NO_VARIABLE" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="13">
+				<xsd:annotation>
+					<xsd:documentation>
+						A NetCDF variable is not found (Unknown
+						varaible)
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember
+							name="NETCDF_VARIABLE_NOT_FOUND" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="14">
+				<xsd:annotation>
+					<xsd:documentation>
+						Error occurs during NetCDF attribute processing
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember
+							name="NETCDF_ATTRIBUTE" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="15">
+				<xsd:annotation>
+					<xsd:documentation>
+						Number of maximum requests in queue server pool
+						is reached
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember
+							name="EXCEEDING_QUEUE_CAPACITY" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="16">
+				<xsd:annotation>
+					<xsd:documentation>
+						Number of maximum simultaneaous requests for a
+						user is reached
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember
+							name="EXCEEDING_USER_CAPACITY" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="17">
+				<xsd:annotation>
+					<xsd:documentation>
+						Depth (Z dimension) is invalid or inconsistent
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember name="INVALID_DEPTH" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="18">
+				<xsd:annotation>
+					<xsd:documentation>
+						Invalid request priority according to the queue
+						server
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember
+							name="INVALID_QUEUE_PRIORITY" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="19">
+				<xsd:annotation>
+					<xsd:documentation>
+						Unknown request id.
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember
+							name="UNKNOWN_REQUEST_ID" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="20">
+				<xsd:annotation>
+					<xsd:documentation>
+						The amount of data of a request is exceeded the
+						maximum data threshold of the queues. No queue
+						lays out such a size (data threshold)
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember
+							name="EXCEEDING_QUEUE_DATA_CAPACITY" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="statusModeType">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<jaxb:typesafeEnumClass name="StatusModeType" />
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:unsignedShort">
+			<xsd:enumeration value="0">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember name="INPROGRESS" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="1">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember name="DONE" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="2">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember name="ERROR" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="3">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember name="PENDING" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:element name="statusModeResponse">
+		<xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Réponse à une requete d'extraction en mode 'status'
+				</xsd:documentation>
+			</xsd:annotation>
+
+			<xsd:attribute name="status" type="statusModeType" />
+			<xsd:attribute name="requestId" type="xsd:long" />
+			<xsd:attribute name="msg" type="xsd:string" />
+			<xsd:attribute name="code" type="errorType" />
+			<xsd:attribute name="dateProc" type="xsd:dateTime" />
+			<xsd:attribute name="size" type="xsd:double" />
+		</xsd:complexType>
+
+	</xsd:element>
+
+
+	<xsd:element name="timeCoverage">
+		<xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Réponse informations couverture temporelle d'un
+					produit.
+				</xsd:documentation>
+			</xsd:annotation>
+
+			<xsd:attribute name="start" type="xsd:dateTime" />
+			<xsd:attribute name="end" type="xsd:dateTime" />
+			<xsd:attribute name="msg" type="xsd:string" />
+			<xsd:attribute name="code" type="errorType" />
+		</xsd:complexType>
+
+	</xsd:element>
+
+	<xsd:element name="requestSize">
+		<xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Réponse informations volume de donneés (en octets)
+					d'une requête d'extraction.
+				</xsd:documentation>
+			</xsd:annotation>
+
+			<xsd:attribute name="maxAllowedSize" type="xsd:double" />
+			<xsd:attribute name="size" type="xsd:double" />
+			<xsd:attribute name="msg" type="xsd:string" />
+			<xsd:attribute name="code" type="errorType" />
+
+		</xsd:complexType>
+
+	</xsd:element>
+
+</xsd:schema>

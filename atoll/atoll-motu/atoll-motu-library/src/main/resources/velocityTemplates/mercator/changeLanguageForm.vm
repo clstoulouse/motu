@@ -1,0 +1,4 @@
+<form method="get" name="changeLangForm">
+	<input type="hidden" name="action" value="refresh" />
+	<input type="hidden" name="lang" value="${service.getAlternateLanguageAsString()}" />
+</form>

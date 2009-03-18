@@ -1,0 +1,68 @@
+<jxb:bindings version="1.0" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<!-- These xjc errors are fixed by these JAXB schema annotations. -->
+	<!--
+      [xjc] [ERROR] Property name "Class" is reserved by java.lang.Object.
+      [xjc]   line 19 of file:fix-collides/example
+.xsd
+      [xjc] [ERROR] Property "Value" is already defined.
+      [xjc]   line 20 of file:fix-collides/example
+.xsd
+      [xjc] [ERROR] The following location is relevant to the above error
+      [xjc]   line 22 of file:fix-collides/example
+.xsd
+-->
+	<jxb:bindings schemaLocation="InvCatalog.1.0.2.xsd" node="/xs:schema">
+		<jxb:schemaBindings>
+			<jxb:package name="fr.cls.atoll.motu.tds.server.schema"/>
+		</jxb:schemaBindings>
+		<!--
+	<jxb:bindings node="//xs:element[@name='class']">
+	  <jxb:class name="Clazz"/>
+	  <jxb:property name="Clazz"/>
+	</jxb:bindings> 
+-->
+		<!-- Resolve collision between XML names "type". -->
+		<jxb:bindings node="//xs:complexType[@name='documentationType']">
+			<!-- resolve name collision between attribute and element "Value" -->
+			<jxb:bindings node=".//xs:attribute[@name='type']">
+				<jxb:property name="typeDoc"/>
+			</jxb:bindings>
+			<!-- node="//xs:complexType[@name='DatatypeCd']" -->
+		</jxb:bindings>
+		
+		<!-- Resolve collision between XML deprecated names "filter", ..... -->
+		<jxb:bindings node="//xs:element[@name='datasetScan']">
+			<!-- resolve name collision between attribute and element "Value" -->
+			<jxb:bindings node=".//xs:attribute[@name='dirLocation']">
+				<jxb:property name="dirLocationDeprecated"/>
+			</jxb:bindings>
+			<jxb:bindings node=".//xs:attribute[@name='filter']">
+				<jxb:property name="filterDeprecated"/>
+			</jxb:bindings>
+			<jxb:bindings node=".//xs:attribute[@name='addDatasetSize']">
+				<jxb:property name="addDatasetSizeDeprecated"/>
+			</jxb:bindings>
+			<jxb:bindings node=".//xs:attribute[@name='addLatest']">
+				<jxb:property name="addLatestDeprecated"/>
+			</jxb:bindings>
+			<jxb:bindings node=".//xs:attribute[@name='addId']">
+				<jxb:property name="addIdDeprecated"/>
+			</jxb:bindings>
+		</jxb:bindings>
+
+		<!-- Resolve collision between XML names "variable" (InvCatalog.1.0.1.xsd and ncml-2.2.xsd). -->
+		<jxb:bindings node="//xs:element[@name='variable']">
+		  <jxb:class name="VariableDesc"/>
+		  <jxb:property name="VariableDesc"/>
+		</jxb:bindings> 
+		
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="ncml-2.2.xsd" node="/xs:schema">
+		<jxb:schemaBindings>
+			<jxb:package name="fr.cls.atoll.motu.opendap.server1_0.schema"/>
+		</jxb:schemaBindings>
+
+	</jxb:bindings>
+
+</jxb:bindings>

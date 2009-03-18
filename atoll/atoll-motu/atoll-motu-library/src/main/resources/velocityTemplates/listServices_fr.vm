@@ -1,0 +1,46 @@
+<html>
+<head>
+  <title>Inventaires disponibles via Motu</title>
+</head>
+
+<style>
+	h1
+	{
+	font: 18pt "Arial", "Helvetica", sans-serif;
+	font-weight: bold;
+	color:#000099;
+    padding-top: 20px;
+	}
+	h2
+	{
+	font: 14pt "Arial", "Helvetica", sans-serif;
+	font-weight: bold;
+	color:#000099;
+    padding-top: 10px;
+	}
+</style> 
+
+<body>
+	<h1>Inventaires disponibles via Motu</h1>
+	<table>
+	#foreach( $service in $serviceList )
+	<tr>
+#*		
+		<td>	
+	    <h2>
+		<a href=?action=listcatalog&service=${service.getName()}>
+	 		 ${service.getName()} 
+	    </h2>
+		</td>
+*#		
+		<td>	
+	    <h2>
+		<a href=?action=listcatalog&service=${service.getName()}>
+	 		 ${service.getGroup()}&nbsp;${service.getDescription()} 
+	    </h2>
+		</td>
+	</tr>
+	#end
+	</table>	   
+</body>
+</html>

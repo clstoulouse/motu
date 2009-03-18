@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration debug="false"
+	xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<appender class="org.apache.log4j.ConsoleAppender" name="CONSOLE">
+		<param name="Target" value="System.Out" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="[%-5p &lt;%d{dd/MM/yyyy HH:mm:ss.SSS}&gt;, thrID: %t - %c.%M%n%m ]%n%n" />
+		</layout>
+	</appender>
+
+
+	<appender class="org.apache.log4j.DailyRollingFileAppender"
+		name="XMLFileInfo">
+		<param name="file"
+			value="/home/atoll/distrib/tomcat-motu-dev/logs/dev-motu_queue_log.xml" />
+		<!--
+			<param name="encoding" value="UTF-8" />
+		-->
+		<param name="Append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM" />
+		<layout class="fr.cls.atoll.motu.log4j.MotuXMLLayout"></layout>
+
+	</appender>
+	<logger name="atoll.motu.queueserver">
+		<level value="INFO" />
+		<appender-ref ref="XMLFileInfo" />
+	</logger>
+
+	<!--
+		
+		<logger name="fr.cls.atoll.motu">
+		<level value="DEBUG" />
+		<appender-ref ref="CONSOLE" />
+		</logger>
+		
+		<logger name="fr.cls.atoll.motuservlet">
+		<level value="DEBUG" />
+		<appender-ref ref="CONSOLE" />
+		</logger>
+	-->
+
+
+	<root>
+		<!-- 
+			<level value="INFO" />
+			<appender-ref ref="CONSOLE" />
+		-->
+	</root>
+</log4j:configuration>
