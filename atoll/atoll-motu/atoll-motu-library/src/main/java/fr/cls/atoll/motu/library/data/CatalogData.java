@@ -42,8 +42,8 @@ import fr.cls.atoll.motu.library.tds.server.TimeCoverageType;
 /**
  * This class implements a product's catalog .
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-03-20 13:02:44 $
  */
 public class CatalogData {
 
@@ -1202,8 +1202,7 @@ public class CatalogData {
      * @param numberToRemove the n elements to remove.
      */
     public void removeListCatalogRefSubPaths(int numberToRemove) {
-        for (int i = 0 ; i < numberToRemove ; i++)
-        {
+        for (int i = 0 ; i < numberToRemove ; i++) {
             listCatalogRefSubPaths.remove(listCatalogRefSubPaths.size() - 1);
         }
 
