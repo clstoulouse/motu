@@ -162,7 +162,7 @@
 	
 </style>
 
-<body class="int">
+<body class="int" onLoad="init()">
 
 
 <script language="JavaScript" type="text/javascript">

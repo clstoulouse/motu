@@ -186,7 +186,7 @@
 <table  width="50%" cellpadding="1" cellspacing=0 border="0" >
 <tr>
 	<td class="advice_noimg" width="160" height="20" align="left">
-	  &nbsp;&nbsp;&nbsp;Région &nbsp;:
+	  &nbsp;&nbsp;&nbsp;Région&nbsp;:
 	</td>
 	<td align="left"><font size=2>
 	<select name="region" >
@@ -469,7 +469,7 @@ td.advice_noimg { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fo
 
 <h2>Variable</h2>
 #set ($listParameterMetadata = $productMetaData.getParameterMetaDatas() )
-<table class="encadre" width="95%" border="0" cellspacing="2">
+<table class="encadre" width="80%" border="0" cellspacing="2">
 	<tr>
 		<th>Extraire</th>
 		<th>Nom</th>

@@ -9,7 +9,7 @@
 #set ($productMetaDataPrev = false)
 #set ($listProductTypeDataset = $catalog.getListProductTypeDataset() )
 <br>
-<table class="toc" width="100%" cellspacing="2" cellpadding="5" border="0">
+<table class="int" width="100%" cellspacing="2" cellpadding="5" border="0">
 <tr>
 #foreach( $sameProductTypeDataset in $listProductTypeDataset )	
 	#foreach( $product in $sameProductTypeDataset )
