@@ -31,8 +31,8 @@ import fr.cls.atoll.motu.library.opendap.server.Metadata;
 import fr.cls.atoll.motu.library.opendap.server.Service;
 
 /**
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-03-25 15:34:18 $
  * 
  */
 public class TestData {
@@ -261,7 +261,7 @@ public class TestData {
 
     public static Catalog loadConfigOpendapFromFile(String path) throws JAXBException, IOException {
 
-        JAXBContext jc = JAXBContext.newInstance("fr.cls.atoll.motu.library.library.opendap.server");
+        JAXBContext jc = JAXBContext.newInstance("fr.cls.atoll.motu.library.opendap.server");
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         FileInputStream in = new FileInputStream(path);
 
@@ -279,7 +279,7 @@ public class TestData {
 
     public static Catalog loadConfigOpendap(String path) throws JAXBException, IOException {
 
-        JAXBContext jc = JAXBContext.newInstance("fr.cls.atoll.motu.library.library.opendap.server");
+        JAXBContext jc = JAXBContext.newInstance("fr.cls.atoll.motu.library.opendap.server");
         Unmarshaller unmarshaller = jc.createUnmarshaller();
 
         // InputStream in =
@@ -323,7 +323,7 @@ public class TestData {
         OutputStream os = null;
 
         try {
-            JAXBContext jc = JAXBContext.newInstance("fr.cls.atoll.motu.library.library.opendap.server");
+            JAXBContext jc = JAXBContext.newInstance("fr.cls.atoll.motu.library.opendap.server");
 
             // create a Marshaller and marshal to System.out
             Marshaller m = jc.createMarshaller();

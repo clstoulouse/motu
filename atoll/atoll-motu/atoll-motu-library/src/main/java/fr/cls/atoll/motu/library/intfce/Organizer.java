@@ -85,8 +85,8 @@ import org.apache.velocity.app.VelocityEngine;
  * This class allows to organize and control the sequences of the functions. It is the entry-point of the
  * application.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-03-25 15:34:18 $
  */
 public class Organizer {
 
@@ -125,7 +125,7 @@ public class Organizer {
     protected static final long MILLISECS_PER_DAY = 24 * MILLISECS_PER_HOUR;
 
     /** The Constant CONFIG_SCHEMA_PACK_NAME. */
-    private static final String CONFIG_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.library.configuration";
+    private static final String CONFIG_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.configuration";
 
     /** The Constant DEFAULT_MOTU_PROPS_NAME. */
     private static final String DEFAULT_MOTU_PROPS_NAME = "motu.properties";
@@ -158,7 +158,7 @@ public class Organizer {
     private static MotuConfig motuConfig = null;
 
     /** The Constant OPENDAP_SCHEMA_PACK_NAME. */
-    private static final String OPENDAP_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.library.opendap.server";
+    private static final String OPENDAP_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.opendap.server";
 
     /** The props. */
     private static Properties props = null;
@@ -176,13 +176,13 @@ public class Organizer {
     private static Map<String, ServicePersistent> servicesPersistent = new HashMap<String, ServicePersistent>();
 
     /** The Constant STDNAME_EQUIV_PACK_NAME. */
-    private static final String STDNAME_EQUIV_PACK_NAME = "fr.cls.atoll.motu.library.library.sdtnameequiv";
+    private static final String STDNAME_EQUIV_PACK_NAME = "fr.cls.atoll.motu.library.sdtnameequiv";
 
     /** Standard name equivalence (1 standard name --> n netcdf variable names). */
     private static StandardNames stdNameEquiv = null;
 
     /** The Constant TDS_SCHEMA_PACK_NAME. */
-    private static final String TDS_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.library.tds.server";
+    private static final String TDS_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.tds.server";
 
     /** The unmarshaller opendap config. */
     private static Unmarshaller unmarshallerOpendapConfig = null;;

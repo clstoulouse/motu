@@ -19,18 +19,18 @@
 		-->
 		<param name="Append" value="true" />
 		<param name="DatePattern" value="'.'yyyy-MM" />
-		<layout class="fr.cls.atoll.motu.log4j.MotuXMLLayout"></layout>
+		<layout class="fr.cls.atoll.motu.library.log4j.MotuXMLLayout"></layout>
 		<!--
 			<layout class="org.apache.log4j.xml.XMLLayout"/>
 		-->
 	</appender>
 <!-- 
 
-	<logger name="fr.cls.atoll.motu">
+	<logger name="fr.cls.atoll.motu.library">
 		<level value="DEBUG" />
 	</logger>
 
-	<logger name="atoll.motu.queueserver">
+	<logger name="atoll.motu.library.queueserver">
 		<level value="INFO" />
 		<appender-ref ref="XMLFileInfo" />
 	</logger>

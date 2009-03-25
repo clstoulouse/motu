@@ -3,8 +3,8 @@ package fr.cls.atoll.motu.library.metadata;
 /**
  * Delivery resource class.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-03-25 15:34:18 $
  */
 public class Delivery {
 
@@ -127,7 +127,7 @@ public class Delivery {
 
     /**
      * @uml.property name="distributor"
-     * @uml.associationEnd inverse="delivery:fr.cls.atoll.motu.library.library.metadata.TEP"
+     * @uml.associationEnd inverse="delivery:fr.cls.atoll.motu.library.metadata.TEP"
      * @uml.association name="Delivery - TEP"
      */
     private TEP distributor;

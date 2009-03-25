@@ -20,7 +20,7 @@
 		-->
 		<param name="Append" value="true" />
 		<param name="DatePattern" value="'.'yyyy-MM" />
-		<layout class="fr.cls.atoll.motu.log4j.MotuXMLLayout"></layout>
+		<layout class="fr.cls.atoll.motu.library.log4j.MotuXMLLayout"></layout>
 
 	</appender>
 	<logger name="atoll.motu.queueserver">

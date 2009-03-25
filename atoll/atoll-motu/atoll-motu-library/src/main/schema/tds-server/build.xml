@@ -8,13 +8,13 @@
 	<property name="project.dir" value="../../../.." />
 	<property name="src.dir" value="${project.dir}/src/main/java" />
 
-	<property name="schema.path" value="fr/cls/atoll/motu/tds/server" />
-	<property name="schema.package" value="fr.cls.atoll.motu.tds.server" />
+	<property name="schema.path" value="fr/cls/atoll/motu/library/tds/server" />
+	<property name="schema.package" value="fr.cls.atoll.motu.library.tds.server" />
 	<property name="schema.xsdfile" value="InvCatalog.1.0.2.xsd" />
 	<property name="schema.xjbfile" value="binding.xjb" />
 				
 	<path id="classpath">
-		<fileset dir="${project.dir}/../cls-commons-config/lib/jaxb" includes="*.jar" />
+		<fileset dir="${project.dir}/../../../cls-commons-config/lib/jaxb" includes="*.jar" />
 	</path>
 
 	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask" classpathref="classpath" />
