@@ -17,6 +17,16 @@
 	<description>This package holds the processors in conformance with WPS sepecification.</description>
 	<dependencies>
 		<dependency>
+			<groupId>cls.atoll.motu</groupId>
+			<artifactId>atoll-motu-library</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>cls.atoll.motu</groupId>
+			<artifactId>atoll-motu-msg</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.deegree</groupId>
 			<artifactId>deegree-services</artifactId>
 			<version>3.0-alpha2-dev1</version>
@@ -26,7 +36,6 @@
 			<artifactId>deegree</artifactId>
 			<version>2.2</version>
 		</dependency>
-
 		<dependency>
 			<groupId>opensymphony</groupId>
 			<artifactId>osworkflow</artifactId>

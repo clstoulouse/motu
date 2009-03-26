@@ -3,6 +3,33 @@
  */
 package fr.cls.atoll.motu.library.intfce;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.apache.log4j.Logger;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+
 import fr.cls.atoll.motu.library.configuration.ConfigService;
 import fr.cls.atoll.motu.library.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.data.ExtractCriteria;
@@ -51,33 +78,6 @@ import fr.cls.commons.util.PropertiesUtilities;
 import fr.cls.commons.util.io.ConfigLoader;
 import fr.cls.commons.util5.DatePeriod;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.apache.log4j.Logger;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and
 // trace log.
 
@@ -86,7 +86,7 @@ import org.apache.velocity.app.VelocityEngine;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-03-25 15:34:18 $
+ * @version $Revision: 1.3 $ - $Date: 2009-03-26 15:41:53 $
  */
 public class Organizer {
 
@@ -3242,7 +3242,8 @@ public class Organizer {
             LOG.debug("getTimeCoverage(String, String, Writer) - exiting");
         }
     }
-
+    
+ 
     /**
      * Getter of the property <tt>user</tt>.
      * 

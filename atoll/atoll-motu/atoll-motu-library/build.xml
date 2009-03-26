@@ -8,11 +8,9 @@
 		<fileset dir="C:\Java\deegree-src_v3\d3_services\build/lib">
 			<include name="**/*.jar" />
 		</fileset>
-		<!--
 		<fileset dir="C:\Java\netcdfAll-4.0.34">
 			<include name="**/*.jar" />
 		</fileset>
-		-->
 	</path>
 	<target name="show.dependencies">
 		<property name="lib.classpath" refid="classpath" />
