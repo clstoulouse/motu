@@ -38,6 +38,11 @@
 		</logger>
 		
 	-->
+		<logger name="fr.cls.atoll.motu.processor">
+		<level value="DEBUG" />
+		<appender-ref ref="CONSOLE" />
+		</logger>
+	
 	<root>
 		<!-- 
 			<level value="INFO" />

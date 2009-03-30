@@ -18,9 +18,9 @@
 			<Phone>+33 (0)5 61 39 47 00</Phone>
 			<Facsimile>+33 (0)5 61 75 10 14</Facsimile>
 			<!--
-			<ElectronicMailAddress>info@lat-lon.de</ElectronicMailAddress>
- 			-->
- 			<Address>
+				<ElectronicMailAddress>info@lat-lon.de</ElectronicMailAddress>
+			-->
+			<Address>
 				<DeliveryPoint>8-10, rue Hermès</DeliveryPoint>
 				<City>Ramonville Saint-Agne</City>
 				<AdministrativeArea>Parc Technologique du Canal</AdministrativeArea>
@@ -59,8 +59,7 @@
 	<ConfiguredServices>
 		<Service>
 			<ServiceName>WPS</ServiceName>
-			<ConfigurationLocation>WEB-INF/conf/wps/wps_configuration.xml
-			</ConfigurationLocation>
+			<ConfigurationLocation>WEB-INF/conf/wps/wps_configuration.xml</ConfigurationLocation>
 		</Service>
 	</ConfiguredServices>
 

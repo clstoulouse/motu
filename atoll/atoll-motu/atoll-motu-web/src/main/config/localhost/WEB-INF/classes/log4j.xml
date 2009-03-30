@@ -26,16 +26,22 @@
 		-->
 	</appender>
 
+	<!--
 		<logger name="fr.cls.atoll.motu">
 		<level value="DEBUG" />
 		<appender-ref ref="CONSOLE" />
 		</logger>
-
+		-->
+		<logger name="fr.cls.atoll.motu.processor">
+		<level value="DEBUG" />
+		<appender-ref ref="CONSOLE" />
+		</logger>
+<!--
 	<logger name="atoll.motu.queueserver">
 		<level value="INFO" />
 		<appender-ref ref="XMLFileInfo" />
 	</logger>
-
+-->
 	<root>
 	<!-- 
 		<level value="INFO" />
