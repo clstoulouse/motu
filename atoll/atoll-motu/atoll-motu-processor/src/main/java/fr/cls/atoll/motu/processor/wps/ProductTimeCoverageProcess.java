@@ -38,6 +38,8 @@
 
 package fr.cls.atoll.motu.processor.wps;
 
+import java.net.Authenticator;
+
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
@@ -49,8 +51,11 @@ import org.deegree.services.wps.output.LiteralOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.cls.atoll.motu.library.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.intfce.SimpleAuthenticator;
 import fr.cls.atoll.motu.msg.xml.ErrorType;
 import fr.cls.atoll.motu.msg.xml.TimeCoverage;
 
@@ -59,7 +64,7 @@ import fr.cls.atoll.motu.msg.xml.TimeCoverage;
  * 
  * @author last edited by: $Author: dearith $
  * 
- * @version $Revision: 1.1 $, $Date: 2009-03-26 15:42:42 $
+ * @version $Revision: 1.2 $, $Date: 2009-03-30 15:05:22 $
  */
 public class ProductTimeCoverageProcess extends MotuWPSProcess {
 
@@ -94,7 +99,7 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
                                        PARAM_PRODUCT);
 
             MotuWPSProcess.setReturnCode(ErrorType.INCONSISTENCY, msg, out);
-            return;
+            throw new ProcessletException(msg);
         }
 
         if (!MotuWPSProcess.isNullOrEmpty(locationDataParam) && !MotuWPSProcess.isNullOrEmpty(productIdParam)) {
@@ -107,7 +112,7 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
                                        MotuWPSProcess.PARAM_PRODUCT);
 
             MotuWPSProcess.setReturnCode(ErrorType.INCONSISTENCY, msg, out);
-            return;
+            throw new ProcessletException(msg);
         }
 
         if (MotuWPSProcess.isNullOrEmpty(serviceNameParam) && !MotuWPSProcess.isNullOrEmpty(productIdParam)) {
@@ -118,16 +123,21 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
             String msg = String.format("ERROR: '%s' parameter is filled but '%s' is empty. You have to fill it.", PARAM_PRODUCT, PARAM_SERVICE);
 
             MotuWPSProcess.setReturnCode(ErrorType.INCONSISTENCY, msg, out);
-            return;
+            throw new ProcessletException(msg);
         }
 
         // -------------------------------------------------
         // get Time coverage
         // -------------------------------------------------
-        if (!MotuWPSProcess.isNullOrEmpty(locationDataParam)) {
-            productGetTimeCoverage(locationDataParam.getValue(), out);
-        } else if (!MotuWPSProcess.isNullOrEmpty(serviceNameParam) && !MotuWPSProcess.isNullOrEmpty(productIdParam)) {
-            productGetTimeCoverage(serviceNameParam.getValue(), productIdParam.getValue(), out);
+        try {
+            if (!MotuWPSProcess.isNullOrEmpty(locationDataParam)) {
+                productGetTimeCoverage(locationDataParam.getValue(), out);
+            } else if (!MotuWPSProcess.isNullOrEmpty(serviceNameParam) && !MotuWPSProcess.isNullOrEmpty(productIdParam)) {
+                productGetTimeCoverage(serviceNameParam.getValue(), productIdParam.getValue(), out);
+            }
+        } catch (MotuExceptionBase e) {
+            // TODO Auto-generated catch block
+            throw new ProcessletException(e.notifyException());
         }
 
         if (LOG.isDebugEnabled()) {
@@ -175,11 +185,12 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
      * @param response the response
      * @param serviceName the service name
      * @param productId the product id
+     * @throws MotuExceptionBase
      * 
      */
-    private void productGetTimeCoverage(String serviceName, String productId, ProcessletOutputs response) {
+    private void productGetTimeCoverage(String serviceName, String productId, ProcessletOutputs response) throws MotuExceptionBase {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("productGetTimeCoverage(String, String, HttpSession, HttpServletResponse) - entering");
+            LOG.debug("productGetTimeCoverage(String, String, ProcessletOutputs) - entering");
         }
 
         Organizer organizer = getOrganizer(response);
@@ -190,15 +201,17 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
         TimeCoverage timeCoverage = null;
         try {
             timeCoverage = organizer.getTimeCoverage(serviceName, productId);
-        } catch (MotuException e) {
-            LOG.error("productGetTimeCoverage(String, String, HttpSession, HttpServletResponse)", e);
-            // Do nothing error is in response code
+        } catch (MotuExceptionBase e) {
+
+            LOG.error("productGetTimeCoverage(String, String, ProcessletOutputs", e);
+            timeCoverage = Organizer.createTimeCoverage(e);
+            throw e;
         }
 
         productGetTimeCoverage(timeCoverage, response);
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("productGetTimeCoverage(String, String, HttpSession, HttpServletResponse) - exiting");
+            LOG.debug("productGetTimeCoverage(String, String, ProcessletOutputs) - exiting");
         }
     }
 
@@ -235,16 +248,20 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
 
     }
 
- 
     /** {@inheritDoc} */
     @Override
     public void destroy() {
-        LOG.debug("TimeCoverageProcess#destroy() called");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("TimeCoverageProcess#destroy() called");
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public void init() {
-        LOG.debug("TimeCoverageProcess#init() called");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("TimeCoverageProcess#init() called");
+        }
+        super.init();
     }
 }
