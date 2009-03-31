@@ -27,17 +27,64 @@ import fr.cls.atoll.motu.msg.xml.ErrorType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-03-30 15:05:22 $
+ * @version $Revision: 1.3 $ - $Date: 2009-03-31 14:38:36 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(MotuWPSProcess.class);
+
+    /** Process output return code parameter name. */
+    public static final String PARAM_CODE = "code";
+
+    public static final String PARAM_END = "end";
+
+    /** Language servlet paremeter name. */
+    public static final String PARAM_LANGUAGE = "lang";
+
+    /** Process output message parameter name. */
+    public static final String PARAM_MESSAGE = "message";
+
+    /** Product servlet parameter name. */
+    public static final String PARAM_PRODUCT = "product";
+
+    /** Service servlet parameter name. */
+    public static final String PARAM_SERVICE = "service";
+
+    public static final String PARAM_START = "start";
+
+
+    /** Url parameter name. */
+    public static final String PARAM_URL = "url";
 
     /**
      * Constructeur.
      */
     public MotuWPSProcess() {
     }
+    
+    
+    public void setLanguageParameter(ProcessletInputs in) 
+    {
+
+    LiteralInput languageParam = (LiteralInput) in.getParameter(MotuWPSProcess.PARAM_LANGUAGE);
+/*
+   String language = request.getParameter(PARAM_LANGUAGE);
+
+   if (MotuWPSProcess.isNullOrEmpty(language)) {
+   return;
+   }
+
+   Organizer organizer = getOrganizer(session, response);
+   try {
+   organizer.setCurrentLanguage(language);
+   } catch (MotuExceptionBase e) {
+   throw new ServletException(e.notifyException(), e);
+   } catch (Exception e) {
+   throw new ServletException(e);
+   }
+*/
+   }
+
 
     /** {@inheritDoc} */
     @Override
@@ -172,24 +219,5 @@ public abstract class MotuWPSProcess implements Processlet {
 
         return organizer;
     }
-
-    /** Url parameter name. */
-    public static final String PARAM_URL = "Url";
-
-    /** Service servlet parameter name. */
-    public static final String PARAM_SERVICE = "Service";
-
-    /** Product servlet parameter name. */
-    public static final String PARAM_PRODUCT = "Product";
-
-    public static final String PARAM_START = "Start";
-
-    public static final String PARAM_END = "End";
-
-    /** Process output return code parameter name. */
-    public static final String PARAM_CODE = "Code";
-
-    /** Process output message parameter name. */
-    public static final String PARAM_MESSAGE = "Message";
 
 }

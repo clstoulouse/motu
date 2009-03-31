@@ -3,48 +3,58 @@
 	processVersion="1.0.0" statusSupported="false"
 	xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/wps/0.1.0/process_definition.xsd">
-	<Identifier>ProductTimeCoverageProcess</Identifier>
-	<JavaClass>fr.cls.atoll.motu.processor.wps.ProductTimeCoverageProcess</JavaClass>
-	<Title>Process for getting the time coverage of a product.</Title>
+	<Identifier>ProductExtractionProcess</Identifier>
+	<JavaClass>fr.cls.atoll.motu.processor.wps.ProductExtractionProcess</JavaClass>
+	<Title>Process for data extraction from a product.</Title>
 	<Abstract><![CDATA[The purpose of this process is to provide the time coverage of a product.
 	A product is identified either by the Service name and Product name input parameters or by the url of the product (Data input parameter)]]>
 	</Abstract>
 	<InputParameters>
 		<LiteralInput minOccurs="0">
-			<Identifier>Service</Identifier>
+			<Identifier>service</Identifier>
 			<Title>Name a the Motu service</Title>
 			<Abstract>This parameter specifies the name of the Motu service as described in the Motu configuration</Abstract>
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
 		</LiteralInput>
 		<LiteralInput minOccurs="0">
-			<Identifier>Product</Identifier>
+			<Identifier>product</Identifier>
 			<Title>The product identifer (name)</Title>
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
 		</LiteralInput>
 		<LiteralInput minOccurs="0">
-			<Identifier>Url</Identifier>
+			<Identifier>url</Identifier>
 			<Title>Url of the product data</Title>
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+		</LiteralInput>
+		<LiteralInput minOccurs="0">
+			<Identifier>start</Identifier>
+			<Title>The start coverage date</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#datetime">datetime</DataType>
+		</LiteralInput>
+		<LiteralInput minOccurs="0">
+			<Identifier>end</Identifier>
+			<Title>The end coverage date</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#datetime">datetime</DataType>
 		</LiteralInput>
 	</InputParameters>
 	<OutputParameters>
 		<LiteralOutput>
-			<Identifier>Start</Identifier>
+			<Identifier>start</Identifier>
 			<Title>The start coverage date</Title>
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#datetime">datetime</DataType>
 		</LiteralOutput>
 		<LiteralOutput>
-			<Identifier>End</Identifier>
+			<Identifier>end</Identifier>
 			<Title>The end coverage date</Title>
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#datetime">datetime</DataType>
 		</LiteralOutput>
 		<LiteralOutput>
-			<Identifier>Code</Identifier>
+			<Identifier>code</Identifier>
 			<Title>Code returned by the process</Title>
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
 		</LiteralOutput>
 		<LiteralOutput>
-			<Identifier>Message</Identifier>
+			<Identifier>message</Identifier>
 			<Title>Message returned by the process</Title>
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
 		</LiteralOutput>

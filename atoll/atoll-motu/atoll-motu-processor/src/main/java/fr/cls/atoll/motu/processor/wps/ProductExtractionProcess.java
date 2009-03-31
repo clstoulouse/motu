@@ -55,22 +55,26 @@ import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.msg.xml.ErrorType;
 import fr.cls.atoll.motu.msg.xml.TimeCoverage;
 
+
+
+
+
 /**
  * The purpose of this {@link Processlet} is to provide the time coverage of a product
  * 
  * @author last edited by: $Author: dearith $
  * 
- * @version $Revision: 1.3 $, $Date: 2009-03-31 14:38:36 $
+ * @version $Revision: 1.1 $, $Date: 2009-03-31 14:38:36 $
  */
-public class ProductTimeCoverageProcess extends MotuWPSProcess {
+public class ProductExtractionProcess extends MotuWPSProcess {
 
     /**
      * Constructeur.
      */
-    public ProductTimeCoverageProcess() {
+    public ProductExtractionProcess() {
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProductTimeCoverageProcess.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ProductExtractionProcess.class);
 
     /** {@inheritDoc} */
     @Override
@@ -80,6 +84,85 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
             LOG.debug("BEGIN TimeCoverageProcess.process(), context: " + OGCFrontController.getContext());
         }
 
+        /*
+        
+        try {
+
+            setLanguageParameter(request, session, response);
+        } catch (ServletException e) {
+            LOG.error("isActionProductDownload(String, HttpServletRequest, HttpSession, HttpServletResponse)", e);
+
+            response.sendError(500, String.format("ERROR: %s", e.getMessage()));
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("isActionProductDownload(String, HttpServletRequest, HttpSession, HttpServletResponse) - exiting");
+            }
+            return true;
+        }
+
+        Writer out = null;
+        Organizer.Format responseFormat = null;
+
+        String mode = getMode(request);
+
+        int priority = getRequestPriority(request);
+
+        overrideMaxPoolAnonymous(request);
+        overrideMaxPoolAuthenticate(request);
+
+        String userId = getLogin(request, session);
+        boolean anonymousUser = isAnonymousUser(request, userId);
+        String userHost = getRemoteHost(request);
+
+        if (MotuServlet.isNullOrEmpty(userId)) {
+            userId = userHost;
+        }
+
+        if (RunnableHttpExtraction.noMode(mode)) {
+            out = response.getWriter();
+            responseFormat = Organizer.Format.HTML;
+        }
+
+        ExtractionParameters extractionParameters = new ExtractionParameters(
+                request.getParameter(MotuRequestParametersConstant.PARAM_SERVICE),
+                request.getParameter(MotuRequestParametersConstant.PARAM_DATA),
+                getVariables(request),
+                getTemporalCoverage(request),
+                getGeoCoverage(request),
+                getDepthCoverage(request),
+                request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT),
+                Organizer.Format.NETCDF,
+                out,
+                responseFormat,
+                userId,
+                anonymousUser);
+
+        extractionParameters.setBatchQueue(isBatch(request));
+        extractionParameters.setUserHost(userHost);
+
+        productDownload(extractionParameters, mode, priority, session, response);
+
+        boolean noMode = RunnableHttpExtraction.noMode(mode);
+        if (!noMode) {
+            removeOrganizerSession(session);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("isActionProductDownload(String, HttpServletRequest, HttpSession, HttpServletResponse) - exiting");
+        }
+        return true;
+        
+        
+        
+        */
+        
+        
+        
+        
+        
+        
+        
+        
         LiteralInput serviceNameParam = (LiteralInput) in.getParameter(MotuWPSProcess.PARAM_SERVICE);
         LiteralInput locationDataParam = (LiteralInput) in.getParameter(MotuWPSProcess.PARAM_URL);
         LiteralInput productIdParam = (LiteralInput) in.getParameter(MotuWPSProcess.PARAM_PRODUCT);
