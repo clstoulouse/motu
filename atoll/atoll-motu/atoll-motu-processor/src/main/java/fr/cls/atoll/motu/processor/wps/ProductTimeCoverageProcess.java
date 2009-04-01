@@ -60,7 +60,7 @@ import fr.cls.atoll.motu.msg.xml.TimeCoverage;
  * 
  * @author last edited by: $Author: dearith $
  * 
- * @version $Revision: 1.4 $, $Date: 2009-04-01 07:18:05 $
+ * @version $Revision: 1.5 $, $Date: 2009-04-01 08:41:01 $
  */
 public class ProductTimeCoverageProcess extends MotuWPSProcess {
 
@@ -250,7 +250,7 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
     @Override
     public void destroy() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("TimeCoverageProcess#destroy() called");
+            LOG.debug("ProductTimeCoverageProcess#destroy() called");
         }
     }
 
@@ -258,7 +258,7 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
     @Override
     public void init() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("TimeCoverageProcess#init() called");
+            LOG.debug("ProductTimeCoverageProcess#init() called");
         }
         super.init();
     }

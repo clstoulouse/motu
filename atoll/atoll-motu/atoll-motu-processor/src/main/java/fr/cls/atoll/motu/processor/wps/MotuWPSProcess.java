@@ -27,7 +27,7 @@ import fr.cls.atoll.motu.msg.xml.ErrorType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-04-01 07:18:05 $
+ * @version $Revision: 1.5 $ - $Date: 2009-04-01 08:41:01 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
@@ -94,6 +94,10 @@ public abstract class MotuWPSProcess implements Processlet {
     /** {@inheritDoc} */
     @Override
     public void init() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("MotuWPSProcess#init() called");
+        }
+
         try {
             initProxyLogin();
         } catch (ProcessletException e) {
