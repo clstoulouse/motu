@@ -7,7 +7,7 @@
 		</LiteralInput>
 		<LiteralInput minOccurs="0">
 			<Identifier>product</Identifier>
-			<Title>The product identifer (name)</Title>
+			<Title>The product identifier (name)</Title>
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
 		</LiteralInput>
 		<LiteralInput minOccurs="0">
