@@ -86,7 +86,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-03-26 15:41:53 $
+ * @version $Revision: 1.4 $ - $Date: 2009-04-01 14:06:15 $
  */
 public class Organizer {
 
@@ -96,16 +96,62 @@ public class Organizer {
     public enum Format {
 
         /** ascii format. */
-        ASCII,
+        ASCII(0),
 
         /** html format. */
-        HTML,
+        HTML(1),
 
         /** NetCdf format. */
-        NETCDF,
+        NETCDF(2),
 
         /** xml format. */
-        XML
+        XML(3);
+        
+        private final int value;
+
+         /**
+          * Instantiates a new format.
+          * 
+          * @param v the v
+          */
+         Format(int v) {
+            value = v;
+        }
+
+        /**
+         * Value.
+         * 
+         * @return the int
+         */
+        public int value() {
+            return value;
+        }
+
+         /**
+          * From value.
+          * 
+          * @param v the v
+          * 
+          * @return the format
+          */
+         public static Format fromValue(int v) {
+            for (Format c: Format.values()) {
+                if (c.value == v) {
+                    return c;
+                }
+            }
+            throw new IllegalArgumentException(String.valueOf(v));
+        }
+         
+         /**
+          * Gets the default.
+          * 
+          * @return the default
+          */
+         public static Format getDefault() {
+             return NETCDF;       
+         }
+       
     }
 
     /** Number of milliseconds per hour, except when a leap second is inserted. */

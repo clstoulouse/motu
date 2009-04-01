@@ -72,7 +72,7 @@ import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-03-20 13:02:44 $
+ * @version $Revision: 1.3 $ - $Date: 2009-04-01 14:06:15 $
  * 
  */
 public class TestIntfce {
@@ -90,6 +90,8 @@ public class TestIntfce {
         // LOGQUEUE.info("main(String[]) - xxx jentering");
         // }
 
+        System.out.println (Organizer.Format.valueOf("NETCDFRRRRRR"));
+        //System.out.println (Organizer.Format.fromValue(2));
         //testFraction();
         
         // Mandatory if there is a proxy to access Opendap server.
@@ -102,7 +104,7 @@ public class TestIntfce {
         System.setProperty("socksProxyPort", "1080");
         */
 
-        Authenticator.setDefault(new MyAuthenticator());
+        //Authenticator.setDefault(new MyAuthenticator());
 //        try {
 //            DetectProxy();
 //        } catch (Exception e) {
@@ -217,7 +219,7 @@ public class TestIntfce {
         // testLoadMotuConfig();
         // testgetMotuConfigSchema();
 
-        // productInformation();
+        //productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
         //productDownloadInfo();
@@ -231,7 +233,7 @@ public class TestIntfce {
         // productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
-        productExtractDiversity();
+        //productExtractDiversity();
         //testProjection();
         // testJason2Local();
         // testProjection2();
@@ -356,13 +358,13 @@ public class TestIntfce {
             // String productId = "duacs_regional-gomex_nrt_g2_slaext";
             // String serviceName = "dev";
             // String productId = "res_oer_g2";
-            // String serviceName = "mercator";
+            String serviceName = "mercator";
             // String serviceName = "cls";
-            String serviceName = "AvisoDT";
-            // String productId = "mercatorPsy3v2R1v_arc_mean_best_estimate";
+            //String serviceName = "AvisoDT";
+           String productId = "mercatorPsy3v2_nat_mean_best_estimate";
             // String productId = "mercatorPsy3v2R1v_med_levitus_1998";
             // String productId = "global_sst";
-            String productId = "dt_ref_global_merged_madt_h";
+            //String productId = "dt_ref_global_merged_madt_h";
 
             FileWriter writer = new FileWriter("./target/resultProductInfo.html");
             Organizer organizer = new Organizer();
