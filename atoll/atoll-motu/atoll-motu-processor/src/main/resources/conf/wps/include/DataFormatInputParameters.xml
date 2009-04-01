@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+		<LiteralInput maxOccurs="1">
+			<Identifier>dataformat</Identifier>
+			<Title>Available data file format</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<AllowedValues>netcdf</AllowedValues>
+			<DefaultValue>netcdf</DefaultValue>		
+		</LiteralInput>

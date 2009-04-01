@@ -1,40 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
- Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
- Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
- Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
 
 package fr.cls.atoll.motu.processor.wps;
 
@@ -60,7 +23,7 @@ import fr.cls.atoll.motu.msg.xml.TimeCoverage;
  * 
  * @author last edited by: $Author: dearith $
  * 
- * @version $Revision: 1.5 $, $Date: 2009-04-01 08:41:01 $
+ * @version $Revision: 1.6 $, $Date: 2009-04-01 14:13:38 $
  */
 public class ProductTimeCoverageProcess extends MotuWPSProcess {
 
@@ -73,6 +36,7 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
     private static final Logger LOG = LoggerFactory.getLogger(ProductTimeCoverageProcess.class);
 
     /** {@inheritDoc} */
+    @SuppressWarnings("null")
     @Override
     public void process(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info) throws ProcessletException {
 
@@ -81,48 +45,11 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
         if (LOG.isDebugEnabled()) {
             LOG.debug("BEGIN TimeCoverageProcess.process(), context: " + OGCFrontController.getContext());
         }
-
-        LiteralInput serviceNameParam = (LiteralInput) processletInputs.getParameter(MotuWPSProcess.PARAM_SERVICE);
-        LiteralInput locationDataParam = (LiteralInput) processletInputs.getParameter(MotuWPSProcess.PARAM_URL);
-        LiteralInput productIdParam = (LiteralInput) processletInputs.getParameter(MotuWPSProcess.PARAM_PRODUCT);
-
-        if (MotuWPSProcess.isNullOrEmpty(locationDataParam) && MotuWPSProcess.isNullOrEmpty(productIdParam)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.info(" empty locationData and empty productId");
-                LOG.debug("END TimeCoverageProcess.process()");
-            }
-
-            String msg = String.format("ERROR: neither '%s' nor '%s' parameters are filled - Choose one of them",
-                                       MotuWPSProcess.PARAM_URL,
-                                       PARAM_PRODUCT);
-
-            setReturnCode(ErrorType.INCONSISTENCY, msg);
-            throw new ProcessletException(msg);
-        }
-
-        if (!MotuWPSProcess.isNullOrEmpty(locationDataParam) && !MotuWPSProcess.isNullOrEmpty(productIdParam)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.info(" non empty locationData and non empty productId");
-                LOG.debug("END TimeCoverageProcess.process()");
-            }
-            String msg = String.format("ERROR: '%s' and '%s' parameters are not compatible - Choose only one of them",
-                                       MotuWPSProcess.PARAM_URL,
-                                       MotuWPSProcess.PARAM_PRODUCT);
-
-            setReturnCode(ErrorType.INCONSISTENCY, msg);
-            throw new ProcessletException(msg);
-        }
-
-        if (MotuWPSProcess.isNullOrEmpty(serviceNameParam) && !MotuWPSProcess.isNullOrEmpty(productIdParam)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.info("empty serviceName  and non empty productId");
-                LOG.debug("END TimeCoverageProcess.process()");
-            }
-            String msg = String.format("ERROR: '%s' parameter is filled but '%s' is empty. You have to fill it.", PARAM_PRODUCT, PARAM_SERVICE);
-
-            setReturnCode(ErrorType.INCONSISTENCY, msg);
-            throw new ProcessletException(msg);
-        }
+        LiteralInput serviceNameParam = null;
+        LiteralInput locationDataParam = null;
+        LiteralInput productIdParam = null;
+        
+        getProductInfo(serviceNameParam, locationDataParam, productIdParam);
 
         // -------------------------------------------------
         // get Time coverage
@@ -134,8 +61,7 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
                 productGetTimeCoverage(serviceNameParam.getValue(), productIdParam.getValue());
             }
         } catch (MotuExceptionBase e) {
-            // TODO Auto-generated catch block
-            throw new ProcessletException(e.notifyException());
+            //throw new ProcessletException(e.notifyException());
         }
 
         if (LOG.isDebugEnabled()) {
@@ -225,8 +151,8 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
             return;
         }
 
-        LiteralOutput startParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_START);
-        LiteralOutput endParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_END);
+        LiteralOutput startParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_STARTTIME);
+        LiteralOutput endParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_ENDTIME);
         LiteralOutput codeParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_CODE);
         LiteralOutput msgParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_MESSAGE);
 

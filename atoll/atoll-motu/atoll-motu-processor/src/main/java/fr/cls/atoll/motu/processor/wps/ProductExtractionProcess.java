@@ -1,42 +1,8 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
- Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
- Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
- Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
-
 package fr.cls.atoll.motu.processor.wps;
+
+import java.io.IOException;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.Processlet;
@@ -51,20 +17,19 @@ import org.slf4j.LoggerFactory;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.exception.MotuMarshallException;
+import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.msg.xml.ErrorType;
+import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
 import fr.cls.atoll.motu.msg.xml.TimeCoverage;
-
-
-
-
 
 /**
  * The purpose of this {@link Processlet} is to provide the time coverage of a product
  * 
  * @author last edited by: $Author: dearith $
  * 
- * @version $Revision: 1.2 $, $Date: 2009-04-01 07:18:05 $
+ * @version $Revision: 1.3 $, $Date: 2009-04-01 14:13:38 $
  */
 public class ProductExtractionProcess extends MotuWPSProcess {
 
@@ -77,153 +42,57 @@ public class ProductExtractionProcess extends MotuWPSProcess {
     private static final Logger LOG = LoggerFactory.getLogger(ProductExtractionProcess.class);
 
     /** {@inheritDoc} */
+    @SuppressWarnings("null")
     @Override
     public void process(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info) throws ProcessletException {
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("BEGIN TimeCoverageProcess.process(), context: " + OGCFrontController.getContext());
+            LOG.debug("BEGIN ProductExtractionProcess.process(), context: " + OGCFrontController.getContext());
         }
 
-        /*
-        
-        try {
-
-            setLanguageParameter(request, session, response);
-        } catch (ServletException e) {
-            LOG.error("isActionProductDownload(String, HttpServletRequest, HttpSession, HttpServletResponse)", e);
-
-            response.sendError(500, String.format("ERROR: %s", e.getMessage()));
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionProductDownload(String, HttpServletRequest, HttpSession, HttpServletResponse) - exiting");
-            }
-            return true;
-        }
-
-        Writer out = null;
         Organizer.Format responseFormat = null;
 
-        String mode = getMode(request);
+        String mode = getMode();
 
-        int priority = getRequestPriority(request);
+        int priority = getRequestPriority();
 
-        overrideMaxPoolAnonymous(request);
-        overrideMaxPoolAuthenticate(request);
+        String userId = getLogin();
+        boolean anonymousUser = isAnonymousUser(userId);
 
-        String userId = getLogin(request, session);
-        boolean anonymousUser = isAnonymousUser(request, userId);
-        String userHost = getRemoteHost(request);
-
-        if (MotuServlet.isNullOrEmpty(userId)) {
-            userId = userHost;
+        if (MotuWPSProcess.isNullOrEmpty(userId)) {
+            userId = MotuWPSProcess.PARAM_ANONYMOUS;
         }
 
-        if (RunnableHttpExtraction.noMode(mode)) {
-            out = response.getWriter();
-            responseFormat = Organizer.Format.HTML;
-        }
+        LiteralInput serviceNameParam = null;
+        LiteralInput locationDataParam = null;
+        LiteralInput productIdParam = null;
 
+        getProductInfo(serviceNameParam, locationDataParam, productIdParam);
+
+        Object s;
         ExtractionParameters extractionParameters = new ExtractionParameters(
-                request.getParameter(MotuRequestParametersConstant.PARAM_SERVICE),
-                request.getParameter(MotuRequestParametersConstant.PARAM_DATA),
-                getVariables(request),
-                getTemporalCoverage(request),
-                getGeoCoverage(request),
-                getDepthCoverage(request),
-                request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT),
-                Organizer.Format.NETCDF,
-                out,
+                serviceNameParam.getValue(),
+                locationDataParam.getValue(),
+                getVariables(),
+                getTemporalCoverage(),
+                getGeoCoverage(),
+                getDepthCoverage(),
+                productIdParam.getValue(),
+                getDataFormat(),
+                null,
                 responseFormat,
                 userId,
                 anonymousUser);
 
-        extractionParameters.setBatchQueue(isBatch(request));
-        extractionParameters.setUserHost(userHost);
+        extractionParameters.setBatchQueue(isBatch());
 
-        productDownload(extractionParameters, mode, priority, session, response);
-
-        boolean noMode = RunnableHttpExtraction.noMode(mode);
-        if (!noMode) {
-            removeOrganizerSession(session);
-        }
+        productDownload(extractionParameters, mode, priority);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionProductDownload(String, HttpServletRequest, HttpSession, HttpServletResponse) - exiting");
         }
-        return true;
-        
-        
-        
-        */
-        
-        
-        
-        
-        
-        
-        
-        
-        LiteralInput serviceNameParam = (LiteralInput) in.getParameter(MotuWPSProcess.PARAM_SERVICE);
-        LiteralInput locationDataParam = (LiteralInput) in.getParameter(MotuWPSProcess.PARAM_URL);
-        LiteralInput productIdParam = (LiteralInput) in.getParameter(MotuWPSProcess.PARAM_PRODUCT);
-
-        if (MotuWPSProcess.isNullOrEmpty(locationDataParam) && MotuWPSProcess.isNullOrEmpty(productIdParam)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.info(" empty locationData and empty productId");
-                LOG.debug("END TimeCoverageProcess.process()");
-            }
-
-            String msg = String.format("ERROR: neither '%s' nor '%s' parameters are filled - Choose one of them",
-                                       MotuWPSProcess.PARAM_URL,
-                                       PARAM_PRODUCT);
-
-            setReturnCode(ErrorType.INCONSISTENCY, msg);
-            throw new ProcessletException(msg);
-        }
-
-        if (!MotuWPSProcess.isNullOrEmpty(locationDataParam) && !MotuWPSProcess.isNullOrEmpty(productIdParam)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.info(" non empty locationData and non empty productId");
-                LOG.debug("END TimeCoverageProcess.process()");
-            }
-            String msg = String.format("ERROR: '%s' and '%s' parameters are not compatible - Choose only one of them",
-                                       MotuWPSProcess.PARAM_URL,
-                                       MotuWPSProcess.PARAM_PRODUCT);
-
-            setReturnCode(ErrorType.INCONSISTENCY, msg);
-            throw new ProcessletException(msg);
-        }
-
-        if (MotuWPSProcess.isNullOrEmpty(serviceNameParam) && !MotuWPSProcess.isNullOrEmpty(productIdParam)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.info("empty serviceName  and non empty productId");
-                LOG.debug("END TimeCoverageProcess.process()");
-            }
-            String msg = String.format("ERROR: '%s' parameter is filled but '%s' is empty. You have to fill it.", PARAM_PRODUCT, PARAM_SERVICE);
-
-            setReturnCode(ErrorType.INCONSISTENCY, msg);
-            throw new ProcessletException(msg);
-        }
-
-        // -------------------------------------------------
-        // get Time coverage
-        // -------------------------------------------------
-        try {
-            if (!MotuWPSProcess.isNullOrEmpty(locationDataParam)) {
-                productGetTimeCoverage(locationDataParam.getValue());
-            } else if (!MotuWPSProcess.isNullOrEmpty(serviceNameParam) && !MotuWPSProcess.isNullOrEmpty(productIdParam)) {
-                productGetTimeCoverage(serviceNameParam.getValue(), productIdParam.getValue());
-            }
-        } catch (MotuExceptionBase e) {
-            // TODO Auto-generated catch block
-            throw new ProcessletException(e.notifyException());
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("END TimeCoverageProcess.process()");
-        }
-
         return;
+
     }
 
     /**
@@ -306,8 +175,8 @@ public class ProductExtractionProcess extends MotuWPSProcess {
             return;
         }
 
-        LiteralOutput startParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_START);
-        LiteralOutput endParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_END);
+        LiteralOutput startParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_STARTTIME);
+        LiteralOutput endParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_ENDTIME);
         LiteralOutput codeParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_CODE);
         LiteralOutput msgParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_MESSAGE);
 
@@ -327,11 +196,10 @@ public class ProductExtractionProcess extends MotuWPSProcess {
 
     }
 
-    /** {@inheritDoc} */
     @Override
     public void destroy() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("TimeCoverageProcess#destroy() called");
+            LOG.debug("ProductExtractionProcess#destroy() called");
         }
     }
 
@@ -339,8 +207,119 @@ public class ProductExtractionProcess extends MotuWPSProcess {
     @Override
     public void init() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("TimeCoverageProcess#init() called");
+            LOG.debug("ProductExtractionProcess#init() called");
         }
         super.init();
     }
+
+    /**
+     * Product download.
+     * 
+     * @param response the response
+     * @param session the session
+     * @param priority the priority
+     * @param extractionParameters the extraction parameters
+     * @param mode the mode
+     * 
+     * @throws IOException the IO exception
+     */
+    private void productDownload(ExtractionParameters extractionParameters, String mode, int priority) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("productDownload(ExtractionParameters, String, int) - entering");
+        }
+
+        // boolean modeConsole = RunnableHttpExtraction.isModeConsole(mode);
+        // boolean modeUrl = RunnableHttpExtraction.isModeUrl(mode);
+        boolean modeStatus = MotuWPSProcess.isModeStatus(mode);
+        // boolean noMode = RunnableHttpExtraction.noMode(mode);
+
+        RunnableWPSExtraction runnableWPSExtraction = null;
+
+        StatusModeResponse statusModeResponse = null;
+
+        final ReentrantLock lock = new ReentrantLock();
+        final Condition requestEndedCondition = lock.newCondition();
+
+        String serviceName = extractionParameters.getServiceName();
+        Organizer organizer = getOrganizer();
+        try {
+
+            if (organizer.isGenericService() && !MotuWPSProcess.isNullOrEmpty(serviceName)) {
+                organizer.setCurrentService(serviceName);
+            }
+        } catch (MotuExceptionBase e) {
+            LOG.error("MotuWPSProcess.productDownload(ExtractionParameters, String, int)", e);
+
+            setReturnCode(e);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("productDownload(ExtractionParameters, String, int) - exiting");
+            }
+            return;
+        }
+
+        runnableWPSExtraction = new RunnableWPSExtraction(
+                priority,
+                organizer,
+                extractionParameters,
+                processletOutputs,
+                mode,
+                requestEndedCondition,
+                lock);
+
+        // runnableHttpExtraction.lock = lock;
+
+        long requestId = requestManagement.generateRequestId();
+
+        runnableWPSExtraction.setRequestId(requestId);
+
+        statusModeResponse = runnableWPSExtraction.getStatusModeResponse();
+
+        statusModeResponse.setRequestId(requestId);
+
+        requestManagement.putIfAbsentRequestStatusMap(requestId, statusModeResponse);
+
+        try {
+            // ------------------------------------------------------
+            lock.lock();
+            // ------------------------------------------------------
+
+            getQueueServerManagement().execute(runnableWPSExtraction);
+
+            if (modeStatus) {
+                response.setContentType(null);
+                Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());
+            } else {
+                // --------- wait for the end of the request -----------
+                requestEndedCondition.await();
+                // ------------------------------------------------------
+            }
+        } catch (MotuMarshallException e) {
+            LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
+
+            response.sendError(500, String.format("ERROR: %s", e.getMessage()));
+        } catch (MotuExceptionBase e) {
+            LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
+
+            runnableWPSExtraction.aborted();
+            // Do nothing error is in response error code
+            // response.sendError(400, String.format("ERROR: %s", e.notifyException()));
+        } catch (Exception e) {
+            LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
+
+            runnableWPSExtraction.aborted();
+            // response.sendError(500, String.format("ERROR: %s", e.getMessage()));
+        } finally {
+            // ------------------------------------------------------
+            if (lock.isLocked()) {
+                lock.unlock();
+            }
+            // ------------------------------------------------------
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse) - exiting");
+        }
+    }
+
 }
