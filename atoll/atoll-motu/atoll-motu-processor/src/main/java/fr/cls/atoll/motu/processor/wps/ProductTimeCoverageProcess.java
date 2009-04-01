@@ -60,7 +60,7 @@ import fr.cls.atoll.motu.msg.xml.TimeCoverage;
  * 
  * @author last edited by: $Author: dearith $
  * 
- * @version $Revision: 1.3 $, $Date: 2009-03-31 14:38:36 $
+ * @version $Revision: 1.4 $, $Date: 2009-04-01 07:18:05 $
  */
 public class ProductTimeCoverageProcess extends MotuWPSProcess {
 
@@ -76,13 +76,15 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
     @Override
     public void process(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info) throws ProcessletException {
 
+        super.process(in, out, info);
+        
         if (LOG.isDebugEnabled()) {
             LOG.debug("BEGIN TimeCoverageProcess.process(), context: " + OGCFrontController.getContext());
         }
 
-        LiteralInput serviceNameParam = (LiteralInput) in.getParameter(MotuWPSProcess.PARAM_SERVICE);
-        LiteralInput locationDataParam = (LiteralInput) in.getParameter(MotuWPSProcess.PARAM_URL);
-        LiteralInput productIdParam = (LiteralInput) in.getParameter(MotuWPSProcess.PARAM_PRODUCT);
+        LiteralInput serviceNameParam = (LiteralInput) processletInputs.getParameter(MotuWPSProcess.PARAM_SERVICE);
+        LiteralInput locationDataParam = (LiteralInput) processletInputs.getParameter(MotuWPSProcess.PARAM_URL);
+        LiteralInput productIdParam = (LiteralInput) processletInputs.getParameter(MotuWPSProcess.PARAM_PRODUCT);
 
         if (MotuWPSProcess.isNullOrEmpty(locationDataParam) && MotuWPSProcess.isNullOrEmpty(productIdParam)) {
             if (LOG.isDebugEnabled()) {
@@ -94,7 +96,7 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
                                        MotuWPSProcess.PARAM_URL,
                                        PARAM_PRODUCT);
 
-            MotuWPSProcess.setReturnCode(ErrorType.INCONSISTENCY, msg, out);
+            setReturnCode(ErrorType.INCONSISTENCY, msg);
             throw new ProcessletException(msg);
         }
 
@@ -107,7 +109,7 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
                                        MotuWPSProcess.PARAM_URL,
                                        MotuWPSProcess.PARAM_PRODUCT);
 
-            MotuWPSProcess.setReturnCode(ErrorType.INCONSISTENCY, msg, out);
+            setReturnCode(ErrorType.INCONSISTENCY, msg);
             throw new ProcessletException(msg);
         }
 
@@ -118,7 +120,7 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
             }
             String msg = String.format("ERROR: '%s' parameter is filled but '%s' is empty. You have to fill it.", PARAM_PRODUCT, PARAM_SERVICE);
 
-            MotuWPSProcess.setReturnCode(ErrorType.INCONSISTENCY, msg, out);
+            setReturnCode(ErrorType.INCONSISTENCY, msg);
             throw new ProcessletException(msg);
         }
 
@@ -127,9 +129,9 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
         // -------------------------------------------------
         try {
             if (!MotuWPSProcess.isNullOrEmpty(locationDataParam)) {
-                productGetTimeCoverage(locationDataParam.getValue(), out);
+                productGetTimeCoverage(locationDataParam.getValue());
             } else if (!MotuWPSProcess.isNullOrEmpty(serviceNameParam) && !MotuWPSProcess.isNullOrEmpty(productIdParam)) {
-                productGetTimeCoverage(serviceNameParam.getValue(), productIdParam.getValue(), out);
+                productGetTimeCoverage(serviceNameParam.getValue(), productIdParam.getValue());
             }
         } catch (MotuExceptionBase e) {
             // TODO Auto-generated catch block
@@ -150,12 +152,12 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
      * @param locationData the location data
      * 
      */
-    private void productGetTimeCoverage(String locationData, ProcessletOutputs response) {
+    private void productGetTimeCoverage(String locationData) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("productGetTimeCoverage(String, ProcessletOutputs) - entering");
         }
 
-        Organizer organizer = getOrganizer(response);
+        Organizer organizer = getOrganizer();
         if (organizer == null) {
             return;
         }
@@ -168,7 +170,7 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
             // Do nothing error is in response code
         }
 
-        productGetTimeCoverage(timeCoverage, response);
+        productGetTimeCoverage(timeCoverage);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("productGetTimeCoverage(String, ProcessletOutputs) - exiting");
@@ -184,12 +186,12 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
      * @throws MotuExceptionBase
      * 
      */
-    private void productGetTimeCoverage(String serviceName, String productId, ProcessletOutputs response) throws MotuExceptionBase {
+    private void productGetTimeCoverage(String serviceName, String productId) throws MotuExceptionBase {
         if (LOG.isDebugEnabled()) {
             LOG.debug("productGetTimeCoverage(String, String, ProcessletOutputs) - entering");
         }
 
-        Organizer organizer = getOrganizer(response);
+        Organizer organizer = getOrganizer();
         if (organizer == null) {
             return;
         }
@@ -204,7 +206,7 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
             throw e;
         }
 
-        productGetTimeCoverage(timeCoverage, response);
+        productGetTimeCoverage(timeCoverage);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("productGetTimeCoverage(String, String, ProcessletOutputs) - exiting");
@@ -217,16 +219,16 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
      * @param timeCoverage the time coverage
      * @param out the out
      */
-    private void productGetTimeCoverage(TimeCoverage timeCoverage, ProcessletOutputs out) {
+    private void productGetTimeCoverage(TimeCoverage timeCoverage) {
 
         if (timeCoverage == null) {
             return;
         }
 
-        LiteralOutput startParam = (LiteralOutput) out.getParameter(MotuWPSProcess.PARAM_START);
-        LiteralOutput endParam = (LiteralOutput) out.getParameter(MotuWPSProcess.PARAM_END);
-        LiteralOutput codeParam = (LiteralOutput) out.getParameter(MotuWPSProcess.PARAM_CODE);
-        LiteralOutput msgParam = (LiteralOutput) out.getParameter(MotuWPSProcess.PARAM_MESSAGE);
+        LiteralOutput startParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_START);
+        LiteralOutput endParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_END);
+        LiteralOutput codeParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_CODE);
+        LiteralOutput msgParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_MESSAGE);
 
         if (startParam != null) {
             startParam.setValue(timeCoverage.getStart().normalize().toXMLFormat());

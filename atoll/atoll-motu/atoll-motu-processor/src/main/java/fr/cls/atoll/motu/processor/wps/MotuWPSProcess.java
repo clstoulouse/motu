@@ -27,7 +27,7 @@ import fr.cls.atoll.motu.msg.xml.ErrorType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-03-31 14:38:36 $
+ * @version $Revision: 1.4 $ - $Date: 2009-04-01 07:18:05 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
@@ -36,7 +36,7 @@ public abstract class MotuWPSProcess implements Processlet {
     /** Process output return code parameter name. */
     public static final String PARAM_CODE = "code";
 
-    public static final String PARAM_END = "end";
+    public static final String PARAM_END = "endTime";
 
     /** Language servlet paremeter name. */
     public static final String PARAM_LANGUAGE = "lang";
@@ -50,41 +50,39 @@ public abstract class MotuWPSProcess implements Processlet {
     /** Service servlet parameter name. */
     public static final String PARAM_SERVICE = "service";
 
-    public static final String PARAM_START = "start";
-
+    public static final String PARAM_START = "startTime";
 
     /** Url parameter name. */
     public static final String PARAM_URL = "url";
+
+    protected ProcessletInputs processletInputs;
+    protected ProcessletOutputs processletOutputs;
+    protected ProcessletExecutionInfo processletExecutionInfo;
 
     /**
      * Constructeur.
      */
     public MotuWPSProcess() {
     }
-    
-    
-    public void setLanguageParameter(ProcessletInputs in) 
-    {
 
-    LiteralInput languageParam = (LiteralInput) in.getParameter(MotuWPSProcess.PARAM_LANGUAGE);
-/*
-   String language = request.getParameter(PARAM_LANGUAGE);
+    public void setLanguageParameter(ProcessletInputs in) throws ProcessletException {
 
-   if (MotuWPSProcess.isNullOrEmpty(language)) {
-   return;
-   }
+        LiteralInput languageParam = (LiteralInput) in.getParameter(MotuWPSProcess.PARAM_LANGUAGE);
 
-   Organizer organizer = getOrganizer(session, response);
-   try {
-   organizer.setCurrentLanguage(language);
-   } catch (MotuExceptionBase e) {
-   throw new ServletException(e.notifyException(), e);
-   } catch (Exception e) {
-   throw new ServletException(e);
-   }
-*/
-   }
+        if (MotuWPSProcess.isNullOrEmpty(languageParam)) {
+            return;
+        }
 
+        Organizer organizer = getOrganizer();
+        try {
+            organizer.setCurrentLanguage(languageParam.getValue());
+        } catch (MotuExceptionBase e) {
+            throw new ProcessletException(e.notifyException());
+        } catch (Exception e) {
+            throw new ProcessletException(e.getMessage());
+        }
+
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -96,22 +94,30 @@ public abstract class MotuWPSProcess implements Processlet {
     /** {@inheritDoc} */
     @Override
     public void init() {
-        initProxyLogin();
+        try {
+            initProxyLogin();
+        } catch (ProcessletException e) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("END MotuWPSProcess.initProxyLogin() -- ProcessletException");
+            }
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public void process(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info) throws ProcessletException {
-        // TODO Auto-generated method stub
-
+        processletExecutionInfo = info;
+        processletInputs = in;
+        processletOutputs = out;
     }
 
     /**
      * Sets parameters for proxy connection if a proxy is used.
      * 
-     * @throws ServletException the servlet exception
+     * @throws ProcessletException
+     * 
      */
-    protected void initProxyLogin() {
+    protected void initProxyLogin() throws ProcessletException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("BEGIN MotuWPSProcess.initProxyLogin()");
             LOG.debug("BEGIN ProductTimeCoverageProcess.initProxyLogin()");
@@ -141,10 +147,9 @@ public abstract class MotuWPSProcess implements Processlet {
                 }
             }
         } catch (MotuException e) {
-            // throw new ServletException(String.format("Proxy initialisation failure - %s",
-            // e.notifyException()), e);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("END MotuWPSProcess.initProxyLogin() -- MotuException");
+                throw new ProcessletException(String.format("Proxy initialisation failure - %s", e.notifyException()));
             }
         }
         if (LOG.isDebugEnabled()) {
@@ -184,10 +189,10 @@ public abstract class MotuWPSProcess implements Processlet {
         return isNullOrEmpty(value.getValue());
     }
 
-    protected static void setReturnCode(ErrorType code, String msg, ProcessletOutputs out) {
+    protected void setReturnCode(ErrorType code, String msg) {
 
-        LiteralOutput codeParam = (LiteralOutput) out.getParameter(MotuWPSProcess.PARAM_CODE);
-        LiteralOutput msgParam = (LiteralOutput) out.getParameter(MotuWPSProcess.PARAM_MESSAGE);
+        LiteralOutput codeParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_CODE);
+        LiteralOutput msgParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_MESSAGE);
 
         if ((codeParam != null) && (code != null)) {
             codeParam.setValue(code.toString());
@@ -199,14 +204,11 @@ public abstract class MotuWPSProcess implements Processlet {
     }
 
     /**
-     * Gets Organizer object form the HttpSession.
-     * 
-     * @param response the response
-     * @param session that contains Organizer.
+     * Create new Organizer object.
      * 
      * @return Organizer object.
      */
-    protected Organizer getOrganizer(ProcessletOutputs response) {
+    protected Organizer getOrganizer() {
 
         Organizer organizer = null;
         try {
@@ -214,7 +216,7 @@ public abstract class MotuWPSProcess implements Processlet {
         } catch (MotuExceptionBase e) {
             String msg = String.format("ERROR: - MotuWPSProcess.getOrganizer - Unable to create a new organiser. Native Error: %s", e
                     .notifyException());
-            MotuWPSProcess.setReturnCode(ErrorType.SYSTEM, msg, response);
+            setReturnCode(ErrorType.SYSTEM, msg);
         }
 
         return organizer;
