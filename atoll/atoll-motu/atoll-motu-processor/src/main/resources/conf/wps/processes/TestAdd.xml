@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProcessDefinition configVersion="0.1.0"
+	processVersion="1.0.0" statusSupported="false" storeSupported="true"
+	xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/wps/0.1.0/process_definition.xsd"
+	xmlns:xi="http://www.w3.org/2001/XInclude">
+	<Identifier>TestAdd</Identifier>
+	<JavaClass>fr.cls.atoll.motu.processor.wps.TestAdd</JavaClass>
+	<Title>Add 2 integer.</Title>
+	<Abstract>Add 2 integer</Abstract>
+	<InputParameters>
+		<LiteralInput minOccurs="1">
+			<Identifier>A</Identifier>
+			<Title>Number A</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
+		</LiteralInput>
+		<LiteralInput minOccurs="1">
+			<Identifier>B</Identifier>
+			<Title>Number B</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
+		</LiteralInput>
+	</InputParameters>
+	<OutputParameters>
+		<LiteralOutput>
+			<Identifier>C</Identifier>
+			<Title>A + B</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
+		</LiteralOutput>
+	</OutputParameters>
+</ProcessDefinition>

@@ -4,6 +4,7 @@ import java.net.Authenticator;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
@@ -13,8 +14,6 @@ import org.deegree.services.wps.input.BoundingBoxInput;
 import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.output.LiteralOutput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import fr.cls.atoll.motu.library.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.exception.MotuException;
@@ -33,11 +32,11 @@ import fr.cls.atoll.motu.msg.xml.ErrorType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.6 $ - $Date: 2009-04-01 14:13:38 $
+ * @version $Revision: 1.7 $ - $Date: 2009-04-02 15:03:44 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MotuWPSProcess.class);
+    private static final Logger LOG = Logger.getLogger(MotuWPSProcess.class);
 
     /** The Constant PARAM_FORWARDED_FOR (Real user Ip). */
     public static final String PARAM_ANONYMOUS = "anonymous";
@@ -112,6 +111,11 @@ public abstract class MotuWPSProcess implements Processlet {
     protected ProcessletExecutionInfo processletExecutionInfo;
     /** The request management. */
     protected RequestManagement requestManagement = null;
+
+    
+    LiteralInput serviceNameParam = null;
+    LiteralInput locationDataParam = null;
+    LiteralInput productIdParam = null;
 
     /**
      * Gets the queue server management.
@@ -317,7 +321,7 @@ public abstract class MotuWPSProcess implements Processlet {
         return organizer;
     }
 
-    protected void getProductInfo(LiteralInput serviceNameParam, LiteralInput locationDataParam, LiteralInput productIdParam)
+    protected void getProductInfoParameters()
             throws ProcessletException {
 
         serviceNameParam = (LiteralInput) processletInputs.getParameter(MotuWPSProcess.PARAM_SERVICE);

@@ -22,7 +22,7 @@ import fr.cls.atoll.motu.library.queueserver.RunnableExtraction;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-04-01 14:13:38 $
+ * @version $Revision: 1.2 $ - $Date: 2009-04-02 15:03:44 $
  */
 public class RunnableWPSExtraction extends RunnableExtraction {
     /**
@@ -158,7 +158,7 @@ public class RunnableWPSExtraction extends RunnableExtraction {
      * @return true, if has mode
      */
     public boolean hasMode() {
-        return !RunnableWPSExtraction.noMode(mode);
+        return !MotuWPSProcess.noMode(mode);
     }
 
     /**
@@ -167,7 +167,7 @@ public class RunnableWPSExtraction extends RunnableExtraction {
      * @return true, if no mode
      */
     public boolean noMode() {
-        return RunnableWPSExtraction.noMode(mode);
+        return MotuWPSProcess.noMode(mode);
     }
 
     /**
@@ -272,11 +272,11 @@ public class RunnableWPSExtraction extends RunnableExtraction {
             return;
         }
 
-        try {
-            response.sendError(500, String.format("ERROR: %s", msg));
-        } catch (IOException e) {
-            LOG.error("sendResponseError500()", e);
-        }
+      //$$$$$  try {
+            //$$$$$ response.sendError(500, String.format("ERROR: %s", msg));
+      //$$$$$  } catch (IOException e) {
+      //$$$$$      LOG.error("sendResponseError500()", e);
+      //$$$$$   }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("sendResponseError500(String) - exiting");
@@ -299,9 +299,9 @@ public class RunnableWPSExtraction extends RunnableExtraction {
         }
 
         try {
-            response.setContentType(MotuServlet.CONTENT_TYPE_PLAIN);
-            Writer out = response.getWriter();
-            out.write(String.format("ERROR: %s", statusModeResponse.getMsg()));
+            //$$$$$ response.setContentType(MotuServlet.CONTENT_TYPE_PLAIN);
+          //$$$$$ Writer out = response.getWriter();
+          //$$$$$ out.write(String.format("ERROR: %s", statusModeResponse.getMsg()));
         } catch (Exception e) {
             LOG.error("setAbortedModeConsole()", e);
 
@@ -327,16 +327,16 @@ public class RunnableWPSExtraction extends RunnableExtraction {
             return;
         }
 
-        response.setContentType(null);
-        try {
-            Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());
-        } catch (MotuMarshallException e) {
-            LOG.error("setAbortedModeStatus()", e);
-            sendResponseError500(e.notifyException());
-        } catch (IOException e) {
-            LOG.error("setAbortedModeStatus()", e);
-            sendResponseError500(e.getMessage());
-        }
+      //$$$$$ response.setContentType(null);
+      //$$$$$ try {
+          //$$$$$ Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());
+          //$$$$$ } catch (MotuMarshallException e) {
+          //$$$$$     LOG.error("setAbortedModeStatus()", e);
+          //$$$$$    sendResponseError500(e.notifyException());
+          //$$$$$ } catch (IOException e) {
+          //$$$$$    LOG.error("setAbortedModeStatus()", e);
+          //$$$$$     sendResponseError500(e.getMessage());
+      //$$$$$  }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("setAbortedModeStatus() - exiting");
@@ -369,35 +369,35 @@ public class RunnableWPSExtraction extends RunnableExtraction {
         Writer out = null;
         try {
             boolean writeHTML = false;
-            out = response.getWriter();
+          //$$$$$ out = response.getWriter();
             if (organizer.getCurrentService() != null) {
                 writeHTML = organizer.getCurrentService().writeProductDownloadHTML(product, out);
             }
             if (!writeHTML) {
                 if (queueLogInfo.getQueueLogError() != null) {
-                    response.setContentType(MotuServlet.CONTENT_TYPE_PLAIN);
-                    out.write(queueLogInfo.getQueueLogError().toString());
+                  //$$$$$ response.setContentType(MotuServlet.CONTENT_TYPE_PLAIN);
+                  //$$$$$ out.write(queueLogInfo.getQueueLogError().toString());
                 }
             }
 
         } catch (MotuException e) {
             LOG.error("setAbortedNoMode()", e);
 
-            response.setContentType(MotuServlet.CONTENT_TYPE_PLAIN);
-            try {
-                out.write(Organizer.getFormattedError(e, null));
-            } catch (IOException e1) {
-                LOG.error("setAbortedNoMode()", e1);
+          //$$$$$ response.setContentType(MotuServlet.CONTENT_TYPE_PLAIN);
+          //$$$$$   try {
+          //$$$$$       out.write(Organizer.getFormattedError(e, null));
+          //$$$$$   } catch (IOException e1) {
+          //$$$$$       LOG.error("setAbortedNoMode()", e1);
 
                 // Do Nothing
-            }
-            setError(e);
-        } catch (IOException e) {
-            LOG.error("setAbortedNoMode()", e);
+          //$$$$$    }
+      //$$$$$   setError(e);
+          //$$$$$  } catch (IOException e) {
+          //$$$$$   LOG.error("setAbortedNoMode()", e);
 
-            setError(e);
+          //$$$$$   setError(e);
 
-        }
+           }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("setAbortedNoMode() - exiting");
@@ -419,7 +419,7 @@ public class RunnableWPSExtraction extends RunnableExtraction {
             return;
         }
         try {
-            response.sendRedirect(product.getDownloadUrlPath());
+          //$$$$$ response.sendRedirect(product.getDownloadUrlPath());
         } catch (Exception e) {
             LOG.error("setResponseModeConsole()", e);
 
@@ -460,9 +460,9 @@ public class RunnableWPSExtraction extends RunnableExtraction {
             return;
         }
         try {
-            response.setContentType(MotuServlet.CONTENT_TYPE_PLAIN);
-            Writer out = response.getWriter();
-            out.write(product.getDownloadUrlPath());
+          //$$$$$ response.setContentType(MotuServlet.CONTENT_TYPE_PLAIN);
+          //$$$$$ Writer out = response.getWriter();
+          //$$$$$ out.write(product.getDownloadUrlPath());
         } catch (Exception e) {
             LOG.error("setResponseModeUrl()", e);
 

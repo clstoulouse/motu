@@ -4,23 +4,20 @@ import java.io.IOException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.log4j.Logger;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
-import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.output.LiteralOutput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
 import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.msg.xml.ErrorType;
 import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
 import fr.cls.atoll.motu.msg.xml.TimeCoverage;
 
@@ -29,7 +26,7 @@ import fr.cls.atoll.motu.msg.xml.TimeCoverage;
  * 
  * @author last edited by: $Author: dearith $
  * 
- * @version $Revision: 1.3 $, $Date: 2009-04-01 14:13:38 $
+ * @version $Revision: 1.4 $, $Date: 2009-04-02 15:03:44 $
  */
 public class ProductExtractionProcess extends MotuWPSProcess {
 
@@ -39,10 +36,9 @@ public class ProductExtractionProcess extends MotuWPSProcess {
     public ProductExtractionProcess() {
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProductExtractionProcess.class);
+    private static final Logger LOG = Logger.getLogger(ProductExtractionProcess.class);
 
     /** {@inheritDoc} */
-    @SuppressWarnings("null")
     @Override
     public void process(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info) throws ProcessletException {
 
@@ -63,11 +59,11 @@ public class ProductExtractionProcess extends MotuWPSProcess {
             userId = MotuWPSProcess.PARAM_ANONYMOUS;
         }
 
-        LiteralInput serviceNameParam = null;
-        LiteralInput locationDataParam = null;
-        LiteralInput productIdParam = null;
+        serviceNameParam = null;
+        locationDataParam = null;
+        productIdParam = null;
 
-        getProductInfo(serviceNameParam, locationDataParam, productIdParam);
+        getProductInfoParameters();
 
         Object s;
         ExtractionParameters extractionParameters = new ExtractionParameters(
@@ -287,8 +283,8 @@ public class ProductExtractionProcess extends MotuWPSProcess {
             getQueueServerManagement().execute(runnableWPSExtraction);
 
             if (modeStatus) {
-                response.setContentType(null);
-                Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());
+              //$$$$$ response.setContentType(null);
+              //$$$$$ Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());
             } else {
                 // --------- wait for the end of the request -----------
                 requestEndedCondition.await();
@@ -297,7 +293,7 @@ public class ProductExtractionProcess extends MotuWPSProcess {
         } catch (MotuMarshallException e) {
             LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
 
-            response.sendError(500, String.format("ERROR: %s", e.getMessage()));
+          //$$$$$ response.sendError(500, String.format("ERROR: %s", e.getMessage()));
         } catch (MotuExceptionBase e) {
             LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
 

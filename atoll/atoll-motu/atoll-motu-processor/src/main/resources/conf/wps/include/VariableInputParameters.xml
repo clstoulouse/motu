@@ -2,5 +2,5 @@
 		<LiteralInput minOccurs="1">
 			<Identifier>variable</Identifier>
 			<Title>Name or identifier of the data</Title>
-			<DataType reference="http://www.w3.org/TR/xmlschema-2/#istring">string</DataType>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
 		</LiteralInput>

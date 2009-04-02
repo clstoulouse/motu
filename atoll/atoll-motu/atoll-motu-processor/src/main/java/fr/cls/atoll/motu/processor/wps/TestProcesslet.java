@@ -45,6 +45,7 @@ import java.io.InputStream;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.log4j.Logger;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.Processlet;
@@ -58,8 +59,6 @@ import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.output.BoundingBoxOutput;
 import org.deegree.services.wps.output.ComplexOutput;
 import org.deegree.services.wps.output.LiteralOutput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The purpose of this {@link Processlet} is to provide a means for testing the correct processing of input and output
@@ -68,11 +67,11 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: dearith $
  * 
- * @version $Revision: 1.1 $, $Date: 2009-03-25 15:34:32 $
+ * @version $Revision: 1.2 $, $Date: 2009-04-02 15:03:44 $
  */
 public class TestProcesslet implements Processlet {
 
-    private static final Logger LOG = LoggerFactory.getLogger( TestProcesslet.class );
+    private static final Logger LOG = Logger.getLogger( TestProcesslet.class );
 
     @Override
     public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info )

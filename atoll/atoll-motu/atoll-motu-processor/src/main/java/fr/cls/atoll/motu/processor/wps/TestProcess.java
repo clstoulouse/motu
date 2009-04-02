@@ -3,25 +3,24 @@ package fr.cls.atoll.motu.processor.wps;
 
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.deegree.ogcwebservices.OGCWebServiceException;
 import org.deegree.ogcwebservices.wps.describeprocess.ProcessDescription;
 import org.deegree.ogcwebservices.wps.execute.IOValue;
 import org.deegree.ogcwebservices.wps.execute.OutputDefinitions;
 import org.deegree.ogcwebservices.wps.execute.ExecuteResponse.ProcessOutputs;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class describes an exemplary Process Implementation.
  * 
  * @author ccamel
- * @version $Revision: 1.1 $ - $Date: 2009-03-25 15:34:32 $ - $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-04-02 15:03:44 $ - $Author: dearith $
  */
 public class TestProcess extends TransformProcessAbstract {
     /**
      * Private logger for this instance.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestProcess.class);
+    private static final Logger LOG = Logger.getLogger(TestProcess.class);
 
     @InputAnnotation("paramA")
     private int paramA;

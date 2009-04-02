@@ -1,6 +1,7 @@
 
 package fr.cls.atoll.motu.processor.wps;
 
+import org.apache.log4j.Logger;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
@@ -9,8 +10,6 @@ import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.output.LiteralOutput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
@@ -23,7 +22,7 @@ import fr.cls.atoll.motu.msg.xml.TimeCoverage;
  * 
  * @author last edited by: $Author: dearith $
  * 
- * @version $Revision: 1.6 $, $Date: 2009-04-01 14:13:38 $
+ * @version $Revision: 1.7 $, $Date: 2009-04-02 15:03:44 $
  */
 public class ProductTimeCoverageProcess extends MotuWPSProcess {
 
@@ -33,10 +32,9 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
     public ProductTimeCoverageProcess() {
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProductTimeCoverageProcess.class);
+    private static final Logger LOG = Logger.getLogger(ProductTimeCoverageProcess.class);
 
     /** {@inheritDoc} */
-    @SuppressWarnings("null")
     @Override
     public void process(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info) throws ProcessletException {
 
@@ -45,11 +43,11 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
         if (LOG.isDebugEnabled()) {
             LOG.debug("BEGIN TimeCoverageProcess.process(), context: " + OGCFrontController.getContext());
         }
-        LiteralInput serviceNameParam = null;
-        LiteralInput locationDataParam = null;
-        LiteralInput productIdParam = null;
+        serviceNameParam = null;
+        locationDataParam = null;
+        productIdParam = null;
         
-        getProductInfo(serviceNameParam, locationDataParam, productIdParam);
+        getProductInfoParameters();
 
         // -------------------------------------------------
         // get Time coverage

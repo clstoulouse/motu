@@ -4,12 +4,12 @@
 <!ENTITY commonBasicOutputParameters SYSTEM "../include/CommonBasicOutputParameters.xml">
 <!ENTITY timeCoverageInputParameters SYSTEM "../include/TimeCoverageInputParameters.xml">
 <!ENTITY variableInputParameters SYSTEM "../include/VariableInputParameters.xml">
-<!ENTITY geoBoundingBoxInputParameters SYSTEM "../include/GeoBoundingBoxInputParameters.xml">
+<!ENTITY geoBBoxInputParameters SYSTEM "../include/GeoBBoxInputParameters.xml">
 <!ENTITY depthInputParameters SYSTEM "../include/DepthInputParameters.xml">
 <!ENTITY dataFormatInputParameters SYSTEM "../include/DataFormatInputParameters.xml">
 ]>
 <ProcessDefinition configVersion="0.1.0"
-	processVersion="1.0.0" statusSupported="false"
+	processVersion="1.0.0" statusSupported="false" storeSupported="false"
 	xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/wps/0.1.0/process_definition.xsd">
 	<Identifier>ProductExtractionProcess</Identifier>
@@ -23,7 +23,7 @@
 		&commonBasicInputParameters;
 		&timeCoverageInputParameters;		
 		&variableInputParameters;		
-		&geoBoundingBoxInputParameters;
+		&geoBBoxInputParameters;
 		&depthInputParameters;
 		&dataFormatInputParameters;
 
