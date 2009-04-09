@@ -9,9 +9,11 @@
 <!ENTITY dataFormatInputParameters SYSTEM "../include/DataFormatInputParameters.xml">
 ]>
 <ProcessDefinition configVersion="0.1.0"
-	processVersion="1.0.0" statusSupported="false" storeSupported="false"
+	processVersion="1.0.0" statusSupported="false" storeSupported="false">
+	<!-- 
 	xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/wps/0.1.0/process_definition.xsd">
+	 -->
 	<Identifier>ProductExtractionProcess</Identifier>
 	<JavaClass>fr.cls.atoll.motu.processor.wps.ProductExtractionProcess</JavaClass>
 	<Title>Process for data extraction from a product.</Title>

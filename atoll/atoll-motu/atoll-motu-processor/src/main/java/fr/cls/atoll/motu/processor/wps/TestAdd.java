@@ -1,20 +1,33 @@
 package fr.cls.atoll.motu.processor.wps;
 
+import java.io.IOException;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.apache.log4j.Logger;
 
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
+import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.LiteralInput;
+import org.deegree.services.wps.output.ComplexOutput;
 import org.deegree.services.wps.output.LiteralOutput;
+import org.deegree.services.wps.output.ProcessletOutput;
 
 /**
- * <br><br>Copyright : Copyright (c) 2009.
- * <br><br>Société : CLS (Collecte Localisation Satellites)
+ * <br>
+ * <br>
+ * Copyright : Copyright (c) 2009. <br>
+ * <br>
+ * Société : CLS (Collecte Localisation Satellites)
+ * 
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-04-02 15:03:44 $
+ * @version $Revision: 1.2 $ - $Date: 2009-04-09 13:36:35 $
  */
 public class TestAdd implements Processlet {
     /**
@@ -55,13 +68,45 @@ public class TestAdd implements Processlet {
             LOG.debug("process(ProcessletInputs in=" + in + ", ProcessletOutputs out=" + out + ", ProcessletExecutionInfo info=" + info
                     + ") - entering");
         }
-        LiteralInput a = (LiteralInput)in.getParameter("A");
-        LiteralInput b = (LiteralInput)in.getParameter("B");
+        //        
+        // LiteralInput a = (LiteralInput) in.getParameter("A");
+        // LiteralInput b = (LiteralInput) in.getParameter("B");
+        //
+        // int value = Integer.parseInt(a.getValue()) + Integer.parseInt(b.getValue());
 
-        int value = Integer.parseInt(a.getValue()) + Integer.parseInt(b.getValue());
+        ComplexInput a = (ComplexInput) in.getParameter("A");
+        ComplexInput b = (ComplexInput) in.getParameter("B");
+        String aa = null;
+        String bb = null;
+        try {
+            aa = a.getValueAsElement().getText();
+            bb = b.getValueAsElement().getText();
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        int value = Integer.parseInt(aa) + Integer.parseInt(bb);
         // TODO Auto-generated method stub
-        LiteralOutput c = (LiteralOutput)out.getParameter("C");
-        c.setValue(Integer.toString(value));
+        // LiteralOutput c = (LiteralOutput)out.getParameter("C");
+        // c.setValue(Integer.toString(value));
+        ComplexOutput c = (ComplexOutput) out.getParameter("C");
+        try {
+            XMLStreamWriter writer = c.getXMLStreamWriter();
+            XMLAdapter.writeElement(writer, "C", Integer.toString(value));
+
+        } catch (XMLStreamException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        // ComplexOutput c = (ComplexOutput) out.getParameter("C");
+        // try {
+        // c.getXMLStreamWriter().writeEmptyElement("C");
+        // c.getXMLStreamWriter().writeCData(Integer.toString(value));
+        // } catch (XMLStreamException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("process(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo) - exiting");
@@ -70,6 +115,7 @@ public class TestAdd implements Processlet {
 
     /**
      * .
+     * 
      * @param args
      */
     public static void main(String[] args) {

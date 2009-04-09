@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<wps:Execute service="WPS" version="1.0.0"
+  xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
+http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+  <!--
+      Executes the TestProcess with default response behaviour.
+      
+      A ResponseDocument with all available output parameters is returned.
+   -->
+  <ows:Identifier>TestMultiply</ows:Identifier>
+  <wps:DataInputs>
+    <wps:Input>
+      <ows:Identifier>A</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>4</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>B</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>6</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+  </wps:DataInputs>
+</wps:Execute>
