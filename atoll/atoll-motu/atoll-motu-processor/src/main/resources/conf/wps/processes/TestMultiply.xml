@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ProcessDefinition configVersion="0.1.0"
-	processVersion="1.0.0" statusSupported="false" storeSupported="true">
-	<!-- 
+	processVersion="1.0.0" statusSupported="false" storeSupported="true"
 	xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/wps/0.1.0/process_definition.xsd"
 	xmlns:xi="http://www.w3.org/2001/XInclude">
-	 -->
 	<Identifier>TestMultiply</Identifier>
 	<JavaClass>fr.cls.atoll.motu.processor.wps.TestMultiply</JavaClass>
 	<Title>Multiply 2 integer.</Title>

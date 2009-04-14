@@ -24,9 +24,10 @@ http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
 				<wps:Reference method="POST"
 				xlink:href="file://J:\dev\atoll-v2\atoll-motu\atoll-motu-processor\src\test\resources\xml\TestTestAM.xml"/>
 			-->
-			<wps:Reference encoding="UTF-8" method="POST"  xlink:href="http://localhost:8080/atoll-motuservlet/services">
+			<wps:Reference encoding="UTF-8" method="POST"
+				xlink:href="http://localhost:8080/atoll-motuservlet/services">
 				<wps:Body>
-				
+
 					<wps:Execute service="WPS" version="1.0.0"
 						xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
 						xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -43,7 +44,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
 							<wps:Input>
 								<ows:Identifier>B</ows:Identifier>
 								<wps:Data>
-									<wps:ComplexData>3</wps:ComplexData>
+									<wps:ComplexData>8</wps:ComplexData>
 								</wps:Data>
 							</wps:Input>
 						</wps:DataInputs>
