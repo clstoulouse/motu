@@ -1,6 +1,9 @@
 package fr.cls.atoll.motu.processor.wps;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -27,7 +30,7 @@ import org.deegree.services.wps.output.ProcessletOutput;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-04-09 13:36:35 $
+ * @version $Revision: 1.3 $ - $Date: 2009-04-15 14:30:30 $
  */
 public class TestAdd implements Processlet {
     /**
@@ -81,7 +84,7 @@ public class TestAdd implements Processlet {
         try {
             aa = a.getValueAsElement().getText();
             bb = b.getValueAsElement().getText();
-        } catch (IOException e1) {
+        } catch (Exception e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
@@ -91,14 +94,21 @@ public class TestAdd implements Processlet {
         // c.setValue(Integer.toString(value));
         ComplexOutput c = (ComplexOutput) out.getParameter("C");
         try {
-            XMLStreamWriter writer = c.getXMLStreamWriter();
-            XMLAdapter.writeElement(writer, "C", Integer.toString(value));
 
+            XMLStreamWriter writer = c.getXMLStreamWriter();
+            XMLAdapter.writeElement(writer, c.getIdentifier().getCode(), Integer.toString(value));
         } catch (XMLStreamException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
+        // try {
+        //
+        // c.getBinaryOutputStream().write(Integer.toString(value).getBytes());
+        // } catch (IOException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        //
+        // }
         // ComplexOutput c = (ComplexOutput) out.getParameter("C");
         // try {
         // c.getXMLStreamWriter().writeEmptyElement("C");

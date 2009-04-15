@@ -3,11 +3,16 @@
 <!ENTITY commonBasicInputParameters SYSTEM "../include/CommonBasicInputParameters.xml">
 <!ENTITY commonBasicOutputParameters SYSTEM "../include/CommonBasicOutputParameters.xml">
 <!ENTITY timeCoverageInputParameters SYSTEM "../include/TimeCoverageInputParameters.xml">
+<!ENTITY variableInputParameters SYSTEM "../include/VariableInputParameters.xml">
+<!ENTITY geoBBoxInputParameters SYSTEM "../include/GeoBBoxInputParameters.xml">
+<!ENTITY depthInputParameters SYSTEM "../include/DepthInputParameters.xml">
+<!ENTITY dataFormatInputParameters SYSTEM "../include/DataFormatInputParameters.xml">
 ]>
 <ProcessDefinition configVersion="0.1.0"
-	processVersion="1.0.0" statusSupported="false"
+	processVersion="1.0.0" statusSupported="false" storeSupported="false"
 	xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/wps/0.1.0/process_definition.xsd">
+	
 	<Identifier>ProductExtractionProcess</Identifier>
 	<JavaClass>fr.cls.atoll.motu.processor.wps.ProductExtractionProcess</JavaClass>
 	<Title>Process for data extraction from a product.</Title>
@@ -17,13 +22,49 @@
 	<InputParameters>
 	
 		&commonBasicInputParameters;
-		
-		&timeCoverageInputParameters;
+		&timeCoverageInputParameters;		
+		&variableInputParameters;		
+		&geoBBoxInputParameters;
+		&depthInputParameters;
+		&dataFormatInputParameters;
+
+		<LiteralInput minOccurs="1" maxOccurs="1">
+			<Identifier>priority</Identifier>
+			<Title>Priority of the request</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
+			<DefaultValue>2</DefaultValue>
+		</LiteralInput>
+		<LiteralInput>
+			<Identifier>login</Identifier>
+			<Title>login of the user</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+		</LiteralInput>
+		<LiteralInput>
+			<Identifier>batch</Identifier>
+			<Title>flag to process as batch or not</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<DefaultValue>false</DefaultValue>		
+		</LiteralInput>
+		<LiteralInput>
+			<Identifier>isanonymous</Identifier>
+			<Title>flag to process user as an anonymoys one or not</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<DefaultValue>true</DefaultValue>		
+		</LiteralInput>
+		<LiteralInput>
+			<Identifier>mode</Identifier>
+			<Title>use this parameter to set the response modet</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<AllowedValues>status</AllowedValues>
+			<AllowedValues>url</AllowedValues>
+			<DefaultValue>status</DefaultValue>		
+		</LiteralInput>
 
 	</InputParameters>
+
 	<OutputParameters>
 		
 		&commonBasicOutputParameters;
-				
+
 	</OutputParameters>
 </ProcessDefinition>

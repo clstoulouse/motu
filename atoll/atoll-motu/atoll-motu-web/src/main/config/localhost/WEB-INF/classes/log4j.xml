@@ -36,6 +36,11 @@
 		<level value="DEBUG" />
 		<appender-ref ref="CONSOLE" />
 		</logger>
+		<logger name="org.deegree.services">
+		<level value="DEBUG" />
+		<appender-ref ref="CONSOLE" />
+		</logger>
+		
 <!--
 	<logger name="atoll.motu.queueserver">
 		<level value="INFO" />

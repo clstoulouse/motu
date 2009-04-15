@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-		<LiteralInput>
-			<Identifier>startTime</Identifier>
+		<LiteralInput minOccurs="0">
+			<Identifier>starttime</Identifier>
 			<Title>The start coverage datetime</Title>
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#datetime">datetime</DataType>
 		</LiteralInput>
-		<LiteralInput>
-			<Identifier>endTime</Identifier>
+		<LiteralInput minOccurs="0">
+			<Identifier>endtime</Identifier>
 			<Title>The end coverage datetime</Title>
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#datetime">datetime</DataType>
 		</LiteralInput>

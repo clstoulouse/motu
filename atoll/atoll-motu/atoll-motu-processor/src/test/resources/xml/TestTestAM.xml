@@ -13,7 +13,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
 		<wps:Input>
 			<ows:Identifier>A</ows:Identifier>
 			<wps:Data>
-				<wps:ComplexData>10</wps:ComplexData>
+				<wps:ComplexData mimeType="plain/text">252</wps:ComplexData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
@@ -38,18 +38,18 @@ http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
 							<wps:Input>
 								<ows:Identifier>A</ows:Identifier>
 								<wps:Data>
-									<wps:ComplexData>10</wps:ComplexData>
+									<wps:ComplexData mimeType="plain/text">10</wps:ComplexData>
 								</wps:Data>
 							</wps:Input>
 							<wps:Input>
-								<ows:Identifier>B</ows:Identifier>
+								<ows:Identifier mimeType="plain/text">B</ows:Identifier>
 								<wps:Data>
 									<wps:ComplexData>8</wps:ComplexData>
 								</wps:Data>
 							</wps:Input>
 						</wps:DataInputs>
 						<wps:ResponseForm>
-							<wps:RawDataOutput mimeType="text/xml">
+							<wps:RawDataOutput mimeType="plain/text">
 								<ows:Identifier>C</ows:Identifier>
 							</wps:RawDataOutput>
 						</wps:ResponseForm>
@@ -60,8 +60,8 @@ http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
 		</wps:Input>
 	</wps:DataInputs>
 	<wps:ResponseForm>
-		<wps:RawDataOutput mimeType="text/xml">
-			<ows:Identifier>C</ows:Identifier>
+		<wps:RawDataOutput mimeType="plain/text">
+			<ows:Identifier>C</ows:Identifier>			
 		</wps:RawDataOutput>
 	</wps:ResponseForm>
 

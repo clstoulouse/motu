@@ -2,10 +2,11 @@
 <deegreeServicesMetadata configVersion="0.1.0"
 	xmlns="http://www.deegree.org/webservices" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.deegree.org/webservices ..\..\schema\webservices\0.1.0\services_metadata.xsd">
-	<!--
-		General service information for all services. Used in the
+	<!--	
+	General service information for all services. Used in the
 		GetCapabilities responses.
 	-->
+	
 	<ServiceProvider>
 		<ProviderName>Collecte Localisation Satellites (CLS)
 		</ProviderName>
