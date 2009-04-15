@@ -1,3 +1,4 @@
+package fr.cls.atoll.motu.processor.wps;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -14,7 +15,7 @@ import org.deegree.commons.utils.HttpUtils;
  * <br><br>Copyright : Copyright (c) 2009.
  * <br><br>Société : CLS (Collecte Localisation Satellites)
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-04-14 15:02:45 $
+ * @version $Revision: 1.1 $ - $Date: 2009-04-15 06:13:44 $
  */
 public class Test {
     /**
