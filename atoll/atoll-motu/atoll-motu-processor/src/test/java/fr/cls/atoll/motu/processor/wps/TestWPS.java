@@ -1,16 +1,14 @@
 package fr.cls.atoll.motu.processor.wps;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.axiom.om.OMElement;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
 import org.deegree.commons.utils.HttpUtils;
@@ -23,7 +21,7 @@ import org.deegree.commons.utils.HttpUtils;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-04-16 14:23:43 $
+ * @version $Revision: 1.3 $ - $Date: 2009-04-16 15:35:17 $
  */
 public class TestWPS {
     /**
@@ -75,14 +73,11 @@ public class TestWPS {
     public static void testUTF8EncodeDecode() {
         int i = 270;
         String str = Integer.toString(i);
-        ByteBuffer bb = ByteBuffer.wrap(str.getBytes());
-        System.out.println("Initial Byte Buffer");
-        print(bb);
-        Charset csets = Charset.forName("UTF-8");
-        System.out.println(csets.name() + ":");
-        print(csets.encode(bb.asCharBuffer()));
-        System.out.println(csets.decode(bb));
-        bb.rewind();
+        
+        CharBuffer result = byteConvert(str.getBytes(), "UTF-8");
+        System.out.println(result);
+        //result = byteConvert(str.getBytes(), "base64");
+        //System.out.println(result);
 
     }
 
@@ -91,6 +86,23 @@ public class TestWPS {
             System.out.print(bb.get() + " ");
         System.out.println();
         bb.rewind();
+    }
+    public static CharBuffer byteConvert(byte[] value, String charset) {
+        ByteBuffer bb = ByteBuffer.wrap(value);
+        CharBuffer charBuffer = null;
+        try {
+            Charset csets = Charset.forName(charset);
+            charBuffer =  csets.decode(bb);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        String str = charBuffer.toString();
+        System.out.println("XXXXXXXX");
+        System.out.println(str);
+
+        return charBuffer;
     }
 
 }
