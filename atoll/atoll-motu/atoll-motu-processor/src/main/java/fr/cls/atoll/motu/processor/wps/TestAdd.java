@@ -30,7 +30,7 @@ import org.deegree.services.wps.output.ProcessletOutput;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-04-15 14:30:30 $
+ * @version $Revision: 1.4 $ - $Date: 2009-04-16 14:23:43 $
  */
 public class TestAdd implements Processlet {
     /**
@@ -82,8 +82,26 @@ public class TestAdd implements Processlet {
         String aa = null;
         String bb = null;
         try {
-            aa = a.getValueAsElement().getText();
-            bb = b.getValueAsElement().getText();
+//            aa = a.getValueAsElement().getText();
+//            bb = b.getValueAsElement().getText();
+            
+            byte[] buffer = new byte[1024];
+
+            InputStream is = a.getValueAsBinaryStream();
+            StringBuffer stringBuffer = new StringBuffer();
+            int bytesRead = 0;
+            while ( ( bytesRead = is.read( buffer ) ) != -1 ) {
+                stringBuffer.append(new String(buffer, 0, bytesRead));
+            }
+            aa = stringBuffer.toString();
+
+            is = b.getValueAsBinaryStream();
+            stringBuffer = new StringBuffer();
+            while ( ( bytesRead = is.read( buffer ) ) != -1 ) {
+                stringBuffer.append(new String(buffer, 0, bytesRead));
+            }
+            bb = stringBuffer.toString();
+
         } catch (Exception e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
@@ -93,22 +111,22 @@ public class TestAdd implements Processlet {
         // LiteralOutput c = (LiteralOutput)out.getParameter("C");
         // c.setValue(Integer.toString(value));
         ComplexOutput c = (ComplexOutput) out.getParameter("C");
-        try {
-
-            XMLStreamWriter writer = c.getXMLStreamWriter();
-            XMLAdapter.writeElement(writer, c.getIdentifier().getCode(), Integer.toString(value));
-        } catch (XMLStreamException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        // try {
-        //
-        // c.getBinaryOutputStream().write(Integer.toString(value).getBytes());
-        // } catch (IOException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        //
-        // }
+//        try {
+//
+//            XMLStreamWriter writer = c.getXMLStreamWriter();
+//            XMLAdapter.writeElement(writer, c.getIdentifier().getCode(), Integer.toString(value));
+//        } catch (XMLStreamException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+         try {
+        
+         c.getBinaryOutputStream().write(Integer.toString(value).getBytes());
+         } catch (IOException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+        
+         }
         // ComplexOutput c = (ComplexOutput) out.getParameter("C");
         // try {
         // c.getXMLStreamWriter().writeEmptyElement("C");
