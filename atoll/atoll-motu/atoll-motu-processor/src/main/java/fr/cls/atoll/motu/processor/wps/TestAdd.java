@@ -1,26 +1,16 @@
 package fr.cls.atoll.motu.processor.wps;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.log4j.Logger;
-
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.input.ComplexInput;
-import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.output.ComplexOutput;
-import org.deegree.services.wps.output.LiteralOutput;
-import org.deegree.services.wps.output.ProcessletOutput;
 
 /**
  * <br>
@@ -30,7 +20,7 @@ import org.deegree.services.wps.output.ProcessletOutput;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-04-16 14:23:43 $
+ * @version $Revision: 1.5 $ - $Date: 2009-04-20 14:08:20 $
  */
 public class TestAdd implements Processlet {
     /**

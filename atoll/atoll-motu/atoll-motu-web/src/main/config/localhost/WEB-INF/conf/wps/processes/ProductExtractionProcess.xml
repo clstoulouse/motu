@@ -7,6 +7,7 @@
 <!ENTITY geoBBoxInputParameters SYSTEM "../include/GeoBBoxInputParameters.xml">
 <!ENTITY depthInputParameters SYSTEM "../include/DepthInputParameters.xml">
 <!ENTITY dataFormatInputParameters SYSTEM "../include/DataFormatInputParameters.xml">
+<!ENTITY requestIdOutputParameters SYSTEM "../include/RequestIdOutputParameters.xml">
 ]>
 <ProcessDefinition configVersion="0.1.0"
 	processVersion="1.0.0" statusSupported="false" storeSupported="false"
@@ -28,41 +29,45 @@
 		&depthInputParameters;
 		&dataFormatInputParameters;
 
-		<LiteralInput minOccurs="1" maxOccurs="1">
+		<LiteralInput minOccurs="0" maxOccurs="1">
 			<Identifier>priority</Identifier>
 			<Title>Priority of the request</Title>
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
 			<DefaultValue>2</DefaultValue>
 		</LiteralInput>
-		<LiteralInput>
+		<LiteralInput minOccurs="0" maxOccurs="1">
 			<Identifier>login</Identifier>
 			<Title>login of the user</Title>
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
 		</LiteralInput>
-		<LiteralInput>
+		<LiteralInput minOccurs="0" maxOccurs="1">
 			<Identifier>batch</Identifier>
 			<Title>flag to process as batch or not</Title>
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
 			<DefaultValue>false</DefaultValue>		
 		</LiteralInput>
-		<LiteralInput>
+		<LiteralInput minOccurs="0" maxOccurs="1">
 			<Identifier>isanonymous</Identifier>
 			<Title>flag to process user as an anonymoys one or not</Title>
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
 			<DefaultValue>true</DefaultValue>		
 		</LiteralInput>
+		<!-- 
 		<LiteralInput>
 			<Identifier>mode</Identifier>
-			<Title>use this parameter to set the response modet</Title>
+			<Title>use this parameter to set the response mode</Title>
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
 			<AllowedValues>status</AllowedValues>
 			<AllowedValues>url</AllowedValues>
 			<DefaultValue>status</DefaultValue>		
 		</LiteralInput>
+		 -->
 
 	</InputParameters>
 
 	<OutputParameters>
+		
+		&requestIdOutputParameters;
 		
 		&commonBasicOutputParameters;
 

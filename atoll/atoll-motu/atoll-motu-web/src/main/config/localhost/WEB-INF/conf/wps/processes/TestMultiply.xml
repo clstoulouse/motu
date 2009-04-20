@@ -9,22 +9,31 @@
 	<Title>Multiply 2 integer.</Title>
 	<Abstract>Multiply 2 integer</Abstract>
 	<InputParameters>
-		<LiteralInput minOccurs="1">
-			<Identifier>A</Identifier>
-			<Title>Number A</Title>
-			<DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
-		</LiteralInput>
-		<LiteralInput minOccurs="1">
+		<ComplexInput minOccurs="1">
+			<Identifier>A</Identifier>		
+			<Title>A value</Title>	
+			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
+		</ComplexInput>
+		<ComplexInput minOccurs="1">
 			<Identifier>B</Identifier>
-			<Title>Number B</Title>
-			<DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
-		</LiteralInput>	
+			<Title>A value</Title>				
+			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
+		</ComplexInput>
+		<!--
+			<LiteralInput minOccurs="1"> <Title>Number A</Title> <DataType
+			reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
+			</LiteralInput> <LiteralInput minOccurs="1">
+			<Identifier>B</Identifier> <Title>Number B</Title> <DataType
+			reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
+			</LiteralInput>
+		-->
 	</InputParameters>
 	<OutputParameters>
-		<LiteralOutput>
+		<ComplexOutput>
 			<Identifier>C</Identifier>
-			<Title>A * B</Title>
+			<Title>A + B</Title>			
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
-		</LiteralOutput>
+			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
+		</ComplexOutput>
 	</OutputParameters>
 </ProcessDefinition>

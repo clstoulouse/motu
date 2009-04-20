@@ -32,10 +32,11 @@ import fr.cls.atoll.motu.msg.xml.ErrorType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.7 $ - $Date: 2009-04-02 15:03:44 $
+ * @version $Revision: 1.8 $ - $Date: 2009-04-20 14:08:20 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
+    /** The Constant LOG. */
     private static final Logger LOG = Logger.getLogger(MotuWPSProcess.class);
 
     /** The Constant PARAM_FORWARDED_FOR (Real user Ip). */
@@ -50,13 +51,16 @@ public abstract class MotuWPSProcess implements Processlet {
     /** Process output return code parameter name. */
     public static final String PARAM_CODE = "code";
 
+    /** The Constant PARAM_DATAFORMAT. */
     public static final String PARAM_DATAFORMAT = "dataformat";
 
+    /** The Constant PARAM_ENDTIME. */
     public static final String PARAM_ENDTIME = "endtime";
     
     /** Low latitude servlet paremeter name. */
     public static final String PARAM_GEOBBOX = "geobbox";
 
+    /** The Constant PARAM_HIGHDEPTH. */
     public static final String PARAM_HIGHDEPTH = "highdepth";
 
     /** Language servlet paremeter name. */
@@ -65,6 +69,7 @@ public abstract class MotuWPSProcess implements Processlet {
     /** Login parameter name. */
     public static final String PARAM_LOGIN = "login";
 
+    /** The Constant PARAM_LOWDEPTH. */
     public static final String PARAM_LOWDEPTH = "lowdepth";
 
     /** Process output message parameter name. */
@@ -89,9 +94,12 @@ public abstract class MotuWPSProcess implements Processlet {
     /** Product servlet parameter name. */
     public static final String PARAM_PRODUCT = "product";
 
+    public static final String PARAM_REQUESTID = "requestid";
+
     /** Service servlet parameter name. */
     public static final String PARAM_SERVICE = "service";
 
+    /** The Constant PARAM_STARTTIME. */
     public static final String PARAM_STARTTIME = "starttime";
 
     /** Url parameter name. */
@@ -106,15 +114,26 @@ public abstract class MotuWPSProcess implements Processlet {
     /** The Constant PARAM_MAX_POOL_AUTHENTICATE. */
     public static final String PARAM_MAX_POOL_AUTHENTICATE = "maxpoolauth";
 
+    /** The processlet inputs. */
     protected ProcessletInputs processletInputs;
+    
+    /** The processlet outputs. */
     protected ProcessletOutputs processletOutputs;
+    
+    /** The processlet execution info. */
     protected ProcessletExecutionInfo processletExecutionInfo;
+    
     /** The request management. */
     protected RequestManagement requestManagement = null;
 
     
+    /** The service name param. */
     LiteralInput serviceNameParam = null;
+    
+    /** The location data param. */
     LiteralInput locationDataParam = null;
+    
+    /** The product id param. */
     LiteralInput productIdParam = null;
 
     /**
@@ -133,6 +152,13 @@ public abstract class MotuWPSProcess implements Processlet {
     public MotuWPSProcess() {
     }
 
+    /**
+     * Sets the language parameter.
+     * 
+     * @param in the new language parameter
+     * 
+     * @throws ProcessletException the processlet exception
+     */
     public void setLanguageParameter(ProcessletInputs in) throws ProcessletException {
 
         LiteralInput languageParam = (LiteralInput) in.getParameter(MotuWPSProcess.PARAM_LANGUAGE);
@@ -186,8 +212,7 @@ public abstract class MotuWPSProcess implements Processlet {
     /**
      * Sets parameters for proxy connection if a proxy is used.
      * 
-     * @throws ProcessletException
-     * 
+     * @throws ProcessletException the processlet exception
      */
     protected void initProxyLogin() throws ProcessletException {
         if (LOG.isDebugEnabled()) {
@@ -261,27 +286,42 @@ public abstract class MotuWPSProcess implements Processlet {
         return isNullOrEmpty(value.getValue());
     }
 
+    /**
+     * Sets the return code.
+     * 
+     * @param code the code
+     * @param msg the msg
+     */
     protected void setReturnCode(ErrorType code, String msg) {
 
-        LiteralOutput codeParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_CODE);
-        LiteralOutput msgParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_MESSAGE);
-
-        if ((codeParam != null) && (code != null)) {
-            codeParam.setValue(code.toString());
-        }
-        if ((msgParam != null) && (msg != null)) {
-            msgParam.setValue(msg);
-        }
+        MotuWPSProcess.setReturnCode(this.processletOutputs, code, msg);
 
     }
+    protected void setReturnCode(String msg) {
+
+        MotuWPSProcess.setReturnCode(this.processletOutputs, msg);
+
+    }
+    
+    /**
+     * Sets the return code.
+     * 
+     * @param e the new return code
+     */
     protected void setReturnCode(Exception e) {
 
-        setReturnCode(ErrorType.SYSTEM, e);
+        MotuWPSProcess.setReturnCode(this.processletOutputs, ErrorType.SYSTEM, e);
 
     }
+    
+    /**
+     * Sets the return code.
+     * 
+     * @param e the new return code
+     */
     protected void setReturnCode(MotuExceptionBase e) {
 
-        setReturnCode(ErrorType.SYSTEM, e);
+        MotuWPSProcess.setReturnCode(this.processletOutputs, ErrorType.SYSTEM, e);
 
     }
     
@@ -293,12 +333,86 @@ public abstract class MotuWPSProcess implements Processlet {
      */
     protected void setReturnCode(ErrorType code, MotuExceptionBase e) {
 
-        setReturnCode(code, e.notifyException());
+        MotuWPSProcess.setReturnCode(this.processletOutputs, code, e.notifyException());
 
     }
+    
+    /**
+     * Sets the return code.
+     * 
+     * @param code the code
+     * @param e the e
+     */
     protected void setReturnCode(ErrorType code, Exception e) {
 
-        setReturnCode(code, e.getMessage());
+        MotuWPSProcess.setReturnCode(this.processletOutputs, code, e.getMessage());
+
+    }    
+    
+    /**
+     * Sets the return code.
+     * 
+     * @param response the response
+     * @param e the e
+     */
+    protected static void setReturnCode(ProcessletOutputs response, MotuExceptionBase e) {
+
+        MotuWPSProcess.setReturnCode(response, ErrorType.SYSTEM, e);
+
+    }
+    
+    /**
+     * Sets the return code.
+     * 
+     * @param response the response
+     * @param e the e
+     */
+    protected static void setReturnCode(ProcessletOutputs response, Exception e) {
+
+        MotuWPSProcess.setReturnCode(response, ErrorType.SYSTEM, e);
+
+    }
+    protected static void setReturnCode(ProcessletOutputs response, String msg) {
+
+        MotuWPSProcess.setReturnCode(response, ErrorType.SYSTEM, msg);
+
+    }
+    /**
+     * Sets the return code.
+     * 
+     * @param response the response
+     * @param code the code
+     * @param msg the msg
+     */
+    protected static void setReturnCode(ProcessletOutputs response, ErrorType code, String msg) {
+
+        setReturnCode(response, code.toString(), msg);
+    }
+    protected static void setReturnCode(ProcessletOutputs response, String code, String msg) {
+
+        LiteralOutput codeParam = (LiteralOutput) response.getParameter(MotuWPSProcess.PARAM_CODE);
+        LiteralOutput msgParam = (LiteralOutput) response.getParameter(MotuWPSProcess.PARAM_MESSAGE);
+
+        if ((codeParam != null) && (code != null)) {
+            codeParam.setValue(code);
+        }
+        if ((msgParam != null) && (msg != null)) {
+            msgParam.setValue(msg);
+        }
+
+    }
+    
+    /**
+     * Sets the return code.
+     * 
+     * @param code the code
+     * @param e the e
+     * @param response the response
+     */
+ 
+    protected static void setReturnCode(ProcessletOutputs response, ErrorType code, Exception e) {
+
+        setReturnCode(response, code, e.getMessage());
 
     }
 
@@ -321,6 +435,13 @@ public abstract class MotuWPSProcess implements Processlet {
         return organizer;
     }
 
+    /**
+     * Gets the product info parameters.
+     * 
+     * @return the product info parameters
+     * 
+     * @throws ProcessletException the processlet exception
+     */
     protected void getProductInfoParameters()
             throws ProcessletException {
 
@@ -370,7 +491,6 @@ public abstract class MotuWPSProcess implements Processlet {
     /**
      * Gets the temporal coverage from the request.
      * 
-     * 
      * @return a list of temporable coverage, first start date, and then end date (they can be empty string)
      */
     protected List<String> getTemporalCoverage() {
@@ -387,6 +507,11 @@ public abstract class MotuWPSProcess implements Processlet {
         return listTemporalCoverage;
     }
     
+    /**
+     * Gets the data format.
+     * 
+     * @return the data format
+     */
     protected Organizer.Format getDataFormat() {
         
         Organizer.Format dataFormat = Organizer.Format.getDefault();
@@ -406,7 +531,6 @@ public abstract class MotuWPSProcess implements Processlet {
 
     /**
      * Gets the geographical coverage from the request.
-     * 
      * 
      * @return a list of geographical coverage : Lat min, Lon min, Lat max, Lon max
      */
@@ -483,6 +607,7 @@ public abstract class MotuWPSProcess implements Processlet {
         }
         return listDepthCoverage;
     }
+    
     /**
      * Checks if is mode console.
      * 
@@ -497,6 +622,7 @@ public abstract class MotuWPSProcess implements Processlet {
         }
         return isMode;
     }
+    
     /**
      * Checks if is mode url.
      * 
@@ -526,6 +652,7 @@ public abstract class MotuWPSProcess implements Processlet {
         }
         return isMode;
     }
+    
     /**
      * Checks for mode.
      * 
@@ -536,6 +663,7 @@ public abstract class MotuWPSProcess implements Processlet {
     public static boolean hasMode(String mode) {
         return !MotuWPSProcess.noMode(mode);
     }
+    
     /**
      * No mode.
      * 
@@ -569,6 +697,7 @@ public abstract class MotuWPSProcess implements Processlet {
         String anonymousUserAsString = anonymousUserAsStringParam.getValue().trim();
         return anonymousUserAsString.equalsIgnoreCase("true") || anonymousUserAsString.equalsIgnoreCase("1");
     }
+    
     /**
      * Checks if is batch.
      * 
@@ -582,10 +711,9 @@ public abstract class MotuWPSProcess implements Processlet {
         String batchAsString = batchAsStringParam.getValue().trim();
         return batchAsString.equalsIgnoreCase("true") || batchAsString.equalsIgnoreCase("1");
     }
+    
     /**
      * Gets the login.
-     * 
-     * @param request the request
      * 
      * @return the login
      */
@@ -598,26 +726,26 @@ public abstract class MotuWPSProcess implements Processlet {
         }
         return login;
     }
-    /**
-     * Gets the mode parameter from the request.
-     * 
-     * @return the status mode
-     */
-    protected String getMode() {
-        // -------------------------------------------------
-        // Gets Depth coverage
-        // -------------------------------------------------
-        LiteralInput modeParam = (LiteralInput) processletInputs.getParameter(MotuWPSProcess.PARAM_MODE);
-        if (modeParam == null) {
-            return "";
-        }
-        return modeParam.getValue();
-    }
+    
+    
+//    /**
+//     * Gets the mode parameter from the request.
+//     * 
+//     * @return the status mode
+//     */
+//    protected String getMode() {
+//        // -------------------------------------------------
+//        // Gets Depth coverage
+//        // -------------------------------------------------
+//        LiteralInput modeParam = (LiteralInput) processletInputs.getParameter(MotuWPSProcess.PARAM_MODE);
+//        if (modeParam == null) {
+//            return "";
+//        }
+//        return modeParam.getValue();
+//    }
 
     /**
      * Gets the request priority.
-     * 
-     * @param request the request
      * 
      * @return the request priority
      */
@@ -639,6 +767,11 @@ public abstract class MotuWPSProcess implements Processlet {
         return priority;
     }
     
+    /**
+     * Gets the variables.
+     * 
+     * @return the variables
+     */
     protected List<String> getVariables() {
         List<ProcessletInput> variables = processletInputs.getParameters(PARAM_VARIABLE);
 

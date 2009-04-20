@@ -11,6 +11,7 @@ import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
+import org.deegree.services.wps.output.ComplexOutput;
 import org.deegree.services.wps.output.LiteralOutput;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
@@ -19,14 +20,12 @@ import fr.cls.atoll.motu.library.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
-import fr.cls.atoll.motu.msg.xml.TimeCoverage;
 
 /**
- * The purpose of this {@link Processlet} is to provide the time coverage of a product
+ * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * 
- * @version $Revision: 1.4 $, $Date: 2009-04-02 15:03:44 $
+ * @version $Revision: 1.5 $, $Date: 2009-04-20 14:08:20 $
  */
 public class ProductExtractionProcess extends MotuWPSProcess {
 
@@ -36,6 +35,7 @@ public class ProductExtractionProcess extends MotuWPSProcess {
     public ProductExtractionProcess() {
     }
 
+    /** The Constant LOG. */
     private static final Logger LOG = Logger.getLogger(ProductExtractionProcess.class);
 
     /** {@inheritDoc} */
@@ -46,9 +46,23 @@ public class ProductExtractionProcess extends MotuWPSProcess {
             LOG.debug("BEGIN ProductExtractionProcess.process(), context: " + OGCFrontController.getContext());
         }
 
+        super.process(in, out, info);
+
+        try {
+            setResquestId(-1);
+        } catch (MotuExceptionBase e) {
+            LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
+            setReturnCode(e);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse) - exiting");
+            }
+            return;
+        }
+        
         Organizer.Format responseFormat = null;
 
-        String mode = getMode();
+        // String mode = getMode();
+        String mode = MotuWPSProcess.PARAM_MODE_STATUS;
 
         int priority = getRequestPriority();
 
@@ -65,7 +79,6 @@ public class ProductExtractionProcess extends MotuWPSProcess {
 
         getProductInfoParameters();
 
-        Object s;
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 serviceNameParam.getValue(),
                 locationDataParam.getValue(),
@@ -91,107 +104,7 @@ public class ProductExtractionProcess extends MotuWPSProcess {
 
     }
 
-    /**
-     * Product get time coverage.
-     * 
-     * @param response the response
-     * @param locationData the location data
-     * 
-     */
-    private void productGetTimeCoverage(String locationData) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("productGetTimeCoverage(String, ProcessletOutputs) - entering");
-        }
-
-        Organizer organizer = getOrganizer();
-        if (organizer == null) {
-            return;
-        }
-
-        TimeCoverage timeCoverage = null;
-        try {
-            timeCoverage = organizer.getTimeCoverage(locationData);
-        } catch (MotuException e) {
-            LOG.error("productGetTimeCoverage(String, ProcessletOutputs)", e);
-            // Do nothing error is in response code
-        }
-
-        productGetTimeCoverage(timeCoverage);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("productGetTimeCoverage(String, ProcessletOutputs) - exiting");
-        }
-    }
-
-    /**
-     * Product get time coverage.
-     * 
-     * @param response the response
-     * @param serviceName the service name
-     * @param productId the product id
-     * @throws MotuExceptionBase
-     * 
-     */
-    private void productGetTimeCoverage(String serviceName, String productId) throws MotuExceptionBase {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("productGetTimeCoverage(String, String, ProcessletOutputs) - entering");
-        }
-
-        Organizer organizer = getOrganizer();
-        if (organizer == null) {
-            return;
-        }
-
-        TimeCoverage timeCoverage = null;
-        try {
-            timeCoverage = organizer.getTimeCoverage(serviceName, productId);
-        } catch (MotuExceptionBase e) {
-
-            LOG.error("productGetTimeCoverage(String, String, ProcessletOutputs", e);
-            timeCoverage = Organizer.createTimeCoverage(e);
-            throw e;
-        }
-
-        productGetTimeCoverage(timeCoverage);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("productGetTimeCoverage(String, String, ProcessletOutputs) - exiting");
-        }
-    }
-
-    /**
-     * Product get time coverage.
-     * 
-     * @param timeCoverage the time coverage
-     * @param out the out
-     */
-    private void productGetTimeCoverage(TimeCoverage timeCoverage) {
-
-        if (timeCoverage == null) {
-            return;
-        }
-
-        LiteralOutput startParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_STARTTIME);
-        LiteralOutput endParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_ENDTIME);
-        LiteralOutput codeParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_CODE);
-        LiteralOutput msgParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_MESSAGE);
-
-        if (startParam != null) {
-            startParam.setValue(timeCoverage.getStart().normalize().toXMLFormat());
-        }
-        if (endParam != null) {
-            endParam.setValue(timeCoverage.getEnd().normalize().toXMLFormat());
-        }
-
-        if (codeParam != null) {
-            codeParam.setValue(timeCoverage.getCode().toString());
-        }
-        if (msgParam != null) {
-            msgParam.setValue(timeCoverage.getMsg());
-        }
-
-    }
-
+    /** {@inheritDoc} */
     @Override
     public void destroy() {
         if (LOG.isDebugEnabled()) {
@@ -211,8 +124,6 @@ public class ProductExtractionProcess extends MotuWPSProcess {
     /**
      * Product download.
      * 
-     * @param response the response
-     * @param session the session
      * @param priority the priority
      * @param extractionParameters the extraction parameters
      * @param mode the mode
@@ -273,6 +184,17 @@ public class ProductExtractionProcess extends MotuWPSProcess {
 
         statusModeResponse.setRequestId(requestId);
 
+        try {
+            setResquestId(requestId);
+        } catch (MotuExceptionBase e) {
+            LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
+            setReturnCode(e);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse) - exiting");
+            }
+            return;
+        }
+
         requestManagement.putIfAbsentRequestStatusMap(requestId, statusModeResponse);
 
         try {
@@ -283,8 +205,8 @@ public class ProductExtractionProcess extends MotuWPSProcess {
             getQueueServerManagement().execute(runnableWPSExtraction);
 
             if (modeStatus) {
-              //$$$$$ response.setContentType(null);
-              //$$$$$ Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());
+                // $$$$$ response.setContentType(null);
+                // $$$$$ Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());
             } else {
                 // --------- wait for the end of the request -----------
                 requestEndedCondition.await();
@@ -292,19 +214,16 @@ public class ProductExtractionProcess extends MotuWPSProcess {
             }
         } catch (MotuMarshallException e) {
             LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
+            setReturnCode(e);
 
-          //$$$$$ response.sendError(500, String.format("ERROR: %s", e.getMessage()));
         } catch (MotuExceptionBase e) {
             LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
-
             runnableWPSExtraction.aborted();
-            // Do nothing error is in response error code
-            // response.sendError(400, String.format("ERROR: %s", e.notifyException()));
+
         } catch (Exception e) {
             LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
-
             runnableWPSExtraction.aborted();
-            // response.sendError(500, String.format("ERROR: %s", e.getMessage()));
+
         } finally {
             // ------------------------------------------------------
             if (lock.isLocked()) {
@@ -316,6 +235,66 @@ public class ProductExtractionProcess extends MotuWPSProcess {
         if (LOG.isDebugEnabled()) {
             LOG.debug("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse) - exiting");
         }
+    }
+
+    /**
+     * Sets the resquest id.
+     * 
+     * @param requestId the new resquest id
+     * @throws MotuException 
+     */
+    public void setResquestId(long requestId) throws MotuException {
+
+        ProductExtractionProcess.setResquestId(processletOutputs, Long.toString(requestId));
+
+    }
+
+    /**
+     * Sets the resquest id.
+     * 
+     * @param requestId the new resquest id
+     * @throws MotuException 
+     */
+    public void setResquestId(String requestId) throws MotuException {
+
+        ProductExtractionProcess.setResquestId(processletOutputs, requestId);
+
+    }
+
+    /**
+     * Sets the resquest id.
+     * 
+     * @param response the response
+     * @param requestId the request id
+     * @throws MotuException 
+     */
+    public static void setResquestId(ProcessletOutputs response, long requestId) throws MotuException {
+
+        ProductExtractionProcess.setResquestId(response, Long.toString(requestId));
+
+    }
+
+    /**
+     * Sets the resquest id.
+     * 
+     * @param response the response
+     * @param requestId the request id
+     * @throws MotuException 
+     */
+    public static void setResquestId(ProcessletOutputs response, String requestId) throws MotuException {
+
+        ComplexOutput requestIdParam = (ComplexOutput) response.getParameter(MotuWPSProcess.PARAM_REQUESTID);
+
+        if ((requestIdParam == null) || (requestId == null)) {
+            return;
+        }
+
+        try {
+            requestIdParam.getBinaryOutputStream().write(requestId.getBytes());
+        } catch (IOException e) {
+            throw new MotuException("ERROR ProductExtractionProcess#setResquestId", e);
+        }
+
     }
 
 }
