@@ -2,7 +2,7 @@
 		<LiteralOutput>
 			<Identifier>code</Identifier>
 			<Title>Code returned by the process</Title>
-			<DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>			
 		</LiteralOutput>
 		<LiteralOutput>
 			<Identifier>message</Identifier>

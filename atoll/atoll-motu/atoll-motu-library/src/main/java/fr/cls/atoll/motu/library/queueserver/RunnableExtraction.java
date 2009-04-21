@@ -35,8 +35,8 @@ import org.apache.log4j.Logger;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-04-21 14:51:34 $
  */
 
 public class RunnableExtraction implements Runnable, Comparable<RunnableExtraction> {
@@ -415,9 +415,10 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
             }
         }
 
-        setStatusInProgress();
 
         try {
+            setStatusInProgress();
+
             product = organizer.extractData(extractionParameters);
 
             setStatusDone();
@@ -685,19 +686,21 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
 
     /**
      * Init.
+     * @throws MotuException 
      */
     private void init() {
+
         statusModeResponse = Organizer.createStatusModeResponse();
         setStatusPending();
 
     }
-
+    
     /**
      * Sets the status done.
      * 
      * @throws MotuException
      */
-    private void setStatusDone() throws MotuException {
+    protected void setStatusDone() throws MotuException {
 
         Organizer.setStatusDone(statusModeResponse, product);
 
@@ -705,8 +708,9 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
 
     /**
      * Sets the status in progress.
+     * @throws MotuException 
      */
-    private void setStatusInProgress() {
+    protected void setStatusInProgress() {
         statusModeResponse.setStatus(StatusModeType.INPROGRESS);
         statusModeResponse.setMsg(StatusModeType.INPROGRESS.toString());
         statusModeResponse.setCode(ErrorType.OK);
@@ -715,10 +719,24 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
 
     /**
      * Sets the status pending.
+     * @throws MotuException 
      */
-    private void setStatusPending() {
+    protected void setStatusPending() {
         statusModeResponse.setStatus(StatusModeType.PENDING);
         statusModeResponse.setMsg(StatusModeType.PENDING.toString());
+        statusModeResponse.setCode(ErrorType.OK);
+
+    }
+    
+    /**
+     * Sets the status error.
+     * 
+     * @param msg the status error
+     * 
+     */
+    protected void setStatusError(String msg) {
+        statusModeResponse.setStatus(StatusModeType.ERROR);
+        statusModeResponse.setMsg(msg);
         statusModeResponse.setCode(ErrorType.OK);
 
     }

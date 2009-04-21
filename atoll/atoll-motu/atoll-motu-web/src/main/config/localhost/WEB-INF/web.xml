@@ -53,7 +53,7 @@
 	</servlet>
 	<servlet>
 		<servlet-name>services</servlet-name>
-		<servlet-class>org.deegree.services.controller.OGCFrontController</servlet-class>
+		<servlet-class>fr.cls.atoll.motu.web.services.MotuOGCFrontController</servlet-class>
  		<!--
 			parameter 'ConfigurationFile' is optional (only needed when a
 			non-default location is used for the 'services_metadata.xml' file)

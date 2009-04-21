@@ -8,17 +8,21 @@
 <!ENTITY depthInputParameters SYSTEM "../include/DepthInputParameters.xml">
 <!ENTITY dataFormatInputParameters SYSTEM "../include/DataFormatInputParameters.xml">
 <!ENTITY requestIdOutputParameters SYSTEM "../include/RequestIdOutputParameters.xml">
+<!ENTITY statusResponseOutputParameters SYSTEM "../include/StatusResponseOutputParameters.xml">
 ]>
 <ProcessDefinition configVersion="0.1.0"
 	processVersion="1.0.0" statusSupported="false" storeSupported="false"
 	xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/wps/0.1.0/process_definition.xsd">
 	
-	<Identifier>ProductExtractionProcess</Identifier>
+	<Identifier>ExtractData</Identifier>
 	<JavaClass>fr.cls.atoll.motu.processor.wps.ProductExtractionProcess</JavaClass>
 	<Title>Process for data extraction from a product.</Title>
-	<Abstract><![CDATA[The purpose of this process is to provide the time coverage of a product.
-	A product is identified either by the Service name and Product name input parameters or by the url of the product (Data input parameter)]]>
+	<Abstract><![CDATA[The purpose of this process is to extract data from a product.
+	A product is identified either by the Service name and Product name input parameters or by the url of the product (Data input parameter)
+	Extraction criteria can be specified: geographical coverage, time coverage, depth coverage. They are optional.
+	Variable names to extract have to be set as input parameters.
+	The return values are the status of the request (pending, in progress, done, error), the request identifer and the return process code (ok or error code) and the correponding message)]]>
 	</Abstract>
 	<InputParameters>
 	
@@ -68,7 +72,7 @@
 	<OutputParameters>
 		
 		&requestIdOutputParameters;
-		
+		&statusResponseOutputParameters;
 		&commonBasicOutputParameters;
 
 	</OutputParameters>

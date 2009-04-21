@@ -31,8 +31,8 @@ import org.quartz.TriggerUtils;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-04-21 14:51:34 $
  */
 public class RequestManagement implements JobListener {
 
@@ -440,6 +440,24 @@ public class RequestManagement implements JobListener {
         return requestStatusMap.size();
     }
 
+    /**
+     * Checks if is shutdown.
+     * 
+     * @return true, if checks if is shutdown
+     */
+    public boolean isShutdown() {
+        
+        if (scheduler == null) {
+            return true;            
+        }
+         try {
+            return scheduler.isShutdown();
+        } catch (SchedulerException e) {
+            return true;
+        }
+        
+    }
+    
     /**
      * Shutdown.
      * 
