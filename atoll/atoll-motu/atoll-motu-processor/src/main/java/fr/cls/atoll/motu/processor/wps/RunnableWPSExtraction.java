@@ -26,7 +26,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-04-21 14:51:45 $
+ * @version $Revision: 1.5 $ - $Date: 2009-04-22 14:40:14 $
  */
 public class RunnableWPSExtraction extends RunnableExtraction {
     /**
@@ -234,6 +234,11 @@ public class RunnableWPSExtraction extends RunnableExtraction {
         // this.notEnded = true;
 
     }
+    
+    protected void setUrl() throws MotuException {
+        MotuWPSProcess.setUrl(response, statusModeResponse.getMsg());
+
+    }
     protected void setStatus() {
         ProductExtractionProcess.setStatus(response, statusModeResponse.getStatus());
 
@@ -242,33 +247,34 @@ public class RunnableWPSExtraction extends RunnableExtraction {
         ProductExtractionProcess.setReturnCode(response, statusModeResponse);
 
     }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void setStatusDone() throws MotuException {
-        super.setStatusDone();
-        setStatus();
-        setReturnCode();
-        
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void setStatusInProgress() {
-        super.setStatusInProgress();
-        setStatus();
-        setReturnCode();
-    }
-
-    /** {@inheritDoc} 
-     * @throws MotuException */
-    @Override
-    protected void setStatusPending() {
-        super.setStatusPending();
-        setStatus();
-        setReturnCode();
-
-    }
+//
+//    /** {@inheritDoc} */
+//    @Override
+//    protected void setStatusDone() throws MotuException {
+//        super.setStatusDone();
+//        setStatus();
+//        setUrl();
+//        setReturnCode();
+//        
+//    }
+//
+//    /** {@inheritDoc} */
+//    @Override
+//    protected void setStatusInProgress() {
+//        super.setStatusInProgress();
+//        setStatus();
+//        setReturnCode();
+//    }
+//
+//    /** {@inheritDoc} 
+//     * @throws MotuException */
+//    @Override
+//    protected void setStatusPending() {
+//        super.setStatusPending();
+//        setStatus();
+//        setReturnCode();
+//
+//    }
     
  
     /**
@@ -329,22 +335,22 @@ public class RunnableWPSExtraction extends RunnableExtraction {
             LOG.debug("setAbortedModeConsole() - entering");
         }
 
-        if (response == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("setAbortedModeConsole() - exiting");
-            }
-            return;
-        }
-
-        try {
-            setStatus();
-            setReturnCode();
-        } catch (Exception e) {
-            LOG.error("setAbortedModeConsole()", e);
-
-            sendResponseError500(e.getMessage());
-        }
-
+//        if (response == null) {
+//            if (LOG.isDebugEnabled()) {
+//                LOG.debug("setAbortedModeConsole() - exiting");
+//            }
+//            return;
+//        }
+//
+//        try {
+//            setStatus();
+//            setReturnCode();
+//        } catch (Exception e) {
+//            LOG.error("setAbortedModeConsole()", e);
+//
+//            sendResponseError500(e.getMessage());
+//        }
+//
         if (LOG.isDebugEnabled()) {
             LOG.debug("setAbortedModeConsole() - exiting");
         }
@@ -357,15 +363,15 @@ public class RunnableWPSExtraction extends RunnableExtraction {
         if (LOG.isDebugEnabled()) {
             LOG.debug("setAbortedModeStatus() - entering");
         }
-        if (response == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("setAbortedModeStatus() - response == null - exiting");
-            }
-            return;
-        }
-
-        setStatus();
-        setReturnCode();
+//        if (response == null) {
+//            if (LOG.isDebugEnabled()) {
+//                LOG.debug("setAbortedModeStatus() - response == null - exiting");
+//            }
+//            return;
+//        }
+//
+//        setStatus();
+//        setReturnCode();
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("setAbortedModeStatus() - exiting");
@@ -380,7 +386,7 @@ public class RunnableWPSExtraction extends RunnableExtraction {
             LOG.debug("setAbortedModeUrl() - entering");
         }
 
-        setAbortedModeConsole();
+//        setAbortedModeConsole();
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("setAbortedModeUrl() - exiting");
@@ -395,9 +401,9 @@ public class RunnableWPSExtraction extends RunnableExtraction {
             LOG.debug("setAbortedNoMode() - entering");
         }
 
-        if (queueLogInfo.getQueueLogError() != null) {
-            MotuWPSProcess.setReturnCode(response, queueLogInfo.getQueueLogError().getErrorCode(), queueLogInfo.getQueueLogError().getMessage());
-        }
+//        if (queueLogInfo.getQueueLogError() != null) {
+//            MotuWPSProcess.setReturnCode(response, queueLogInfo.getQueueLogError().getErrorCode(), queueLogInfo.getQueueLogError().getMessage());
+//        }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("setAbortedNoMode() - exiting");

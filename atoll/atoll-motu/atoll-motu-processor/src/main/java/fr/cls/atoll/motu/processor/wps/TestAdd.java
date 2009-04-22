@@ -10,6 +10,7 @@ import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.input.ComplexInput;
+import org.deegree.services.wps.input.ReferencedComplexInput;
 import org.deegree.services.wps.output.ComplexOutput;
 
 /**
@@ -20,7 +21,7 @@ import org.deegree.services.wps.output.ComplexOutput;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-04-20 14:08:20 $
+ * @version $Revision: 1.6 $ - $Date: 2009-04-22 14:40:14 $
  */
 public class TestAdd implements Processlet {
     /**
@@ -69,6 +70,17 @@ public class TestAdd implements Processlet {
 
         ComplexInput a = (ComplexInput) in.getParameter("A");
         ComplexInput b = (ComplexInput) in.getParameter("B");
+        
+        if ( a instanceof ReferencedComplexInput ) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("process(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo) : ComplexInput a is reference");
+            }
+        }
+        if ( b instanceof ReferencedComplexInput ) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("process(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo) : ComplexInput b is reference");
+            }
+        }
         String aa = null;
         String bb = null;
         try {

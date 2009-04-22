@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-		<LiteralInput minOccurs="1">
+		<LiteralInput minOccurs="1" maxOccurs="100">
 			<Identifier>variable</Identifier>
 			<Title>Name or identifier of the data</Title>
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
