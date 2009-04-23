@@ -21,14 +21,17 @@ import org.deegree.commons.utils.HttpUtils;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-04-16 15:35:17 $
+ * @version $Revision: 1.4 $ - $Date: 2009-04-23 14:16:09 $
  */
 public class TestWPS {
     /**
      * Logger for this class
      */
     private static final Logger LOG = Logger.getLogger(TestWPS.class);
-
+    public class GetObjectId
+    {
+      public GetObjectId(){}
+    }
     /**
      * .
      * 
@@ -37,7 +40,47 @@ public class TestWPS {
     public static void main(String[] args) {
 
         //testBodyPost();
-        testUTF8EncodeDecode();
+        //testUTF8EncodeDecode();
+        TestWPS test = new TestWPS();
+        
+        TestWPS.GetObjectId id = test.new  GetObjectId();
+        System.out.println(id.hashCode());
+        TestWPS.GetObjectId id2 = test.new  GetObjectId();
+        System.out.println(id2.hashCode());
+        
+        TestWPS.GetObjectId id3 = id;
+        System.out.println(id3.hashCode());
+        
+        String abc = new String("Australia");
+        System.out.println("Hash code for String object: " + abc.hashCode());
+        String abc2 = new String("Australia");
+        System.out.println("Hash code for String object: " + abc2.hashCode());
+
+        
+        
+//        try {
+//            // Generate a DES key
+//            KeyGenerator keyGen = KeyGenerator.getInstance("DES");
+//            SecretKey key = keyGen.generateKey();
+//            System.out.println(key.hashCode());
+//            // Get the bytes of the key
+//            byte[] keyBytes = key.getEncoded();
+//            int numBytes = keyBytes.length;
+//            String string = new String(keyBytes);
+//            System.out.println(string);
+//            
+//
+//            // Generate a Blowfish key
+//            keyGen = KeyGenerator.getInstance("Blowfish");
+//            key = keyGen.generateKey();
+//            System.out.println(key.hashCode());
+//        
+//            // Generate a triple DES key
+//            keyGen = KeyGenerator.getInstance("DESede");
+//            key = keyGen.generateKey();
+//            System.out.println(key.hashCode());
+//        } catch (java.security.NoSuchAlgorithmException e) {
+//        }
 
     }
 

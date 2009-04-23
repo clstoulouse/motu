@@ -22,7 +22,7 @@ import fr.cls.atoll.motu.msg.xml.TimeCoverage;
  * 
  * @author last edited by: $Author: dearith $
  * 
- * @version $Revision: 1.7 $, $Date: 2009-04-02 15:03:44 $
+ * @version $Revision: 1.8 $, $Date: 2009-04-23 14:16:09 $
  */
 public class ProductTimeCoverageProcess extends MotuWPSProcess {
 
@@ -43,20 +43,17 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
         if (LOG.isDebugEnabled()) {
             LOG.debug("BEGIN TimeCoverageProcess.process(), context: " + OGCFrontController.getContext());
         }
-        serviceNameParam = null;
-        locationDataParam = null;
-        productIdParam = null;
         
-        getProductInfoParameters();
+        MotuWPSProcessData motuWPSProcessData = getProductInfoParameters(in);
 
         // -------------------------------------------------
         // get Time coverage
         // -------------------------------------------------
         try {
-            if (!MotuWPSProcess.isNullOrEmpty(locationDataParam)) {
-                productGetTimeCoverage(locationDataParam.getValue());
-            } else if (!MotuWPSProcess.isNullOrEmpty(serviceNameParam) && !MotuWPSProcess.isNullOrEmpty(productIdParam)) {
-                productGetTimeCoverage(serviceNameParam.getValue(), productIdParam.getValue());
+            if (!MotuWPSProcess.isNullOrEmpty(motuWPSProcessData.getLocationDataParamIn())) {
+                productGetTimeCoverage(motuWPSProcessData.getLocationDataParamIn().getValue());
+            } else if (!MotuWPSProcess.isNullOrEmpty(motuWPSProcessData.getServiceNameParamIn()) && !MotuWPSProcess.isNullOrEmpty(motuWPSProcessData.getProductIdParamIn())) {
+                productGetTimeCoverage(motuWPSProcessData.getServiceNameParamIn().getValue(), motuWPSProcessData.getProductIdParamIn().getValue());
             }
         } catch (MotuExceptionBase e) {
             //throw new ProcessletException(e.notifyException());
@@ -143,13 +140,15 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
      * @param timeCoverage the time coverage
      * @param out the out
      */
-    private void productGetTimeCoverage(TimeCoverage timeCoverage) {
+    private void productGetTimeCoverage(ProcessletInputs in, TimeCoverage timeCoverage) {
 
         if (timeCoverage == null) {
             return;
         }
 
-        LiteralOutput startParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_STARTTIME);
+        MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
+
+        LiteralOutput startParam =  motuWPSProcessData.getStartDateParamOut();
         LiteralOutput endParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_ENDTIME);
         LiteralOutput codeParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_CODE);
         LiteralOutput msgParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_MESSAGE);
@@ -186,4 +185,5 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
         }
         super.init();
     }
-}
+
+ }

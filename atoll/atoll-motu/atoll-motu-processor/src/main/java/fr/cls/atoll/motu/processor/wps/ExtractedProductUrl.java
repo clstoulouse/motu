@@ -7,6 +7,7 @@ import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
+import org.deegree.services.wps.input.ReferencedComplexInput;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuInvalidRequestIdException;
@@ -16,12 +17,12 @@ import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.2 $, $Date: 2009-04-22 14:40:15 $
+ * @version $Revision: 1.3 $, $Date: 2009-04-23 14:16:09 $
  */
 public class ExtractedProductUrl extends MotuWPSProcess {
 
     /**
-     * Constructeur.
+     * Constructor.
      */
     public ExtractedProductUrl() {
     }
@@ -29,7 +30,6 @@ public class ExtractedProductUrl extends MotuWPSProcess {
     /** The Constant LOG. */
     private static final Logger LOG = Logger.getLogger(ExtractedProductUrl.class);
 
-    
     /** {@inheritDoc} */
     @Override
     public void process(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info) throws ProcessletException {
@@ -55,7 +55,6 @@ public class ExtractedProductUrl extends MotuWPSProcess {
         }
     }
 
-    
     /** {@inheritDoc} */
     @Override
     public void init() {
@@ -63,30 +62,32 @@ public class ExtractedProductUrl extends MotuWPSProcess {
             LOG.debug("ProductExtractionProcess#init() called");
         }
         super.init();
-    }
-    
 
-
- 
-     /**
-      * Gets the extracted url.
-      * 
-      * @throws MotuException the motu exception
-      */
-     private void getExtractedUrl() throws MotuException  {
-         
-         long requestId = getRequestIdAsLong();
-         
-         StatusModeResponse statusModeResponse = requestManagement.getResquestStatusMap(requestId);
-         if (statusModeResponse == null) {
-             setReturnCode(new MotuInvalidRequestIdException(requestId));
-             return;            
-         }
-         
-         setReturnCode(statusModeResponse);
-         setUrl(statusModeResponse);
+        // runnableWPS = new
     }
 
+    /**
+     * Gets the extracted url.
+     * 
+     * @throws MotuException the motu exception
+     */
+    private void getExtractedUrl() throws MotuException {
+        long requestId = -1;
 
- 
+        if (getRequestId() instanceof ReferencedComplexInput) {
+
+        } else {
+            requestId = getRequestIdAsLong();
+        }
+
+        StatusModeResponse statusModeResponse = requestManagement.getResquestStatusMap(requestId);
+        if (statusModeResponse == null) {
+            setReturnCode(new MotuInvalidRequestIdException(requestId));
+            return;
+        }
+
+        setReturnCode(statusModeResponse);
+        setUrl(statusModeResponse);
+    }
+
 }
