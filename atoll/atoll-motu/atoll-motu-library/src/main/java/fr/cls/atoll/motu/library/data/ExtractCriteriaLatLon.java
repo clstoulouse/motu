@@ -46,8 +46,8 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
  * This class introduces geographical coverage criterias as latitude an longitude coordinates to be apply on
  * data (for extraction/selection and research).
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-04-27 10:47:21 $
  * 
  */
 public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
@@ -530,7 +530,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
             rect = new LatLonRect(gcsRect);
         } else {
             // If geo criteria include Lon coord. system : set criteria to /Lon Coord. System
-            LatLonRect gcsRectLon = new LatLonRect(new LatLonPointImpl(0, xMinMax.min), new LatLonPointImpl(0, xMinMax.min));
+            LatLonRect gcsRectLon = new LatLonRect(new LatLonPointImpl(0, xMinMax.min), new LatLonPointImpl(0, xMinMax.max));
             LatLonRect rectLon = new LatLonRect(new LatLonPointImpl(0, rect.getLonMin()), new LatLonPointImpl(0, rect.getLonMax()));
             if (gcsRectLon.containedIn(rectLon)) {
                 rect = new LatLonRect(new LatLonRect(new LatLonPointImpl(rect.getLatMin(), xMinMax.min), new LatLonPointImpl(
