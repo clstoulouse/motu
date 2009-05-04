@@ -20,7 +20,7 @@ import org.deegree.services.wps.output.LiteralOutput;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-04-23 14:16:09 $
+ * @version $Revision: 1.2 $ - $Date: 2009-05-04 09:58:44 $
  */
 public class MotuWPSProcessData {
     /**
@@ -246,6 +246,13 @@ public class MotuWPSProcessData {
      */
     public void setProcessletExecutionInfo(ProcessletExecutionInfo processletExecutionInfo) {
         this.processletExecutionInfo = processletExecutionInfo;
+    }
+
+    public LiteralOutput getStartDateParamOut() {
+        return (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_STARTTIME);
+    }
+    public LiteralOutput getEndDateParamOut() {
+        return (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_ENDTIME);
     }
 
     /**

@@ -17,7 +17,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.3 $, $Date: 2009-04-23 14:16:09 $
+ * @version $Revision: 1.4 $, $Date: 2009-05-04 09:58:44 $
  */
 public class ExtractedProductUrl extends MotuWPSProcess {
 
@@ -40,10 +40,12 @@ public class ExtractedProductUrl extends MotuWPSProcess {
 
         super.process(in, out, info);
 
+        long threadId = Thread.currentThread().getId();
+        
         try {
-            getExtractedUrl();
+            getExtractedUrl(in);
         } catch (MotuException e) {
-            setReturnCode(e);
+            setReturnCode(out, e);
         }
     }
 
@@ -70,24 +72,36 @@ public class ExtractedProductUrl extends MotuWPSProcess {
      * Gets the extracted url.
      * 
      * @throws MotuException the motu exception
+     * @throws ProcessletException 
      */
-    private void getExtractedUrl() throws MotuException {
+    private void getExtractedUrl(ProcessletInputs in) throws MotuException, ProcessletException {
+        MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
         long requestId = -1;
 
-        if (getRequestId() instanceof ReferencedComplexInput) {
+        requestId = getRequestIdAsLong(in);
+        StatusModeResponse statusModeResponse = getRequestManagement().getResquestStatusMap(requestId);
 
-        } else {
-            requestId = getRequestIdAsLong();
-        }
-
-        StatusModeResponse statusModeResponse = requestManagement.getResquestStatusMap(requestId);
         if (statusModeResponse == null) {
-            setReturnCode(new MotuInvalidRequestIdException(requestId));
+            setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuInvalidRequestIdException(requestId));
             return;
         }
 
-        setReturnCode(statusModeResponse);
-        setUrl(statusModeResponse);
+        if (motuWPSProcessData.getRequestIdParamIn() instanceof ReferencedComplexInput) {
+            while (MotuWPSProcess.isStatusPendingOrInProgress(statusModeResponse)) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        }
+
+        MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), statusModeResponse);
+        if ( MotuWPSProcess.isStatusDone(statusModeResponse)) {
+            MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), statusModeResponse);            
+        } else {
+            MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), "");            
+        }
     }
 
 }

@@ -38,7 +38,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.11 $ - $Date: 2009-04-23 14:16:09 $
+ * @version $Revision: 1.12 $ - $Date: 2009-05-04 09:58:44 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
@@ -177,7 +177,7 @@ public abstract class MotuWPSProcess implements Processlet {
             return;
         }
 
-        Organizer organizer = getOrganizer();
+        Organizer organizer = getOrganizer(in);
         try {
             organizer.setCurrentLanguage(languageParam.getValue());
         } catch (MotuExceptionBase e) {
@@ -191,7 +191,6 @@ public abstract class MotuWPSProcess implements Processlet {
     /** {@inheritDoc} */
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
 
     }
 
@@ -497,8 +496,10 @@ public abstract class MotuWPSProcess implements Processlet {
      * Create new Organizer object.
      * 
      * @return Organizer object.
+     * @throws ProcessletException 
      */
-    protected Organizer getOrganizer() {
+    protected Organizer getOrganizer(ProcessletInputs in) throws ProcessletException {
+        MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
 
         Organizer organizer = null;
         try {
@@ -506,7 +507,7 @@ public abstract class MotuWPSProcess implements Processlet {
         } catch (MotuExceptionBase e) {
             String msg = String.format("ERROR: - MotuWPSProcess.getOrganizer - Unable to create a new organiser. Native Error: %s", e
                     .notifyException());
-            setReturnCode(ErrorType.SYSTEM, msg);
+            setReturnCode(motuWPSProcessData.getProcessletOutputs(), ErrorType.SYSTEM, msg);
         }
 
         return organizer;
@@ -548,7 +549,7 @@ public abstract class MotuWPSProcess implements Processlet {
                                        MotuWPSProcess.PARAM_URL,
                                        PARAM_PRODUCT);
 
-            setReturnCode(ErrorType.INCONSISTENCY, msg);
+            setReturnCode(motuWPSProcessData.getProcessletOutputs(), ErrorType.INCONSISTENCY, msg);
             throw new ProcessletException(msg);
         }
 
@@ -561,7 +562,7 @@ public abstract class MotuWPSProcess implements Processlet {
                                        MotuWPSProcess.PARAM_URL,
                                        MotuWPSProcess.PARAM_PRODUCT);
 
-            setReturnCode(ErrorType.INCONSISTENCY, msg);
+            setReturnCode(motuWPSProcessData.getProcessletOutputs(), ErrorType.INCONSISTENCY, msg);
             throw new ProcessletException(msg);
         }
 
@@ -572,7 +573,7 @@ public abstract class MotuWPSProcess implements Processlet {
             }
             String msg = String.format("ERROR: '%s' parameter is filled but '%s' is empty. You have to fill it.", PARAM_PRODUCT, PARAM_SERVICE);
 
-            setReturnCode(ErrorType.INCONSISTENCY, msg);
+            setReturnCode(motuWPSProcessData.getProcessletOutputs(), ErrorType.INCONSISTENCY, msg);
             throw new ProcessletException(msg);
         }
 
@@ -622,9 +623,12 @@ public abstract class MotuWPSProcess implements Processlet {
      * @return the request id as long
      * 
      * @throws MotuException the motu exception
+     * @throws ProcessletException 
      */
-    public long getRequestIdAsLong() throws MotuException {
-        return MotuWPSProcess.getComplexInputValueAsLongFromBinaryStream(getRequestId());
+    public long getRequestIdAsLong(ProcessletInputs in) throws MotuException, ProcessletException {
+        MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
+
+        return MotuWPSProcess.getComplexInputValueAsLongFromBinaryStream(motuWPSProcessData.getRequestIdParamIn());
     }
 
     /**
@@ -695,7 +699,7 @@ public abstract class MotuWPSProcess implements Processlet {
         try {
             dataFormat = Organizer.Format.valueOf(dataFormatParam.getValue());
         } catch (Exception e) {
-            setReturnCode(e);
+            setReturnCode(motuWPSProcessData.getProcessletOutputs(), e);
         }
         return dataFormat;
     }
@@ -909,7 +913,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
 
-        LiteralInput loginParam = (LiteralInput) motuWPSProcessData.getLoginParamIn(;
+        LiteralInput loginParam = (LiteralInput) motuWPSProcessData.getLoginParamIn();
         if (loginParam != null) {
             login = loginParam.getValue();
         }
@@ -943,7 +947,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
 
-        LiteralInput priorityParam = (LiteralInput) motuWPSProcessData.getPriorityParamIn(MotuWPSProcess.PARAM_PRIORITY);
+        LiteralInput priorityParam = (LiteralInput) motuWPSProcessData.getPriorityParamIn();
         if (MotuWPSProcess.isNullOrEmpty(priorityParam)) {
             return priority;
         }

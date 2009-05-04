@@ -26,7 +26,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.8 $, $Date: 2009-04-23 14:16:09 $
+ * @version $Revision: 1.9 $, $Date: 2009-05-04 09:58:44 $
  */
 public class ProductExtractionProcess extends MotuWPSProcess {
 
@@ -62,6 +62,9 @@ public class ProductExtractionProcess extends MotuWPSProcess {
         // return;
         // }
 
+        long threadId = Thread.currentThread().getId();
+        
+        
         Organizer.Format responseFormat = null;
 
         // String mode = getMode();
@@ -97,7 +100,13 @@ public class ProductExtractionProcess extends MotuWPSProcess {
         try {
             productDownload(in, extractionParameters, mode, priority);
         } catch (Exception e) {
-            ProductExtractionProcess.setRequestId(motuWPSProcessData.getProcessletOutputs(), Long.toString(-1L);
+            LOG.error("process(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo)", e);
+
+            try {
+                ProductExtractionProcess.setRequestId(motuWPSProcessData.getProcessletOutputs(), Long.toString(-1L));
+            } catch (MotuException e1) {
+                LOG.error("process(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo)", e1);
+            }
         }
 
         if (LOG.isDebugEnabled()) {
@@ -154,7 +163,7 @@ public class ProductExtractionProcess extends MotuWPSProcess {
         final Condition requestEndedCondition = lock.newCondition();
 
         String serviceName = extractionParameters.getServiceName();
-        Organizer organizer = getOrganizer();
+        Organizer organizer = getOrganizer(in);
         try {
 
             if (organizer.isGenericService() && !MotuWPSProcess.isNullOrEmpty(serviceName)) {
@@ -214,7 +223,7 @@ public class ProductExtractionProcess extends MotuWPSProcess {
             if (modeStatus) {
                 // $$$$$ response.setContentType(null);
                 // $$$$$ Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());               
-                setStatus(statusModeResponse.getStatus());
+                ProductExtractionProcess.setStatus(motuWPSProcessData.getProcessletOutputs(), statusModeResponse.getStatus());
                 setReturnCode(motuWPSProcessData.getProcessletOutputs(), statusModeResponse);
             } else {
                 // --------- wait for the end of the request -----------
@@ -251,13 +260,16 @@ public class ProductExtractionProcess extends MotuWPSProcess {
 
  
 
-    public void setStatus(StatusModeType status) throws MotuException {
-        ProductExtractionProcess.setStatus(processletOutputs, status);
+    public void setStatus(ProcessletInputs in, StatusModeType status) throws MotuException, ProcessletException {
+        MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
+
+        ProductExtractionProcess.setStatus(motuWPSProcessData.getProcessletOutputs(), status);
 
     }
 
-    public void setStatus(String status) throws MotuException {
-        ProductExtractionProcess.setStatus(processletOutputs, status);
+    public void setStatus(ProcessletInputs in, String status) throws MotuException, ProcessletException {
+        MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
+        ProductExtractionProcess.setStatus(motuWPSProcessData.getProcessletOutputs(), status);
     }
 
     /**

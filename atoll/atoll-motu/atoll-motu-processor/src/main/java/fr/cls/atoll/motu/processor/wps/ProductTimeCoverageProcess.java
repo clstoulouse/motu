@@ -22,7 +22,7 @@ import fr.cls.atoll.motu.msg.xml.TimeCoverage;
  * 
  * @author last edited by: $Author: dearith $
  * 
- * @version $Revision: 1.8 $, $Date: 2009-04-23 14:16:09 $
+ * @version $Revision: 1.9 $, $Date: 2009-05-04 09:58:44 $
  */
 public class ProductTimeCoverageProcess extends MotuWPSProcess {
 
@@ -51,9 +51,9 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
         // -------------------------------------------------
         try {
             if (!MotuWPSProcess.isNullOrEmpty(motuWPSProcessData.getLocationDataParamIn())) {
-                productGetTimeCoverage(motuWPSProcessData.getLocationDataParamIn().getValue());
+                productGetTimeCoverage(in, motuWPSProcessData.getLocationDataParamIn().getValue());
             } else if (!MotuWPSProcess.isNullOrEmpty(motuWPSProcessData.getServiceNameParamIn()) && !MotuWPSProcess.isNullOrEmpty(motuWPSProcessData.getProductIdParamIn())) {
-                productGetTimeCoverage(motuWPSProcessData.getServiceNameParamIn().getValue(), motuWPSProcessData.getProductIdParamIn().getValue());
+                productGetTimeCoverage(in, motuWPSProcessData.getServiceNameParamIn().getValue(), motuWPSProcessData.getProductIdParamIn().getValue());
             }
         } catch (MotuExceptionBase e) {
             //throw new ProcessletException(e.notifyException());
@@ -71,14 +71,15 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
      * 
      * @param response the response
      * @param locationData the location data
+     * @throws ProcessletException 
      * 
      */
-    private void productGetTimeCoverage(String locationData) {
+    private void productGetTimeCoverage(ProcessletInputs in, String locationData) throws ProcessletException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("productGetTimeCoverage(String, ProcessletOutputs) - entering");
         }
 
-        Organizer organizer = getOrganizer();
+        Organizer organizer = getOrganizer(in);
         if (organizer == null) {
             return;
         }
@@ -91,7 +92,7 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
             // Do nothing error is in response code
         }
 
-        productGetTimeCoverage(timeCoverage);
+        productGetTimeCoverage(in, timeCoverage);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("productGetTimeCoverage(String, ProcessletOutputs) - exiting");
@@ -105,14 +106,15 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
      * @param serviceName the service name
      * @param productId the product id
      * @throws MotuExceptionBase
+     * @throws ProcessletException 
      * 
      */
-    private void productGetTimeCoverage(String serviceName, String productId) throws MotuExceptionBase {
+    private void productGetTimeCoverage(ProcessletInputs in, String serviceName, String productId) throws MotuExceptionBase, ProcessletException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("productGetTimeCoverage(String, String, ProcessletOutputs) - entering");
         }
 
-        Organizer organizer = getOrganizer();
+        Organizer organizer = getOrganizer(in);
         if (organizer == null) {
             return;
         }
@@ -127,7 +129,7 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
             throw e;
         }
 
-        productGetTimeCoverage(timeCoverage);
+        productGetTimeCoverage(in, timeCoverage);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("productGetTimeCoverage(String, String, ProcessletOutputs) - exiting");
@@ -139,8 +141,9 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
      * 
      * @param timeCoverage the time coverage
      * @param out the out
+     * @throws ProcessletException 
      */
-    private void productGetTimeCoverage(ProcessletInputs in, TimeCoverage timeCoverage) {
+    private void productGetTimeCoverage(ProcessletInputs in, TimeCoverage timeCoverage) throws ProcessletException {
 
         if (timeCoverage == null) {
             return;
@@ -149,10 +152,11 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
 
         LiteralOutput startParam =  motuWPSProcessData.getStartDateParamOut();
-        LiteralOutput endParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_ENDTIME);
-        LiteralOutput codeParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_CODE);
-        LiteralOutput msgParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_MESSAGE);
+        LiteralOutput endParam = (LiteralOutput) motuWPSProcessData.getEndDateParamOut();
+//        LiteralOutput codeParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_CODE);
+//        LiteralOutput msgParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_MESSAGE);
 
+        
         if (startParam != null) {
             startParam.setValue(timeCoverage.getStart().normalize().toXMLFormat());
         }
@@ -160,12 +164,13 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
             endParam.setValue(timeCoverage.getEnd().normalize().toXMLFormat());
         }
 
-        if (codeParam != null) {
-            codeParam.setValue(timeCoverage.getCode().toString());
-        }
-        if (msgParam != null) {
-            msgParam.setValue(timeCoverage.getMsg());
-        }
+        setReturnCode(motuWPSProcessData.getProcessletOutputs(), timeCoverage.getCode().toString(), timeCoverage.getMsg());
+//        if (codeParam != null) {
+//            codeParam.setValue(timeCoverage.getCode().toString());
+//        }
+//        if (msgParam != null) {
+//            msgParam.setValue(timeCoverage.getMsg());
+//        }
 
     }
 
