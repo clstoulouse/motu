@@ -46,8 +46,8 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
 /**
  * This class represents a product.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-05-04 14:48:23 $
  */
 public class Product {
 
@@ -1649,14 +1649,27 @@ public class Product {
      * @throws MotuException the motu exception
      */
     public String getExtractLocationData() throws MotuException {
+        return Product.getExtractLocationData(extractFilename);
+    }
+    
+    /**
+     * Gets the extract location data.
+     * 
+     * @param fileName the file name
+     * 
+     * @return the extract location data
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static String getExtractLocationData(String fileName) throws MotuException {
 
-        if (extractFilename.length() <= 0) {
+        if (fileName.length() <= 0) {
             return "";
         }
         StringBuffer stringBuffer = new StringBuffer();
 
-        stringBuffer.append(getExtractionPath());
-        stringBuffer.append(extractFilename);
+        stringBuffer.append(Product.getExtractionPath());
+        stringBuffer.append(fileName);
 
         return stringBuffer.toString();
     }
@@ -1675,7 +1688,7 @@ public class Product {
             return "";
         }
         StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(getExtractionPath());
+        stringBuffer.append(Product.getExtractionPath());
         stringBuffer.append(extractFilenameTemp);
 
         return stringBuffer.toString();
@@ -1708,7 +1721,7 @@ public class Product {
      * 
      * @throws MotuException the motu exception
      */
-    public String getExtractionPath() throws MotuException {
+    public static String getExtractionPath() throws MotuException {
 
         StringBuffer stringBuffer = new StringBuffer();
 
@@ -1740,8 +1753,21 @@ public class Product {
      * @throws MotuException the motu exception
      */
     public String getDownloadUrlPath() throws MotuException {
+        return getDownloadUrlPath(extractFilename);
+    }
+    
+    /**
+     * Gets the download url path.
+     * 
+     * @param fileName the file name
+     * 
+     * @return the download url path
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static String getDownloadUrlPath(String fileName) throws MotuException {
 
-        if (extractFilename.length() <= 0) {
+        if (fileName.length() <= 0) {
             return "";
         }
 
@@ -1753,7 +1779,7 @@ public class Product {
         if (!(dir.endsWith("/") || dir.endsWith("\\"))) {
             stringBuffer.append("/");
         }
-        stringBuffer.append(extractFilename);
+        stringBuffer.append(fileName);
 
         return stringBuffer.toString();
     }

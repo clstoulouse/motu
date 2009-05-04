@@ -86,7 +86,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-04-01 14:06:15 $
+ * @version $Revision: 1.5 $ - $Date: 2009-05-04 14:48:23 $
  */
 public class Organizer {
 
@@ -1445,7 +1445,6 @@ public class Organizer {
         File fileData = new File(locationData);
 
         Long size = fileData.length();
-        size.doubleValue();
 
         Date lastModified = new Date(fileData.lastModified());
 
