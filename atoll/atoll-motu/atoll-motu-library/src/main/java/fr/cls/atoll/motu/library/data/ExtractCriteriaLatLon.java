@@ -47,7 +47,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
  * data (for extraction/selection and research).
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-04-27 10:47:21 $
+ * @version $Revision: 1.3 $ - $Date: 2009-05-04 09:57:56 $
  * 
  */
 public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
@@ -517,14 +517,12 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
 
         CoordinateAxis xaxis = gcs.getXHorizAxis();
         CoordinateAxis yaxis = gcs.getYHorizAxis();
-        
-        //Warning : CoordinateAxis min/max values doesn't have regard for missing value/fill value.
-        MAMath.MinMax xMinMax =  NetCdfWriter.getMinMaxSkipMissingData(xaxis, null);
-        MAMath.MinMax yMinMax =  NetCdfWriter.getMinMaxSkipMissingData(yaxis, null);
-        
-        LatLonRect gcsRect = new LatLonRect(new LatLonPointImpl(yMinMax.min, xMinMax.min), new LatLonPointImpl(
-                yMinMax.max,
-                xMinMax.max));
+
+        // Warning : CoordinateAxis min/max values doesn't have regard for missing value/fill value.
+        MAMath.MinMax xMinMax = NetCdfWriter.getMinMaxSkipMissingData(xaxis, null);
+        MAMath.MinMax yMinMax = NetCdfWriter.getMinMaxSkipMissingData(yaxis, null);
+
+        LatLonRect gcsRect = new LatLonRect(new LatLonPointImpl(yMinMax.min, xMinMax.min), new LatLonPointImpl(yMinMax.max, xMinMax.max));
         // If geo criteria include Lat/Lon coord. system : set criteria to Lat/Lon Coord. System
         if (gcsRect.containedIn(rect)) {
             rect = new LatLonRect(gcsRect);
@@ -537,11 +535,22 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                         rect.getLatMax(),
                         xMinMax.max)));
             }
+            // } else {
+            // double minLonTmp = (xMinMax.min > rect.getLonMin() ? xMinMax.min : rect.getLonMin());
+            // double maxLonTmp = (xMinMax.max < rect.getLonMax() ? xMinMax.max : rect.getLonMax());
+            // rect = new LatLonRect(new LatLonRect(new LatLonPointImpl(rect.getLatMin(), minLonTmp), new
+            // LatLonPointImpl(
+            // rect.getLatMax(),
+            // maxLonTmp)));
+            //
+            // }
+
             // If geo criteria include Lat coord. system : set criteria to /Lat Coord. System
             LatLonRect gcsRectLat = new LatLonRect(new LatLonPointImpl(yMinMax.min, 0), new LatLonPointImpl(yMinMax.max, 0));
             LatLonRect rectLat = new LatLonRect(new LatLonPointImpl(rect.getLatMin(), 0), new LatLonPointImpl(rect.getLatMax(), 0));
             if (gcsRectLat.containedIn(rectLat)) {
-                rect = new LatLonRect(new LatLonRect(new LatLonPointImpl(yMinMax.min, rect.getLonMin()), new LatLonPointImpl(yMinMax.max, rect.getLonMax())));
+                rect = new LatLonRect(new LatLonRect(new LatLonPointImpl(yMinMax.min, rect.getLonMin()), new LatLonPointImpl(yMinMax.max, rect
+                        .getLonMax())));
             }
 
         }
@@ -689,10 +698,11 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                 maxyIndex = yaxis1.findCoordElementBounded(maxy);
             }
 
-            // min x index is negative (not found), set min x index to max x index which is positive or equal
+            // min x index is negative (not found), set min x index to
             // to zero)
             if ((minxIndex < 0)) {
-                minxIndex = maxxIndex;
+                // minxIndex = maxxIndex;
+                minxIndex = 0;
             }
             // min x and max x have same value ==> min x and max x are same point ==> max index = min index
             if ((maxxIndex < 0) && (minx == maxx)) {
@@ -762,12 +772,12 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
             miny = Math.min(llpt.getLatitude(), lrpt.getLatitude());
             maxx = getMinOrMaxLon(urpt.getLongitude(), lrpt.getLongitude(), false);
             maxy = Math.min(ulpt.getLatitude(), urpt.getLatitude());
-            
+
             if (minx > maxx) {
-                double longitudeCenter =  minx + 180.0;
-                maxx = LatLonPointImpl.lonNormal(maxx, longitudeCenter);                        
+                double longitudeCenter = minx + 180.0;
+                maxx = LatLonPointImpl.lonNormal(maxx, longitudeCenter);
             }
-            
+
         } else {
             Projection dataProjection = gcs.getProjection();
             ProjectionPoint ll = dataProjection.latLonToProj(llpt, new ProjectionPointImpl());
@@ -806,14 +816,14 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
             for (int i = 0; i < ni; i++) {
                 lat = latAxis.getCoordValue(j, i);
                 lon = lonAxis.getCoordValue(j, i);
-                
+
                 if (latAxis.isMissing(lat)) {
                     continue;
                 }
                 if (lonAxis.isMissing(lon)) {
                     continue;
                 }
-                                    
+
                 if ((lat >= miny) && (lat <= maxy) && (lon >= minx) && (lon <= maxx)) {
                     if (i > maxi) {
                         // System.out.println("i > maxi -->" + "minj=" + minj + " maxj=" + maxj + " mini=" +
@@ -956,13 +966,11 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
 
         CoordinateAxis xaxis = gcs.getXHorizAxis();
         CoordinateAxis yaxis = gcs.getYHorizAxis();
-        
-        MAMath.MinMax xMinMax =  NetCdfWriter.getMinMaxSkipMissingData(xaxis, null);
-        MAMath.MinMax yMinMax =  NetCdfWriter.getMinMaxSkipMissingData(yaxis, null);
 
-        LatLonRect gcsRect = new LatLonRect(new LatLonPointImpl(yMinMax.min, xMinMax.min), new LatLonPointImpl(
-                yMinMax.max,
-                xMinMax.max));
+        MAMath.MinMax xMinMax = NetCdfWriter.getMinMaxSkipMissingData(xaxis, null);
+        MAMath.MinMax yMinMax = NetCdfWriter.getMinMaxSkipMissingData(yaxis, null);
+
+        LatLonRect gcsRect = new LatLonRect(new LatLonPointImpl(yMinMax.min, xMinMax.min), new LatLonPointImpl(yMinMax.max, xMinMax.max));
         if (gcsRect.containedIn(rect)) {
             rect = new LatLonRect(gcsRect);
         }
@@ -1028,7 +1036,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                     if (lonAxis.isMissing(lon)) {
                         continue;
                     }
-                    
+
                     if ((lat >= miny) && (lat <= maxy) && (lon >= minx) && (lon <= maxx)) {
                         if (i > maxi) {
                             // System.out.println("i > maxi -->" + "minj=" + minj + " maxj=" + maxj + " mini="
