@@ -22,7 +22,7 @@ import fr.cls.atoll.motu.msg.xml.TimeCoverage;
  * 
  * @author last edited by: $Author: dearith $
  * 
- * @version $Revision: 1.9 $, $Date: 2009-05-04 09:58:44 $
+ * @version $Revision: 1.10 $, $Date: 2009-05-04 16:16:34 $
  */
 public class ProductTimeCoverageProcess extends MotuWPSProcess {
 
@@ -164,7 +164,7 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
             endParam.setValue(timeCoverage.getEnd().normalize().toXMLFormat());
         }
 
-        setReturnCode(motuWPSProcessData.getProcessletOutputs(), timeCoverage.getCode().toString(), timeCoverage.getMsg());
+        setReturnCode(motuWPSProcessData.getProcessletOutputs(), timeCoverage.getCode().toString(), timeCoverage.getMsg(), false);
 //        if (codeParam != null) {
 //            codeParam.setValue(timeCoverage.getCode().toString());
 //        }

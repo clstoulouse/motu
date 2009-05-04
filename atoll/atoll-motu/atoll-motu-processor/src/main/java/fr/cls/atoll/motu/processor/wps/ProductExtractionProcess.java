@@ -26,7 +26,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.9 $, $Date: 2009-05-04 09:58:44 $
+ * @version $Revision: 1.10 $, $Date: 2009-05-04 16:16:35 $
  */
 public class ProductExtractionProcess extends MotuWPSProcess {
 
@@ -61,8 +61,6 @@ public class ProductExtractionProcess extends MotuWPSProcess {
         // }
         // return;
         // }
-
-        long threadId = Thread.currentThread().getId();
         
         
         Organizer.Format responseFormat = null;
@@ -172,7 +170,7 @@ public class ProductExtractionProcess extends MotuWPSProcess {
         } catch (MotuExceptionBase e) {
             LOG.error("MotuWPSProcess.productDownload(ExtractionParameters, String, int)", e);
 
-            setReturnCode(motuWPSProcessData.getProcessletOutputs(), e);
+            setReturnCode(motuWPSProcessData.getProcessletOutputs(), e, false);
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("productDownload(ExtractionParameters, String, int) - exiting");
@@ -204,7 +202,7 @@ public class ProductExtractionProcess extends MotuWPSProcess {
             ProductExtractionProcess.setRequestId(motuWPSProcessData.getProcessletOutputs(), Long.toString(requestId));
         } catch (MotuExceptionBase e) {
             LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
-            setReturnCode(motuWPSProcessData.getProcessletOutputs(), e);
+            setReturnCode(motuWPSProcessData.getProcessletOutputs(), e, false);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse) - exiting");
             }

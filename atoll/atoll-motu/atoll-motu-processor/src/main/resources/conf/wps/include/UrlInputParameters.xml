@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-		<ComplexOutput>
+		<ComplexInput>
 			<Identifier>url</Identifier>
 			<Title>Data url</Title>			
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
 			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
-		</ComplexOutput>
+		</ComplexInput>

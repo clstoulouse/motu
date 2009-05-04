@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE include [
+<!ENTITY statusResponseOutputParameters SYSTEM "../include/StatusResponseOutputParameters.xml">
+<!ENTITY requestIdOutputParameters SYSTEM "../include/RequestIdOutputParameters.xml">
+<!ENTITY requestIdInputParameters SYSTEM "../include/RequestIdInputParameters.xml">
+]>
+<ProcessDefinition configVersion="0.1.0"
+	processVersion="1.0.0" statusSupported="false" storeSupported="false"
+	xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/wps/0.1.0/process_definition.xsd">
+	
+	<Identifier>CompressExtraction</Identifier>
+	<JavaClass>fr.cls.atoll.motu.processor.wps.CompressExtractionProcess</JavaClass>
+	<Title>Process for data compression.</Title>
+	<Abstract>The purpose of this process is to compress data files.</Abstract>
+	<InputParameters>
+		&requestIdInputParameters;
+	</InputParameters>
+
+	<OutputParameters>
+		&requestIdOutputParameters;
+		&commonBasicOutputParameters;
+	</OutputParameters>
+</ProcessDefinition>

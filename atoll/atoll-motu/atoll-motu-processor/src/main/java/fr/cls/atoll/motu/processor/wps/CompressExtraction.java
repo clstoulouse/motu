@@ -7,6 +7,7 @@ import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
+import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.ReferencedComplexInput;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
@@ -17,31 +18,31 @@ import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.5 $, $Date: 2009-05-04 16:16:35 $
+ * @version $Revision: 1.1 $, $Date: 2009-05-04 16:16:35 $
  */
-public class ExtractedProductUrl extends MotuWPSProcess {
+public class CompressExtraction extends MotuWPSProcess {
 
     /**
      * Constructor.
      */
-    public ExtractedProductUrl() {
+    public CompressExtraction() {
     }
 
     /** The Constant LOG. */
-    private static final Logger LOG = Logger.getLogger(ExtractedProductUrl.class);
+    private static final Logger LOG = Logger.getLogger(CompressExtraction.class);
 
     /** {@inheritDoc} */
     @Override
     public void process(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info) throws ProcessletException {
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("BEGIN ExtractedProductUrl.process(), context: " + OGCFrontController.getContext());
+            LOG.debug("BEGIN CompressExtraction.process(), context: " + OGCFrontController.getContext());
         }
 
         super.process(in, out, info);
-       
+
         try {
-            getExtractedUrl(in);
+            zip(in);
         } catch (MotuException e) {
             setReturnCode(out, e, false);
         }
@@ -51,7 +52,7 @@ public class ExtractedProductUrl extends MotuWPSProcess {
     @Override
     public void destroy() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("ExtractedProductUrl#destroy() called");
+            LOG.debug("CompressExtraction#destroy() called");
         }
     }
 
@@ -59,7 +60,7 @@ public class ExtractedProductUrl extends MotuWPSProcess {
     @Override
     public void init() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("ExtractedProductUrl#init() called");
+            LOG.debug("CompressExtraction#init() called");
         }
         super.init();
 
@@ -72,7 +73,7 @@ public class ExtractedProductUrl extends MotuWPSProcess {
      * @throws MotuException the motu exception
      * @throws ProcessletException 
      */
-    private void getExtractedUrl(ProcessletInputs in) throws MotuException, ProcessletException {
+    private void zip(ProcessletInputs in) throws MotuException, ProcessletException {
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
         long requestId = -1;
 
@@ -81,12 +82,14 @@ public class ExtractedProductUrl extends MotuWPSProcess {
         StatusModeResponse statusModeResponse = waitForResponse(motuWPSProcessData.getRequestIdParamIn(), requestId);
 
         if (statusModeResponse == null) {
-            setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuInvalidRequestIdException(requestId), motuWPSProcessData.getRequestIdParamIn() instanceof ReferencedComplexInput);
+            setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuInvalidRequestIdException(requestId),
+                          motuWPSProcessData.getRequestIdParamIn() instanceof ReferencedComplexInput);
             return;
         }
-                
-        MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), statusModeResponse);
-        if ( MotuWPSProcess.isStatusDone(statusModeResponse)) {
+        
+
+        if ( !MotuWPSProcess.isStatusDone(statusModeResponse)) {
+            MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), statusModeResponse);
             MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), statusModeResponse);            
         } else {
             MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), "");            

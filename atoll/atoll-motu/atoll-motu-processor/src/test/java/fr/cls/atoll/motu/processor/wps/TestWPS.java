@@ -13,6 +13,8 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
 import org.deegree.commons.utils.HttpUtils;
 
+import fr.cls.atoll.motu.msg.xml.ErrorType;
+
 /**
  * <br>
  * <br>
@@ -21,7 +23,7 @@ import org.deegree.commons.utils.HttpUtils;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-04-23 14:16:09 $
+ * @version $Revision: 1.5 $ - $Date: 2009-05-04 16:16:35 $
  */
 public class TestWPS {
     /**
@@ -38,25 +40,33 @@ public class TestWPS {
      * @param args
      */
     public static void main(String[] args) {
+        
+//        for (ErrorType c: ErrorType.values()) {
+//            if (c.toString().equalsIgnoreCase("system")) {
+//                System.out.println(c.toString());
+//            }
+//        }
+
 
         //testBodyPost();
         //testUTF8EncodeDecode();
-        TestWPS test = new TestWPS();
         
-        TestWPS.GetObjectId id = test.new  GetObjectId();
-        System.out.println(id.hashCode());
-        TestWPS.GetObjectId id2 = test.new  GetObjectId();
-        System.out.println(id2.hashCode());
-        
-        TestWPS.GetObjectId id3 = id;
-        System.out.println(id3.hashCode());
-        
-        String abc = new String("Australia");
-        System.out.println("Hash code for String object: " + abc.hashCode());
-        String abc2 = new String("Australia");
-        System.out.println("Hash code for String object: " + abc2.hashCode());
-
-        
+//        TestWPS test = new TestWPS();
+//        
+//        TestWPS.GetObjectId id = test.new  GetObjectId();
+//        System.out.println(id.hashCode());
+//        TestWPS.GetObjectId id2 = test.new  GetObjectId();
+//        System.out.println(id2.hashCode());
+//        
+//        TestWPS.GetObjectId id3 = id;
+//        System.out.println(id3.hashCode());
+//        
+//        String abc = new String("Australia");
+//        System.out.println("Hash code for String object: " + abc.hashCode());
+//        String abc2 = new String("Australia");
+//        System.out.println("Hash code for String object: " + abc2.hashCode());
+//
+//        
         
 //        try {
 //            // Generate a DES key
