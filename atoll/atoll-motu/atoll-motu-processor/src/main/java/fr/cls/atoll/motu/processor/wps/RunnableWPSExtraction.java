@@ -6,6 +6,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
+import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.output.LiteralOutput;
 
@@ -26,7 +27,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-04-22 14:40:14 $
+ * @version $Revision: 1.6 $ - $Date: 2009-05-05 10:28:48 $
  */
 public class RunnableWPSExtraction extends RunnableExtraction {
     /**
@@ -244,7 +245,11 @@ public class RunnableWPSExtraction extends RunnableExtraction {
 
     }
     protected void setReturnCode() {
-        ProductExtractionProcess.setReturnCode(response, statusModeResponse);
+        try {
+            ProductExtractionProcess.setReturnCode(response, statusModeResponse, false);
+        } catch (ProcessletException e) {
+            // Do Nothing
+        }
 
     }
 //

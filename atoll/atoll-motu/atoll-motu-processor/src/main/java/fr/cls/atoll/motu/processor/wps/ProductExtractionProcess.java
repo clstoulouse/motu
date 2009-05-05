@@ -26,7 +26,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.10 $, $Date: 2009-05-04 16:16:35 $
+ * @version $Revision: 1.11 $, $Date: 2009-05-05 10:28:48 $
  */
 public class ProductExtractionProcess extends MotuWPSProcess {
 
@@ -222,7 +222,7 @@ public class ProductExtractionProcess extends MotuWPSProcess {
                 // $$$$$ response.setContentType(null);
                 // $$$$$ Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());               
                 ProductExtractionProcess.setStatus(motuWPSProcessData.getProcessletOutputs(), statusModeResponse.getStatus());
-                setReturnCode(motuWPSProcessData.getProcessletOutputs(), statusModeResponse);
+                setReturnCode(motuWPSProcessData.getProcessletOutputs(), statusModeResponse, false);
             } else {
                 // --------- wait for the end of the request -----------
                 requestEndedCondition.await();
@@ -258,81 +258,5 @@ public class ProductExtractionProcess extends MotuWPSProcess {
 
  
 
-    public void setStatus(ProcessletInputs in, StatusModeType status) throws MotuException, ProcessletException {
-        MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
-
-        ProductExtractionProcess.setStatus(motuWPSProcessData.getProcessletOutputs(), status);
-
-    }
-
-    public void setStatus(ProcessletInputs in, String status) throws MotuException, ProcessletException {
-        MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
-        ProductExtractionProcess.setStatus(motuWPSProcessData.getProcessletOutputs(), status);
-    }
-
-    /**
-     * Sets the resquest id.
-     * 
-     * @param response the response
-     * @param requestId the request id
-     * @throws MotuException
-     */
-    public static void setRequestId(ProcessletOutputs response, long requestId) throws MotuException {
-
-        ProductExtractionProcess.setRequestId(response, Long.toString(requestId));
-
-    }
-
-    /**
-     * Sets the resquest id.
-     * 
-     * @param response the response
-     * @param requestId the request id
-     * @throws MotuException
-     */
-    public static void setRequestId(ProcessletOutputs response, String requestId) throws MotuException {
-
-        synchronized (response) {
-
-            if (response == null) {
-                return;
-            }
-
-            ComplexOutput requestIdParam = (ComplexOutput) response.getParameter(MotuWPSProcess.PARAM_REQUESTID);
-
-            if ((requestIdParam == null) || (requestId == null)) {
-                return;
-            }
-
-            try {
-                requestIdParam.getBinaryOutputStream().write(requestId.getBytes());
-            } catch (IOException e) {
-                throw new MotuException("ERROR ProductExtractionProcess#setResquestId", e);
-            }
-        }
-
-    }
-
-    public static void setStatus(ProcessletOutputs response, StatusModeType status) {
-        ProductExtractionProcess.setStatus(response, Integer.toString(status.value()));
-
-    }
-
-    public static void setStatus(ProcessletOutputs response, String status) {
-        synchronized (response) {
-
-            if (response == null) {
-                return;
-            }
-            LiteralOutput statusParam = (LiteralOutput) response.getParameter(MotuWPSProcess.PARAM_STATUS);
-
-            if ((statusParam == null) || (status == null)) {
-                return;
-            }
-
-            statusParam.setValue(status);
-        }
-
-    }
 
 }

@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.apache.log4j.Logger;
 import org.deegree.services.wps.Processlet;
@@ -24,7 +21,6 @@ import org.deegree.services.wps.output.LiteralOutput;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.exception.MotuInvalidRequestIdException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.library.queueserver.RequestManagement;
@@ -40,7 +36,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.13 $ - $Date: 2009-05-04 16:16:35 $
+ * @version $Revision: 1.14 $ - $Date: 2009-05-05 10:28:48 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
@@ -346,7 +342,7 @@ public abstract class MotuWPSProcess implements Processlet {
      * 
      * @param response the response
      * @param e the e
-     * @throws ProcessletException 
+     * @throws ProcessletException
      */
     public static void setReturnCode(ProcessletOutputs response, MotuExceptionBase e, boolean throwProcessletException) throws ProcessletException {
 
@@ -359,7 +355,7 @@ public abstract class MotuWPSProcess implements Processlet {
      * 
      * @param response the response
      * @param e the e
-     * @throws ProcessletException 
+     * @throws ProcessletException
      */
     public static void setReturnCode(ProcessletOutputs response, Exception e, boolean throwProcessletException) throws ProcessletException {
 
@@ -372,7 +368,7 @@ public abstract class MotuWPSProcess implements Processlet {
      * 
      * @param response the response
      * @param msg the msg
-     * @throws ProcessletException 
+     * @throws ProcessletException
      */
     public static void setReturnCode(ProcessletOutputs response, String msg, boolean throwProcessletException) throws ProcessletException {
 
@@ -386,9 +382,10 @@ public abstract class MotuWPSProcess implements Processlet {
      * @param response the response
      * @param code the code
      * @param msg the msg
-     * @throws ProcessletException 
+     * @throws ProcessletException
      */
-    public static void setReturnCode(ProcessletOutputs response, ErrorType code, String msg, boolean throwProcessletException) throws ProcessletException {
+    public static void setReturnCode(ProcessletOutputs response, ErrorType code, String msg, boolean throwProcessletException)
+            throws ProcessletException {
 
         MotuWPSProcess.setReturnCode(response, code.toString(), msg, throwProcessletException);
     }
@@ -399,9 +396,10 @@ public abstract class MotuWPSProcess implements Processlet {
      * @param response the response
      * @param code the code
      * @param msg the msg
-     * @throws ProcessletException 
+     * @throws ProcessletException
      */
-    public static void setReturnCode(ProcessletOutputs response, String code, String msg, boolean throwProcessletException) throws ProcessletException {
+    public static void setReturnCode(ProcessletOutputs response, String code, String msg, boolean throwProcessletException)
+            throws ProcessletException {
         synchronized (response) {
             if (response == null) {
                 return;
@@ -429,15 +427,12 @@ public abstract class MotuWPSProcess implements Processlet {
      * 
      * @param response the response
      * @param statusModeResponse the status mode response
-     * @throws ProcessletException 
+     * @throws ProcessletException
      */
-    public static void setReturnCode(ProcessletOutputs response, StatusModeResponse statusModeResponse) {
+    public static void setReturnCode(ProcessletOutputs response, StatusModeResponse statusModeResponse, boolean throwProcessletException)
+            throws ProcessletException {
 
-        try {
-            MotuWPSProcess.setReturnCode(response, statusModeResponse.getCode(), statusModeResponse.getMsg(), false);
-        } catch (ProcessletException e) {            
-            //Do nothing
-        }
+        MotuWPSProcess.setReturnCode(response, statusModeResponse.getCode(), statusModeResponse.getMsg(), throwProcessletException);
 
     }
 
@@ -447,10 +442,28 @@ public abstract class MotuWPSProcess implements Processlet {
      * @param code the code
      * @param e the e
      * @param response the response
-     * @throws ProcessletException 
+     * @throws ProcessletException
      */
 
-    public static void setReturnCode(ProcessletOutputs response, ErrorType code, Exception e, boolean throwProcessletException) throws ProcessletException {
+    public static void setReturnCode(ProcessletOutputs response, ErrorType code, MotuException e, boolean throwProcessletException)
+            throws ProcessletException {
+
+        setReturnCode(response, code, e.notifyException(), throwProcessletException);
+
+    }
+
+    /**
+     * Sets the return code.
+     * 
+     * @param response the response
+     * @param code the code
+     * @param e the e
+     * @param throwProcessletException the throw processlet exception
+     * 
+     * @throws ProcessletException the processlet exception
+     */
+    public static void setReturnCode(ProcessletOutputs response, ErrorType code, Exception e, boolean throwProcessletException)
+            throws ProcessletException {
 
         setReturnCode(response, code, e.getMessage(), throwProcessletException);
 
@@ -566,7 +579,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
             setReturnCode(motuWPSProcessData.getProcessletOutputs(), ErrorType.INCONSISTENCY, msg, true);
             return null;
-            //throw new ProcessletException(msg);
+            // throw new ProcessletException(msg);
         }
 
         if (!MotuWPSProcess.isNullOrEmpty(locationDataParam) && !MotuWPSProcess.isNullOrEmpty(productIdParam)) {
@@ -580,7 +593,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
             setReturnCode(motuWPSProcessData.getProcessletOutputs(), ErrorType.INCONSISTENCY, msg, true);
             return null;
-            //throw new ProcessletException(msg);
+            // throw new ProcessletException(msg);
         }
 
         if (MotuWPSProcess.isNullOrEmpty(serviceNameParam) && !MotuWPSProcess.isNullOrEmpty(productIdParam)) {
@@ -592,7 +605,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
             setReturnCode(motuWPSProcessData.getProcessletOutputs(), ErrorType.INCONSISTENCY, msg, true);
             return null;
-            //throw new ProcessletException(msg);
+            // throw new ProcessletException(msg);
         }
 
         if (serviceNameParam != null) {
@@ -1029,6 +1042,83 @@ public abstract class MotuWPSProcess implements Processlet {
         }
 
         return statusModeResponse;
+
+    }
+
+    public void setStatus(ProcessletInputs in, StatusModeType status) throws MotuException, ProcessletException {
+        MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
+
+        MotuWPSProcess.setStatus(motuWPSProcessData.getProcessletOutputs(), status);
+
+    }
+
+    public void setStatus(ProcessletInputs in, String status) throws MotuException, ProcessletException {
+        MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
+        MotuWPSProcess.setStatus(motuWPSProcessData.getProcessletOutputs(), status);
+    }
+
+    /**
+     * Sets the resquest id.
+     * 
+     * @param response the response
+     * @param requestId the request id
+     * @throws MotuException
+     */
+    public static void setRequestId(ProcessletOutputs response, long requestId) throws MotuException {
+
+        MotuWPSProcess.setRequestId(response, Long.toString(requestId));
+
+    }
+
+    /**
+     * Sets the resquest id.
+     * 
+     * @param response the response
+     * @param requestId the request id
+     * @throws MotuException
+     */
+    public static void setRequestId(ProcessletOutputs response, String requestId) throws MotuException {
+
+        synchronized (response) {
+
+            if (response == null) {
+                return;
+            }
+
+            ComplexOutput requestIdParam = (ComplexOutput) response.getParameter(MotuWPSProcess.PARAM_REQUESTID);
+
+            if ((requestIdParam == null) || (requestId == null)) {
+                return;
+            }
+
+            try {
+                requestIdParam.getBinaryOutputStream().write(requestId.getBytes());
+            } catch (IOException e) {
+                throw new MotuException("ERROR MotuWPSProcess#setResquestId", e);
+            }
+        }
+
+    }
+
+    public static void setStatus(ProcessletOutputs response, StatusModeType status) {
+        MotuWPSProcess.setStatus(response, Integer.toString(status.value()));
+
+    }
+
+    public static void setStatus(ProcessletOutputs response, String status) {
+        synchronized (response) {
+
+            if (response == null) {
+                return;
+            }
+            LiteralOutput statusParam = (LiteralOutput) response.getParameter(MotuWPSProcess.PARAM_STATUS);
+
+            if ((statusParam == null) || (status == null)) {
+                return;
+            }
+
+            statusParam.setValue(status);
+        }
 
     }
 

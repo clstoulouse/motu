@@ -13,8 +13,6 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
 import org.deegree.commons.utils.HttpUtils;
 
-import fr.cls.atoll.motu.msg.xml.ErrorType;
-
 /**
  * <br>
  * <br>
@@ -23,7 +21,7 @@ import fr.cls.atoll.motu.msg.xml.ErrorType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-05-04 16:16:35 $
+ * @version $Revision: 1.6 $ - $Date: 2009-05-05 10:28:48 $
  */
 public class TestWPS {
     /**

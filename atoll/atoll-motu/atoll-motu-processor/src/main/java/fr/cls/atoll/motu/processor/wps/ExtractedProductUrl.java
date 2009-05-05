@@ -17,7 +17,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.5 $, $Date: 2009-05-04 16:16:35 $
+ * @version $Revision: 1.6 $, $Date: 2009-05-05 10:28:48 $
  */
 public class ExtractedProductUrl extends MotuWPSProcess {
 
@@ -39,7 +39,7 @@ public class ExtractedProductUrl extends MotuWPSProcess {
         }
 
         super.process(in, out, info);
-       
+
         try {
             getExtractedUrl(in);
         } catch (MotuException e) {
@@ -70,27 +70,31 @@ public class ExtractedProductUrl extends MotuWPSProcess {
      * Gets the extracted url.
      * 
      * @throws MotuException the motu exception
-     * @throws ProcessletException 
+     * @throws ProcessletException
      */
     private void getExtractedUrl(ProcessletInputs in) throws MotuException, ProcessletException {
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
         long requestId = -1;
 
         requestId = getRequestIdAsLong(in);
-        
+
         StatusModeResponse statusModeResponse = waitForResponse(motuWPSProcessData.getRequestIdParamIn(), requestId);
 
         if (statusModeResponse == null) {
-            setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuInvalidRequestIdException(requestId), motuWPSProcessData.getRequestIdParamIn() instanceof ReferencedComplexInput);
+            MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuInvalidRequestIdException(requestId), motuWPSProcessData
+                    .getRequestIdParamIn() instanceof ReferencedComplexInput);
             return;
         }
-                
-        MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), statusModeResponse);
-        if ( MotuWPSProcess.isStatusDone(statusModeResponse)) {
-            MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), statusModeResponse);            
+
+        if (MotuWPSProcess.isStatusDone(statusModeResponse)) {
+            MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), statusModeResponse);
         } else {
-            MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), "");            
+            MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), "");
         }
+        
+        MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(),
+                                     statusModeResponse,
+                                     motuWPSProcessData.getRequestIdParamIn() instanceof ReferencedComplexInput);
     }
 
 }
