@@ -27,7 +27,7 @@ import fr.cls.atoll.motu.library.exception.MotuException;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-05-04 14:48:23 $
+ * @version $Revision: 1.2 $ - $Date: 2009-05-05 10:28:37 $
  */
 public class Zip {
 
@@ -64,29 +64,53 @@ public class Zip {
         files.add("C:/BratWks/thelasttest/Operations/CreateOperations_1.cmd");
         files.add("C:/BratWks/TestPreselection/Operations/CreateEnvisat.nc");
         try {
-            // File xx = new File(zipFileName);
-            // System.out.println(xx.getName());
-            // System.out.println(xx.toURI());
-            // System.out.println(xx.getCanonicalPath());
-            // System.out.println(xx.getCanonicalFile());
-            // Zip.zip(zipFileName, files.toArray(new String[files.size()]));
-            List<String> listFiles = Zip.getEntries(zipFileName);
-            System.out.println(listFiles.toString());
-            Zip.unzip(zipFileName, "c:\\temp\\testtt");
+//            Zip.zip(zipFileName, files.toArray(new String[files.size()]), false);
+//            List<String> listFiles = Zip.getEntries(zipFileName);
+//            System.out.println(listFiles.toString());
+//            Zip.unzip(zipFileName, "c:\\temp\\testtt");
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    /**
+     * Zip.
+     * 
+     * @param zipFileName the zip file name
+     * @param file the file to zip
+     * @param storeOrignalFolders the store orignal folders
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static void zip(String zipFileName, String file, boolean storeOrignalFolders) throws MotuException {
+        String[] files = new String[1];
+        files[0] = file;
+        Zip.zip(zipFileName, files, storeOrignalFolders);
     }
 
     /**
      * Zip.
      * 
-     * @param files the files
      * @param zipFileName the zip file name
+     * @param files the files to zip
+     * @param storeOrignalFolders the store orignal folders
      * 
      * @throws MotuException the motu exception
      */
-    public static void zip(String zipFileName, String[] files) throws MotuException {
+    public static void zip(String zipFileName, List<String> files, boolean storeOrignalFolders) throws MotuException {
+        Zip.zip(zipFileName, files.toArray(new String[files.size()]), storeOrignalFolders);
+    }
+    
+    /**
+     * Zip.
+     * 
+     * @param files the files to sip
+     * @param zipFileName the zip file name
+     * @param storeOrignalFolders the store orignal folders
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static void zip(String zipFileName, String[] files, boolean storeOrignalFolders) throws MotuException {
         try {
             // création d'un flux d'écriture sur fichier
             FileOutputStream dest = new FileOutputStream(zipFileName);
@@ -125,8 +149,19 @@ public class Zip {
                 // création d'un tampon de lecture sur ce flux
                 BufferedInputStream buffi = new BufferedInputStream(fi, BUFFER);
 
+                String entryName = "";
+                ZipEntry entry = null;
+                
+                if (storeOrignalFolders) {
+                    entryName = files[i];
+                } else {
+                    File f = new File(files[i]);
+                    entryName = f.getName();
+                    
+                }
+
                 // création d'une entrée Zip pour ce fichier
-                ZipEntry entry = new ZipEntry(Zip.unAccent(files[i]));
+                entry = new ZipEntry(Zip.unAccent(entryName));
 
                 // ajout de cette entrée dans le flux d'écriture de l'archive Zip
                 out.putNextEntry(entry);
@@ -272,6 +307,7 @@ public class Zip {
                 String targetFilename = "";
 
                 String entryName = entry.getName();
+                
                 if (!restoreOrignalFolders) {
                     File f = new File(entryName);
                     entryName = f.getName();

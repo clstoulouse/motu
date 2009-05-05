@@ -86,7 +86,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-05-04 14:48:23 $
+ * @version $Revision: 1.6 $ - $Date: 2009-05-05 10:28:37 $
  */
 public class Organizer {
 
@@ -235,6 +235,8 @@ public class Organizer {
 
     /** The unmarshaller tds config. */
     private static Unmarshaller unmarshallerTdsConfig = null;
+    
+    public static final String ZIP_EXTENSION = "gz";
 
     /** The current language (default is english). */
     private Language currentLanguage = null;
@@ -317,6 +319,26 @@ public class Organizer {
         return Organizer.convertFromKilobytesToBytes(value * 1024d);
     }
 
+    /**
+     * Extract file name.
+     * 
+     * @param pathOrUrl the path or url
+     * 
+     * @return the string
+     */
+    public static String extractFileName(String pathOrUrl) {
+        
+        pathOrUrl = pathOrUrl.replace('\\', '/');
+        String[] pathOrUrlSplit = pathOrUrl.split("/");
+        
+        String fileName = "";
+
+        if (pathOrUrlSplit.length > 0) {
+            fileName = pathOrUrlSplit[pathOrUrlSplit.length - 1];
+        }
+        
+        return fileName;
+    }
     /**
      * Creates the request size.
      * 

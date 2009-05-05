@@ -109,5 +109,14 @@ public enum ErrorType {
         }
         throw new IllegalArgumentException(String.valueOf(v));
     }
+    
+    public static ErrorType fromValue(String v) {
+        for (ErrorType c: ErrorType.values()) {
+            if (c.toString().equalsIgnoreCase(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(String.valueOf(v));
+    }
 
 }
