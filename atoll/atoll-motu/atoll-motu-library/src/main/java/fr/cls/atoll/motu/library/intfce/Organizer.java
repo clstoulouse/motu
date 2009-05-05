@@ -86,7 +86,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.6 $ - $Date: 2009-05-05 10:28:37 $
+ * @version $Revision: 1.7 $ - $Date: 2009-05-05 14:46:57 $
  */
 public class Organizer {
 
@@ -2247,7 +2247,7 @@ public class Organizer {
 
         ProductPersistent productPersistent = servicePersistent.getProductsPersistent(productId);
         if (productPersistent == null) {
-            throw new MotuException(String.format("ERROR in extractData - product '%s' not found in persistent map", productId));
+            throw new MotuException(String.format("ERROR in extractData - product '%s' not found", productId));
         }
 
         String locationData = productPersistent.getUrl();
@@ -2529,7 +2529,7 @@ public class Organizer {
 
         ProductPersistent productPersistent = servicePersistent.getProductsPersistent(productId);
         if (productPersistent == null) {
-            throw new MotuException(String.format("ERROR in getAmountDataSize - product '%s' not found in persistent map", productId));
+            throw new MotuException(String.format("ERROR in getAmountDataSize - product '%s' not found", productId));
         }
 
         String locationData = productPersistent.getUrl();
@@ -3210,7 +3210,7 @@ public class Organizer {
 
         ProductPersistent productPersistent = servicePersistent.getProductsPersistent(productId);
         if (productPersistent == null) {
-            throw new MotuException(String.format("ERROR in getTimeCoverage - product '%s' not found in persistent map", productId));
+            throw new MotuException(String.format("ERROR in getTimeCoverage - product '%s' not found", productId));
         }
 
         if (LOG.isDebugEnabled()) {

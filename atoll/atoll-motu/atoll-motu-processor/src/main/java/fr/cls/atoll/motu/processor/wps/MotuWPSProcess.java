@@ -36,7 +36,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.14 $ - $Date: 2009-05-05 10:28:48 $
+ * @version $Revision: 1.15 $ - $Date: 2009-05-05 14:47:20 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
@@ -445,7 +445,7 @@ public abstract class MotuWPSProcess implements Processlet {
      * @throws ProcessletException
      */
 
-    public static void setReturnCode(ProcessletOutputs response, ErrorType code, MotuException e, boolean throwProcessletException)
+    public static void setReturnCode(ProcessletOutputs response, ErrorType code, MotuExceptionBase e, boolean throwProcessletException)
             throws ProcessletException {
 
         setReturnCode(response, code, e.notifyException(), throwProcessletException);
@@ -659,7 +659,16 @@ public abstract class MotuWPSProcess implements Processlet {
     public long getRequestIdAsLong(ProcessletInputs in) throws MotuException, ProcessletException {
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
 
-        return MotuWPSProcess.getComplexInputValueAsLongFromBinaryStream(motuWPSProcessData.getRequestIdParamIn());
+        long requestId = -1;
+        try {
+            requestId = MotuWPSProcess.getComplexInputValueAsLongFromBinaryStream(motuWPSProcessData.getRequestIdParamIn());
+        } catch (MotuExceptionBase e) {
+            if (motuWPSProcessData.getRequestIdParamIn() instanceof ReferencedComplexInput) {
+                throw new ProcessletException(e.notifyException());
+            }
+        }
+
+        return requestId;
     }
 
     /**
@@ -1102,6 +1111,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
     public static void setStatus(ProcessletOutputs response, StatusModeType status) {
         MotuWPSProcess.setStatus(response, Integer.toString(status.value()));
+        //MotuWPSProcess.setStatus(response, status.toString());
 
     }
 

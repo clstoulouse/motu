@@ -16,7 +16,7 @@
 	xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/wps/0.1.0/process_definition.xsd">
 	
 	<Identifier>ExtractData</Identifier>
-	<JavaClass>fr.cls.atoll.motu.processor.wps.ProductExtractionProcess</JavaClass>
+	<JavaClass>fr.cls.atoll.motu.processor.wps.ProductExtraction</JavaClass>
 	<Title>Process for data extraction from a product.</Title>
 	<Abstract><![CDATA[The purpose of this process is to extract data from a product.
 	A product is identified either by the Service name and Product name input parameters or by the url of the product (Data input parameter)

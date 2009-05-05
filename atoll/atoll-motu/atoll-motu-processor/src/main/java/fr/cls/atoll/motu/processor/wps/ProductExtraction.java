@@ -26,18 +26,18 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.11 $, $Date: 2009-05-05 10:28:48 $
+ * @version $Revision: 1.1 $, $Date: 2009-05-05 14:47:20 $
  */
-public class ProductExtractionProcess extends MotuWPSProcess {
+public class ProductExtraction extends MotuWPSProcess {
 
     /**
      * Constructeur.
      */
-    public ProductExtractionProcess() {
+    public ProductExtraction() {
     }
 
     /** The Constant LOG. */
-    private static final Logger LOG = Logger.getLogger(ProductExtractionProcess.class);
+    private static final Logger LOG = Logger.getLogger(ProductExtraction.class);
 
     //protected boolean isRequestIdSet = false;
 
@@ -46,7 +46,7 @@ public class ProductExtractionProcess extends MotuWPSProcess {
     public void process(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info) throws ProcessletException {
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("BEGIN ProductExtractionProcess.process(), context: " + OGCFrontController.getContext());
+            LOG.debug("BEGIN ProductExtraction.process(), context: " + OGCFrontController.getContext());
         }
 
         super.process(in, out, info);
@@ -54,10 +54,10 @@ public class ProductExtractionProcess extends MotuWPSProcess {
         // try {
         // setResquestId(-1);
         // } catch (MotuExceptionBase e) {
-        // LOG.error("ProductExtractionProcess.process()", e);
+        // LOG.error("ProductExtraction.process()", e);
         // setReturnCode(e);
         // if (LOG.isDebugEnabled()) {
-        // LOG.debug("ProductExtractionProcess.process() - exiting");
+        // LOG.debug("ProductExtraction.process() - exiting");
         // }
         // return;
         // }
@@ -101,14 +101,17 @@ public class ProductExtractionProcess extends MotuWPSProcess {
             LOG.error("process(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo)", e);
 
             try {
-                ProductExtractionProcess.setRequestId(motuWPSProcessData.getProcessletOutputs(), Long.toString(-1L));
+                if (motuWPSProcessData.getRequestId() == -1) {
+                    MotuWPSProcess.setRequestId(motuWPSProcessData.getProcessletOutputs(), Long.toString(-1L));
+                    
+                }
             } catch (MotuException e1) {
                 LOG.error("process(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo)", e1);
             }
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("ProductExtractionProcess.process() - exiting");
+            LOG.debug("ProductExtraction.process() - exiting");
         }
         return;
 
@@ -118,7 +121,7 @@ public class ProductExtractionProcess extends MotuWPSProcess {
     @Override
     public void destroy() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("ProductExtractionProcess#destroy() called");
+            LOG.debug("ProductExtraction#destroy() called");
         }
     }
 
@@ -126,7 +129,7 @@ public class ProductExtractionProcess extends MotuWPSProcess {
     @Override
     public void init() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("ProductExtractionProcess#init() called");
+            LOG.debug("ProductExtraction#init() called");
         }
         super.init();
     }
@@ -138,10 +141,9 @@ public class ProductExtractionProcess extends MotuWPSProcess {
      * @param priority the priority
      * @param extractionParameters the extraction parameters
      * @param mode the mode
-     * @throws Exception
-     * @throws IOException the IO exception
+     * @throws MotuExceptionBase, Exception 
      */
-    private void productDownload(ProcessletInputs in, ExtractionParameters extractionParameters, String mode, int priority) throws Exception {
+    private void productDownload(ProcessletInputs in, ExtractionParameters extractionParameters, String mode, int priority) throws MotuExceptionBase, Exception  {
         if (LOG.isDebugEnabled()) {
             LOG.debug("productDownload(ExtractionParameters, String, int) - entering");
         }
@@ -197,9 +199,10 @@ public class ProductExtractionProcess extends MotuWPSProcess {
         statusModeResponse = runnableWPSExtraction.getStatusModeResponse();
 
         statusModeResponse.setRequestId(requestId);
+        motuWPSProcessData.setRequestId(requestId);
 
         try {
-            ProductExtractionProcess.setRequestId(motuWPSProcessData.getProcessletOutputs(), Long.toString(requestId));
+            MotuWPSProcess.setRequestId(motuWPSProcessData.getProcessletOutputs(), Long.toString(requestId));
         } catch (MotuExceptionBase e) {
             LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
             setReturnCode(motuWPSProcessData.getProcessletOutputs(), e, false);
@@ -221,8 +224,8 @@ public class ProductExtractionProcess extends MotuWPSProcess {
             if (modeStatus) {
                 // $$$$$ response.setContentType(null);
                 // $$$$$ Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());               
-                ProductExtractionProcess.setStatus(motuWPSProcessData.getProcessletOutputs(), statusModeResponse.getStatus());
-                setReturnCode(motuWPSProcessData.getProcessletOutputs(), statusModeResponse, false);
+                MotuWPSProcess.setStatus(motuWPSProcessData.getProcessletOutputs(), statusModeResponse.getStatus());
+                MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), statusModeResponse, false);
             } else {
                 // --------- wait for the end of the request -----------
                 requestEndedCondition.await();

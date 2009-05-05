@@ -6,8 +6,8 @@ import org.apache.log4j.Logger;
  * <br><br>Copyright : Copyright (c) 2008.
  * <br><br>Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-05-05 14:46:57 $
  */
 public class MotuInvalidRequestIdException extends MotuExceptionBase {
 
@@ -78,7 +78,7 @@ public class MotuInvalidRequestIdException extends MotuExceptionBase {
 
         stringBuffer.append("The request id '.");
         stringBuffer.append(getIdAsString());
-        stringBuffer.append(" ' (or null if négative value) is not valid or unknown.");
+        stringBuffer.append(" ' (or null if negative value) is not valid or unknown.");
         return stringBuffer.toString();
     }
 }
