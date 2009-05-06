@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>atoll-motu</artifactId>
 		<groupId>cls.atoll</groupId>
@@ -10,10 +11,10 @@
 	<artifactId>atoll-motu-library</artifactId>
 	<packaging>jar</packaging>
 	<version>2.0.0-SNAPSHOT</version>
-	<name>ATOLL Motu Library</name>	
+	<name>ATOLL Motu Library</name>
 	<scm>
 		<connection>scm:cvs:pserver:@cvsserver.cls.fr:/home/cvs/REPOSITORIES/mvn-atoll:atoll/atoll-motu/atoll-motu-library</connection>
-    </scm>
+	</scm>
 	<description>This package holds the core components of the Motu server.</description>
 	<dependencies>
 		<dependency>
@@ -21,13 +22,27 @@
 			<artifactId>atoll-motu-msg</artifactId>
 			<version>2.0.0-SNAPSHOT</version>
 		</dependency>
-		<!-- 
-		<dependency>
-			<groupId>org.deegree</groupId>
+		<!--
+			<dependency> <groupId>org.deegree</groupId>
 			<artifactId>deegree-services</artifactId>
-			<version>3.0-alpha2-dev1</version>
-		</dependency>		
-		 -->
+			<version>3.0-alpha2-dev1</version> </dependency>
+		-->
+		<dependency>
+			<groupId>commons-vfs</groupId>
+			<artifactId>commons-vfs</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-net</groupId>
+			<artifactId>commons-net</artifactId>
+			<version>1.4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.1</version>
+		</dependency>
+
 		<dependency>
 			<groupId>quartz</groupId>
 			<artifactId>quartz</artifactId>
@@ -39,20 +54,20 @@
 			<version>1.2.2</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-api</artifactId>
-		    <version>1.5.6</version>
-		</dependency> 	
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.5.6</version>
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.5.6</version>
 		</dependency>
 		<dependency>
-		    <groupId>log4j</groupId>
-		    <artifactId>log4j</artifactId>
-		    <version>1.2.15</version>
-		</dependency> 
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.15</version>
+		</dependency>
 		<dependency>
 			<groupId>velocity</groupId>
 			<artifactId>velocity</artifactId>
@@ -79,53 +94,32 @@
 			<artifactId>netcdf</artifactId>
 			<version>4.0.34</version>
 		</dependency>
-		<!--  
-		<dependency>
-			<groupId>ucar</groupId>
-			<artifactId>netcdfUI</artifactId>
-			<version>2.2.22.20</version>
-		</dependency>
-		<dependency>
-			<groupId>ucar</groupId>
-			<artifactId>jpeg2000</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>ucar</groupId>
-			<artifactId>grib</artifactId>
-			<version>6.0.7</version>
-		</dependency>
-		<dependency>
-			<groupId>ucar</groupId>
-			<artifactId>bufr</artifactId>
-			<version>1.4.00</version>
-		</dependency>
-		<dependency>
-			<groupId>ucar</groupId>
-			<artifactId>resopt</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>ucar</groupId>
-			<artifactId>opendap</artifactId>
-			<version>2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>jdom</groupId>
-			<artifactId>jdom</artifactId>
-			<version>1.0</version>
-		</dependency>
+		<!--
+			<dependency> <groupId>ucar</groupId>
+			<artifactId>netcdfUI</artifactId> <version>2.2.22.20</version>
+			</dependency> <dependency> <groupId>ucar</groupId>
+			<artifactId>jpeg2000</artifactId> <version>1.0</version>
+			</dependency> <dependency> <groupId>ucar</groupId>
+			<artifactId>grib</artifactId> <version>6.0.7</version> </dependency>
+			<dependency> <groupId>ucar</groupId> <artifactId>bufr</artifactId>
+			<version>1.4.00</version> </dependency> <dependency>
+			<groupId>ucar</groupId> <artifactId>resopt</artifactId>
+			<version>1.0</version> </dependency> <dependency>
+			<groupId>ucar</groupId> <artifactId>opendap</artifactId>
+			<version>2.1</version> </dependency> <dependency>
+			<groupId>jdom</groupId> <artifactId>jdom</artifactId>
+			<version>1.0</version> </dependency>
 		-->
 		<dependency>
 			<groupId>cls.commons</groupId>
 			<artifactId>cls-commons-util5</artifactId>
 			<version>1.0.1.40</version>
 		</dependency>
- 		<dependency>
+		<dependency>
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
-<!-- 
+			<!-- 
 			<version>3.0.1</version>
 -->
 		</dependency>
