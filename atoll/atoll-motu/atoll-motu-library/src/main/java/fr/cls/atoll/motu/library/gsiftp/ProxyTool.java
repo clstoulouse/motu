@@ -27,6 +27,7 @@ import org.globus.util.Util;
  * Utility class to create a grid proxy.
  * 
  * @author Vladimir Silva
+ * @version $Revision: 1.2 $ $Date: 2009-05-14 14:17:22 $
  */
 public class ProxyTool {
     
