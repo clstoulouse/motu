@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.cls.atoll.motu.library.gsiftp;
+package fr.cls.atoll.motu.library.vfs.provider.gsiftp;
 
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemOptions;
@@ -26,7 +26,7 @@ import java.io.IOException;
  * 
  * @author <a href="mailto:imario@apache.org">Mario Ivankovits</a>
  * @author <a href="mailto:vladimir_silva@yaho.com">Vladimir Silva</a>
- * @version $Revision: 1.1 $ $Date: 2009-05-14 14:16:46 $
+ * @version $Revision: 1.1 $ $Date: 2009-05-14 14:58:33 $
  */
 public class GsiFtpClientFactory {
     

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.cls.atoll.motu.library.gsiftp;
+package fr.cls.atoll.motu.library.vfs.provider.gsiftp;
 
 import org.apache.commons.vfs.provider.FileNameParser;
 import org.apache.commons.vfs.provider.URLFileNameParser;

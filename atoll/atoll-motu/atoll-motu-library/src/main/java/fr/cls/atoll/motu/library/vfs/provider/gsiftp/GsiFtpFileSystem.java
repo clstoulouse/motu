@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.cls.atoll.motu.library.gsiftp;
+package fr.cls.atoll.motu.library.vfs.provider.gsiftp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,7 +36,7 @@ import java.util.Map;
  * Represents the files on an SFTP server.
  * 
  * @author <a href="mailto:adammurdoch@apache.org">Adam Murdoch</a>
- * @version $Revision: 1.1 $ $Date: 2009-05-14 14:16:46 $
+ * @version $Revision: 1.1 $ $Date: 2009-05-14 14:58:33 $
  */
 public class GsiFtpFileSystem extends AbstractFileSystem implements FileSystem {
 	

@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.gsiftp;
+package fr.cls.atoll.motu.library.vfs.provider.gsiftp;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,7 +27,7 @@ import org.globus.util.Util;
  * Utility class to create a grid proxy.
  * 
  * @author Vladimir Silva
- * @version $Revision: 1.2 $ $Date: 2009-05-14 14:17:22 $
+ * @version $Revision: 1.1 $ $Date: 2009-05-14 14:58:33 $
  */
 public class ProxyTool {
     

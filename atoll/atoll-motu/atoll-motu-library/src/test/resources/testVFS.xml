@@ -14,8 +14,13 @@
         <scheme name="ftp"/>
         <if-available class-name="org.apache.commons.net.ftp.FTPFile"/>
     </provider>
+    
     <provider class-name="org.apache.commons.vfs.provider.sftp.SftpFileProvider">
         <scheme name="sftp"/>
+    </provider>
+
+    <provider class-name="fr.cls.atoll.motu.library.vfs.provider.gsiftp.GsiFtpFileProvider">
+        <scheme name="gsiftp"/>
     </provider>
 
 

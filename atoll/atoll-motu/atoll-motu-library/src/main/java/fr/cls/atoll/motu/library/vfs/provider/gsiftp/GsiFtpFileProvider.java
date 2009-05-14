@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.cls.atoll.motu.library.gsiftp;
+package fr.cls.atoll.motu.library.vfs.provider.gsiftp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,7 +35,7 @@ import java.util.Collections;
  * A provider for accessing files over GsiFTP.
  * 
  * @author <a href="mailto:vladimir_silva@yahoo.com">Vladimir Silva</a>
- * @version $Id: GsiFtpFileProvider.java,v 1.1 2009-05-14 14:16:46 dearith Exp $
+ * @version $Id: GsiFtpFileProvider.java,v 1.1 2009-05-14 14:58:33 dearith Exp $
  */
 public class GsiFtpFileProvider extends AbstractOriginatingFileProvider {
     

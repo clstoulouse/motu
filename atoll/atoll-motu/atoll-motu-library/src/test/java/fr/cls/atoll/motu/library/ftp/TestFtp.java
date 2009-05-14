@@ -17,10 +17,8 @@ import org.apache.commons.vfs.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs.impl.DefaultFileReplicator;
 import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
 import org.apache.commons.vfs.impl.StandardFileSystemManager;
-import org.apache.commons.vfs.operations.FileOperationProvider;
 import org.apache.commons.vfs.provider.ftp.FtpClientFactory;
 import org.apache.commons.vfs.provider.ftp.FtpFileSystemConfigBuilder;
-import org.apache.commons.vfs.provider.local.DefaultLocalFileProvider;
 import org.apache.commons.vfs.provider.sftp.SftpClientFactory;
 import org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder;
 import org.apache.log4j.Logger;
@@ -46,7 +44,9 @@ public class TestFtp {
         //testFtp();
         // testSftp();
         //testVFS("t", "t", "sftp", "CLS-EARITH.pc.cls.fr", "AsciiEnvisat.txt");
-        testVFS("anonymous", "dearith@cls.fr", "ftp", "ftp.cls.fr/pub/oceano/AVISO/", "NRT-SLA/maps/rt/j2/h/msla_rt_j2_err_21564.nc.gz");
+        //testVFS("anonymous", "dearith@cls.fr", "ftp", "ftp.cls.fr/pub/oceano/AVISO/", "NRT-SLA/maps/rt/j2/h/msla_rt_j2_err_21564.nc.gz");
+        //testVFS("anonymous@ftp.unidata.ucar.edu", "", "ftp", "proxy.cls.fr", "/pub/README");
+        testVFS("anonymous@ftp.unidata.ucar.edu", "", "gsiftp", "proxy.cls.fr", "/pub/README");
     }
 
     public static void testFtp() {
@@ -174,12 +174,11 @@ public class TestFtp {
             FileSystemConfigBuilder fscb = fsManager.getFileSystemConfigBuilder(scheme);
             DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
 
-
             System.out.println(fsManager.getProviderCapabilities(scheme));
             
             if (fscb instanceof FtpFileSystemConfigBuilder) {
                 FtpFileSystemConfigBuilder ftpFscb = (FtpFileSystemConfigBuilder) fscb;
-                ftpFscb.setUserDirIsRoot(opts, false);
+                ftpFscb.setUserDirIsRoot(opts, true);
 
             }
 
@@ -193,9 +192,10 @@ public class TestFtp {
             }
             //FileObject fo = fsManager.resolveFile("ftp://ftp.cls.fr/pub/oceano/AVISO/NRT-SLA/maps/rt/j2/h/msla_rt_j2_err_21564.nc.gz", opts);
 
-            String uri = String.format("%s://%s/", scheme, host);
-            FileObject originBase = fsManager.resolveFile(uri, opts);
-            fsManager.setBaseFile(originBase);
+            //String uri = String.format("%s://%s/%s", scheme, host, file);
+            //String uri = String.format("%s://%s/", scheme, host);
+            //FileObject originBase = fsManager.resolveFile(uri, opts);
+            //fsManager.setBaseFile(originBase);
 
             File tempDir = new File("c:/tempVFS");
             // File tempFile = File.createTempFile("AsciiEnvisat", ".txt", tempDir);
@@ -212,7 +212,8 @@ public class TestFtp {
 
             // FileObject ff = fsManager.resolveFile("sftp://t:t@CLS-EARITH.pc.cls.fr/AsciiEnvisat.txt",
             // opts);
-            FileObject ff = fsManager.resolveFile(file, opts);
+            String uri = String.format("%s://%s/%s", scheme, host, file);
+            FileObject ff = fsManager.resolveFile(uri, opts);
             FileObject dest = fsManager.toFileObject(newFile);
             dest.copyFrom(ff, Selectors.SELECT_ALL);
 
