@@ -5,12 +5,18 @@
 	<import file="../../../cls-commons-config/build.xml" optional="true" />
 
 	<path id="classpath">
+		
+		<fileset dir="C:\Java\cog-jglobus-1.4-bin\cog-jglobus-1.4\lib">
+			<include name="**/*.jar" />
+		</fileset>
+<!--
 		<fileset dir="C:\Java\deegree-src_v3\d3_services\build">
 			<include name="**/*.jar" />
 		</fileset>
 		<fileset dir="C:\Java\deegree-src_v3\d3_services\build/lib">
 			<include name="**/*.jar" />
 		</fileset>
+-->		
 		<!--
 		<fileset dir="C:\Java\deegree-src_v3.old\d3_services\build">
 			<include name="**/*.jar" />
