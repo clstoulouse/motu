@@ -23,22 +23,37 @@ import org.apache.commons.vfs.FileSystem;
 import org.apache.commons.vfs.FileSystemConfigBuilder;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemOptions;
+import org.apache.commons.vfs.UserAuthenticationData;
 import org.apache.commons.vfs.provider.AbstractOriginatingFileProvider;
 import org.apache.commons.vfs.provider.GenericFileName;
 import org.globus.ftp.GridFTPClient;
+import org.globus.ftp.exception.ServerException;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * A provider for accessing files over GsiFTP.
+ * A provider for accessing files over GsiFTP. This file was modified by CLS
  * 
  * @author <a href="mailto:vladimir_silva@yahoo.com">Vladimir Silva</a>
- * @version $Id: GsiFtpFileProvider.java,v 1.1 2009-05-14 14:58:33 dearith Exp $
+ * @version $Id: GsiFtpFileProvider.java,v 1.2 2009-05-18 12:29:54 dearith Exp $
+ */
+/**
+ * <br><br>Copyright : Copyright (c) 2009.
+ * <br><br>Société : CLS (Collecte Localisation Satellites)
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-05-18 12:29:54 $
+ */
+/**
+ * <br><br>Copyright : Copyright (c) 2009.
+ * <br><br>Société : CLS (Collecte Localisation Satellites)
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-05-18 12:29:54 $
  */
 public class GsiFtpFileProvider extends AbstractOriginatingFileProvider {
-    
+
     /** The log. */
     private Log log = LogFactory.getLog(GsiFtpFileProvider.class);
 
@@ -52,6 +67,10 @@ public class GsiFtpFileProvider extends AbstractOriginatingFileProvider {
 
     /** The Constant ATTR_HOME_DIR. */
     public final static String ATTR_HOME_DIR = "HOME_DIRECTORY";
+
+    /** The Constant AUTHENTICATOR_TYPES. */
+    public final static UserAuthenticationData.Type[] AUTHENTICATOR_TYPES = new UserAuthenticationData.Type[] {
+            UserAuthenticationData.USERNAME, UserAuthenticationData.PASSWORD };
 
     /**
      * Instantiates a new gsi ftp file provider.
@@ -75,27 +94,40 @@ public class GsiFtpFileProvider extends AbstractOriginatingFileProvider {
         // Create the file system
         final GenericFileName rootName = (GenericFileName) name;
 
-        // Session session;
-        GridFTPClient client;
         String attrHome;
+        GridFTPClientWrapper gridFtpClient = null;
         try {
-            log.debug("Creating connection to GsiFTP Host:" + rootName.getHostName() + " Port:" + rootName.getPort() + " User:"
-                    + rootName.getUserName() + " Path:" + rootName.getPath());
-
-            client = GsiFtpClientFactory.createConnection(rootName.getHostName(),
-                                                          rootName.getPort(),
-                                                          rootName.getUserName(),
-                                                          rootName.getPassword(),
-                                                          fileSystemOptions);
-
-            attrHome = client.getCurrentDir();
+            gridFtpClient = new GridFTPClientWrapper(rootName, fileSystemOptions);
+            log.debug("Creating connection to GsiFTP Host:" + gridFtpClient.getRoot().getHostName() + " Port:" + gridFtpClient.getRoot().getPort() + " User:"
+                      + gridFtpClient.getRoot().getUserName() + " Path:" + gridFtpClient.getRoot().getPath());
+            attrHome = gridFtpClient.getCurrentDir();
             log.debug("Current directory: " + attrHome);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             throw new FileSystemException("vfs.provider.gsiftp/connect.error", name, e);
         }
 
+        
+//        // Session session;
+//        GridFTPClient client;
+//        String attrHome;
+//        try {
+//            log.debug("Creating connection to GsiFTP Host:" + rootName.getHostName() + " Port:" + rootName.getPort() + " User:"
+//                    + rootName.getUserName() + " Path:" + rootName.getPath());
+//
+//            client = GsiFtpClientFactory.createConnection(rootName.getHostName(),
+//                                                          rootName.getPort(),
+//                                                          rootName.getUserName(),
+//                                                          rootName.getPassword(),
+//                                                          fileSystemOptions);
+//
+//            attrHome = client.getCurrentDir();
+//            log.debug("Current directory: " + attrHome);
+//        } catch (final Exception e) {
+//            throw new FileSystemException("vfs.provider.gsiftp/connect.error", name, e);
+//        }
+
         // set HOME dir attribute
-        final GsiFtpFileSystem fs = new GsiFtpFileSystem(rootName, client, fileSystemOptions);
+        final GsiFtpFileSystem fs = new GsiFtpFileSystem(rootName, gridFtpClient, fileSystemOptions);
         fs.setAttribute(ATTR_HOME_DIR, attrHome);
 
         return fs;
