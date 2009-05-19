@@ -32,9 +32,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import javax.measure.DecimalMeasure;
+import javax.measure.quantity.Angle;
+import javax.measure.quantity.DataAmount;
+import javax.measure.quantity.Duration;
 import javax.xml.bind.JAXBElement;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Period;
 
 import ucar.ma2.StructureData;
 import ucar.nc2.Dimension;
@@ -60,6 +66,7 @@ import fr.cls.atoll.motu.library.configuration.ConfigService;
 import fr.cls.atoll.motu.library.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.configuration.QueueServerType;
 import fr.cls.atoll.motu.library.configuration.QueueType;
+import fr.cls.atoll.motu.library.converter.jaxb.JodaPeriodAdapter;
 import fr.cls.atoll.motu.library.data.Product;
 import fr.cls.atoll.motu.library.data.ServiceData;
 import fr.cls.atoll.motu.library.exception.MotuException;
@@ -72,7 +79,7 @@ import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-05-04 09:58:28 $
+ * @version $Revision: 1.5 $ - $Date: 2009-05-19 14:45:15 $
  * 
  */
 public class TestIntfce {
@@ -90,6 +97,13 @@ public class TestIntfce {
         // LOGQUEUE.info("main(String[]) - xxx jentering");
         // }
 
+//        DecimalMeasure x = DecimalMeasure.valueOf("10052");        
+//        System.out.println(x);
+        
+            Period p = JodaPeriodAdapter.PERIOD_FORMATER.parsePeriod("P10D");
+            System.out.println(p.getDays());
+
+        
         //System.out.println (Organizer.Format.valueOf("NETCDFRRRRRR"));
         //System.out.println (Organizer.Format.fromValue(2));
         //testFraction();
@@ -230,7 +244,7 @@ public class TestIntfce {
         //productInformationFromLocationData();
         // productExtractDataAviso2();
 
-        productExtractDataMercator();
+        //productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
         //productExtractDiversity();
