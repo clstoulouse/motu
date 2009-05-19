@@ -44,9 +44,20 @@ public class TestFtp {
         //testFtp();
         // testSftp();
         //testVFS("t", "t", "sftp", "CLS-EARITH.pc.cls.fr", "AsciiEnvisat.txt");
+        testVFS("atoll", "atoll", "sftp", "catsat-data1.cls.fr/home/atoll", "/atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_20090516.xml");
+
         //testVFS("anonymous", "dearith@cls.fr", "ftp", "ftp.cls.fr/pub/oceano/AVISO/", "NRT-SLA/maps/rt/j2/h/msla_rt_j2_err_21564.nc.gz");
         //testVFS("anonymous@ftp.unidata.ucar.edu", "", "ftp", "proxy.cls.fr", "/pub/README");
-        testVFS("anonymous@ftp.unidata.ucar.edu", "", "gsiftp", "proxy.cls.fr", "/pub/README");
+
+        
+        
+        
+        //testVFS("anonymous@gridftp.bigred.iu.teragrid.org:2811", "dearith@cls.fr", "gsiftp", "proxy.cls.fr", "/pub/README");
+        //testVFS("anonymous@dcgftp.usatlas.bnl.gov:2811/", "dearith@cls.fr", "gsiftp", "proxy.cls.fr", "pnfs/usatlas.bnl.gov/arelvalid/loadtest/data1188508850256");
+        //gsiftp://gridftp.bigred.iu.teragrid.org:2811/
+        //gsiftp://155.69.144.160:8080/home/shahand/globus-4.1.2.1/var/DWSSDF/repository/org_globus_examples_services_core_first.0.gar
+        //gsiftp://dcgftp.usatlas.bnl.gov/pnfs/usatlas.bnl.gov/arelvalid/loadtest/data1188508850256
+        //gsiftp://dcgftp.usatlas.bnl.gov:2811/pnfs/usatlas.bnl.gov/data/prod/pandadev/ 
     }
 
     public static void testFtp() {
@@ -178,13 +189,13 @@ public class TestFtp {
             
             if (fscb instanceof FtpFileSystemConfigBuilder) {
                 FtpFileSystemConfigBuilder ftpFscb = (FtpFileSystemConfigBuilder) fscb;
-                ftpFscb.setUserDirIsRoot(opts, true);
+                //ftpFscb.setUserDirIsRoot(opts, true);
 
             }
 
             if (fscb instanceof SftpFileSystemConfigBuilder) {
                 SftpFileSystemConfigBuilder sftpFscb = (SftpFileSystemConfigBuilder) fscb;
-                sftpFscb.setUserDirIsRoot(opts, true);
+                //sftpFscb.setUserDirIsRoot(opts, true);
                 sftpFscb.setStrictHostKeyChecking(opts, "no");
                 // SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(opts, true);
                 // SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(opts, "no");
@@ -213,8 +224,10 @@ public class TestFtp {
             // FileObject ff = fsManager.resolveFile("sftp://t:t@CLS-EARITH.pc.cls.fr/AsciiEnvisat.txt",
             // opts);
             String uri = String.format("%s://%s/%s", scheme, host, file);
+            //FileObject ff2 = fsManager.resolveFile("sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll/atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_20090516.xml");
             FileObject ff = fsManager.resolveFile(uri, opts);
             FileObject dest = fsManager.toFileObject(newFile);
+            //dest.copyFrom(ff2, Selectors.SELECT_ALL);
             dest.copyFrom(ff, Selectors.SELECT_ALL);
 
         } catch (FileSystemException e) {

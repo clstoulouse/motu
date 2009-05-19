@@ -45,8 +45,8 @@ import fr.cls.commons.util.io.ConfigLoader;
 /**
  * This class implements a service (AVISO, MERCATOR, ...).
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-05-19 13:28:44 $
  */
 public class ServiceData {
 
@@ -697,6 +697,9 @@ public class ServiceData {
             break;
         case TDS:
             catalog.loadTdsCatalog(this.getCatalogLocation());
+            break;
+        case FTP:
+            catalog.loadFtpCatalog(this.getCatalogLocation());
             break;
         default:
             throw new MotuException(String.format("Unknown catalog type %d ", getCatalogType()));

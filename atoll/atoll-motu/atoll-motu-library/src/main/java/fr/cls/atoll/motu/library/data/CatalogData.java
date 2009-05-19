@@ -43,7 +43,7 @@ import fr.cls.atoll.motu.library.tds.server.TimeCoverageType;
  * This class implements a product's catalog .
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-03-20 13:02:44 $
+ * @version $Revision: 1.3 $ - $Date: 2009-05-19 13:28:44 $
  */
 public class CatalogData {
 
@@ -59,7 +59,10 @@ public class CatalogData {
         OPENDAP,
 
         /** Tds catalog. */
-        TDS
+        TDS,
+        
+        /** Ftp catalog (ftp, scft, griFtp). */
+        FTP
     };
 
     /** ServiceName XML tag element. */
@@ -96,6 +99,98 @@ public class CatalogData {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("init() - exiting");
+        }
+    }
+    public void loadFtpCatalog(String path) throws MotuException {
+
+        // Set to store product id that are in the catalog.
+        if (productsLoaded == null) {
+            productsLoaded = new HashSet<String>();
+        }
+        productsLoaded.clear();
+
+        // Products map are not cleared, it always refresh :
+        // - Products that have previously loaded are refresh
+        // - Products that are newly inserted in the catalog are insert in the
+        // products map
+        // - Products that are not anymore in the catalog are removed from the
+        // products map
+        // clearProducts();
+
+        fr.cls.atoll.motu.library.tds.server.Catalog catalogXml = loadConfigTds(path);
+        // --------------------------
+        // -------- Loads dataset
+        // --------------------------
+        List<JAXBElement<? extends DatasetType>> list = catalogXml.getDataset();
+
+        this.title = catalogXml.getName();
+
+        for (Iterator<JAXBElement<? extends DatasetType>> it = list.iterator(); it.hasNext();) {
+            JAXBElement<? extends DatasetType> o = it.next();
+            // System.out.println(o.getDeclaredType().getName());
+
+            DatasetType datasetType = (DatasetType) o.getValue();
+            if (datasetType != null) {
+                if (datasetType instanceof CatalogRef) {
+                    // System.out.println("is CatalogRef");
+
+                    this.currentProductType = "";
+                    getCurrentProductSubTypes();
+                    sameProductTypeDataset = new ArrayList<Product>();
+
+                    int numberSubPaths = loadTdsCatalogRef((CatalogRef) datasetType);
+                    removeListCatalogRefSubPaths(numberSubPaths);
+
+                } else if (datasetType instanceof DatasetType) {
+                    // System.out.println("is DatasetType");
+
+                    this.currentProductType = "";
+                    getCurrentProductSubTypes();
+                    sameProductTypeDataset = new ArrayList<Product>();
+
+                    loadTdsProducts(datasetType, catalogXml);
+
+                    if (sameProductTypeDataset.size() > 0) {
+                        listProductTypeDataset.add(sameProductTypeDataset);
+                    }
+                }
+            }
+
+        }
+
+        // Remove products that are not anymore in the catalog
+        productsKeySet().retainAll(productsLoaded);
+
+        // for(Iterator<List> it = listProductTypeDataset.iterator();
+        // it.hasNext();) {
+        // sameProductTypeDataset = it.next();
+        // System.out.println(sameProductTypeDataset.size());
+        //             
+        // for(int i = 0 ; i < sameProductTypeDataset.size(); i++) {
+        // Product p = sameProductTypeDataset.get(i);
+        // if (i == 0) {
+        // List<String> subTypes = p.getProductMetaData().getProductSubTypes();
+        // System.out.println(p.getProductMetaData().getProductType());
+        // int indent = 0;
+        // for (Iterator<String> it2 = subTypes.iterator() ; it2.hasNext();) {
+        // indent ++;
+        // for (int d = 0; d < indent; d++) {
+        // System.out.print("-");
+        // }
+        // System.out.println(it2.next());
+        // }
+        // }
+        // System.out.println("name and location");
+        // System.out.println(p.getProductMetaData().getTitle());
+        // System.out.println(p.getLocationData());
+        // System.out.println("--------");
+        // }
+        // }
+        // this.currentProductType = "";
+        // this.currentProductSubTypes = null;
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadTdsCatalog() - exiting");
         }
     }
 
