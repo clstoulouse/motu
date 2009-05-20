@@ -1,11 +1,14 @@
 package fr.cls.atoll.motu.library.intfce;
 
 import java.io.Writer;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuInconsistencyException;
 import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
@@ -17,8 +20,8 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-05-20 15:15:05 $
  */
 public class ExtractionParameters implements Cloneable {
 
@@ -368,13 +371,14 @@ public class ExtractionParameters implements Cloneable {
     /** The user host. */
     private String userHost = null;
 
-
     /** The anonymous user. */
     private boolean anonymousUser = true;
 
     /** The batch queue. */
     protected boolean batchQueue = false;
-    
+
+    /** The protocol scheme. */
+    protected String protocolScheme = null;
 
     /**
      * Test if a string is null or empty.
@@ -408,6 +412,41 @@ public class ExtractionParameters implements Cloneable {
      */
     public void setDataOutputFormat(Organizer.Format dataOutputFormat) {
         this.dataOutputFormat = dataOutputFormat;
+    }
+
+    /**
+     * Sets the protocol scheme.
+     * 
+     * @param protocolScheme the new protocol scheme
+     */
+    public void setProtocolScheme(String protocolScheme) {
+        this.protocolScheme = protocolScheme;
+    }
+
+    /**
+     * Gets the protocol scheme.
+     * 
+     * @return the protocol scheme
+     * 
+     * @throws MotuException the motu exception
+     */
+    public String getProtocolScheme() throws MotuException {
+        if (!Organizer.isNullOrEmpty(this.protocolScheme)) {
+            return this.protocolScheme;
+        }
+
+        if (Organizer.isNullOrEmpty(locationData)) {
+            return null;
+        }
+
+        URI uri = null;
+        try {
+            uri = new URI(locationData);
+        } catch (URISyntaxException e) {
+            throw new MotuException(String.format("ERROR: location data '%s' has not a valid syntax", locationData), e);
+        }
+        return uri.getScheme();
+
     }
 
     /**
@@ -734,8 +773,8 @@ public class ExtractionParameters implements Cloneable {
     public int getTemporalCoverageInDays() {
         return temporalCoverageInDays;
     }
-    
-  /**
+
+    /**
      * Checks if is batch queue.
      * 
      * @return true, if is batch queue
@@ -770,6 +809,5 @@ public class ExtractionParameters implements Cloneable {
     public void setUserHost(String userHost) {
         this.userHost = userHost;
     }
-
 
 }

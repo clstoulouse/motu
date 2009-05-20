@@ -37,6 +37,7 @@ import fr.cls.atoll.motu.library.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.inventory.InventoryOLA;
 import fr.cls.atoll.motu.library.metadata.ProductMetaData;
 import fr.cls.commons.util.io.ConfigLoader;
 
@@ -46,7 +47,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * This class implements a service (AVISO, MERCATOR, ...).
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-05-19 13:28:44 $
+ * @version $Revision: 1.3 $ - $Date: 2009-05-20 15:15:05 $
  */
 public class ServiceData {
 
@@ -699,7 +700,7 @@ public class ServiceData {
             catalog.loadTdsCatalog(this.getCatalogLocation());
             break;
         case FTP:
-            catalog.loadFtpCatalog(this.getCatalogLocation());
+            // catalog.loadFtpCatalog(this.getCatalogLocation());
             break;
         default:
             throw new MotuException(String.format("Unknown catalog type %d ", getCatalogType()));
@@ -817,6 +818,21 @@ public class ServiceData {
         product.setLocationData(locationData);
         product.setProductIdFromLocation();
 
+        if (Organizer.isXMLFile(locationData)) {
+            this.setCatalogType(CatalogData.CatalogType.FTP);
+        }
+//        
+//        try {
+//            InventoryOLA inventoryOLA = Organizer.getInventoryOLA(locationData);
+//            if (inventoryOLA != null) {
+//                this.setCatalogType(CatalogData.CatalogType.FTP);
+//            }
+//
+//        } catch (Exception e) {
+//            // Not a Inventory XML file : do nothing
+//            e.printStackTrace();
+//        }
+
         getProductInformation(product);
 
         if (LOG.isDebugEnabled()) {
@@ -876,6 +892,9 @@ public class ServiceData {
             break;
         case TDS:
             product.loadOpendapMetaData();
+            break;
+        case FTP:
+            product.loadInventoryMetaData();
             break;
         default:
             throw new MotuNotImplementedException(String.format("Unimplemented catalog type %d ", getCatalogType()));
@@ -1432,7 +1451,7 @@ public class ServiceData {
      * @throws MotuInvalidDateException the motu invalid date exception
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException 
+     * @throws IOException
      */
     public void extractData(Product product,
                             List<String> listVar,
@@ -1604,7 +1623,7 @@ public class ServiceData {
      * @throws MotuException the motu exception
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException 
+     * @throws IOException
      */
     public void extractData(Product product,
                             List<String> listVar,
@@ -1653,7 +1672,7 @@ public class ServiceData {
      * @throws MotuException the motu exception
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException 
+     * @throws IOException
      */
     public void extractData(Product product, Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException,
             MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException,
@@ -1894,7 +1913,7 @@ public class ServiceData {
     public void getHowTogetExceededData(StringBuffer stringBuffer) throws MotuException {
         // Searchs file with service group name
         String resourceFileName = String.format(HOW_TO_GET_EXCEED_DATA_INFO_FILENAME, this.group.toLowerCase());
-        //URL url = Organizer.class.getClassLoader().getResource(resourceFileName);
+        // URL url = Organizer.class.getClassLoader().getResource(resourceFileName);
         URL url = null;
         try {
             url = ConfigLoader.getInstance().get(resourceFileName);
@@ -1905,7 +1924,7 @@ public class ServiceData {
         if (url == null) {
             // Searchs file with servicevelocity prefix
             resourceFileName = String.format(HOW_TO_GET_EXCEED_DATA_INFO_FILENAME, this.veloTemplatePrefix.toLowerCase());
-            //url = Organizer.class.getClassLoader().getResource(resourceFileName);
+            // url = Organizer.class.getClassLoader().getResource(resourceFileName);
             try {
                 url = ConfigLoader.getInstance().get(resourceFileName);
             } catch (IOException e) {

@@ -236,6 +236,20 @@
 			catalog type (ie. opendap).
 		-->
 		<xs:attribute name="type" type="xs:string" />
+		<!-- type :
+			protocol scheme (ie. http, ftp, sftp, gsiftp).
+		-->
+		<xs:attribute name="protocol" use="optional" default="http">
+		  <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="http" />
+            <xs:enumeration value="ftp" />
+            <xs:enumeration value="sftp" />
+            <xs:enumeration value="gsiftp" />
+          </xs:restriction>
+        </xs:simpleType>
+		
+		</xs:attribute>
 	</xs:complexType>
 
 

@@ -22,6 +22,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.units.Unit;
 
 import fr.cls.atoll.motu.library.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.exception.MotuException;
@@ -36,6 +37,10 @@ import fr.cls.atoll.motu.library.exception.NetCdfAttributeNotFoundException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
+import fr.cls.atoll.motu.library.inventory.InventoryOLA;
+import fr.cls.atoll.motu.library.inventory.Ressource;
+import fr.cls.atoll.motu.library.inventory.TimePeriod;
 import fr.cls.atoll.motu.library.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.library.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
@@ -47,7 +52,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
  * This class represents a product.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-05-04 14:48:23 $
+ * @version $Revision: 1.3 $ - $Date: 2009-05-20 15:15:05 $
  */
 public class Product {
 
@@ -342,6 +347,27 @@ public class Product {
     }
 
     /**
+     * Reads product metadata from a XML file).
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void loadInventoryMetaData() throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadXmlMetaData() - entering");
+        }
+
+        if (locationData.equals("")) {
+            throw new MotuException("Error in loadInventoryMetaData - Unable to open XML file - url path is not set (is empty)");
+        }
+        // Loads global metadata from opendap
+        loadInventoryGlobalMetaData();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadXmlMetaData() - exiting");
+        }
+    }
+
+    /**
      * Reads product global metadata from an (NetCDF file).
      * 
      * @throws MotuException the motu exception
@@ -420,6 +446,58 @@ public class Product {
      * 
      * @throws MotuException the motu exception
      */
+
+    /**
+     * Reads product global metadata from an (NetCDF file).
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void loadInventoryGlobalMetaData() throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadInventoryGlobalMetaData() - entering");
+        }
+
+        if (productMetaData == null) {
+            throw new MotuException("Error in loadInventoryGlobalMetaData - Unable to load - productMetaData is null");
+        }
+
+        InventoryOLA inventoryOLA = Organizer.getInventoryOLA(locationData);
+
+        productMetaData.setProductId(inventoryOLA.getProduct().getUrn().toString());
+        productMetaData.setTitle(inventoryOLA.getProduct().getUrn().toString());
+
+        Ressource ressource = inventoryOLA.getRessource();
+
+        //GeospatialCoverage geospatialCoverage = ressource.getGeospatialCoverage();
+        
+        TimePeriod timePeriod = ressource.getTimePeriod();
+
+        productMetaData.setTimeCoverage(timePeriod.getStart(), timePeriod.getEnd());
+
+        // Gets variables metadata.
+        fr.cls.atoll.motu.library.inventory.Variables variables = ressource.getVariables();
+
+        for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {
+
+            ParameterMetaData parameterMetaData = new ParameterMetaData();
+
+            parameterMetaData.setName(variable.getName());
+            parameterMetaData.setLabel(variable.getName());
+            parameterMetaData.setUnit(variable.getUnits());
+            parameterMetaData.setUnitLong(variable.getUnits());
+            parameterMetaData.setStandardName(variable.getVocabularyName());
+
+            if (productMetaData.getParameterMetaDatas() == null) {
+                productMetaData.setParameterMetaDatas(new HashMap<String, ParameterMetaData>());
+            }
+            productMetaData.putParameterMetaDatas(variable.getName(), parameterMetaData);
+
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadInventoryGlobalMetaData() - exiting");
+        }
+    }
 
     @SuppressWarnings("unchecked")
     private void getOpendapVariableMetadata() throws MotuException {
@@ -723,7 +801,7 @@ public class Product {
      * @return a {@link Array} constains latitude axis data values
      * 
      * @throws MotuException the motu exception
-     * @throws NetCdfVariableException 
+     * @throws NetCdfVariableException
      */
     public Array getLatAxisData() throws MotuException, NetCdfVariableException {
         if (LOG.isDebugEnabled()) {
@@ -781,7 +859,7 @@ public class Product {
      * @return a {@link Array} constains geoX axis data values
      * 
      * @throws MotuException the motu exception
-     * @throws NetCdfVariableException 
+     * @throws NetCdfVariableException
      */
     public Array getGeoXAxisData() throws MotuException, NetCdfVariableException {
         if (LOG.isDebugEnabled()) {
@@ -953,7 +1031,7 @@ public class Product {
         return list;
 
     }
-    
+
     /**
      * Gets the z axis rounded up data as string.
      * 
@@ -965,9 +1043,9 @@ public class Product {
      * @throws NetCdfVariableException the net cdf variable exception
      */
     public List<String> getZAxisRoundedUpDataAsString(int desiredDecimalNumberDigits) throws MotuException, NetCdfVariableException {
-        return getZAxisDataAsString(RoundingMode.UP, desiredDecimalNumberDigits); 
+        return getZAxisDataAsString(RoundingMode.UP, desiredDecimalNumberDigits);
     }
-    
+
     /**
      * Gets the z axis rounded down data as string.
      * 
@@ -979,9 +1057,9 @@ public class Product {
      * @throws NetCdfVariableException the net cdf variable exception
      */
     public List<String> getZAxisRoundedDownDataAsString(int desiredDecimalNumberDigits) throws MotuException, NetCdfVariableException {
-        return getZAxisDataAsString(RoundingMode.DOWN, desiredDecimalNumberDigits); 
+        return getZAxisDataAsString(RoundingMode.DOWN, desiredDecimalNumberDigits);
     }
-    
+
     /**
      * Gets the z axis data as string.
      * 
@@ -1015,33 +1093,36 @@ public class Product {
         return list;
 
     }
+
     /**
      * Checks for geo XY axis with lon lat equivalence.
      * 
      * @return true if axes collection contains GeoX with Longitude equivalence and GeoY with Latitude
      *         equivalenceaxes.
-     * @throws MotuException 
+     * @throws MotuException
      */
     public boolean hasGeoXYAxisWithLonLatEquivalence() throws MotuException {
         return (hasGeoXAxisWithLonEquivalence() && hasGeoYAxisWithLatEquivalence());
     }
+
     /**
      * Checks for geo X axis with lon equivalence.
      * 
      * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable equivalence
      *         (Variable whose name is 'longitude' and with at least two dimensions X/Y).
-     * @throws MotuException 
+     * @throws MotuException
      */
     public boolean hasGeoXAxisWithLonEquivalence() throws MotuException {
         return productMetaData.hasGeoXAxisWithLonEquivalence(this.netCdfReader);
     }
+
     /**
      * Checks for geo Y axis with lat equivalence.
      * 
      * @param netCdfReader the net cdf reader
      * 
      * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable equivalence
-     * (Variable whose name is 'longitude' and with at least two dimensions X/Y).
+     *         (Variable whose name is 'longitude' and with at least two dimensions X/Y).
      * 
      * @throws MotuException the motu exception
      */
@@ -1123,7 +1204,7 @@ public class Product {
      * @return a ucar.ma2.Array with data for the variable.
      * 
      * @throws MotuException the motu exception
-     * @throws NetCdfVariableException 
+     * @throws NetCdfVariableException
      */
 
     public Array readVariable(Variable variable) throws MotuException, NetCdfVariableException {
@@ -1229,7 +1310,7 @@ public class Product {
      * @throws MotuException the motu exception
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException 
+     * @throws IOException
      */
     public void extractData(Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
@@ -1518,6 +1599,7 @@ public class Product {
         stringBuffer.append(NetCdfWriter.NETCDF_FILE_EXTENSION_EXTRACT);
         this.extractFilenameTemp = stringBuffer.toString();
     }
+
     /** The temporary output location path and file name. */
     private String extractFilenameTemp = "";
 
@@ -1542,7 +1624,6 @@ public class Product {
     public void setExtractFilenameTemp(String extractFilenameTemp) {
         this.extractFilenameTemp = extractFilenameTemp;
     }
-
 
     /**
      * Clears <tt>extractFilename</tt>.
@@ -1651,7 +1732,7 @@ public class Product {
     public String getExtractLocationData() throws MotuException {
         return Product.getExtractLocationData(extractFilename);
     }
-    
+
     /**
      * Gets the extract location data.
      * 
@@ -1673,7 +1754,7 @@ public class Product {
 
         return stringBuffer.toString();
     }
-    
+
     /**
      * Gets the output temporary full file name (with path).
      * 
@@ -1693,27 +1774,28 @@ public class Product {
 
         return stringBuffer.toString();
     }
-    
+
     /**
      * Move temp extract file to final extract.
      * 
-     * @throws MotuException 
+     * @throws MotuException
      */
     public void moveTempExtractFileToFinalExtractFile() throws MotuException {
-        // Temporary File 
+        // Temporary File
         String locationTmp = getExtractLocationDataTemp();
         File fileTemp = new File(locationTmp);
-        
-        // Final File 
+
+        // Final File
         String locationFinal = getExtractLocationData();
         File fileFinal = new File(locationFinal);
-        
-        // Rename file 
+
+        // Rename file
         boolean success = fileTemp.renameTo(fileFinal);
-        if (!success)  {
+        if (!success) {
             throw new MotuException(String.format("Unable to rename file '%s' to file '%s'.", locationTmp, locationFinal));
         }
     }
+
     /**
      * Gets the extraction path.
      * 
@@ -1733,7 +1815,7 @@ public class Product {
         }
         return stringBuffer.toString();
     }
-  
+
     /**
      * Gets the document root oh the Http server.
      * 
@@ -1755,7 +1837,7 @@ public class Product {
     public String getDownloadUrlPath() throws MotuException {
         return getDownloadUrlPath(extractFilename);
     }
-    
+
     /**
      * Gets the download url path.
      * 

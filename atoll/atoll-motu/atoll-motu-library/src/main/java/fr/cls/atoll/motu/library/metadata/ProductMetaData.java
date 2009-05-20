@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.joda.time.DateTime;
+
 import ucar.ma2.MAMath;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
@@ -31,15 +33,15 @@ import fr.cls.commons.util5.DatePeriod;
 /**
  * This class represents the metadata of a product. The metadata are similar to all products.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-05-20 15:15:05 $
  */
 
 /**
  * The Class ProductMetaData.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-05-20 15:15:05 $
  */
 public class ProductMetaData {
 
@@ -2490,6 +2492,15 @@ public class ProductMetaData {
         return timeCoverage;
     }
 
+    /**
+     * Sets the time coverage.
+     * 
+     * @param timeEnd the time end
+     * @param timeStart the time start
+     */
+    public void setTimeCoverage(DateTime timeStart, DateTime timeEnd) {
+        this.timeCoverage = new DatePeriod(timeStart.toDate(), timeEnd.toDate());
+    }
     /**
      * Sets the time coverage.
      * 

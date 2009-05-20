@@ -21,6 +21,7 @@ import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DecimalFormat;
@@ -38,6 +39,9 @@ import javax.measure.quantity.DataAmount;
 import javax.measure.quantity.Duration;
 import javax.xml.bind.JAXBElement;
 
+import org.apache.commons.vfs.FileName;
+import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.provider.HostFileNameParser;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -83,7 +87,7 @@ import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.6 $ - $Date: 2009-05-20 09:01:30 $
+ * @version $Revision: 1.7 $ - $Date: 2009-05-20 15:15:05 $
  * 
  */
 public class TestIntfce {
@@ -101,6 +105,41 @@ public class TestIntfce {
         // LOGQUEUE.info("main(String[]) - xxx jentering");
         // }
 
+//        try {
+//            //String uriStr = "sftp://atoll:atoll@catsat-data1.cls.fr/data/atoll/applications/archive/temperature/infrared_timestamp/med";
+//            //String uriStr = "atoll:service:ftp-catsat-ftp:ftp";
+//            String uriStr = "c:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
+//            
+//            URI uri = new URI(uriStr);
+//            if (uri.isOpaque()) {
+//                System.out.println("This is an opaque URI."); 
+//                System.out.println("The scheme is " + uri.getScheme( ));        
+//                System.out.println("The scheme specific part is " 
+//                 + uri.getSchemeSpecificPart( ));        
+//                System.out.println("The fragment ID is " + uri.getFragment( ));        
+//
+//            }
+//            File  ff = new File(uriStr);
+//            System.out.println(ff.getName().endsWith(".xml")); 
+//            
+//            System.out.println(uri.getScheme());
+//            System.out.println(uri.getUserInfo());
+//            System.out.println(uri.getHost());
+//            System.out.println(uri.getPort());
+//            System.out.println(uri.getAuthority());
+//            System.out.println(uri.getPath());
+//            System.out.println(uri.getQuery());
+//            System.out.println(uri.getSchemeSpecificPart());      
+//            System.out.println(uri);
+//            
+//            
+//            System.out.println(uri.normalize());
+//
+//        } catch (URISyntaxException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+        
         // DecimalMeasure x = DecimalMeasure.valueOf("10052");
         // System.out.println(x);
 
@@ -259,7 +298,8 @@ public class TestIntfce {
         // productExtractDataCatsat();
         // productExtractDataAvisofromExtractionParameters();
         // productExtractDataMerseaFromHttp();
-        testLoadInventoryOLA();
+        // testLoadInventoryOLA();
+        productInformationFromInventory();
     }
 
     public static void listServices() {
@@ -299,6 +339,12 @@ public class TestIntfce {
             System.out.println(e.getMessage());
         }
     }
+    public static Product productInformationFromInventory() {
+        String xmlUri = "C:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
+
+        return productInformationFromLocationData(xmlUri);
+        
+    }
 
     public static Product productInformationFromLocationData() {
         // String productId = "duacs_global_nrt_madt_merged_h";
@@ -330,20 +376,28 @@ public class TestIntfce {
             Organizer organizer = new Organizer();
             product = organizer.getProductInformation(locationData);
             System.out.println(product.getProductId());
-            System.out.println(product.getProductMetaData().getLatAxisMinValueAsString());
-            System.out.println(product.getProductMetaData().getLatAxisMaxValueAsString());
-            System.out.println(product.getProductMetaData().getLonAxisMinValueAsString());
-            System.out.println(product.getProductMetaData().getLonAxisMaxValueAsString());
-            System.out.println(product.getProductMetaData().getTimeAxisMinValueAsString());
-            System.out.println(product.getProductMetaData().getTimeAxisMaxValueAsString());
-            System.out.println(product.hasGeoXAxisWithLonEquivalence());
-            System.out.println(product.hasGeoYAxisWithLatEquivalence());
+            
+            try {
+                System.out.println(product.getProductMetaData().getLatAxisMinValueAsString());
+                System.out.println(product.getProductMetaData().getLatAxisMaxValueAsString());
+                System.out.println(product.getProductMetaData().getLonAxisMinValueAsString());
+                System.out.println(product.getProductMetaData().getLonAxisMaxValueAsString());
+                System.out.println(product.getProductMetaData().getTimeAxisMinValueAsString());
+                System.out.println(product.getProductMetaData().getTimeAxisMaxValueAsString());
+                System.out.println(product.hasGeoXAxisWithLonEquivalence());
+                System.out.println(product.hasGeoYAxisWithLatEquivalence());
 
-            System.out.println(product.getProductMetaData().getGeoXAxisMinValueAsLonString(product));
-            System.out.println(product.getProductMetaData().getGeoXAxisMaxValueAsLonString(product));
+                System.out.println(product.getProductMetaData().getGeoXAxisMinValueAsLonString(product));
+                System.out.println(product.getProductMetaData().getGeoXAxisMaxValueAsLonString(product));
 
-            System.out.println(product.getProductMetaData().getGeoYAxisMinValueAsLatString(product));
-            System.out.println(product.getProductMetaData().getGeoYAxisMaxValueAsLatString(product));
+                System.out.println(product.getProductMetaData().getGeoYAxisMinValueAsLatString(product));
+                System.out.println(product.getProductMetaData().getGeoYAxisMaxValueAsLatString(product));
+            } catch (Exception e) {
+                // Do nothing
+            }
+            
+            System.out.println(product.getProductMetaData().getTimeCoverage().toString());
+            System.out.println(product.getProductMetaData().getParameterMetaDatas().toString());
 
         } catch (MotuExceptionBase e) {
             System.out.println(e.notifyException());
@@ -871,6 +925,8 @@ public class TestIntfce {
             System.out.println(confServ.getCatalog().getUrlSite());
             System.out.println(confServ.getCatalog().getName());
             System.out.println(confServ.getCatalog().getType());
+            System.out.println(confServ.getCatalog().getProtocol());
+            
         }
         QueueServerType queueServer = config.getQueueServerConfig();
         System.out.print("queueServer.getMaxPoolAnonymous()");

@@ -14,9 +14,29 @@
 	<property name="schema.xsdpath" value="${resource.dir}/schema" />
 	<property name="schema.xsdfile" value="MotuConfig.xsd" />
 
+	<!--
 	<path id="classpath">
 		<fileset dir="${project.dir}/../../../cls-commons-config/lib/jaxb" includes="*.jar" />
 		<pathelement location="${m2repository.dir}/javax/xml/defaultvalueplugin/1.0/defaultvalueplugin-1.0.jar"/>
+	</path>
+	-->
+	<path id="classpath">
+		<!--
+		<fileset dir="${project.dir}/../../../cls-commons-config/lib/jaxb" includes="*.jar" />
+		-->
+		<!--
+		<fileset dir="${m2repository.dir}/org/jvnet/jaxb2_commons/jaxb-xjc/2.1.10" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-xjc/2.1.7" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-impl/2.1.10" includes="*.jar" />
+		-->
+		<fileset dir="${m2repository.dir}/org/jvnet/jaxb2_commons/jaxb-xjc/2.1.10" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-impl/2.1.10" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/com/sun/istack/istack-commons-tools/1.1" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-impl/2.1.10" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/com/sun/codemodel/codemodel/2.1" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/com/sun/xsom/xsom/20081112" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/org/kohsuke/rngom/rngom/20061207" includes="*.jar" />
+		<!-- <pathelement location="${m2repository.dir}/javax/xml/defaultvalueplugin/1.0/defaultvalueplugin-1.0.jar"/> -->
 	</path>
 
 	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask" classpathref="classpath"/>
@@ -24,16 +44,21 @@
 	<!-- =================================================================== -->
 	<!-- Génération des classes JAVA en utilisant JAXB                       -->
 	<!-- =================================================================== -->
-
+<!--
 	<target name="generate">
-		<!--		<xjc schema="${schema.xsdfile}" target="${src.dir}" package="${schema.package}" removeOldOutput="no">
-						<produces dir="${src.dir}"/>
-					</xjc>
-		-->
 		<xjc  target="${src.dir}" package="${schema.package}" removeOldOutput="no">
 			<schema dir="${schema.xsdpath}" includes="${schema.xsdfile}" />
 			<arg value="-extension"/>
 			<arg value="-Xdefault-value"/>
+			<produces dir="${src.dir}" />
+		</xjc>
+	</target>
+	-->
+	<target name="generate">
+			<xjc  destdir="${src.dir}"  target="2.1" package="${schema.package}" removeOldOutput="no">
+			<schema dir="${schema.xsdpath}" includes="${schema.xsdfile}" />
+			<arg value="-extension"/>
+	<!--		<arg value="-Xdefault-value"/> -->
 			<produces dir="${src.dir}" />
 		</xjc>
 	</target>

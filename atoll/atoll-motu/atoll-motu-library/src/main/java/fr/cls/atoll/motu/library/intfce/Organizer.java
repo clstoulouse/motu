@@ -87,7 +87,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.8 $ - $Date: 2009-05-20 09:01:30 $
+ * @version $Revision: 1.9 $ - $Date: 2009-05-20 15:15:05 $
  */
 public class Organizer {
 
@@ -815,6 +815,18 @@ public class Organizer {
         return Organizer.getPropertiesInstance().getProperty(PROPS_INVENTORY_OLA_SCHEMA);
     }
 
+    /**
+     * Checks if is XML file.
+     * 
+     * @param uri the uri
+     * 
+     * @return true, if is XML file
+     */
+    public static boolean isXMLFile(String uri) {
+        File  ff = new File(uri);
+        return ff.getName().endsWith(".xml"); 
+
+    }
     /**
      * Gets the motu config xml.
      * 
