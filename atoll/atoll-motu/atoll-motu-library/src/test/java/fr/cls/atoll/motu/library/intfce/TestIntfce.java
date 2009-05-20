@@ -71,6 +71,10 @@ import fr.cls.atoll.motu.library.data.Product;
 import fr.cls.atoll.motu.library.data.ServiceData;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
+import fr.cls.atoll.motu.library.inventory.InventoryOLA;
+import fr.cls.atoll.motu.library.inventory.Ressource;
+import fr.cls.atoll.motu.library.inventory.TimePeriod;
 import fr.cls.atoll.motu.library.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.sdtnameequiv.StandardName;
@@ -79,7 +83,7 @@ import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-05-19 14:45:15 $
+ * @version $Revision: 1.6 $ - $Date: 2009-05-20 09:01:30 $
  * 
  */
 public class TestIntfce {
@@ -97,34 +101,33 @@ public class TestIntfce {
         // LOGQUEUE.info("main(String[]) - xxx jentering");
         // }
 
-//        DecimalMeasure x = DecimalMeasure.valueOf("10052");        
-//        System.out.println(x);
-        
-            Period p = JodaPeriodAdapter.PERIOD_FORMATER.parsePeriod("P10D");
-            System.out.println(p.getDays());
+        // DecimalMeasure x = DecimalMeasure.valueOf("10052");
+        // System.out.println(x);
 
-        
-        //System.out.println (Organizer.Format.valueOf("NETCDFRRRRRR"));
-        //System.out.println (Organizer.Format.fromValue(2));
-        //testFraction();
-        
+        // Period p = JodaPeriodAdapter.PERIOD_FORMATER.parsePeriod("P10D");
+        // System.out.println(p.getDays());
+
+        // System.out.println (Organizer.Format.valueOf("NETCDFRRRRRR"));
+        // System.out.println (Organizer.Format.fromValue(2));
+        // testFraction();
+
         // Mandatory if there is a proxy to access Opendap server.
         // System.setProperty("http.proxyHost", "proxy.cls.fr"); // adresse IP
         // System.setProperty("http.proxyPort", "8080");
 
-        /*System.setProperty("http.proxyHost", "proxy.cls.fr"); // adresse IP
-        System.setProperty("http.proxyPort", "8080");
-        System.setProperty("socksProxyHost", "proxy.cls.fr");
-        System.setProperty("socksProxyPort", "1080");
-        */
+        /*
+         * System.setProperty("http.proxyHost", "proxy.cls.fr"); // adresse IP
+         * System.setProperty("http.proxyPort", "8080"); System.setProperty("socksProxyHost", "proxy.cls.fr");
+         * System.setProperty("socksProxyPort", "1080");
+         */
 
-        //Authenticator.setDefault(new MyAuthenticator());
-//        try {
-//            DetectProxy();
-//        } catch (Exception e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
+        // Authenticator.setDefault(new MyAuthenticator());
+        // try {
+        // DetectProxy();
+        // } catch (Exception e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
         // try {
         //            
         // String extractionPath = Organizer.getMotuConfigInstance().getExtractionPath();
@@ -142,7 +145,6 @@ public class TestIntfce {
         // // TODO Auto-generated catch block
         // e.printStackTrace();
         // }
-
         // Exception e = new MotuException("tetsd");
         //        
         // if (e instanceof MotuExceptionBase) {
@@ -155,7 +157,6 @@ public class TestIntfce {
         // // TODO Auto-generated catch block
         // e.printStackTrace();
         // }
-
         // Locale locale = Locale.getDefault();
         // System.out.println(DecimalFormatSymbols.getInstance().getDecimalSeparator());
         // System.out.println(locale.toString());
@@ -165,7 +166,6 @@ public class TestIntfce {
         // String x = "-19,123";
         // double y = Double.parseDouble(x);
         // System.out.println(Double.toString(y));
-
         // System.out.println(Double.doubleToLongBits(25.5d));
         // System.out.println(ExtractCriteriaLatLon.getMinOrMaxLon(360, 0, false));
         // System.out.println(LatLonPointImpl.lonNormal(-50, 0));
@@ -198,7 +198,6 @@ public class TestIntfce {
         // // TODO Auto-generated catch block
         // e.printStackTrace();
         // }
-
         // LatLonRect r1 = l1.getLatLonRect();
         // LatLonRect r2 = l2.getLatLonRect();
         //        
@@ -221,56 +220,46 @@ public class TestIntfce {
         // }
         // MAMath.MinMax minMax = NetCdfReader.getMinMaxLonNormal(r1, r2, r1Values, r2Values)
         // listServices();
-
-        //catalogInformation();
+        // catalogInformation();
         // try {
         // ServiceData.Language test = ServiceData.Language.valueOf("ee");
         // } catch (RuntimeException e) {
         // // TODO Auto-generated catch block
         // e.printStackTrace();
         // }
-
         // testLoadMotuConfig();
         // testgetMotuConfigSchema();
-
-        //productInformation();
+        // productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
-        //productDownloadInfo();
-
+        // productDownloadInfo();
         // productExtractDataHTMLAviso();
         // productExtractDataAviso();
-        //productExtractDataAvisofromProductId();
-        //productInformationFromLocationData();
+        // productExtractDataAvisofromProductId();
+        // productInformationFromLocationData();
         // productExtractDataAviso2();
-
-        //productExtractDataMercator();
+        // productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
-        //productExtractDiversity();
-        //testProjection();
+        // productExtractDiversity();
+        // testProjection();
         // testJason2Local();
         // testProjection2();
         // testReadFromListe();
-        
-        //testFeatures();
-
+        // testFeatures();
         // try {
         // String date = NetCdfReader.getDateAsGMTString(0, "days since 0000-01-01 00:00");
         // } catch (MotuException e) {
         // // TODO Auto-generated catch block
         // e.printStackTrace();
         // }
-
         // testLoadStdNameEquiv();
-
         // testGetAmountDataSize();
-
         // testSynchronized();
-
-         //productExtractDataCatsat();
+        // productExtractDataCatsat();
         // productExtractDataAvisofromExtractionParameters();
-        //productExtractDataMerseaFromHttp();
+        // productExtractDataMerseaFromHttp();
+        testLoadInventoryOLA();
     }
 
     public static void listServices() {
@@ -293,10 +282,10 @@ public class TestIntfce {
 
         try {
             // String serviceName = "aviso_dt";
-            //String serviceName = "Mercator";
+            // String serviceName = "Mercator";
             String serviceName = "MercatorIBI";
             // String serviceName = "Catsat";
-            //String serviceName = "AvisoNRT";
+            // String serviceName = "AvisoNRT";
             // String serviceName = "aviso_dt";
             FileWriter writer = new FileWriter("./target/resultCatalogInfo.html");
             Organizer organizer = new Organizer();
@@ -315,17 +304,17 @@ public class TestIntfce {
         // String productId = "duacs_global_nrt_madt_merged_h";
         // String locationData = "http://opendap-nrt.aviso.oceanobs.com/thredds/dodsC/" + productId;
         // String productId = "MERSEA_CLS_DEMO_COLOR-D20070423-Z-180.0_180.0_-70.0_70.0-S0.1.nc";
-        //String productId = "Test_Galapagos_20070901_ssh.nc";
+        // String productId = "Test_Galapagos_20070901_ssh.nc";
         // String productId = "mercatorPsy3v2R1v_glo_mean_best_estimate_1182752515507.nc";
         // String locationData = "C:/Java/dev/" + productId;
-        //String locationData = "J:/dev/" + productId;
+        // String locationData = "J:/dev/" + productId;
         // String productId = "dt_upd_med_e1_sla_vfec";
         // String locationData = "http://opendap-dt.aviso.oceanobs.com/thredds/dodsC/" + productId;
         // String productId = "dt_upd_med_tp_sla_vfec_19920925_19920930_20050914.nc";
         // String locationData = "C:/BratData/netCDF/" + productId;
         String productId = "extlink_source.h5";
         String locationData = "C:/Documents and Settings/dearith/" + productId;
-        
+
         try {
             NetcdfDataset.acquireDataset(locationData, null);
         } catch (IOException e) {
@@ -374,11 +363,11 @@ public class TestIntfce {
             // String productId = "res_oer_g2";
             String serviceName = "mercator";
             // String serviceName = "cls";
-            //String serviceName = "AvisoDT";
-           String productId = "mercatorPsy3v2_nat_mean_best_estimate";
+            // String serviceName = "AvisoDT";
+            String productId = "mercatorPsy3v2_nat_mean_best_estimate";
             // String productId = "mercatorPsy3v2R1v_med_levitus_1998";
             // String productId = "global_sst";
-            //String productId = "dt_ref_global_merged_madt_h";
+            // String productId = "dt_ref_global_merged_madt_h";
 
             FileWriter writer = new FileWriter("./target/resultProductInfo.html");
             Organizer organizer = new Organizer();
@@ -398,8 +387,8 @@ public class TestIntfce {
 
         try {
             String serviceName = "MercatorIBI";
-            //String serviceName = "avisoNRT";
-            //String productId = "duacs_global_nrt_madt_merged_h";
+            // String serviceName = "avisoNRT";
+            // String productId = "duacs_global_nrt_madt_merged_h";
             String productId = "mercatorPsy2v3_ibi_mean_best_estimate";
             // String serviceName = "mercator";
             // String serviceName = "mercator";
@@ -407,7 +396,7 @@ public class TestIntfce {
             // String productId = "mercatorPsy3v1R1v_arc_mean_best_estimate";
             FileWriter writer = new FileWriter("./target/resultProductDownloadInfo.html");
             Organizer organizer = new Organizer();
-            //organizer.setCurrentLanguage("uk");
+            // organizer.setCurrentLanguage("uk");
             organizer.getProductDownloadInfo(serviceName, productId, writer, Organizer.Format.HTML);
             writer.flush();
             writer.close();
@@ -907,6 +896,81 @@ public class TestIntfce {
         System.out.println("End testLoadMotuConfig : \n");
     }
 
+    public static void testLoadInventoryOLA() {
+
+        InventoryOLA inventoryOLA = null;
+        String xmlUri = "C:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
+
+        try {
+            inventoryOLA = Organizer.getInventoryOLA(xmlUri);
+        } catch (MotuException e) {
+            System.out.println("Exception : \n");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+
+        System.out.println(inventoryOLA.getLastModificationDate());
+        System.out.println(inventoryOLA.getProduct().getUrn());
+        
+        Ressource ressource = inventoryOLA.getRessource();
+        
+        GeospatialCoverage geospatialCoverage = ressource.getGeospatialCoverage();        
+        System.out.println(geospatialCoverage.getType());
+        System.out.println(geospatialCoverage.getUnits());
+        System.out.println(geospatialCoverage.getEast());
+        System.out.println(geospatialCoverage.getNorth());
+        System.out.println(geospatialCoverage.getSouth());
+        System.out.println(geospatialCoverage.getWest());
+        System.out.println(geospatialCoverage.getEastResolution());
+        System.out.println(geospatialCoverage.getNorthResolution());
+        
+        TimePeriod timePeriod = ressource.getTimePeriod();
+        System.out.println(timePeriod.getStart());
+        System.out.println(timePeriod.getEnd());
+        System.out.println(timePeriod.getStep());
+        
+        fr.cls.atoll.motu.library.inventory.Variables variables = ressource.getVariables();
+        for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {
+            System.out.print(variable.getName());
+            System.out.print(" ");
+            System.out.print(variable.getUnits());
+            System.out.print(" ");
+            System.out.print(variable.getVocabularyName());
+            System.out.println("");
+
+        }
+        
+        
+        for (fr.cls.atoll.motu.library.inventory.File file : inventoryOLA.getFiles().getFile()) {
+            System.out.print(file.getName());
+            System.out.print(" ");
+            System.out.print(file.getWeight());
+            System.out.print(" ");
+            System.out.print(file.getModelPrediction());
+            System.out.print(" ");
+            System.out.print(file.getStartCoverageDate());
+            System.out.print(" ");
+            System.out.print(file.getEndCoverageDate());
+            System.out.print(" ");
+            System.out.print(file.getCreationDate());
+            System.out.print(" ");
+            System.out.print(file.getAvailabilityServiceDate());
+            System.out.print(" ");
+            System.out.print(file.getAvailabilitySIDate());
+            System.out.print(" ");
+            System.out.print(file.getTheoreticalAvailabilityDate());
+            System.out.println("");
+
+
+
+
+            
+        }
+
+        System.out.println("End testLoadInventoryOLA : \n");
+    }
+
     public static void testLoadStdNameEquiv() {
         StandardNames stdNames = null;
         try {
@@ -948,11 +1012,11 @@ public class TestIntfce {
         List<String> listVar = new ArrayList<String>();
         // add variable to extract
         // listVar.add("salinity");
-        //listVar.add("u");
+        // listVar.add("u");
         listVar.add("temperature");
-        //listVar.add("sea_water_salinity");
-        //listVar.add("sea_surface_elevation");
-        //listVar.add("ocean_mixed_layer_thickness");
+        // listVar.add("sea_water_salinity");
+        // listVar.add("sea_surface_elevation");
+        // listVar.add("ocean_mixed_layer_thickness");
 
         // add temporal criteria
         // first element is start date
@@ -970,8 +1034,8 @@ public class TestIntfce {
         List<String> listLatLonCoverage = new ArrayList<String>();
         listLatLonCoverage.add("90");
         listLatLonCoverage.add("240");
-         listLatLonCoverage.add("-90");
-         listLatLonCoverage.add("210");
+        listLatLonCoverage.add("-90");
+        listLatLonCoverage.add("210");
         //
         // listLatLonCoverage.add("-10");
         // listLatLonCoverage.add("-1");
@@ -1085,8 +1149,8 @@ public class TestIntfce {
     }
 
     public static void productExtractDiversity() {
-        //String productId = "Test_Galapagos_20070901_ssh.nc";
-        //String locationData = "J:/dev/" + productId;
+        // String productId = "Test_Galapagos_20070901_ssh.nc";
+        // String locationData = "J:/dev/" + productId;
         String productId = "dt_upd_global_merged_msla_h_20050831_20050831_20060206.nc";
         String locationData = "C:/BratData/hangzhou/" + productId;
 
@@ -1103,8 +1167,8 @@ public class TestIntfce {
         // second element is end date (optional)
         // if only start date is set, end date equals start date
         List<String> listTemporalCoverage = new ArrayList<String>();
-        //listTemporalCoverage.add("2007-09-01");
-        //listTemporalCoverage.add("2007-09-01");
+        // listTemporalCoverage.add("2007-09-01");
+        // listTemporalCoverage.add("2007-09-01");
 
         // add Lat/Lon criteria
         // first element is low latitude
@@ -1153,10 +1217,11 @@ public class TestIntfce {
         }
 
     }
+
     public static void testJason2Local() {
         String productId = "JA2_IPN_2PTP010_001_20081009_070651_20081009_080304";
         String locationData = "C:/data/jason-2/igdr/StandardDataset/" + productId;
-        //String locationData = "http://atoll-dev.cls.fr:60080/thredds/dodsC/Jason2_ATP_IGDR_REDUCED";
+        // String locationData = "http://atoll-dev.cls.fr:60080/thredds/dodsC/Jason2_ATP_IGDR_REDUCED";
 
         // String productId = "mercatorPsy3v1R1v_arc_mean_20060628_R20060712_1170678793644.nc";
         // String locationData = "C:/apache-tomcat-5.5.16/webapps/motu-file-extract/" + productId;
@@ -1180,10 +1245,10 @@ public class TestIntfce {
         // third element is high latitude
         // fourth element is high longitude
         List<String> listLatLonCoverage = new ArrayList<String>();
-        //listLatLonCoverage.add("-10");
-        //listLatLonCoverage.add("-50");
-        //listLatLonCoverage.add("10");
-        //listLatLonCoverage.add("-30");
+        // listLatLonCoverage.add("-10");
+        // listLatLonCoverage.add("-50");
+        // listLatLonCoverage.add("10");
+        // listLatLonCoverage.add("-30");
 
         // add depth (Z) criteria
         // first element is low depth
@@ -1227,7 +1292,7 @@ public class TestIntfce {
         // add variable to extract
         // listVar.add("salinity");
         // listVar.add("temperature");
-        //listVar.add("ssh");
+        // listVar.add("ssh");
         listVar.add("ext_link/win_speed_alt");
 
         // add temporal criteria
@@ -1279,12 +1344,12 @@ public class TestIntfce {
     }
 
     public static void testProjection() {
-        //String productId = "mercatorPsy3v1R1v_arc_mean_20060628_R20060712.nc";
-        //String locationData = "C:/Java/dev/atoll-motu/" + productId;
-        //String productId = "JA2_IPN_2PTP010_001_20081009_070651_20081009_080304";
-        //String locationData = "C:/data/jason-2/igdr/StandardDataset/" + productId;
-        //String productId = "extlink_source.h5";
-        //String locationData = "C:/Documents and Settings/dearith/" + productId;
+        // String productId = "mercatorPsy3v1R1v_arc_mean_20060628_R20060712.nc";
+        // String locationData = "C:/Java/dev/atoll-motu/" + productId;
+        // String productId = "JA2_IPN_2PTP010_001_20081009_070651_20081009_080304";
+        // String locationData = "C:/data/jason-2/igdr/StandardDataset/" + productId;
+        // String productId = "extlink_source.h5";
+        // String locationData = "C:/Documents and Settings/dearith/" + productId;
         String productId = "TestHDF5.h5";
         String locationData = "C:/" + productId;
 
@@ -1463,7 +1528,7 @@ public class TestIntfce {
 
     public static void productExtractDataCatsat() {
         // String productId = "mercatorPsy3v1R1v_glo_mean_best_estimate";
-        //String productId = "nrt_glo_st_chlorophyll";
+        // String productId = "nrt_glo_st_chlorophyll";
         String productId = "duacs_global_nrt_msla_merged_h_uv";
         // String productId = "global_sst";
         // String productId = "GLB_TE01_20550.nc";
@@ -1799,9 +1864,9 @@ public class TestIntfce {
         System.setProperty("proxyHost", "proxy.cls.fr"); // adresse IP
         System.setProperty("proxyPort", "8080");
         System.setProperty("socksProxyHost", "proxy.cls.fr");
-//        System.setProperty("http.proxyHost", "http-proxy.ece.fr");
-//        System.setProperty("http.proxyPort", "3128");
-//        System.setProperty("java.net.useSystemProxies", "true");
+        // System.setProperty("http.proxyHost", "http-proxy.ece.fr");
+        // System.setProperty("http.proxyPort", "3128");
+        // System.setProperty("java.net.useSystemProxies", "true");
         List<Proxy> proxyList = ProxySelector.getDefault().select(new URI("http://www.yahoo.com/"));
         for (Proxy proxy : proxyList) {
             System.out.println("Proxy type : " + proxy.type());
@@ -1813,23 +1878,23 @@ public class TestIntfce {
             }
         }
     }
-    
+
     public static void testFraction() {
         String s = "0.494024";
-        double number = 0.49402499198913574; 
-        //double number = 0.00; 
-        int in =  (int)(number);
+        double number = 0.49402499198913574;
+        // double number = 0.00;
+        int in = (int) (number);
         double frac = number - in;
-        
-        double d= Double.valueOf(in).doubleValue();
+
+        double d = Double.valueOf(in).doubleValue();
         System.out.println("Integral is:=" + in);
         System.out.println("Fraction is:=" + frac);
-        String[] res = new String[2];  
+        String[] res = new String[2];
         res = Double.toString(number).split("\\.");
-        System.out.println(" The number of decimals :  " + res[1].length());  
-        System.out.println(" Frac is zero :  " + (frac == 0.));  
+        System.out.println(" The number of decimals :  " + res[1].length());
+        System.out.println(" Frac is zero :  " + (frac == 0.));
 
-        //DecimalFormat decimalFormat = new DecimalFormat("##0.#####", new DecimalFormatSymbols(Locale.US));
+        // DecimalFormat decimalFormat = new DecimalFormat("##0.#####", new DecimalFormatSymbols(Locale.US));
         DecimalFormat decimalFormat = new DecimalFormat();
         decimalFormat.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
         int desired_number_of_digits = 2;
@@ -1838,15 +1903,15 @@ public class TestIntfce {
         decimalFormat.setRoundingMode(RoundingMode.UP);
         System.out.println(Double.toString(number));
         System.out.println(decimalFormat.format(number));
-        //        int precision = 10^2;
-        //        System.out.println(precision);
-        //        System.out.println(Math.floor(number* precision )/precision);
-        
+        // int precision = 10^2;
+        // System.out.println(precision);
+        // System.out.println(Math.floor(number* precision )/precision);
+
     }
-    
+
     public static void testFeatures() {
         String location = "C:/BratData/testFeatures.nc";
-        File  file = new File(location);
+        File file = new File(location);
         try {
             CFPointObWriter.rewritePointFeatureDataset(location, "C:/TEMP/" + file.getName(), true);
         } catch (IOException e) {
@@ -1854,8 +1919,8 @@ public class TestIntfce {
             e.printStackTrace();
         }
 
-    }    
-    
+    }
+
     public static boolean rewriteTrajectoryFeatureDataset(String fileIn, String fileOut, boolean inMemory) throws IOException {
         System.out.println("Rewrite2 .nc files from " + fileIn + " to " + fileOut + " inMemory= " + inMemory);
 
@@ -1867,38 +1932,39 @@ public class TestIntfce {
 
         Formatter errlog = new Formatter();
         FeatureDataset fd = FeatureDatasetFactoryManager.wrap(FeatureType.ANY_POINT, ncd, null, errlog);
-        if (fd == null) return false;
+        if (fd == null)
+            return false;
 
         if (fd instanceof FeatureDatasetPoint) {
-          TestIntfce.writeTrajectoryFeatureCollection((FeatureDatasetPoint) fd, fileOut);
-          fd.close();
-          long took = System.currentTimeMillis() - start;
-          System.out.println(" that took " + (took - start) + " msecs");
-          return true;
+            TestIntfce.writeTrajectoryFeatureCollection((FeatureDatasetPoint) fd, fileOut);
+            fd.close();
+            long took = System.currentTimeMillis() - start;
+            System.out.println(" that took " + (took - start) + " msecs");
+            return true;
         }
 
         return false;
 
-      }
+    }
 
-      /**
-       * Write a ucar.nc2.ft.PointFeatureCollection in CF point format.
-       *
-       * @param pfDataset find the first PointFeatureCollection, and write all data from it
-       * @param fileOut   write to this netcdf-3 file
-       * @return number of records written
-       * @throws IOException on read/write error, or if no PointFeatureCollection in pfDataset
-       */
-      public static int writeTrajectoryFeatureCollection(FeatureDatasetPoint pfDataset, String fileOut) throws IOException {
+    /**
+     * Write a ucar.nc2.ft.PointFeatureCollection in CF point format.
+     * 
+     * @param pfDataset find the first PointFeatureCollection, and write all data from it
+     * @param fileOut write to this netcdf-3 file
+     * @return number of records written
+     * @throws IOException on read/write error, or if no PointFeatureCollection in pfDataset
+     */
+    public static int writeTrajectoryFeatureCollection(FeatureDatasetPoint pfDataset, String fileOut) throws IOException {
         // extract the TrajectoryFeatureCollection
-          TrajectoryFeatureCollection pointFeatureCollection = null;
+        TrajectoryFeatureCollection pointFeatureCollection = null;
         List<FeatureCollection> featureCollectionList = pfDataset.getPointFeatureCollectionList();
         for (FeatureCollection featureCollection : featureCollectionList) {
-          if (featureCollection instanceof TrajectoryFeatureCollection)
-            pointFeatureCollection = (TrajectoryFeatureCollection) featureCollection;
+            if (featureCollection instanceof TrajectoryFeatureCollection)
+                pointFeatureCollection = (TrajectoryFeatureCollection) featureCollection;
         }
         if (null == pointFeatureCollection)
-          throw new IOException("There is no PointFeatureCollection in  " + pfDataset.getLocation());
+            throw new IOException("There is no PointFeatureCollection in  " + pfDataset.getLocation());
 
         long start = System.currentTimeMillis();
 
@@ -1906,32 +1972,28 @@ public class TestIntfce {
         DataOutputStream out = new DataOutputStream(new BufferedOutputStream(fos, 10000));
         WriterCFPointObsDataset writer = null;
 
-        /* LOOK BAD
-        List<VariableSimpleIF> dataVars = new ArrayList<VariableSimpleIF>();
-        ucar.nc2.NetcdfFile ncfile = pfDataset.getNetcdfFile();
-        if ((ncfile == null) || !(ncfile instanceof NetcdfDataset))  {
-          dataVars.addAll(pfDataset.getDataVariables());
-        } else {
-          NetcdfDataset ncd = (NetcdfDataset) ncfile;
-          for (VariableSimpleIF vs : pfDataset.getDataVariables()) {
-            if (ncd.findCoordinateAxis(vs.getName()) == null)
-              dataVars.add(vs);
-          }
-        } */
+        /*
+         * LOOK BAD List<VariableSimpleIF> dataVars = new ArrayList<VariableSimpleIF>(); ucar.nc2.NetcdfFile
+         * ncfile = pfDataset.getNetcdfFile(); if ((ncfile == null) || !(ncfile instanceof NetcdfDataset)) {
+         * dataVars.addAll(pfDataset.getDataVariables()); } else { NetcdfDataset ncd = (NetcdfDataset) ncfile;
+         * for (VariableSimpleIF vs : pfDataset.getDataVariables()) { if (ncd.findCoordinateAxis(vs.getName())
+         * == null) dataVars.add(vs); } }
+         */
 
         int count = 0;
         pointFeatureCollection.resetIteration();
         while (pointFeatureCollection.hasNext()) {
-          PointFeature pointFeature = (PointFeature) pointFeatureCollection.next();
-          StructureData data = pointFeature.getData();
-          if (count == 0) {
-            EarthLocation loc = pointFeature.getLocation(); // LOOK we dont know this until we see the obs
-            String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters"; // LOOK units may be wrong
-            writer = new WriterCFPointObsDataset(out, pfDataset.getGlobalAttributes(), altUnits);
-            writer.writeHeader(pfDataset.getDataVariables(), -1);
-          }
-          writer.writeRecord(pointFeature, data);
-          count++;
+            PointFeature pointFeature = (PointFeature) pointFeatureCollection.next();
+            StructureData data = pointFeature.getData();
+            if (count == 0) {
+                EarthLocation loc = pointFeature.getLocation(); // LOOK we dont know this until we see the obs
+                String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters"; // LOOK units may be
+                                                                                     // wrong
+                writer = new WriterCFPointObsDataset(out, pfDataset.getGlobalAttributes(), altUnits);
+                writer.writeHeader(pfDataset.getDataVariables(), -1);
+            }
+            writer.writeRecord(pointFeature, data);
+            count++;
         }
 
         writer.finish();
@@ -1941,9 +2003,5 @@ public class TestIntfce {
         long took = System.currentTimeMillis() - start;
         System.out.printf("Write %d records from %s to %s took %d msecs %n", count, pfDataset.getLocation(), fileOut, took);
         return count;
-      }    
+    }
 }
-
-
-
-

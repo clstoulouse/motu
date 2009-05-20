@@ -23,8 +23,8 @@ import fr.cls.atoll.motu.library.exception.MotuException;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-05-20 09:01:30 $
  */
 public class XMLUtils {
 
@@ -34,7 +34,21 @@ public class XMLUtils {
     protected XMLUtils() {
 
     }
-
+    
+    /**
+     * Validate xml.
+     * 
+     * @param inSchema the in schema
+     * @param inXml the in xml
+     * 
+     * @return the xML error handler
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static XMLErrorHandler validateXML(InputStream inSchema, InputStream inXml) throws MotuException {
+        
+        return validateXML(inSchema, inXml, XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    }
     /**
      * Validate XML.
      * 
@@ -45,7 +59,7 @@ public class XMLUtils {
      * 
      * @throws MotuException the motu exception
      */
-    public static XMLErrorHandler validateXML(InputStream inSchema, InputStream inXml) throws MotuException {
+    public static XMLErrorHandler validateXML(InputStream inSchema, InputStream inXml, String schemaLanguage) throws MotuException {
         // parse an XML document into a DOM tree
         Document document;
         // create a Validator instance, which can be used to validate an instance document
@@ -62,7 +76,7 @@ public class XMLUtils {
             document = documentBuilder.parse(inXml);
 
             // create a SchemaFactory capable of understanding WXS schemas
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(schemaLanguage);
 
             // load a WXS schema, represented by a Schema instance
             Source schemaFile = new StreamSource(inSchema);

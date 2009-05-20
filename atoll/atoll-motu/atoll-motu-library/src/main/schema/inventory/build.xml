@@ -13,7 +13,7 @@
 	<property name="schema.path" value="fr/cls/atoll/motu/library/inventory" />
 	<property name="schema.package" value="fr.cls.atoll.motu.library.inventory" />
 	<property name="schema.xsdpath" value="${resource.dir}/schema" />
-	<property name="schema.xsdfile" value="Inventory.xsd" />
+	<property name="schema.xsdfile" value="InventoryOLA.xsd" />
 	<property name="schema.xjbfile" value="binding.xjb" />
 				
 	<path id="classpath">

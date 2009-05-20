@@ -62,6 +62,7 @@ import fr.cls.atoll.motu.library.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.library.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.library.inventory.InventoryOLA;
 import fr.cls.atoll.motu.library.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.library.sdtnameequiv.StandardNames;
@@ -86,7 +87,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.7 $ - $Date: 2009-05-05 14:46:57 $
+ * @version $Revision: 1.8 $ - $Date: 2009-05-20 09:01:30 $
  */
 public class Organizer {
 
@@ -106,15 +107,15 @@ public class Organizer {
 
         /** xml format. */
         XML(3);
-        
+
         private final int value;
 
-         /**
-          * Instantiates a new format.
-          * 
-          * @param v the v
-          */
-         Format(int v) {
+        /**
+         * Instantiates a new format.
+         * 
+         * @param v the v
+         */
+        Format(int v) {
             value = v;
         }
 
@@ -127,31 +128,31 @@ public class Organizer {
             return value;
         }
 
-         /**
-          * From value.
-          * 
-          * @param v the v
-          * 
-          * @return the format
-          */
-         public static Format fromValue(int v) {
-            for (Format c: Format.values()) {
+        /**
+         * From value.
+         * 
+         * @param v the v
+         * 
+         * @return the format
+         */
+        public static Format fromValue(int v) {
+            for (Format c : Format.values()) {
                 if (c.value == v) {
                     return c;
                 }
             }
             throw new IllegalArgumentException(String.valueOf(v));
         }
-         
-         /**
-          * Gets the default.
-          * 
-          * @return the default
-          */
-         public static Format getDefault() {
-             return NETCDF;       
-         }
-       
+
+        /**
+         * Gets the default.
+         * 
+         * @return the default
+         */
+        public static Format getDefault() {
+            return NETCDF;
+        }
+
     }
 
     /** Number of milliseconds per hour, except when a leap second is inserted. */
@@ -172,6 +173,9 @@ public class Organizer {
 
     /** The Constant CONFIG_SCHEMA_PACK_NAME. */
     private static final String CONFIG_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.configuration";
+
+    /** The Constant INVENTORY_OLA_SCHEMA_PACK_NAME. */
+    private static final String INVENTORY_OLA_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.inventory";
 
     /** The Constant DEFAULT_MOTU_PROPS_NAME. */
     private static final String DEFAULT_MOTU_PROPS_NAME = "motu.properties";
@@ -215,6 +219,9 @@ public class Organizer {
     /** The Constant PROPS_MOTU_CONFIG_SCHEMA. */
     private static final String PROPS_MOTU_CONFIG_SCHEMA = "configSchema";
 
+    /** The Constant PROPS_INVENTORY_OLA_SCHEMA. */
+    private static final String PROPS_INVENTORY_OLA_SCHEMA = "inventoryOLASchema";
+
     /** The Constant PROPS_STDNAMES_EQUIV_FILE. */
     private static final String PROPS_STDNAMES_EQUIV_FILE = "sdtNameEquiv";
 
@@ -235,7 +242,7 @@ public class Organizer {
 
     /** The unmarshaller tds config. */
     private static Unmarshaller unmarshallerTdsConfig = null;
-    
+
     public static final String ZIP_EXTENSION = "gz";
 
     /** The current language (default is english). */
@@ -327,18 +334,19 @@ public class Organizer {
      * @return the string
      */
     public static String extractFileName(String pathOrUrl) {
-        
+
         pathOrUrl = pathOrUrl.replace('\\', '/');
         String[] pathOrUrlSplit = pathOrUrl.split("/");
-        
+
         String fileName = "";
 
         if (pathOrUrlSplit.length > 0) {
             fileName = pathOrUrlSplit[pathOrUrlSplit.length - 1];
         }
-        
+
         return fileName;
     }
+
     /**
      * Creates the request size.
      * 
@@ -712,6 +720,52 @@ public class Organizer {
     }
 
     /**
+     * Gets the inventory ola.
+     * 
+     * @param xmlUri the xml uri to load
+     * 
+     * @return the inventory ola
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static InventoryOLA getInventoryOLA(String xmlUri) throws MotuException {
+
+        InventoryOLA inventoryOLA = new InventoryOLA();
+
+        List<String> errors = validateInventoryOLA(xmlUri);
+        if (errors.size() > 0) {
+            StringBuffer stringBuffer = new StringBuffer();
+            for (String str : errors) {
+                stringBuffer.append(str);
+                stringBuffer.append("\n");
+            }
+            throw new MotuException(String.format("ERROR - IventoryOLA file '%s' is not valid - See errors below:\n%s", xmlUri, stringBuffer
+                    .toString()));
+        }
+
+        InputStream in = Organizer.getUriAsInputStream(xmlUri);
+
+        try {
+            JAXBContext jc = JAXBContext.newInstance(INVENTORY_OLA_SCHEMA_PACK_NAME);
+            Unmarshaller unmarshaller = jc.createUnmarshaller();
+            inventoryOLA = (InventoryOLA) unmarshaller.unmarshal(in);
+        } catch (Exception e) {
+            throw new MotuException("Error in getInventoryOLA", e);
+        }
+
+        if (inventoryOLA == null) {
+            throw new MotuException("Unable to load Inventory (inventoryOLA is null)");
+        }
+
+        try {
+            in.close();
+        } catch (IOException io) {
+            // Do nothing
+        }
+        return inventoryOLA;
+    }
+
+    /**
      * Gets the motu config schema.
      * 
      * @return the motu config schema
@@ -721,18 +775,20 @@ public class Organizer {
     public static InputStream getMotuConfigSchema() throws MotuException {
 
         String configSchema = Organizer.getMotuConfigSchemaName();
-        try {
-            return ConfigLoader.getInstance().getAsStream(configSchema);
-        } catch (IOException e) {
-            throw new MotuException(String.format("'%s' config schema file has not be found", configSchema), e);
-        }
-        // return Organizer.class.getClassLoader().getResourceAsStream(configSchema);
+        return Organizer.getUriAsInputStream(configSchema);
+    }
 
-        // StringBuffer stringBuffer = new StringBuffer();
-        // stringBuffer.append(MOTU_XSD_RESOURCEPATH);
-        // stringBuffer.append(MOTU_XSD_FILENAME);
-        //        
-        // return Organizer.class.getClassLoader().getResource(Organizer.getMotuConfigSchemaFullPath());
+    /**
+     * Gets the inventory ola schema.
+     * 
+     * @return the inventory ola schema
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static InputStream getInventoryOLASchema() throws MotuException {
+
+        String configSchema = Organizer.getInventoryOLASchemaName();
+        return Organizer.getUriAsInputStream(configSchema);
     }
 
     /**
@@ -748,6 +804,18 @@ public class Organizer {
     }
 
     /**
+     * Gets the inventory ola schema name.
+     * 
+     * @return the inventory ola schema name
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static String getInventoryOLASchemaName() throws MotuException {
+
+        return Organizer.getPropertiesInstance().getProperty(PROPS_INVENTORY_OLA_SCHEMA);
+    }
+
+    /**
      * Gets the motu config xml.
      * 
      * @return the motu config xml
@@ -756,19 +824,25 @@ public class Organizer {
      */
     public static InputStream getMotuConfigXml() throws MotuException {
 
-        String configXml = Organizer.getMotuConfigXmlName();
-        try {
-            return ConfigLoader.getInstance().getAsStream(configXml);
-        } catch (IOException e) {
-            throw new MotuException(String.format("'%s' config file has not be found", configXml), e);
-        }
-        // return Organizer.class.getClassLoader().getResourceAsStream(configXml);
+        return Organizer.getUriAsInputStream(Organizer.getMotuConfigXmlName());
+    }
 
-        // StringBuffer stringBuffer = new StringBuffer();
-        // stringBuffer.append(MOTU_XSD_RESOURCEPATH);
-        // stringBuffer.append(MOTU_XSD_FILENAME);
-        //        
-        // return Organizer.class.getClassLoader().getResource(Organizer.getMotuConfigSchemaFullPath());
+    /**
+     * Gets the uri as input stream.
+     * 
+     * @param uri the uri
+     * 
+     * @return the uri as input stream
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static InputStream getUriAsInputStream(String uri) throws MotuException {
+
+        try {
+            return ConfigLoader.getInstance().getAsStream(uri);
+        } catch (IOException e) {
+            throw new MotuException(String.format("'%s' uri file has not be found", uri), e);
+        }
     }
 
     /**
@@ -818,9 +892,9 @@ public class Organizer {
             // InputStream in = Organizer.class.getClassLoader().getResourceAsStream(DEFAULT_MOTU_PROPS_NAME);
             InputStream in = null;
             try {
-                in = ConfigLoader.getInstance().getAsStream(DEFAULT_MOTU_PROPS_NAME);
-            } catch (IOException e1) {
-                throw new MotuException("Motu properties file not found in classpath");
+                in = Organizer.getUriAsInputStream(DEFAULT_MOTU_PROPS_NAME);
+            } catch (MotuException e1) {
+                throw new MotuException("Motu properties file not found in classpath", e1);
             }
 
             if (in == null) {
@@ -905,8 +979,8 @@ public class Organizer {
             // InputStream in = Organizer.class.getClassLoader().getResourceAsStream(file);
             InputStream in = null;
             try {
-                in = ConfigLoader.getInstance().getAsStream(file);
-            } catch (IOException e1) {
+                in = Organizer.getUriAsInputStream(file);
+            } catch (MotuException e1) {
                 // Do Nothing
             }
             if (in == null) {
@@ -1502,6 +1576,38 @@ public class Organizer {
 
         if (errorHandler == null) {
             throw new MotuException("ERROR in Organiser.validateMotuConfig - Motu configuration schema : XMLErrorHandler is null");
+        }
+        return errorHandler.getErrors();
+
+    }
+
+    /**
+     * Validate inventory ola.
+     * 
+     * @param xmlUri the xml uri to validate
+     * 
+     * @return the list of XML validation errors (empty is no error)
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static List<String> validateInventoryOLA(String xmlUri) throws MotuException {
+
+        InputStream inSchema = Organizer.getInventoryOLASchema();
+        if (inSchema == null) {
+            throw new MotuException(String.format("ERROR in Organiser.validateInventoryOLA - InventoryOLA  schema ('%s') not found:", Organizer
+                    .getInventoryOLASchemaName()));
+        }
+
+        InputStream inXml = Organizer.getUriAsInputStream(xmlUri);
+
+        if (inXml == null) {
+            throw new MotuException(String.format("ERROR in Organiser.validateInventoryOLA - InventoryOLA  xml ('%s') not found:", xmlUri));
+        }
+
+        XMLErrorHandler errorHandler = XMLUtils.validateXML(inSchema, inXml);
+
+        if (errorHandler == null) {
+            throw new MotuException("ERROR in Organiser.validateInventoryOLA - InventoryOLA schema : XMLErrorHandler is null");
         }
         return errorHandler.getErrors();
 
@@ -3309,8 +3415,7 @@ public class Organizer {
             LOG.debug("getTimeCoverage(String, String, Writer) - exiting");
         }
     }
-    
- 
+
     /**
      * Getter of the property <tt>user</tt>.
      * 
