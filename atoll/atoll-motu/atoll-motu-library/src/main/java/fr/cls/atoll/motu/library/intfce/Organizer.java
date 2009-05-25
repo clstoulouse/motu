@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -25,6 +27,15 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.vfs.CacheStrategy;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.FileSystemManager;
+import org.apache.commons.vfs.FileSystemOptions;
+import org.apache.commons.vfs.VFS;
+import org.apache.commons.vfs.impl.StandardFileSystemManager;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -62,6 +73,8 @@ import fr.cls.atoll.motu.library.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.library.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.library.ftp.TestFtp;
+import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.InventoryOLA;
 import fr.cls.atoll.motu.library.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.queueserver.QueueServerManagement;
@@ -87,7 +100,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.9 $ - $Date: 2009-05-20 15:15:05 $
+ * @version $Revision: 1.10 $ - $Date: 2009-05-25 15:18:20 $
  */
 public class Organizer {
 
@@ -108,6 +121,7 @@ public class Organizer {
         /** xml format. */
         XML(3);
 
+        /** The value. */
         private final int value;
 
         /**
@@ -177,6 +191,9 @@ public class Organizer {
     /** The Constant INVENTORY_OLA_SCHEMA_PACK_NAME. */
     private static final String INVENTORY_OLA_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.inventory";
 
+    /** The Constant CATALOG_OLA_SCHEMA_PACK_NAME. */
+    private static final String CATALOG_OLA_SCHEMA_PACK_NAME = Organizer.INVENTORY_OLA_SCHEMA_PACK_NAME;
+
     /** The Constant DEFAULT_MOTU_PROPS_NAME. */
     private static final String DEFAULT_MOTU_PROPS_NAME = "motu.properties";
 
@@ -194,6 +211,7 @@ public class Organizer {
 
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(Organizer.class);
+
 
     /** The marshaller motu msg. */
     private static Marshaller marshallerMotuMsg = null;
@@ -222,6 +240,12 @@ public class Organizer {
     /** The Constant PROPS_INVENTORY_OLA_SCHEMA. */
     private static final String PROPS_INVENTORY_OLA_SCHEMA = "inventoryOLASchema";
 
+    /** The Constant PROPS_CATALOG_OLA_SCHEMA. */
+    private static final String PROPS_CATALOG_OLA_SCHEMA = "catalogOLASchema";
+
+    /** The Constant PROPS_VFS_PROVIDER. */
+    private static final String PROPS_VFS_PROVIDER = "vfsProvider";
+
     /** The Constant PROPS_STDNAMES_EQUIV_FILE. */
     private static final String PROPS_STDNAMES_EQUIV_FILE = "sdtNameEquiv";
 
@@ -243,6 +267,33 @@ public class Organizer {
     /** The unmarshaller tds config. */
     private static Unmarshaller unmarshallerTdsConfig = null;
 
+    /** The vfs standard manager. */
+    private static StandardFileSystemManager fsManager = null;
+    
+    private static final ThreadLocal<FileSystemManager> FILE_SYSTEM_MANAGER = new ThreadLocal<FileSystemManager>() {
+        @Override
+        protected FileSystemManager initialValue() {
+            StandardFileSystemManager standardFileSystemManager = new StandardFileSystemManager();
+            standardFileSystemManager.setLogger(LogFactory.getLog(VFS.class));
+            try {
+                standardFileSystemManager.init();
+            } catch (FileSystemException e) {
+                LOG.fatal("Error in VFS initialisation - Unable to intiialize VFS", e);
+            }
+            return standardFileSystemManager;
+        }
+    };
+
+    /**
+     * Gets the file system manager.
+     * 
+     * @return the file system manager
+     */
+    public FileSystemManager getFileSystemManager (){
+        return FILE_SYSTEM_MANAGER.get();
+    }
+    
+    /** The Constant ZIP_EXTENSION. */
     public static final String ZIP_EXTENSION = "gz";
 
     /** The current language (default is english). */
@@ -720,6 +771,52 @@ public class Organizer {
     }
 
     /**
+     * Gets the catalog ola.
+     * 
+     * @param xmlUri the xml uri
+     * 
+     * @return the catalog ola
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static CatalogOLA getCatalogOLA(String xmlUri) throws MotuException {
+
+        CatalogOLA catalogOLA = new CatalogOLA();
+
+        List<String> errors = validateCatalogOLA(xmlUri);
+        if (errors.size() > 0) {
+            StringBuffer stringBuffer = new StringBuffer();
+            for (String str : errors) {
+                stringBuffer.append(str);
+                stringBuffer.append("\n");
+            }
+            throw new MotuException(String.format("ERROR - CatalogOLA file '%s' is not valid - See errors below:\n%s", xmlUri, stringBuffer
+                    .toString()));
+        }
+
+        InputStream in = Organizer.getUriAsInputStream(xmlUri);
+
+        try {
+            JAXBContext jc = JAXBContext.newInstance(CATALOG_OLA_SCHEMA_PACK_NAME);
+            Unmarshaller unmarshaller = jc.createUnmarshaller();
+            catalogOLA = (CatalogOLA) unmarshaller.unmarshal(in);
+        } catch (Exception e) {
+            throw new MotuException("Error in getCatalogOLA", e);
+        }
+
+        if (catalogOLA == null) {
+            throw new MotuException("Unable to load Catalog OLA (CatalogOLA is null)");
+        }
+
+        try {
+            in.close();
+        } catch (IOException io) {
+            // Do nothing
+        }
+        return catalogOLA;
+    }
+
+    /**
      * Gets the inventory ola.
      * 
      * @param xmlUri the xml uri to load
@@ -739,7 +836,7 @@ public class Organizer {
                 stringBuffer.append(str);
                 stringBuffer.append("\n");
             }
-            throw new MotuException(String.format("ERROR - IventoryOLA file '%s' is not valid - See errors below:\n%s", xmlUri, stringBuffer
+            throw new MotuException(String.format("ERROR - InventoryOLA file '%s' is not valid - See errors below:\n%s", xmlUri, stringBuffer
                     .toString()));
         }
 
@@ -779,6 +876,19 @@ public class Organizer {
     }
 
     /**
+     * Gets the catalog ola schema.
+     * 
+     * @return the catalog ola schema
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static InputStream getCatalogOLASchema() throws MotuException {
+
+        String configSchema = Organizer.getCatalogOLASchemaName();
+        return Organizer.getUriAsInputStream(configSchema);
+    }
+
+    /**
      * Gets the inventory ola schema.
      * 
      * @return the inventory ola schema
@@ -804,6 +914,30 @@ public class Organizer {
     }
 
     /**
+     * Gets the catalog ola schema name.
+     * 
+     * @return the catalog ola schema name
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static String getCatalogOLASchemaName() throws MotuException {
+
+        return Organizer.getPropertiesInstance().getProperty(PROPS_CATALOG_OLA_SCHEMA);
+    }
+
+    /**
+     * Gets the vFS provider config.
+     * 
+     * @return the vFS provider config
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static String getVFSProviderConfig() throws MotuException {
+
+        return Organizer.getPropertiesInstance().getProperty(PROPS_VFS_PROVIDER);
+    }
+
+    /**
      * Gets the inventory ola schema name.
      * 
      * @return the inventory ola schema name
@@ -823,10 +957,11 @@ public class Organizer {
      * @return true, if is XML file
      */
     public static boolean isXMLFile(String uri) {
-        File  ff = new File(uri);
-        return ff.getName().endsWith(".xml"); 
+        File ff = new File(uri);
+        return ff.getName().endsWith(".xml");
 
     }
+
     /**
      * Gets the motu config xml.
      * 
@@ -849,12 +984,19 @@ public class Organizer {
      * @throws MotuException the motu exception
      */
     public static InputStream getUriAsInputStream(String uri) throws MotuException {
-
+        InputStream in = null;
         try {
-            return ConfigLoader.getInstance().getAsStream(uri);
+
+            in = ConfigLoader.getInstance().getAsStream(uri);
+            if (in == null) {
+                URL url = new URL(uri);
+                URLConnection ulrConnection = url.openConnection();
+                in = ulrConnection.getInputStream();
+            }
         } catch (IOException e) {
             throw new MotuException(String.format("'%s' uri file has not be found", uri), e);
         }
+        return in;
     }
 
     /**
@@ -1594,6 +1736,38 @@ public class Organizer {
     }
 
     /**
+     * Validate catalog ola.
+     * 
+     * @param xmlUri the xml uri
+     * 
+     * @return the list< string>
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static List<String> validateCatalogOLA(String xmlUri) throws MotuException {
+
+        InputStream inSchema = Organizer.getCatalogOLASchema();
+        if (inSchema == null) {
+            throw new MotuException(String.format("ERROR in Organiser.validateInventoryOLA - CatalogOLA  schema ('%s') not found:", Organizer
+                    .getCatalogOLASchemaName()));
+        }
+
+        InputStream inXml = Organizer.getUriAsInputStream(xmlUri);
+
+        if (inXml == null) {
+            throw new MotuException(String.format("ERROR in Organiser.validateInventoryOLA - CatalogOLA  xml ('%s') not found:", xmlUri));
+        }
+
+        XMLErrorHandler errorHandler = XMLUtils.validateXML(inSchema, inXml);
+
+        if (errorHandler == null) {
+            throw new MotuException("ERROR in Organiser.validateInventoryOLA - CatalogOLA schema : XMLErrorHandler is null");
+        }
+        return errorHandler.getErrors();
+
+    }
+
+    /**
      * Validate inventory ola.
      * 
      * @param xmlUri the xml uri to validate
@@ -1614,6 +1788,12 @@ public class Organizer {
 
         if (inXml == null) {
             throw new MotuException(String.format("ERROR in Organiser.validateInventoryOLA - InventoryOLA  xml ('%s') not found:", xmlUri));
+        }
+
+        try {
+            inXml.close();
+        } catch (IOException e) {
+            // Do nothing
         }
 
         XMLErrorHandler errorHandler = XMLUtils.validateXML(inSchema, inXml);
@@ -1743,27 +1923,19 @@ public class Organizer {
      * Extract data from a product related to the current service and according to criteria (geographical
      * and/or temporal and/or logical expression).
      * 
-     * @param serviceName name of the service for the product
-     * @param locationData locaton of the data to download (url, filename)
-     * @param listVar list of variables (parameters) or expressions to extract.
      * @param criteria list of criteria (geographical coverage, temporal coverage ...)
-     * @param selectData logical expression if it's true extract th data, if it's failse ignore the data.
-     * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
-     * @param out writer in which response of the extraction will be list.
-     * @param responseFormat response output format (HTML, XML, Ascii).
+     * @param varName the var name
+     * @param dimensions the dimensions
+     * @param product the product
+     * 
      * @return product object corresponding to the extraction
-     * @throws NetCdfAttributeException
-     * @throws MotuInvalidDateException
-     * @throws MotuInvalidDepthException
-     * @throws MotuInvalidLatitudeException
-     * @throws MotuInvalidLongitudeException
-     * @throws MotuException
-     * @throws MotuExceedingCapacityException
-     * @throws MotuNotImplementedException
-     * @throws MotuInvalidDateRangeException
-     * @throws MotuInvalidDepthRangeException
-     * @throws NetCdfVariableException
-     * @throws MotuNoVarException
+     * 
+     * @throws NetCdfAttributeException @throws MotuInvalidDateException * @throws MotuInvalidDepthException * @throws
+     *             MotuInvalidLatitudeException * @throws MotuInvalidLongitudeException * @throws
+     *             MotuException * @throws MotuExceedingCapacityException * @throws
+     *             MotuNotImplementedException * @throws MotuInvalidDateRangeException * @throws
+     *             MotuInvalidDepthRangeException * @throws NetCdfVariableException * @throws
+     *             MotuNoVarException
      */
     // public Product extractData(String serviceName,
     // String locationData,
@@ -1837,7 +2009,7 @@ public class Organizer {
     /**
      * Loads application properties from a properties file (ie "filename.propterties").
      * 
-     * @throws MotuException
+     * @throws MotuException the motu exception
      */
     // protected void loadProperties() throws MotuException {
     // TLog.logger().entering(this.getClass().getName(), "loadProperties");
@@ -1943,7 +2115,7 @@ public class Organizer {
      * @throws MotuInvalidDateException the motu invalid date exception
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     public Product extractData(ExtractionParameters params) throws MotuInconsistencyException, MotuInvalidDateException, MotuInvalidDepthException,
             MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
@@ -2005,7 +2177,7 @@ public class Organizer {
      * @throws MotuInvalidDateException the motu invalid date exception
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     public void extractData(Product product,
                             List<String> listVar,
@@ -2059,7 +2231,7 @@ public class Organizer {
      * @throws MotuInvalidDateException the motu invalid date exception
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     public Product extractData(Product product,
                                List<String> listVar,
@@ -2156,7 +2328,7 @@ public class Organizer {
      * @throws MotuInvalidDateException the motu invalid date exception
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     public Product extractData(String locationData,
                                List<String> listVar,
@@ -2213,7 +2385,7 @@ public class Organizer {
      * @throws MotuInvalidDateException the motu invalid date exception
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     public Product extractData(String locationData,
                                List<String> listVar,
@@ -2266,7 +2438,7 @@ public class Organizer {
      * @throws MotuInvalidDateException the motu invalid date exception
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException
+     * @throws IOException Signals that an I/O exception has occurred.
      */
 
     public Product extractData(String serviceName,
@@ -2336,7 +2508,7 @@ public class Organizer {
      * @throws MotuInvalidDateException the motu invalid date exception
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException
+     * @throws IOException Signals that an I/O exception has occurred.
      */
 
     public Product extractData(String serviceName,
@@ -2425,7 +2597,7 @@ public class Organizer {
      * @throws MotuInvalidDateException the motu invalid date exception
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException
+     * @throws IOException Signals that an I/O exception has occurred.
      */
 
     public Product extractData(String serviceName,
@@ -3102,7 +3274,13 @@ public class Organizer {
             LOG.debug("getProductInformation() - entering");
         }
 
-        Product product = getProductInformation(productId, null, null);
+        Product product = null;
+
+        if (Organizer.isXMLFile(productId)) {
+            product = getProductInformation(productId);
+        } else {
+            product = getProductInformation(productId, null, null);
+        }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductInformation() - exiting");
@@ -3900,9 +4078,82 @@ public class Organizer {
 
         Organizer.initJAXB();
 
+        Organizer.initVFS();
+
         initVelocityEngine();
 
         fillServices();
+
+    }
+
+
+    /**
+     * Inits the vfs.
+     * 
+     * @throws MotuException the motu exception
+     */
+    private static synchronized void initVFS() throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initVFS() - entering");
+        }
+        Organizer.fsManager = new StandardFileSystemManager();
+        Organizer.fsManager.setLogger(LogFactory.getLog(VFS.class));
+        try {
+            Organizer.fsManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderConfig()));
+            Organizer.fsManager.setCacheStrategy(CacheStrategy.ON_CALL);
+            // fsManager.addProvider("moi", new DefaultLocalFileProvider());
+            Organizer.fsManager.init();
+        } catch (IOException e) {
+            LOG.error("initVFS()", e);
+
+            throw new MotuException("Error in initVFS - Unable to intialize VFS", e);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initVFS() - exiting");
+        }
+    }
+
+    /**
+     * Resolve file.
+     * 
+     * @param uri the uri
+     * @param opts the opts
+     * 
+     * @return the file object
+     */
+    public static FileObject resolveFile(final String uri, final FileSystemOptions opts) {
+        FileObject fileObject = null;
+        try {
+            synchronized (Organizer.fsManager) {
+                fileObject = Organizer.fsManager.resolveFile(uri, opts);
+            }
+        } catch (FileSystemException e) {
+            new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
+        }
+
+        return fileObject;
+
+    }
+
+    /**
+     * Resolve file.
+     * 
+     * @param uri the uri
+     * 
+     * @return the file object
+     */
+    public static FileObject resolveFile(final String uri) {
+        FileObject fileObject = null;
+        try {
+            synchronized (Organizer.fsManager) {
+                fileObject = Organizer.fsManager.resolveFile(uri);
+            }
+        } catch (FileSystemException e) {
+            new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
+        }
+
+        return fileObject;
 
     }
 

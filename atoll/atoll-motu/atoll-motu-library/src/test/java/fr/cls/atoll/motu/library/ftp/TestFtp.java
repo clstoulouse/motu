@@ -2,6 +2,9 @@ package fr.cls.atoll.motu.library.ftp;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,6 +28,8 @@ import org.apache.log4j.Logger;
 
 import com.jcraft.jsch.Session;
 
+import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.commons.util.io.ConfigLoader;
 
 public class TestFtp {
@@ -44,13 +49,13 @@ public class TestFtp {
         //testFtp();
         // testSftp();
         //testVFS("t", "t", "sftp", "CLS-EARITH.pc.cls.fr", "AsciiEnvisat.txt");
-        testVFS("atoll", "atoll", "sftp", "catsat-data1.cls.fr/home/atoll", "/atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_20090516.xml");
+        //testVFS("atoll", "atoll", "sftp", "catsat-data1.cls.fr/home/atoll", "/atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_20090516.xml");
 
         //testVFS("anonymous", "dearith@cls.fr", "ftp", "ftp.cls.fr/pub/oceano/AVISO/", "NRT-SLA/maps/rt/j2/h/msla_rt_j2_err_21564.nc.gz");
         //testVFS("anonymous@ftp.unidata.ucar.edu", "", "ftp", "proxy.cls.fr", "/pub/README");
 
-        
-        
+        testVFS("", "", "http", "catsat-data1.cls.fr:43080", "/thredds/catalog.xml");
+                      
         
         //testVFS("anonymous@gridftp.bigred.iu.teragrid.org:2811", "dearith@cls.fr", "gsiftp", "proxy.cls.fr", "/pub/README");
         //testVFS("anonymous@dcgftp.usatlas.bnl.gov:2811/", "dearith@cls.fr", "gsiftp", "proxy.cls.fr", "pnfs/usatlas.bnl.gov/arelvalid/loadtest/data1188508850256");
@@ -176,12 +181,13 @@ public class TestFtp {
             fsManager.setLogger(_LOG);
 
             StaticUserAuthenticator auth = new StaticUserAuthenticator(null, user, pwd);
-            FileSystemOptions opts = new FileSystemOptions();
 
-            fsManager.setConfiguration(ConfigLoader.getInstance().get("testVFS.xml"));
+            fsManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderConfig()));
             fsManager.setCacheStrategy(CacheStrategy.ON_CALL);
             // fsManager.addProvider("moi", new DefaultLocalFileProvider());
             fsManager.init();
+
+            FileSystemOptions opts = new FileSystemOptions();
             FileSystemConfigBuilder fscb = fsManager.getFileSystemConfigBuilder(scheme);
             DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
 
@@ -229,11 +235,22 @@ public class TestFtp {
             FileObject dest = fsManager.toFileObject(newFile);
             //dest.copyFrom(ff2, Selectors.SELECT_ALL);
             dest.copyFrom(ff, Selectors.SELECT_ALL);
+            
+            URL url = ff.getURL();
+            
+            url.openConnection();
+            URLConnection conn = url.openConnection();
+            InputStream in = conn.getInputStream();
+            in.close();
+
 
         } catch (FileSystemException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MotuException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {

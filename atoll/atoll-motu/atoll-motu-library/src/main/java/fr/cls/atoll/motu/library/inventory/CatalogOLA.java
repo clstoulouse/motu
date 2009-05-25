@@ -8,15 +8,12 @@
 
 package fr.cls.atoll.motu.library.inventory;
 
-import java.net.URI;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import fr.cls.atoll.motu.library.converter.jaxb.UriAdapter;
 
 
 /**
@@ -28,7 +25,10 @@ import fr.cls.atoll.motu.library.converter.jaxb.UriAdapter;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="urn" use="required" type="{http://www.w3.org/2001/XMLSchema}anyURI" />
+ *       &lt;sequence>
+ *         &lt;element ref="{http://atoll.cls.fr/2009/resource}datasetsOLA"/>
+ *       &lt;/sequence>
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -37,37 +37,63 @@ import fr.cls.atoll.motu.library.converter.jaxb.UriAdapter;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
-@XmlRootElement(name = "service")
-public class Service {
+@XmlType(name = "", propOrder = {
+    "datasetsOLA"
+})
+@XmlRootElement(name = "catalogOLA")
+public class CatalogOLA {
 
-    @XmlAttribute(required = true)
-    @XmlJavaTypeAdapter(UriAdapter.class)
-    @XmlSchemaType(name = "anyURI")
-    protected URI urn;
+    @XmlElement(required = true)
+    protected DatasetsOLA datasetsOLA;
+    @XmlAttribute
+    protected String name;
 
     /**
-     * Gets the value of the urn property.
+     * Gets the value of the datasetsOLA property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link DatasetsOLA }
+     *     
+     */
+    public DatasetsOLA getDatasetsOLA() {
+        return datasetsOLA;
+    }
+
+    /**
+     * Sets the value of the datasetsOLA property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DatasetsOLA }
+     *     
+     */
+    public void setDatasetsOLA(DatasetsOLA value) {
+        this.datasetsOLA = value;
+    }
+
+    /**
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public URI getUrn() {
-        return urn;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Sets the value of the urn property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setUrn(URI value) {
-        this.urn = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
 }

@@ -29,6 +29,7 @@ import fr.cls.atoll.motu.library.converter.jaxb.UriAdapter;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;attribute name="urn" use="required" type="{http://www.w3.org/2001/XMLSchema}anyURI" />
+ *       &lt;attribute name="inventoryUrl" use="required" type="{http://www.w3.org/2001/XMLSchema}anyURI" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -38,13 +39,17 @@ import fr.cls.atoll.motu.library.converter.jaxb.UriAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "service")
-public class Service {
+@XmlRootElement(name = "datasetOLA")
+public class DatasetOLA {
 
     @XmlAttribute(required = true)
     @XmlJavaTypeAdapter(UriAdapter.class)
     @XmlSchemaType(name = "anyURI")
     protected URI urn;
+    @XmlAttribute(required = true)
+    @XmlJavaTypeAdapter(UriAdapter.class)
+    @XmlSchemaType(name = "anyURI")
+    protected URI inventoryUrl;
 
     /**
      * Gets the value of the urn property.
@@ -68,6 +73,30 @@ public class Service {
      */
     public void setUrn(URI value) {
         this.urn = value;
+    }
+
+    /**
+     * Gets the value of the inventoryUrl property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public URI getInventoryUrl() {
+        return inventoryUrl;
+    }
+
+    /**
+     * Sets the value of the inventoryUrl property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setInventoryUrl(URI value) {
+        this.inventoryUrl = value;
     }
 
 }

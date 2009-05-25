@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://atoll.cls.fr/2009/resource"
+           xmlns="http://atoll.cls.fr/2009/resource"
+           elementFormDefault="qualified">
+           <!-- 
            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
            xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
            jaxb:extensionBindingPrefixes="xjc"
            jaxb:version="2.1">
-           <!-- 
-           targetNamespace="http://atoll.cls.fr/2009/resource"
-           xmlns="http://atoll.cls.fr/2009/resource"
-           elementFormDefault="unqualified"
- -->
   <xs:annotation><xs:appinfo>
     <jaxb:globalBindings>
       <xjc:javaType name="org.joda.time.DateTime" xmlType="xs:dateTime" 
@@ -22,6 +21,7 @@
       adapter="fr.cls.atoll.motu.library.converter.jaxb.DecimalMeasureAdapter"/>
      </jaxb:globalBindings>
   </xs:appinfo></xs:annotation>
+ -->
 
 
   <xs:element name="file">

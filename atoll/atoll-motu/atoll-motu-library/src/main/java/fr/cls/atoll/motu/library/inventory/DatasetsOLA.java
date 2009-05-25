@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://atoll.cls.fr/2009/resource}file" maxOccurs="unbounded"/>
+ *         &lt;element ref="{http://atoll.cls.fr/2009/resource}datasetOLA" maxOccurs="unbounded"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -38,41 +38,41 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "file"
+    "datasetOLA"
 })
-@XmlRootElement(name = "files")
-public class Files {
+@XmlRootElement(name = "datasetsOLA")
+public class DatasetsOLA {
 
     @XmlElement(required = true)
-    protected List<File> file;
+    protected List<DatasetOLA> datasetOLA;
 
     /**
-     * Gets the value of the file property.
+     * Gets the value of the datasetOLA property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the file property.
+     * This is why there is not a <CODE>set</CODE> method for the datasetOLA property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getFile().add(newItem);
+     *    getDatasetOLA().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link File }
+     * {@link DatasetOLA }
      * 
      * 
      */
-    public List<File> getFile() {
-        if (file == null) {
-            file = new ArrayList<File>();
+    public List<DatasetOLA> getDatasetOLA() {
+        if (datasetOLA == null) {
+            datasetOLA = new ArrayList<DatasetOLA>();
         }
-        return this.file;
+        return this.datasetOLA;
     }
 
 }

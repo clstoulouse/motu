@@ -75,6 +75,7 @@ import fr.cls.atoll.motu.library.data.Product;
 import fr.cls.atoll.motu.library.data.ServiceData;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
 import fr.cls.atoll.motu.library.inventory.InventoryOLA;
 import fr.cls.atoll.motu.library.inventory.Ressource;
@@ -87,7 +88,7 @@ import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.7 $ - $Date: 2009-05-20 15:15:05 $
+ * @version $Revision: 1.8 $ - $Date: 2009-05-25 15:18:20 $
  * 
  */
 public class TestIntfce {
@@ -298,8 +299,12 @@ public class TestIntfce {
         // productExtractDataCatsat();
         // productExtractDataAvisofromExtractionParameters();
         // productExtractDataMerseaFromHttp();
-        // testLoadInventoryOLA();
-        productInformationFromInventory();
+
+        testLoadInventoryOLA();
+        //testLoadCatalogOLA();
+        
+        //productInformationFromInventory();
+        //productExtractDataFromInventory();
     }
 
     public static void listServices() {
@@ -341,8 +346,9 @@ public class TestIntfce {
     }
     public static Product productInformationFromInventory() {
         String xmlUri = "C:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
+        String service = "atoll:service:ftp-catsat:ftp";
 
-        return productInformationFromLocationData(xmlUri);
+        return productInformationFromLocationData(service, xmlUri);
         
     }
 
@@ -370,6 +376,42 @@ public class TestIntfce {
         return productInformationFromLocationData(locationData);
     }
 
+    public static Product productInformationFromLocationData(String service, String locationData) {
+        Product product = null;
+        try {
+            Organizer organizer = new Organizer();
+            product = organizer.getProductInformation(service, locationData);
+            System.out.println(product.getProductId());
+            try {
+                System.out.println(product.getProductMetaData().getLatAxisMinValueAsString());
+                System.out.println(product.getProductMetaData().getLatAxisMaxValueAsString());
+                System.out.println(product.getProductMetaData().getLonAxisMinValueAsString());
+                System.out.println(product.getProductMetaData().getLonAxisMaxValueAsString());
+                System.out.println(product.getProductMetaData().getTimeAxisMinValueAsString());
+                System.out.println(product.getProductMetaData().getTimeAxisMaxValueAsString());
+                System.out.println(product.hasGeoXAxisWithLonEquivalence());
+                System.out.println(product.hasGeoYAxisWithLatEquivalence());
+
+                System.out.println(product.getProductMetaData().getGeoXAxisMinValueAsLonString(product));
+                System.out.println(product.getProductMetaData().getGeoXAxisMaxValueAsLonString(product));
+
+                System.out.println(product.getProductMetaData().getGeoYAxisMinValueAsLatString(product));
+                System.out.println(product.getProductMetaData().getGeoYAxisMaxValueAsLatString(product));
+            } catch (Exception e) {
+                // Do nothing
+            }
+            
+            System.out.println(product.getProductMetaData().getTimeCoverage().toString());
+            System.out.println(product.getProductMetaData().getParameterMetaDatas().toString());
+
+        } catch (MotuExceptionBase e) {
+            System.out.println(e.notifyException());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return product;
+    }
     public static Product productInformationFromLocationData(String locationData) {
         Product product = null;
         try {
@@ -460,6 +502,56 @@ public class TestIntfce {
             System.out.println(e.getMessage());
         }
 
+    }
+    
+    public static void productExtractDataFromInventory() {
+        String productId = "C:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
+        String service = "atoll:service:ftp-catsat:ftp";
+
+
+        // add temporal criteria
+        // first element is start date
+        // second element is end date (optional)
+        // if only start date is set, end date equals start date
+        List<String> listTemporalCoverage = new ArrayList<String>();
+        listTemporalCoverage.add("2007-04-06");
+        listTemporalCoverage.add("2007-04-14");
+
+        ExtractionParameters extractionParameters = new ExtractionParameters(
+                                                                             service,
+                                                                             null,
+                                                                             null,
+                                                                             listTemporalCoverage,
+                                                                             null,
+                                                                             null,
+                                                                             productId,
+                                                                             Organizer.Format.NETCDF,
+                                                                             null,
+                                                                             null,
+                                                                             "dearith",
+                                                                             true);
+
+        Product product = null;
+
+        try {
+            Organizer organizer = new Organizer();
+
+            product = organizer.extractData(extractionParameters);
+
+            // get the output full file name (with path)
+            String extractLocationData = product.getExtractLocationData();
+            // get the url to download the output file.
+            String urlExtractPath = product.getDownloadUrlPath();
+
+            System.out.println(String.format("Product file is stored on the server in %s", extractLocationData));
+            System.out.println(String.format("Product %s can be downloaded with http at %s", product.getProductId(), urlExtractPath));
+
+        } catch (MotuExceptionBase e) {
+            System.out.println(e.notifyException());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        
     }
 
     public static void productExtractDataAviso() {
@@ -951,12 +1043,39 @@ public class TestIntfce {
 
         System.out.println("End testLoadMotuConfig : \n");
     }
+    public static void testLoadCatalogOLA() {
+
+        CatalogOLA catalogOLA = null;
+        String xmlUri = "C:/tempVFS/catalogCatsatFTP.xml";
+
+        try {
+            catalogOLA = Organizer.getCatalogOLA(xmlUri);
+        } catch (MotuException e) {
+            System.out.println("Exception : \n");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+
+        
+        
+        for (fr.cls.atoll.motu.library.inventory.DatasetOLA datasetOLA : catalogOLA.getDatasetsOLA().getDatasetOLA()) {
+            System.out.print(datasetOLA.getUrn());
+            System.out.print(" ");
+            System.out.print(datasetOLA.getInventoryUrl());
+            System.out.println("");
+
+            
+        }
+
+        System.out.println("End testLoadCatalogOLA : \n");
+    }
 
     public static void testLoadInventoryOLA() {
 
         InventoryOLA inventoryOLA = null;
-        String xmlUri = "C:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
-
+        //String xmlUri = "C:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
+        String xmlUri = "sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll//atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
         try {
             inventoryOLA = Organizer.getInventoryOLA(xmlUri);
         } catch (MotuException e) {

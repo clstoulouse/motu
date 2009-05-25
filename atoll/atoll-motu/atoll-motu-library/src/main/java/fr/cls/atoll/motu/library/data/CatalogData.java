@@ -26,6 +26,9 @@ import org.apache.log4j.Logger;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.inventory.CatalogOLA;
+import fr.cls.atoll.motu.library.inventory.DatasetOLA;
+import fr.cls.atoll.motu.library.inventory.DatasetsOLA;
 import fr.cls.atoll.motu.library.metadata.DocMetaData;
 import fr.cls.atoll.motu.library.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
@@ -43,7 +46,7 @@ import fr.cls.atoll.motu.library.tds.server.TimeCoverageType;
  * This class implements a product's catalog .
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-05-19 13:28:44 $
+ * @version $Revision: 1.4 $ - $Date: 2009-05-25 15:18:20 $
  */
 public class CatalogData {
 
@@ -117,77 +120,64 @@ public class CatalogData {
         // products map
         // clearProducts();
 
-        fr.cls.atoll.motu.library.tds.server.Catalog catalogXml = loadConfigTds(path);
+        CatalogOLA catalogOLA = Organizer.getCatalogOLA(path);
         // --------------------------
         // -------- Loads dataset
         // --------------------------
-        List<JAXBElement<? extends DatasetType>> list = catalogXml.getDataset();
+        DatasetsOLA datasetsOLA  = catalogOLA.getDatasetsOLA();
 
-        this.title = catalogXml.getName();
-
-        for (Iterator<JAXBElement<? extends DatasetType>> it = list.iterator(); it.hasNext();) {
-            JAXBElement<? extends DatasetType> o = it.next();
-            // System.out.println(o.getDeclaredType().getName());
-
-            DatasetType datasetType = (DatasetType) o.getValue();
-            if (datasetType != null) {
-                if (datasetType instanceof CatalogRef) {
-                    // System.out.println("is CatalogRef");
-
-                    this.currentProductType = "";
-                    getCurrentProductSubTypes();
-                    sameProductTypeDataset = new ArrayList<Product>();
-
-                    int numberSubPaths = loadTdsCatalogRef((CatalogRef) datasetType);
-                    removeListCatalogRefSubPaths(numberSubPaths);
-
-                } else if (datasetType instanceof DatasetType) {
-                    // System.out.println("is DatasetType");
-
-                    this.currentProductType = "";
-                    getCurrentProductSubTypes();
-                    sameProductTypeDataset = new ArrayList<Product>();
-
-                    loadTdsProducts(datasetType, catalogXml);
-
-                    if (sameProductTypeDataset.size() > 0) {
-                        listProductTypeDataset.add(sameProductTypeDataset);
-                    }
-                }
-            }
-
+        this.title = catalogOLA.getName();
+        
+        for (DatasetOLA datasetOLA : datasetsOLA.getDatasetOLA()) {
+            System.out.print(datasetOLA.getUrn());
+            System.out.print(" ");
+            System.out.print(datasetOLA.getInventoryUrl());
+            System.out.println("");            
         }
-
+        
+        // --------------------------
+        // -------- Loads dataset
+        // --------------------------
+//        List<JAXBElement<? extends DatasetType>> list = catalogOLA.getDataset();
+//
+//        this.title = catalogOLA.getName();
+//
+//        for (Iterator<JAXBElement<? extends DatasetType>> it = list.iterator(); it.hasNext();) {
+//            JAXBElement<? extends DatasetType> o = it.next();
+//            // System.out.println(o.getDeclaredType().getName());
+//
+//            DatasetType datasetType = (DatasetType) o.getValue();
+//            if (datasetType != null) {
+//                if (datasetType instanceof CatalogRef) {
+//                    // System.out.println("is CatalogRef");
+//
+//                    this.currentProductType = "";
+//                    getCurrentProductSubTypes();
+//                    sameProductTypeDataset = new ArrayList<Product>();
+//
+//                    int numberSubPaths = loadTdsCatalogRef((CatalogRef) datasetType);
+//                    removeListCatalogRefSubPaths(numberSubPaths);
+//
+//                } else if (datasetType instanceof DatasetType) {
+//                    // System.out.println("is DatasetType");
+//
+//                    this.currentProductType = "";
+//                    getCurrentProductSubTypes();
+//                    sameProductTypeDataset = new ArrayList<Product>();
+//
+//                    loadTdsProducts(datasetType, catalogXml);
+//
+//                    if (sameProductTypeDataset.size() > 0) {
+//                        listProductTypeDataset.add(sameProductTypeDataset);
+//                    }
+//                }
+//            }
+//
+//        }
+//
         // Remove products that are not anymore in the catalog
         productsKeySet().retainAll(productsLoaded);
 
-        // for(Iterator<List> it = listProductTypeDataset.iterator();
-        // it.hasNext();) {
-        // sameProductTypeDataset = it.next();
-        // System.out.println(sameProductTypeDataset.size());
-        //             
-        // for(int i = 0 ; i < sameProductTypeDataset.size(); i++) {
-        // Product p = sameProductTypeDataset.get(i);
-        // if (i == 0) {
-        // List<String> subTypes = p.getProductMetaData().getProductSubTypes();
-        // System.out.println(p.getProductMetaData().getProductType());
-        // int indent = 0;
-        // for (Iterator<String> it2 = subTypes.iterator() ; it2.hasNext();) {
-        // indent ++;
-        // for (int d = 0; d < indent; d++) {
-        // System.out.print("-");
-        // }
-        // System.out.println(it2.next());
-        // }
-        // }
-        // System.out.println("name and location");
-        // System.out.println(p.getProductMetaData().getTitle());
-        // System.out.println(p.getLocationData());
-        // System.out.println("--------");
-        // }
-        // }
-        // this.currentProductType = "";
-        // this.currentProductSubTypes = null;
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadTdsCatalog() - exiting");
