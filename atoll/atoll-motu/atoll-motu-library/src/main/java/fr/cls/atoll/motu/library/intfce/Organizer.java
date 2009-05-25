@@ -100,7 +100,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.10 $ - $Date: 2009-05-25 15:18:20 $
+ * @version $Revision: 1.11 $ - $Date: 2009-05-25 15:30:41 $
  */
 public class Organizer {
 
@@ -212,7 +212,6 @@ public class Organizer {
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(Organizer.class);
 
-
     /** The marshaller motu msg. */
     private static Marshaller marshallerMotuMsg = null;
 
@@ -268,16 +267,22 @@ public class Organizer {
     private static Unmarshaller unmarshallerTdsConfig = null;
 
     /** The vfs standard manager. */
-    private static StandardFileSystemManager fsManager = null;
-    
+
     private static final ThreadLocal<FileSystemManager> FILE_SYSTEM_MANAGER = new ThreadLocal<FileSystemManager>() {
         @Override
         protected FileSystemManager initialValue() {
             StandardFileSystemManager standardFileSystemManager = new StandardFileSystemManager();
             standardFileSystemManager.setLogger(LogFactory.getLog(VFS.class));
             try {
+                standardFileSystemManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderConfig()));
+                standardFileSystemManager.setCacheStrategy(CacheStrategy.ON_CALL);
+                // standardFileSystemManager.addProvider("moi", new DefaultLocalFileProvider());
                 standardFileSystemManager.init();
             } catch (FileSystemException e) {
+                LOG.fatal("Error in VFS initialisation - Unable to intiialize VFS", e);
+            } catch (IOException e) {
+                LOG.fatal("Error in VFS initialisation - Unable to intiialize VFS", e);
+            } catch (MotuException e) {
                 LOG.fatal("Error in VFS initialisation - Unable to intiialize VFS", e);
             }
             return standardFileSystemManager;
@@ -289,10 +294,10 @@ public class Organizer {
      * 
      * @return the file system manager
      */
-    public FileSystemManager getFileSystemManager (){
+    public static final FileSystemManager getFileSystemManager() {
         return FILE_SYSTEM_MANAGER.get();
     }
-    
+
     /** The Constant ZIP_EXTENSION. */
     public static final String ZIP_EXTENSION = "gz";
 
@@ -4078,7 +4083,7 @@ public class Organizer {
 
         Organizer.initJAXB();
 
-        Organizer.initVFS();
+        // Organizer.initVFS();
 
         initVelocityEngine();
 
@@ -4086,34 +4091,32 @@ public class Organizer {
 
     }
 
-
     /**
      * Inits the vfs.
      * 
      * @throws MotuException the motu exception
      */
-    private static synchronized void initVFS() throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initVFS() - entering");
-        }
-        Organizer.fsManager = new StandardFileSystemManager();
-        Organizer.fsManager.setLogger(LogFactory.getLog(VFS.class));
-        try {
-            Organizer.fsManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderConfig()));
-            Organizer.fsManager.setCacheStrategy(CacheStrategy.ON_CALL);
-            // fsManager.addProvider("moi", new DefaultLocalFileProvider());
-            Organizer.fsManager.init();
-        } catch (IOException e) {
-            LOG.error("initVFS()", e);
-
-            throw new MotuException("Error in initVFS - Unable to intialize VFS", e);
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initVFS() - exiting");
-        }
-    }
-
+    // private static synchronized void initVFS() throws MotuException {
+    // if (LOG.isDebugEnabled()) {
+    // LOG.debug("initVFS() - entering");
+    // }
+    // Organizer.fsManager = new StandardFileSystemManager();
+    // Organizer.fsManager.setLogger(LogFactory.getLog(VFS.class));
+    // try {
+    // Organizer.fsManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderConfig()));
+    // Organizer.fsManager.setCacheStrategy(CacheStrategy.ON_CALL);
+    // // fsManager.addProvider("moi", new DefaultLocalFileProvider());
+    // Organizer.fsManager.init();
+    // } catch (IOException e) {
+    // LOG.error("initVFS()", e);
+    //
+    // throw new MotuException("Error in initVFS - Unable to intialize VFS", e);
+    // }
+    //
+    // if (LOG.isDebugEnabled()) {
+    // LOG.debug("initVFS() - exiting");
+    // }
+    // }
     /**
      * Resolve file.
      * 
@@ -4125,9 +4128,7 @@ public class Organizer {
     public static FileObject resolveFile(final String uri, final FileSystemOptions opts) {
         FileObject fileObject = null;
         try {
-            synchronized (Organizer.fsManager) {
-                fileObject = Organizer.fsManager.resolveFile(uri, opts);
-            }
+            fileObject = Organizer.getFileSystemManager().resolveFile(uri, opts);
         } catch (FileSystemException e) {
             new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
         }
@@ -4146,9 +4147,7 @@ public class Organizer {
     public static FileObject resolveFile(final String uri) {
         FileObject fileObject = null;
         try {
-            synchronized (Organizer.fsManager) {
-                fileObject = Organizer.fsManager.resolveFile(uri);
-            }
+            fileObject = Organizer.getFileSystemManager().resolveFile(uri);
         } catch (FileSystemException e) {
             new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
         }
