@@ -88,7 +88,7 @@ import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.8 $ - $Date: 2009-05-25 15:18:20 $
+ * @version $Revision: 1.9 $ - $Date: 2009-05-26 14:44:16 $
  * 
  */
 public class TestIntfce {
@@ -301,10 +301,13 @@ public class TestIntfce {
         // productExtractDataMerseaFromHttp();
 
         testLoadInventoryOLA();
-        //testLoadCatalogOLA();
+
+        testLoadCatalogOLA();
         
         //productInformationFromInventory();
         //productExtractDataFromInventory();
+        
+        
     }
 
     public static void listServices() {
@@ -1046,7 +1049,8 @@ public class TestIntfce {
     public static void testLoadCatalogOLA() {
 
         CatalogOLA catalogOLA = null;
-        String xmlUri = "C:/tempVFS/catalogCatsatFTP.xml";
+        //String xmlUri = "C:/tempVFS/catalogCatsatFTP.xml";
+        String xmlUri = "sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll//atoll-distrib/HOA_Catsat/Interface_ATOLL/catalogCatsatFTP.xml";
 
         try {
             catalogOLA = Organizer.getCatalogOLA(xmlUri);
@@ -1075,12 +1079,16 @@ public class TestIntfce {
 
         InventoryOLA inventoryOLA = null;
         //String xmlUri = "C:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
-        String xmlUri = "sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll//atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
+        String xmlUri = "sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll//atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_TEST.xml";
         try {
             inventoryOLA = Organizer.getInventoryOLA(xmlUri);
+//            Organizer.getFileSystemManager().close();
+//            Organizer.getFileSystemManager().freeUnusedResources();
+            //Organizer.freeResources();  
+
         } catch (MotuException e) {
             System.out.println("Exception : \n");
-            System.out.println(e.getMessage());
+            System.out.println(e.notifyException());
             e.printStackTrace();
             return;
         }
@@ -1104,6 +1112,8 @@ public class TestIntfce {
         System.out.println(timePeriod.getStart());
         System.out.println(timePeriod.getEnd());
         System.out.println(timePeriod.getStep());
+        System.out.println(timePeriod.getStep().toStandardDuration().getMillis());
+        System.out.println(timePeriod.getStep().getMillis());
         
         fr.cls.atoll.motu.library.inventory.Variables variables = ressource.getVariables();
         for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {
@@ -1142,6 +1152,7 @@ public class TestIntfce {
 
             
         }
+        
 
         System.out.println("End testLoadInventoryOLA : \n");
     }

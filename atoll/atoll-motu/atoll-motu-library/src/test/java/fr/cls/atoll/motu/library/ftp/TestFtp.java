@@ -24,6 +24,7 @@ import org.apache.commons.vfs.provider.ftp.FtpClientFactory;
 import org.apache.commons.vfs.provider.ftp.FtpFileSystemConfigBuilder;
 import org.apache.commons.vfs.provider.sftp.SftpClientFactory;
 import org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder;
+import org.apache.commons.vfs.provider.sftp.TrustEveryoneUserInfo;
 import org.apache.log4j.Logger;
 
 import com.jcraft.jsch.Session;
@@ -49,12 +50,12 @@ public class TestFtp {
         //testFtp();
         // testSftp();
         //testVFS("t", "t", "sftp", "CLS-EARITH.pc.cls.fr", "AsciiEnvisat.txt");
-        //testVFS("atoll", "atoll", "sftp", "catsat-data1.cls.fr/home/atoll", "/atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_20090516.xml");
+        testVFS("atoll", "atoll", "sftp", "catsat-data1.cls.fr/home/atoll", "/atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_20090516.xml");
 
         //testVFS("anonymous", "dearith@cls.fr", "ftp", "ftp.cls.fr/pub/oceano/AVISO/", "NRT-SLA/maps/rt/j2/h/msla_rt_j2_err_21564.nc.gz");
         //testVFS("anonymous@ftp.unidata.ucar.edu", "", "ftp", "proxy.cls.fr", "/pub/README");
 
-        testVFS("", "", "http", "catsat-data1.cls.fr:43080", "/thredds/catalog.xml");
+        //testVFS("", "", "http", "catsat-data1.cls.fr:43080", "/thredds/catalog.xml");
                       
         
         //testVFS("anonymous@gridftp.bigred.iu.teragrid.org:2811", "dearith@cls.fr", "gsiftp", "proxy.cls.fr", "/pub/README");
@@ -198,11 +199,14 @@ public class TestFtp {
                 //ftpFscb.setUserDirIsRoot(opts, true);
 
             }
-
             if (fscb instanceof SftpFileSystemConfigBuilder) {
                 SftpFileSystemConfigBuilder sftpFscb = (SftpFileSystemConfigBuilder) fscb;
                 //sftpFscb.setUserDirIsRoot(opts, true);
-                sftpFscb.setStrictHostKeyChecking(opts, "no");
+                
+//                TrustEveryoneUserInfo trustEveryoneUserInfo = new TrustEveryoneUserInfo();
+//                trustEveryoneUserInfo.promptYesNo("eddfsdfs");
+//                sftpFscb.setUserInfo(opts, new TrustEveryoneUserInfo());
+                sftpFscb.setTimeout(opts, 5000);
                 // SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(opts, true);
                 // SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(opts, "no");
 
@@ -235,15 +239,16 @@ public class TestFtp {
             FileObject dest = fsManager.toFileObject(newFile);
             //dest.copyFrom(ff2, Selectors.SELECT_ALL);
             dest.copyFrom(ff, Selectors.SELECT_ALL);
+//            
+//            URL url = ff.getURL();
+//            
+//            url.openConnection();
+//            URLConnection conn = url.openConnection();
+//            InputStream in = conn.getInputStream();
+//            in.close();
             
-            URL url = ff.getURL();
+          //InputStream in = ff.getContent().getInputStream();
             
-            url.openConnection();
-            URLConnection conn = url.openConnection();
-            InputStream in = conn.getInputStream();
-            in.close();
-
-
         } catch (FileSystemException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -254,7 +259,8 @@ public class TestFtp {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
-            fsManager.close();
+            //fsManager.close();
+            //fsManager.freeUnusedResources();
         }
 
     }

@@ -113,7 +113,9 @@
 	runCleanInterval="1"
 	extractionFilePatterns=".*\.nc$|.*\\.zip$|.*\.tar$|.*\.gz$"
 	extractionFileCacheSize="50"	
-	runGCInterval="10">
+	runGCInterval="10"
+	sftpSessionTimeOut="PT10S"
+	strictHostKeyChecking="no">
 	
 	<!--=====================   CATSAT FTP ===================-->
 	<configService defaultLanguage="UK" description="Ftp Catsat"

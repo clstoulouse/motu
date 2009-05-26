@@ -26,6 +26,10 @@
     <provider class-name="org.apache.commons.vfs.provider.http.HttpFileProvider">
         <scheme name="http"/>
     </provider>
+    
+    <provider class-name="org.apache.commons.vfs.provider.https.HttpsFileProvider">
+        <scheme name="https"/>
+    </provider>
 
 
 </providers>

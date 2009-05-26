@@ -35,7 +35,9 @@ import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.FileSystemOptions;
 import org.apache.commons.vfs.VFS;
+import org.apache.commons.vfs.cache.SoftRefFilesCache;
 import org.apache.commons.vfs.impl.StandardFileSystemManager;
+import org.apache.commons.vfs.provider.AbstractFileSystem;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -100,7 +102,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.11 $ - $Date: 2009-05-25 15:30:41 $
+ * @version $Revision: 1.12 $ - $Date: 2009-05-26 14:44:16 $
  */
 public class Organizer {
 
@@ -267,25 +269,11 @@ public class Organizer {
     private static Unmarshaller unmarshallerTdsConfig = null;
 
     /** The vfs standard manager. */
-
-    private static final ThreadLocal<FileSystemManager> FILE_SYSTEM_MANAGER = new ThreadLocal<FileSystemManager>() {
+    private static final ThreadLocal<VFSManager> VFS_MANAGER = new ThreadLocal<VFSManager>() {
         @Override
-        protected FileSystemManager initialValue() {
-            StandardFileSystemManager standardFileSystemManager = new StandardFileSystemManager();
-            standardFileSystemManager.setLogger(LogFactory.getLog(VFS.class));
-            try {
-                standardFileSystemManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderConfig()));
-                standardFileSystemManager.setCacheStrategy(CacheStrategy.ON_CALL);
-                // standardFileSystemManager.addProvider("moi", new DefaultLocalFileProvider());
-                standardFileSystemManager.init();
-            } catch (FileSystemException e) {
-                LOG.fatal("Error in VFS initialisation - Unable to intiialize VFS", e);
-            } catch (IOException e) {
-                LOG.fatal("Error in VFS initialisation - Unable to intiialize VFS", e);
-            } catch (MotuException e) {
-                LOG.fatal("Error in VFS initialisation - Unable to intiialize VFS", e);
-            }
-            return standardFileSystemManager;
+        protected synchronized VFSManager initialValue() {
+            VFSManager vfsManager = new VFSManager();
+            return vfsManager;
         }
     };
 
@@ -293,11 +281,80 @@ public class Organizer {
      * Gets the file system manager.
      * 
      * @return the file system manager
+     * 
+     * @throws MotuException the motu exception
      */
-    public static final FileSystemManager getFileSystemManager() {
-        return FILE_SYSTEM_MANAGER.get();
+    public static final VFSManager getVFSSystemManager() throws MotuException {
+        VFSManager vfsManager = VFS_MANAGER.get();
+        if (vfsManager == null) {
+            throw new MotuException("Error File System manager has not been initialized");
+        }
+        return VFS_MANAGER.get();
     }
 
+    // private static final ThreadLocal<StandardFileSystemManager> FILE_SYSTEM_MANAGER = new
+    // ThreadLocal<StandardFileSystemManager>() {
+    //        
+    // @Override
+    // protected synchronized StandardFileSystemManager initialValue() {
+    // StandardFileSystemManager standardFileSystemManager = new StandardFileSystemManager();
+    // standardFileSystemManager.setLogger(LogFactory.getLog(VFS.class));
+    // try {
+    // standardFileSystemManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderConfig()));
+    // // standardFileSystemManager.setCacheStrategy(CacheStrategy.ON_CALL);
+    // // standardFileSystemManager.setFilesCache(new SoftRefFilesCache());
+    // // standardFileSystemManager.addProvider("moi", new DefaultLocalFileProvider());
+    // standardFileSystemManager.init();
+    // } catch (FileSystemException e) {
+    // LOG.fatal("Error in VFS initialisation - Unable to intiialize VFS", e);
+    // } catch (IOException e) {
+    // LOG.fatal("Error in VFS initialisation - Unable to intiialize VFS", e);
+    // } catch (MotuException e) {
+    // LOG.fatal("Error in VFS initialisation - Unable to intiialize VFS", e);
+    // }
+    // return standardFileSystemManager;
+    // }
+    //
+    // @Override
+    // public void remove() {
+    //            
+    // StandardFileSystemManager standardFileSystemManager = this.get();
+    // if (standardFileSystemManager == null) {
+    // return;
+    // }
+    //                        
+    // standardFileSystemManager.close();
+    //
+    // super.remove();
+    //
+    // }
+    //
+    // };
+
+    /**
+     * Free resources.
+     */
+    // public static void freeResources() {
+    // Organizer.FILE_SYSTEM_MANAGER.remove();
+    // // try {
+    // // Organizer.getFileSystemManager().close();
+    // // } catch (MotuException e) {
+    // // // Do nothing
+    // // }
+    // }
+    /**
+     * Gets the file system manager.
+     * 
+     * @return the file system manager
+     * @throws MotuException
+     */
+    // public static final StandardFileSystemManager getFileSystemManager() throws MotuException {
+    // StandardFileSystemManager fileSystemManager = FILE_SYSTEM_MANAGER.get();
+    // if (fileSystemManager == null) {
+    // throw new MotuException("Error File System manager has not been initialized");
+    // }
+    // return FILE_SYSTEM_MANAGER.get();
+    // }
     /** The Constant ZIP_EXTENSION. */
     public static final String ZIP_EXTENSION = "gz";
 
@@ -994,9 +1051,19 @@ public class Organizer {
 
             in = ConfigLoader.getInstance().getAsStream(uri);
             if (in == null) {
-                URL url = new URL(uri);
-                URLConnection ulrConnection = url.openConnection();
-                in = ulrConnection.getInputStream();
+                FileObject fileObject = Organizer.getVFSSystemManager().resolveFile(uri);
+                if (fileObject != null) {
+                    // URL url = fileObject.getURL();
+                    // URLConnection urlConnection = url.openConnection();
+                    // in = urlConnection.getInputStream();
+                    // fileObject.close();
+                    in = fileObject.getContent().getInputStream();
+                    
+                    // With sftp, session seems not to be disconnected, so force close ?
+                    //((AbstractFileSystem)fileObject.getFileSystem()).closeCommunicationLink();
+                    
+
+                }
             }
         } catch (IOException e) {
             throw new MotuException(String.format("'%s' uri file has not be found", uri), e);
@@ -1795,13 +1862,13 @@ public class Organizer {
             throw new MotuException(String.format("ERROR in Organiser.validateInventoryOLA - InventoryOLA  xml ('%s') not found:", xmlUri));
         }
 
+        XMLErrorHandler errorHandler = XMLUtils.validateXML(inSchema, inXml);
+
         try {
             inXml.close();
         } catch (IOException e) {
             // Do nothing
         }
-
-        XMLErrorHandler errorHandler = XMLUtils.validateXML(inSchema, inXml);
 
         if (errorHandler == null) {
             throw new MotuException("ERROR in Organiser.validateInventoryOLA - InventoryOLA schema : XMLErrorHandler is null");
@@ -4083,8 +4150,6 @@ public class Organizer {
 
         Organizer.initJAXB();
 
-        // Organizer.initVFS();
-
         initVelocityEngine();
 
         fillServices();
@@ -4096,27 +4161,6 @@ public class Organizer {
      * 
      * @throws MotuException the motu exception
      */
-    // private static synchronized void initVFS() throws MotuException {
-    // if (LOG.isDebugEnabled()) {
-    // LOG.debug("initVFS() - entering");
-    // }
-    // Organizer.fsManager = new StandardFileSystemManager();
-    // Organizer.fsManager.setLogger(LogFactory.getLog(VFS.class));
-    // try {
-    // Organizer.fsManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderConfig()));
-    // Organizer.fsManager.setCacheStrategy(CacheStrategy.ON_CALL);
-    // // fsManager.addProvider("moi", new DefaultLocalFileProvider());
-    // Organizer.fsManager.init();
-    // } catch (IOException e) {
-    // LOG.error("initVFS()", e);
-    //
-    // throw new MotuException("Error in initVFS - Unable to intialize VFS", e);
-    // }
-    //
-    // if (LOG.isDebugEnabled()) {
-    // LOG.debug("initVFS() - exiting");
-    // }
-    // }
     /**
      * Resolve file.
      * 
@@ -4124,38 +4168,40 @@ public class Organizer {
      * @param opts the opts
      * 
      * @return the file object
+     * @throws MotuException
      */
-    public static FileObject resolveFile(final String uri, final FileSystemOptions opts) {
-        FileObject fileObject = null;
-        try {
-            fileObject = Organizer.getFileSystemManager().resolveFile(uri, opts);
-        } catch (FileSystemException e) {
-            new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
-        }
-
-        return fileObject;
-
-    }
-
+    // public static FileObject resolveFile(final String uri, final FileSystemOptions opts) throws
+    // MotuException {
+    // FileObject fileObject = null;
+    // try {
+    // fileObject = Organizer.getFileSystemManager().resolveFile(uri, opts);
+    // } catch (FileSystemException e) {
+    // new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
+    // }
+    //
+    // return fileObject;
+    //
+    // }
     /**
      * Resolve file.
      * 
      * @param uri the uri
      * 
      * @return the file object
+     * @throws MotuException
      */
-    public static FileObject resolveFile(final String uri) {
-        FileObject fileObject = null;
-        try {
-            fileObject = Organizer.getFileSystemManager().resolveFile(uri);
-        } catch (FileSystemException e) {
-            new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
-        }
-
-        return fileObject;
-
-    }
-
+    // public static FileObject resolveFile(final String uri) throws MotuException {
+    // FileObject fileObject = null;
+    // try {
+    // fileObject = Organizer.getFileSystemManager().resolveFile(uri);
+    // } catch (FileSystemException e) {
+    // new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
+    // }
+    //
+    // return fileObject;
+    //
+    // }
+    //
     /**
      * initializes the Velocity runtime engine, using default properties plus the properties in the Motu
      * velocity properties file.
