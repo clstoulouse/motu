@@ -47,7 +47,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * This class implements a service (AVISO, MERCATOR, ...).
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-05-25 15:18:20 $
+ * @version $Revision: 1.5 $ - $Date: 2009-05-27 16:02:50 $
  */
 public class ServiceData {
 
@@ -515,6 +515,27 @@ public class ServiceData {
         this.description = description;
     }
 
+    /** The keep data files list. */
+    private boolean keepDataFilesList = false;
+
+    /**
+     * Checks if is keep data files list.
+     * 
+     * @return true, if is keep data files list
+     */
+    public boolean isKeepDataFilesList() {
+        return keepDataFilesList;
+    }
+
+    /**
+     * Sets the keep data files list.
+     * 
+     * @param keepDataFilesList the new keep data files list
+     */
+    public void setKeepDataFilesList(boolean keepDataFilesList) {
+        this.keepDataFilesList = keepDataFilesList;
+    }
+
     /** Type of catalog. */
     private CatalogData.CatalogType catalogType = CatalogData.CatalogType.OPENDAP;
 
@@ -570,6 +591,7 @@ public class ServiceData {
      * @return Returns the catalog.
      * 
      * @throws MotuException the motu exception
+     * 
      * @uml.property name="catalog"
      */
     public CatalogData getCatalog() throws MotuException {
@@ -726,7 +748,14 @@ public class ServiceData {
                     productPersistent.setId(productId);
                     productPersistent.setServiceType(product.getTdsServiceType());
                     productPersistent.setUrl(product.getLocationData());
+                    productPersistent.setUrlMetaData(product.getLocationMetaData());
+
+                    if (isKeepDataFilesList()) {
+                        productPersistent.setDataFiles(product.getDataFiles());
+                    }
+
                     servicePersistent.putProductsPersistent(productId, productPersistent);
+
                 }
             }
         }
@@ -823,17 +852,17 @@ public class ServiceData {
         if (Organizer.isXMLFile(locationData)) {
             this.setCatalogType(CatalogData.CatalogType.FTP);
         }
-//        
-//        try {
-//            InventoryOLA inventoryOLA = Organizer.getInventoryOLA(locationData);
-//            if (inventoryOLA != null) {
-//                this.setCatalogType(CatalogData.CatalogType.FTP);
-//            }
-//
-//        } catch (Exception e) {
-//            // Not a Inventory XML file : do nothing
-//            e.printStackTrace();
-//        }
+        //        
+        // try {
+        // InventoryOLA inventoryOLA = Organizer.getInventoryOLA(locationData);
+        // if (inventoryOLA != null) {
+        // this.setCatalogType(CatalogData.CatalogType.FTP);
+        // }
+        //
+        // } catch (Exception e) {
+        // // Not a Inventory XML file : do nothing
+        // e.printStackTrace();
+        // }
 
         getProductInformation(product);
 
@@ -896,7 +925,7 @@ public class ServiceData {
             product.loadOpendapMetaData();
             break;
         case FTP:
-            product.loadInventoryMetaData();
+            // product.loadInventoryMetaData();
             break;
         default:
             throw new MotuNotImplementedException(String.format("Unimplemented catalog type %d ", getCatalogType()));
@@ -1237,9 +1266,8 @@ public class ServiceData {
      *            created
      * @param listDepthCoverage list contains low depth, high depth.
      * 
-     * @throws MotuInvalidLongitudeException
-     * @throws MotuInvalidLatitudeException
-     * @throws MotuException the motu exception
+     * @throws MotuInvalidLongitudeException @throws MotuInvalidLatitudeException * @throws MotuException the
+     *             motu exception
      * @throws MotuInvalidDepthException the motu invalid depth exception
      */
     public static void addCriteriaDepth(List<String> listDepthCoverage, List<ExtractCriteria> criteria) throws MotuInvalidDepthException,
@@ -1307,6 +1335,7 @@ public class ServiceData {
      * @param listLatLonCoverage the list lat lon coverage
      * @param listDepthCoverage the list depth coverage
      * @param listTemporalCoverage the list temporal coverage
+     * 
      * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
      * @throws MotuInvalidLongitudeException the motu invalid longitude exception
@@ -1381,7 +1410,6 @@ public class ServiceData {
      * Extracts data from a location data (url , filename) and according to criteria (geographical and/or
      * temporal and/or logical expression).
      * 
-     * @param locationData location of the data to download (url, filename)
      * @param listVar list of variables (parameters) or expressions to extract.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
@@ -1389,21 +1417,25 @@ public class ServiceData {
      * @param listDepthCoverage list contains low depth, high depth.
      * @param selectData logical expression if it's true extract th data, if it's failse ignore the data.
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
+     * @param product the product
+     * 
      * @return product object corresponding to the extraction
-     * @throws MotuInvalidDateException
-     * @throws MotuInvalidDepthException
-     * @throws MotuInvalidLatitudeException
-     * @throws MotuInvalidLongitudeException
-     * @throws MotuException
-     * @throws MotuExceedingCapacityException
-     * @throws MotuNotImplementedException
-     * @throws MotuInvalidDateRangeException
-     * @throws MotuInvalidDepthRangeException
-     * @throws MotuInvalidLatLonRangeException
-     * @throws NetCdfVariableException
-     * @throws MotuNoVarException
-     * @throws NetCdfAttributeException
-     * @throws NetCdfVariableNotFoundException
+     * 
+     * @throws MotuInvalidDateException the motu invalid date exception
+     * @throws MotuInvalidDepthException the motu invalid depth exception
+     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
+     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
+     * @throws MotuException the motu exception
+     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
+     * @throws MotuNotImplementedException the motu not implemented exception
+     * @throws MotuInvalidDateRangeException the motu invalid date range exception
+     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
+     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
+     * @throws NetCdfVariableException the net cdf variable exception
+     * @throws MotuNoVarException the motu no var exception
+     * @throws NetCdfAttributeException the net cdf attribute exception
+     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     // public Product extractData(String locationData,
     // List<String> listVar,
@@ -1481,22 +1513,16 @@ public class ServiceData {
      * Extract data from a product related to the current service and according to criteria (geographical
      * and/or temporal and/or logical expression).
      * 
-     * @param locationData location of the data to download (url, filename)
      * @param listVar list of variables (parameters) or expressions to extract.
-     * @param criteria list of criteria (geographical coverage, temporal coverage ...)
-     * @param selectData logical expression if it's true extract th data, if it's failse ignore the data.
-     * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
+     * @param product the product
+     * 
      * @return product object corresponding to the extraction
-     * @throws MotuException
-     * @throws NetCdfAttributeException
-     * @throws MotuNotImplementedException
-     * @throws MotuExceedingCapacityException
-     * @throws MotuNotImplementedException
-     * @throws MotuInvalidDateRangeException
-     * @throws MotuInvalidDepthRangeException
-     * @throws NetCdfVariableException
-     * @throws MotuInvalidLatLonRangeException
-     * @throws MotuNoVarException
+     * 
+     * @throws MotuException the motu exception
+     * @throws NetCdfAttributeException @throws MotuNotImplementedException the motu not implemented exception
+     * @throws MotuExceedingCapacityException @throws MotuInvalidDateRangeException * @throws
+     *             MotuInvalidDepthRangeException * @throws NetCdfVariableException * @throws
+     *             MotuInvalidLatLonRangeException * @throws MotuNoVarException
      */
 
     // public Product extractData(String locationData,
@@ -1582,6 +1608,26 @@ public class ServiceData {
         }
     }
 
+    public void updateFiles(Product product) throws MotuException, MotuNotImplementedException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("updateFiles() - entering");
+        }
+
+        if (product == null) {
+            throw new MotuException("Error in updateFiles - product is null");
+        }
+
+        if (product.getDataFiles() == null) {
+            product.clearFiles();
+        } else {
+            product.updateFiles();
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("updateFiles() - exiting");
+        }
+    }
+
     /**
      * Updates the variable collection to download.
      * 
@@ -1625,7 +1671,7 @@ public class ServiceData {
      * @throws MotuException the motu exception
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     public void extractData(Product product,
                             List<String> listVar,
@@ -1642,6 +1688,16 @@ public class ServiceData {
             throw new MotuException("Error in extractData - product is null");
         }
 
+        if (getCatalogType() == CatalogData.CatalogType.FTP) {
+                        
+            getLocationMetaData(product);
+            getDataFiles(product);
+            
+            product.setMediaKey(getCatalogType().name());  
+
+            updateFiles(product);
+        }
+        
         // updates variables collection to download
         updateVariables(product, listVar);
 
@@ -1650,7 +1706,7 @@ public class ServiceData {
 
         // updates 'select data' collection
         updateSelectData(product, selectData);
-
+        
         product.extractData(dataOutputFormat);
 
         if (LOG.isDebugEnabled()) {
@@ -1674,7 +1730,7 @@ public class ServiceData {
      * @throws MotuException the motu exception
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     public void extractData(Product product, Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException,
             MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException,
@@ -1769,8 +1825,8 @@ public class ServiceData {
      * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuException the motu exception
      * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
+     * @throws MotuInvalidLatLonRangeException @throws MotuInvalidDateRangeException the motu invalid date
+     *             range exception
      */
     public Product extractDataHTML(Product product,
                                    List<String> listVar,
@@ -2110,6 +2166,7 @@ public class ServiceData {
      * Getter of the property <tt>sameGroupServices</tt>.
      * 
      * @return Returns the sameGroupServices.
+     * 
      * @uml.property name="sameGroupServices"
      */
     public List<ServiceData> getSameGroupServices() {
@@ -2120,6 +2177,7 @@ public class ServiceData {
      * Setter of the property <tt>sameGroupServices</tt>.
      * 
      * @param sameGroupServices The sameGroupServices to set.
+     * 
      * @uml.property name="sameGroupServices"
      */
     public void setSameGroupServices(List<ServiceData> sameGroupServices) {
@@ -2138,6 +2196,62 @@ public class ServiceData {
         return currentProduct;
     }
 
+    /**
+     * Gets the data files.
+     * 
+     * @param product the product
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void getDataFiles(Product product) throws MotuException {
+
+        List<DataFile> dataFiles = null;
+
+        if (isKeepDataFilesList()) {
+            ServicePersistent servicePersistent = Organizer.getServicesPersistent(name);
+
+            if (servicePersistent != null) {
+                ProductPersistent productPersistent = servicePersistent.getProductsPersistent(product.getProductId());
+                if (productPersistent == null) {
+                    throw new MotuException(String.format("ERROR in ServiceData#getDataFiles - product '%s' not found", product.getProductId()));
+                }
+
+                dataFiles = productPersistent.getDataFiles();
+                product.setDataFiles(dataFiles);
+            }
+
+        }
+        if (dataFiles != null) {
+            return;
+        }
+        
+        if (product.getLocationMetaData().isEmpty()) {
+            getLocationMetaData(product);
+        }
+
+        InventoryOLA inventoryOLA = Organizer.getInventoryOLA(product.getLocationMetaData());
+
+        dataFiles = CatalogData.loadFtpDataFiles(inventoryOLA);
+
+        product.setDataFiles(dataFiles);
+    }
+
+    public void getLocationMetaData(Product product) throws MotuException {
+
+        ServicePersistent servicePersistent = Organizer.getServicesPersistent(name);
+
+        if (servicePersistent == null) {
+            return;
+        }
+        ProductPersistent productPersistent = servicePersistent.getProductsPersistent(product.getProductId());
+        if (productPersistent == null) {
+            throw new MotuException(String.format("ERROR in ServiceData#getLocationMetaData - product '%s' not found", product.getProductId()));
+        }
+
+        String locationMetaData = productPersistent.getUrlMetaData();
+        product.setLocationMetaData(locationMetaData);
+    }
+    
 }
 
 // CSON: MultipleStringLiterals

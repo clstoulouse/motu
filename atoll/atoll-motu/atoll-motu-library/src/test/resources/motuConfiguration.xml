@@ -121,8 +121,8 @@
 	<configService defaultLanguage="UK" description="Ftp Catsat"
 		group="CatsatFTP" httpBaseRef="http://www.cls.fr"
 		name="atoll:service:ftp-catsat:ftp" veloTemplatePrefix="generic">
-		<catalog name="catalogCatsatFTP.xml" type="FTP" protocol="sftp"
-			urlSite="sftp:atoll:atoll@catsat-data1.cls.fr/home/atoll/atoll-distrib/HOA_Catsat/Interface_ATOLL" />
+		<catalog name="catalogCatsatFTP.xml" type="FTP"
+			urlSite="sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll/atoll-distrib/HOA_Catsat/Interface_ATOLL" />
 	</configService>
 	<!--===========================================-->
 	<!--                     AVISO_NRT             -->

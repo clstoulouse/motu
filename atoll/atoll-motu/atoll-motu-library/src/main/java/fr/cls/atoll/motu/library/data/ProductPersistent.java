@@ -3,6 +3,8 @@
  */
 package fr.cls.atoll.motu.library.data;
 
+import java.util.List;
+
 /**
  * <br>
  * <br>
@@ -10,9 +12,8 @@ package fr.cls.atoll.motu.library.data;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
- * 
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-05-27 16:02:50 $
  */
 
 public class ProductPersistent {
@@ -31,6 +32,27 @@ public class ProductPersistent {
 
     /** The url. */
     protected String url;
+
+    /** The url meta data. */
+    protected String urlMetaData;
+    
+    /**
+     * Gets the url meta data.
+     * 
+     * @return the url meta data
+     */
+    public String getUrlMetaData() {
+        return urlMetaData;
+    }
+
+    /**
+     * Sets the url meta data.
+     * 
+     * @param urlMetaData the new url meta data
+     */
+    public void setUrlMetaData(String urlMetaData) {
+        this.urlMetaData = urlMetaData;
+    }
 
     /**
      * Gets the service type.
@@ -85,5 +107,28 @@ public class ProductPersistent {
     public void setUrl(String url) {
         this.url = url;
     }
+    
+    /** The data files. */
+    List<DataFile> dataFiles = null;
+    
+
+    /**
+     * Gets the data files.
+     * 
+     * @return the data files
+     */
+    public List<DataFile> getDataFiles() {
+        return dataFiles;
+    }
+
+    /**
+     * Sets the data files.
+     * 
+     * @param dataFiles the new data files
+     */
+    public void setDataFiles(List<DataFile> dataFiles) {
+        this.dataFiles = dataFiles;
+    }
+
 
 }

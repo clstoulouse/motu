@@ -3,6 +3,8 @@ package fr.cls.atoll.motu.library.ftp;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -47,10 +49,21 @@ public class TestFtp {
      */
     public static void main(String[] args) {
 
+        try {
+            URI uri = new URI("sftp://catsat-data1.cls.fr/home/atoll");
+            URI newURI = new URI(uri.getScheme(), "atoll:atoll", uri.getHost(), uri.getPort(), uri.getPath(), uri.getQuery(), uri.getFragment());
+            System.out.println(newURI.toString());
+            
+        } catch (URISyntaxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        
         //testFtp();
         // testSftp();
         //testVFS("t", "t", "sftp", "CLS-EARITH.pc.cls.fr", "AsciiEnvisat.txt");
-        testVFS("atoll", "atoll", "sftp", "catsat-data1.cls.fr/home/atoll", "/atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_20090516.xml");
+        //testVFS("atoll", "atoll", "sftp", "catsat-data1.cls.fr/home/atoll", "/atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_20090516.xml");
 
         //testVFS("anonymous", "dearith@cls.fr", "ftp", "ftp.cls.fr/pub/oceano/AVISO/", "NRT-SLA/maps/rt/j2/h/msla_rt_j2_err_21564.nc.gz");
         //testVFS("anonymous@ftp.unidata.ucar.edu", "", "ftp", "proxy.cls.fr", "/pub/README");

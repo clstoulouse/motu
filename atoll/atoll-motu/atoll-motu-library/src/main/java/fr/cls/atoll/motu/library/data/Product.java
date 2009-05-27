@@ -24,6 +24,7 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.units.Unit;
 
+import fr.cls.atoll.motu.library.configuration.QueueType;
 import fr.cls.atoll.motu.library.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
@@ -41,10 +42,12 @@ import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
 import fr.cls.atoll.motu.library.inventory.InventoryOLA;
 import fr.cls.atoll.motu.library.inventory.Ressource;
 import fr.cls.atoll.motu.library.inventory.TimePeriod;
+import fr.cls.atoll.motu.library.metadata.DocMetaData;
 import fr.cls.atoll.motu.library.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.library.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.library.tds.server.DocumentationType;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -52,7 +55,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
  * This class represents a product.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-05-20 15:15:05 $
+ * @version $Revision: 1.4 $ - $Date: 2009-05-27 16:02:50 $
  */
 public class Product {
 
@@ -234,6 +237,20 @@ public class Product {
     }
 
     /**
+     * Checks if is ftp media.
+     * 
+     * @return true, if is ftp media
+     * 
+     * @throws MotuException the motu exception
+     */
+    public boolean isFtpMedia() throws MotuException {
+        if (productMetaData == null) {
+            throw new MotuException("Error in isFtpMedia - productMetaData is null");
+        }
+        return productMetaData.isFtpMedia();
+    }
+
+    /**
      * Checks if is product downloadable.
      * 
      * @return Returns true if product type is downloadable. Note that "Along track" product and with
@@ -302,6 +319,19 @@ public class Product {
     }
 
     /**
+     * Sets the product id.
+     * 
+     * @param productId the new product id
+     */
+    public void setProductId(String productId) {
+
+        if (productMetaData == null) {
+            productMetaData = new ProductMetaData();
+        }
+        productMetaData.setProductId(productId);
+    }
+
+    /**
      * Reads product metadata from an URL Opendap dataset.
      * 
      * @param url url of the Opendap dataset
@@ -346,26 +376,27 @@ public class Product {
         }
     }
 
-    /**
-     * Reads product metadata from a XML file).
-     * 
-     * @throws MotuException the motu exception
-     */
-    public void loadInventoryMetaData() throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("loadXmlMetaData() - entering");
-        }
-
-        if (locationData.equals("")) {
-            throw new MotuException("Error in loadInventoryMetaData - Unable to open XML file - url path is not set (is empty)");
-        }
-        // Loads global metadata from opendap
-        loadInventoryGlobalMetaData();
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("loadXmlMetaData() - exiting");
-        }
-    }
+    // /**
+    // * Reads product metadata from a XML file).
+    // *
+    // * @throws MotuException the motu exception
+    // */
+    // public void loadInventoryMetaData() throws MotuException {
+    // if (LOG.isDebugEnabled()) {
+    // LOG.debug("loadXmlMetaData() - entering");
+    // }
+    //
+    // if (locationMetaData.equals("")) {
+    // throw new
+    // MotuException("Error in loadInventoryMetaData - Unable to open XML file - url path is not set (is empty)");
+    // }
+    // // Loads global metadata from opendap
+    // loadInventoryGlobalMetaData();
+    //
+    // if (LOG.isDebugEnabled()) {
+    // LOG.debug("loadXmlMetaData() - exiting");
+    // }
+    // }
 
     /**
      * Reads product global metadata from an (NetCDF file).
@@ -444,6 +475,8 @@ public class Product {
     /**
      * Reads product global variable metadata from a NetCDF file.
      * 
+     * @param inventoryOLA the inventory ola
+     * 
      * @throws MotuException the motu exception
      */
 
@@ -452,7 +485,7 @@ public class Product {
      * 
      * @throws MotuException the motu exception
      */
-    public void loadInventoryGlobalMetaData() throws MotuException {
+    public void loadInventoryGlobalMetaData(InventoryOLA inventoryOLA) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadInventoryGlobalMetaData() - entering");
         }
@@ -461,15 +494,13 @@ public class Product {
             throw new MotuException("Error in loadInventoryGlobalMetaData - Unable to load - productMetaData is null");
         }
 
-        InventoryOLA inventoryOLA = Organizer.getInventoryOLA(locationData);
-
         productMetaData.setProductId(inventoryOLA.getProduct().getUrn().toString());
         productMetaData.setTitle(inventoryOLA.getProduct().getUrn().toString());
 
         Ressource ressource = inventoryOLA.getRessource();
 
-        //GeospatialCoverage geospatialCoverage = ressource.getGeospatialCoverage();
-        
+        // GeospatialCoverage geospatialCoverage = ressource.getGeospatialCoverage();
+
         TimePeriod timePeriod = ressource.getTimePeriod();
 
         productMetaData.setTimeCoverage(timePeriod.getStart(), timePeriod.getEnd());
@@ -494,11 +525,45 @@ public class Product {
 
         }
 
+        // if (productMetaData.getDocumentations() == null) {
+        // productMetaData.setDocumentations(new ArrayList<DocMetaData>());
+        // }
+        // productMetaData.clearDocumentations();
+        //        
+        // DocMetaData docMetaData = new DocMetaData();
+        // docMetaData.setTitle(ProductMetaData.MEDIA_KEY);
+        // docMetaData.setResource(CatalogData.CatalogType.FTP.name());
+        // productMetaData.addDocumentations(docMetaData);
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadInventoryGlobalMetaData() - exiting");
         }
     }
 
+    /**
+     * Sets the media key.
+     * 
+     * @param value the new media key
+     */
+    public void setMediaKey(String value) {
+
+        if (productMetaData.getDocumentations() == null) {
+            productMetaData.setDocumentations(new ArrayList<DocMetaData>());
+        }
+        productMetaData.clearDocumentations();
+
+        DocMetaData docMetaData = new DocMetaData();
+        docMetaData.setTitle(ProductMetaData.MEDIA_KEY);
+        docMetaData.setResource(value);
+        productMetaData.addDocumentations(docMetaData);
+
+    }
+
+    /**
+     * Gets the opendap variable metadata.
+     * 
+     * @throws MotuException the motu exception
+     */
     @SuppressWarnings("unchecked")
     private void getOpendapVariableMetadata() throws MotuException {
         // Gets variables metadata.
@@ -678,7 +743,6 @@ public class Product {
 
     /**
      * Removes all variables from the dataset.
-     * 
      */
     public void clearVariables() {
         if (LOG.isDebugEnabled()) {
@@ -727,7 +791,6 @@ public class Product {
 
     /**
      * Removes all criteria from the dataset.
-     * 
      */
     public void clearCriteria() {
         if (LOG.isDebugEnabled()) {
@@ -745,6 +808,50 @@ public class Product {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("clearCriteria() - exiting");
+        }
+    }
+
+    /**
+     * Update files.
+     * 
+     * @throws MotuException the motu exception
+     * @throws MotuNotImplementedException the motu not implemented exception
+     */
+    public void updateFiles() throws MotuException, MotuNotImplementedException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("updateFiles() - entering");
+        }
+
+        if (dataset == null) {
+            createDataset();
+        }
+
+        dataset.updateFiles(dataFiles);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("updateFiles() - exiting");
+        }
+    }
+
+    /**
+     * Clear files.
+     */
+    public void clearFiles() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("clearFiles() - entering");
+        }
+
+        if (dataset == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("clearFiles() - exiting");
+            }
+            return;
+        }
+
+        dataset.clearFiles();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("clearFiles() - exiting");
         }
     }
 
@@ -783,7 +890,9 @@ public class Product {
             throw new MotuException("Error in CreateDataset - Unable to create dataset - productMetaData is null");
         }
 
-        if (isProductAlongTrack()) {
+        if (isFtpMedia()) {
+            dataset = new DatasetFtp(this);
+        } else if (isProductAlongTrack()) {
             dataset = new DatasetAlongTrack(this);
             throw new MotuException("Extraction of 'Along Track' Product is not yet available.");
         } else if (getNetCdfReader().hasGeoXYAxisWithLonLatEquivalence()) {
@@ -801,7 +910,7 @@ public class Product {
      * @return a {@link Array} constains latitude axis data values
      * 
      * @throws MotuException the motu exception
-     * @throws NetCdfVariableException
+     * @throws NetCdfVariableException the net cdf variable exception
      */
     public Array getLatAxisData() throws MotuException, NetCdfVariableException {
         if (LOG.isDebugEnabled()) {
@@ -859,7 +968,7 @@ public class Product {
      * @return a {@link Array} constains geoX axis data values
      * 
      * @throws MotuException the motu exception
-     * @throws NetCdfVariableException
+     * @throws NetCdfVariableException the net cdf variable exception
      */
     public Array getGeoXAxisData() throws MotuException, NetCdfVariableException {
         if (LOG.isDebugEnabled()) {
@@ -1099,7 +1208,8 @@ public class Product {
      * 
      * @return true if axes collection contains GeoX with Longitude equivalence and GeoY with Latitude
      *         equivalenceaxes.
-     * @throws MotuException
+     * 
+     * @throws MotuException the motu exception
      */
     public boolean hasGeoXYAxisWithLonLatEquivalence() throws MotuException {
         return (hasGeoXAxisWithLonEquivalence() && hasGeoYAxisWithLatEquivalence());
@@ -1110,7 +1220,8 @@ public class Product {
      * 
      * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable equivalence
      *         (Variable whose name is 'longitude' and with at least two dimensions X/Y).
-     * @throws MotuException
+     * 
+     * @throws MotuException the motu exception
      */
     public boolean hasGeoXAxisWithLonEquivalence() throws MotuException {
         return productMetaData.hasGeoXAxisWithLonEquivalence(this.netCdfReader);
@@ -1118,8 +1229,6 @@ public class Product {
 
     /**
      * Checks for geo Y axis with lat equivalence.
-     * 
-     * @param netCdfReader the net cdf reader
      * 
      * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable equivalence
      *         (Variable whose name is 'longitude' and with at least two dimensions X/Y).
@@ -1204,7 +1313,7 @@ public class Product {
      * @return a ucar.ma2.Array with data for the variable.
      * 
      * @throws MotuException the motu exception
-     * @throws NetCdfVariableException
+     * @throws NetCdfVariableException the net cdf variable exception
      */
 
     public Array readVariable(Variable variable) throws MotuException, NetCdfVariableException {
@@ -1310,7 +1419,7 @@ public class Product {
      * @throws MotuException the motu exception
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     public void extractData(Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
@@ -1328,6 +1437,15 @@ public class Product {
         if (LOG.isDebugEnabled()) {
             LOG.debug("extractData() - exiting");
         }
+    }
+
+    /**
+     * Extract ftp data.
+     * 
+     * @param dataOutputFormat the data output format
+     */
+    public void extractFtpData(Organizer.Format dataOutputFormat) {
+
     }
 
     /**
@@ -1442,6 +1560,27 @@ public class Product {
      */
     public void setTdsServiceType(String tdsServiceType) {
         this.tdsServiceType = tdsServiceType;
+    }
+
+    /** The data files. */
+    List<DataFile> dataFiles = null;
+
+    /**
+     * Gets the data files.
+     * 
+     * @return the data files
+     */
+    public List<DataFile> getDataFiles() {
+        return dataFiles;
+    }
+
+    /**
+     * Sets the data files.
+     * 
+     * @param dataFiles the new data files
+     */
+    public void setDataFiles(List<DataFile> dataFiles) {
+        this.dataFiles = dataFiles;
     }
 
     /** URL to find the product (URL Opendap , ...). */
@@ -1715,7 +1854,6 @@ public class Product {
      * Checks for last error.
      * 
      * @return true last error message string is not empty, false otherwise.
-     * 
      */
     public boolean hasLastError() {
 
@@ -1760,7 +1898,6 @@ public class Product {
      * 
      * @return the output temporary full file name (with path).
      * 
-     * 
      * @throws MotuException the motu exception
      */
     public String getExtractLocationDataTemp() throws MotuException {
@@ -1778,7 +1915,7 @@ public class Product {
     /**
      * Move temp extract file to final extract.
      * 
-     * @throws MotuException
+     * @throws MotuException the motu exception
      */
     public void moveTempExtractFileToFinalExtractFile() throws MotuException {
         // Temporary File

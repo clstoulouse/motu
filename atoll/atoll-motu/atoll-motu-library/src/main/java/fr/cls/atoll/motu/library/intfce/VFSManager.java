@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.vfs.CacheStrategy;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemConfigBuilder;
 import org.apache.commons.vfs.FileSystemException;
@@ -14,6 +15,7 @@ import org.apache.commons.vfs.FileSystemOptions;
 import org.apache.commons.vfs.Selectors;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.auth.StaticUserAuthenticator;
+import org.apache.commons.vfs.cache.SoftRefFilesCache;
 import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
 import org.apache.commons.vfs.impl.StandardFileSystemManager;
 import org.apache.commons.vfs.provider.ftp.FtpFileSystemConfigBuilder;
@@ -31,7 +33,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-05-26 14:44:16 $
+ * @version $Revision: 1.2 $ - $Date: 2009-05-27 16:02:50 $
  */
 public class VFSManager {
 
@@ -118,8 +120,8 @@ public class VFSManager {
         standardFileSystemManager.setLogger(LogFactory.getLog(VFS.class));
         try {
             standardFileSystemManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderConfig()));
-            // standardFileSystemManager.setCacheStrategy(CacheStrategy.ON_CALL);
-            // standardFileSystemManager.setFilesCache(new SoftRefFilesCache());
+            standardFileSystemManager.setCacheStrategy(CacheStrategy.ON_RESOLVE);
+            standardFileSystemManager.setFilesCache(new SoftRefFilesCache());
             // standardFileSystemManager.addProvider("moi", new DefaultLocalFileProvider());
             standardFileSystemManager.init();
             open = true;

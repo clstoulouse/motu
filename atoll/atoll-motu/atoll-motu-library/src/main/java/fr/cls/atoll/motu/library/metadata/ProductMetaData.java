@@ -19,6 +19,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 
+import fr.cls.atoll.motu.library.data.CatalogData;
 import fr.cls.atoll.motu.library.data.DatasetBase;
 import fr.cls.atoll.motu.library.data.Product;
 import fr.cls.atoll.motu.library.exception.MotuException;
@@ -34,47 +35,50 @@ import fr.cls.commons.util5.DatePeriod;
  * This class represents the metadata of a product. The metadata are similar to all products.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-05-20 15:15:05 $
+ * @version $Revision: 1.3 $ - $Date: 2009-05-27 16:02:50 $
  */
 
 /**
  * The Class ProductMetaData.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-05-20 15:15:05 $
+ * @version $Revision: 1.3 $ - $Date: 2009-05-27 16:02:50 $
  */
 public class ProductMetaData {
 
     /** The Constant PRODUCT_TYPE_ALONG_TRACK. */
-    private static final String PRODUCT_TYPE_ALONG_TRACK = "ALONG_TRACK_PRODUCT";
+    public static final String PRODUCT_TYPE_ALONG_TRACK = "ALONG_TRACK_PRODUCT";
 
     /** The Constant QUICKLOOK_KEY. */
-    private static final String QUICKLOOK_KEY = "quicklook";
+    public static final String QUICKLOOK_KEY = "quicklook";
 
     /** The Constant LAS_URL_KEY. */
-    private static final String LAS_URL_KEY = "las";
+    public static final String LAS_URL_KEY = "las";
 
     /** The Constant FTP_URL_KEY. */
-    private static final String FTP_URL_KEY = "ftp";
+    public static final String FTP_URL_KEY = "ftp";
 
     /** The Constant PAGE_SITE_WEB_URL_KEY. */
-    private static final String PAGE_SITE_WEB_URL_KEY = "info";
+    public static final String PAGE_SITE_WEB_URL_KEY = "info";
 
     /** The Constant BULLETIN_SITE_URL_KEY. */
-    private static final String BULLETIN_SITE_URL_KEY = "bulletinsite";
+    public static final String BULLETIN_SITE_URL_KEY = "bulletinsite";
 
     /** The Constant QUICKLOOK_FILEEXT. */
-    private static final String QUICKLOOK_FILEEXT = ".gif";
+    public static final String QUICKLOOK_FILEEXT = ".gif";
 
     /** The Constant TYPE_KEY. */
-    private static final String TYPE_KEY = "type";
+    public static final String TYPE_KEY = "type";
 
+    /** The Constant MEDIA_KEY. */
+    public static final String MEDIA_KEY = "media";
+    
     /** The Constant TYPE_VALUE_ATP. */
-    private static final String TYPE_VALUE_ATP = "along track product";
+    public static final String TYPE_VALUE_ATP = "along track product";
 
     /** The Constant TYPE_VALUE_GRID. */
     @SuppressWarnings("unused")
-    private static final String TYPE_VALUE_GRID = "gridded product";
+    public static final String TYPE_VALUE_GRID = "gridded product";
 
     /**
      * Default constructor.
@@ -144,6 +148,15 @@ public class ProductMetaData {
      */
     public boolean isProductAlongTrack() {
         return productCategory.equalsIgnoreCase(PRODUCT_TYPE_ALONG_TRACK) || getProductTypeServiceValue().equalsIgnoreCase(TYPE_VALUE_ATP);
+    }
+    
+    /**
+     * Checks if is ftp media.
+     * 
+     * @return true, if is ftp media
+     */
+    public boolean isFtpMedia() {
+        return getProductMediaValue().equalsIgnoreCase(CatalogData.CatalogType.FTP.name());
     }
 
     /** product id or short name. */
@@ -2428,6 +2441,21 @@ public class ProductMetaData {
     public String getProductTypeServiceValue() {
 
         DocMetaData docMetaData = getDocumentation(TYPE_KEY);
+        if (docMetaData == null) {
+            return "";
+        }
+
+        return docMetaData.getResource();
+    }
+    
+    /**
+     * Gets the product media value.
+     * 
+     * @return the product media value
+     */
+    public String getProductMediaValue() {
+
+        DocMetaData docMetaData = getDocumentation(MEDIA_KEY);
         if (docMetaData == null) {
             return "";
         }

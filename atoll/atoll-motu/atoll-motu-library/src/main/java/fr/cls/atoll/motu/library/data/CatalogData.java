@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,14 +27,20 @@ import org.apache.log4j.Logger;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.inventory.Access;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.DatasetOLA;
 import fr.cls.atoll.motu.library.inventory.DatasetsOLA;
+import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
+import fr.cls.atoll.motu.library.inventory.InventoryOLA;
+import fr.cls.atoll.motu.library.inventory.Ressource;
+import fr.cls.atoll.motu.library.inventory.TimePeriod;
 import fr.cls.atoll.motu.library.metadata.DocMetaData;
 import fr.cls.atoll.motu.library.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.opendap.server.Dataset;
 import fr.cls.atoll.motu.library.opendap.server.Service;
+import fr.cls.atoll.motu.library.queueserver.QueueThresholdComparator;
 import fr.cls.atoll.motu.library.tds.server.CatalogRef;
 import fr.cls.atoll.motu.library.tds.server.DatasetType;
 import fr.cls.atoll.motu.library.tds.server.DateTypeFormatted;
@@ -46,7 +53,7 @@ import fr.cls.atoll.motu.library.tds.server.TimeCoverageType;
  * This class implements a product's catalog .
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-05-25 15:18:20 $
+ * @version $Revision: 1.5 $ - $Date: 2009-05-27 16:02:50 $
  */
 public class CatalogData {
 
@@ -63,7 +70,7 @@ public class CatalogData {
 
         /** Tds catalog. */
         TDS,
-        
+
         /** Ftp catalog (ftp, scft, griFtp). */
         FTP
     };
@@ -104,6 +111,14 @@ public class CatalogData {
             LOG.debug("init() - exiting");
         }
     }
+
+    /**
+     * Load ftp catalog.
+     * 
+     * @param path the path
+     * 
+     * @throws MotuException the motu exception
+     */
     public void loadFtpCatalog(String path) throws MotuException {
 
         // Set to store product id that are in the catalog.
@@ -124,66 +139,133 @@ public class CatalogData {
         // --------------------------
         // -------- Loads dataset
         // --------------------------
-        DatasetsOLA datasetsOLA  = catalogOLA.getDatasetsOLA();
+        DatasetsOLA datasetsOLA = catalogOLA.getDatasetsOLA();
 
         this.title = catalogOLA.getName();
-        
+
         for (DatasetOLA datasetOLA : datasetsOLA.getDatasetOLA()) {
-            System.out.print(datasetOLA.getUrn());
-            System.out.print(" ");
-            System.out.print(datasetOLA.getInventoryUrl());
-            System.out.println("");            
+            currentProductType = datasetOLA.getUrn().toString();
+            loadFtpInventory(datasetOLA.getInventoryUrl().toString());
         }
-        
-        // --------------------------
-        // -------- Loads dataset
-        // --------------------------
-//        List<JAXBElement<? extends DatasetType>> list = catalogOLA.getDataset();
-//
-//        this.title = catalogOLA.getName();
-//
-//        for (Iterator<JAXBElement<? extends DatasetType>> it = list.iterator(); it.hasNext();) {
-//            JAXBElement<? extends DatasetType> o = it.next();
-//            // System.out.println(o.getDeclaredType().getName());
-//
-//            DatasetType datasetType = (DatasetType) o.getValue();
-//            if (datasetType != null) {
-//                if (datasetType instanceof CatalogRef) {
-//                    // System.out.println("is CatalogRef");
-//
-//                    this.currentProductType = "";
-//                    getCurrentProductSubTypes();
-//                    sameProductTypeDataset = new ArrayList<Product>();
-//
-//                    int numberSubPaths = loadTdsCatalogRef((CatalogRef) datasetType);
-//                    removeListCatalogRefSubPaths(numberSubPaths);
-//
-//                } else if (datasetType instanceof DatasetType) {
-//                    // System.out.println("is DatasetType");
-//
-//                    this.currentProductType = "";
-//                    getCurrentProductSubTypes();
-//                    sameProductTypeDataset = new ArrayList<Product>();
-//
-//                    loadTdsProducts(datasetType, catalogXml);
-//
-//                    if (sameProductTypeDataset.size() > 0) {
-//                        listProductTypeDataset.add(sameProductTypeDataset);
-//                    }
-//                }
-//            }
-//
-//        }
-//
+
         // Remove products that are not anymore in the catalog
         productsKeySet().retainAll(productsLoaded);
 
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("loadTdsCatalog() - exiting");
-        }
     }
 
+    /**
+     * Load ftp inventory.
+     * 
+     * @param xmlUri the xml uri
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void loadFtpInventory(String xmlUri) throws MotuException {
+
+        InventoryOLA inventoryOLA = Organizer.getInventoryOLA(xmlUri);
+
+        Ressource ressource = inventoryOLA.getRessource();
+        Access access = ressource.getAccess();
+
+        ProductMetaData productMetaData = null;
+
+        String productId = inventoryOLA.getProduct().getUrn().toString();
+
+        boolean newProduct = true;
+
+        Product product = getProducts(productId);
+
+        if (product == null) {
+            product = new Product();
+            productMetaData = new ProductMetaData();
+            productMetaData.setProductId(productId);
+        } else {
+            newProduct = false;
+            productMetaData = product.getProductMetaData();
+        }
+
+        product.setProductMetaData(productMetaData);
+        
+        product.setLocationMetaData(xmlUri);
+
+        productsLoaded.add(productId);
+        
+        product.loadInventoryGlobalMetaData(inventoryOLA);
+        
+        
+        URI accessUri = null;
+        URI accessUriTemp = null;
+        String login = access.getLogin();
+        String password = access.getPassword();
+        StringBuffer userInfo = null;
+
+        if (password == null) {
+            password = "";
+        }
+
+        if (!Organizer.isNullOrEmpty(login)) {
+            userInfo = new StringBuffer();
+            userInfo.append(login);
+            userInfo.append(":");
+            userInfo.append(password);
+        }
+
+        try {
+            accessUriTemp = new URI(access.getUrlPath());
+
+            if (userInfo != null) {
+                accessUri = new URI(accessUriTemp.getScheme(), userInfo.toString(), accessUriTemp.getHost(), accessUriTemp.getPort(), accessUriTemp
+                        .getPath(), accessUriTemp.getQuery(), accessUriTemp.getFragment());
+            }            else {
+                accessUri = accessUriTemp;
+            }
+
+        } catch (URISyntaxException e) {
+            throw new MotuException(String.format("Invalid URI '%s' in file '%s' at '%s.urlPath' tag.attribute", accessUri, xmlUri, access.getClass()
+                    .toString()), e);
+        }
+
+        product.setLocationData(accessUri.toString());
+        
+        List<DataFile> dataFiles = CatalogData.loadFtpDataFiles(inventoryOLA);
+        
+        product.setDataFiles(dataFiles);
+        
+        if (newProduct) {
+            putProducts(productMetaData.getProductId(), product);
+        }
+
+    }
+
+    /**
+     * Load ftp data files.
+     * 
+     * @param inventoryOLA the inventory ola
+     * 
+     * @return the list< data file>
+     */
+    public static List<DataFile> loadFtpDataFiles(InventoryOLA inventoryOLA) {
+        
+        if (inventoryOLA.getFiles().getFile().isEmpty()) {
+            return null;
+        }
+        
+        List<DataFile> dataFiles = new ArrayList<DataFile>();
+        
+        for (fr.cls.atoll.motu.library.inventory.File file : inventoryOLA.getFiles().getFile()) {
+            DataFile dataFile = new DataFile();
+            dataFile.setName(file.getName());
+            dataFile.setStartCoverageDate(file.getStartCoverageDate());
+            dataFile.setEndCoverageDate(file.getEndCoverageDate());
+            
+            dataFiles.add(dataFile);
+        }
+        
+        DataFileComparator dataFileComparator = new DataFileComparator();
+        Collections.sort(dataFiles, dataFileComparator);
+        
+        return dataFiles;
+    }
     /**
      * Loads an Opendap catalog..
      * 
@@ -332,7 +414,7 @@ public class CatalogData {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadTdsCatalogRef() - exiting");
         }
-        
+
         return catalogHrefSplit.length - 1;
     }
 
@@ -534,7 +616,7 @@ public class CatalogData {
      * Loads Opendap products from Opendap catalog.
      * 
      * @param dataset dataset (from Opendap catalog) from which information will be loaded Dataset contains a
-     *            list of datasets, recursivity is use to load.
+     * list of datasets, recursivity is use to load.
      * 
      * @throws MotuException the motu exception
      */
@@ -594,7 +676,7 @@ public class CatalogData {
      * 
      * @param catalogXml Tds catalog
      * @param datasetType dataset (from Tds catalog) from which information will be loaded Dataset contains a
-     *            list of datasets, recursivity is use to load.
+     * list of datasets, recursivity is use to load.
      * 
      * @throws MotuException the motu exception
      */
@@ -635,7 +717,7 @@ public class CatalogData {
                     // System.out.println("is CatalogRef");
                     int numberSubPaths = loadTdsCatalogRef((CatalogRef) datasetTypeChild);
                     removeListCatalogRefSubPaths(numberSubPaths);
-                    
+
                 } else if (datasetType instanceof fr.cls.atoll.motu.library.tds.server.DatasetType) {
                     // System.out.println("is DatasetType");
                     loadTdsProducts(datasetTypeChild, catalogXml);
@@ -878,7 +960,8 @@ public class CatalogData {
      * 
      * @return a Service object if found, otherwhise null.
      */
-    private fr.cls.atoll.motu.library.tds.server.Service findTdsService(String tdsServiceName, List<fr.cls.atoll.motu.library.tds.server.Service> listTdsService) {
+    private fr.cls.atoll.motu.library.tds.server.Service findTdsService(String tdsServiceName,
+                                                                        List<fr.cls.atoll.motu.library.tds.server.Service> listTdsService) {
 
         fr.cls.atoll.motu.library.tds.server.Service serviceFound = null;
 
@@ -905,7 +988,8 @@ public class CatalogData {
      * 
      * @return a Service object if found, otherwhise null.
      */
-    private fr.cls.atoll.motu.library.tds.server.Service findTdsServiceType(String tdsServiceType, List<fr.cls.atoll.motu.library.tds.server.Service> listTdsService) {
+    private fr.cls.atoll.motu.library.tds.server.Service findTdsServiceType(String tdsServiceType,
+                                                                            List<fr.cls.atoll.motu.library.tds.server.Service> listTdsService) {
 
         fr.cls.atoll.motu.library.tds.server.Service serviceFound = null;
 
@@ -935,8 +1019,8 @@ public class CatalogData {
      * @return a Service object if found, otherwhise null.
      */
     private fr.cls.atoll.motu.library.tds.server.Service findTdsService(String tdsServiceName,
-                                                                String tdsServiceType,
-                                                                List<fr.cls.atoll.motu.library.tds.server.Service> listTdsService) {
+                                                                        String tdsServiceType,
+                                                                        List<fr.cls.atoll.motu.library.tds.server.Service> listTdsService) {
 
         // search service with name
         fr.cls.atoll.motu.library.tds.server.Service serviceFound = findTdsService(tdsServiceName, listTdsService);
@@ -1014,7 +1098,7 @@ public class CatalogData {
                 continue;
             }
 
-            JAXBElement<?> jabxElement =  (JAXBElement<?>) elt;
+            JAXBElement<?> jabxElement = (JAXBElement<?>) elt;
 
             if (!jabxElement.getName().getLocalPart().equalsIgnoreCase(tagName)) {
                 continue;
@@ -1280,20 +1364,19 @@ public class CatalogData {
 
         return catalogXml;
     }
-    
+
     /**
      * Removes n elements form the end of the list catalog ref sub paths.
      * 
      * @param numberToRemove the n elements to remove.
      */
     public void removeListCatalogRefSubPaths(int numberToRemove) {
-        for (int i = 0 ; i < numberToRemove ; i++) {
+        for (int i = 0; i < numberToRemove; i++) {
             listCatalogRefSubPaths.remove(listCatalogRefSubPaths.size() - 1);
         }
 
     }
-    
- 
+
     /**
      * Initialize product's collection.
      * 
@@ -1328,7 +1411,7 @@ public class CatalogData {
     public void setTitle(String title) {
         this.title = title;
     }
-
+    
     /** The current product. */
     private Product currentProduct = null;
 
@@ -1543,7 +1626,7 @@ public class CatalogData {
      * @param key key whose associated value is to be returned.
      * 
      * @return the value to which this map maps the specified key, or <tt>null</tt> if the map contains no
-     *         mapping for this key.
+     * mapping for this key.
      * 
      * @see java.util.Map#get(Object)
      * @uml.property name="products"
@@ -1613,8 +1696,7 @@ public class CatalogData {
      * 
      * @param key key whose mapping is to be removed from the map.
      * 
-     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for
-     *         key.
+     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for key.
      * 
      * @see java.util.Map#remove(Object)
      * @uml.property name="products"
@@ -1665,10 +1747,7 @@ public class CatalogData {
         }
     }
 
-    /**
-     * Temporary variable use to set product id loaded in the catalog. When catalog is loaded only product
-     * that are in this set are retained in the products map.
-     */
+    /** Temporary variable use to set product id loaded in the catalog. When catalog is loaded only product that are in this set are retained in the products map. */
     private Set<String> productsLoaded = null;
 
 }

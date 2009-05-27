@@ -42,8 +42,8 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
 /**
  * Dataset class. A dataset refers to one product.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-05-27 16:02:50 $
  */
 public abstract class DatasetBase {
 
@@ -318,7 +318,6 @@ public abstract class DatasetBase {
      * Finds a type of depth criteria into the dataset list of criteria.
      * 
      * @return criteria found or null if not found.
-     * 
      */
     public ExtractCriteriaDepth findCriteriaDepth() {
         return (ExtractCriteriaDepth) findCriteria(ExtractCriteriaDepth.class);
@@ -328,7 +327,6 @@ public abstract class DatasetBase {
      * Finds a type of GeoX/GeoY criteria into the dataset list of criteria.
      * 
      * @return criteria found or null if not found.
-     * 
      */
     public ExtractCriteriaGeo findCriteriaGeo() {
         return (ExtractCriteriaGeo) findCriteria(ExtractCriteriaGeo.class);
@@ -338,7 +336,6 @@ public abstract class DatasetBase {
      * Finds a type of Lat/Lon criteria into the dataset list of criteria.
      * 
      * @return criteria found or null if not found.
-     * 
      */
     public ExtractCriteriaLatLon findCriteriaLatLon() {
         return (ExtractCriteriaLatLon) findCriteria(ExtractCriteriaLatLon.class);
@@ -348,7 +345,6 @@ public abstract class DatasetBase {
      * Finds a type of datetime criteria into the dataset list of criteria.
      * 
      * @return criteria found or null if not found.
-     * 
      */
     public ExtractCriteriaDatetime findCriteriaDatetime() {
         return (ExtractCriteriaDatetime) findCriteria(ExtractCriteriaDatetime.class);
@@ -360,7 +356,6 @@ public abstract class DatasetBase {
      * @param cls type of criteria class to find.
      * 
      * @return criteria found or null if not found.
-     * 
      */
     public ExtractCriteria findCriteria(Class<? extends ExtractCriteria> cls) {
         if (LOG.isDebugEnabled()) {
@@ -394,7 +389,6 @@ public abstract class DatasetBase {
      * @param criteria type of criteria to find.
      * 
      * @return criteria found or null if not found.
-     * 
      */
     public ExtractCriteria findCriteria(ExtractCriteria criteria) {
         if (criteria == null) {
@@ -467,6 +461,36 @@ public abstract class DatasetBase {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("updateCriteria() - exiting");
+        }
+    }
+    
+    /**
+     * Update files.
+     * 
+     * @param list the list
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void updateFiles(List<DataFile> list) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("updateFiles() - entering");
+        }
+
+        if (list == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("updateFiles() - exiting");
+            }
+            return;
+        }
+
+        if (listFiles == null) {
+            listFiles = new ArrayList<DataFile>();
+        }
+        listFiles.clear();
+        listFiles.addAll(list);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("updateFiles() - exiting");
         }
     }
 
@@ -740,7 +764,7 @@ public abstract class DatasetBase {
      * @throws MotuException the motu exception
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException 
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     public abstract void extractData(Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException,
             MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException,
@@ -750,7 +774,7 @@ public abstract class DatasetBase {
      * Checks dimension in output.
      * 
      * @throws MotuException the net cdf variable not found exception
-     * @throws NetCdfVariableNotFoundException 
+     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      */
     public void setHasOutputDimension() throws MotuException, NetCdfVariableNotFoundException {
         hasOutputTimeDimension = false;
@@ -1073,7 +1097,7 @@ public abstract class DatasetBase {
      * @param key key whose associated value is to be returned.
      * 
      * @return the value to which this map maps the specified key, or <tt>null</tt> if the map contains no
-     *         mapping for this key.
+     * mapping for this key.
      * 
      * @see java.util.Map#get(Object)
      * @uml.property name="variables"
@@ -1138,7 +1162,7 @@ public abstract class DatasetBase {
      * @param key key whose mapping is to be removed from the map.
      * 
      * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for
-     *         key.
+     * key.
      * 
      * @see java.util.Map#remove(Object)
      * @uml.property name="variables"
@@ -1156,6 +1180,9 @@ public abstract class DatasetBase {
     public void clearVariables() {
         this.variablesMap.clear();
     }
+    
+    /** The list criteria. */
+    private List<DataFile> listFiles;
 
     /** The list criteria. */
     private List<ExtractCriteria> listCriteria;
@@ -1215,7 +1242,7 @@ public abstract class DatasetBase {
      * @param elements collection to be checked for containment in this collection.
      * 
      * @return Returns <tt>true</tt> if this collection contains all of the elements in the specified
-     *         collection.
+     * collection.
      * 
      * @see java.util.Collection#containsAll(Collection)
      * @uml.property name="listCriteria"
@@ -1253,7 +1280,6 @@ public abstract class DatasetBase {
      * array is that of the specified array.
      * 
      * @param criteria the array into which the elements of this collection are to be stored.
-     * @param <T> generic type
      * 
      * @return an array containing all of the elements in this collection
      * 
@@ -1312,6 +1338,13 @@ public abstract class DatasetBase {
      */
     public void clearCriteria() {
         this.listCriteria.clear();
+    }
+
+    /**
+     * Clear files.
+     */
+    public void clearFiles() {
+        this.listFiles.clear();
     }
 
     /** The product. */

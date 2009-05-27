@@ -11,7 +11,6 @@ package fr.cls.atoll.motu.library.inventory;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -25,10 +24,9 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element ref="{http://atoll.cls.fr/2009/resource}datasetsOLA"/>
- *       &lt;/sequence>
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="urlPath" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="login" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="password" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -37,63 +35,87 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "datasetsOLA"
-})
-@XmlRootElement(name = "catalogOLA")
-public class CatalogOLA {
+@XmlType(name = "")
+@XmlRootElement(name = "access")
+public class Access {
 
-    @XmlElement(required = true)
-    protected DatasetsOLA datasetsOLA;
+    @XmlAttribute(required = true)
+    protected String urlPath;
     @XmlAttribute
-    protected String name;
+    protected String login;
+    @XmlAttribute
+    protected String password;
 
     /**
-     * Gets the value of the datasetsOLA property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DatasetsOLA }
-     *     
-     */
-    public DatasetsOLA getDatasetsOLA() {
-        return datasetsOLA;
-    }
-
-    /**
-     * Sets the value of the datasetsOLA property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DatasetsOLA }
-     *     
-     */
-    public void setDatasetsOLA(DatasetsOLA value) {
-        this.datasetsOLA = value;
-    }
-
-    /**
-     * Gets the value of the name property.
+     * Gets the value of the urlPath property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getName() {
-        return name;
+    public String getUrlPath() {
+        return urlPath;
     }
 
     /**
-     * Sets the value of the name property.
+     * Sets the value of the urlPath property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setName(String value) {
-        this.name = value;
+    public void setUrlPath(String value) {
+        this.urlPath = value;
+    }
+
+    /**
+     * Gets the value of the login property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getLogin() {
+        return login;
+    }
+
+    /**
+     * Sets the value of the login property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setLogin(String value) {
+        this.login = value;
+    }
+
+    /**
+     * Gets the value of the password property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * Sets the value of the password property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setPassword(String value) {
+        this.password = value;
     }
 
 }

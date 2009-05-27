@@ -71,6 +71,7 @@ import fr.cls.atoll.motu.library.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.configuration.QueueServerType;
 import fr.cls.atoll.motu.library.configuration.QueueType;
 import fr.cls.atoll.motu.library.converter.jaxb.JodaPeriodAdapter;
+import fr.cls.atoll.motu.library.data.DataFile;
 import fr.cls.atoll.motu.library.data.Product;
 import fr.cls.atoll.motu.library.data.ServiceData;
 import fr.cls.atoll.motu.library.exception.MotuException;
@@ -88,7 +89,7 @@ import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.9 $ - $Date: 2009-05-26 14:44:16 $
+ * @version $Revision: 1.10 $ - $Date: 2009-05-27 16:02:51 $
  * 
  */
 public class TestIntfce {
@@ -106,41 +107,42 @@ public class TestIntfce {
         // LOGQUEUE.info("main(String[]) - xxx jentering");
         // }
 
-//        try {
-//            //String uriStr = "sftp://atoll:atoll@catsat-data1.cls.fr/data/atoll/applications/archive/temperature/infrared_timestamp/med";
-//            //String uriStr = "atoll:service:ftp-catsat-ftp:ftp";
-//            String uriStr = "c:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
-//            
-//            URI uri = new URI(uriStr);
-//            if (uri.isOpaque()) {
-//                System.out.println("This is an opaque URI."); 
-//                System.out.println("The scheme is " + uri.getScheme( ));        
-//                System.out.println("The scheme specific part is " 
-//                 + uri.getSchemeSpecificPart( ));        
-//                System.out.println("The fragment ID is " + uri.getFragment( ));        
-//
-//            }
-//            File  ff = new File(uriStr);
-//            System.out.println(ff.getName().endsWith(".xml")); 
-//            
-//            System.out.println(uri.getScheme());
-//            System.out.println(uri.getUserInfo());
-//            System.out.println(uri.getHost());
-//            System.out.println(uri.getPort());
-//            System.out.println(uri.getAuthority());
-//            System.out.println(uri.getPath());
-//            System.out.println(uri.getQuery());
-//            System.out.println(uri.getSchemeSpecificPart());      
-//            System.out.println(uri);
-//            
-//            
-//            System.out.println(uri.normalize());
-//
-//        } catch (URISyntaxException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-        
+        // try {
+        // //String uriStr =
+        // "sftp://atoll:atoll@catsat-data1.cls.fr/data/atoll/applications/archive/temperature/infrared_timestamp/med";
+        // //String uriStr = "atoll:service:ftp-catsat-ftp:ftp";
+        // String uriStr = "c:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
+        //            
+        // URI uri = new URI(uriStr);
+        // if (uri.isOpaque()) {
+        // System.out.println("This is an opaque URI.");
+        // System.out.println("The scheme is " + uri.getScheme( ));
+        // System.out.println("The scheme specific part is "
+        // + uri.getSchemeSpecificPart( ));
+        // System.out.println("The fragment ID is " + uri.getFragment( ));
+        //
+        // }
+        // File ff = new File(uriStr);
+        // System.out.println(ff.getName().endsWith(".xml"));
+        //            
+        // System.out.println(uri.getScheme());
+        // System.out.println(uri.getUserInfo());
+        // System.out.println(uri.getHost());
+        // System.out.println(uri.getPort());
+        // System.out.println(uri.getAuthority());
+        // System.out.println(uri.getPath());
+        // System.out.println(uri.getQuery());
+        // System.out.println(uri.getSchemeSpecificPart());
+        // System.out.println(uri);
+        //            
+        //            
+        // System.out.println(uri.normalize());
+        //
+        // } catch (URISyntaxException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+
         // DecimalMeasure x = DecimalMeasure.valueOf("10052");
         // System.out.println(x);
 
@@ -299,15 +301,11 @@ public class TestIntfce {
         // productExtractDataCatsat();
         // productExtractDataAvisofromExtractionParameters();
         // productExtractDataMerseaFromHttp();
+        // testLoadInventoryOLA();
+        // testLoadCatalogOLA();
+        // productInformationFromInventory();
+        productExtractDataFromInventory();
 
-        testLoadInventoryOLA();
-
-        testLoadCatalogOLA();
-        
-        //productInformationFromInventory();
-        //productExtractDataFromInventory();
-        
-        
     }
 
     public static void listServices() {
@@ -347,12 +345,47 @@ public class TestIntfce {
             System.out.println(e.getMessage());
         }
     }
-    public static Product productInformationFromInventory() {
-        String xmlUri = "C:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
-        String service = "atoll:service:ftp-catsat:ftp";
 
-        return productInformationFromLocationData(service, xmlUri);
-        
+    public static Product productInformationFromInventory() {
+        // String xmlUri = "C:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
+        // String service = "atoll:service:ftp-catsat:ftp";
+        //
+        // return productInformationFromLocationData(service, xmlUri);
+
+        String service = "atoll:service:ftp-catsat:ftp";
+        String productId = "atoll:product:nrt-med-infrared-sst-timestamp";
+        Product product = null;
+        try {
+            Organizer organizer = new Organizer();
+            product = organizer.getProductInformation(service, productId, null, null);
+            System.out.println(product.getProductId());
+
+            System.out.println(product.getLocationData());
+            System.out.println(product.getLocationMetaData());
+            System.out.println(product.getProductMetaData().getTimeCoverage().toString());
+            System.out.println(product.getProductMetaData().getParameterMetaDatas().toString());
+
+            List<DataFile> files = product.getDataFiles();
+            if (files != null) {
+                for (DataFile file : files) {
+                    System.out.print(file.getName());
+                    System.out.print(" ");
+                    System.out.print(file.getStartCoverageDate());
+                    System.out.print(" ");
+                    System.out.print(file.getEndCoverageDate());
+                    System.out.print(" ");
+                    System.out.println("");
+
+                }
+            }
+        } catch (MotuExceptionBase e) {
+            System.out.println(e.notifyException());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return product;
+
     }
 
     public static Product productInformationFromLocationData() {
@@ -403,7 +436,7 @@ public class TestIntfce {
             } catch (Exception e) {
                 // Do nothing
             }
-            
+
             System.out.println(product.getProductMetaData().getTimeCoverage().toString());
             System.out.println(product.getProductMetaData().getParameterMetaDatas().toString());
 
@@ -415,13 +448,14 @@ public class TestIntfce {
 
         return product;
     }
+
     public static Product productInformationFromLocationData(String locationData) {
         Product product = null;
         try {
             Organizer organizer = new Organizer();
             product = organizer.getProductInformation(locationData);
             System.out.println(product.getProductId());
-            
+
             try {
                 System.out.println(product.getProductMetaData().getLatAxisMinValueAsString());
                 System.out.println(product.getProductMetaData().getLatAxisMaxValueAsString());
@@ -440,7 +474,7 @@ public class TestIntfce {
             } catch (Exception e) {
                 // Do nothing
             }
-            
+
             System.out.println(product.getProductMetaData().getTimeCoverage().toString());
             System.out.println(product.getProductMetaData().getParameterMetaDatas().toString());
 
@@ -506,11 +540,10 @@ public class TestIntfce {
         }
 
     }
-    
-    public static void productExtractDataFromInventory() {
-        String productId = "C:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
-        String service = "atoll:service:ftp-catsat:ftp";
 
+    public static void productExtractDataFromInventory() {
+        String productId = "atoll:product:nrt-med-infrared-sst-timestamp";
+        String service = "atoll:service:ftp-catsat:ftp";
 
         // add temporal criteria
         // first element is start date
@@ -521,18 +554,18 @@ public class TestIntfce {
         listTemporalCoverage.add("2007-04-14");
 
         ExtractionParameters extractionParameters = new ExtractionParameters(
-                                                                             service,
-                                                                             null,
-                                                                             null,
-                                                                             listTemporalCoverage,
-                                                                             null,
-                                                                             null,
-                                                                             productId,
-                                                                             Organizer.Format.NETCDF,
-                                                                             null,
-                                                                             null,
-                                                                             "dearith",
-                                                                             true);
+                service,
+                null,
+                null,
+                listTemporalCoverage,
+                null,
+                null,
+                productId,
+                Organizer.Format.NETCDF,
+                null,
+                null,
+                "dearith",
+                true);
 
         Product product = null;
 
@@ -554,7 +587,7 @@ public class TestIntfce {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        
+
     }
 
     public static void productExtractDataAviso() {
@@ -953,7 +986,8 @@ public class TestIntfce {
                                             null,
                                             Organizer.Format.NETCDF,
                                             writer,
-                                            Organizer.Format.HTML);
+                                            Organizer.Format.HTML,
+                                            null);
             writer.flush();
             writer.close();
 
@@ -1020,8 +1054,7 @@ public class TestIntfce {
             System.out.println(confServ.getCatalog().getUrlSite());
             System.out.println(confServ.getCatalog().getName());
             System.out.println(confServ.getCatalog().getType());
-            System.out.println(confServ.getCatalog().getProtocol());
-            
+
         }
         QueueServerType queueServer = config.getQueueServerConfig();
         System.out.print("queueServer.getMaxPoolAnonymous()");
@@ -1046,10 +1079,11 @@ public class TestIntfce {
 
         System.out.println("End testLoadMotuConfig : \n");
     }
+
     public static void testLoadCatalogOLA() {
 
         CatalogOLA catalogOLA = null;
-        //String xmlUri = "C:/tempVFS/catalogCatsatFTP.xml";
+        // String xmlUri = "C:/tempVFS/catalogCatsatFTP.xml";
         String xmlUri = "sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll//atoll-distrib/HOA_Catsat/Interface_ATOLL/catalogCatsatFTP.xml";
 
         try {
@@ -1061,15 +1095,12 @@ public class TestIntfce {
             return;
         }
 
-        
-        
         for (fr.cls.atoll.motu.library.inventory.DatasetOLA datasetOLA : catalogOLA.getDatasetsOLA().getDatasetOLA()) {
             System.out.print(datasetOLA.getUrn());
             System.out.print(" ");
             System.out.print(datasetOLA.getInventoryUrl());
             System.out.println("");
 
-            
         }
 
         System.out.println("End testLoadCatalogOLA : \n");
@@ -1078,13 +1109,13 @@ public class TestIntfce {
     public static void testLoadInventoryOLA() {
 
         InventoryOLA inventoryOLA = null;
-        //String xmlUri = "C:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
+        // String xmlUri = "C:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
         String xmlUri = "sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll//atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_TEST.xml";
         try {
             inventoryOLA = Organizer.getInventoryOLA(xmlUri);
-//            Organizer.getFileSystemManager().close();
-//            Organizer.getFileSystemManager().freeUnusedResources();
-            //Organizer.freeResources();  
+            // Organizer.getFileSystemManager().close();
+            // Organizer.getFileSystemManager().freeUnusedResources();
+            // Organizer.freeResources();
 
         } catch (MotuException e) {
             System.out.println("Exception : \n");
@@ -1095,10 +1126,10 @@ public class TestIntfce {
 
         System.out.println(inventoryOLA.getLastModificationDate());
         System.out.println(inventoryOLA.getProduct().getUrn());
-        
+
         Ressource ressource = inventoryOLA.getRessource();
-        
-        GeospatialCoverage geospatialCoverage = ressource.getGeospatialCoverage();        
+
+        GeospatialCoverage geospatialCoverage = ressource.getGeospatialCoverage();
         System.out.println(geospatialCoverage.getType());
         System.out.println(geospatialCoverage.getUnits());
         System.out.println(geospatialCoverage.getEast());
@@ -1107,14 +1138,14 @@ public class TestIntfce {
         System.out.println(geospatialCoverage.getWest());
         System.out.println(geospatialCoverage.getEastResolution());
         System.out.println(geospatialCoverage.getNorthResolution());
-        
+
         TimePeriod timePeriod = ressource.getTimePeriod();
         System.out.println(timePeriod.getStart());
         System.out.println(timePeriod.getEnd());
         System.out.println(timePeriod.getStep());
         System.out.println(timePeriod.getStep().toStandardDuration().getMillis());
         System.out.println(timePeriod.getStep().getMillis());
-        
+
         fr.cls.atoll.motu.library.inventory.Variables variables = ressource.getVariables();
         for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {
             System.out.print(variable.getName());
@@ -1125,8 +1156,7 @@ public class TestIntfce {
             System.out.println("");
 
         }
-        
-        
+
         for (fr.cls.atoll.motu.library.inventory.File file : inventoryOLA.getFiles().getFile()) {
             System.out.print(file.getName());
             System.out.print(" ");
@@ -1147,12 +1177,7 @@ public class TestIntfce {
             System.out.print(file.getTheoreticalAvailabilityDate());
             System.out.println("");
 
-
-
-
-            
         }
-        
 
         System.out.println("End testLoadInventoryOLA : \n");
     }
@@ -2174,7 +2199,7 @@ public class TestIntfce {
             if (count == 0) {
                 EarthLocation loc = pointFeature.getLocation(); // LOOK we dont know this until we see the obs
                 String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters"; // LOOK units may be
-                                                                                     // wrong
+                // wrong
                 writer = new WriterCFPointObsDataset(out, pfDataset.getGlobalAttributes(), altUnits);
                 writer.writeHeader(pfDataset.getDataVariables(), -1);
             }

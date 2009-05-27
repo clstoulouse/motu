@@ -89,21 +89,30 @@
 				<xs:annotation>
 					<xs:documentation>
 						The timeout value on a sftp session.
-						Value is stated in standard duration.
-						The duration data type is used to specify a time interval.
+						Value is
+						stated in standard duration.
+						The duration data type is used to
+						specify a time interval.
 
-						The time interval is specified in the following form "PnYnMnDTnHnMnS"
+						The time interval is specified in the
+						following form "PnYnMnDTnHnMnS"
 						where:
 
-						* P indicates the period (required)
+						* P indicates the period
+						(required)
 						* nY indicates the number of years
-						* nM indicates the number of months
+						* nM indicates the
+						number of months
 						* nD indicates the number of days
-						* T indicates the start of a time section (required if you are
-						going to specify hours, minutes, or seconds)
+						* T indicates the
+						start of a time section (required if you are
+						going to specify
+						hours, minutes, or seconds)
 						* nH indicates the number of hours
-						* nM indicates the number of minutes
-						* nS indicates the number of seconds						
+						* nM
+						indicates the number of minutes
+						* nS indicates the number of
+						seconds						
 					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
@@ -111,7 +120,8 @@
 				<xs:annotation>
 					<xs:documentation>
 						Configure the host key checking to use.
-						Valid arguments are only 'yes' and 'no'.
+						Valid
+						arguments are only 'yes' and 'no'.
 					</xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
@@ -261,6 +271,18 @@
 		-->
 		<xs:attribute name="defaultLanguage" type="xs:string"
 			default="UK" />
+			
+		<xs:attribute name="keepDataFilesList" type="xs:boolean"
+			default="false">
+			<xs:annotation>
+				<xs:documentation>
+					Used only for FTP service. 
+					True : the lists of data files of the products are kept in memory.
+					False : the lists of data files of the products are not kept and loaded when necessary (for each extraction request).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
 	</xs:complexType>
 
 	<!-- =================================  -->
@@ -280,20 +302,17 @@
 			catalog type (ie. opendap).
 		-->
 		<xs:attribute name="type" type="xs:string" />
-		<!-- type :
-			protocol scheme (ie. http, ftp, sftp, gsiftp).
+		
+		<!--
+			protocol : protocol scheme (ie. http, ftp, sftp, gsiftp).
 		-->
-		<xs:attribute name="protocol" use="optional" default="http">
-			<xs:simpleType>
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="http" />
-					<xs:enumeration value="ftp" />
-					<xs:enumeration value="sftp" />
-					<xs:enumeration value="gsiftp" />
-				</xs:restriction>
-			</xs:simpleType>
-
-		</xs:attribute>
+		<!--
+			<xs:attribute name="protocol" use="optional" default="http">
+			<xs:simpleType> <xs:restriction base="xs:string"> <xs:enumeration
+			value="http" /> <xs:enumeration value="ftp" /> <xs:enumeration
+			value="sftp" /> <xs:enumeration value="gsiftp" /> </xs:restriction>
+			</xs:simpleType> </xs:attribute>
+		-->
 	</xs:complexType>
 
 

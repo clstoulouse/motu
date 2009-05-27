@@ -102,7 +102,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.12 $ - $Date: 2009-05-26 14:44:16 $
+ * @version $Revision: 1.13 $ - $Date: 2009-05-27 16:02:50 $
  */
 public class Organizer {
 
@@ -889,7 +889,7 @@ public class Organizer {
      */
     public static InventoryOLA getInventoryOLA(String xmlUri) throws MotuException {
 
-        InventoryOLA inventoryOLA = new InventoryOLA();
+        InventoryOLA inventoryOLA = null;
 
         List<String> errors = validateInventoryOLA(xmlUri);
         if (errors.size() > 0) {
@@ -1058,10 +1058,9 @@ public class Organizer {
                     // in = urlConnection.getInputStream();
                     // fileObject.close();
                     in = fileObject.getContent().getInputStream();
-                    
+
                     // With sftp, session seems not to be disconnected, so force close ?
-                    //((AbstractFileSystem)fileObject.getFileSystem()).closeCommunicationLink();
-                    
+                    // ((AbstractFileSystem)fileObject.getFileSystem()).closeCommunicationLink();
 
                 }
             }
@@ -2203,7 +2202,7 @@ public class Organizer {
         if (!Organizer.isNullOrEmpty(params.getLocationData())) {
             product = extractData(params.getServiceName(), params.getLocationData(), params.getListVar(), params.getListTemporalCoverage(), params
                     .getListLatLonCoverage(), params.getListDepthCoverage(), null, params.getDataOutputFormat(), params.getOut(), params
-                    .getResponseFormat());
+                    .getResponseFormat(), null);
         } else if (!Organizer.isNullOrEmpty(params.getServiceName()) && !Organizer.isNullOrEmpty(params.getProductId())) {
             product = extractData(params.getServiceName(),
                                   params.getListVar(),
@@ -2422,6 +2421,7 @@ public class Organizer {
                            selectData,
                            dataOutputFormat,
                            null,
+                           null,
                            null);
     }
 
@@ -2467,13 +2467,18 @@ public class Organizer {
                                SelectData selectData,
                                Organizer.Format dataOutputFormat,
                                Writer out,
-                               Organizer.Format responseFormat) throws MotuInvalidDateException, MotuInvalidDepthException,
-            MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
-            NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException, IOException {
+                               Organizer.Format responseFormat,
+                               String productId) throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException,
+            MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
+            MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
+            NetCdfVariableNotFoundException, IOException {
         // CSON: StrictDuplicateCode.
 
         Product product = getProductInformation(locationData);
+
+        if (!Organizer.isNullOrEmpty(productId)) {
+            product.setProductId(productId);
+        }
 
         extractData(product, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage, selectData, dataOutputFormat, out, responseFormat);
 
@@ -2623,7 +2628,8 @@ public class Organizer {
                                       selectData,
                                       dataOutputFormat,
                                       out,
-                                      responseFormat);
+                                      responseFormat,
+                                      productId);
         return product;
         //
         // setCurrentService(serviceName);
@@ -2681,10 +2687,11 @@ public class Organizer {
                                SelectData selectData,
                                Organizer.Format dataOutputFormat,
                                Writer out,
-                               Organizer.Format responseFormat) throws MotuInvalidDateException, MotuInvalidDepthException,
-            MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
-            NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException, IOException {
+                               Organizer.Format responseFormat,
+                               String productId) throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException,
+            MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
+            MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
+            NetCdfVariableNotFoundException, IOException {
 
         // CSON: StrictDuplicateCode
         if (!Organizer.isNullOrEmpty(serviceName)) {
@@ -2699,7 +2706,8 @@ public class Organizer {
                            selectData,
                            dataOutputFormat,
                            out,
-                           responseFormat);
+                           responseFormat,
+                           productId);
         // Product product = getProductInformation(locationData);
         //
         // extractData(product, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage,
@@ -4028,7 +4036,7 @@ public class Organizer {
         setDefaultServiceName(getMotuConfigInstance().getDefaultService());
         int countServ = getMotuConfigInstance().getConfigService().size();
         for (int i = 0; i < countServ; i++) {
-            ConfigService confServ = getMotuConfigInstance().getConfigService().get(i);
+            ConfigService confServ = Organizer.getMotuConfigInstance().getConfigService().get(i);
 
             ServiceData service = new ServiceData();
             service.setVelocityEngine(this.velocityEngine);
@@ -4041,6 +4049,8 @@ public class Organizer {
             service.setCatalogFileName(confServ.getCatalog().getName());
             service.setCatalogType(confServ.getCatalog().getType());
             service.setVeloTemplatePrefix(confServ.getVeloTemplatePrefix());
+            service.setKeepDataFilesList(confServ.isKeepDataFilesList());
+
             putServices(service.getName().toLowerCase(), service);
         }
 
