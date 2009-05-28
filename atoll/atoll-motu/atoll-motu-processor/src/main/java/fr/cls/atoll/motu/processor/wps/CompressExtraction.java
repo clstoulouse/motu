@@ -24,7 +24,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.2 $, $Date: 2009-05-05 10:28:48 $
+ * @version $Revision: 1.3 $, $Date: 2009-05-28 15:02:57 $
  */
 public class CompressExtraction extends MotuWPSProcess {
 
@@ -107,7 +107,7 @@ public class CompressExtraction extends MotuWPSProcess {
             }
             
             String localFileName = Product.getExtractLocationData(fileName);
-            String zipFileName = String.format("%s.%s", localFileName, Organizer.ZIP_EXTENSION);
+            String zipFileName = String.format("%s%s", localFileName, Organizer.ZIP_EXTENSION);
             try {
                 Zip.zip(zipFileName, localFileName, false);
             } catch (MotuException e) {
