@@ -47,17 +47,14 @@ import fr.cls.commons.util.io.ConfigLoader;
  * This class implements a service (AVISO, MERCATOR, ...).
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-05-27 16:02:50 $
+ * @version $Revision: 1.6 $ - $Date: 2009-05-28 15:02:31 $
  */
 public class ServiceData {
 
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(ServiceData.class);
 
-    /**
-     * Name of the file that contents inforamtion of how to get huge data file. With '%s' corresponding to the
-     * grup name of the service in lowercase (ie aviso, mercator).
-     */
+    /** Name of the file that contents inforamtion of how to get huge data file. With '%s' corresponding to the grup name of the service in lowercase (ie aviso, mercator). */
     private static final String HOW_TO_GET_EXCEED_DATA_INFO_FILENAME = "howToGetExceedData.%s.info";
 
     /** The Constant VELOCITY_TEMPLATE_SUFFIX_FILE. */
@@ -1148,7 +1145,7 @@ public class ServiceData {
      * 
      * @param criteria list of criteria (geographical coverage, temporal coverage ...)
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
+     * be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * 
@@ -1213,7 +1210,7 @@ public class ServiceData {
      * Add a temporal criteria to a list of {@link ExtractCriteria} objects.
      * 
      * @param criteria list of criteria (geographical coverage, temporal coverage ...), if null list is
-     *            created
+     * created
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * 
      * @throws MotuException the motu exception
@@ -1238,9 +1235,9 @@ public class ServiceData {
      * Add a geographical Lat/Lon criteria to a list of {@link ExtractCriteria} objects.
      * 
      * @param criteria list of criteria (geographical coverage, temporal coverage ...), if null list is
-     *            created
+     * created
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
+     * be empty string)
      * 
      * @throws MotuInvalidLongitudeException the motu invalid longitude exception
      * @throws MotuInvalidLatitudeException the motu invalid latitude exception
@@ -1263,12 +1260,13 @@ public class ServiceData {
      * Add a geographical Depth criteria to a list of {@link ExtractCriteria} objects.
      * 
      * @param criteria list of criteria (geographical coverage, temporal coverage ...), if null list is
-     *            created
+     * created
      * @param listDepthCoverage list contains low depth, high depth.
      * 
      * @throws MotuInvalidLongitudeException @throws MotuInvalidLatitudeException * @throws MotuException the
-     *             motu exception
+     * motu exception
      * @throws MotuInvalidDepthException the motu invalid depth exception
+     * @throws MotuException the motu exception
      */
     public static void addCriteriaDepth(List<String> listDepthCoverage, List<ExtractCriteria> criteria) throws MotuInvalidDepthException,
             MotuException {
@@ -1413,7 +1411,7 @@ public class ServiceData {
      * @param listVar list of variables (parameters) or expressions to extract.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
+     * be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param selectData logical expression if it's true extract th data, if it's failse ignore the data.
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
@@ -1521,8 +1519,9 @@ public class ServiceData {
      * @throws MotuException the motu exception
      * @throws NetCdfAttributeException @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuExceedingCapacityException @throws MotuInvalidDateRangeException * @throws
-     *             MotuInvalidDepthRangeException * @throws NetCdfVariableException * @throws
-     *             MotuInvalidLatLonRangeException * @throws MotuNoVarException
+     * MotuInvalidDepthRangeException * @throws NetCdfVariableException * @throws
+     * MotuInvalidLatLonRangeException * @throws MotuNoVarException
+     * @throws MotuNotImplementedException the motu not implemented exception
      */
 
     // public Product extractData(String locationData,
@@ -1608,6 +1607,14 @@ public class ServiceData {
         }
     }
 
+    /**
+     * Update files.
+     * 
+     * @param product the product
+     * 
+     * @throws MotuException the motu exception
+     * @throws MotuNotImplementedException the motu not implemented exception
+     */
     public void updateFiles(Product product) throws MotuException, MotuNotImplementedException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("updateFiles() - entering");
@@ -1807,7 +1814,7 @@ public class ServiceData {
      * @param listVar list of variables (parameters) or expressions to extract.
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
+     * be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * @param out writer in which catalog's information will be listed.
@@ -1826,7 +1833,8 @@ public class ServiceData {
      * @throws MotuException the motu exception
      * @throws MotuInvalidDateException the motu invalid date exception
      * @throws MotuInvalidLatLonRangeException @throws MotuInvalidDateRangeException the motu invalid date
-     *             range exception
+     * range exception
+     * @throws MotuInvalidDateRangeException the motu invalid date range exception
      */
     public Product extractDataHTML(Product product,
                                    List<String> listVar,
@@ -2075,10 +2083,7 @@ public class ServiceData {
         return template;
     }
 
-    /**
-     * General velocity template prefix name. If empty, the velocity template prefix is service name in
-     * lowercase
-     */
+    /** General velocity template prefix name. If empty, the velocity template prefix is service name in lowercase */
     private String veloTemplatePrefix = "";
 
     /**
@@ -2236,6 +2241,15 @@ public class ServiceData {
         product.setDataFiles(dataFiles);
     }
 
+    /**
+     * Gets the location meta data.
+     * 
+     * @param product the product
+     * 
+     * @return the location meta data
+     * 
+     * @throws MotuException the motu exception
+     */
     public void getLocationMetaData(Product product) throws MotuException {
 
         ServicePersistent servicePersistent = Organizer.getServicesPersistent(name);

@@ -87,10 +87,11 @@ import fr.cls.atoll.motu.library.sdtnameequiv.StandardName;
 import fr.cls.atoll.motu.library.sdtnameequiv.StandardNames;
 import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
 import fr.cls.atoll.motu.library.utils.Zip;
+import fr.cls.atoll.motu.library.vfs.VFSManager;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.11 $ - $Date: 2009-05-28 09:53:39 $
+ * @version $Revision: 1.12 $ - $Date: 2009-05-28 15:02:31 $
  * 
  */
 public class TestIntfce {
@@ -108,48 +109,76 @@ public class TestIntfce {
         // LOGQUEUE.info("main(String[]) - xxx jentering");
         // }
 
+        
+//        try {
+//            VFSManager.createLocalFile("c:/tgaga/test.txt");
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+        
+        
+//        URI uri = null;
+//        try {
+//            uri = new URI("sftp://atoll:atoll@catsat-data1.cls.fr/data/atoll/applications/archive/temperature/infrared_timestamp/med/nrt_med_infrared_sst_timestamp_FTP_TEST.xml");
+//        } catch (URISyntaxException e) {
+//            throw new MotuException(String.format("Data extraction - Invalid URI '%s'", uriFile), e);
+//        }
+//        System.out.println(uri.getFragment());
+        
            
 //        String temp = "sdfsdf:tt!sdf.sdf.txt";
 //        System.out.println(temp.replaceAll("[^\\p{ASCII}]", ""));
 //        System.out.println(temp.replaceAll("[\\W&&[^\\.]]", "-"));
 //        Zip.unAccent(temp);
         
-
-        // try {
-        // //String uriStr =
-        // "sftp://atoll:atoll@catsat-data1.cls.fr/data/atoll/applications/archive/temperature/infrared_timestamp/med";
-        // //String uriStr = "atoll:service:ftp-catsat-ftp:ftp";
-        // String uriStr = "c:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
-        //            
-        // URI uri = new URI(uriStr);
-        // if (uri.isOpaque()) {
-        // System.out.println("This is an opaque URI.");
-        // System.out.println("The scheme is " + uri.getScheme( ));
-        // System.out.println("The scheme specific part is "
-        // + uri.getSchemeSpecificPart( ));
-        // System.out.println("The fragment ID is " + uri.getFragment( ));
-        //
-        // }
-        // File ff = new File(uriStr);
-        // System.out.println(ff.getName().endsWith(".xml"));
-        //            
-        // System.out.println(uri.getScheme());
-        // System.out.println(uri.getUserInfo());
-        // System.out.println(uri.getHost());
-        // System.out.println(uri.getPort());
-        // System.out.println(uri.getAuthority());
-        // System.out.println(uri.getPath());
-        // System.out.println(uri.getQuery());
-        // System.out.println(uri.getSchemeSpecificPart());
-        // System.out.println(uri);
-        //            
-        //            
-        // System.out.println(uri.normalize());
-        //
-        // } catch (URISyntaxException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
+//
+//         try {
+//         String uriStr =         "sftp://atoll:atoll@catsat-data1.cls.fr/data/atoll/applications/archive/temperature/infrared_timestamp/med/nrt_med_infrared_sst_timestamp_FTP_TEST.xml";
+//         //String uriStr = "atoll:service:ftp-catsat-ftp:ftp";
+//         //String uriStr = "c:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
+//                    
+//         URI uri = new URI(uriStr);
+//         if (uri.isOpaque()) {
+//         System.out.println("This is an opaque URI.");
+//         System.out.println("The scheme is " + uri.getScheme( ));
+//         System.out.println("The scheme specific part is "
+//         + uri.getSchemeSpecificPart( ));
+//         System.out.println("The fragment ID is " + uri.getFragment( ));
+//        
+//         }
+//         File ff = new File(uriStr);
+//         System.out.println(ff.getName().endsWith(".xml"));
+//                    
+//         System.out.println(uri.getScheme());
+//         System.out.println(uri.getUserInfo());
+//         System.out.println(uri.getHost());
+//         System.out.println(uri.getPort());
+//         System.out.println(uri.getAuthority());
+//         System.out.println("Path");
+//         System.out.println(uri.getPath());
+//         System.out.println(uri.getQuery());
+//         System.out.println(uri.getSchemeSpecificPart());
+//         System.out.println(uri);
+//         
+//         System.out.println("Fragment");
+//         System.out.println(uri.getFragment());
+//       
+//                    
+//         System.out.println(uri.normalize());
+//
+//         File srcFilePath = new File(uri.getPath());
+//         
+//         System.out.println("srcFilePath");
+//         System.out.println(srcFilePath.getParent());
+//         System.out.println("srcFileName");
+//         System.out.println(srcFilePath.getName());
+//
+//         
+//         } catch (URISyntaxException e) {
+//         // TODO Auto-generated catch block
+//         e.printStackTrace();
+//         }
 
         // DecimalMeasure x = DecimalMeasure.valueOf("10052");
         // System.out.println(x);
@@ -569,8 +598,8 @@ public class TestIntfce {
                 null,
                 null,
                 productId,
-                //Organizer.Format.NETCDF,
-                Organizer.Format.URL,
+                Organizer.Format.NETCDF,
+                //Organizer.Format.URL,
                 null,
                 null,
                 "dearith",

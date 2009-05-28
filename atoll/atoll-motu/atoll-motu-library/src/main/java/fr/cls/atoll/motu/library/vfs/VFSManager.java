@@ -34,7 +34,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-05-28 09:53:39 $
+ * @version $Revision: 1.2 $ - $Date: 2009-05-28 15:02:31 $
  */
 public class VFSManager {
 
@@ -47,10 +47,9 @@ public class VFSManager {
     public VFSManager() {
     }
 
-
     /** The standard file system manager. */
     protected StandardFileSystemManager standardFileSystemManager = null;
-    
+
     /**
      * Gets the opts.
      * 
@@ -60,7 +59,6 @@ public class VFSManager {
         return opts;
     }
 
- 
     /**
      * Gets the standard file system manager.
      * 
@@ -72,7 +70,7 @@ public class VFSManager {
 
     /** The opts. */
     protected FileSystemOptions opts = null;
-    
+
     /**
      * Sets the opts.
      * 
@@ -138,8 +136,6 @@ public class VFSManager {
 
         setUserInfo(user, pwd);
         setSchemeOpts(scheme);
-        
-        
 
     }
 
@@ -200,14 +196,15 @@ public class VFSManager {
                 SftpFileSystemConfigBuilder sftpFscb = (SftpFileSystemConfigBuilder) fscb;
                 // sftpFscb.setUserDirIsRoot(opts, true);
                 sftpFscb.setStrictHostKeyChecking(opts, Organizer.getMotuConfigInstance().getStrictHostKeyChecking());
-                
+
                 long sftpTimeOut = Organizer.getMotuConfigInstance().getSftpSessionTimeOut().toStandardDuration().getMillis();
                 if (sftpTimeOut > Integer.MAX_VALUE) {
-                    throw new MotuException(String.format("Motu Configuration : sftp timeout value is too large '%ld' milliseconds. Max is '%d'",  sftpTimeOut, Integer.MAX_VALUE));
+                    throw new MotuException(String.format("Motu Configuration : sftp timeout value is too large '%ld' milliseconds. Max is '%d'",
+                                                          sftpTimeOut,
+                                                          Integer.MAX_VALUE));
                 }
 
                 sftpFscb.setTimeout(opts, (int) sftpTimeOut);
-                
 
             }
 
@@ -269,19 +266,18 @@ public class VFSManager {
 
         try {
             URI uriObject = new URI(uri);
-           
+
             setSchemeOpts(uriObject.getScheme());
-            
+
             fileObject = standardFileSystemManager.resolveFile(uri, opts);
         } catch (FileSystemException e) {
-            throw new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);                
+            throw new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
         } catch (URISyntaxException e) {
-            throw new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);                
+            throw new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
         }
         return fileObject;
 
     }
-
 
     /**
      * Copy file.
@@ -295,33 +291,28 @@ public class VFSManager {
      * 
      * @throws MotuException the motu exception
      */
-    public void copyFile(String user, String pwd, String scheme, String host, String fileSrc, String fileDest ) throws MotuException {
-        
+    public void copyFileToLocalFile(String user, String pwd, String scheme, String host, String fileSrc, String fileDest) throws MotuException {
+
         open(user, pwd, scheme);
-        
+
         FileObject foSrc = null;
         FileObject foDest = null;
 
         try {
-            //File tempDir = new File("c:/tempVFS");
-            File hostFile = new File(fileSrc);
-            String fileName = hostFile.getName();
-            //File newFile = new File(tempDir, fileName);
-            File newFile = new File(fileName);
-            newFile.createNewFile();
+            File newFile = VFSManager.createLocalFile(fileDest);
 
             String uri = String.format("%s://%s/%s", scheme, host, fileSrc);
             foSrc = resolveFile(uri);
             if (foSrc == null) {
-                throw new MotuException(String.format("Unable to resolve source uri '%s' ", uri));                
+                throw new MotuException(String.format("Unable to resolve source uri '%s' ", uri));
             }
 
             foDest = standardFileSystemManager.toFileObject(newFile);
             if (foSrc == null) {
-                throw new MotuException(String.format("Unable to resolve dest uri '%s' ", newFile.getAbsolutePath()));                
+                throw new MotuException(String.format("Unable to resolve dest uri '%s' ", newFile.getAbsolutePath()));
             }
             foDest.copyFrom(foSrc, Selectors.SELECT_ALL);
-            
+
         } catch (Exception e) {
             try {
                 throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
@@ -330,5 +321,109 @@ public class VFSManager {
             }
         }
 
+    }
+
+    /**
+     * Copy file to local file.
+     * 
+     * @param uriSrc the uri src
+     * @param fileDest the file dest
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void copyFileToLocalFile(String uriSrc, String fileDest) throws MotuException {
+        // URI uri = new URI(uriSrc);
+        //        
+        // String[] userInfo = uri.getUserInfo().split(":");
+        // String user = "";
+        // String pwd = "";
+        //        
+        // if (userInfo.length >= 2) {
+        // pwd = userInfo[1];
+        // }
+        //
+        // if (userInfo.length >= 1) {
+        // user = userInfo[0];
+        // }
+        //        
+        // copyFile(user, pwd, uri.getScheme(), uri.
+
+        FileObject foSrc = null;
+        FileObject foDest = null;
+
+        try {
+            File newFile = VFSManager.createLocalFile(fileDest);
+
+            foSrc = resolveFile(uriSrc);
+            if (foSrc == null) {
+                throw new MotuException(String.format("Unable to resolve source uri '%s' ", uriSrc));
+            }
+
+            foDest = standardFileSystemManager.toFileObject(newFile);
+            if (foSrc == null) {
+                throw new MotuException(String.format("Unable to resolve dest uri '%s' ", newFile.getAbsolutePath()));
+            }
+            foDest.copyFrom(foSrc, Selectors.SELECT_ALL);
+
+        } catch (Exception e) {
+            try {
+                throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
+            } catch (FileSystemException e1) {
+                throw new MotuException(String.format("Unable to copy files", e1));
+            }
+        }
+
+    }
+
+    /**
+     * Creates the local file.
+     * 
+     * @param localFile the local file
+     * 
+     * @return the file
+     * 
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public static File createLocalFile(String localFile) throws IOException {
+
+        File newFile = new File(localFile);
+        File path = new File(newFile.getParent());
+        path.mkdirs();
+        newFile.createNewFile();
+
+        return newFile;
+
+    }
+
+    /**
+     * Delete directory.
+     * 
+     * @param path the path
+     * 
+     * @return true, if successful
+     */
+    public static boolean deleteDirectory(String path) {
+        return deleteDirectory(new File(path));
+    }
+
+    /**
+     * Delete directory.
+     * 
+     * @param path the path
+     * 
+     * @return true, if successful
+     */
+    public static boolean deleteDirectory(File path) {
+        if (path.exists()) {
+            File[] files = path.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].isDirectory()) {
+                    deleteDirectory(files[i]);
+                } else {
+                    files[i].delete();
+                }
+            }
+        }
+        return (path.delete());
     }
 }

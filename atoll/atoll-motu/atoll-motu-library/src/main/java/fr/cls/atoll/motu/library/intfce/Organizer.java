@@ -82,6 +82,7 @@ import fr.cls.atoll.motu.library.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.library.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.library.sdtnameequiv.StandardNames;
+import fr.cls.atoll.motu.library.utils.Zip;
 import fr.cls.atoll.motu.library.vfs.VFSManager;
 import fr.cls.atoll.motu.library.xml.XMLErrorHandler;
 import fr.cls.atoll.motu.library.xml.XMLUtils;
@@ -104,7 +105,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.14 $ - $Date: 2009-05-28 09:53:39 $
+ * @version $Revision: 1.15 $ - $Date: 2009-05-28 15:02:31 $
  */
 public class Organizer {
 
@@ -361,7 +362,7 @@ public class Organizer {
     // return FILE_SYSTEM_MANAGER.get();
     // }
     /** The Constant ZIP_EXTENSION. */
-    public static final String ZIP_EXTENSION = "gz";
+    public static final String ZIP_EXTENSION = ".gz";
 
     /** The current language (default is english). */
     private Language currentLanguage = null;
@@ -1418,6 +1419,23 @@ public class Organizer {
             return true;
         }
         if (value.equals("")) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Checks if is null or empty.
+     * 
+     * @param value the value
+     * 
+     * @return true, if is null or empty
+     */
+    static public boolean isNullOrEmpty(List<?> value) {
+        if (value == null) {
+            return true;
+        }
+        if (value.isEmpty()) {
             return true;
         }
         return false;
@@ -4273,7 +4291,7 @@ public class Organizer {
         if (suffix != null) {
             stringBuffer.append(suffix);
         }
-        String temp = stringBuffer.toString();
+        String temp = Zip.unAccent(stringBuffer.toString());
         // replace all non-words character except '.' by "-"
         return temp.replaceAll("[\\W&&[^\\.]]", "-");
     }

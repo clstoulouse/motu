@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
  * <br><br>Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-05-27 16:02:50 $
+ * @version $Revision: 1.2 $ - $Date: 2009-05-28 15:02:31 $
  */
 public class DataFile {
 
@@ -26,6 +26,27 @@ public class DataFile {
     
     /** The end coverage date. */
     DateTime endCoverageDate;    
+
+    /** The weight. */
+    double weight;
+    
+    /**
+     * Gets the weight.
+     * 
+     * @return the weight
+     */
+    public double getWeight() {
+        return weight;
+    }
+
+    /**
+     * Sets the weight.
+     * 
+     * @param weight the new weight
+     */
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
 
     /**
      * Gets the name.
