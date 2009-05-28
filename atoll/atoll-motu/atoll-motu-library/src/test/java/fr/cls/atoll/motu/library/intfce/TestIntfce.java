@@ -86,10 +86,11 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.sdtnameequiv.StandardName;
 import fr.cls.atoll.motu.library.sdtnameequiv.StandardNames;
 import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
+import fr.cls.atoll.motu.library.utils.Zip;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.10 $ - $Date: 2009-05-27 16:02:51 $
+ * @version $Revision: 1.11 $ - $Date: 2009-05-28 09:53:39 $
  * 
  */
 public class TestIntfce {
@@ -106,6 +107,13 @@ public class TestIntfce {
         // if (LOGQUEUE.isInfoEnabled()) {
         // LOGQUEUE.info("main(String[]) - xxx jentering");
         // }
+
+           
+//        String temp = "sdfsdf:tt!sdf.sdf.txt";
+//        System.out.println(temp.replaceAll("[^\\p{ASCII}]", ""));
+//        System.out.println(temp.replaceAll("[\\W&&[^\\.]]", "-"));
+//        Zip.unAccent(temp);
+        
 
         // try {
         // //String uriStr =
@@ -561,7 +569,8 @@ public class TestIntfce {
                 null,
                 null,
                 productId,
-                Organizer.Format.NETCDF,
+                //Organizer.Format.NETCDF,
+                Organizer.Format.URL,
                 null,
                 null,
                 "dearith",

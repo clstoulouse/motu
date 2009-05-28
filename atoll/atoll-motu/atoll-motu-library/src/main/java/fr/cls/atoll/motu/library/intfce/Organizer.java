@@ -79,8 +79,10 @@ import fr.cls.atoll.motu.library.ftp.TestFtp;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.InventoryOLA;
 import fr.cls.atoll.motu.library.metadata.ProductMetaData;
+import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.library.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.library.sdtnameequiv.StandardNames;
+import fr.cls.atoll.motu.library.vfs.VFSManager;
 import fr.cls.atoll.motu.library.xml.XMLErrorHandler;
 import fr.cls.atoll.motu.library.xml.XMLUtils;
 import fr.cls.atoll.motu.msg.MotuMsgConstant;
@@ -102,7 +104,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.13 $ - $Date: 2009-05-27 16:02:50 $
+ * @version $Revision: 1.14 $ - $Date: 2009-05-28 09:53:39 $
  */
 public class Organizer {
 
@@ -121,7 +123,10 @@ public class Organizer {
         NETCDF(2),
 
         /** xml format. */
-        XML(3);
+        XML(3),
+
+        /** xml format. */
+        URL(4);
 
         /** The value. */
         private final int value;
@@ -4246,6 +4251,31 @@ public class Organizer {
         if (LOG.isDebugEnabled()) {
             LOG.debug("initVelocityEngine() - exiting");
         }
+    }
+
+    /**
+     * Gets a unique file name (without path).
+     * 
+     * @param prefix prefix of the file name
+     * @param suffix the suffix of the file name
+     * 
+     * @return a unique NetCdf file name based on system time.
+     * 
+     */
+    public static String getUniqueFileName(String prefix, String suffix)  {
+        // Gets a temporary fle name for the file to create.
+        StringBuffer stringBuffer = new StringBuffer();
+        if (prefix != null) {
+            stringBuffer.append(prefix);
+        }
+        stringBuffer.append("_");
+        stringBuffer.append(Long.toString(System.currentTimeMillis()));
+        if (suffix != null) {
+            stringBuffer.append(suffix);
+        }
+        String temp = stringBuffer.toString();
+        // replace all non-words character except '.' by "-"
+        return temp.replaceAll("[\\W&&[^\\.]]", "-");
     }
 
 }

@@ -55,8 +55,8 @@ import fr.cls.atoll.motu.library.intfce.Organizer;
  * These class is very similar to ucar.nc2.FileWriter. Because of private attributes of ucar.nc2.FileWriter,
  * these class is not an extend of FileWriter, and some method have copied from FileWriter.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-05-28 09:53:39 $
  */
 
 // CSOFF: MultipleStringLiterals : avoid constants and trace duplicate string
@@ -2707,18 +2707,9 @@ public class NetCdfWriter {
      * 
      * @param prefix prefix of the file name
      * @return a unique NetCdf file name based on system time.
-     * @throws MotuException
      */
-    public static String getUniqueNetCdfFileName(String prefix) throws MotuException {
-        // Gets a temporary fle name for the netcdf file to create.
-        StringBuffer stringBuffer = new StringBuffer();
-        if (prefix != null) {
-            stringBuffer.append(prefix);
-        }
-        stringBuffer.append("_");
-        stringBuffer.append(Long.toString(System.currentTimeMillis()));
-        stringBuffer.append(NetCdfWriter.NETCDF_FILE_EXTENSION_FINAL);
-        return stringBuffer.toString();
+    public static String getUniqueNetCdfFileName(String prefix) {
+        return Organizer.getUniqueFileName(prefix, NetCdfWriter.NETCDF_FILE_EXTENSION_FINAL);
     }
 
     /**

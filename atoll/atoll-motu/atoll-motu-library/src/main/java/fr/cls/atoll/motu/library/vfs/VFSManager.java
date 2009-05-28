@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.intfce;
+package fr.cls.atoll.motu.library.vfs;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +23,7 @@ import org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder;
 import org.apache.log4j.Logger;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.commons.util.io.ConfigLoader;
 
 /**
@@ -33,7 +34,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-05-27 16:02:50 $
+ * @version $Revision: 1.1 $ - $Date: 2009-05-28 09:53:39 $
  */
 public class VFSManager {
 

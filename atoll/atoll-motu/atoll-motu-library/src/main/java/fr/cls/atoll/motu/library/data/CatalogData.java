@@ -53,7 +53,7 @@ import fr.cls.atoll.motu.library.tds.server.TimeCoverageType;
  * This class implements a product's catalog .
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-05-27 16:02:50 $
+ * @version $Revision: 1.6 $ - $Date: 2009-05-28 09:53:39 $
  */
 public class CatalogData {
 
@@ -216,7 +216,7 @@ public class CatalogData {
             if (userInfo != null) {
                 accessUri = new URI(accessUriTemp.getScheme(), userInfo.toString(), accessUriTemp.getHost(), accessUriTemp.getPort(), accessUriTemp
                         .getPath(), accessUriTemp.getQuery(), accessUriTemp.getFragment());
-            }            else {
+            } else {
                 accessUri = accessUriTemp;
             }
 
