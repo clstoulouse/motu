@@ -22,9 +22,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.units.Unit;
-
-import fr.cls.atoll.motu.library.configuration.QueueType;
 import fr.cls.atoll.motu.library.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
@@ -38,16 +35,14 @@ import fr.cls.atoll.motu.library.exception.NetCdfAttributeNotFoundException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
 import fr.cls.atoll.motu.library.inventory.InventoryOLA;
-import fr.cls.atoll.motu.library.inventory.Ressource;
+import fr.cls.atoll.motu.library.inventory.Resource;
 import fr.cls.atoll.motu.library.inventory.TimePeriod;
 import fr.cls.atoll.motu.library.metadata.DocMetaData;
 import fr.cls.atoll.motu.library.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.library.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
-import fr.cls.atoll.motu.library.tds.server.DocumentationType;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -55,7 +50,7 @@ import fr.cls.atoll.motu.library.tds.server.DocumentationType;
  * This class represents a product.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-05-27 16:02:50 $
+ * @version $Revision: 1.5 $ - $Date: 2009-06-03 14:46:05 $
  */
 public class Product {
 
@@ -494,19 +489,19 @@ public class Product {
             throw new MotuException("Error in loadInventoryGlobalMetaData - Unable to load - productMetaData is null");
         }
 
-        productMetaData.setProductId(inventoryOLA.getProduct().getUrn().toString());
-        productMetaData.setTitle(inventoryOLA.getProduct().getUrn().toString());
+        productMetaData.setProductId(inventoryOLA.getResource().getUrn().toString());
+        productMetaData.setTitle(inventoryOLA.getResource().getUrn().toString());
 
-        Ressource ressource = inventoryOLA.getRessource();
+        Resource resource = inventoryOLA.getResource();
 
         // GeospatialCoverage geospatialCoverage = ressource.getGeospatialCoverage();
 
-        TimePeriod timePeriod = ressource.getTimePeriod();
+        TimePeriod timePeriod = resource.getTimePeriod();
 
         productMetaData.setTimeCoverage(timePeriod.getStart(), timePeriod.getEnd());
 
         // Gets variables metadata.
-        fr.cls.atoll.motu.library.inventory.Variables variables = ressource.getVariables();
+        fr.cls.atoll.motu.library.inventory.Variables variables = resource.getVariables();
 
         for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {
 

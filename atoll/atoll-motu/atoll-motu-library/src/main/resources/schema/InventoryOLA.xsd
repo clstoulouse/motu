@@ -75,23 +75,23 @@
 	<xs:element name="inventoryOLA">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="product" />
+			<!-- <xs:element ref="product" /> -->
 				<xs:element ref="service" />
-				<xs:element ref="ressource" />
+				<xs:element ref="resource" />
 				<xs:element ref="files" />
 			</xs:sequence>
 			<xs:attribute name="lastModificationDate" type="xs:dateTime"
 				use="required" />
 		</xs:complexType>
 	</xs:element>
-
+<!-- 
 	<xs:element name="product">
 		<xs:complexType>
 			<xs:attribute name="urn" type="xs:anyURI" use="required" />
 		</xs:complexType>
 	</xs:element>
-
-	<xs:element name="ressource">
+ -->
+	<xs:element name="resource">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="access" />

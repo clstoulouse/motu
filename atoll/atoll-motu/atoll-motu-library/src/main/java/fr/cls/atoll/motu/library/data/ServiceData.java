@@ -47,7 +47,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * This class implements a service (AVISO, MERCATOR, ...).
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.6 $ - $Date: 2009-05-28 15:02:31 $
+ * @version $Revision: 1.7 $ - $Date: 2009-06-03 14:46:05 $
  */
 public class ServiceData {
 
@@ -1393,6 +1393,16 @@ public class ServiceData {
         if (product == null) {
             throw new MotuException("Error in extractData - product is null");
         }
+        
+        if (getCatalogType() == CatalogData.CatalogType.FTP) {
+            
+            getLocationMetaData(product);
+            getDataFiles(product);
+            
+            product.setMediaKey(getCatalogType().name());  
+
+            updateFiles(product);
+        }
 
         // updates variables collection to download
         updateVariables(product, listVar);
@@ -2245,8 +2255,6 @@ public class ServiceData {
      * Gets the location meta data.
      * 
      * @param product the product
-     * 
-     * @return the location meta data
      * 
      * @throws MotuException the motu exception
      */

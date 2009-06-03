@@ -15,13 +15,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.RoundingMode;
-import java.net.Authenticator;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DecimalFormat;
@@ -33,18 +31,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import javax.measure.DecimalMeasure;
-import javax.measure.quantity.Angle;
-import javax.measure.quantity.DataAmount;
-import javax.measure.quantity.Duration;
 import javax.xml.bind.JAXBElement;
 
-import org.apache.commons.vfs.FileName;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.provider.HostFileNameParser;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.Period;
 
 import ucar.ma2.StructureData;
 import ucar.nc2.Dimension;
@@ -65,12 +54,10 @@ import ucar.nc2.ft.TrajectoryFeatureCollection;
 import ucar.nc2.ft.point.writer.CFPointObWriter;
 import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
 import ucar.unidata.geoloc.EarthLocation;
-import fr.cls.atoll.motu.library.MyAuthenticator;
 import fr.cls.atoll.motu.library.configuration.ConfigService;
 import fr.cls.atoll.motu.library.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.configuration.QueueServerType;
 import fr.cls.atoll.motu.library.configuration.QueueType;
-import fr.cls.atoll.motu.library.converter.jaxb.JodaPeriodAdapter;
 import fr.cls.atoll.motu.library.data.DataFile;
 import fr.cls.atoll.motu.library.data.Product;
 import fr.cls.atoll.motu.library.data.ServiceData;
@@ -79,19 +66,18 @@ import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
 import fr.cls.atoll.motu.library.inventory.InventoryOLA;
-import fr.cls.atoll.motu.library.inventory.Ressource;
+import fr.cls.atoll.motu.library.inventory.Resource;
+import fr.cls.atoll.motu.library.inventory.ResourceOLA;
 import fr.cls.atoll.motu.library.inventory.TimePeriod;
 import fr.cls.atoll.motu.library.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.sdtnameequiv.StandardName;
 import fr.cls.atoll.motu.library.sdtnameequiv.StandardNames;
 import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
-import fr.cls.atoll.motu.library.utils.Zip;
-import fr.cls.atoll.motu.library.vfs.VFSManager;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.12 $ - $Date: 2009-05-28 15:02:31 $
+ * @version $Revision: 1.13 $ - $Date: 2009-06-03 14:46:05 $
  * 
  */
 public class TestIntfce {
@@ -579,7 +565,7 @@ public class TestIntfce {
     }
 
     public static void productExtractDataFromInventory() {
-        String productId = "atoll:product:nrt-med-infrared-sst-timestamp";
+        String productId = "atoll:ressource:dataset:datafile-nrt-med-infrared-sst-timestamp";
         String service = "atoll:service:ftp-catsat:ftp";
 
         // add temporal criteria
@@ -1133,10 +1119,10 @@ public class TestIntfce {
             return;
         }
 
-        for (fr.cls.atoll.motu.library.inventory.DatasetOLA datasetOLA : catalogOLA.getDatasetsOLA().getDatasetOLA()) {
-            System.out.print(datasetOLA.getUrn());
+        for (ResourceOLA  resourceOLA : catalogOLA.getResourcesOLA().getResourceOLA()) {
+            System.out.print(resourceOLA.getUrn());
             System.out.print(" ");
-            System.out.print(datasetOLA.getInventoryUrl());
+            System.out.print(resourceOLA.getInventoryUrl());
             System.out.println("");
 
         }
@@ -1163,11 +1149,11 @@ public class TestIntfce {
         }
 
         System.out.println(inventoryOLA.getLastModificationDate());
-        System.out.println(inventoryOLA.getProduct().getUrn());
+        System.out.println(inventoryOLA.getResource().getUrn());
 
-        Ressource ressource = inventoryOLA.getRessource();
+        Resource resource = inventoryOLA.getResource();
 
-        GeospatialCoverage geospatialCoverage = ressource.getGeospatialCoverage();
+        GeospatialCoverage geospatialCoverage = resource.getGeospatialCoverage();
         System.out.println(geospatialCoverage.getType());
         System.out.println(geospatialCoverage.getUnits());
         System.out.println(geospatialCoverage.getEast());
@@ -1177,14 +1163,14 @@ public class TestIntfce {
         System.out.println(geospatialCoverage.getEastResolution());
         System.out.println(geospatialCoverage.getNorthResolution());
 
-        TimePeriod timePeriod = ressource.getTimePeriod();
+        TimePeriod timePeriod = resource.getTimePeriod();
         System.out.println(timePeriod.getStart());
         System.out.println(timePeriod.getEnd());
         System.out.println(timePeriod.getStep());
         System.out.println(timePeriod.getStep().toStandardDuration().getMillis());
         System.out.println(timePeriod.getStep().getMillis());
 
-        fr.cls.atoll.motu.library.inventory.Variables variables = ressource.getVariables();
+        fr.cls.atoll.motu.library.inventory.Variables variables = resource.getVariables();
         for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {
             System.out.print(variable.getName());
             System.out.print(" ");

@@ -12,17 +12,17 @@
  -->
 
   
-  <xs:element name="datasetOLA">
+  <xs:element name="resourceOLA">
     <xs:complexType>
       <xs:attribute name="urn" type="xs:anyURI" use="required" />
       <xs:attribute name="inventoryUrl" type="xs:anyURI" use="required" />            
     </xs:complexType>
   </xs:element>
   
-  <xs:element name="datasetsOLA">
+  <xs:element name="resourcesOLA">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="datasetOLA" maxOccurs="unbounded" />
+        <xs:element ref="resourceOLA" maxOccurs="unbounded" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -30,7 +30,7 @@
   <xs:element name="catalogOLA">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="datasetsOLA" />
+        <xs:element ref="resourcesOLA" />
       </xs:sequence>
       <xs:attribute name="name" type="xs:string" use="optional" />            
     </xs:complexType>

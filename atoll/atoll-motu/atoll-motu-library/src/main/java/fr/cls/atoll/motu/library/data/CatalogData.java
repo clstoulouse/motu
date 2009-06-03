@@ -29,18 +29,15 @@ import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.inventory.Access;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
-import fr.cls.atoll.motu.library.inventory.DatasetOLA;
-import fr.cls.atoll.motu.library.inventory.DatasetsOLA;
-import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
 import fr.cls.atoll.motu.library.inventory.InventoryOLA;
-import fr.cls.atoll.motu.library.inventory.Ressource;
-import fr.cls.atoll.motu.library.inventory.TimePeriod;
+import fr.cls.atoll.motu.library.inventory.Resource;
+import fr.cls.atoll.motu.library.inventory.ResourceOLA;
+import fr.cls.atoll.motu.library.inventory.ResourcesOLA;
 import fr.cls.atoll.motu.library.metadata.DocMetaData;
 import fr.cls.atoll.motu.library.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.opendap.server.Dataset;
 import fr.cls.atoll.motu.library.opendap.server.Service;
-import fr.cls.atoll.motu.library.queueserver.QueueThresholdComparator;
 import fr.cls.atoll.motu.library.tds.server.CatalogRef;
 import fr.cls.atoll.motu.library.tds.server.DatasetType;
 import fr.cls.atoll.motu.library.tds.server.DateTypeFormatted;
@@ -53,7 +50,7 @@ import fr.cls.atoll.motu.library.tds.server.TimeCoverageType;
  * This class implements a product's catalog .
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.7 $ - $Date: 2009-05-28 15:02:31 $
+ * @version $Revision: 1.8 $ - $Date: 2009-06-03 14:46:05 $
  */
 public class CatalogData {
 
@@ -139,13 +136,13 @@ public class CatalogData {
         // --------------------------
         // -------- Loads dataset
         // --------------------------
-        DatasetsOLA datasetsOLA = catalogOLA.getDatasetsOLA();
+        ResourcesOLA resourcesOLA = catalogOLA.getResourcesOLA();
 
         this.title = catalogOLA.getName();
 
-        for (DatasetOLA datasetOLA : datasetsOLA.getDatasetOLA()) {
-            currentProductType = datasetOLA.getUrn().toString();
-            loadFtpInventory(datasetOLA.getInventoryUrl().toString());
+        for (ResourceOLA resourceOLA : resourcesOLA.getResourceOLA()) {
+            currentProductType = resourceOLA.getUrn().toString();
+            loadFtpInventory(resourceOLA.getInventoryUrl().toString());
         }
 
         // Remove products that are not anymore in the catalog
@@ -164,12 +161,12 @@ public class CatalogData {
 
         InventoryOLA inventoryOLA = Organizer.getInventoryOLA(xmlUri);
 
-        Ressource ressource = inventoryOLA.getRessource();
-        Access access = ressource.getAccess();
+        Resource resource = inventoryOLA.getResource();
+        Access access = resource.getAccess();
 
         ProductMetaData productMetaData = null;
 
-        String productId = inventoryOLA.getProduct().getUrn().toString();
+        String productId = inventoryOLA.getResource().getUrn().toString();
 
         boolean newProduct = true;
 

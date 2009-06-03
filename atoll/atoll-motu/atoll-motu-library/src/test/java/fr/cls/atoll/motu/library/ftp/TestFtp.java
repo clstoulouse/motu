@@ -203,6 +203,16 @@ public class TestFtp {
 //            e.printStackTrace();
 //        }
         
+//        try {
+//            Organizer.getVFSSystemManager();
+//            //Organizer.closeVFSSystemManager();
+//            Organizer.removeVFSSystemManager();
+//        } catch (MotuException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//
+        
         
         //testFtp();
         // testSftp();

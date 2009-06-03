@@ -3,12 +3,11 @@
  */
 package fr.cls.atoll.motu.library.intfce;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -27,17 +26,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.CacheStrategy;
 import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileSystemManager;
-import org.apache.commons.vfs.FileSystemOptions;
-import org.apache.commons.vfs.VFS;
-import org.apache.commons.vfs.cache.SoftRefFilesCache;
-import org.apache.commons.vfs.impl.StandardFileSystemManager;
-import org.apache.commons.vfs.provider.AbstractFileSystem;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -75,11 +64,9 @@ import fr.cls.atoll.motu.library.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.library.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.ftp.TestFtp;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.InventoryOLA;
 import fr.cls.atoll.motu.library.metadata.ProductMetaData;
-import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.library.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.library.sdtnameequiv.StandardNames;
 import fr.cls.atoll.motu.library.utils.Zip;
@@ -105,7 +92,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.17 $ - $Date: 2009-06-03 11:43:51 $
+ * @version $Revision: 1.18 $ - $Date: 2009-06-03 14:46:05 $
  */
 public class Organizer {
 
@@ -281,6 +268,7 @@ public class Organizer {
             VFSManager vfsManager = new VFSManager();
             return vfsManager;
         }
+        
     };
 
     /**
@@ -296,6 +284,25 @@ public class Organizer {
             throw new MotuException("Error File System manager has not been initialized");
         }
         return vfsManager;
+    }
+    
+    /**
+     * Removes the vfs system manager.
+     * @throws MotuException 
+     * 
+     */
+    public static synchronized final void removeVFSSystemManager() throws MotuException {
+        Organizer.closeVFSSystemManager();
+        VFS_MANAGER.remove();
+    }
+    
+    /**
+     * Close vfs system manager.
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static synchronized final void closeVFSSystemManager() throws MotuException {
+        Organizer.getVFSSystemManager().close();
     }
 
     // private static final ThreadLocal<StandardFileSystemManager> FILE_SYSTEM_MANAGER = new
@@ -2773,7 +2780,7 @@ public class Organizer {
 
         if (!Organizer.isNullOrEmpty(params.getLocationData())) {
             product = getAmountDataSize(params.getLocationData(), params.getListVar(), params.getListTemporalCoverage(), params
-                    .getListLatLonCoverage(), params.getListDepthCoverage(), params.getOut(), params.isBatchQueue());
+                    .getListLatLonCoverage(), params.getListDepthCoverage(), params.getOut(), params.isBatchQueue(), null);
         } else if (!Organizer.isNullOrEmpty(params.getServiceName()) && !Organizer.isNullOrEmpty(params.getProductId())) {
             product = getAmountDataSize(params.getServiceName(), params.getListVar(), params.getListTemporalCoverage(), params
                     .getListLatLonCoverage(), params.getListDepthCoverage(), params.getProductId(), params.getOut(), params.isBatchQueue());
@@ -2810,6 +2817,7 @@ public class Organizer {
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
      */
     public Product getAmountDataSize(String locationData,
+                                     String productId,    
                                      List<String> listVar,
                                      List<String> listTemporalCoverage,
                                      List<String> listLatLonCoverage,
@@ -2826,6 +2834,10 @@ public class Organizer {
         Product product = null;
         try {
             product = getProductInformation(locationData);
+            if (!Organizer.isNullOrEmpty(productId)) {
+                product.setProductId(productId);
+            }
+            
             currentService.computeAmountDataSize(product, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
         } catch (NetCdfAttributeException e) {
             // Do nothing;
@@ -2917,6 +2929,8 @@ public class Organizer {
         if (!Organizer.servicesPersistentContainsKey(serviceName)) {
             loadCatalogInfo(serviceName);
         }
+        
+        setCurrentService(serviceName);
 
         servicePersistent = Organizer.getServicesPersistent(serviceName);
 
@@ -2927,7 +2941,7 @@ public class Organizer {
 
         String locationData = productPersistent.getUrl();
 
-        Product product = getAmountDataSize(locationData, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
+        Product product = getAmountDataSize(locationData, productId, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("getAmountDataSize(String, List<String>, List<String>, List<String>, List<String>, String) - exiting");
@@ -3070,7 +3084,7 @@ public class Organizer {
                                      List<String> listLatLonCoverage,
                                      List<String> listDepthCoverage,
                                      Writer out,
-                                     boolean batchQueue) throws MotuException, MotuMarshallException, MotuInvalidDateException,
+                                     boolean batchQueue, String productId) throws MotuException, MotuMarshallException, MotuInvalidDateException,
             MotuInvalidDepthException, MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuInvalidDateRangeException,
             MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
             NetCdfVariableException, MotuNoVarException, NetCdfVariableNotFoundException {
@@ -3084,7 +3098,7 @@ public class Organizer {
 
         RequestSize requestSize = null;
         try {
-            product = getAmountDataSize(locationData, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
+            product = getAmountDataSize(locationData, productId, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
             requestSize = Organizer.initRequestSize(product, batchQueue);
         } catch (MotuException e) {
             marshallRequestSize(e, out);

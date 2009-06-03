@@ -34,7 +34,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-06-03 07:01:52 $
+ * @version $Revision: 1.4 $ - $Date: 2009-06-03 14:46:05 $
  */
 public class VFSManager {
 
@@ -204,7 +204,9 @@ public class VFSManager {
                                                           Integer.MAX_VALUE));
                 }
 
-                sftpFscb.setTimeout(opts, (int) sftpTimeOut);
+                if (sftpTimeOut > 0) {                    
+                    sftpFscb.setTimeout(opts, (int) sftpTimeOut);
+                }
 
             }
 
