@@ -36,7 +36,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.15 $ - $Date: 2009-05-05 14:47:20 $
+ * @version $Revision: 1.16 $ - $Date: 2009-06-03 11:44:23 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
@@ -75,6 +75,15 @@ public abstract class MotuWPSProcess implements Processlet {
 
     /** The Constant PARAM_LOWDEPTH. */
     public static final String PARAM_LOWDEPTH = "lowdepth";
+    
+    /** The Constant PARAM_MAX_ALLOWED_SIZE. */
+    public static final String PARAM_MAX_ALLOWED_SIZE = "maxAllowedSize";
+    
+    /** The Constant PARAM_MAX_POOL_ANONYMOUS. */
+    public static final String PARAM_MAX_POOL_ANONYMOUS = "maxpoolanonymous";
+
+    /** The Constant PARAM_MAX_POOL_AUTHENTICATE. */
+    public static final String PARAM_MAX_POOL_AUTHENTICATE = "maxpoolauth";
 
     /** Process output message parameter name. */
     public static final String PARAM_MESSAGE = "message";
@@ -106,6 +115,9 @@ public abstract class MotuWPSProcess implements Processlet {
     /** The Constant PARAM_STARTTIME. */
     public static final String PARAM_STARTTIME = "starttime";
 
+    /** The Constant PARAM_SIZE. */
+    public static final String PARAM_SIZE = "size";
+    
     /** The Constant PARAM_STATUS. */
     public static final String PARAM_STATUS = "status";
 
@@ -115,11 +127,6 @@ public abstract class MotuWPSProcess implements Processlet {
     /** Variable servlet paremeter name. */
     public static final String PARAM_VARIABLE = "variable";
 
-    /** The Constant PARAM_MAX_POOL_ANONYMOUS. */
-    public static final String PARAM_MAX_POOL_ANONYMOUS = "maxpoolanonymous";
-
-    /** The Constant PARAM_MAX_POOL_AUTHENTICATE. */
-    public static final String PARAM_MAX_POOL_AUTHENTICATE = "maxpoolauth";
 
     // protected RunnableWPS runnableWPS = null;
 
@@ -136,6 +143,11 @@ public abstract class MotuWPSProcess implements Processlet {
         }
     }
 
+    /**
+     * Gets the wPS request management.
+     * 
+     * @return the wPS request management
+     */
     public WPSRequestManagement getWPSRequestManagement() {
         try {
             return WPSRequestManagement.getInstance();
@@ -213,9 +225,27 @@ public abstract class MotuWPSProcess implements Processlet {
 
     }
 
+    /**
+     * Before process.
+     * 
+     * @param in the in
+     * @param out the out
+     * @param info the info
+     * 
+     * @throws ProcessletException the processlet exception
+     */
     public void beforeProcess(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info) throws ProcessletException {
     }
 
+    /**
+     * After process.
+     * 
+     * @param in the in
+     * @param out the out
+     * @param info the info
+     * 
+     * @throws ProcessletException the processlet exception
+     */
     public void afterProcess(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info) throws ProcessletException {
     }
 
@@ -342,7 +372,9 @@ public abstract class MotuWPSProcess implements Processlet {
      * 
      * @param response the response
      * @param e the e
-     * @throws ProcessletException
+     * @param throwProcessletException the throw processlet exception
+     * 
+     * @throws ProcessletException the processlet exception
      */
     public static void setReturnCode(ProcessletOutputs response, MotuExceptionBase e, boolean throwProcessletException) throws ProcessletException {
 
@@ -355,7 +387,9 @@ public abstract class MotuWPSProcess implements Processlet {
      * 
      * @param response the response
      * @param e the e
-     * @throws ProcessletException
+     * @param throwProcessletException the throw processlet exception
+     * 
+     * @throws ProcessletException the processlet exception
      */
     public static void setReturnCode(ProcessletOutputs response, Exception e, boolean throwProcessletException) throws ProcessletException {
 
@@ -368,7 +402,9 @@ public abstract class MotuWPSProcess implements Processlet {
      * 
      * @param response the response
      * @param msg the msg
-     * @throws ProcessletException
+     * @param throwProcessletException the throw processlet exception
+     * 
+     * @throws ProcessletException the processlet exception
      */
     public static void setReturnCode(ProcessletOutputs response, String msg, boolean throwProcessletException) throws ProcessletException {
 
@@ -382,7 +418,9 @@ public abstract class MotuWPSProcess implements Processlet {
      * @param response the response
      * @param code the code
      * @param msg the msg
-     * @throws ProcessletException
+     * @param throwProcessletException the throw processlet exception
+     * 
+     * @throws ProcessletException the processlet exception
      */
     public static void setReturnCode(ProcessletOutputs response, ErrorType code, String msg, boolean throwProcessletException)
             throws ProcessletException {
@@ -396,7 +434,9 @@ public abstract class MotuWPSProcess implements Processlet {
      * @param response the response
      * @param code the code
      * @param msg the msg
-     * @throws ProcessletException
+     * @param throwProcessletException the throw processlet exception
+     * 
+     * @throws ProcessletException the processlet exception
      */
     public static void setReturnCode(ProcessletOutputs response, String code, String msg, boolean throwProcessletException)
             throws ProcessletException {
@@ -427,7 +467,9 @@ public abstract class MotuWPSProcess implements Processlet {
      * 
      * @param response the response
      * @param statusModeResponse the status mode response
-     * @throws ProcessletException
+     * @param throwProcessletException the throw processlet exception
+     * 
+     * @throws ProcessletException the processlet exception
      */
     public static void setReturnCode(ProcessletOutputs response, StatusModeResponse statusModeResponse, boolean throwProcessletException)
             throws ProcessletException {
@@ -442,7 +484,9 @@ public abstract class MotuWPSProcess implements Processlet {
      * @param code the code
      * @param e the e
      * @param response the response
-     * @throws ProcessletException
+     * @param throwProcessletException the throw processlet exception
+     * 
+     * @throws ProcessletException the processlet exception
      */
 
     public static void setReturnCode(ProcessletOutputs response, ErrorType code, MotuExceptionBase e, boolean throwProcessletException)
@@ -523,8 +567,11 @@ public abstract class MotuWPSProcess implements Processlet {
     /**
      * Create new Organizer object.
      * 
+     * @param in the in
+     * 
      * @return Organizer object.
-     * @throws ProcessletException
+     * 
+     * @throws ProcessletException the processlet exception
      */
     protected Organizer getOrganizer(ProcessletInputs in) throws ProcessletException {
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
@@ -541,16 +588,27 @@ public abstract class MotuWPSProcess implements Processlet {
         return organizer;
     }
 
+    /**
+     * Gets the motu wps process data.
+     * 
+     * @param in the in
+     * 
+     * @return the motu wps process data
+     * 
+     * @throws ProcessletException the processlet exception
+     */
     protected MotuWPSProcessData getMotuWPSProcessData(ProcessletInputs in) throws ProcessletException {
         MotuWPSProcessData motuWPSProcessData = getWPSRequestManagement().getMotuWPSProcessData(in);
         if (motuWPSProcessData == null) {
-            throw new ProcessletException("Error - MotuWPSProcess#getProductInfoParameters - Unable to find process data");
+            throw new ProcessletException("Error - MotuWPSProcess#getMotuWPSProcessData - Unable to find process data");
         }
         return motuWPSProcessData;
     }
 
     /**
      * Gets the product info parameters.
+     * 
+     * @param in the in
      * 
      * @return the product info parameters
      * 
@@ -629,8 +687,11 @@ public abstract class MotuWPSProcess implements Processlet {
     /**
      * Gets the temporal coverage from the request.
      * 
+     * @param in the in
+     * 
      * @return a list of temporable coverage, first start date, and then end date (they can be empty string)
-     * @throws ProcessletException
+     * 
+     * @throws ProcessletException the processlet exception
      */
     protected List<String> getTemporalCoverage(ProcessletInputs in) throws ProcessletException {
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
@@ -651,10 +712,12 @@ public abstract class MotuWPSProcess implements Processlet {
     /**
      * Gets the request id as long.
      * 
+     * @param in the in
+     * 
      * @return the request id as long
      * 
      * @throws MotuException the motu exception
-     * @throws ProcessletException
+     * @throws ProcessletException the processlet exception
      */
     public long getRequestIdAsLong(ProcessletInputs in) throws MotuException, ProcessletException {
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
@@ -723,8 +786,11 @@ public abstract class MotuWPSProcess implements Processlet {
     /**
      * Gets the data format.
      * 
+     * @param in the in
+     * 
      * @return the data format
-     * @throws ProcessletException
+     * 
+     * @throws ProcessletException the processlet exception
      */
     protected Organizer.Format getDataFormat(ProcessletInputs in) throws ProcessletException {
 
@@ -747,8 +813,11 @@ public abstract class MotuWPSProcess implements Processlet {
     /**
      * Gets the geographical coverage from the request.
      * 
+     * @param in the in
+     * 
      * @return a list of geographical coverage : Lat min, Lon min, Lat max, Lon max
-     * @throws ProcessletException
+     * 
+     * @throws ProcessletException the processlet exception
      */
     protected List<String> getGeoCoverage(ProcessletInputs in) throws ProcessletException {
 
@@ -807,8 +876,11 @@ public abstract class MotuWPSProcess implements Processlet {
     /**
      * Gets the depth coverage from the request.
      * 
+     * @param in the in
+     * 
      * @return a list of deph coverage : first depth min, then depth max
-     * @throws ProcessletException
+     * 
+     * @throws ProcessletException the processlet exception
      */
     protected List<String> getDepthCoverage(ProcessletInputs in) throws ProcessletException {
 
@@ -902,9 +974,11 @@ public abstract class MotuWPSProcess implements Processlet {
      * Checks if is anonymous user.
      * 
      * @param userId the user id
+     * @param in the in
      * 
      * @return true, if is anonymous user
-     * @throws ProcessletException
+     * 
+     * @throws ProcessletException the processlet exception
      */
     protected boolean isAnonymousUser(ProcessletInputs in, String userId) throws ProcessletException {
         if (MotuWPSProcess.isNullOrEmpty(userId)) {
@@ -928,8 +1002,11 @@ public abstract class MotuWPSProcess implements Processlet {
     /**
      * Checks if is batch.
      * 
+     * @param in the in
+     * 
      * @return true, if is batch
-     * @throws ProcessletException
+     * 
+     * @throws ProcessletException the processlet exception
      */
     protected boolean isBatch(ProcessletInputs in) throws ProcessletException {
 
@@ -946,7 +1023,11 @@ public abstract class MotuWPSProcess implements Processlet {
     /**
      * Gets the login.
      * 
+     * @param in the in
+     * 
      * @return the login
+     * 
+     * @throws ProcessletException the processlet exception
      */
     protected String getLogin(ProcessletInputs in) throws ProcessletException {
         String login = null;
@@ -979,7 +1060,11 @@ public abstract class MotuWPSProcess implements Processlet {
     /**
      * Gets the request priority.
      * 
+     * @param in the in
+     * 
      * @return the request priority
+     * 
+     * @throws ProcessletException the processlet exception
      */
     protected int getRequestPriority(ProcessletInputs in) throws ProcessletException {
 
@@ -1004,7 +1089,11 @@ public abstract class MotuWPSProcess implements Processlet {
     /**
      * Gets the variables.
      * 
+     * @param in the in
+     * 
      * @return the variables
+     * 
+     * @throws ProcessletException the processlet exception
      */
     protected List<String> getVariables(ProcessletInputs in) throws ProcessletException {
 
@@ -1031,6 +1120,14 @@ public abstract class MotuWPSProcess implements Processlet {
 
     }
 
+    /**
+     * Wait for response.
+     * 
+     * @param in the in
+     * @param requestId the request id
+     * 
+     * @return the status mode response
+     */
     protected StatusModeResponse waitForResponse(ComplexInput in, long requestId) {
         StatusModeResponse statusModeResponse = getRequestManagement().getResquestStatusMap(requestId);
 
@@ -1054,6 +1151,15 @@ public abstract class MotuWPSProcess implements Processlet {
 
     }
 
+    /**
+     * Sets the status.
+     * 
+     * @param in the in
+     * @param status the status
+     * 
+     * @throws MotuException the motu exception
+     * @throws ProcessletException the processlet exception
+     */
     public void setStatus(ProcessletInputs in, StatusModeType status) throws MotuException, ProcessletException {
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
 
@@ -1061,6 +1167,15 @@ public abstract class MotuWPSProcess implements Processlet {
 
     }
 
+    /**
+     * Sets the status.
+     * 
+     * @param in the in
+     * @param status the status
+     * 
+     * @throws MotuException the motu exception
+     * @throws ProcessletException the processlet exception
+     */
     public void setStatus(ProcessletInputs in, String status) throws MotuException, ProcessletException {
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
         MotuWPSProcess.setStatus(motuWPSProcessData.getProcessletOutputs(), status);
@@ -1071,7 +1186,8 @@ public abstract class MotuWPSProcess implements Processlet {
      * 
      * @param response the response
      * @param requestId the request id
-     * @throws MotuException
+     * 
+     * @throws MotuException the motu exception
      */
     public static void setRequestId(ProcessletOutputs response, long requestId) throws MotuException {
 
@@ -1084,7 +1200,8 @@ public abstract class MotuWPSProcess implements Processlet {
      * 
      * @param response the response
      * @param requestId the request id
-     * @throws MotuException
+     * 
+     * @throws MotuException the motu exception
      */
     public static void setRequestId(ProcessletOutputs response, String requestId) throws MotuException {
 
@@ -1109,12 +1226,24 @@ public abstract class MotuWPSProcess implements Processlet {
 
     }
 
+    /**
+     * Sets the status.
+     * 
+     * @param response the response
+     * @param status the status
+     */
     public static void setStatus(ProcessletOutputs response, StatusModeType status) {
         MotuWPSProcess.setStatus(response, Integer.toString(status.value()));
         //MotuWPSProcess.setStatus(response, status.toString());
 
     }
 
+    /**
+     * Sets the status.
+     * 
+     * @param response the response
+     * @param status the status
+     */
     public static void setStatus(ProcessletOutputs response, String status) {
         synchronized (response) {
 
@@ -1131,5 +1260,7 @@ public abstract class MotuWPSProcess implements Processlet {
         }
 
     }
+    
+    
 
 }
