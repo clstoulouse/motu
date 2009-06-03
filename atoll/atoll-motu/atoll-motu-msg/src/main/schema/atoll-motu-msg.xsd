@@ -328,7 +328,7 @@
 		<xsd:complexType>
 			<xsd:annotation>
 				<xsd:documentation>
-					Réponse informations volume de donneés (en octets)
+					Réponse informations volume de donneés (en Mega-octets)
 					d'une requête d'extraction.
 				</xsd:documentation>
 			</xsd:annotation>
