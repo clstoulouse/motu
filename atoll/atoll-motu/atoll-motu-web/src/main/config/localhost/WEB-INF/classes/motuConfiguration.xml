@@ -43,8 +43,17 @@
 	maxSizePerFile="1024"
 	extractionPath="C:\Java\apache-tomcat-6.0.9\webapps\motu-file-extract"
 	downloadHttpUrl="http://localhost:8080/motu-file-extract"
-	httpDocumentRoot="http://aviso-motu.cls.fr">
-
+	httpDocumentRoot="http://aviso-motu.cls.fr"
+	sftpSessionTimeOut="PT10M"
+	strictHostKeyChecking="no">
+	<!--=====================   CATSAT FTP ===================-->
+	<configService defaultLanguage="UK" description="Ftp Catsat"
+		group="CatsatFTP" httpBaseRef="http://www.cls.fr"
+		name="atoll:service:ftp-catsat:ftp" veloTemplatePrefix="generic">
+		<catalog name="catalogCatsatFTP.xml" type="FTP"
+			urlSite="sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll/atoll-distrib/HOA_Catsat/Interface_ATOLL" />
+	</configService>
+	
 	<!--===========================================-->
 	<!--                     Topaz TDS         -->
 	<!--===========================================-->

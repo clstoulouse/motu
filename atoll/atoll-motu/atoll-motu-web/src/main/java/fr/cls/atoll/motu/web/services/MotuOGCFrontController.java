@@ -1,18 +1,14 @@
 package fr.cls.atoll.motu.web.services;
 
-import java.io.IOException;
 import java.net.Authenticator;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.ProcessletException;
 
-import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicLong;
 import fr.cls.atoll.motu.library.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
@@ -26,7 +22,7 @@ import fr.cls.atoll.motu.processor.wps.WPSRequestManagement;
  * <br><br>Copyright : Copyright (c) 2009.
  * <br><br>Société : CLS (Collecte Localisation Satellites)
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-04-23 14:16:19 $
+ * @version $Revision: 1.3 $ - $Date: 2009-06-03 14:45:39 $
  */
 public class MotuOGCFrontController extends OGCFrontController {
     /**
@@ -50,6 +46,11 @@ public class MotuOGCFrontController extends OGCFrontController {
     /** {@inheritDoc} */
     @Override
     public void destroy() {
+        try {
+            Organizer.closeVFSSystemManager();
+        } catch (MotuException e) {
+            // Do nothing
+        }
         super.destroy();
     }
 

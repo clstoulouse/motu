@@ -12,7 +12,7 @@
 	
 	<Identifier>GetProductTimeCoverage</Identifier>
 	<JavaClass>fr.cls.atoll.motu.processor.wps.ProductTimeCoverageProcess</JavaClass>
-	<Title>Process for getting the time coverage of a product.</Title>
+	<Title>Process to get the time coverage of a product.</Title>
 	<Abstract><![CDATA[The purpose of this process is to provide the time coverage of a product.
 	A product is identified either by the Service name and Product name input parameters or by the url of the product (Data input parameter)
 	The return values are the status of the request (pending, in progress, done, error) and the return process code (ok or error code) and the correponding message)]]>

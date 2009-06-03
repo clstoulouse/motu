@@ -2,6 +2,6 @@
 		<ComplexOutput>
 			<Identifier>url</Identifier>
 			<Title>Data url</Title>			
-			<DataType reference="http://www.w3.org/TR/xmlschema-2/#long">long</DataType>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
 			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
 		</ComplexOutput>
