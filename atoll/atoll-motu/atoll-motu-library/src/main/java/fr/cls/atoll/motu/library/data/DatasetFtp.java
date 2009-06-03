@@ -33,7 +33,7 @@ import fr.cls.commons.util.DatePeriod;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-05-28 15:02:31 $
+ * @version $Revision: 1.4 $ - $Date: 2009-06-03 07:01:52 $
  */
 public class DatasetFtp extends DatasetBase {
 
@@ -63,6 +63,10 @@ public class DatasetFtp extends DatasetBase {
     public void computeAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
             MotuNoVarException, NetCdfVariableNotFoundException {
+        
+        List<DataFile> dataFiles = selectDataFile();
+
+        amountDataSize = DatasetFtp.getAmountDataSize(dataFiles);
 
     }
 
@@ -93,7 +97,7 @@ public class DatasetFtp extends DatasetBase {
      * 
      * @throws MotuException the motu exception
      * @throws FileNotFoundException the file not found exception
-     * @throws MotuExceedingCapacityException 
+     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
      */
     protected void extractDataAsUrlList() throws MotuException, FileNotFoundException, MotuExceedingCapacityException {
 
@@ -125,7 +129,7 @@ public class DatasetFtp extends DatasetBase {
      * 
      * @throws MotuException the motu exception
      * @throws FileNotFoundException the file not found exception
-     * @throws MotuExceedingCapacityException 
+     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
      */
     protected void extractDataAsZip() throws MotuException, FileNotFoundException, MotuExceedingCapacityException {
         // Create output file
@@ -269,7 +273,7 @@ public class DatasetFtp extends DatasetBase {
      * 
      * @return the double
      */
-    public double computeSize(List<DataFile> dataFiles) {
+    public static double computeSize(List<DataFile> dataFiles) {
         double count = 0.0;
 
         for (DataFile dataFile : dataFiles) {
@@ -290,11 +294,23 @@ public class DatasetFtp extends DatasetBase {
      */
     public void checkSize(List<DataFile> dataFiles) throws MotuException, MotuExceedingCapacityException {
         // Compute size in Mega-bytes
-        double amountDataSize = (computeSize(dataFiles)) / (1024 * 1024);
+        amountDataSize = DatasetFtp.getAmountDataSize(dataFiles);
         if (amountDataSize > Organizer.getMotuConfigInstance().getMaxSizePerFile().doubleValue()) {
             throw new MotuExceedingCapacityException(Organizer.getMotuConfigInstance().getMaxSizePerFile().doubleValue());
         }
 
+    }
+    
+    /**
+     * Gets the amount data size in megabytes
+     * 
+     * @param dataFiles the data files
+     * 
+     * @return the amount data size
+     */
+    public static double getAmountDataSize(List<DataFile> dataFiles) {
+        return (DatasetFtp.computeSize(dataFiles)) / (1024 * 1024);
+        
     }
 
 }

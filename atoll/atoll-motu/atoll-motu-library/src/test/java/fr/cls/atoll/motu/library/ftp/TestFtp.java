@@ -33,6 +33,10 @@ import com.jcraft.jsch.Session;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.intfce.TestIntfce;
+import fr.cls.atoll.motu.library.intfce.TestIntfce.Client;
+import fr.cls.atoll.motu.library.intfce.TestIntfce.Client2;
+import fr.cls.atoll.motu.library.intfce.TestIntfce.Client3;
 import fr.cls.commons.util.io.ConfigLoader;
 
 public class TestFtp {
@@ -42,6 +46,146 @@ public class TestFtp {
     private static final Logger LOG = Logger.getLogger(TestFtp.class);
     private static final Log _LOG = LogFactory.getLog(TestFtp.class);
 
+    public class Client extends Thread {
+        /**
+         * Logger for this class
+         */
+        private final Logger LOG = Logger.getLogger(Client.class);
+
+        public Client(String name) {
+            this.name = name;
+        }
+
+        String name;
+
+        public void run() {
+
+            System.out.print("Start Client ");
+            System.out.println(name);
+            
+            try {
+                Organizer.getVFSSystemManager().copyFileToLocalFile("t", "t", "sftp", "CLS-EARITH.pc.cls.fr", "AsciiEnvisat.txt", "c:/tempVFS/AsciiEnvisat.txt");
+            } catch (MotuException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            System.out.print("End Client ");
+            System.out.println(name);
+
+        }
+    }
+    public class Client2 extends Thread {
+        /**
+         * Logger for this class
+         */
+        private final Logger LOG = Logger.getLogger(Client2.class);
+
+        public Client2(String name) {
+            this.name = name;
+        }
+
+        String name;
+
+        public void run() {
+
+            System.out.print("Start Client2 ");
+            System.out.println(name);
+
+            try {
+                Organizer.getVFSSystemManager().copyFileToLocalFile("atoll", "atoll", "sftp", "catsat-data1.cls.fr/home/atoll", "/atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_20090516.xml", "c:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml");
+            } catch (MotuException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            System.out.print("End Client2 ");
+            System.out.println(name);
+
+        }
+    }
+    public class Client3 extends Thread {
+        /**
+         * Logger for this class
+         */
+        private final Logger LOG = Logger.getLogger(Client3.class);
+
+        public Client3(String name) {
+            this.name = name;
+        }
+
+        String name;
+
+        public void run() {
+
+            System.out.print("Start Client3 ");
+            System.out.println(name);
+
+            try {
+                Organizer.getVFSSystemManager().copyFileToLocalFile("anonymous", "dearith@cls.fr", "ftp", "ftp.cls.fr/pub/oceano/AVISO/", "NRT-SLA/maps/rt/j2/h/msla_rt_j2_err_21564.nc.gz", "c:/tempVFS/msla_rt_j2_err_21564.nc.gz");
+            } catch (MotuException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            System.out.print("End Client3 ");
+            System.out.println(name);
+
+        }
+    }
+    public class Client4 extends Thread {
+        /**
+         * Logger for this class
+         */
+        private final Logger LOG = Logger.getLogger(Client4.class);
+
+        public Client4(String name) {
+            this.name = name;
+        }
+
+        String name;
+
+        public void run() {
+
+            System.out.print("Start Client4 ");
+            System.out.println(name);
+
+            try {
+                Organizer.getVFSSystemManager().copyFileToLocalFile("anonymous@ftp.unidata.ucar.edu", "", "ftp", "proxy.cls.fr", "/pub/README", "c:/tempVFS/README");
+            } catch (MotuException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            System.out.print("End Client4 ");
+            System.out.println(name);
+
+        }
+    }
+    
+    public static void testVFSThread() {
+
+        TestFtp testFtp = new TestFtp();
+        //TestFtp.Client[] c = { testFtp.new Client("Client1"), testFtp.new Client("Client2"), };
+        TestFtp.Client[] c = { testFtp.new Client("Client1A"),};
+        for (int i = 0; i < c.length; i++) {
+            c[i].start();
+        }
+        TestFtp.Client2[] c2 = { testFtp.new Client2("Client2A"),};
+        for (int i = 0; i < c2.length; i++) {
+            c2[i].start();
+        }
+        TestFtp.Client3[] c3 = { testFtp.new Client3("Client3A"), };
+        for (int i = 0; i < c3.length; i++) {
+            c3[i].start();
+        }
+        TestFtp.Client4[] c4 = { testFtp.new Client4("Client4A"), };
+        for (int i = 0; i < c4.length; i++) {
+            c4[i].start();
+        }
+
+    }
+
     /**
      * .
      * 
@@ -49,15 +193,15 @@ public class TestFtp {
      */
     public static void main(String[] args) {
 
-        try {
-            URI uri = new URI("sftp://catsat-data1.cls.fr/home/atoll");
-            URI newURI = new URI(uri.getScheme(), "atoll:atoll", uri.getHost(), uri.getPort(), uri.getPath(), uri.getQuery(), uri.getFragment());
-            System.out.println(newURI.toString());
-            
-        } catch (URISyntaxException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//        try {
+//            URI uri = new URI("sftp://catsat-data1.cls.fr/home/atoll");
+//            URI newURI = new URI(uri.getScheme(), "atoll:atoll", uri.getHost(), uri.getPort(), uri.getPath(), uri.getQuery(), uri.getFragment());
+//            System.out.println(newURI.toString());
+//            
+//        } catch (URISyntaxException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
         
         
         //testFtp();

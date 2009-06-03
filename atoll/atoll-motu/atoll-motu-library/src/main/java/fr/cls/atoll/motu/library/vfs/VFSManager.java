@@ -34,7 +34,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-05-28 15:02:31 $
+ * @version $Revision: 1.3 $ - $Date: 2009-06-03 07:01:52 $
  */
 public class VFSManager {
 
@@ -119,7 +119,7 @@ public class VFSManager {
         standardFileSystemManager.setLogger(LogFactory.getLog(VFS.class));
         try {
             standardFileSystemManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderConfig()));
-            standardFileSystemManager.setCacheStrategy(CacheStrategy.ON_RESOLVE);
+            standardFileSystemManager.setCacheStrategy(CacheStrategy.ON_CALL);
             standardFileSystemManager.setFilesCache(new SoftRefFilesCache());
             // standardFileSystemManager.addProvider("moi", new DefaultLocalFileProvider());
             standardFileSystemManager.init();

@@ -105,7 +105,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.15 $ - $Date: 2009-05-28 15:02:31 $
+ * @version $Revision: 1.16 $ - $Date: 2009-06-03 07:01:52 $
  */
 public class Organizer {
 
@@ -295,7 +295,7 @@ public class Organizer {
         if (vfsManager == null) {
             throw new MotuException("Error File System manager has not been initialized");
         }
-        return VFS_MANAGER.get();
+        return vfsManager;
     }
 
     // private static final ThreadLocal<StandardFileSystemManager> FILE_SYSTEM_MANAGER = new
