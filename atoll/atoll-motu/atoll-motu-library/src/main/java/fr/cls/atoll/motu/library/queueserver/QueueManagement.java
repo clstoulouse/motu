@@ -30,8 +30,26 @@ import fr.cls.atoll.motu.library.exception.MotuInvalidQueuePriorityException;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-06-03 11:43:51 $
+ */
+/**
+ * <br><br>Copyright : Copyright (c) 2009.
+ * <br><br>Société : CLS (Collecte Localisation Satellites)
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-06-03 11:43:51 $
+ */
+/**
+ * <br><br>Copyright : Copyright (c) 2009.
+ * <br><br>Société : CLS (Collecte Localisation Satellites)
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-06-03 11:43:51 $
+ */
+/**
+ * <br><br>Copyright : Copyright (c) 2009.
+ * <br><br>Société : CLS (Collecte Localisation Satellites)
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-06-03 11:43:51 $
  */
 public class QueueManagement implements JobListener {
 
@@ -96,7 +114,7 @@ public class QueueManagement implements JobListener {
      * Creates the thread pool executor.
      */
     private void createThreadPoolExecutor() {
-        int maxRunningThreads = this.queueConfig.getMaxThreads();
+        int maxRunningThreads = this.getMaxThreads();
         this.threadPoolExecutor = new ExtractionThreadPoolExecutor(maxRunningThreads, maxRunningThreads, 0L, TimeUnit.SECONDS, priorityBlockingQueue);
 
     }
@@ -321,7 +339,7 @@ public class QueueManagement implements JobListener {
             LOG.debug("isMaxQueueSizeReached() - entering");
         }
 
-        int maxQueueSize = queueConfig.getMaxPoolSize();
+        int maxQueueSize = getMaxPoolSize();
         int queueSize = priorityBlockingQueue.size();
         boolean reached = false;
 
@@ -336,6 +354,32 @@ public class QueueManagement implements JobListener {
         return reached;
     }
 
+    /**
+     * Gets the max pool size.
+     * 
+     * @return the max pool size
+     */
+    public Short getMaxPoolSize() {
+        if (queueConfig.getMaxPoolSize() == null) {
+            return -1;
+        } else {
+            return queueConfig.getMaxPoolSize();
+        }
+    }
+    
+    /**
+     * Gets the max threads.
+     * 
+     * @return the max threads
+     */
+    public Integer getMaxThreads() {
+        if (queueConfig.getMaxThreads() == null) {
+            return 1;
+        } else {
+            return queueConfig.getMaxThreads();
+        }
+    }
+    
     /**
      * Count request user.
      * 

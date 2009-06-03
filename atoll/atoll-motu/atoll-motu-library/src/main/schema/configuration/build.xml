@@ -38,6 +38,7 @@
 		<fileset dir="${m2repository.dir}/com/sun/xsom/xsom/20081112" includes="*.jar" />
 		<fileset dir="${m2repository.dir}/org/kohsuke/rngom/rngom/20061207" includes="*.jar" />
 		<!-- <pathelement location="${m2repository.dir}/javax/xml/defaultvalueplugin/1.0/defaultvalueplugin-1.0.jar"/> -->
+		<!-- <fileset dir="c:/java" includes="defaultvalueplugin.jar"/>-->
 	</path>
 
 	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask" classpathref="classpath"/>
@@ -59,7 +60,7 @@
 			<xjc  destdir="${src.dir}"  target="2.1" package="${schema.package}" binding="${schema.xjbfile}" removeOldOutput="no">
 			<schema dir="${schema.xsdpath}" includes="${schema.xsdfile}" />
 			<arg value="-extension"/>
-	<!--		<arg value="-Xdefault-value"/> -->
+			<!--<arg value="-Xdefault-value"/>-->
 			<produces dir="${src.dir}" />
 		</xjc>
 	</target>

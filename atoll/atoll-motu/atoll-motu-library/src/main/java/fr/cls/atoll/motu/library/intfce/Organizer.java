@@ -105,7 +105,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.16 $ - $Date: 2009-06-03 07:01:52 $
+ * @version $Revision: 1.17 $ - $Date: 2009-06-03 11:43:51 $
  */
 public class Organizer {
 
@@ -1296,7 +1296,7 @@ public class Organizer {
 
         double maxAllowedSize = 0d;
         try {
-            maxAllowedSize = Organizer.getMotuConfigInstance().getMaxSizePerFile().doubleValue();
+            maxAllowedSize = Organizer.convertFromMegabytesToBytes(Organizer.getMotuConfigInstance().getMaxSizePerFile().doubleValue());
         } catch (MotuException e) {
             Organizer.setError(requestSize, e);
             return requestSize;
@@ -1304,7 +1304,7 @@ public class Organizer {
 
         MotuExceptionBase exceptionBase = null;
 
-        if (size > Organizer.convertFromMegabytesToBytes(maxAllowedSize)) {
+        if (size > maxAllowedSize) {
             exceptionBase = new MotuExceedingCapacityException(Organizer.convertFromBytesToMegabytes(size), maxAllowedSize);
         }
 
@@ -1313,12 +1313,12 @@ public class Organizer {
         if (QueueServerManagement.hasInstance()) {
             double maxDataThreshold = 0d;
             try {
-                maxDataThreshold = QueueServerManagement.getInstance().getMaxDataThreshold(batchQueue);
+                maxDataThreshold = Organizer.convertFromMegabytesToBytes(QueueServerManagement.getInstance().getMaxDataThreshold(batchQueue));
             } catch (MotuException e) {
                 Organizer.setError(requestSize, e);
                 return requestSize;
             }
-            if (size > Organizer.convertFromMegabytesToBytes(maxDataThreshold)) {
+            if (size > maxDataThreshold) {
                 exceptionBase = new MotuExceedingQueueDataCapacityException(Organizer.convertFromBytesToMegabytes(size), maxDataThreshold, batchQueue);
             }
             maxAllowedSizeToSet = maxAllowedSizeToSet > maxDataThreshold ? maxDataThreshold : maxAllowedSizeToSet;
@@ -3085,7 +3085,7 @@ public class Organizer {
         RequestSize requestSize = null;
         try {
             product = getAmountDataSize(locationData, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
-            requestSize = initRequestSize(product, batchQueue);
+            requestSize = Organizer.initRequestSize(product, batchQueue);
         } catch (MotuException e) {
             marshallRequestSize(e, out);
             throw e;

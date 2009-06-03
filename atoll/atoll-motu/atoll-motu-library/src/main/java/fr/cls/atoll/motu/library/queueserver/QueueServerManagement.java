@@ -39,8 +39,8 @@ import fr.cls.atoll.motu.library.intfce.Organizer;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-06-03 11:43:51 $
  */
 public class QueueServerManagement {
 
@@ -537,7 +537,7 @@ public class QueueServerManagement {
     public int computeMaxPoolAnonymous(QueueManagement queueManagement) {
         int maxPoolAnonymous = (maxPoolAnonymousOverrided != null ? maxPoolAnonymousOverrided.shortValue() : queueServerConfig.getMaxPoolAnonymous());
 
-        int maxPoolSize = queueManagement.getQueueConfig().getMaxPoolSize();
+        int maxPoolSize = queueManagement.getMaxPoolSize();
 
         if ((maxPoolSize > 0) && ((maxPoolAnonymous > maxPoolSize) || (maxPoolAnonymous <= 0))) {
 
@@ -555,7 +555,7 @@ public class QueueServerManagement {
      */
     public int computeMaxPoolAuthenticate(QueueManagement queueManagement) {
         int maxPoolAuthenticate = (maxPoolAuthOverrided != null ? maxPoolAuthOverrided.shortValue() : queueServerConfig.getMaxPoolAuth());
-        int maxPoolSize = queueManagement.getQueueConfig().getMaxPoolSize();
+        int maxPoolSize = queueManagement.getMaxPoolSize();
 
         if ((maxPoolSize > 0) && ((maxPoolAuthenticate > maxPoolSize) || (maxPoolAuthenticate <= 0))) {
 
