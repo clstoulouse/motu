@@ -23,6 +23,7 @@ import org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder;
 import org.apache.log4j.Logger;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.commons.util.io.ConfigLoader;
 
@@ -34,7 +35,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-06-03 14:46:05 $
+ * @version $Revision: 1.5 $ - $Date: 2009-06-04 07:33:09 $
  */
 public class VFSManager {
 
@@ -292,35 +293,36 @@ public class VFSManager {
      * @param fileDest the file dest
      * 
      * @throws MotuException the motu exception
+     * @throws MotuExceptionBase the motu exception base
      */
-    public void copyFileToLocalFile(String user, String pwd, String scheme, String host, String fileSrc, String fileDest) throws MotuException {
+    public void copyFileToLocalFile(String user, String pwd, String scheme, String host, String fileSrc, String fileDest) throws MotuExceptionBase {
 
         open(user, pwd, scheme);
 
         FileObject foSrc = null;
         FileObject foDest = null;
-
+        String uri = "";
+        
         try {
             File newFile = VFSManager.createLocalFile(fileDest);
 
-            String uri = String.format("%s://%s/%s", scheme, host, fileSrc);
+            uri = String.format("%s://%s/%s", scheme, host, fileSrc);
             foSrc = resolveFile(uri);
             if (foSrc == null) {
                 throw new MotuException(String.format("Unable to resolve source uri '%s' ", uri));
             }
 
             foDest = standardFileSystemManager.toFileObject(newFile);
-            if (foSrc == null) {
-                throw new MotuException(String.format("Unable to resolve dest uri '%s' ", newFile.getAbsolutePath()));
+            if (foDest == null) {
+                throw new MotuException(String.format("Unable to resolve dest uri '%s' ", fileDest));
             }
             foDest.copyFrom(foSrc, Selectors.SELECT_ALL);
 
+        } catch (MotuExceptionBase e) {
+            throw e;
         } catch (Exception e) {
-            try {
-                throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
-            } catch (FileSystemException e1) {
-                throw new MotuException(String.format("Unable to copy files", e1));
-            }
+            //throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
+            throw new MotuException(String.format("Unable to copy file '%s' to '%s'", uri.toString(), fileDest), e);
         }
 
     }

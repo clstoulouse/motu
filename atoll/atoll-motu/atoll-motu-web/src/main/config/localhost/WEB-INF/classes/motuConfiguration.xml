@@ -43,9 +43,8 @@
 	maxSizePerFile="1024"
 	extractionPath="C:\Java\apache-tomcat-6.0.9\webapps\motu-file-extract"
 	downloadHttpUrl="http://localhost:8080/motu-file-extract"
-	httpDocumentRoot="http://aviso-motu.cls.fr"
-	sftpSessionTimeOut="PT10M"
-	strictHostKeyChecking="no">
+	httpDocumentRoot="http://aviso-motu.cls.fr">
+	
 	<!--=====================   CATSAT FTP ===================-->
 	<configService defaultLanguage="UK" description="Ftp Catsat"
 		group="CatsatFTP" httpBaseRef="http://www.cls.fr"

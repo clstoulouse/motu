@@ -1,9 +1,12 @@
 package fr.cls.atoll.motu.web.services;
 
+import java.io.IOException;
 import java.net.Authenticator;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.deegree.services.controller.OGCFrontController;
@@ -22,13 +25,35 @@ import fr.cls.atoll.motu.processor.wps.WPSRequestManagement;
  * <br><br>Copyright : Copyright (c) 2009.
  * <br><br>Société : CLS (Collecte Localisation Satellites)
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-06-03 14:45:39 $
+ * @version $Revision: 1.4 $ - $Date: 2009-06-04 07:33:43 $
  */
 public class MotuOGCFrontController extends OGCFrontController {
     /**
      * Logger for this class
      */
     private static final Logger LOG = Logger.getLogger(MotuOGCFrontController.class);
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        super.doGet(request, response);
+        try {
+            Organizer.closeVFSSystemManager();
+        } catch (MotuException e) {
+            // Do nothing
+        }
+    }
+
+
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        super.doPost(request, response);
+        try {
+            Organizer.removeVFSSystemManager();
+        } catch (MotuException e) {
+            // Do nothing
+        }
+    }
 
     /**
      * .
@@ -43,17 +68,6 @@ public class MotuOGCFrontController extends OGCFrontController {
     
 
     
-    /** {@inheritDoc} */
-    @Override
-    public void destroy() {
-        try {
-            Organizer.closeVFSSystemManager();
-        } catch (MotuException e) {
-            // Do nothing
-        }
-        super.destroy();
-    }
-
     /** {@inheritDoc} */
     @Override
     public void init(ServletConfig config) throws ServletException {

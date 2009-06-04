@@ -80,7 +80,7 @@
 			-->
 			<xs:attribute name="httpDocumentRoot" type="xs:string"
 				use="required" />
-			<xs:attribute name="sftpSessionTimeOut" type="xs:duration" default="PT5M">
+			<xs:attribute name="sftpSessionTimeOut" type="xs:duration" default="PT0M">
 				<xs:annotation>
 					<xs:documentation>
 						The timeout value on a sftp session.

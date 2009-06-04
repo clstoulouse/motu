@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import com.jcraft.jsch.Session;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.intfce.TestIntfce;
 import fr.cls.atoll.motu.library.intfce.TestIntfce.Client;
@@ -65,8 +66,11 @@ public class TestFtp {
             
             try {
                 Organizer.getVFSSystemManager().copyFileToLocalFile("t", "t", "sftp", "CLS-EARITH.pc.cls.fr", "AsciiEnvisat.txt", "c:/tempVFS/AsciiEnvisat.txt");
-            } catch (MotuException e) {
-                // TODO Auto-generated catch block
+                Organizer.removeVFSSystemManager();
+            } catch (MotuExceptionBase e) {
+                System.out.print("Exception in ");
+                System.out.println(name);
+                System.out.println(e.notifyException());
                 e.printStackTrace();
             }
 
@@ -94,8 +98,11 @@ public class TestFtp {
 
             try {
                 Organizer.getVFSSystemManager().copyFileToLocalFile("atoll", "atoll", "sftp", "catsat-data1.cls.fr/home/atoll", "/atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_20090516.xml", "c:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml");
-            } catch (MotuException e) {
-                // TODO Auto-generated catch block
+                Organizer.removeVFSSystemManager();
+            } catch (MotuExceptionBase e) {
+                System.out.print("Exception in ");
+                System.out.println(name);
+                System.out.println(e.notifyException());
                 e.printStackTrace();
             }
 
@@ -123,8 +130,11 @@ public class TestFtp {
 
             try {
                 Organizer.getVFSSystemManager().copyFileToLocalFile("anonymous", "dearith@cls.fr", "ftp", "ftp.cls.fr/pub/oceano/AVISO/", "NRT-SLA/maps/rt/j2/h/msla_rt_j2_err_21564.nc.gz", "c:/tempVFS/msla_rt_j2_err_21564.nc.gz");
-            } catch (MotuException e) {
-                // TODO Auto-generated catch block
+                Organizer.removeVFSSystemManager();
+            } catch (MotuExceptionBase e) {
+                System.out.print("Exception in ");
+                System.out.println(name);
+                System.out.println(e.notifyException());
                 e.printStackTrace();
             }
 
@@ -152,8 +162,11 @@ public class TestFtp {
 
             try {
                 Organizer.getVFSSystemManager().copyFileToLocalFile("anonymous@ftp.unidata.ucar.edu", "", "ftp", "proxy.cls.fr", "/pub/README", "c:/tempVFS/README");
-            } catch (MotuException e) {
-                // TODO Auto-generated catch block
+                Organizer.removeVFSSystemManager();
+            } catch (MotuExceptionBase e) {
+                System.out.print("Exception in ");
+                System.out.println(name);
+                System.out.println(e.notifyException());
                 e.printStackTrace();
             }
 
@@ -230,7 +243,10 @@ public class TestFtp {
         //gsiftp://gridftp.bigred.iu.teragrid.org:2811/
         //gsiftp://155.69.144.160:8080/home/shahand/globus-4.1.2.1/var/DWSSDF/repository/org_globus_examples_services_core_first.0.gar
         //gsiftp://dcgftp.usatlas.bnl.gov/pnfs/usatlas.bnl.gov/arelvalid/loadtest/data1188508850256
-        //gsiftp://dcgftp.usatlas.bnl.gov:2811/pnfs/usatlas.bnl.gov/data/prod/pandadev/ 
+        //gsiftp://dcgftp.usatlas.bnl.gov:2811/pnfs/usatlas.bnl.gov/data/prod/pandadev/
+        
+
+        testVFSThread();
     }
 
     public static void testFtp() {
