@@ -100,6 +100,13 @@
 	extractionFilePatterns=".*\.nc$|.*\\.zip$|.*\.tar$|.*\.gz$"
 	extractionFileCacheSize="1024" runGCInterval="10">
 
+	<!--=====================   CATSAT FTP ===================-->
+	<configService defaultLanguage="UK" description="Ftp Catsat"
+		group="CatsatFTP" httpBaseRef="http://www.cls.fr"
+		name="atoll:service:ftp-catsat:ftp" veloTemplatePrefix="generic">
+		<catalog name="catalogCatsatFTP.xml" type="FTP"
+			urlSite="sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll/atoll-distrib/HOA_Catsat/Interface_ATOLL" />
+	</configService>
 
 	<!--===========================================-->
 	<!--                     Test Jason 2 ATP TDS        		-->

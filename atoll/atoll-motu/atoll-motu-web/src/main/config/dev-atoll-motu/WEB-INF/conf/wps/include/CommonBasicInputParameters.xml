@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+		<LiteralInput minOccurs="0">
+			<Identifier>service</Identifier>
+			<Title>Name a the Motu service</Title>
+			<Abstract>This parameter specifies the name of the Motu service as described in the Motu configuration</Abstract>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+		</LiteralInput>
+		<LiteralInput minOccurs="0">
+			<Identifier>product</Identifier>
+			<Title>The product identifier (name)</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+		</LiteralInput>
+		<LiteralInput minOccurs="0">
+			<Identifier>url</Identifier>
+			<Title>Url of the product data</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+		</LiteralInput>

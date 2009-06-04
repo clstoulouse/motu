@@ -175,6 +175,16 @@
 				<remote.password></remote.password>
 			</properties>
 		</profile>
+		<profile>
+			<id>atoll-dev</id>
+			<properties>
+				<config.dir>dev-atoll-motu</config.dir>
+				<tomcat.url>http://atoll-dev.cls.fr:30080</tomcat.url>
+				<remote.username>admin</remote.username>
+				<remote.password></remote.password>
+			</properties>
+		</profile>
+		
 	</profiles>
 
 </project>

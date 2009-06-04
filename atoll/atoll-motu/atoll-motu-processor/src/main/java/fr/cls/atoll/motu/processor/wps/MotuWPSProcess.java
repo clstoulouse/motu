@@ -36,7 +36,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.16 $ - $Date: 2009-06-03 11:44:23 $
+ * @version $Revision: 1.17 $ - $Date: 2009-06-04 15:44:36 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
@@ -744,12 +744,28 @@ public abstract class MotuWPSProcess implements Processlet {
      * @throws MotuException the motu exception
      */
     public static long getComplexInputValueAsLongFromBinaryStream(ComplexInput complexInput) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getComplexInputValueAsLongFromBinaryStream(ComplexInput) - entering");
+        }
+
         String value = MotuWPSProcess.getComplexInputValueFromBinaryStream(complexInput);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getComplexInputValueAsLongFromBinaryStream(ComplexInput) - String value=" + value);
+            LOG.debug("getComplexInputValueAsLongFromBinaryStream(ComplexInput) - String value=" + System.getProperty("java.io.tmpdir"));
+        }
+
         if (value == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getComplexInputValueAsLongFromBinaryStream(ComplexInput) - exiting");
+            }
             return Long.MAX_VALUE;
         }
 
-        return Long.parseLong(value);
+        long returnlong = Long.parseLong(value);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getComplexInputValueAsLongFromBinaryStream(ComplexInput) - exiting");
+        }
+        return returnlong;
     }
 
     /**
