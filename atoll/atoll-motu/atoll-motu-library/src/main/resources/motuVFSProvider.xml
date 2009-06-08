@@ -9,6 +9,10 @@
     <provider class-name="org.apache.commons.vfs.provider.local.DefaultLocalFileProvider">
         <scheme name="local"/>
     </provider>
+    
+    <provider class-name="org.apache.commons.vfs.provider.local.DefaultLocalFileProvider">
+        <scheme name="file"/>
+    </provider>
 
     <provider class-name="org.apache.commons.vfs.provider.ftp.FtpFileProvider">
         <scheme name="ftp"/>

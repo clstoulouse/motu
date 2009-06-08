@@ -21,7 +21,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-05-20 15:15:05 $
+ * @version $Revision: 1.3 $ - $Date: 2009-06-08 14:44:01 $
  */
 public class ExtractionParameters implements Cloneable {
 
@@ -441,7 +441,8 @@ public class ExtractionParameters implements Cloneable {
 
         URI uri = null;
         try {
-            uri = new URI(locationData);
+            //uri = new URI(locationData);
+            uri = Organizer.newURI(locationData);
         } catch (URISyntaxException e) {
             throw new MotuException(String.format("ERROR: location data '%s' has not a valid syntax", locationData), e);
         }

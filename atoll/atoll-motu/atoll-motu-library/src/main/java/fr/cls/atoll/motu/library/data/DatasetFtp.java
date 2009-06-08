@@ -33,7 +33,7 @@ import fr.cls.commons.util.DatePeriod;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-06-03 07:01:52 $
+ * @version $Revision: 1.5 $ - $Date: 2009-06-08 14:44:01 $
  */
 public class DatasetFtp extends DatasetBase {
 
@@ -137,7 +137,6 @@ public class DatasetFtp extends DatasetBase {
 
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(Product.getExtractionPath());
-        stringBuffer.append("/");
         stringBuffer.append(Organizer.getUniqueFileName(DatasetFtp.DOWNLOAD_TEMPDIR_PREFIX, null));
 
         String tempDownloadDir = stringBuffer.toString();
@@ -167,7 +166,7 @@ public class DatasetFtp extends DatasetBase {
 
         Zip.zip(product.getExtractLocationDataTemp(), localFiles, false);
 
-        VFSManager.deleteDirectory(tempDownloadDir);
+        Organizer.deleteDirectory(tempDownloadDir);
 
         product.moveTempExtractFileToFinalExtractFile();
 
@@ -302,7 +301,7 @@ public class DatasetFtp extends DatasetBase {
     }
     
     /**
-     * Gets the amount data size in megabytes
+     * Gets the amount data size in megabytes.
      * 
      * @param dataFiles the data files
      * 

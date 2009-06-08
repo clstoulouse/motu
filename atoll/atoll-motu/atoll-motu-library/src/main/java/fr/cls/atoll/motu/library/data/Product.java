@@ -50,7 +50,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
  * This class represents a product.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-06-03 14:46:05 $
+ * @version $Revision: 1.6 $ - $Date: 2009-06-08 14:44:01 $
  */
 public class Product {
 
@@ -1943,7 +1943,7 @@ public class Product {
         stringBuffer.append(dir);
 
         if (!(dir.endsWith("/") || dir.endsWith("\\"))) {
-            stringBuffer.append(System.getProperty("file.separator"));
+            stringBuffer.append("/");
         }
         return stringBuffer.toString();
     }

@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -27,6 +29,8 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.Selectors;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -92,7 +96,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.18 $ - $Date: 2009-06-03 14:46:05 $
+ * @version $Revision: 1.19 $ - $Date: 2009-06-08 14:44:01 $
  */
 public class Organizer {
 
@@ -268,7 +272,7 @@ public class Organizer {
             VFSManager vfsManager = new VFSManager();
             return vfsManager;
         }
-        
+
     };
 
     /**
@@ -285,17 +289,18 @@ public class Organizer {
         }
         return vfsManager;
     }
-    
+
     /**
      * Removes the vfs system manager.
-     * @throws MotuException 
+     * 
+     * @throws MotuException
      * 
      */
     public static synchronized final void removeVFSSystemManager() throws MotuException {
         Organizer.closeVFSSystemManager();
         VFS_MANAGER.remove();
     }
-    
+
     /**
      * Close vfs system manager.
      * 
@@ -1049,6 +1054,106 @@ public class Organizer {
         return Organizer.getUriAsInputStream(Organizer.getMotuConfigXmlName());
     }
 
+    
+    /**
+     * New uri.
+     * 
+     * @param uri the uri
+     * 
+     * @return the uRI
+     * @throws URISyntaxException 
+     */
+    public static URI newURI(String uri) throws URISyntaxException {
+        return new URI(uri.replace("\\", "/"));
+
+    }
+    /**
+     * Resolve file.
+     * 
+     * @param uri the uri
+     * 
+     * @return the file object
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static FileObject resolveFile(String uri) throws MotuException {
+        return Organizer.getVFSSystemManager().resolveFile(uri);
+    }
+
+    /**
+     * Copy file.
+     * 
+     * @param from the from
+     * @param to the to
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static void copyFile(String from, String to) throws MotuException {
+        Organizer.getVFSSystemManager().copyFile(from, to);
+    }
+
+    /**
+     * Copy file.
+     * 
+     * @param from the from
+     * @param to the to
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static void copyFile(FileObject from, FileObject to) throws MotuException {
+        Organizer.getVFSSystemManager().copyFile(from, to);
+    }
+    
+    /**
+     * Delete a file.
+     * 
+     * @param file the file to delete.
+     * 
+     * @return true, if successfull.
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static boolean deleteFile(String file) throws MotuException {
+        return Organizer.getVFSSystemManager().delete(file);
+    }
+    /**
+     * Delete a file.
+     * 
+     * @param file the file to delete
+     * 
+     * @return true, if successfull.
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static boolean deleteFile(FileObject file) throws MotuException {
+        return Organizer.getVFSSystemManager().delete(file);
+    }
+    
+    /**
+     * Delete directory all the descendents of this directory.
+     * 
+     * @param path the path to delete.
+     * 
+     * @return true, if successful
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static boolean deleteDirectory(FileObject path) throws MotuException {
+        return Organizer.getVFSSystemManager().deleteDirectory(path);
+    }
+    /**
+     * Delete directory all the descendents of this directory.
+     * 
+     * @param path the path to delete.
+     * 
+     * @return true, if successful
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static boolean deleteDirectory(String path) throws MotuException {
+        return Organizer.getVFSSystemManager().deleteDirectory(path);
+    }
+
     /**
      * Gets the uri as input stream.
      * 
@@ -1064,7 +1169,7 @@ public class Organizer {
 
             in = ConfigLoader.getInstance().getAsStream(uri);
             if (in == null) {
-                FileObject fileObject = Organizer.getVFSSystemManager().resolveFile(uri);
+                FileObject fileObject = Organizer.resolveFile(uri);
                 if (fileObject != null) {
                     // URL url = fileObject.getURL();
                     // URLConnection urlConnection = url.openConnection();
@@ -1430,7 +1535,7 @@ public class Organizer {
         }
         return false;
     }
-    
+
     /**
      * Checks if is null or empty.
      * 
@@ -2817,7 +2922,7 @@ public class Organizer {
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
      */
     public Product getAmountDataSize(String locationData,
-                                     String productId,    
+                                     String productId,
                                      List<String> listVar,
                                      List<String> listTemporalCoverage,
                                      List<String> listLatLonCoverage,
@@ -2837,7 +2942,7 @@ public class Organizer {
             if (!Organizer.isNullOrEmpty(productId)) {
                 product.setProductId(productId);
             }
-            
+
             currentService.computeAmountDataSize(product, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
         } catch (NetCdfAttributeException e) {
             // Do nothing;
@@ -2929,7 +3034,7 @@ public class Organizer {
         if (!Organizer.servicesPersistentContainsKey(serviceName)) {
             loadCatalogInfo(serviceName);
         }
-        
+
         setCurrentService(serviceName);
 
         servicePersistent = Organizer.getServicesPersistent(serviceName);
@@ -3084,7 +3189,8 @@ public class Organizer {
                                      List<String> listLatLonCoverage,
                                      List<String> listDepthCoverage,
                                      Writer out,
-                                     boolean batchQueue, String productId) throws MotuException, MotuMarshallException, MotuInvalidDateException,
+                                     boolean batchQueue,
+                                     String productId) throws MotuException, MotuMarshallException, MotuInvalidDateException,
             MotuInvalidDepthException, MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuInvalidDateRangeException,
             MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
             NetCdfVariableException, MotuNoVarException, NetCdfVariableNotFoundException {
@@ -4061,6 +4167,14 @@ public class Organizer {
     }
 
     /**
+     * Gets the path separator.
+     * 
+     * @return the path separator
+     */
+    public static String getFileSeparator() {
+        return System.getProperty("file.separator");
+    }
+    /**
      * fill in the services' list.
      * 
      * @throws MotuException the motu exception
@@ -4294,7 +4408,7 @@ public class Organizer {
      * @return a unique NetCdf file name based on system time.
      * 
      */
-    public static String getUniqueFileName(String prefix, String suffix)  {
+    public static String getUniqueFileName(String prefix, String suffix) {
         // Gets a temporary fle name for the file to create.
         StringBuffer stringBuffer = new StringBuffer();
         if (prefix != null) {

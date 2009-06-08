@@ -246,7 +246,22 @@ public class TestFtp {
         //gsiftp://dcgftp.usatlas.bnl.gov:2811/pnfs/usatlas.bnl.gov/data/prod/pandadev/
         
 
-        testVFSThread();
+        //testVFSThread();
+        
+        String fromUri = "http://atoll-dev.cls.fr:30080/motu-extract/atoll-ressource-dataset-datafile-nrt-med-infrared-sst-timestamp_1244456058793.txt";
+        //String toUri = "sftp://t:t@CLS-EARITH.pc.cls.fr/atoll-ressource-dataset-datafile-nrt-med-infrared-sst-timestamp_1244456058793.txt";
+        //String toUri = "file://c:/tempVFS/atoll-ressource-dataset-datafile-nrt-med-infrared-sst-timestamp_1244456058793.txt";
+        String toUri = "c:/tempVFS/atoll-ressource-dataset-datafile-nrt-med-infrared-sst-timestamp_1244456058793.txt";
+        //testPush(fromUri, toUri);
+        
+        URI uriTest = null;
+        try {
+            uriTest = Organizer.newURI("http:/\\atoll-dev.cls.fr:30080/motu-extract/atoll-ressource-dataset-datafile-nrt-med-infrared-sst-timestamp_1244456058793.txt");
+        } catch (URISyntaxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println(uriTest.toString());
     }
 
     public static void testFtp() {
@@ -446,5 +461,15 @@ public class TestFtp {
             //fsManager.freeUnusedResources();
         }
 
+    }
+    
+    public  static void testPush(String fromUri, String toUri) {
+        
+        try {
+            Organizer.copyFile(fromUri, toUri);
+        } catch (MotuException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }

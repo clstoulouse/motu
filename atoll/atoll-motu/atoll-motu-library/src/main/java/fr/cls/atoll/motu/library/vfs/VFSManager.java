@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.CacheStrategy;
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSelector;
 import org.apache.commons.vfs.FileSystemConfigBuilder;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemOptions;
@@ -35,12 +36,15 @@ import fr.cls.commons.util.io.ConfigLoader;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-06-04 07:33:09 $
+ * @version $Revision: 1.6 $ - $Date: 2009-06-08 14:44:01 $
  */
 public class VFSManager {
 
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(VFSManager.class);
+    
+    /** The Constant DEFAULT_SCHEME. */
+    public static final String DEFAULT_SCHEME = "local";
 
     /**
      * Instantiates a new vFS manager.
@@ -186,7 +190,12 @@ public class VFSManager {
 
         FileSystemConfigBuilder fscb;
         try {
-            fscb = standardFileSystemManager.getFileSystemConfigBuilder(scheme);
+            try {
+                fscb = standardFileSystemManager.getFileSystemConfigBuilder(scheme);
+            } catch (FileSystemException e) {
+                fscb = standardFileSystemManager.getFileSystemConfigBuilder(VFSManager.DEFAULT_SCHEME);
+            }
+            
             if (fscb instanceof FtpFileSystemConfigBuilder) {
                 FtpFileSystemConfigBuilder ftpFscb = (FtpFileSystemConfigBuilder) fscb;
                 // ftpFscb.setUserDirIsRoot(opts, true);
@@ -268,7 +277,8 @@ public class VFSManager {
         }
 
         try {
-            URI uriObject = new URI(uri);
+            //URI uriObject = new URI(uri);
+            URI uriObject = Organizer.newURI(uri);
 
             setSchemeOpts(uriObject.getScheme());
 
@@ -292,7 +302,6 @@ public class VFSManager {
      * @param fileSrc the file src
      * @param fileDest the file dest
      * 
-     * @throws MotuException the motu exception
      * @throws MotuExceptionBase the motu exception base
      */
     public void copyFileToLocalFile(String user, String pwd, String scheme, String host, String fileSrc, String fileDest) throws MotuExceptionBase {
@@ -400,14 +409,54 @@ public class VFSManager {
     }
 
     /**
-     * Delete directory.
+     * Delete a file.
      * 
-     * @param path the path
+     * @param file the file to delete
      * 
      * @return true, if successful
+     * @throws MotuException 
      */
-    public static boolean deleteDirectory(String path) {
-        return deleteDirectory(new File(path));
+    public boolean delete(String file) throws MotuException {
+        FileObject fileToDelete = resolveFile(file);
+        return delete(fileToDelete);
+    }
+    
+//    public static boolean deleteDirectory(String path) {
+//        return VFSManager.deleteDirectory(new File(path));
+//        
+//    }
+
+    /**
+ * Delete directory.
+ * 
+ * @param path the path
+ * 
+ * @return true, if successful
+     * @throws MotuException 
+ */
+public boolean deleteDirectory(String path) throws MotuException {
+    
+    StringBuffer stringBuffer = new StringBuffer();
+    stringBuffer.append(path);
+    
+    if (!(path.endsWith("/") || path.endsWith("\\"))) {
+        stringBuffer.append("/");
+    }
+        FileObject pathToDelete = resolveFile(stringBuffer.toString());
+        return deleteDirectory(pathToDelete);
+        
+    }
+    
+    /**
+     * Delete directory ând all descendents of the file.
+     * 
+     * @param file the file
+     * 
+     * @return true, if successful
+     * @throws MotuException 
+     */
+    public boolean deleteDirectory(FileObject file) throws MotuException {
+        return delete(file, Selectors.SELECT_ALL);
     }
 
     /**
@@ -429,5 +478,82 @@ public class VFSManager {
             }
         }
         return (path.delete());
+    }
+    
+    /**
+     * Delete the file repsented by the file parameter.
+     * 
+     * @param file the file
+     * 
+     * @return true, if successful
+     * @throws MotuException 
+     */
+    public boolean delete(FileObject file) throws MotuException {
+        
+        boolean deleted = false;
+        try {
+            if (file.exists()) {
+                deleted = file.delete();
+            }
+        } catch (FileSystemException e) {
+            //throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
+            throw new MotuException(String.format("Unable to delete '%s'", file.getName().toString()), e);
+        }
+        return deleted;
+    }
+    
+    /**
+     * Delete all descendents of this file that match a selector.
+     * 
+     * @param file the file
+     * @param selector the selector
+     * 
+     * @return true, if successful
+     * @throws MotuException 
+     */
+    public boolean delete(FileObject file, FileSelector selector) throws MotuException {
+        
+        int deleted = 0;
+        try {
+            if (file.exists()) {
+                deleted = file.delete(selector);
+            }
+        } catch (FileSystemException e) {
+            //throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
+            throw new MotuException(String.format("Unable to delete '%s'", file.getName().toString()), e);
+        }
+        return (deleted > 0);
+    }
+    
+     
+    /**
+     * Copy file.
+     * 
+     * @param from the from
+     * @param to the to
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void copyFile(String from, String to) throws MotuException {
+        FileObject src = resolveFile(from);
+        FileObject dest = resolveFile(to);
+        copyFile(src, dest);
+    }
+    
+    /**
+     * Copy file.
+     * 
+     * @param from the from
+     * @param to the to
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void copyFile(FileObject from, FileObject to) throws MotuException {
+        try {
+            to.copyFrom(from, Selectors.SELECT_ALL);
+        } catch (Exception e) {
+            //throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
+            throw new MotuException(String.format("Unable to copy file '%s' to '%s'", from.getName().toString(), from.getName().toString()), e);
+        }
     }
 }
