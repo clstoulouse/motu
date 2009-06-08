@@ -178,7 +178,7 @@
 		<profile>
 			<id>atoll-dev</id>
 			<properties>
-				<config.dir>dev-atoll-motu</config.dir>
+				<config.dir>atoll-dev</config.dir>
 				<tomcat.url>http://atoll-dev.cls.fr:30080</tomcat.url>
 				<remote.username>admin</remote.username>
 				<remote.password></remote.password>

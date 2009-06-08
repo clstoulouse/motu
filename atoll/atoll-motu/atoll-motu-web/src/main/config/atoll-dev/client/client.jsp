@@ -1,5 +1,5 @@
 <%-- $HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/apps/services-template/trunk/web/client/client.jsp $ --%>
-<%-- $Id: client.jsp,v 1.1 2009-06-04 15:44:48 dearith Exp $ --%>
+<%-- $Id: client.jsp,v 1.1 2009-06-08 10:29:36 dearith Exp $ --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="org.deegree.commons.version.*"%>
 <%@ page import="java.io.File"%>
