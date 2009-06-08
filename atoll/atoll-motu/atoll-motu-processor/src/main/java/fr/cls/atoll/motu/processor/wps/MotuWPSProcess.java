@@ -36,7 +36,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.17 $ - $Date: 2009-06-04 15:44:36 $
+ * @version $Revision: 1.18 $ - $Date: 2009-06-08 10:04:49 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
@@ -819,7 +819,7 @@ public abstract class MotuWPSProcess implements Processlet {
         }
 
         try {
-            dataFormat = Organizer.Format.valueOf(dataFormatParam.getValue());
+            dataFormat = Organizer.Format.valueOf(dataFormatParam.getValue().toUpperCase());
         } catch (Exception e) {
             setReturnCode(motuWPSProcessData.getProcessletOutputs(), e, false);
         }
