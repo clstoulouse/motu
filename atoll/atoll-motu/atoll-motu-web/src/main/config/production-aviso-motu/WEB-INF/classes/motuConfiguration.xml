@@ -108,7 +108,7 @@
 	cleanRequestInterval="60"
 	runCleanInterval="1"
 	extractionFilePatterns=".*\.nc$|.*\\.zip$|.*\.tar$|.*\.gz$"
-	extractionFileCacheSize="10240"	
+	extractionFileCacheSize="20480"	
 	runGCInterval="10">
 	
 	<!--===========================================-->
