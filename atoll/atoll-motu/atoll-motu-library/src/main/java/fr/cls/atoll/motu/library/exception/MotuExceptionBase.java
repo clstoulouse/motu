@@ -10,8 +10,8 @@ import org.apache.log4j.Logger;
 /**
  * Base exception class of Motu.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-06-10 14:16:47 $
  * 
  */
 public class MotuExceptionBase extends Exception {
@@ -65,13 +65,31 @@ public class MotuExceptionBase extends Exception {
     public String notifyException() {
         String msg;
 
-        if (this.getCause() != null) {
-            msg = String.format("%s\nNative Exception Type: %s\nNative Exception Message: %s\n", this.getMessage(), getCause().getClass(), getCause()
-                    .getMessage());
-        } else {
+        if (this.getCause() == null) {
             msg = this.getMessage();
+            return msg;
         }
-        return msg;
+
+        Throwable thisCause = this;
+        Throwable nativeCause = this.getCause();
+        StringBuffer stringBuffer = new StringBuffer();
+
+        msg = String.format("%s\n", this.getMessage());
+        stringBuffer.append(msg);
+
+        while (nativeCause != null) {
+            if (nativeCause == thisCause) {
+                break;
+            }
+            msg = String.format("Native Exception Type: %s\nNative Exception Message: %s\n", nativeCause.getClass(), nativeCause.getMessage());
+
+            stringBuffer.append(msg);
+
+            thisCause = nativeCause;
+            nativeCause = nativeCause.getCause();
+        }
+
+        return stringBuffer.toString();
     }
 }
 // CSON: MultipleStringLiterals

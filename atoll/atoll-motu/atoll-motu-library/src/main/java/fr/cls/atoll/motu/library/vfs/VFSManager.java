@@ -36,7 +36,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.7 $ - $Date: 2009-06-10 06:39:18 $
+ * @version $Revision: 1.8 $ - $Date: 2009-06-10 14:16:47 $
  */
 public class VFSManager {
 
@@ -632,9 +632,8 @@ public boolean deleteDirectory(String path) throws MotuException {
      */
     public void copyFile(FileObject from, FileObject to) throws MotuException {
         try {
-            if ((to.exists())&& (to.getType() == FileType.FOLDER))
-            {
-                throw new MotuException(String.format("File copy from '%s' to '%s' is rejected: the destination already exists and is a folder. You were about to loose all the content of '%s' ", from.getName().toString(), to.getName().toString(), to.getName().toString()));
+            if ((to.exists())&& (to.getType() == FileType.FOLDER)) {
+                throw new MotuException(String.format("File copy from '%s' to '%s' is rejected: the destination already exists and is a folder. You were about to loose all of the content of '%s' ", from.getName().toString(), to.getName().toString(), to.getName().toString()));
             }
             to.copyFrom(from, Selectors.SELECT_ALL);
         } catch (MotuException e) {

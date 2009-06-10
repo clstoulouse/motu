@@ -283,22 +283,45 @@ public class TestFtp {
         // String toUri =
         // "c:\\tempVFS\\atoll-ressource-dataset-datafile-nrt-med-infrared-sst-timestamp_1244456058793.txt";
         String toUri = "sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll/atoll-distrib/HOA_Catsat/Interface_ATOLL/test.txt";
-        testPush(fromUri, toUri);
+        toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/test.txt";
+        //testPush(fromUri, toUri);
 
         String userFrom = "";
         String pwdFrom = "";
         String userTo = "aviso";
         String pwdTo = "aviso;00";
 
-        toUri = "ftp://ftp.cls.fr/data/ftp/depot/oceano/AVISO/test.txt";
+        //toUri = "ftp://ftp.cls.fr/data/ftp/depot/oceano/AVISO/test.txt";
+        toUri = "ftp://ftp.cls.fr/depot/oceano/AVISO/test.txt";
+        //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
 
         userTo = "anonymous";
         pwdTo = "dearith@cls.fr";
-        // testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
+        toUri = "ftp://ftpsedr.cls.fr/pub/oceano/pistach/test.txt";               
+        //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
 
-        toUri = "ftp://ftp.cls.fr/data/ftp/depot/oceano/AVISO/test.txt";
-        // testPush(fromUri, toUri);
+        userTo = "anonymous";
+        pwdTo = "dearith@cls.fr";
+        //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
+        
+        userTo = "anonymous";
+        pwdTo = "dearith@cls.fr";
+        toUri = "ftp://CLS-EARITH.pc.cls.fr/test.txt";
+        //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
+        
+        userTo = "t";
+        pwdTo = "t";
+        //toUri = "ftp://CLS-EARITH.pc.cls.fr/test.txt";
+        toUri = "ftp://CLS-EARITH.pc.cls.fr/MonDossier/test.txt";
+        //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
 
+        fromUri = "sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll/atoll-distrib/HOA_Catsat/Interface_ATOLL/test.txt";
+        //toUri = "http://atoll-dev.cls.fr:30080/motu-extract/test.txt";
+        //toUri = "http://atoll-dev.cls.fr:30080/motu-extract/test.txt";
+        toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.txt";
+        testPush(fromUri, toUri);
+
+        
         // URI uriTest = null;
         // try {
         // uriTest =
@@ -535,6 +558,11 @@ public class TestFtp {
         } catch (MotuException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            System.out.println(e.notifyException());
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 }
