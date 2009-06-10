@@ -96,7 +96,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.19 $ - $Date: 2009-06-08 14:44:01 $
+ * @version $Revision: 1.20 $ - $Date: 2009-06-10 06:39:18 $
  */
 public class Organizer {
 
@@ -1090,6 +1090,23 @@ public class Organizer {
      */
     public static void copyFile(String from, String to) throws MotuException {
         Organizer.getVFSSystemManager().copyFile(from, to);
+    }
+    
+    /**
+     * Copy file.
+     * 
+     * @param from the from
+     * @param to the to
+     * @param userFrom the user from
+     * @param pwdFrom the pwd from
+     * @param userTo the user to
+     * @param pwdTo the pwd to
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static void copyFile(String from, String to, String userFrom, String pwdFrom, String userTo, String pwdTo) throws MotuException {
+        Organizer.getVFSSystemManager().copyFile(from, to, userFrom, pwdFrom, userTo, pwdTo);
+        
     }
 
     /**

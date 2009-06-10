@@ -13,10 +13,10 @@ import org.apache.commons.vfs.FileSelector;
 import org.apache.commons.vfs.FileSystemConfigBuilder;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemOptions;
+import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.Selectors;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.auth.StaticUserAuthenticator;
-import org.apache.commons.vfs.cache.SoftRefFilesCache;
 import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
 import org.apache.commons.vfs.impl.StandardFileSystemManager;
 import org.apache.commons.vfs.provider.ftp.FtpFileSystemConfigBuilder;
@@ -36,7 +36,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.6 $ - $Date: 2009-06-08 14:44:01 $
+ * @version $Revision: 1.7 $ - $Date: 2009-06-10 06:39:18 $
  */
 public class VFSManager {
 
@@ -125,7 +125,7 @@ public class VFSManager {
         try {
             standardFileSystemManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderConfig()));
             standardFileSystemManager.setCacheStrategy(CacheStrategy.ON_CALL);
-            standardFileSystemManager.setFilesCache(new SoftRefFilesCache());
+            //standardFileSystemManager.setFilesCache(new SoftRefFilesCache());
             // standardFileSystemManager.addProvider("moi", new DefaultLocalFileProvider());
             standardFileSystemManager.init();
             open = true;
@@ -198,7 +198,7 @@ public class VFSManager {
             
             if (fscb instanceof FtpFileSystemConfigBuilder) {
                 FtpFileSystemConfigBuilder ftpFscb = (FtpFileSystemConfigBuilder) fscb;
-                // ftpFscb.setUserDirIsRoot(opts, true);
+                //ftpFscb.setUserDirIsRoot(opts, true);
 
             }
 
@@ -287,6 +287,35 @@ public class VFSManager {
             throw new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
         } catch (URISyntaxException e) {
             throw new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
+        }
+        return fileObject;
+
+    }
+    
+    /**
+     * Resolve file.
+     * 
+     * @param baseFile the base file
+     * @param file the file
+     * 
+     * @return the file object
+     * 
+     * @throws MotuException the motu exception
+     */
+    public FileObject resolveFile(FileObject baseFile, final String file) throws MotuException {
+        FileObject fileObject = null;
+        open();
+        if (opts == null) {
+            opts = new FileSystemOptions();
+        }
+
+        try {
+            
+            setSchemeOpts(baseFile.getName().getScheme());
+
+            fileObject = standardFileSystemManager.resolveFile(baseFile, file, opts);
+        } catch (FileSystemException e) {
+            throw new MotuException(String.format("Unable to resolve uri '%s/%s' ", baseFile.getName().toString(), file), e);
         }
         return fileObject;
 
@@ -535,6 +564,10 @@ public boolean deleteDirectory(String path) throws MotuException {
      * @throws MotuException the motu exception
      */
     public void copyFile(String from, String to) throws MotuException {
+        
+        //FileObject originBase = fsManager.resolveFile(uri, opts);
+        //fsManager.setBaseFile(originBase);
+
         FileObject src = resolveFile(from);
         FileObject dest = resolveFile(to);
         copyFile(src, dest);
@@ -545,12 +578,67 @@ public boolean deleteDirectory(String path) throws MotuException {
      * 
      * @param from the from
      * @param to the to
+     * @param optsFrom the opts from
+     * @param optsTo the opts to
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void copyFile(String from, String to, FileSystemOptions optsFrom, FileSystemOptions optsTo) throws MotuException {
+        opts = optsFrom;
+        FileObject src = resolveFile(from);
+        opts = optsTo;
+        FileObject dest = resolveFile(to);
+        copyFile(src, dest);
+    }
+    
+    /**
+     * Copy file.
+     * 
+     * @param from the from
+     * @param to the to
+     * @param userFrom the user from
+     * @param pwdFrom the pwd from
+     * @param userTo the user to
+     * @param pwdTo the pwd to
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void copyFile(String from, String to, String userFrom, String pwdFrom, String userTo, String pwdTo) throws MotuException {
+
+        opts = null;
+        if (!Organizer.isNullOrEmpty(userFrom)) {
+            setUserInfo(userFrom, pwdFrom);            
+        }
+        FileObject src = resolveFile(from);
+
+        opts = null;
+        if (!Organizer.isNullOrEmpty(userTo)) {
+            setUserInfo(userTo, pwdTo);            
+        }
+
+
+        FileObject dest = resolveFile(to);
+        
+        copyFile(src, dest);
+    }
+
+    /**
+     * Copy file.
+     * 
+     * @param from the from
+     * @param to the to
      * 
      * @throws MotuException the motu exception
      */
     public void copyFile(FileObject from, FileObject to) throws MotuException {
         try {
+            if ((to.exists())&& (to.getType() == FileType.FOLDER))
+            {
+                throw new MotuException(String.format("File copy from '%s' to '%s' is rejected: the destination already exists and is a folder. You were about to loose all the content of '%s' ", from.getName().toString(), to.getName().toString(), to.getName().toString()));
+            }
             to.copyFrom(from, Selectors.SELECT_ALL);
+        } catch (MotuException e) {
+            throw e;
         } catch (Exception e) {
             //throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
             throw new MotuException(String.format("Unable to copy file '%s' to '%s'", from.getName().toString(), from.getName().toString()), e);
