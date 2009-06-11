@@ -96,7 +96,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.20 $ - $Date: 2009-06-10 06:39:18 $
+ * @version $Revision: 1.21 $ - $Date: 2009-06-11 14:45:05 $
  */
 public class Organizer {
 
@@ -1131,7 +1131,7 @@ public class Organizer {
      * @throws MotuException the motu exception
      */
     public static boolean deleteFile(String file) throws MotuException {
-        return Organizer.getVFSSystemManager().delete(file);
+        return Organizer.getVFSSystemManager().deleteFile(file);
     }
     /**
      * Delete a file.
@@ -1143,7 +1143,7 @@ public class Organizer {
      * @throws MotuException the motu exception
      */
     public static boolean deleteFile(FileObject file) throws MotuException {
-        return Organizer.getVFSSystemManager().delete(file);
+        return Organizer.getVFSSystemManager().deleteFile(file);
     }
     
     /**
@@ -1926,6 +1926,8 @@ public class Organizer {
         statusModeResponse.setSize(size.doubleValue());
         statusModeResponse.setDateProc(Organizer.dateToXMLGregorianCalendar(lastModified));
         statusModeResponse.setCode(ErrorType.OK);
+        statusModeResponse.setRemoteUri(downloadUrlPath);
+        statusModeResponse.setLocalUri(locationData);
 
     }
 
@@ -4439,6 +4441,38 @@ public class Organizer {
         String temp = Zip.unAccent(stringBuffer.toString());
         // replace all non-words character except '.' by "-"
         return temp.replaceAll("[\\W&&[^\\.]]", "-");
+    }
+    
+    /**
+     * Error typefrom value.
+     * 
+     * @param v the v
+     * 
+     * @return the error type
+     */
+    public static ErrorType errorTypefromValue(String v) {
+        for (ErrorType c: ErrorType.values()) {
+            if (c.toString().equalsIgnoreCase(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(String.valueOf(v));
+    }
+
+    /**
+     * Status mode type from value1.
+     * 
+     * @param v the v
+     * 
+     * @return the status mode type
+     */
+    public static StatusModeType statusModeTypeFromValue1(String v) {
+        for (StatusModeType c : StatusModeType.values()) {
+            if (c.toString().equalsIgnoreCase(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(String.valueOf(v));
     }
 
 }

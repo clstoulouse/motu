@@ -256,7 +256,7 @@ public class TestFtp {
 
         // testVFS("anonymous", "dearith@cls.fr", "ftp", "ftp.cls.fr/pub/oceano/AVISO/",
         // "NRT-SLA/maps/rt/j2/h/msla_rt_j2_err_21564.nc.gz");
-        // testVFS("anonymous@ftp.unidata.ucar.edu", "", "ftp", "proxy.cls.fr", "/pub/README");
+        //testVFS("anonymous@ftp.unidata.ucar.edu", "", "ftp", "proxy.cls.fr", "/pub/README");
 
         // testVFS("", "", "http", "catsat-data1.cls.fr:43080", "/thredds/catalog.xml");
 
@@ -319,9 +319,15 @@ public class TestFtp {
         //toUri = "http://atoll-dev.cls.fr:30080/motu-extract/test.txt";
         //toUri = "http://atoll-dev.cls.fr:30080/motu-extract/test.txt";
         toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.txt";
-        testPush(fromUri, toUri);
+        //testPush(fromUri, toUri);
 
-        
+
+        fromUri = "ftp://proxy.cls.fr/pub/README";
+        toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.txt";
+        userFrom = "anonymous@ftp.unidata.ucar.edu";
+        pwdFrom = "dearith@cls.fr";
+        testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
+
         // URI uriTest = null;
         // try {
         // uriTest =

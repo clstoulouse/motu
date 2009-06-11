@@ -36,7 +36,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.8 $ - $Date: 2009-06-10 14:16:47 $
+ * @version $Revision: 1.9 $ - $Date: 2009-06-11 14:45:05 $
  */
 public class VFSManager {
 
@@ -270,10 +270,26 @@ public class VFSManager {
      * @throws MotuException the motu exception
      */
     public FileObject resolveFile(final String uri) throws MotuException {
+        return resolveFile(uri, this.opts);
+    }
+    
+    /**
+     * Resolve file.
+     * 
+     * @param uri the uri
+     * @param fileSystemOptions the file system options
+     * 
+     * @return the file object
+     * 
+     * @throws MotuException the motu exception
+     */
+    public FileObject resolveFile(final String uri, FileSystemOptions fileSystemOptions) throws MotuException {
         FileObject fileObject = null;
+        
         open();
-        if (opts == null) {
-            opts = new FileSystemOptions();
+
+        if (fileSystemOptions == null) {
+            fileSystemOptions = new FileSystemOptions();
         }
 
         try {
@@ -282,7 +298,7 @@ public class VFSManager {
 
             setSchemeOpts(uriObject.getScheme());
 
-            fileObject = standardFileSystemManager.resolveFile(uri, opts);
+            fileObject = standardFileSystemManager.resolveFile(uri, fileSystemOptions);
         } catch (FileSystemException e) {
             throw new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
         } catch (URISyntaxException e) {
@@ -445,9 +461,9 @@ public class VFSManager {
      * @return true, if successful
      * @throws MotuException 
      */
-    public boolean delete(String file) throws MotuException {
+    public boolean deleteFile(String file) throws MotuException {
         FileObject fileToDelete = resolveFile(file);
-        return delete(fileToDelete);
+        return deleteFile(fileToDelete);
     }
     
 //    public static boolean deleteDirectory(String path) {
@@ -517,11 +533,16 @@ public boolean deleteDirectory(String path) throws MotuException {
      * @return true, if successful
      * @throws MotuException 
      */
-    public boolean delete(FileObject file) throws MotuException {
+    public boolean deleteFile(FileObject file) throws MotuException {
         
         boolean deleted = false;
         try {
+
             if (file.exists()) {
+                if (file.getType() != FileType.FILE) {
+                    throw new MotuException(String.format("Delete file '%s' is rejected: it is a folder. ", file.getName().toString()));
+                }
+                
                 deleted = file.delete();
             }
         } catch (FileSystemException e) {
@@ -584,10 +605,8 @@ public boolean deleteDirectory(String path) throws MotuException {
      * @throws MotuException the motu exception
      */
     public void copyFile(String from, String to, FileSystemOptions optsFrom, FileSystemOptions optsTo) throws MotuException {
-        opts = optsFrom;
-        FileObject src = resolveFile(from);
-        opts = optsTo;
-        FileObject dest = resolveFile(to);
+        FileObject src = resolveFile(from, optsFrom);
+        FileObject dest = resolveFile(to, optsTo);
         copyFile(src, dest);
     }
     
@@ -607,17 +626,16 @@ public boolean deleteDirectory(String path) throws MotuException {
 
         opts = null;
         if (!Organizer.isNullOrEmpty(userFrom)) {
-            setUserInfo(userFrom, pwdFrom);            
+            opts = setUserInfo(userFrom, pwdFrom);            
         }
-        FileObject src = resolveFile(from);
+        FileObject src = resolveFile(from, opts);
 
         opts = null;
         if (!Organizer.isNullOrEmpty(userTo)) {
-            setUserInfo(userTo, pwdTo);            
+            opts = setUserInfo(userTo, pwdTo);            
         }
 
-
-        FileObject dest = resolveFile(to);
+        FileObject dest = resolveFile(to, opts);
         
         copyFile(src, dest);
     }
@@ -640,7 +658,7 @@ public boolean deleteDirectory(String path) throws MotuException {
             throw e;
         } catch (Exception e) {
             //throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
-            throw new MotuException(String.format("Unable to copy file '%s' to '%s'", from.getName().toString(), from.getName().toString()), e);
+            throw new MotuException(String.format("Unable to copy file '%s' to '%s'", from.getName().toString(), to.getName().toString()), e);
         }
     }
 }
