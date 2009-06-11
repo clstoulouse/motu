@@ -36,7 +36,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.18 $ - $Date: 2009-06-08 10:04:49 $
+ * @version $Revision: 1.19 $ - $Date: 2009-06-11 14:46:23 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
@@ -54,12 +54,18 @@ public abstract class MotuWPSProcess implements Processlet {
 
     /** Process output return code parameter name. */
     public static final String PARAM_CODE = "code";
+    
+    /** Mode Status parameter value. */
+    public static final String PARAM_MODE_CONSOLE = "console";
 
     /** The Constant PARAM_DATAFORMAT. */
     public static final String PARAM_DATAFORMAT = "dataformat";
 
     /** The Constant PARAM_ENDTIME. */
     public static final String PARAM_ENDTIME = "endtime";
+    
+    /** The Constant PARAM_FROM. */
+    public static final String PARAM_FROM = "from";
 
     /** Low latitude servlet paremeter name. */
     public static final String PARAM_GEOBBOX = "geobbox";
@@ -69,6 +75,9 @@ public abstract class MotuWPSProcess implements Processlet {
 
     /** Language servlet paremeter name. */
     public static final String PARAM_LANGUAGE = "lang";
+    
+    /** The Constant PARAM_LOCAL_URL. */
+    public static final String PARAM_LOCAL_URL = "localUrl";
 
     /** Login parameter name. */
     public static final String PARAM_LOGIN = "login";
@@ -91,11 +100,12 @@ public abstract class MotuWPSProcess implements Processlet {
     /** Mode parameter name. */
     public static final String PARAM_MODE = "mode";
 
-    /** Mode Status parameter value. */
-    public static final String PARAM_MODE_CONSOLE = "console";
 
     /** Mode Status parameter value. */
     public static final String PARAM_MODE_STATUS = "status";
+
+    /** The Constant PARAM_TO. */
+    public static final String PARAM_TO = "to";
 
     /** Mode Url parameter value. */
     public static final String PARAM_MODE_URL = "url";
@@ -105,10 +115,22 @@ public abstract class MotuWPSProcess implements Processlet {
 
     /** Product servlet parameter name. */
     public static final String PARAM_PRODUCT = "product";
+    
+    /** The Constant PARAM_PWDFROM. */
+    public static final String PARAM_PWDFROM = "pwdFrom";
+    
+    /** The Constant PARAM_PWDTO. */
+    public static final String PARAM_PWDTO = "pwdTo";
 
     /** The Constant PARAM_REQUESTID. */
     public static final String PARAM_REQUESTID = "requestid";
+    
+    /** The Constant PARAM_REMOVE. */
+    public static final String PARAM_REMOVE = "remove";
 
+    /** The Constant PARAM_REMOVE. */
+    public static final String PARAM_RENAME = "rename";
+    
     /** Service servlet parameter name. */
     public static final String PARAM_SERVICE = "service";
 
@@ -124,6 +146,12 @@ public abstract class MotuWPSProcess implements Processlet {
     /** Url parameter name. */
     public static final String PARAM_URL = "url";
 
+    /** The Constant PARAM_USERFROM. */
+    public static final String PARAM_USERFROM = "userFrom";
+
+    /** The Constant PARAM_USERTO. */
+    public static final String PARAM_USERTO = "userTo";
+    
     /** Variable servlet paremeter name. */
     public static final String PARAM_VARIABLE = "variable";
 
@@ -455,7 +483,7 @@ public abstract class MotuWPSProcess implements Processlet {
                 msgParam.setValue(msg);
             }
         }
-        ErrorType errorType = ErrorType.fromValue(code);
+        ErrorType errorType = MotuWPSProcess.errorTypefromValue(code);
         if (throwProcessletException && (errorType != ErrorType.OK)) {
             throw new ProcessletException(String.format("ERROR - Code: %s, Message: %s", code, msg));
         }
@@ -509,10 +537,65 @@ public abstract class MotuWPSProcess implements Processlet {
     public static void setReturnCode(ProcessletOutputs response, ErrorType code, Exception e, boolean throwProcessletException)
             throws ProcessletException {
 
-        setReturnCode(response, code, e.getMessage(), throwProcessletException);
+        if (e instanceof MotuExceptionBase) {
+            setReturnCode(response, code, (MotuExceptionBase)e, throwProcessletException);            
+        } else {
+            setReturnCode(response, code, e.getMessage(), throwProcessletException);
+        }
 
     }
+    
+    /**
+     * Sets the local url.
+     * 
+     * @param response the response
+     * @param statusModeResponse the status mode response
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static void setLocalUrl(ProcessletOutputs response, StatusModeResponse statusModeResponse) throws MotuException {
 
+        if (response == null) {
+            return;
+        }
+        if (statusModeResponse == null) {
+            return;
+        }
+
+        MotuWPSProcess.setLocalUrl(response, statusModeResponse.getLocalUri());
+
+    }
+    
+    /**
+     * Sets the local url.
+     * 
+     * @param response the response
+     * @param url the url
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static void setLocalUrl(ProcessletOutputs response, String url) throws MotuException {
+
+        synchronized (response) {
+
+            if (response == null) {
+                return;
+            }
+            ComplexOutput urlParam = (ComplexOutput) response.getParameter(MotuWPSProcess.PARAM_LOCAL_URL);
+
+            if ((urlParam == null) || (url == null)) {
+                return;
+            }
+
+            try {
+                urlParam.getBinaryOutputStream().write(url.getBytes());
+            } catch (IOException e) {
+                throw new MotuException("ERROR MotuWPSProcess#setLocalUrl", e);
+            }
+        }
+
+    }
+    
     /**
      * Sets the resquest id.
      * 
@@ -530,7 +613,7 @@ public abstract class MotuWPSProcess implements Processlet {
             return;
         }
 
-        MotuWPSProcess.setUrl(response, statusModeResponse.getMsg());
+        MotuWPSProcess.setUrl(response, statusModeResponse.getRemoteUri());
 
     }
 
@@ -733,6 +816,42 @@ public abstract class MotuWPSProcess implements Processlet {
 
         return requestId;
     }
+    
+    /**
+     * Gets the literal input value.
+     * 
+     * @param literalInput the literal input
+     * 
+     * @return the literal input value
+     */
+    public static String getLiteralInputValue(LiteralInput literalInput) {
+        String value = "";
+        
+        if (literalInput != null) {
+            value = literalInput.getValue();
+        }
+        return value;
+
+    }
+    
+    /**
+     * Gets the literal input value as boolean.
+     * 
+     * @param literalInput the literal input
+     * @param defaultValue the default value
+     * 
+     * @return the literal input value as boolean
+     */
+    public static boolean getLiteralInputValueAsBoolean(LiteralInput literalInput, boolean defaultValue) {
+        String value = "";
+        
+        if (literalInput == null) {
+            return defaultValue;
+        }
+        value = literalInput.getValue();
+        return Boolean.parseBoolean(value);
+
+    }
 
     /**
      * Gets the complex input valueas long from binary stream.
@@ -749,12 +868,8 @@ public abstract class MotuWPSProcess implements Processlet {
         }
 
         String value = MotuWPSProcess.getComplexInputValueFromBinaryStream(complexInput);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getComplexInputValueAsLongFromBinaryStream(ComplexInput) - String value=" + value);
-            LOG.debug("getComplexInputValueAsLongFromBinaryStream(ComplexInput) - String value=" + System.getProperty("java.io.tmpdir"));
-        }
 
-        if (value == null) {
+        if (MotuWPSProcess.isNullOrEmpty(value)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getComplexInputValueAsLongFromBinaryStream(ComplexInput) - exiting");
             }
@@ -778,7 +893,12 @@ public abstract class MotuWPSProcess implements Processlet {
      * @throws MotuException the motu exception
      */
     public static String getComplexInputValueFromBinaryStream(ComplexInput complexInput) throws MotuException {
-        String value = null;
+        String value = "";
+        
+        if (complexInput == null) {
+            return value;
+        }
+        
         try {
 
             byte[] buffer = new byte[1024];
@@ -1276,7 +1396,38 @@ public abstract class MotuWPSProcess implements Processlet {
         }
 
     }
-    
+
+    /**
+     * Error typefrom value.
+     * 
+     * @param v the v
+     * 
+     * @return the error type
+     */
+    public static ErrorType errorTypefromValue(String v) {
+        for (ErrorType c: ErrorType.values()) {
+            if (c.toString().equalsIgnoreCase(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(String.valueOf(v));
+    }
+
+    /**
+     * Status mode type from value1.
+     * 
+     * @param v the v
+     * 
+     * @return the status mode type
+     */
+    public static StatusModeType statusModeTypeFromValue1(String v) {
+        for (StatusModeType c : StatusModeType.values()) {
+            if (c.toString().equalsIgnoreCase(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(String.valueOf(v));
+    }
     
 
 }

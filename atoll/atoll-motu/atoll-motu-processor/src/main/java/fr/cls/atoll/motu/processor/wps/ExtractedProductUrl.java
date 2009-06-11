@@ -17,7 +17,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.6 $, $Date: 2009-05-05 10:28:48 $
+ * @version $Revision: 1.7 $, $Date: 2009-06-11 14:46:23 $
  */
 public class ExtractedProductUrl extends MotuWPSProcess {
 
@@ -88,8 +88,10 @@ public class ExtractedProductUrl extends MotuWPSProcess {
 
         if (MotuWPSProcess.isStatusDone(statusModeResponse)) {
             MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), statusModeResponse);
+            MotuWPSProcess.setLocalUrl(motuWPSProcessData.getProcessletOutputs(), statusModeResponse);
         } else {
             MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), "");
+            MotuWPSProcess.setLocalUrl(motuWPSProcessData.getProcessletOutputs(), "");
         }
         
         MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(),

@@ -3,6 +3,7 @@ package fr.cls.atoll.motu.processor.wps;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.deegree.ogcwebservices.wps.describeprocess.ComplexData;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
@@ -20,7 +21,7 @@ import org.deegree.services.wps.output.LiteralOutput;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-05-04 09:58:44 $
+ * @version $Revision: 1.3 $ - $Date: 2009-06-11 14:46:23 $
  */
 public class MotuWPSProcessData {
     /**
@@ -115,6 +116,38 @@ public class MotuWPSProcessData {
 
     public LiteralInput getPriorityParamIn() {
         return (LiteralInput) processletInputs.getParameter(MotuWPSProcess.PARAM_PRIORITY);
+    }
+    
+    public ComplexInput getFromParamIn() {
+        return (ComplexInput) processletInputs.getParameter(MotuWPSProcess.PARAM_FROM);
+    }
+
+    public ComplexInput getToParamIn() {
+        return (ComplexInput) processletInputs.getParameter(MotuWPSProcess.PARAM_TO);
+    }
+
+    public LiteralInput getUserFromParamIn() {
+        return (LiteralInput) processletInputs.getParameter(MotuWPSProcess.PARAM_USERFROM);
+    }
+    
+    public LiteralInput getUserToParamIn() {
+        return (LiteralInput) processletInputs.getParameter(MotuWPSProcess.PARAM_USERTO);
+    }
+    
+    public LiteralInput getPwdFromParamIn() {
+        return (LiteralInput) processletInputs.getParameter(MotuWPSProcess.PARAM_PWDFROM);
+    }
+    
+    public LiteralInput getPwdToParamIn() {
+        return (LiteralInput) processletInputs.getParameter(MotuWPSProcess.PARAM_PWDTO);
+    }
+    
+    public LiteralInput getRemoveParamIn() {
+        return (LiteralInput) processletInputs.getParameter(MotuWPSProcess.PARAM_REMOVE);
+    }
+    
+    public LiteralInput getRenameParamIn() {
+        return (LiteralInput) processletInputs.getParameter(MotuWPSProcess.PARAM_RENAME);
     }
 
     public List<ProcessletInput> getVariablesParamIn() {

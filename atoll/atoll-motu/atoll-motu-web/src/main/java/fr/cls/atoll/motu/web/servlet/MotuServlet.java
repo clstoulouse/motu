@@ -62,8 +62,8 @@ import org.apache.log4j.Logger;
 /**
  * The Class MotuServlet.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-06-11 14:46:35 $
  */
 public class MotuServlet extends HttpServlet implements MotuRequestParametersConstant {
 
@@ -1947,6 +1947,12 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         stringBuffer.append("<th>\n");
         stringBuffer.append("Message");
         stringBuffer.append("</th>\n");
+        stringBuffer.append("<th>\n");
+        stringBuffer.append("Remote data");
+        stringBuffer.append("</th>\n");
+        stringBuffer.append("<th>\n");
+        stringBuffer.append("Local data");
+        stringBuffer.append("</th>\n");
         stringBuffer.append("</tr>\n");
 
         Set<Long> requestIds = requestManagement.requestStatusMapKeySet();
@@ -1987,6 +1993,12 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             } else {
                 stringBuffer.append("null");
             }
+            stringBuffer.append("</td>\n");
+            stringBuffer.append("<td>\n");
+            stringBuffer.append(statusModeResponse.getRemoteUri());
+            stringBuffer.append("</td>\n");
+            stringBuffer.append("<td>\n");
+            stringBuffer.append(statusModeResponse.getLocalUri());
             stringBuffer.append("</td>\n");
             stringBuffer.append("</tr>\n");
             stringBuffer.append("\n");

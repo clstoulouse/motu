@@ -1,7 +1,6 @@
 package fr.cls.atoll.motu.processor.wps;
 
 import java.io.File;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.deegree.services.controller.OGCFrontController;
@@ -10,7 +9,6 @@ import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
-import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.ReferencedComplexInput;
 
 import fr.cls.atoll.motu.library.data.Product;
@@ -24,7 +22,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.3 $, $Date: 2009-05-28 15:02:57 $
+ * @version $Revision: 1.4 $, $Date: 2009-06-11 14:46:23 $
  */
 public class CompressExtraction extends MotuWPSProcess {
 
@@ -97,7 +95,7 @@ public class CompressExtraction extends MotuWPSProcess {
 
         if (MotuWPSProcess.isStatusDone(statusModeResponse)) {
             
-            String fileName = Organizer.extractFileName(statusModeResponse.getMsg());
+            String fileName = Organizer.extractFileName(statusModeResponse.getRemoteUri());
             
             if (fileName.isEmpty()) {
                 MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(),
@@ -119,6 +117,8 @@ public class CompressExtraction extends MotuWPSProcess {
             File fileTemp = new File(zipFileName);
             String httpUrl = Product.getDownloadUrlPath(fileTemp.getName());
             statusModeResponse.setMsg(httpUrl);            
+            statusModeResponse.setRemoteUri(httpUrl);            
+            statusModeResponse.setLocalUri(zipFileName);            
             fileTemp = new File(localFileName);
             try {
                 fileTemp.delete();

@@ -27,7 +27,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.7 $ - $Date: 2009-05-05 14:47:20 $
+ * @version $Revision: 1.8 $ - $Date: 2009-06-11 14:46:23 $
  */
 public class RunnableWPSExtraction extends RunnableExtraction {
     /**
@@ -237,7 +237,11 @@ public class RunnableWPSExtraction extends RunnableExtraction {
     }
     
     protected void setUrl() throws MotuException {
-        MotuWPSProcess.setUrl(response, statusModeResponse.getMsg());
+        MotuWPSProcess.setUrl(response, statusModeResponse.getRemoteUri());
+
+    }
+    protected void setLocalUri() throws MotuException {
+        MotuWPSProcess.setUrl(response, statusModeResponse.getLocalUri());
 
     }
     protected void setStatus() {
