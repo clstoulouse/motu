@@ -2,16 +2,16 @@
 <xsd:schema attributeFormDefault="unqualified"
 	elementFormDefault="qualified"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.0">
+	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
-
+ 
 	<xsd:simpleType name="errorType">
 		<xsd:annotation>
 			<xsd:documentation>
 				Motu error codes enumeration
 			</xsd:documentation>
 			<xsd:appinfo>
-				<jaxb:typesafeEnumClass name="ErrorType" />
+				<jaxb:typesafeEnumClass name="ErrorType" />								
 			</xsd:appinfo>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:unsignedShort">
@@ -19,7 +19,7 @@
 				<xsd:annotation>
 					<xsd:documentation>No error</xsd:documentation>
 					<xsd:appinfo>
-						<jaxb:typesafeEnumMember name="OK" />
+						<jaxb:typesafeEnumMember name="OK" />						
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -302,6 +302,8 @@
 			<xsd:attribute name="code" type="errorType" />
 			<xsd:attribute name="dateProc" type="xsd:dateTime" />
 			<xsd:attribute name="size" type="xsd:double" />
+			<xsd:attribute name="remoteUri" type="xsd:string" />
+			<xsd:attribute name="localUri" type="xsd:string" />
 		</xsd:complexType>
 
 	</xsd:element>
