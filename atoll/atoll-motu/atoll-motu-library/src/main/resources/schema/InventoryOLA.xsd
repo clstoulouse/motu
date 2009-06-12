@@ -30,15 +30,16 @@
 	<xs:element name="file">
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:ID" use="required" />
+            <xs:attribute name="path" type="xs:string" use="optional" />
 			<xs:attribute name="availabilityServiceDate" type="xs:dateTime"
-				use="required" />
+				use="optional" />
 			<xs:attribute name="modelPrediction" type="xs:anyURI"
 				use="required" />
 			<xs:attribute name="availabilitySIDate" type="xs:dateTime"
-				use="required" />
+				use="optional" />
 			<xs:attribute name="creationDate" type="xs:dateTime"
-				use="required" />
-			<xs:attribute name="weight" type="xs:decimal" use="required" />
+				use="optional" />
+			<xs:attribute name="weight" type="xs:decimal" use="optional" />
 			<xs:attribute name="endCoverageDate" type="xs:dateTime"
 				use="required" />
 			<xs:attribute name="theoreticalAvailabilityDate" type="xs:dateTime"
@@ -72,7 +73,7 @@
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="inventoryOLA">
+	<xs:element name="inventory">
 		<xs:complexType>
 			<xs:sequence>
 			<!-- <xs:element ref="product" /> -->
@@ -112,10 +113,17 @@
 	<xs:element name="timePeriod">
 		<xs:complexType>
 			<xs:attribute name="end" type="xs:dateTime" use="required" />
-			<xs:attribute name="step" type="xs:duration" use="required" />
 			<xs:attribute name="start" type="xs:dateTime" use="required" />
 		</xs:complexType>
 	</xs:element>
+
+    <xs:element name="theoricalTimePeriod">
+        <xs:complexType>
+            <xs:attribute name="end" type="xs:dateTime" use="required" />
+            <xs:attribute name="step" type="xs:duration" use="optional" />
+            <xs:attribute name="start" type="xs:dateTime" use="required" />
+        </xs:complexType>
+    </xs:element>
 
 	<xs:element name="variable">
 		<xs:complexType>
