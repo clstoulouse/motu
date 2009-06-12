@@ -21,7 +21,7 @@
 
 	<xs:element name="access">
 		<xs:complexType>
-			<xs:attribute name="urlPath" type="xs:string" use="required" />
+			<xs:attribute name="urlPath" type="xs:anyURI" use="required" />
 			<xs:attribute name="login" type="xs:string" use="optional" />
 			<xs:attribute name="password" type="xs:string" use="optional" />
 		</xs:complexType>
@@ -30,7 +30,7 @@
 	<xs:element name="file">
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:ID" use="required" />
-            <xs:attribute name="path" type="xs:string" use="optional" />
+            <xs:attribute name="path" type="xs:anyURI" use="optional" />
 			<xs:attribute name="availabilityServiceDate" type="xs:dateTime"
 				use="optional" />
 			<xs:attribute name="modelPrediction" type="xs:anyURI"
@@ -64,7 +64,7 @@
 			<xs:attribute name="eastResolution" type="xs:decimal"
 				use="required" />
 			<xs:attribute name="units" type="xs:string" use="required" />
-			<xs:attribute name="type" type="xs:string" use="required" />
+			<xs:attribute name="type" type="xs:anyURI" use="required" />
 			<xs:attribute name="south" type="xs:decimal" use="required" />
 			<xs:attribute name="east" type="xs:decimal" use="required" />
 			<xs:attribute name="northResolution" type="xs:decimal"
