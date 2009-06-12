@@ -39,7 +39,7 @@
 				use="optional" />
 			<xs:attribute name="creationDate" type="xs:dateTime"
 				use="optional" />
-			<xs:attribute name="weight" type="xs:decimal" use="optional" />
+			<xs:attribute name="weight" type="xs:nonNegativeInteger" use="optional" />
 			<xs:attribute name="endCoverageDate" type="xs:dateTime"
 				use="required" />
 			<xs:attribute name="theoreticalAvailabilityDate" type="xs:dateTime"
