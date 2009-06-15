@@ -77,7 +77,7 @@ import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.14 $ - $Date: 2009-06-15 07:38:42 $
+ * @version $Revision: 1.15 $ - $Date: 2009-06-15 12:03:36 $
  * 
  */
 public class TestIntfce {
@@ -565,8 +565,9 @@ public class TestIntfce {
     }
 
     public static void productExtractDataFromInventory() {
-        String productId = "atoll:ressource:dataset:datafile-nrt-med-infrared-sst-timestamp";
-        String service = "atoll:service:ftp-catsat:ftp";
+        String prefix = "http://atoll.cls.fr/2009/resource/individual/atoll#";
+        String productId = prefix + "datafile-nrt-med-infrared-sst-timestamp";
+        String service = prefix +  "ftp-catsat:ftp";
 
         // add temporal criteria
         // first element is start date
