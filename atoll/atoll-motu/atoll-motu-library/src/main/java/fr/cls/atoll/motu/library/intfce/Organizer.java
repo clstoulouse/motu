@@ -93,7 +93,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.22 $ - $Date: 2009-06-15 07:38:42 $
+ * @version $Revision: 1.23 $ - $Date: 2009-06-15 08:06:09 $
  */
 public class Organizer {
 
@@ -913,7 +913,7 @@ public class Organizer {
                 stringBuffer.append(str);
                 stringBuffer.append("\n");
             }
-            throw new MotuException(String.format("ERROR - InventoryOLA file '%s' is not valid - See errors below:\n%s", xmlUri, stringBuffer
+            throw new MotuException(String.format("ERROR - Inventory file '%s' is not valid - See errors below:\n%s", xmlUri, stringBuffer
                     .toString()));
         }
 
