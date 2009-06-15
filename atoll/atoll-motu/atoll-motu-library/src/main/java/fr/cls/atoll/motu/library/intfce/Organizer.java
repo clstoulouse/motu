@@ -3,7 +3,6 @@
  */
 package fr.cls.atoll.motu.library.intfce;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,8 +28,6 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.Selectors;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -69,7 +66,7 @@ import fr.cls.atoll.motu.library.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
-import fr.cls.atoll.motu.library.inventory.InventoryOLA;
+import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.library.sdtnameequiv.StandardNames;
@@ -96,7 +93,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.21 $ - $Date: 2009-06-11 14:45:05 $
+ * @version $Revision: 1.22 $ - $Date: 2009-06-15 07:38:42 $
  */
 public class Organizer {
 
@@ -905,9 +902,9 @@ public class Organizer {
      * 
      * @throws MotuException the motu exception
      */
-    public static InventoryOLA getInventoryOLA(String xmlUri) throws MotuException {
+    public static Inventory getInventoryOLA(String xmlUri) throws MotuException {
 
-        InventoryOLA inventoryOLA = null;
+        Inventory inventoryOLA = null;
 
         List<String> errors = validateInventoryOLA(xmlUri);
         if (errors.size() > 0) {
@@ -925,7 +922,7 @@ public class Organizer {
         try {
             JAXBContext jc = JAXBContext.newInstance(INVENTORY_OLA_SCHEMA_PACK_NAME);
             Unmarshaller unmarshaller = jc.createUnmarshaller();
-            inventoryOLA = (InventoryOLA) unmarshaller.unmarshal(in);
+            inventoryOLA = (Inventory) unmarshaller.unmarshal(in);
         } catch (Exception e) {
             throw new MotuException("Error in getInventoryOLA", e);
         }

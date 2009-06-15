@@ -65,7 +65,7 @@ import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
-import fr.cls.atoll.motu.library.inventory.InventoryOLA;
+import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.inventory.Resource;
 import fr.cls.atoll.motu.library.inventory.ResourceOLA;
 import fr.cls.atoll.motu.library.inventory.TimePeriod;
@@ -77,7 +77,7 @@ import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.13 $ - $Date: 2009-06-03 14:46:05 $
+ * @version $Revision: 1.14 $ - $Date: 2009-06-15 07:38:42 $
  * 
  */
 public class TestIntfce {
@@ -1132,7 +1132,7 @@ public class TestIntfce {
 
     public static void testLoadInventoryOLA() {
 
-        InventoryOLA inventoryOLA = null;
+        Inventory inventoryOLA = null;
         // String xmlUri = "C:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
         String xmlUri = "sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll//atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_TEST.xml";
         try {
@@ -1166,9 +1166,9 @@ public class TestIntfce {
         TimePeriod timePeriod = resource.getTimePeriod();
         System.out.println(timePeriod.getStart());
         System.out.println(timePeriod.getEnd());
-        System.out.println(timePeriod.getStep());
-        System.out.println(timePeriod.getStep().toStandardDuration().getMillis());
-        System.out.println(timePeriod.getStep().getMillis());
+//        System.out.println(timePeriod.getStep());
+//        System.out.println(timePeriod.getStep().toStandardDuration().getMillis());
+//        System.out.println(timePeriod.getStep().getMillis());
 
         fr.cls.atoll.motu.library.inventory.Variables variables = resource.getVariables();
         for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {

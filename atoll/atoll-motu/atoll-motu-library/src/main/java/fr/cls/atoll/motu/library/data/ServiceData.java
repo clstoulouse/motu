@@ -37,7 +37,7 @@ import fr.cls.atoll.motu.library.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.inventory.InventoryOLA;
+import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.metadata.ProductMetaData;
 import fr.cls.commons.util.io.ConfigLoader;
 
@@ -47,7 +47,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * This class implements a service (AVISO, MERCATOR, ...).
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.7 $ - $Date: 2009-06-03 14:46:05 $
+ * @version $Revision: 1.8 $ - $Date: 2009-06-15 07:38:42 $
  */
 public class ServiceData {
 
@@ -2244,7 +2244,7 @@ public class ServiceData {
             getLocationMetaData(product);
         }
 
-        InventoryOLA inventoryOLA = Organizer.getInventoryOLA(product.getLocationMetaData());
+        Inventory inventoryOLA = Organizer.getInventoryOLA(product.getLocationMetaData());
 
         dataFiles = CatalogData.loadFtpDataFiles(inventoryOLA);
 

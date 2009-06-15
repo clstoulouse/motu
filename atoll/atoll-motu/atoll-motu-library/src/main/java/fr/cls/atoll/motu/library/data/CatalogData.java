@@ -29,7 +29,7 @@ import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.inventory.Access;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
-import fr.cls.atoll.motu.library.inventory.InventoryOLA;
+import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.inventory.Resource;
 import fr.cls.atoll.motu.library.inventory.ResourceOLA;
 import fr.cls.atoll.motu.library.inventory.ResourcesOLA;
@@ -50,7 +50,7 @@ import fr.cls.atoll.motu.library.tds.server.TimeCoverageType;
  * This class implements a product's catalog .
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.8 $ - $Date: 2009-06-03 14:46:05 $
+ * @version $Revision: 1.9 $ - $Date: 2009-06-15 07:38:41 $
  */
 public class CatalogData {
 
@@ -159,7 +159,7 @@ public class CatalogData {
      */
     public void loadFtpInventory(String xmlUri) throws MotuException {
 
-        InventoryOLA inventoryOLA = Organizer.getInventoryOLA(xmlUri);
+        Inventory inventoryOLA = Organizer.getInventoryOLA(xmlUri);
 
         Resource resource = inventoryOLA.getResource();
         Access access = resource.getAccess();
@@ -208,7 +208,7 @@ public class CatalogData {
         }
 
         try {
-            accessUriTemp = new URI(access.getUrlPath());
+            accessUriTemp = access.getUrlPath();
 
             if (userInfo != null) {
                 accessUri = new URI(accessUriTemp.getScheme(), userInfo.toString(), accessUriTemp.getHost(), accessUriTemp.getPort(), accessUriTemp
@@ -241,7 +241,7 @@ public class CatalogData {
      * 
      * @return the list< data file>
      */
-    public static List<DataFile> loadFtpDataFiles(InventoryOLA inventoryOLA) {
+    public static List<DataFile> loadFtpDataFiles(Inventory inventoryOLA) {
         
         if (inventoryOLA.getFiles().getFile().isEmpty()) {
             return null;
@@ -254,7 +254,7 @@ public class CatalogData {
             dataFile.setName(file.getName());
             dataFile.setStartCoverageDate(file.getStartCoverageDate());
             dataFile.setEndCoverageDate(file.getEndCoverageDate());
-            dataFile.setWeight(file.getWeight().getValue().doubleValue());
+            dataFile.setWeight(file.getWeight().doubleValue());
             
             dataFiles.add(dataFile);
         }

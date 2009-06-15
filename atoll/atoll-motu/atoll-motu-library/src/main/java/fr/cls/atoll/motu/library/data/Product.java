@@ -35,7 +35,7 @@ import fr.cls.atoll.motu.library.exception.NetCdfAttributeNotFoundException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.inventory.InventoryOLA;
+import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.inventory.Resource;
 import fr.cls.atoll.motu.library.inventory.TimePeriod;
 import fr.cls.atoll.motu.library.metadata.DocMetaData;
@@ -50,7 +50,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
  * This class represents a product.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.6 $ - $Date: 2009-06-08 14:44:01 $
+ * @version $Revision: 1.7 $ - $Date: 2009-06-15 07:38:42 $
  */
 public class Product {
 
@@ -480,7 +480,7 @@ public class Product {
      * 
      * @throws MotuException the motu exception
      */
-    public void loadInventoryGlobalMetaData(InventoryOLA inventoryOLA) throws MotuException {
+    public void loadInventoryGlobalMetaData(Inventory inventoryOLA) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadInventoryGlobalMetaData() - entering");
         }

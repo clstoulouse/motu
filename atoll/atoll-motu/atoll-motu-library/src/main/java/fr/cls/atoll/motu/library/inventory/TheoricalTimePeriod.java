@@ -8,7 +8,6 @@
 
 package fr.cls.atoll.motu.library.inventory;
 
-import java.net.URI;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -16,7 +15,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import fr.cls.atoll.motu.library.converter.jaxb.UriAdapter;
+import fr.cls.atoll.motu.library.converter.jaxb.JodaPeriodAdapter;
+import fr.cls.atoll.motu.library.converter.jaxb.JodaTimeAdapter;
+import org.joda.time.DateTime;
+import org.joda.time.Period;
 
 
 /**
@@ -28,9 +30,9 @@ import fr.cls.atoll.motu.library.converter.jaxb.UriAdapter;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="urlPath" use="required" type="{http://www.w3.org/2001/XMLSchema}anyURI" />
- *       &lt;attribute name="login" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="password" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="end" use="required" type="{http://www.w3.org/2001/XMLSchema}dateTime" />
+ *       &lt;attribute name="step" type="{http://www.w3.org/2001/XMLSchema}duration" />
+ *       &lt;attribute name="start" use="required" type="{http://www.w3.org/2001/XMLSchema}dateTime" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -40,88 +42,92 @@ import fr.cls.atoll.motu.library.converter.jaxb.UriAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "access")
-public class Access {
+@XmlRootElement(name = "theoricalTimePeriod")
+public class TheoricalTimePeriod {
 
     @XmlAttribute(required = true)
-    @XmlJavaTypeAdapter(UriAdapter.class)
-    @XmlSchemaType(name = "anyURI")
-    protected URI urlPath;
+    @XmlJavaTypeAdapter(JodaTimeAdapter.class)
+    @XmlSchemaType(name = "dateTime")
+    protected DateTime end;
     @XmlAttribute
-    protected String login;
-    @XmlAttribute
-    protected String password;
+    @XmlJavaTypeAdapter(JodaPeriodAdapter.class)
+    @XmlSchemaType(name = "duration")
+    protected Period step;
+    @XmlAttribute(required = true)
+    @XmlJavaTypeAdapter(JodaTimeAdapter.class)
+    @XmlSchemaType(name = "dateTime")
+    protected DateTime start;
 
     /**
-     * Gets the value of the urlPath property.
+     * Gets the value of the end property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public URI getUrlPath() {
-        return urlPath;
+    public DateTime getEnd() {
+        return end;
     }
 
     /**
-     * Sets the value of the urlPath property.
+     * Sets the value of the end property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setUrlPath(URI value) {
-        this.urlPath = value;
+    public void setEnd(DateTime value) {
+        this.end = value;
     }
 
     /**
-     * Gets the value of the login property.
+     * Gets the value of the step property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getLogin() {
-        return login;
+    public Period getStep() {
+        return step;
     }
 
     /**
-     * Sets the value of the login property.
+     * Sets the value of the step property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setLogin(String value) {
-        this.login = value;
+    public void setStep(Period value) {
+        this.step = value;
     }
 
     /**
-     * Gets the value of the password property.
+     * Gets the value of the start property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getPassword() {
-        return password;
+    public DateTime getStart() {
+        return start;
     }
 
     /**
-     * Sets the value of the password property.
+     * Sets the value of the start property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setPassword(String value) {
-        this.password = value;
+    public void setStart(DateTime value) {
+        this.start = value;
     }
 
 }
