@@ -36,7 +36,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.9 $ - $Date: 2009-06-11 14:45:05 $
+ * @version $Revision: 1.10 $ - $Date: 2009-06-16 09:44:49 $
  */
 public class VFSManager {
 
@@ -61,6 +61,13 @@ public class VFSManager {
      * @return the opts
      */
     public FileSystemOptions getOpts() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getOpts() - entering");
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getOpts() - exiting");
+        }
         return opts;
     }
 
@@ -70,6 +77,13 @@ public class VFSManager {
      * @return the standard file system manager
      */
     public StandardFileSystemManager getStandardFileSystemManager() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getStandardFileSystemManager() - entering");
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getStandardFileSystemManager() - exiting");
+        }
         return standardFileSystemManager;
     }
 
@@ -82,7 +96,15 @@ public class VFSManager {
      * @param opts the new opts
      */
     public void setOpts(FileSystemOptions opts) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setOpts(FileSystemOptions) - entering");
+        }
+
         this.opts = opts;
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setOpts(FileSystemOptions) - exiting");
+        }
     }
 
     /** The open. */
@@ -94,6 +116,13 @@ public class VFSManager {
      * @return true, if is opened
      */
     public boolean isOpened() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("isOpened() - entering");
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("isOpened() - exiting");
+        }
         return open;
     }
 
@@ -103,7 +132,15 @@ public class VFSManager {
      * @throws MotuException the motu exception
      */
     public void open() throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("open() - entering");
+        }
+
         open("", "", "");
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("open() - exiting");
+        }
     }
 
     /**
@@ -116,7 +153,14 @@ public class VFSManager {
      * @throws MotuException the motu exception
      */
     public void open(String user, String pwd, String scheme) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("open(String, String, String) - entering");
+        }
+
         if (isOpened()) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("open(String, String, String) - exiting");
+            }
             return;
         }
 
@@ -142,6 +186,9 @@ public class VFSManager {
         setUserInfo(user, pwd);
         setSchemeOpts(scheme);
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("open(String, String, String) - exiting");
+        }
     }
 
     /**
@@ -155,6 +202,10 @@ public class VFSManager {
      * @throws MotuException the motu exception
      */
     public FileSystemOptions setUserInfo(String user, String pwd) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setUserInfo(String, String) - entering");
+        }
+
         if (opts == null) {
             opts = new FileSystemOptions();
         }
@@ -162,9 +213,14 @@ public class VFSManager {
         try {
             DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
         } catch (FileSystemException e) {
+            LOG.error("setUserInfo(String, String)", e);
+
             throw new MotuException("Error in VFSManager#setUserInfo", e);
         }
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setUserInfo(String, String) - exiting");
+        }
         return opts;
 
     }
@@ -179,8 +235,14 @@ public class VFSManager {
      * @throws MotuException the motu exception
      */
     public FileSystemOptions setSchemeOpts(String scheme) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setSchemeOpts(String) - entering");
+        }
 
         if (Organizer.isNullOrEmpty(scheme)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("setSchemeOpts(String) - exiting");
+            }
             return opts;
         }
 
@@ -193,6 +255,8 @@ public class VFSManager {
             try {
                 fscb = standardFileSystemManager.getFileSystemConfigBuilder(scheme);
             } catch (FileSystemException e) {
+                LOG.error("setSchemeOpts(String)", e);
+
                 fscb = standardFileSystemManager.getFileSystemConfigBuilder(VFSManager.DEFAULT_SCHEME);
             }
             
@@ -221,9 +285,14 @@ public class VFSManager {
             }
 
         } catch (FileSystemException e) {
+            LOG.error("setSchemeOpts(String)", e);
+
             throw new MotuException("Error in VFSManager#setScheme", e);
         }
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setSchemeOpts(String) - exiting");
+        }
         return opts;
     }
 
@@ -231,9 +300,17 @@ public class VFSManager {
      * Close.
      */
     public void close() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("close() - entering");
+        }
+
         if (isOpened()) {
             standardFileSystemManager.close();
             open = false;
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("close() - exiting");
         }
     }
 
@@ -247,6 +324,10 @@ public class VFSManager {
      * @throws MotuException the motu exception
      */
     public InputStream getUriAsInputStream(String uri) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getUriAsInputStream(String) - entering");
+        }
+
         InputStream in = null;
         try {
 
@@ -255,7 +336,13 @@ public class VFSManager {
                 in = fileObject.getContent().getInputStream();
             }
         } catch (IOException e) {
+            LOG.error("getUriAsInputStream(String)", e);
+
             throw new MotuException(String.format("'%s' uri file has not be found", uri), e);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getUriAsInputStream(String) - exiting");
         }
         return in;
     }
@@ -270,7 +357,15 @@ public class VFSManager {
      * @throws MotuException the motu exception
      */
     public FileObject resolveFile(final String uri) throws MotuException {
-        return resolveFile(uri, this.opts);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("resolveFile(String) - entering");
+        }
+
+        FileObject returnFileObject = resolveFile(uri, this.opts);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("resolveFile(String) - exiting");
+        }
+        return returnFileObject;
     }
     
     /**
@@ -284,6 +379,10 @@ public class VFSManager {
      * @throws MotuException the motu exception
      */
     public FileObject resolveFile(final String uri, FileSystemOptions fileSystemOptions) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("resolveFile(String, FileSystemOptions) - entering");
+        }
+
         FileObject fileObject = null;
         
         open();
@@ -300,9 +399,17 @@ public class VFSManager {
 
             fileObject = standardFileSystemManager.resolveFile(uri, fileSystemOptions);
         } catch (FileSystemException e) {
+            LOG.error("resolveFile(String, FileSystemOptions)", e);
+
             throw new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
         } catch (URISyntaxException e) {
+            LOG.error("resolveFile(String, FileSystemOptions)", e);
+
             throw new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("resolveFile(String, FileSystemOptions) - exiting");
         }
         return fileObject;
 
@@ -319,6 +426,10 @@ public class VFSManager {
      * @throws MotuException the motu exception
      */
     public FileObject resolveFile(FileObject baseFile, final String file) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("resolveFile(FileObject, String) - entering");
+        }
+
         FileObject fileObject = null;
         open();
         if (opts == null) {
@@ -331,7 +442,13 @@ public class VFSManager {
 
             fileObject = standardFileSystemManager.resolveFile(baseFile, file, opts);
         } catch (FileSystemException e) {
+            LOG.error("resolveFile(FileObject, String)", e);
+
             throw new MotuException(String.format("Unable to resolve uri '%s/%s' ", baseFile.getName().toString(), file), e);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("resolveFile(FileObject, String) - exiting");
         }
         return fileObject;
 
@@ -350,6 +467,9 @@ public class VFSManager {
      * @throws MotuExceptionBase the motu exception base
      */
     public void copyFileToLocalFile(String user, String pwd, String scheme, String host, String fileSrc, String fileDest) throws MotuExceptionBase {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("copyFileToLocalFile(String, String, String, String, String, String) - entering");
+        }
 
         open(user, pwd, scheme);
 
@@ -373,12 +493,19 @@ public class VFSManager {
             foDest.copyFrom(foSrc, Selectors.SELECT_ALL);
 
         } catch (MotuExceptionBase e) {
+            LOG.error("copyFileToLocalFile(String, String, String, String, String, String)", e);
+
             throw e;
         } catch (Exception e) {
+            LOG.error("copyFileToLocalFile(String, String, String, String, String, String)", e);
+
             //throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
             throw new MotuException(String.format("Unable to copy file '%s' to '%s'", uri.toString(), fileDest), e);
         }
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("copyFileToLocalFile(String, String, String, String, String, String) - exiting");
+        }
     }
 
     /**
@@ -390,6 +517,10 @@ public class VFSManager {
      * @throws MotuException the motu exception
      */
     public void copyFileToLocalFile(String uriSrc, String fileDest) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("copyFileToLocalFile(String, String) - entering");
+        }
+
         // URI uri = new URI(uriSrc);
         //        
         // String[] userInfo = uri.getUserInfo().split(":");
@@ -424,13 +555,20 @@ public class VFSManager {
             foDest.copyFrom(foSrc, Selectors.SELECT_ALL);
 
         } catch (Exception e) {
+            LOG.error("copyFileToLocalFile(String, String)", e);
+
             try {
                 throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
             } catch (FileSystemException e1) {
+                LOG.error("copyFileToLocalFile(String, String)", e1);
+
                 throw new MotuException(String.format("Unable to copy files", e1));
             }
         }
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("copyFileToLocalFile(String, String) - exiting");
+        }
     }
 
     /**
@@ -443,12 +581,18 @@ public class VFSManager {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public static File createLocalFile(String localFile) throws IOException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createLocalFile(String) - entering");
+        }
 
         File newFile = new File(localFile);
         File path = new File(newFile.getParent());
         path.mkdirs();
         newFile.createNewFile();
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createLocalFile(String) - exiting");
+        }
         return newFile;
 
     }
@@ -462,8 +606,16 @@ public class VFSManager {
      * @throws MotuException 
      */
     public boolean deleteFile(String file) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("deleteFile(String) - entering");
+        }
+
         FileObject fileToDelete = resolveFile(file);
-        return deleteFile(fileToDelete);
+        boolean returnboolean = deleteFile(fileToDelete);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("deleteFile(String) - exiting");
+        }
+        return returnboolean;
     }
     
 //    public static boolean deleteDirectory(String path) {
@@ -480,6 +632,9 @@ public class VFSManager {
      * @throws MotuException 
  */
 public boolean deleteDirectory(String path) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("deleteDirectory(String) - entering");
+        }
     
     StringBuffer stringBuffer = new StringBuffer();
     stringBuffer.append(path);
@@ -488,7 +643,11 @@ public boolean deleteDirectory(String path) throws MotuException {
         stringBuffer.append("/");
     }
         FileObject pathToDelete = resolveFile(stringBuffer.toString());
-        return deleteDirectory(pathToDelete);
+        boolean returnboolean = deleteDirectory(pathToDelete);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("deleteDirectory(String) - exiting");
+        }
+        return returnboolean;
         
     }
     
@@ -501,7 +660,15 @@ public boolean deleteDirectory(String path) throws MotuException {
      * @throws MotuException 
      */
     public boolean deleteDirectory(FileObject file) throws MotuException {
-        return delete(file, Selectors.SELECT_ALL);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("deleteDirectory(FileObject) - entering");
+        }
+
+        boolean returnboolean = delete(file, Selectors.SELECT_ALL);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("deleteDirectory(FileObject) - exiting");
+        }
+        return returnboolean;
     }
 
     /**
@@ -512,6 +679,10 @@ public boolean deleteDirectory(String path) throws MotuException {
      * @return true, if successful
      */
     public static boolean deleteDirectory(File path) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("deleteDirectory(File) - entering");
+        }
+
         if (path.exists()) {
             File[] files = path.listFiles();
             for (int i = 0; i < files.length; i++) {
@@ -522,7 +693,11 @@ public boolean deleteDirectory(String path) throws MotuException {
                 }
             }
         }
-        return (path.delete());
+        boolean returnboolean = (path.delete());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("deleteDirectory(File) - exiting");
+        }
+        return returnboolean;
     }
     
     /**
@@ -534,6 +709,9 @@ public boolean deleteDirectory(String path) throws MotuException {
      * @throws MotuException 
      */
     public boolean deleteFile(FileObject file) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("deleteFile(FileObject) - entering");
+        }
         
         boolean deleted = false;
         try {
@@ -546,8 +724,14 @@ public boolean deleteDirectory(String path) throws MotuException {
                 deleted = file.delete();
             }
         } catch (FileSystemException e) {
+            LOG.error("deleteFile(FileObject)", e);
+
             //throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
             throw new MotuException(String.format("Unable to delete '%s'", file.getName().toString()), e);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("deleteFile(FileObject) - exiting");
         }
         return deleted;
     }
@@ -562,6 +746,9 @@ public boolean deleteDirectory(String path) throws MotuException {
      * @throws MotuException 
      */
     public boolean delete(FileObject file, FileSelector selector) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("delete(FileObject, FileSelector) - entering");
+        }
         
         int deleted = 0;
         try {
@@ -569,10 +756,16 @@ public boolean deleteDirectory(String path) throws MotuException {
                 deleted = file.delete(selector);
             }
         } catch (FileSystemException e) {
+            LOG.error("delete(FileObject, FileSelector)", e);
+
             //throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
             throw new MotuException(String.format("Unable to delete '%s'", file.getName().toString()), e);
         }
-        return (deleted > 0);
+        boolean returnboolean = (deleted > 0);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("delete(FileObject, FileSelector) - exiting");
+        }
+        return returnboolean;
     }
     
      
@@ -585,6 +778,9 @@ public boolean deleteDirectory(String path) throws MotuException {
      * @throws MotuException the motu exception
      */
     public void copyFile(String from, String to) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("copyFile(String, String) - entering");
+        }
         
         //FileObject originBase = fsManager.resolveFile(uri, opts);
         //fsManager.setBaseFile(originBase);
@@ -592,6 +788,10 @@ public boolean deleteDirectory(String path) throws MotuException {
         FileObject src = resolveFile(from);
         FileObject dest = resolveFile(to);
         copyFile(src, dest);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("copyFile(String, String) - exiting");
+        }
     }
     
     /**
@@ -605,9 +805,17 @@ public boolean deleteDirectory(String path) throws MotuException {
      * @throws MotuException the motu exception
      */
     public void copyFile(String from, String to, FileSystemOptions optsFrom, FileSystemOptions optsTo) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("copyFile(String, String, FileSystemOptions, FileSystemOptions) - entering");
+        }
+
         FileObject src = resolveFile(from, optsFrom);
         FileObject dest = resolveFile(to, optsTo);
         copyFile(src, dest);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("copyFile(String, String, FileSystemOptions, FileSystemOptions) - exiting");
+        }
     }
     
     /**
@@ -623,6 +831,9 @@ public boolean deleteDirectory(String path) throws MotuException {
      * @throws MotuException the motu exception
      */
     public void copyFile(String from, String to, String userFrom, String pwdFrom, String userTo, String pwdTo) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("copyFile(String, String, String, String, String, String) - entering");
+        }
 
         opts = null;
         if (!Organizer.isNullOrEmpty(userFrom)) {
@@ -638,6 +849,10 @@ public boolean deleteDirectory(String path) throws MotuException {
         FileObject dest = resolveFile(to, opts);
         
         copyFile(src, dest);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("copyFile(String, String, String, String, String, String) - exiting");
+        }
     }
 
     /**
@@ -649,16 +864,28 @@ public boolean deleteDirectory(String path) throws MotuException {
      * @throws MotuException the motu exception
      */
     public void copyFile(FileObject from, FileObject to) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("copyFile(FileObject, FileObject) - entering");
+        }
+
         try {
             if ((to.exists())&& (to.getType() == FileType.FOLDER)) {
                 throw new MotuException(String.format("File copy from '%s' to '%s' is rejected: the destination already exists and is a folder. You were about to loose all of the content of '%s' ", from.getName().toString(), to.getName().toString(), to.getName().toString()));
             }
             to.copyFrom(from, Selectors.SELECT_ALL);
         } catch (MotuException e) {
+            LOG.error("copyFile(FileObject, FileObject)", e);
+
             throw e;
         } catch (Exception e) {
+            LOG.error("copyFile(FileObject, FileObject)", e);
+
             //throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
             throw new MotuException(String.format("Unable to copy file '%s' to '%s'", from.getName().toString(), to.getName().toString()), e);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("copyFile(FileObject, FileObject) - exiting");
         }
     }
 }

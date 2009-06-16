@@ -12,7 +12,7 @@
 
 	<appender class="org.apache.log4j.DailyRollingFileAppender"
 		name="XMLFileInfo">
-		<param name="file" value="infoup.xml" />
+		<param name="file" value="dev-motu_queue_log.xml" />
 		<!--
 			<param name="encoding" value="UTF-8" />
 		-->
@@ -31,7 +31,7 @@
 		<level value="DEBUG" />
 		<appender-ref ref="CONSOLE" />
 		</logger>
-		-->
+		-->		
 		<logger name="fr.cls.atoll.motu.processor">
 		<level value="TRACE" />
 		<appender-ref ref="CONSOLE" />
@@ -40,7 +40,16 @@
 		<level value="TRACE" />
 		<appender-ref ref="CONSOLE" />
 		</logger>
-		
+		<!-- 
+		<logger name="org.apache.commons.vfs">
+		<level value="TRACE" />
+		<appender-ref ref="CONSOLE" />
+		</logger>
+		<logger name="fr.cls.atoll.motu.library.VFSManager">
+		<level value="TRACE" />
+		<appender-ref ref="CONSOLE" />
+		</logger>
+		 -->
 <!--
 	<logger name="atoll.motu.queueserver">
 		<level value="INFO" />

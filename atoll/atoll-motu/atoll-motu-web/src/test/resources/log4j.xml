@@ -46,6 +46,11 @@
 		<level value="DEBUG" />
 		<appender-ref ref="CONSOLE" />
 		</logger>
+		<logger name="org.apache.commons.vfs">
+		<level value="TRACE" />
+		<appender-ref ref="CONSOLE" />
+		</logger>
+		
 	
 	<root>
 		<!-- 
