@@ -196,33 +196,26 @@
 			<version>1.0</version>
 		</dependency>
 	</dependencies>
+	<repositories>
+	</repositories>
   <pluginRepositories>
-    <pluginRepository>
-      <id>KungFoo M2 Release Repository</id>
-      <url>http://kungfoo-m2.googlecode.com/svn/release-repo</url>
-      <snapshots>
-      	<updatePolicy>always</updatePolicy>
-      	<checksumPolicy>ignore</checksumPolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
-        <checksumPolicy>ignore</checksumPolicy>
-      </releases>
-    </pluginRepository>
   </pluginRepositories>
   <reporting>
   	<plugins>
-  		<plugin>
+  	</plugins>
+  </reporting>
+  <build>
+    <plugins>
+      <plugin>
   			<groupId>com.googlecode.maven-overview-plugin</groupId>
   			<artifactId>maven-overview-plugin</artifactId>
   			<version>1.4</version>
-  			<reportSets>
-  				<reportSet>
-  					<id></id>
-  				</reportSet>
-  			</reportSets>
-  		</plugin>
-  	</plugins>
-  </reporting>
+        <configuration>
+          <url>http://kungfoo-m2.googlecode.com/svn/release-rep</url>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  
 </project>
