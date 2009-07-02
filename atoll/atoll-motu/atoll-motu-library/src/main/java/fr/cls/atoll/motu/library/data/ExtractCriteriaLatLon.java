@@ -47,7 +47,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
  * data (for extraction/selection and research).
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-05-04 09:57:56 $
+ * @version $Revision: 1.4 $ - $Date: 2009-07-02 08:27:29 $
  * 
  */
 public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
@@ -685,7 +685,9 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
             // has longitude range ?
             // if no return empty YX ranges
             if (((minyIndex < 0) && (maxyIndex < 0)) || ((minxIndex < 0) && (maxxIndex < 0))) {
-                listRanges.add(createEmptyYXRanges());
+                // In Netcdf-Java 4.xx, no need to create empty ranges
+                // return now an empty range list
+                //listRanges.add(createEmptyYXRanges());
                 return listRanges;
             }
 
