@@ -5,6 +5,7 @@
     </fileset>
     <filter name="FilesFromPackage" enabled="true">
         <filter-data value="src/main/java/fr/cls/atoll/motu/library/configuration"/>
+        <filter-data value="src/main/java/fr/cls/atoll/motu/library/inventory"/>
         <filter-data value="src/main/java/fr/cls/atoll/motu/library/opendap"/>
         <filter-data value="src/main/java/fr/cls/atoll/motu/library/opendap/server"/>
         <filter-data value="src/main/java/fr/cls/atoll/motu/library/sdtnameequiv"/>
