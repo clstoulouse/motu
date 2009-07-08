@@ -33,7 +33,7 @@ import fr.cls.commons.util.DatePeriod;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-06-08 14:44:01 $
+ * @version $Revision: 1.6 $ - $Date: 2009-07-08 13:38:37 $
  */
 public class DatasetFtp extends DatasetBase {
 
@@ -253,6 +253,10 @@ public class DatasetFtp extends DatasetBase {
                 StringBuffer stringBuffer = new StringBuffer();
                 stringBuffer.append(uriExtraction.toString());
                 stringBuffer.append("/");
+                if (!Organizer.isNullOrEmpty(dataFile.getPath())) {
+                    stringBuffer.append("dataFile.getPath()");
+                    stringBuffer.append("/");                    
+                }
                 stringBuffer.append(dataFile.getName());
 
                 listUrls.add(stringBuffer.toString());

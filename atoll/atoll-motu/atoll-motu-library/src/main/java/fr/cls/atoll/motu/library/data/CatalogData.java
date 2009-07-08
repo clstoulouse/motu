@@ -50,7 +50,7 @@ import fr.cls.atoll.motu.library.tds.server.TimeCoverageType;
  * This class implements a product's catalog .
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.9 $ - $Date: 2009-06-15 07:38:41 $
+ * @version $Revision: 1.10 $ - $Date: 2009-07-08 13:38:37 $
  */
 public class CatalogData {
 
@@ -252,6 +252,7 @@ public class CatalogData {
         for (fr.cls.atoll.motu.library.inventory.File file : inventoryOLA.getFiles().getFile()) {
             DataFile dataFile = new DataFile();
             dataFile.setName(file.getName());
+            dataFile.setPath(file.getPath().toString());
             dataFile.setStartCoverageDate(file.getStartCoverageDate());
             dataFile.setEndCoverageDate(file.getEndCoverageDate());
             dataFile.setWeight(file.getWeight().doubleValue());

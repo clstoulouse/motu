@@ -27,7 +27,8 @@
 	<xs:element name="file">
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:ID" use="required" />
-			<xs:attribute name="path" type="xs:anyURI" use="required" default=""/>
+			<xs:attribute name="path" type="xs:anyURI" use="optional"
+				default="" />
 			<xs:attribute name="availabilityServiceDate" type="xs:dateTime"
 				use="optional" />
 			<xs:attribute name="modelPrediction" type="xs:anyURI"
@@ -53,17 +54,24 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+
+	<xs:simpleType name="resolutiontype">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="1\/[1-9][0-9]+" />
+		</xs:restriction>
+	</xs:simpleType>
+
 	<xs:element name="geospatialCoverage">
 		<xs:complexType>
 			<xs:attribute name="west" type="xs:decimal" use="required" />
-			<xs:attribute name="eastResolution" type="xs:decimal"
-				use="required" />
+			<xs:attribute name="eastResolution" type="resolutiontype"
+				use="optional" />
 			<xs:attribute name="units" type="xs:string" use="required" />
 			<xs:attribute name="type" type="xs:anyURI" use="required" />
 			<xs:attribute name="south" type="xs:decimal" use="required" />
 			<xs:attribute name="east" type="xs:decimal" use="required" />
-			<xs:attribute name="northResolution" type="xs:decimal"
-				use="required" />
+			<xs:attribute name="northResolution" type="resolutiontype"
+				use="optional" />
 			<xs:attribute name="north" type="xs:decimal" use="required" />
 		</xs:complexType>
 	</xs:element>

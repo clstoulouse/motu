@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
  * <br><br>Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-05-28 15:02:31 $
+ * @version $Revision: 1.3 $ - $Date: 2009-07-08 13:38:37 $
  */
 public class DataFile {
 
@@ -21,6 +21,11 @@ public class DataFile {
     /** The name. */
     String name;
     
+    /** The path. */
+    String path;
+    
+ 
+
     /** The start coverage date. */
     DateTime startCoverageDate;
     
@@ -102,6 +107,18 @@ public class DataFile {
         this.endCoverageDate = endCoverageDate;
     }
 
+    /**
+     * Gets the path.
+     * 
+     * @return the path
+     */
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 
 
 }

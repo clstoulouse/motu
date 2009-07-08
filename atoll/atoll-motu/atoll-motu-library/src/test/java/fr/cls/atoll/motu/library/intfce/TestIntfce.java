@@ -78,7 +78,7 @@ import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.17 $ - $Date: 2009-07-08 12:04:13 $
+ * @version $Revision: 1.18 $ - $Date: 2009-07-08 13:38:37 $
  * 
  */
 public class TestIntfce {
@@ -307,7 +307,7 @@ public class TestIntfce {
         // productExtractDataAvisofromProductId();
         // productInformationFromLocationData();
         // productExtractDataAviso2();
-        productExtractDataMercator();
+        //productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
         // productExtractDiversity();
@@ -328,7 +328,7 @@ public class TestIntfce {
         // productExtractDataCatsat();
         // productExtractDataAvisofromExtractionParameters();
         // productExtractDataMerseaFromHttp();
-        // testLoadInventoryOLA();
+        testLoadInventoryOLA();
         // testLoadCatalogOLA();
         // productInformationFromInventory();
         //productExtractDataFromInventory();
@@ -395,6 +395,8 @@ public class TestIntfce {
             List<DataFile> files = product.getDataFiles();
             if (files != null) {
                 for (DataFile file : files) {
+                    System.out.print(file.getPath());
+                    System.out.print(" ");
                     System.out.print(file.getName());
                     System.out.print(" ");
                     System.out.print(file.getStartCoverageDate());
@@ -1138,8 +1140,8 @@ public class TestIntfce {
     public static void testLoadInventoryOLA() {
 
         Inventory inventoryOLA = null;
-        // String xmlUri = "C:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
-        String xmlUri = "sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll//atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_TEST.xml";
+        String xmlUri = "C:/tempVFS/nrt_med_st_chlorophyll_FTP_TEST.xml";
+        //String xmlUri = "sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll//atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_TEST.xml";
         try {
             inventoryOLA = Organizer.getInventoryOLA(xmlUri);
             // Organizer.getFileSystemManager().close();
