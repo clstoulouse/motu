@@ -28,7 +28,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.1 $, $Date: 2009-06-11 14:46:23 $
+ * @version $Revision: 1.2 $, $Date: 2009-08-03 14:59:14 $
  */
 public class Push extends MotuWPSProcess {
 
@@ -76,6 +76,7 @@ public class Push extends MotuWPSProcess {
 
         // runnableWPS = new
     }
+    
 
       /**
        * Push.
@@ -87,8 +88,37 @@ public class Push extends MotuWPSProcess {
        */
       private void push(ProcessletInputs in) throws ProcessletException, MotuException {
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
-        
+
         String from = MotuWPSProcess.getComplexInputValueFromBinaryStream(motuWPSProcessData.getFromParamIn());
+
+        // Either the the source url (from) or the request id
+        // have to be set as input parameter
+        // If 'from' is null or empty : use resquest id and get the its remote url as 'from' parameter
+        if (MotuWPSProcess.isNullOrEmpty(from)) {
+            long requestId = -1;
+
+            requestId = getRequestIdAsLong(in);
+
+            StatusModeResponse statusModeResponse = waitForResponse(motuWPSProcessData.getRequestIdParamIn(), requestId);
+
+            if (statusModeResponse == null) {
+                MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuInvalidRequestIdException(requestId), motuWPSProcessData
+                        .getRequestIdParamIn() instanceof ReferencedComplexInput);
+                return;
+            }
+
+            if (MotuWPSProcess.isStatusDone(statusModeResponse)) {
+                from = statusModeResponse.getRemoteUri();
+            } else {
+                MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(),
+                                             statusModeResponse,
+                                             motuWPSProcessData.getRequestIdParamIn() instanceof ReferencedComplexInput);
+                return;
+            }
+            
+            
+        }
+        
         String to = MotuWPSProcess.getComplexInputValueFromBinaryStream(motuWPSProcessData.getToParamIn());
 
         String userFrom = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getUserFromParamIn());
@@ -100,7 +130,8 @@ public class Push extends MotuWPSProcess {
         boolean remove = MotuWPSProcess.getLiteralInputValueAsBoolean(motuWPSProcessData.getRemoveParamIn(), false);
 
         boolean rename = MotuWPSProcess.getLiteralInputValueAsBoolean(motuWPSProcessData.getRenameParamIn(), false);
-
+        
+        
         if (!rename) {
             File fileTmp  = new File(from);
             to = String.format("%s/%s", to, fileTmp.getName());
