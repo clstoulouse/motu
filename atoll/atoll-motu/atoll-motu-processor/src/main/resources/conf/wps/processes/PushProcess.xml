@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE include [
-<!ENTITY requestIdInputParameters SYSTEM "../include/RequestIdInputParameters.xml">
+<!ENTITY requestIdInputParametersOptional SYSTEM "../include/RequestIdInputParametersOptional.xml">
 <!ENTITY commonBasicOutputParameters SYSTEM "../include/CommonBasicOutputParameters.xml">
 ]>
 <ProcessDefinition configVersion="0.1.0"
@@ -52,10 +52,10 @@
 	</Abstract>
 	<InputParameters>
 	
-		&requestIdInputParameters;
+		&requestIdInputParametersOptional;
 
 		
-		<ComplexInput>
+		<ComplexInput minOccurs="0" maxOccurs="1">
 			<Identifier>from</Identifier>
 			<Title>Source uri</Title>	
 			<Abstract>
