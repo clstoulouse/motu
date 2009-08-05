@@ -1,17 +1,35 @@
 package fr.cls.atoll.motu.processor.wps;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.namespace.QName;
 
 import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
 import org.deegree.commons.utils.HttpUtils;
+
+import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.inventory.Inventory;
+import fr.cls.atoll.motu.processor.opengis.wps100.DescriptionType;
+import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
+import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType;
+import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
+import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType.DataInputs;
 
 /**
  * <br>
@@ -21,7 +39,7 @@ import org.deegree.commons.utils.HttpUtils;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.6 $ - $Date: 2009-05-05 10:28:48 $
+ * @version $Revision: 1.7 $ - $Date: 2009-08-05 15:10:40 $
  */
 public class TestWPS {
     /**
@@ -89,7 +107,7 @@ public class TestWPS {
 //            System.out.println(key.hashCode());
 //        } catch (java.security.NoSuchAlgorithmException e) {
 //        }
-
+        getDescribeProcess();
     }
 
     public static void testBodyPost() {
@@ -155,5 +173,125 @@ public class TestWPS {
 
         return charBuffer;
     }
+    public static ProcessDescriptions getDescribeProcess()  {
+    
+        
+        String href = "http://localhost:8080/atoll-motuservlet/services";
+        InputStream in = null;
+        Map<String, String> headers = new HashMap<String, String>();
+        try {
+            in = Organizer.getUriAsInputStream("DescribeAll.xml");
+            in = HttpUtils.post(HttpUtils.STREAM, href, in, headers);
+//            byte b[] = new byte[1024];
+//
+//            int bytesRead = 0;
+//            if (in.markSupported()) {
+//                in.mark(bytesRead);
+//            }
+//
+//            while ((bytesRead = in.read(b)) != -1) {
+//                String nextLine = new String(b, 0, bytesRead);
+//                System.out.println(nextLine);
+//            }
+//            
+//            if (in.markSupported()) {
+//                in.reset();
+//            }
+
+
+        } catch (HttpException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MotuException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        
+        ProcessDescriptions processDescriptions = null;
+        
+        if (in == null) 
+        {
+            return processDescriptions;
+        }
+        
+
+    try {
+        JAXBContext jc = JAXBContext.newInstance(MotuWPSProcess.WPS100_SHEMA_PACK_NAME);
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        processDescriptions = (ProcessDescriptions) unmarshaller.unmarshal(in);
+    } catch (Exception e) {
+        //throw new MotuException("Error in GetDescribeProcess", e);
+        System.out.println(e.getMessage());
+    }
+
+    if (processDescriptions == null) {
+        //throw new MotuException("Unable to load WPS Process Descriptions (processDescriptions is null)");
+        System.out.println("Unable to load WPS Process Descriptions (processDescriptions is null)");
+        return processDescriptions;
+    }
+    
+    List<ProcessDescriptionType> processDescriptionList = processDescriptions.getProcessDescription();
+    
+    for (ProcessDescriptionType processDescriptionType: processDescriptionList) {
+        //JAXBElement<String> element = new JAXBElement<String>(new QName("Test"), String.class, "tre");
+        System.out.println("===================");
+        System.out.println(processDescriptionType.getIdentifier().getValue());
+        System.out.println("===================");
+        List<InputDescriptionType> inputDescriptionTypeList  = processDescriptionType.getDataInputs().getInput();
+        for (InputDescriptionType inputDescriptionType: inputDescriptionTypeList) {
+            Object inputData = null;
+            String fieldName = "";
+            if (inputDescriptionType.getLiteralData() != null) {
+                inputData = inputDescriptionType.getLiteralData();
+               //JAXBElement<InputDescriptionType> element = inputDescriptionType;
+            }
+            if (inputDescriptionType.getComplexData() != null) {
+                inputData = inputDescriptionType.getComplexData();
+            }
+            if (inputDescriptionType.getBoundingBoxData() != null) {
+                inputData = inputDescriptionType.getBoundingBoxData();
+            }
+            try {
+                Field[] fields = DescriptionType.class.getDeclaredFields();
+                for (Field  field : fields) {
+                    System.out.println(field.getName());
+                    
+                }
+                System.out.println(DescriptionType.class.getDeclaredField("identifier").getAnnotation(XmlElement.class).toString());
+                System.out.println(inputDescriptionType.getIdentifier().getCodeSpace());
+            } catch (SecurityException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            } catch (NoSuchFieldException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            System.out.print(inputDescriptionType.getIdentifier().getValue());
+            System.out.print(" class is '");
+            System.out.println(inputData.getClass().getName());
+            System.out.print("', XmlElement is '");
+            try {
+                System.out.print(InputDescriptionType.class.getDeclaredField("complexData").getAnnotation(XmlElement.class).toString());
+                //System.out.print(InputDescriptionType.class.getDeclaredField("complexData").getAnnotation(XmlElement.class).name());
+            } catch (SecurityException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (NoSuchFieldException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            System.out.println("'");
+        }
+        
+    }
+    
+    
+    return processDescriptions;
+    }
+
 
 }
