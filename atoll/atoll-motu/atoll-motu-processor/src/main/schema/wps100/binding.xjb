@@ -8,7 +8,7 @@
         </jaxb:globalBindings>
 
   <jaxb:bindings xmlns:tns="http://schemas.opengis.net/wps/1.0.0/" xmlns="http://java.sun.com/xml/ns/jaxb" version="2.1">
-	  <jaxb:bindings schemaLocation="http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd">
+	  <jaxb:bindings schemaLocation="http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
     	<jaxb:schemaBindings>
       		<jaxb:package name="fr.cls.atoll.motu.processor.opengis.wps100"/>
     	</jaxb:schemaBindings>

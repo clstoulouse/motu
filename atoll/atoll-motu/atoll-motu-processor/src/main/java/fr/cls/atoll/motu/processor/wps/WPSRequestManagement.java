@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentMap;
  * <br><br>Copyright : Copyright (c) 2009.
  * <br><br>Société : CLS (Collecte Localisation Satellites)
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-04-23 14:16:09 $
+ * @version $Revision: 1.2 $ - $Date: 2009-08-06 14:28:57 $
  */
 public class WPSRequestManagement {
     /**
@@ -53,7 +53,7 @@ public class WPSRequestManagement {
         return motuWPSProcessDataMap.replace(key, value);
     }
 
-     public boolean requestStatusMapContainsKey(ProcessletInputs key) {
+     public boolean motuWPSProcessDataMapContainsKey(ProcessletInputs key) {
         return motuWPSProcessDataMap.containsKey(key);
     }
 

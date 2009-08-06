@@ -16,7 +16,7 @@
 	
 	<property name="schema.xsdfile" value="wpsDescribeProcess_response.xsd" />
 	<property name="proxy.host" value="proxy.cls.fr" />
-	<property name="schema.xjbfile" value="${schema.xsdpath}/binding.xjb" /> 				
+	<property name="schema.xjbfile" value="./binding.xjb" /> 				
 	<path id="classpath">
 		<!--
 		<fileset dir="${project.dir}/../../../cls-commons-config/lib/jaxb" includes="*.jar" />
@@ -73,7 +73,7 @@
 		-->
 		<!-- <schema dir="${schema.xsdpath}" includes="${schema.xsdfile}" /> -->
 		 <!-- <xjc  target="${src.dir}"  package="${schema.package}" removeOldOutput="no"> --> 
-			<xjc  schema="http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" destdir="${src.dir}"  target="2.1" binding="${schema.xjbfile}"  removeOldOutput="no">
+			<xjc  schema="http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd" destdir="${src.dir}"  target="2.1" binding="${schema.xjbfile}"  removeOldOutput="no">
 				<arg value="-extension"/>
 			   
 				<!-- <arg value="-Xdefault-value"/> -->
