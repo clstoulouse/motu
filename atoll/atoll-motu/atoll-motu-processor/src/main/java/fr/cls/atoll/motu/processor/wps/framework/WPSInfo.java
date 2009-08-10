@@ -32,7 +32,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-08-06 14:28:57 $
+ * @version $Revision: 1.2 $ - $Date: 2009-08-10 14:31:01 $
  */
 public class WPSInfo {
     /**
@@ -40,69 +40,62 @@ public class WPSInfo {
      */
     private static final Logger LOG = Logger.getLogger(WPSInfo.class);
 
-
     public WPSInfo(String url) throws MotuException {
-        this.url = url;
+        this.serverUrl = url;
+    }
+
+    protected String serverUrl = null;
+    protected ProcessDescriptions processDescriptions = null;
+
+    /*
+     * protected ConcurrentMap<String, String> xmlNamespaceAliases = new ConcurrentHashMap<String, String>();
+     * public void clearXmlNamespaceAliases() { xmlNamespaceAliases.clear(); } public String
+     * getXmlNamespaceAliases(String key) { return xmlNamespaceAliases.get(key); }
+     * 
+     * public String putIfAbsentXmlNamespaceAliases(String key, String value) { return
+     * xmlNamespaceAliases.putIfAbsent(key, value); } public String putXmlNamespaceAliases(String key, String
+     * value) { return xmlNamespaceAliases.put(key, value); }
+     * 
+     * public String removeXmlNamespaceAliases(String key) { return xmlNamespaceAliases.remove(key); }
+     * 
+     * public String replaceXmlNamespaceAliases(String key, String value) { return
+     * xmlNamespaceAliases.replace(key, value); }
+     * 
+     * public boolean xmlNamespaceAliasesMapContainsKey(String key) { return
+     * xmlNamespaceAliases.containsKey(key); }
+     * 
+     * public Set<String> motuWPSProcessDataKeySet() { return xmlNamespaceAliases.keySet(); }
+     * 
+     * public int xmlNamespaceAliasesSize() { return xmlNamespaceAliases.size(); }
+     */
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
+    public void setServerUrl(String url) {
+        this.serverUrl = url;
+    }
+
+    public ProcessDescriptions getProcessDescriptions() throws MotuException {
+        return loadDescribeProcess();
+    }
+
+    public synchronized void reloadDescribeProcess() throws MotuException {
+        processDescriptions = null;
         loadDescribeProcess();
     }
 
-    protected String url = null;
-    protected ProcessDescriptions processDescriptions = null;
+    public synchronized ProcessDescriptions loadDescribeProcess() throws MotuException {
+        
+        if (processDescriptions != null) {
+            return processDescriptions;
+        }
 
-    protected ConcurrentMap<String, String> xmlNamespaceAliases = new ConcurrentHashMap<String, String>();
-    public void clearXmlNamespaceAliases() {
-        xmlNamespaceAliases.clear();
-    }
-    public String getXmlNamespaceAliases(String key) {
-        return xmlNamespaceAliases.get(key);
-    }
-    
-    public String putIfAbsentXmlNamespaceAliases(String key, String value) {
-        return xmlNamespaceAliases.putIfAbsent(key, value);
-    }
-     public String putXmlNamespaceAliases(String key, String value) {
-        return xmlNamespaceAliases.put(key, value);
-    }
-
-     public String removeXmlNamespaceAliases(String key) {
-        return xmlNamespaceAliases.remove(key);
-    }
-
-     public String replaceXmlNamespaceAliases(String key, String value) {
-        return xmlNamespaceAliases.replace(key, value);
-    }
-
-     public boolean xmlNamespaceAliasesMapContainsKey(String key) {
-        return xmlNamespaceAliases.containsKey(key);
-    }
-
-     public Set<String> motuWPSProcessDataKeySet() {
-        return xmlNamespaceAliases.keySet();
-    }
-
-     public int xmlNamespaceAliasesSize() {
-        return xmlNamespaceAliases.size();
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public ProcessDescriptions getProcessDescriptions() {
-        return processDescriptions;
-    }
-
-    public void loadDescribeProcess() throws MotuException {
-
-        if (url == null) {
+        if (serverUrl == null) {
             throw new MotuException("WPSInfo - Unable to load WPS Process Descriptions (WPS uri is null)");
         }
 
-        InputStream in = WPSUtils.post(url, MotuWPSProcess.WPS_DESCRIBE_ALL_XML);
+        InputStream in = WPSUtils.post(serverUrl, MotuWPSProcess.WPS_DESCRIBE_ALL_XML);
         try {
             JAXBContext jc = JAXBContext.newInstance(MotuWPSProcess.WPS100_SHEMA_PACK_NAME);
             Unmarshaller unmarshaller = jc.createUnmarshaller();
@@ -114,6 +107,7 @@ public class WPSInfo {
         if (processDescriptions == null) {
             throw new MotuException("Unable to load WPS Process Descriptions (processDescriptions is null)");
         }
+        return processDescriptions;
     }
 
     public List<String> getProcessIdentifierValues() throws MotuException {
@@ -154,7 +148,7 @@ public class WPSInfo {
 
     }
 
-    public ProcessDescriptionType getProcessDescrition(String processName) throws MotuException {
+    public ProcessDescriptionType getProcessDescription(String processName) throws MotuException {
 
         if (processDescriptions == null) {
             loadDescribeProcess();
@@ -173,40 +167,47 @@ public class WPSInfo {
 
     public DataInputs getDataInputs(String processName) throws MotuException {
 
-        ProcessDescriptionType processDescriptionType = getProcessDescrition(processName);
+        ProcessDescriptionType processDescriptionType = getProcessDescription(processName);
         DataInputs dataInputs = null;
 
         if (processDescriptionType != null) {
-            dataInputs = processDescriptionType.getDataInputs();            
+            dataInputs = processDescriptionType.getDataInputs();
         }
-        
+
         return dataInputs;
     }
-
 
     public List<InputDescriptionType> getInputDescriptions(String processName) throws MotuException {
 
         DataInputs dataInputs = getDataInputs(processName);
         List<InputDescriptionType> inputDescriptionList = null;
-        
+
         if (dataInputs != null) {
             inputDescriptionList = dataInputs.getInput();
         }
-        
+
         return inputDescriptionList;
     }
 
-    public String getXmlSchemaNamespace(Class<?> clazz) {
-        
-        String namespace = ReflectionUtils.getXmlSchemaNamespace(clazz);
-        
-        if (MotuWPSProcess.isNullOrEmpty(namespace)) {
-            return namespace;
-        }
-        
-        if (!xmlNamespaceAliasesMapContainsKey(namespace)) {
-            putXmlNamespaceAliases(namespace, String.format("ns%d", xmlNamespaceAliasesSize()));
-        }
-        return namespace;        
+    public static boolean isComplexData(InputDescriptionType inputDescriptionType) {
+        return inputDescriptionType.getComplexData() != null;
     }
+
+    public static boolean isLiteralData(InputDescriptionType inputDescriptionType) {
+        return inputDescriptionType.getLiteralData() != null;
+    }
+
+    public static boolean isBoundingBoxData(InputDescriptionType inputDescriptionType) {
+        return inputDescriptionType.getBoundingBoxData() != null;
+    }
+    /*
+     * public String getXmlSchemaNamespace(Class<?> clazz) {
+     * 
+     * String namespace = ReflectionUtils.getXmlSchemaNamespace(clazz);
+     * 
+     * if (MotuWPSProcess.isNullOrEmpty(namespace)) { return namespace; }
+     * 
+     * if (!xmlNamespaceAliasesMapContainsKey(namespace)) { putXmlNamespaceAliases(namespace,
+     * String.format("ns%d", xmlNamespaceAliasesSize())); } return namespace; }
+     */
 }

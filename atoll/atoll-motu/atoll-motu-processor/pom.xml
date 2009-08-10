@@ -36,6 +36,11 @@
 			<artifactId>deegree</artifactId>
 			<version>2.2</version>
 		</dependency>
+        <dependency>
+            <groupId>org.geotoolkit</groupId>
+            <artifactId>geotk-referencing</artifactId>
+            <version>SNAPSHOT</version>
+        </dependency>		
 		<dependency>
 			<groupId>opensymphony</groupId>
 			<artifactId>osworkflow</artifactId>
