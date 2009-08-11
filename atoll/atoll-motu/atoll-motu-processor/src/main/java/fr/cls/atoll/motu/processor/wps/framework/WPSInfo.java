@@ -15,6 +15,7 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.log4j.Logger;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.utils.ReflectionUtils;
 import fr.cls.atoll.motu.processor.opengis.ows110.CodeType;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
@@ -32,7 +33,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-08-10 14:31:01 $
+ * @version $Revision: 1.3 $ - $Date: 2009-08-11 13:50:40 $
  */
 public class WPSInfo {
     /**
@@ -94,7 +95,7 @@ public class WPSInfo {
         if (serverUrl == null) {
             throw new MotuException("WPSInfo - Unable to load WPS Process Descriptions (WPS uri is null)");
         }
-
+        
         InputStream in = WPSUtils.post(serverUrl, MotuWPSProcess.WPS_DESCRIBE_ALL_XML);
         try {
             JAXBContext jc = JAXBContext.newInstance(MotuWPSProcess.WPS100_SHEMA_PACK_NAME);

@@ -29,6 +29,7 @@ import fr.cls.atoll.motu.processor.opengis.wps100.DescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
+import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
 
 /**
  * <br>
@@ -38,7 +39,7 @@ import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.8 $ - $Date: 2009-08-06 14:28:57 $
+ * @version $Revision: 1.9 $ - $Date: 2009-08-11 13:50:40 $
  */
 public class TestWPS {
     /**
@@ -58,13 +59,17 @@ public class TestWPS {
      */
     public static void main(String[] args) {
 
+        ProductExtraction motuWPSProcess = new ProductExtraction();
+        
+        testBuildWPS();
+        
         // for (ErrorType c: ErrorType.values()) {
         // if (c.toString().equalsIgnoreCase("system")) {
         // System.out.println(c.toString());
         // }
         // }
 
-        // testBodyPost();
+        //testBodyPost();
         // testUTF8EncodeDecode();
 
         // TestWPS test = new TestWPS();
@@ -110,12 +115,13 @@ public class TestWPS {
         // getDescribeProcess();
 
         //testPackageAnnotation();
-        testGetFields();
+        //testGetFields();
     }
 
     public static void testBodyPost() {
 
         String href = "http://localhost:8080/atoll-motuservlet/services";
+
         String postBodyString = "<wps:Execute  xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" service=\"WPS\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd\">                        <ows:Identifier>TestAdd</ows:Identifier>                        <wps:DataInputs>                            <wps:Input>                             <ows:Identifier>A</ows:Identifier>                              <wps:Data>                                  <wps:ComplexData>10</wps:ComplexData>                               </wps:Data>                         </wps:Input>                            <wps:Input>                             <ows:Identifier>B</ows:Identifier>                              <wps:Data>                                  <wps:ComplexData>8</wps:ComplexData>                                </wps:Data>                         </wps:Input>                        </wps:DataInputs>                   <wps:ResponseForm>                          <wps:RawDataOutput mimeType=\"text/plain\">                             <ows:Identifier>C</ows:Identifier>                          </wps:RawDataOutput>                        </wps:ResponseForm>           </wps:Execute>              </wps:Body>";
         LOG.debug("Using post body '" + postBodyString + "'");
         // TODO what about the encoding here?
@@ -340,5 +346,17 @@ public class TestWPS {
         }
     }
 
+    public static void testBuildWPS() {
+        String serverURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/services";
+        
+        try {
+            WPSFactory wpsFactory = new WPSFactory(serverURL);
+            
+        } catch (MotuException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+    }
 
 }
