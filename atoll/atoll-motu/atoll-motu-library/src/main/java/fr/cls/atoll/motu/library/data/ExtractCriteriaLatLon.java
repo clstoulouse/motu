@@ -47,7 +47,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
  * data (for extraction/selection and research).
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-07-02 08:27:29 $
+ * @version $Revision: 1.5 $ - $Date: 2009-08-11 13:50:31 $
  * 
  */
 public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
@@ -55,19 +55,19 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
     /**
      * Latitude min.
      */
-    protected final static String LATITUDE_MIN = "-90";
+    public final static String LATITUDE_MIN = "-90";
     /**
      * Latitude max.
      */
-    protected final static String LATITUDE_MAX = "90";
+    public final static String LATITUDE_MAX = "90";
     /**
      * Longitude min.
      */
-    protected final static String LONGITUDE_MIN = "-180";
+    public final static String LONGITUDE_MIN = "-180";
     /**
      * Longitude max.
      */
-    protected final static String LONGITUDE_MAX = "180";
+    public final static String LONGITUDE_MAX = "180";
 
     /**
      * Default constructor.

@@ -27,7 +27,11 @@
 			<artifactId>freemarker</artifactId>
 			<version>2.3.15</version>
 		</dependency>
-		
+        <dependency>
+            <groupId>org.geotoolkit</groupId>
+            <artifactId>geotk-referencing</artifactId>
+            <version>SNAPSHOT</version>
+        </dependency>				
 		<dependency>
 			<groupId>org.globus</groupId>
 			<artifactId>cog-jglobus</artifactId>
