@@ -40,7 +40,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-08-11 13:50:40 $
+ * @version $Revision: 1.4 $ - $Date: 2009-08-11 15:04:07 $
  */
 public class WPSFactory {
     /**
@@ -96,7 +96,17 @@ public class WPSFactory {
             LOG.debug("initJAXBWPS() - exiting");
         }
     }
+    public void createExecuteProcessRequest(Map<String, ParameterValue<?>> dataInputValues, String processName) 
+    throws MotuException {
 
+        ProcessDescriptionType processDescriptionType = getWpsInfoInstance().getProcessDescription(processName);
+        
+        if (processDescriptionType == null) {
+            throw new MotuException(String.format("WPSFactory#createExecuteProcessRequest : Unknown process name '%'", processName));
+        }
+        createExecuteProcessRequest(dataInputValues, processDescriptionType);
+        
+    }
     public void createExecuteProcessRequest(Map<String, ParameterValue<?>> dataInputValues, ProcessDescriptionType processDescriptionType)
             throws MotuException {
 

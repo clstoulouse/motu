@@ -3,7 +3,6 @@ package fr.cls.atoll.motu.processor.wps;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.deegree.ogcwebservices.wps.describeprocess.ComplexData;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
@@ -21,7 +20,7 @@ import org.deegree.services.wps.output.LiteralOutput;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-06-11 14:46:23 $
+ * @version $Revision: 1.4 $ - $Date: 2009-08-11 15:04:08 $
  */
 public class MotuWPSProcessData {
     /**

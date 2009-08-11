@@ -18,7 +18,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-08-06 14:28:57 $
+ * @version $Revision: 1.2 $ - $Date: 2009-08-11 15:04:07 $
  */
 public class WPSUtils {
 
@@ -27,7 +27,7 @@ public class WPSUtils {
 
     public static InputStream post(String url, String xmlFile) throws MotuException {
 
-        if (MotuWPSProcess.isNullOrEmpty(url)) {
+        if (Organizer.isNullOrEmpty(url)) {
             throw new MotuException("WPSUtils#post - Unable to process : url is null or empty.");
         }
 

@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,6 +23,11 @@ import javax.xml.bind.annotation.XmlSchema;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
 import org.deegree.commons.utils.HttpUtils;
+import org.geotoolkit.io.wkt.Formatter;
+import org.geotoolkit.parameter.DefaultParameterDescriptor;
+import org.geotoolkit.parameter.Parameter;
+import org.opengis.parameter.ParameterDescriptor;
+import org.opengis.parameter.ParameterValue;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
@@ -29,6 +35,7 @@ import fr.cls.atoll.motu.processor.opengis.wps100.DescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
+import fr.cls.atoll.motu.processor.wps.TestParameter.Liste;
 import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
 
 /**
@@ -39,7 +46,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.9 $ - $Date: 2009-08-11 13:50:40 $
+ * @version $Revision: 1.10 $ - $Date: 2009-08-11 15:04:08 $
  */
 public class TestWPS {
     /**
@@ -51,6 +58,7 @@ public class TestWPS {
         public GetObjectId() {
         }
     }
+    
 
     /**
      * .
@@ -59,7 +67,6 @@ public class TestWPS {
      */
     public static void main(String[] args) {
 
-        ProductExtraction motuWPSProcess = new ProductExtraction();
         
         testBuildWPS();
         
@@ -351,6 +358,31 @@ public class TestWPS {
         
         try {
             WPSFactory wpsFactory = new WPSFactory(serverURL);
+            
+            Map<String, ParameterValue<?>> dataInputValues = new HashMap<String, ParameterValue<?>>();
+            
+            List<String> list = new ArrayList<String>();
+            list.add("a");
+            list.add("b");
+            list.add("c");
+
+            ParameterDescriptor<String> descriptor = new DefaultParameterDescriptor<String>("service", String.class, null, null);
+            ParameterValue<?> parameter = new Parameter<String>(descriptor);
+            parameter.setValue("myservice");
+
+            System.out.println(descriptor.getName().getCode());
+            
+            dataInputValues.put(descriptor.getName().getCode(), parameter);
+
+            ParameterDescriptor<List<String>> descriptor2 = new DefaultParameterDescriptor<List<String>>("variable", (Class<List<String>>) list.getClass(), null, null);
+            parameter = new Parameter<List<String>>(descriptor2);
+            parameter.setValue(list);
+            
+            System.out.println(descriptor2.getName().getCode());
+            
+            dataInputValues.put(descriptor2.getName().getCode(), parameter);
+            
+            wpsFactory.createExecuteProcessRequest(dataInputValues, "ExtractData");            
             
         } catch (MotuException e) {
             // TODO Auto-generated catch block
