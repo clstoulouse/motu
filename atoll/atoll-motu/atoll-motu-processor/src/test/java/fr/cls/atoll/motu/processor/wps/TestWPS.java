@@ -1,6 +1,7 @@
 package fr.cls.atoll.motu.processor.wps;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -28,10 +29,13 @@ import org.geotoolkit.parameter.DefaultParameterDescriptor;
 import org.geotoolkit.parameter.Parameter;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
+import org.w3c.dom.Element;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.processor.opengis.wps100.DescriptionType;
+import fr.cls.atoll.motu.processor.opengis.wps100.Execute;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
@@ -46,7 +50,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.10 $ - $Date: 2009-08-11 15:04:08 $
+ * @version $Revision: 1.11 $ - $Date: 2009-08-13 15:39:11 $
  */
 public class TestWPS {
     /**
@@ -58,7 +62,6 @@ public class TestWPS {
         public GetObjectId() {
         }
     }
-    
 
     /**
      * .
@@ -67,16 +70,15 @@ public class TestWPS {
      */
     public static void main(String[] args) {
 
-        
         testBuildWPS();
-        
+
         // for (ErrorType c: ErrorType.values()) {
         // if (c.toString().equalsIgnoreCase("system")) {
         // System.out.println(c.toString());
         // }
         // }
 
-        //testBodyPost();
+        // testBodyPost();
         // testUTF8EncodeDecode();
 
         // TestWPS test = new TestWPS();
@@ -121,8 +123,8 @@ public class TestWPS {
         // }
         // getDescribeProcess();
 
-        //testPackageAnnotation();
-        //testGetFields();
+        // testPackageAnnotation();
+        // testGetFields();
     }
 
     public static void testBodyPost() {
@@ -332,16 +334,15 @@ public class TestWPS {
         }
         System.out.println(namespace);
     }
-    
+
     public static List<Field> getAllFields(List<Field> fields, Class<?> type) {
         if (type.getSuperclass() != null) {
             fields = getAllFields(fields, type.getSuperclass());
         }
 
-        for (Field field: type.getDeclaredFields()) {
+        for (Field field : type.getDeclaredFields()) {
             fields.add(field);
         }
-
 
         return fields;
     }
@@ -355,12 +356,12 @@ public class TestWPS {
 
     public static void testBuildWPS() {
         String serverURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/services";
-        
+
         try {
             WPSFactory wpsFactory = new WPSFactory(serverURL);
-            
+
             Map<String, ParameterValue<?>> dataInputValues = new HashMap<String, ParameterValue<?>>();
-            
+
             List<String> list = new ArrayList<String>();
             list.add("a");
             list.add("b");
@@ -371,24 +372,54 @@ public class TestWPS {
             parameter.setValue("myservice");
 
             System.out.println(descriptor.getName().getCode());
-            
+
             dataInputValues.put(descriptor.getName().getCode(), parameter);
 
-            ParameterDescriptor<List<String>> descriptor2 = new DefaultParameterDescriptor<List<String>>("variable", (Class<List<String>>) list.getClass(), null, null);
+            ParameterDescriptor<List<String>> descriptor2 = new DefaultParameterDescriptor<List<String>>("variable", (Class<List<String>>) list
+                    .getClass(), null, null);
             parameter = new Parameter<List<String>>(descriptor2);
             parameter.setValue(list);
-            
+
             System.out.println(descriptor2.getName().getCode());
-            
+
             dataInputValues.put(descriptor2.getName().getCode(), parameter);
-            
-            wpsFactory.createExecuteProcessRequest(dataInputValues, "ExtractData");            
-            
+
+            Execute execute = wpsFactory.createExecuteProcessRequest(dataInputValues, "ExtractData");
+
+            FileWriter writer = new FileWriter("WPSExecute.xml");
+
+            String schemaLocationKey = String.format("%s%s", wpsFactory.getWpsInfoInstance().getProcessDescriptions().getService(), wpsFactory
+                    .getWpsInfoInstance().getProcessDescriptions().getVersion());
+            WPSFactory.marshallExecute(execute, writer, WPSFactory.getSchemaLocations().get(schemaLocationKey));
+
+            dataInputValues.clear();
+
+            Integer val = 1023654;
+            //String val = "1023654";
+            System.out.println(val.getClass());
+
+            ParameterValue<?> parameterValue = WPSFactory.createParameter("requestid", val.getClass(), val);
+            System.out.println(parameterValue.getValue().getClass());
+
+            dataInputValues.put(parameterValue.getDescriptor().getName().getCode(), parameterValue);
+
+            execute = wpsFactory.createExecuteProcessRequest(dataInputValues, "CompressExtraction");
+
+            writer = new FileWriter("WPSExecute2.xml");
+
+            WPSFactory.marshallExecute(execute, writer, WPSFactory.getSchemaLocations().get(schemaLocationKey));
+
         } catch (MotuException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MotuMarshallException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        
+
     }
 
 }

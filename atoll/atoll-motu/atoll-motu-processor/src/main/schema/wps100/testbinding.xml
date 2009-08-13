@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" jaxb:version="2.1">
+	<jaxb:globalBindings>
+
+		<xjc:generateElementProperty>false</xjc:generateElementProperty>
+
+	</jaxb:globalBindings>
+	<jaxb:bindings schemaLocation="test.xsd">
+		<jaxb:bindings node="//xs:complexType[@name='TestComplexDataType']">
+		<jaxb:bindings node="./xs:element[@name='contenu']">
+
+			<jaxb:property>
+				<jaxb:baseType name="java.lang.Object"><!--
+
+					<jaxb:javaType name="java.lang.Object" parseMethod="parseComplexData"
+						printMethod="printComplexData">
+
+					</jaxb:javaType>
+
+				--></jaxb:baseType>
+			</jaxb:property>
+
+		</jaxb:bindings>
+		</jaxb:bindings>
+
+	</jaxb:bindings>
+
+</jaxb:bindings>
+
+

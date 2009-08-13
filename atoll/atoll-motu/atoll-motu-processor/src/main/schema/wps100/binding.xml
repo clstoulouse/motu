@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" jaxb:version="2.1">
+	<!--  jaxb:extensionBindingPrefixes="xjc"> -->
+	<jaxb:globalBindings>
+
+		<xjc:generateElementProperty>false</xjc:generateElementProperty>
+		
+		<!--
+
+		<xjc:javaType name="java.lang.Object" xmlType="xs:anyType"
+			adapter="fr.cls.atoll.motu.library.converter.jaxb.UriAdapter" />
+			
+	-->
+	</jaxb:globalBindings>
+	<jaxb:bindings xmlns:tns="http://schemas.opengis.net/wps/1.0.0/"
+		xmlns="http://java.sun.com/xml/ns/jaxb" version="2.1">
+		<jaxb:bindings schemaLocation="http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
+			<jaxb:schemaBindings>
+				<jaxb:package name="fr.cls.atoll.motu.processor.opengis.wps100" />
+			</jaxb:schemaBindings>
+
+		</jaxb:bindings>
+		<!-- 
+		<jaxb:bindings
+			schemaLocation="http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+			<jaxb:bindings
+				node="//xs:complexType[@name='ComplexDataType']/xs:complexContent">
+
+			<jaxb:bindings
+				node="./element[@name='content']">
+				<jaxb:property>
+					<jaxb:baseType>
+
+						<jaxb:javaType name="java.lang.Object" parseMethod="parseComplexData"
+							printMethod="printComplexData">
+
+						</jaxb:javaType>
+
+					</jaxb:baseType>
+				</jaxb:property>
+
+			</jaxb:bindings>
+
+		</jaxb:bindings>
+
+-->
+	</jaxb:bindings>
+	<!--
+		<jaxb:bindings
+		schemaLocation="http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+		<jaxb:bindings node="//xs:complexType[@name='ComplexDataType']">
+
+		<jaxb:property> <jaxb:baseType> <jaxb:javaType name="java.lang.Object"
+		parseMethod="parseComplexData" printMethod="printComplexData">
+
+		</jaxb:javaType> </jaxb:baseType> </jaxb:property> </jaxb:bindings>
+
+		</jaxb:bindings>
+	-->
+	<jaxb:bindings xmlns:tns="http://schemas.opengis.net/ows/1.1.0/"
+		xmlns="http://java.sun.com/xml/ns/jaxb" version="2.1">
+		<jaxb:bindings schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsAll.xsd">
+			<jaxb:schemaBindings>
+				<jaxb:package name="fr.cls.atoll.motu.processor.opengis.ows110" />
+			</jaxb:schemaBindings>
+		</jaxb:bindings>
+	</jaxb:bindings>
+
+</jaxb:bindings>
+
+

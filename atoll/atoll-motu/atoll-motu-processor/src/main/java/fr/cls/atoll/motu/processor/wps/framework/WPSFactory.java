@@ -1,18 +1,32 @@
 package fr.cls.atoll.motu.processor.wps.framework;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.apache.log4j.Logger;
+import org.geotoolkit.parameter.DefaultParameterDescriptor;
+import org.geotoolkit.parameter.Parameter;
 import org.opengis.parameter.InvalidParameterTypeException;
+import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
+
+import com.sun.xml.bind.v2.model.core.Adapter;
 
 import fr.cls.atoll.motu.library.data.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.exception.MotuMarshallException;
+import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.processor.opengis.ows110.BoundingBoxType;
 import fr.cls.atoll.motu.processor.opengis.ows110.CodeType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ComplexDataCombinationsType;
@@ -40,7 +54,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-08-11 15:04:07 $
+ * @version $Revision: 1.5 $ - $Date: 2009-08-13 15:38:44 $
  */
 public class WPSFactory {
     /**
@@ -55,6 +69,12 @@ public class WPSFactory {
 
     protected static WPSInfo wpsInfo = null;
 
+    protected static ConcurrentMap<String, String> schemaLocations = new ConcurrentHashMap<String, String>();
+
+    public static ConcurrentMap<String, String> getSchemaLocations() {
+        return schemaLocations;
+    }
+
     public WPSInfo getWpsInfoInstance() throws MotuException {
         if (wpsInfo == null) {
             wpsInfo.loadDescribeProcess();
@@ -64,9 +84,15 @@ public class WPSFactory {
 
     public WPSFactory(String url) throws MotuException {
 
+        WPSFactory.initSchemaLocations();
         WPSFactory.initJAXBWPS();
         wpsInfo = new WPSInfo(url);
         wpsInfo.loadDescribeProcess();
+
+    }
+
+    private static void initSchemaLocations() throws MotuException {
+        WPSFactory.schemaLocations.putIfAbsent("WPS1.0.0", "http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd");
 
     }
 
@@ -96,18 +122,19 @@ public class WPSFactory {
             LOG.debug("initJAXBWPS() - exiting");
         }
     }
-    public void createExecuteProcessRequest(Map<String, ParameterValue<?>> dataInputValues, String processName) 
-    throws MotuException {
+
+    public Execute createExecuteProcessRequest(Map<String, ParameterValue<?>> dataInputValues, String processName) throws MotuException {
 
         ProcessDescriptionType processDescriptionType = getWpsInfoInstance().getProcessDescription(processName);
-        
+
         if (processDescriptionType == null) {
             throw new MotuException(String.format("WPSFactory#createExecuteProcessRequest : Unknown process name '%'", processName));
         }
-        createExecuteProcessRequest(dataInputValues, processDescriptionType);
-        
+        return createExecuteProcessRequest(dataInputValues, processDescriptionType);
+
     }
-    public void createExecuteProcessRequest(Map<String, ParameterValue<?>> dataInputValues, ProcessDescriptionType processDescriptionType)
+
+    public Execute createExecuteProcessRequest(Map<String, ParameterValue<?>> dataInputValues, ProcessDescriptionType processDescriptionType)
             throws MotuException {
 
         if (processDescriptionType == null) {
@@ -131,55 +158,92 @@ public class WPSFactory {
         for (InputDescriptionType inputDescriptionType : inputs) {
 
             String identifier = inputDescriptionType.getIdentifier().getValue();
-            ParameterValue<?> inputValue = dataInputValues.get(identifier);
+            ParameterValue<?> parameterValue = dataInputValues.get(identifier);
 
-            
-            if (inputValue == null) {
+            if (parameterValue == null) {
                 continue;
             }
 
-            InputType inputType = createInputType(inputDescriptionType);
-            DataType dataType = createInputDataType(inputDescriptionType, inputValue);
+            Object inputValue = parameterValue.getValue();
+            List<?> valueList = null;
 
-            if (dataType == null) {
+            if (inputValue instanceof Map) {
+                valueList = (List<?>) ((Map<?, ?>) inputValue).values();
+            } else if (inputValue instanceof List) {
+                valueList = (List<?>) inputValue;
+            } else if (inputValue instanceof Collection) {
+                throw new MotuException(
+                        String
+                                .format("WPSFactory#createExecuteProcessRequest : the value of the parameter '%s' is a collection which is not supported : '%s'",
+                                        identifier,
+                                        inputValue.getClass()));
+            } else {
+                List<Object> list = new ArrayList<Object>();
+                list.add(inputValue);
+                valueList = list;
+            }
+
+            if (valueList.isEmpty()) {
                 continue;
             }
-            
-            inputType.setData(dataType);
-            // inputType.setReference(value)
 
-            dataInputsType.getInput().add(inputType);
+            Object object = valueList.get(0);
+            @SuppressWarnings("unchecked")
+            ParameterDescriptor parameterDescriptor = new DefaultParameterDescriptor(identifier, null, object.getClass(), null, true);
+            @SuppressWarnings("unchecked")
+            Parameter parameterValueUsed = new Parameter(parameterDescriptor);
+
+            for (Object inValue : valueList) {
+
+                parameterValueUsed.setValue(inValue);
+
+                InputType inputType = createInputType(inputDescriptionType);
+                DataType dataType = createInputDataType(inputDescriptionType, parameterValueUsed);
+
+                if (dataType == null) {
+                    continue;
+                }
+
+                inputType.setData(dataType);
+                // inputType.setReference(value)
+
+                dataInputsType.getInput().add(inputType);
+            }
 
         }
-//
-//Iterator iterator = inputs.iterator();
-//while (iterator.hasNext()) { InputDescriptionType idt =
-// (InputDescriptionType) iterator.next(); String identifier = idt.getIdentifier().getValue(); Object
-//inputValue = input.get(identifier); if (inputValue != null) { // if our value is some sort of
-// collection, then created multiple // dataTypes for this inputdescriptiontype. List<DataType> list =
-// new ArrayList<DataType>(); if (inputValue instanceof Map) { for (Object inVal : ((Map)
-//  inputValue).values()) { DataType createdInput = WPSUtils.createInputDataType(inVal, idt);
-//  list.add(createdInput); } } else if (inputValue instanceof Collection) { for (Object inVal :
-//  (Collection) inputValue) { DataType createdInput = WPSUtils.createInputDataType(inVal, idt);
-//  list.add(createdInput); } } else { // our value is a single object so create a single datatype for
-//  it DataType createdInput = WPSUtils.createInputDataType(inputValue, idt); list.add(createdInput); }
-//  // add the input to the execute request exeRequest.addInput(identifier, list); } }
-//  
-//  // send the request and get the response ExecuteProcessResponse response; try { response =
-//  wps.issueRequest(exeRequest); } catch (ServiceException e) { return null; } catch (IOException e) {
-//  return null; }
-//  
-//  // if there is an exception in the response, return null // TODO: properly handle the exception? if
-//  (response.getExceptionResponse() != null || response.getExecuteResponse() == null) { return null; }
-//  
-//  // get response object and create a map of outputs from it ExecuteResponseType executeResponse =
-//  response.getExecuteResponse();
-//  
-//  // create the result map of outputs Map<String, Object> results = new TreeMap<String, Object>();
-//  results = WPSUtils.createResultMap(executeResponse, results);
-//  
-//  return results;
-// 
+
+        execute.setDataInputs(dataInputsType);
+
+        return execute;
+        //
+        // Iterator iterator = inputs.iterator();
+        // while (iterator.hasNext()) { InputDescriptionType idt =
+        // (InputDescriptionType) iterator.next(); String identifier = idt.getIdentifier().getValue(); Object
+        // inputValue = input.get(identifier); if (inputValue != null) { // if our value is some sort of
+        // collection, then created multiple // dataTypes for this inputdescriptiontype. List<DataType> list =
+        // new ArrayList<DataType>(); if (inputValue instanceof Map) { for (Object inVal : ((Map)
+        // inputValue).values()) { DataType createdInput = WPSUtils.createInputDataType(inVal, idt);
+        // list.add(createdInput); } } else if (inputValue instanceof Collection) { for (Object inVal :
+        // (Collection) inputValue) { DataType createdInput = WPSUtils.createInputDataType(inVal, idt);
+        // list.add(createdInput); } } else { // our value is a single object so create a single datatype for
+        // it DataType createdInput = WPSUtils.createInputDataType(inputValue, idt); list.add(createdInput); }
+        // // add the input to the execute request exeRequest.addInput(identifier, list); } }
+        //  
+        // // send the request and get the response ExecuteProcessResponse response; try { response =
+        // wps.issueRequest(exeRequest); } catch (ServiceException e) { return null; } catch (IOException e) {
+        // return null; }
+        //  
+        // // if there is an exception in the response, return null // TODO: properly handle the exception? if
+        // (response.getExceptionResponse() != null || response.getExecuteResponse() == null) { return null; }
+        //  
+        // // get response object and create a map of outputs from it ExecuteResponseType executeResponse =
+        // response.getExecuteResponse();
+        //  
+        // // create the result map of outputs Map<String, Object> results = new TreeMap<String, Object>();
+        // results = WPSUtils.createResultMap(executeResponse, results);
+        //  
+        // return results;
+        // 
 
     }
 
@@ -232,6 +296,12 @@ public class WPSFactory {
         return newIdentifier;
     }
 
+    // public DataType createInputDataType(InputDescriptionType inputDescriptionType, ParameterValue<?>
+    // parameterValue) throws MotuException {
+    //        
+    // return createInputDataType(inputDescriptionType, parameterValue.getValue());
+    //        
+    // }
     public DataType createInputDataType(InputDescriptionType inputDescriptionType, ParameterValue<?> parameterValue) throws MotuException {
         if (inputDescriptionType == null) {
             throw new MotuException("WPSFactory#createInputDataType : createInputDataType is null");
@@ -290,22 +360,6 @@ public class WPSFactory {
         LiteralDataType literalDataType = objectFactoryWPS.createLiteralDataType();
         literalDataType.setDataType(literalInputType.getDataType().getValue());
 
-        // Collection<?> valueList = null;
-        //        
-        // if (inputValue instanceof Map) {
-        // valueList = ((Map<?,?>)inputValue).values();
-        // } else if (inputValue instanceof Collection) {
-        // valueList = (Collection<?>)inputValue;
-        // }
-        //
-        // if (valueList != null) {
-        // for (Object inValue : valueList) {
-        // DataType createdInput = WPSUtils.createInputDataType(inVal, idt);
-        // list.add(createdInput);
-        // }
-        //
-        // }
-
         try {
             literalDataType.setValue(parameterValue.stringValue());
         } catch (InvalidParameterTypeException e) {
@@ -328,8 +382,9 @@ public class WPSFactory {
             return null;
         }
 
+        
         ComplexDataType complexDataType = objectFactoryWPS.createComplexDataType();
-        complexDataType.getContent().add(parameterValue);
+        complexDataType.getContent().add(parameterValue.getValue());
 
         ComplexDataCombinationsType complexDataCombinationsType = complexDataInputType.getSupported();
         ComplexDataDescriptionType complexDataDescriptionType = null;
@@ -337,10 +392,11 @@ public class WPSFactory {
         if (complexDataCombinationsType != null) {
             complexDataDescriptionType = (ComplexDataDescriptionType) complexDataCombinationsType.getFormat().get(0);
         }
-
+        
         if (complexDataDescriptionType != null) {
             complexDataType.setSchema(complexDataDescriptionType.getSchema());
             complexDataType.setEncoding(complexDataDescriptionType.getEncoding());
+            complexDataType.setMimeType(complexDataDescriptionType.getMimeType());
         }
 
         DataType dataType = objectFactoryWPS.createDataType();
@@ -399,5 +455,39 @@ public class WPSFactory {
         return dataType;
 
     }
+
+    public static void marshallExecute(Execute execute, Writer writer, String schemaLocation) throws MotuMarshallException {
+        if (writer == null) {
+            return;
+        }
+
+        try {
+            synchronized (WPSFactory.marshallerWPS) {
+                WPSFactory.marshallerWPS.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "");
+                if (!Organizer.isNullOrEmpty(schemaLocation)) {
+                    WPSFactory.marshallerWPS.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaLocation);
+                }
+                
+                WPSFactory.marshallerWPS.marshal(execute, writer);
+                writer.flush();
+                writer.close();
+            }
+        } catch (JAXBException e) {
+            throw new MotuMarshallException("Error in WPSFactory - marshallExecute", e);
+        } catch (IOException e) {
+            throw new MotuMarshallException("Error in WPSFactory - marshallExecute", e);
+        }
+
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static  Parameter createParameter(final String name, final Class<?> type, final Object value) {
+        final ParameterDescriptor descriptor = new DefaultParameterDescriptor(name, null, type, null, true);
+        final Parameter parameter = new Parameter(descriptor);
+        
+        parameter.setValue(value);
+        return parameter;
+    }
+
 
 }

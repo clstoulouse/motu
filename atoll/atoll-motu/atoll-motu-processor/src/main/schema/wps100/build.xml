@@ -16,7 +16,7 @@
 	
 	<property name="schema.xsdfile" value="wpsDescribeProcess_response.xsd" />
 	<property name="proxy.host" value="proxy.cls.fr" />
-	<property name="schema.xjbfile" value="./binding.xjb" /> 				
+	<property name="schema.xjbfile" value="./binding.xml" /> 				
 	<path id="classpath">
 		<!--
 		<fileset dir="${project.dir}/../../../cls-commons-config/lib/jaxb" includes="*.jar" />
@@ -26,6 +26,7 @@
 		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-xjc/2.1.7" includes="*.jar" />
 		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-impl/2.1.10" includes="*.jar" />
 		-->
+		
 		<fileset dir="${m2repository.dir}/org/jvnet/jaxb2_commons/jaxb-xjc/2.1.10" includes="*.jar" />
 		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-impl/2.1.10" includes="*.jar" />
 		<fileset dir="${m2repository.dir}/com/sun/istack/istack-commons-tools/1.1" includes="*.jar" />
@@ -33,7 +34,9 @@
 		<fileset dir="${m2repository.dir}/com/sun/codemodel/codemodel/2.1" includes="*.jar" />
 		<fileset dir="${m2repository.dir}/com/sun/xsom/xsom/20081112" includes="*.jar" />
 		<fileset dir="${m2repository.dir}/org/kohsuke/rngom/rngom/20061207" includes="*.jar" />
+		
 		<!-- <pathelement location="${m2repository.dir}/javax/xml/defaultvalueplugin/1.0/defaultvalueplugin-1.0.jar"/> -->
+		<!-- <fileset dir="C:\Downloads\jaxb-ri-20090410\lib" includes="*.jar" /> -->
 	</path>
 
 	<!-- 
@@ -73,9 +76,14 @@
 		-->
 		<!-- <schema dir="${schema.xsdpath}" includes="${schema.xsdfile}" /> -->
 		 <!-- <xjc  target="${src.dir}"  package="${schema.package}" removeOldOutput="no"> --> 
-			<xjc  schema="http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd" destdir="${src.dir}"  target="2.1" binding="${schema.xjbfile}"  removeOldOutput="no">
-				<arg value="-extension"/>
-			   
+		<!--
+		-->			
+		<!--
+		<xjc  schema="test.xsd" destdir="${src.dir}"  target="2.1" binding="${schema.xjbfile}"  removeOldOutput="no">
+			<arg value="-extension"/>
+			   -->
+		<xjc  schema="http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd" destdir="${src.dir}"  target="2.1" binding="${schema.xjbfile}"  removeOldOutput="no">
+			 <arg value="-extension"/>
 				<!-- <arg value="-Xdefault-value"/> -->
 				<produces dir="${src.dir}" />
 		</xjc>
