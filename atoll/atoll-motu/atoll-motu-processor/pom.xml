@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>atoll-motu</artifactId>
 		<groupId>cls.atoll</groupId>
@@ -7,9 +8,9 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cls.atoll.motu</groupId>
-	<artifactId>atoll-motu-processor</artifactId>	
+	<artifactId>atoll-motu-processor</artifactId>
 	<packaging>jar</packaging>
-	<version>2.0.0-SNAPSHOT</version>	
+	<version>2.0.0-SNAPSHOT</version>
 	<name>ATOLL Motu Processors</name>
 	<scm>
 		<connection>scm:cvs:pserver:@cvsserver.cls.fr:/home/cvs/REPOSITORIES/mvn-atoll:atoll/atoll-motu/atoll-motu-processor</connection>
@@ -25,17 +26,36 @@
 			<groupId>cls.atoll.motu</groupId>
 			<artifactId>atoll-motu-msg</artifactId>
 			<version>2.0.0-SNAPSHOT</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>org.deegree</groupId>
 			<artifactId>deegree-services</artifactId>
 			<version>3.0-alpha2-dev1</version>
 		</dependency>
-        <dependency>
-            <groupId>org.geotoolkit</groupId>
-            <artifactId>geotk-referencing</artifactId>
-            <version>SNAPSHOT</version>
-        </dependency>		
+		<dependency>
+			<groupId>org.geotoolkit</groupId>
+			<artifactId>geotk-referencing</artifactId>
+			<version>SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jvnet.ogc</groupId>
+<!-- 			<artifactId>iso-19139-d_2006_05_04-schema</artifactId>  -->
+			<artifactId>iso-19139-d_2007_04_17-schema</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.geotoolkit</groupId>
+			<artifactId>geotk-metadata</artifactId>
+			<version>SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.geomatys</groupId>
+			<artifactId>service</artifactId>
+			<version>0.4-SNAPSHOT</version>
+		</dependency>
+
 		<dependency>
 			<groupId>opensymphony</groupId>
 			<artifactId>osworkflow</artifactId>
@@ -74,14 +94,14 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-		  <groupId>com.sun.xml.bind</groupId>
-		  <artifactId>jaxb-impl</artifactId>
-		  <version>2.1.10</version>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.1.10</version>
 		</dependency>
 		<dependency>
-		  <groupId>org.jvnet.jaxb2_commons</groupId>
-		  <artifactId>jaxb-xjc</artifactId>
-		  <version>2.1.10</version>
+			<groupId>org.jvnet.jaxb2_commons</groupId>
+			<artifactId>jaxb-xjc</artifactId>
+			<version>2.1.10</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -92,5 +112,5 @@
 
 
 	</dependencies>
-		
+
 </project>

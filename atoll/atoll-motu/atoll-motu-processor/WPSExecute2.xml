@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:Execute language="en" version="1.0.0" service="WPS" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd" xmlns:ns2="http://www.opengis.net/wps/1.0.0" xmlns:ns1="http://www.opengis.net/ows/1.1" xmlns:ns3="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ns1:Identifier>CompressExtraction</ns1:Identifier>
+    <ns2:DataInputs>
+        <ns2:Input>
+            <ns1:Identifier>requestid</ns1:Identifier>
+            <ns1:Title>The unique id of the request</ns1:Title>
+            <ns2:Data>
+                <ns2:ComplexData encoding="UTF-8" mimeType="text/plain">1023654</ns2:ComplexData>
+            </ns2:Data>
+        </ns2:Input>
+    </ns2:DataInputs>
+</ns2:Execute>

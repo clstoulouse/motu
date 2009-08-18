@@ -50,7 +50,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.11 $ - $Date: 2009-08-13 15:39:11 $
+ * @version $Revision: 1.12 $ - $Date: 2009-08-18 15:12:19 $
  */
 public class TestWPS {
     /**
@@ -384,6 +384,23 @@ public class TestWPS {
 
             dataInputValues.put(descriptor2.getName().getCode(), parameter);
 
+            //Map geobbox = new HashMap<String, String>();
+            //String geobbox ="-10, -60, 45, 120";
+            double[] geobbox = new double[]{-10d, -60d, 45d, 120d};
+            System.out.println(geobbox.getClass());
+
+            ParameterValue<?> parameterValue = WPSFactory.createParameter("geobbox", geobbox.getClass(), geobbox);
+            System.out.println(parameterValue.getValue().getClass());
+
+            dataInputValues.put(parameterValue.getDescriptor().getName().getCode(), parameterValue);
+            
+            double depth = 0d;
+            parameterValue = WPSFactory.createParameter("lowdepth", depth);
+            System.out.println(parameterValue.getValue().getClass());
+
+            dataInputValues.put(parameterValue.getDescriptor().getName().getCode(), parameterValue);
+            
+            
             Execute execute = wpsFactory.createExecuteProcessRequest(dataInputValues, "ExtractData");
 
             FileWriter writer = new FileWriter("WPSExecute.xml");
@@ -394,11 +411,13 @@ public class TestWPS {
 
             dataInputValues.clear();
 
-            Integer val = 1023654;
+            Long val = 1023654l;
+            //Integer val = 1023654;
+            //Double val = 1023654d;
             //String val = "1023654";
             System.out.println(val.getClass());
 
-            ParameterValue<?> parameterValue = WPSFactory.createParameter("requestid", val.getClass(), val);
+            parameterValue = WPSFactory.createParameter("requestid", val.getClass(), val);
             System.out.println(parameterValue.getValue().getClass());
 
             dataInputValues.put(parameterValue.getDescriptor().getName().getCode(), parameterValue);
@@ -412,6 +431,7 @@ public class TestWPS {
         } catch (MotuException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            System.out.println(e.notifyException());
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import org.apache.log4j.Logger;
 import org.geotoolkit.parameter.DefaultParameterDescriptor;
 import org.geotoolkit.parameter.Parameter;
+import org.geotoolkit.parameter.Parameters;
 import org.opengis.parameter.InvalidParameterTypeException;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
@@ -54,7 +55,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-08-13 15:38:44 $
+ * @version $Revision: 1.6 $ - $Date: 2009-08-18 15:12:19 $
  */
 public class WPSFactory {
     /**
@@ -92,7 +93,8 @@ public class WPSFactory {
     }
 
     private static void initSchemaLocations() throws MotuException {
-        WPSFactory.schemaLocations.putIfAbsent("WPS1.0.0", "http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd");
+        WPSFactory.schemaLocations.putIfAbsent("WPS1.0.0",
+                                               "http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd");
 
     }
 
@@ -128,7 +130,7 @@ public class WPSFactory {
         ProcessDescriptionType processDescriptionType = getWpsInfoInstance().getProcessDescription(processName);
 
         if (processDescriptionType == null) {
-            throw new MotuException(String.format("WPSFactory#createExecuteProcessRequest : Unknown process name '%'", processName));
+            throw new MotuException(String.format("WPSFactory#createExecuteProcessRequest : Unknown process name '%s'", processName));
         }
         return createExecuteProcessRequest(dataInputValues, processDescriptionType);
 
@@ -361,7 +363,7 @@ public class WPSFactory {
         literalDataType.setDataType(literalInputType.getDataType().getValue());
 
         try {
-            literalDataType.setValue(parameterValue.stringValue());
+            literalDataType.setValue(parameterValue.getValue().toString());
         } catch (InvalidParameterTypeException e) {
             throw new MotuException(String.format("WPSFactory#createLiteralDataType : parameter '%s' : invalid value.", parameterValue.toString()), e);
         }
@@ -382,9 +384,8 @@ public class WPSFactory {
             return null;
         }
 
-        
         ComplexDataType complexDataType = objectFactoryWPS.createComplexDataType();
-        complexDataType.getContent().add(parameterValue.getValue());
+        complexDataType.getContent().add(parameterValue.getValue().toString());
 
         ComplexDataCombinationsType complexDataCombinationsType = complexDataInputType.getSupported();
         ComplexDataDescriptionType complexDataDescriptionType = null;
@@ -392,7 +393,7 @@ public class WPSFactory {
         if (complexDataCombinationsType != null) {
             complexDataDescriptionType = (ComplexDataDescriptionType) complexDataCombinationsType.getFormat().get(0);
         }
-        
+
         if (complexDataDescriptionType != null) {
             complexDataType.setSchema(complexDataDescriptionType.getSchema());
             complexDataType.setEncoding(complexDataDescriptionType.getEncoding());
@@ -408,7 +409,7 @@ public class WPSFactory {
 
     public DataType createBoundingBoxInputType(SupportedCRSsType boundingBoxInputType, ParameterValue<?> parameterValue) throws MotuException {
         if (boundingBoxInputType == null) {
-            throw new MotuException("WPSFactory#createComplexDataType : createBoundingBoxInputType is null");
+            throw new MotuException("WPSFactory#createBoundingBoxInputType : boundingBoxInputType is null");
         }
         if (parameterValue == null) {
             return null;
@@ -416,7 +417,19 @@ public class WPSFactory {
 
         BoundingBoxType boundingBoxType = objectFactoryOWS.createBoundingBoxType();
 
-        double[] values = parameterValue.doubleValueList();
+        double[] values = {0d};
+        try {
+            values = parameterValue.doubleValueList();
+        } catch (InvalidParameterTypeException e) {
+            throw new MotuException(String.format("WPSFactory#createBoundingBoxInputType : parameter '%s' (value type '%s') - Unable to get values : '%s' type was expected.",
+                                                  parameterValue.getDescriptor().getName(),
+                                                  parameterValue.getValue().getClass().getName(),
+                                                  values.getClass().getCanonicalName()), e);
+        }
+
+        if (values == null) {
+            return null;
+        }
 
         switch (values.length) {
         case 4:
@@ -467,7 +480,7 @@ public class WPSFactory {
                 if (!Organizer.isNullOrEmpty(schemaLocation)) {
                     WPSFactory.marshallerWPS.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaLocation);
                 }
-                
+
                 WPSFactory.marshallerWPS.marshal(execute, writer);
                 writer.flush();
                 writer.close();
@@ -479,15 +492,26 @@ public class WPSFactory {
         }
 
     }
-    
+
     @SuppressWarnings("unchecked")
-    public static  Parameter createParameter(final String name, final Class<?> type, final Object value) {
-        final ParameterDescriptor descriptor = new DefaultParameterDescriptor(name, null, type, null, true);
-        final Parameter parameter = new Parameter(descriptor);
-        
+    public static Parameter<?> createParameter(final String name, final Class<?> type, final Object value) {
+        final ParameterDescriptor<?> descriptor = new DefaultParameterDescriptor(name, null, type, null, true);
+        final Parameter<?> parameter = new Parameter(descriptor);
         parameter.setValue(value);
         return parameter;
     }
-
+    public static Parameter<?> createParameter(final String name, final int value) {
+        return Parameter.create(name, value);
+    }
+    public static Parameter<?> createParameter(final String name, final double value) {
+        return Parameter.create(name, value, null);
+    }
+    public static Parameter<?> createParameter(final String name, final long value) {
+        final ParameterDescriptor<Long> descriptor =
+                new DefaultParameterDescriptor<Long>(name, Long.class, null, null);
+        final Parameter<Long> parameter = new Parameter<Long>(descriptor);
+        parameter.setValue(value);
+        return parameter;
+    }
 
 }

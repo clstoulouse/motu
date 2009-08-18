@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:Execute language="en" version="1.0.0" service="WPS" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd" xmlns:ns2="http://www.opengis.net/wps/1.0.0" xmlns:ns1="http://www.opengis.net/ows/1.1" xmlns:ns3="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ns1:Identifier>ExtractData</ns1:Identifier>
+    <ns2:DataInputs>
+        <ns2:Input>
+            <ns1:Identifier>service</ns1:Identifier>
+            <ns1:Title>Name a the Motu service</ns1:Title>
+            <ns1:Abstract>This parameter specifies the name of the Motu service as described in the Motu configuration</ns1:Abstract>
+            <ns2:Data>
+                <ns2:LiteralData dataType="string">myservice</ns2:LiteralData>
+            </ns2:Data>
+        </ns2:Input>
+        <ns2:Input>
+            <ns1:Identifier>variable</ns1:Identifier>
+            <ns1:Title>Name or identifier of the data</ns1:Title>
+            <ns2:Data>
+                <ns2:LiteralData dataType="string">a</ns2:LiteralData>
+            </ns2:Data>
+        </ns2:Input>
+        <ns2:Input>
+            <ns1:Identifier>variable</ns1:Identifier>
+            <ns1:Title>Name or identifier of the data</ns1:Title>
+            <ns2:Data>
+                <ns2:LiteralData dataType="string">b</ns2:LiteralData>
+            </ns2:Data>
+        </ns2:Input>
+        <ns2:Input>
+            <ns1:Identifier>variable</ns1:Identifier>
+            <ns1:Title>Name or identifier of the data</ns1:Title>
+            <ns2:Data>
+                <ns2:LiteralData dataType="string">c</ns2:LiteralData>
+            </ns2:Data>
+        </ns2:Input>
+        <ns2:Input>
+            <ns1:Identifier>geobbox</ns1:Identifier>
+            <ns1:Title>The Latitude/Longitude bounding box</ns1:Title>
+            <ns2:Data>
+                <ns2:BoundingBoxData crs="EPSG:4326">
+                    <ns1:LowerCorner>-10.0 -60.0</ns1:LowerCorner>
+                    <ns1:UpperCorner>45.0 120.0</ns1:UpperCorner>
+                </ns2:BoundingBoxData>
+            </ns2:Data>
+        </ns2:Input>
+        <ns2:Input>
+            <ns1:Identifier>lowdepth</ns1:Identifier>
+            <ns1:Title>The lower depth (z)</ns1:Title>
+            <ns2:Data>
+                <ns2:LiteralData dataType="string">0.0</ns2:LiteralData>
+            </ns2:Data>
+        </ns2:Input>
+    </ns2:DataInputs>
+</ns2:Execute>
