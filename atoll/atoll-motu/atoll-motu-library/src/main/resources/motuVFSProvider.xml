@@ -35,5 +35,8 @@
         <scheme name="https"/>
     </provider>
 
+    <provider class-name="org.apache.commons.vfs.provider.jar.JarFileProvider">
+        <scheme name="jar"/>
+    </provider>
 
 </providers>

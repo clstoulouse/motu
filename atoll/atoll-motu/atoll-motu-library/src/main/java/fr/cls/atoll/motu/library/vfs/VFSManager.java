@@ -20,6 +20,7 @@ import org.apache.commons.vfs.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
 import org.apache.commons.vfs.impl.StandardFileSystemManager;
 import org.apache.commons.vfs.provider.ftp.FtpFileSystemConfigBuilder;
+import org.apache.commons.vfs.provider.http.HttpFileSystemConfigBuilder;
 import org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder;
 import org.apache.log4j.Logger;
 
@@ -36,7 +37,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.10 $ - $Date: 2009-06-16 09:44:49 $
+ * @version $Revision: 1.11 $ - $Date: 2009-08-20 16:10:02 $
  */
 public class VFSManager {
 
@@ -265,6 +266,15 @@ public class VFSManager {
                 //ftpFscb.setUserDirIsRoot(opts, true);
 
             }
+            
+            if (fscb instanceof HttpFileSystemConfigBuilder) {
+                HttpFileSystemConfigBuilder httpFscb = (HttpFileSystemConfigBuilder) fscb;
+                String proxyHost = Organizer.getMotuConfigInstance().getProxyHost();
+                String proxyPort = Organizer.getMotuConfigInstance().getProxyPort();
+                httpFscb.setProxyHost(opts, proxyHost);
+                httpFscb.setProxyPort(opts, Integer.parseInt(proxyPort));
+
+            }
 
             if (fscb instanceof SftpFileSystemConfigBuilder) {
                 SftpFileSystemConfigBuilder sftpFscb = (SftpFileSystemConfigBuilder) fscb;
@@ -387,15 +397,15 @@ public class VFSManager {
         
         open();
 
-        if (fileSystemOptions == null) {
-            fileSystemOptions = new FileSystemOptions();
-        }
+//        if (fileSystemOptions == null) {
+//            fileSystemOptions = new FileSystemOptions();
+//        }
 
         try {
             //URI uriObject = new URI(uri);
             URI uriObject = Organizer.newURI(uri);
 
-            setSchemeOpts(uriObject.getScheme());
+            fileSystemOptions = setSchemeOpts(uriObject.getScheme());
 
             fileObject = standardFileSystemManager.resolveFile(uri, fileSystemOptions);
         } catch (FileSystemException e) {

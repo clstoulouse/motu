@@ -11,6 +11,7 @@ package fr.cls.atoll.motu.library.data;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -42,8 +43,8 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
 /**
  * Gridded dataset class.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-08-20 16:10:02 $
  */
 public class DatasetGrid extends fr.cls.atoll.motu.library.data.DatasetBase {
     /**
@@ -435,8 +436,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.data.DatasetBase {
             LOG.debug("getZRange() - exiting");
         }
     }
-
-    /**
+     /**
      * Gets a list of Index Ranges for the given lat, lon bounding box. For projection, only an approximation
      * based on lat/lon corners. Must have 2D/LatLon for x and y axis.
      * 
@@ -471,7 +471,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.data.DatasetBase {
             }
             CoordinateSystem cs = new CoordinateSystem(product.getNetCdfReaderDataset(), productMetadata.getLatLonAxis(), null);
             listYXRanges = extractCriteriaLatLon.toListRanges(cs, rangesLatValue, rangesLonValue);
-
+            
             if (listYXRanges.size() != rangesLonValue.size()) {
                 throw new MotuException(String
                         .format("Inconsistency between Longitude ranges list (%d items) and Longitude values list (%d items) - (%s)", listYXRanges

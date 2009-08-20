@@ -24,6 +24,7 @@ import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
 import org.apache.commons.vfs.impl.StandardFileSystemManager;
 import org.apache.commons.vfs.provider.ftp.FtpClientFactory;
 import org.apache.commons.vfs.provider.ftp.FtpFileSystemConfigBuilder;
+import org.apache.commons.vfs.provider.http.HttpFileSystemConfigBuilder;
 import org.apache.commons.vfs.provider.sftp.SftpClientFactory;
 import org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder;
 import org.apache.commons.vfs.provider.sftp.TrustEveryoneUserInfo;
@@ -260,6 +261,7 @@ public class TestFtp {
 
         // testVFS("", "", "http", "catsat-data1.cls.fr:43080", "/thredds/catalog.xml");
 
+        
         // testVFS("anonymous@gridftp.bigred.iu.teragrid.org:2811", "dearith@cls.fr", "gsiftp",
         // "proxy.cls.fr", "/pub/README");
         // testVFS("anonymous@dcgftp.usatlas.bnl.gov:2811/", "dearith@cls.fr", "gsiftp", "proxy.cls.fr",
@@ -269,6 +271,11 @@ public class TestFtp {
         // gsiftp://dcgftp.usatlas.bnl.gov/pnfs/usatlas.bnl.gov/arelvalid/loadtest/data1188508850256
         // gsiftp://dcgftp.usatlas.bnl.gov:2811/pnfs/usatlas.bnl.gov/data/prod/pandadev/
 
+//        fromUri = "http://proxy.cls.fr/19139/20060504/serviceMetadata.xsd";
+//        toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.txt";
+//        userFrom = "anonymous@schemas.opengis.net/iso";
+//        pwdFrom = "dearith@cls.fr";
+        testVFS("dearith", "bienvenue", "http", "schemas.opengis.net", "iso/19139/20060504/srv/serviceMetadata.xsd");
         // testVFSThread();
 
         String fromUri = "http://atoll-dev.cls.fr:30080/motu-extract/atoll-ressource-dataset-datafile-nrt-med-infrared-sst-timestamp_1244456058793.txt";
@@ -326,8 +333,16 @@ public class TestFtp {
         toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.txt";
         userFrom = "anonymous@ftp.unidata.ucar.edu";
         pwdFrom = "dearith@cls.fr";
-        testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
+        //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
 
+        
+        fromUri = "http://proxy.cls.fr/19139/20060504/serviceMetadata.xsd";
+        toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.txt";
+        userFrom = "anonymous@schemas.opengis.net/iso";
+        pwdFrom = "dearith@cls.fr";
+        //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
+
+            
         // URI uriTest = null;
         // try {
         // uriTest =
@@ -464,12 +479,19 @@ public class TestFtp {
             FileSystemOptions opts = new FileSystemOptions();
             FileSystemConfigBuilder fscb = fsManager.getFileSystemConfigBuilder(scheme);
             DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
+            DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
 
             System.out.println(fsManager.getProviderCapabilities(scheme));
 
             if (fscb instanceof FtpFileSystemConfigBuilder) {
                 FtpFileSystemConfigBuilder ftpFscb = (FtpFileSystemConfigBuilder) fscb;
                 ftpFscb.setUserDirIsRoot(opts, true);
+
+            }
+            if (fscb instanceof HttpFileSystemConfigBuilder) {
+                HttpFileSystemConfigBuilder httpFscb = (HttpFileSystemConfigBuilder) fscb;
+                httpFscb.setProxyHost(opts, "proxy.cls.fr");
+                httpFscb.setProxyPort(opts, 8080);
 
             }
             if (fscb instanceof SftpFileSystemConfigBuilder) {

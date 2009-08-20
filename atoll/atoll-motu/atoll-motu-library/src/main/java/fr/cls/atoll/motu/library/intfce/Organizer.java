@@ -7,8 +7,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -93,7 +95,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.23 $ - $Date: 2009-06-15 08:06:09 $
+ * @version $Revision: 1.24 $ - $Date: 2009-08-20 16:10:02 $
  */
 public class Organizer {
 
@@ -1167,6 +1169,36 @@ public class Organizer {
     public static boolean deleteDirectory(String path) throws MotuException {
         return Organizer.getVFSSystemManager().deleteDirectory(path);
     }
+
+    
+    /**
+     * Find resource.
+     * 
+     * @param name the name or the resource
+     * 
+     * @return the uRL of the resource or null if not found
+     * @throws MotuException 
+     */
+    public static URL findResource(String name) throws MotuException {
+        //first see if the resource is a plain file
+        URL url = null;
+        File f = new File(name);
+        if(f.exists()) {
+          try {
+            url = f.toURI().toURL();
+          } catch (MalformedURLException e) {
+            throw new MotuException(String.format("Organizer#findResource - Could not create URL from path: '%s'", f), e);
+          }
+          return url;
+        }
+        
+        //search for the resource on the classpath
+        
+        //get the default class/resource loader 
+        //ClassLoader cl = getClass().getClassLoader();
+        ClassLoader cl = Organizer.class.getClassLoader();
+        return cl.getResource(name);
+      }
 
     /**
      * Gets the uri as input stream.
