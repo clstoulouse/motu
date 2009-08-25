@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <srv:SV_ServiceIdentification xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:sch="http://www.ascc.net/xml/schematron" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:gss="http://www.isotc211.org/2005/gss" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/srv
-\\tsclient\C\DOCUME~1\dearith\MESDOC~1\Atoll\SchemaIso\srv\srv.xsd">
+http://schemas.opengis.net/iso/19139/20060504/srv/srv.xsd">
+	<!-- \\tsclient\C\DOCUME~1\dearith\MESDOC~1\Atoll\SchemaIso\srv\srv.xsd"> -->
 	<gmd:citation>
 		<gmd:CI_Citation>
 			<gmd:title>
@@ -20,7 +21,11 @@
 		</gmd:CI_Citation>
 	</gmd:citation>
 	<gmd:abstract>
-		<gco:CharacterString>Dataset access service which allow to extract the data through the dimension defined in the dataset</gco:CharacterString>
+		<gco:CharacterString>Dataset access service which allow to extract the data through the dimension defined in the dataset. The purpose of this process is to extract data from a product.
+	A dataset is identified either by the Service name and Product name input parameters or by the url of the dataset 
+	Extraction criteria can be specified: geographical coverage, time coverage, depth coverage. They are optional.
+	Variable names to extract have to be set as input parameters.
+	The return values are the status of the request (pending, in progress, done, error), the request identifer and the return process code (ok or error code) and the correponding message)</gco:CharacterString>
 	</gmd:abstract>
 	<gmd:pointOfContact>
 		<gmd:CI_ResponsibleParty>
@@ -115,7 +120,7 @@
 				<srv:SV_Parameter>
 					<srv:name>
 						<gco:aName>
-							<gco:CharacterString>Variable</gco:CharacterString>
+							<gco:CharacterString>service</gco:CharacterString>
 						</gco:aName>
 						<gco:attributeType>
 							<gco:TypeName>
@@ -125,11 +130,119 @@
 							</gco:TypeName>
 						</gco:attributeType>
 					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+					</srv:direction>
+					<srv:description>
+						<gco:CharacterString>Name of the service</gco:CharacterString>
+					</srv:description>
+					<srv:optionality>
+						<gco:CharacterString>true</gco:CharacterString>
+					</srv:optionality>
+					<srv:repeatability>
+						<gco:Boolean>false</gco:Boolean>
+					</srv:repeatability>
+					<srv:valueType>
+						<gco:TypeName>
+							<gco:aName>
+								<gco:CharacterString>string</gco:CharacterString>
+							</gco:aName>
+						</gco:TypeName>
+					</srv:valueType>
+				</srv:SV_Parameter>
+			</srv:parameters>
+			<srv:parameters>
+				<srv:SV_Parameter>
+					<srv:name>
+						<gco:aName>
+							<gco:CharacterString>product</gco:CharacterString>
+						</gco:aName>
+						<gco:attributeType>
+							<gco:TypeName>
+								<gco:aName>
+									<gco:CharacterString/>
+								</gco:aName>
+							</gco:TypeName>
+						</gco:attributeType>
+					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+					</srv:direction>
+					<srv:description>
+						<gco:CharacterString>The product identifier (name)</gco:CharacterString>
+					</srv:description>
+					<srv:optionality>
+						<gco:CharacterString>true</gco:CharacterString>
+					</srv:optionality>
+					<srv:repeatability>
+						<gco:Boolean>false</gco:Boolean>
+					</srv:repeatability>
+					<srv:valueType>
+						<gco:TypeName>
+							<gco:aName>
+								<gco:CharacterString>string</gco:CharacterString>
+							</gco:aName>
+						</gco:TypeName>
+					</srv:valueType>
+				</srv:SV_Parameter>
+			</srv:parameters>
+			<srv:parameters>
+				<srv:SV_Parameter>
+					<srv:name>
+						<gco:aName>
+							<gco:CharacterString>url</gco:CharacterString>
+						</gco:aName>
+						<gco:attributeType>
+							<gco:TypeName>
+								<gco:aName>
+									<gco:CharacterString/>
+								</gco:aName>
+							</gco:TypeName>
+						</gco:attributeType>
+					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+					</srv:direction>
+					<srv:description>
+						<gco:CharacterString>Url of the product dataset</gco:CharacterString>
+					</srv:description>
+					<srv:optionality>
+						<gco:CharacterString>true</gco:CharacterString>
+					</srv:optionality>
+					<srv:repeatability>
+						<gco:Boolean>false</gco:Boolean>
+					</srv:repeatability>
+					<srv:valueType>
+						<gco:TypeName>
+							<gco:aName>
+								<gco:CharacterString>string</gco:CharacterString>
+							</gco:aName>
+						</gco:TypeName>
+					</srv:valueType>
+				</srv:SV_Parameter>
+			</srv:parameters>
+			<srv:parameters>
+				<srv:SV_Parameter>
+					<srv:name>
+						<gco:aName>
+							<gco:CharacterString>variable</gco:CharacterString>
+						</gco:aName>
+						<gco:attributeType>
+							<gco:TypeName>
+								<gco:aName>
+									<gco:CharacterString/>
+								</gco:aName>
+							</gco:TypeName>
+						</gco:attributeType>
+					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+					</srv:direction>
 					<srv:description>
 						<gco:CharacterString>Variable to extract</gco:CharacterString>
 					</srv:description>
 					<srv:optionality>
-						<gco:CharacterString>required</gco:CharacterString>
+						<gco:CharacterString>false</gco:CharacterString>
 					</srv:optionality>
 					<srv:repeatability>
 						<gco:Boolean>true</gco:Boolean>
@@ -137,7 +250,7 @@
 					<srv:valueType>
 						<gco:TypeName>
 							<gco:aName>
-								<gco:CharacterString>http://cf-pcmdi.llnl.gov/documents/cf-standard-names/standard-name-table/12/cf-standard-name-table.html</gco:CharacterString>
+								<gco:CharacterString>string</gco:CharacterString>
 							</gco:aName>
 						</gco:TypeName>
 					</srv:valueType>
@@ -147,7 +260,7 @@
 				<srv:SV_Parameter>
 					<srv:name>
 						<gco:aName>
-							<gco:CharacterString>Longitude minimum</gco:CharacterString>
+							<gco:CharacterString>geobbox</gco:CharacterString>
 						</gco:aName>
 						<gco:attributeType>
 							<gco:TypeName>
@@ -157,11 +270,49 @@
 							</gco:TypeName>
 						</gco:attributeType>
 					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+					</srv:direction>
 					<srv:description>
-						<gco:CharacterString>Longitude minimum of the geographic extraction</gco:CharacterString>
+						<gco:CharacterString>The Latitude/Longitude bounding box = minlat,minlon,maxlat,maxlon : lower left corner then upper right corner</gco:CharacterString>
 					</srv:description>
 					<srv:optionality>
-						<gco:CharacterString>required</gco:CharacterString>
+						<gco:CharacterString>true</gco:CharacterString>
+					</srv:optionality>
+					<srv:repeatability>
+						<gco:Boolean>false</gco:Boolean>
+					</srv:repeatability>
+					<srv:valueType>
+						<gco:TypeName>						
+							<gco:aName>							
+								<gco:CharacterString>boundingBox</gco:CharacterString>								
+							</gco:aName>
+						</gco:TypeName>
+					</srv:valueType>
+				</srv:SV_Parameter>
+			</srv:parameters>
+			<srv:parameters>
+				<srv:SV_Parameter>
+					<srv:name>
+						<gco:aName>
+							<gco:CharacterString>lowdepth</gco:CharacterString>
+						</gco:aName>
+						<gco:attributeType>
+							<gco:TypeName>
+								<gco:aName>
+									<gco:CharacterString/>
+								</gco:aName>
+							</gco:TypeName>
+						</gco:attributeType>
+					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+					</srv:direction>
+					<srv:description>
+						<gco:CharacterString>Minimum depth (z)  of the spatial extraction ('surface' can be set as a zero depth)</gco:CharacterString>
+					</srv:description>
+					<srv:optionality>
+						<gco:CharacterString>true</gco:CharacterString>
 					</srv:optionality>
 					<srv:repeatability>
 						<gco:Boolean>false</gco:Boolean>
@@ -169,7 +320,7 @@
 					<srv:valueType>
 						<gco:TypeName>
 							<gco:aName>
-								<gco:CharacterString>longitude</gco:CharacterString>
+								<gco:CharacterString>string</gco:CharacterString>
 							</gco:aName>
 						</gco:TypeName>
 					</srv:valueType>
@@ -179,7 +330,7 @@
 				<srv:SV_Parameter>
 					<srv:name>
 						<gco:aName>
-							<gco:CharacterString>Longitude maximum</gco:CharacterString>
+							<gco:CharacterString>highdepth</gco:CharacterString>
 						</gco:aName>
 						<gco:attributeType>
 							<gco:TypeName>
@@ -189,11 +340,14 @@
 							</gco:TypeName>
 						</gco:attributeType>
 					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+					</srv:direction>
 					<srv:description>
-						<gco:CharacterString>Longitude maximum of the geographic extraction</gco:CharacterString>
+						<gco:CharacterString>Maximum depth (z)  of the spatial extraction ('surface' can be set as a zero depth)</gco:CharacterString>
 					</srv:description>
 					<srv:optionality>
-						<gco:CharacterString>required</gco:CharacterString>
+						<gco:CharacterString>true</gco:CharacterString>
 					</srv:optionality>
 					<srv:repeatability>
 						<gco:Boolean>false</gco:Boolean>
@@ -201,7 +355,7 @@
 					<srv:valueType>
 						<gco:TypeName>
 							<gco:aName>
-								<gco:CharacterString>longitude</gco:CharacterString>
+								<gco:CharacterString>string</gco:CharacterString>
 							</gco:aName>
 						</gco:TypeName>
 					</srv:valueType>
@@ -211,7 +365,7 @@
 				<srv:SV_Parameter>
 					<srv:name>
 						<gco:aName>
-							<gco:CharacterString>Latitude minimum</gco:CharacterString>
+							<gco:CharacterString>starttime</gco:CharacterString>
 						</gco:aName>
 						<gco:attributeType>
 							<gco:TypeName>
@@ -221,75 +375,14 @@
 							</gco:TypeName>
 						</gco:attributeType>
 					</srv:name>
-					<srv:description>
-						<gco:CharacterString>Latitude minimum of the geographic extraction</gco:CharacterString>
-					</srv:description>
-					<srv:optionality>
-						<gco:CharacterString>required</gco:CharacterString>
-					</srv:optionality>
-					<srv:repeatability>
-						<gco:Boolean>false</gco:Boolean>
-					</srv:repeatability>
-					<srv:valueType>
-						<gco:TypeName>
-							<gco:aName>
-								<gco:CharacterString>Latitude</gco:CharacterString>
-							</gco:aName>
-						</gco:TypeName>
-					</srv:valueType>
-				</srv:SV_Parameter>
-			</srv:parameters>
-			<srv:parameters>
-				<srv:SV_Parameter>
-					<srv:name>
-						<gco:aName>
-							<gco:CharacterString>Latitude maximum</gco:CharacterString>
-						</gco:aName>
-						<gco:attributeType>
-							<gco:TypeName>
-								<gco:aName>
-									<gco:CharacterString/>
-								</gco:aName>
-							</gco:TypeName>
-						</gco:attributeType>
-					</srv:name>
-					<srv:description>
-						<gco:CharacterString>Latitude maximum of the geographic extraction</gco:CharacterString>
-					</srv:description>
-					<srv:optionality>
-						<gco:CharacterString>required</gco:CharacterString>
-					</srv:optionality>
-					<srv:repeatability>
-						<gco:Boolean>false</gco:Boolean>
-					</srv:repeatability>
-					<srv:valueType>
-						<gco:TypeName>
-							<gco:aName>
-								<gco:CharacterString>Latitude</gco:CharacterString>
-							</gco:aName>
-						</gco:TypeName>
-					</srv:valueType>
-				</srv:SV_Parameter>
-			</srv:parameters>
-			<srv:parameters>
-				<srv:SV_Parameter>
-					<srv:name>
-						<gco:aName>
-							<gco:CharacterString>Time step minimum</gco:CharacterString>
-						</gco:aName>
-						<gco:attributeType>
-							<gco:TypeName>
-								<gco:aName>
-									<gco:CharacterString/>
-								</gco:aName>
-							</gco:TypeName>
-						</gco:attributeType>
-					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+					</srv:direction>
 					<srv:description>
 						<gco:CharacterString>Beginning of the temporal extraction</gco:CharacterString>
 					</srv:description>
 					<srv:optionality>
-						<gco:CharacterString>optional</gco:CharacterString>
+						<gco:CharacterString>true</gco:CharacterString>
 					</srv:optionality>
 					<srv:repeatability>
 						<gco:Boolean>false</gco:Boolean>
@@ -297,7 +390,7 @@
 					<srv:valueType>
 						<gco:TypeName>
 							<gco:aName>
-								<gmd:MD_DatatypeCode codeList="" codeListValue="Date">Date</gmd:MD_DatatypeCode>
+								<gco:CharacterString>datetime</gco:CharacterString>
 							</gco:aName>
 						</gco:TypeName>
 					</srv:valueType>
@@ -307,7 +400,7 @@
 				<srv:SV_Parameter>
 					<srv:name>
 						<gco:aName>
-							<gco:CharacterString>Time step maximum</gco:CharacterString>
+							<gco:CharacterString>endtime</gco:CharacterString>
 						</gco:aName>
 						<gco:attributeType>
 							<gco:TypeName>
@@ -317,11 +410,14 @@
 							</gco:TypeName>
 						</gco:attributeType>
 					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+					</srv:direction>
 					<srv:description>
 						<gco:CharacterString>End of the temporal extraction</gco:CharacterString>
 					</srv:description>
 					<srv:optionality>
-						<gco:CharacterString>optional</gco:CharacterString>
+						<gco:CharacterString>true</gco:CharacterString>
 					</srv:optionality>
 					<srv:repeatability>
 						<gco:Boolean>false</gco:Boolean>
@@ -329,17 +425,17 @@
 					<srv:valueType>
 						<gco:TypeName>
 							<gco:aName>
-								<gmd:MD_DatatypeCode codeList="" codeListValue="Date">Date</gmd:MD_DatatypeCode>
+								<gco:CharacterString>datetime</gco:CharacterString>
 							</gco:aName>
 						</gco:TypeName>
 					</srv:valueType>
 				</srv:SV_Parameter>
-			</srv:parameters>
+			</srv:parameters>			
 			<srv:parameters>
 				<srv:SV_Parameter>
 					<srv:name>
 						<gco:aName>
-							<gco:CharacterString>Depth minimum</gco:CharacterString>
+							<gco:CharacterString>dataformat</gco:CharacterString>
 						</gco:aName>
 						<gco:attributeType>
 							<gco:TypeName>
@@ -349,11 +445,14 @@
 							</gco:TypeName>
 						</gco:attributeType>
 					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+					</srv:direction>
 					<srv:description>
-						<gco:CharacterString>Depth minimum of the spatial extraction</gco:CharacterString>
+						<gco:CharacterString>Data format of the extraction. Default value is 'netcdf'</gco:CharacterString>
 					</srv:description>
 					<srv:optionality>
-						<gco:CharacterString>optional</gco:CharacterString>
+						<gco:CharacterString>true</gco:CharacterString>
 					</srv:optionality>
 					<srv:repeatability>
 						<gco:Boolean>false</gco:Boolean>
@@ -361,17 +460,17 @@
 					<srv:valueType>
 						<gco:TypeName>
 							<gco:aName>
-								<gco:CharacterString>double</gco:CharacterString>
+								<gco:CharacterString>string</gco:CharacterString>
 							</gco:aName>
 						</gco:TypeName>
 					</srv:valueType>
 				</srv:SV_Parameter>
-			</srv:parameters>
+			</srv:parameters>						
 			<srv:parameters>
 				<srv:SV_Parameter>
 					<srv:name>
 						<gco:aName>
-							<gco:CharacterString>Depth maximum</gco:CharacterString>
+							<gco:CharacterString>priority</gco:CharacterString>
 						</gco:aName>
 						<gco:attributeType>
 							<gco:TypeName>
@@ -381,11 +480,14 @@
 							</gco:TypeName>
 						</gco:attributeType>
 					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+					</srv:direction>
 					<srv:description>
-						<gco:CharacterString>Depth maximum of the spatial extraction</gco:CharacterString>
+						<gco:CharacterString>Priority of the request</gco:CharacterString>
 					</srv:description>
 					<srv:optionality>
-						<gco:CharacterString>optional</gco:CharacterString>
+						<gco:CharacterString>true</gco:CharacterString>
 					</srv:optionality>
 					<srv:repeatability>
 						<gco:Boolean>false</gco:Boolean>
@@ -393,17 +495,17 @@
 					<srv:valueType>
 						<gco:TypeName>
 							<gco:aName>
-								<gco:CharacterString>double</gco:CharacterString>
+								<gco:CharacterString>integer</gco:CharacterString>
 							</gco:aName>
 						</gco:TypeName>
 					</srv:valueType>
 				</srv:SV_Parameter>
-			</srv:parameters>
+			</srv:parameters>			
 			<srv:parameters>
 				<srv:SV_Parameter>
 					<srv:name>
 						<gco:aName>
-							<gco:CharacterString>Output format</gco:CharacterString>
+							<gco:CharacterString>login</gco:CharacterString>
 						</gco:aName>
 						<gco:attributeType>
 							<gco:TypeName>
@@ -413,11 +515,14 @@
 							</gco:TypeName>
 						</gco:attributeType>
 					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+					</srv:direction>
 					<srv:description>
-						<gco:CharacterString>Output format of the data extracted</gco:CharacterString>
+						<gco:CharacterString>login of the user</gco:CharacterString>
 					</srv:description>
 					<srv:optionality>
-						<gco:CharacterString>optional</gco:CharacterString>
+						<gco:CharacterString>true</gco:CharacterString>
 					</srv:optionality>
 					<srv:repeatability>
 						<gco:Boolean>false</gco:Boolean>
@@ -425,12 +530,222 @@
 					<srv:valueType>
 						<gco:TypeName>
 							<gco:aName>
-								<gco:CharacterString>String</gco:CharacterString>
+								<gco:CharacterString>string</gco:CharacterString>
 							</gco:aName>
 						</gco:TypeName>
 					</srv:valueType>
 				</srv:SV_Parameter>
-			</srv:parameters>
+			</srv:parameters>	
+			<srv:parameters>
+				<srv:SV_Parameter>
+					<srv:name>
+						<gco:aName>
+							<gco:CharacterString>batch</gco:CharacterString>
+						</gco:aName>
+						<gco:attributeType>
+							<gco:TypeName>
+								<gco:aName>
+									<gco:CharacterString/>
+								</gco:aName>
+							</gco:TypeName>
+						</gco:attributeType>
+					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+					</srv:direction>
+					<srv:description>
+						<gco:CharacterString>To process request as a subscription (true). Default value is false</gco:CharacterString>
+					</srv:description>
+					<srv:optionality>
+						<gco:CharacterString>true</gco:CharacterString>
+					</srv:optionality>
+					<srv:repeatability>
+						<gco:Boolean>false</gco:Boolean>
+					</srv:repeatability>
+					<srv:valueType>
+						<gco:TypeName>
+							<gco:aName>
+								<gco:CharacterString>string</gco:CharacterString>
+							</gco:aName>
+						</gco:TypeName>
+					</srv:valueType>
+				</srv:SV_Parameter>
+			</srv:parameters>					
+			<srv:parameters>
+				<srv:SV_Parameter>
+					<srv:name>
+						<gco:aName>
+							<gco:CharacterString>isanonymous</gco:CharacterString>
+						</gco:aName>
+						<gco:attributeType>
+							<gco:TypeName>
+								<gco:aName>
+									<gco:CharacterString/>
+								</gco:aName>
+							</gco:TypeName>
+						</gco:attributeType>
+					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+					</srv:direction>
+					<srv:description>
+						<gco:CharacterString>Tto process user as an anonymous one or not. Default value is true</gco:CharacterString>
+					</srv:description>
+					<srv:optionality>
+						<gco:CharacterString>true</gco:CharacterString>
+					</srv:optionality>
+					<srv:repeatability>
+						<gco:Boolean>false</gco:Boolean>
+					</srv:repeatability>
+					<srv:valueType>
+						<gco:TypeName>
+							<gco:aName>
+								<gco:CharacterString>string</gco:CharacterString>
+							</gco:aName>
+						</gco:TypeName>
+					</srv:valueType>
+				</srv:SV_Parameter>
+			</srv:parameters>				
+			<srv:parameters>
+				<srv:SV_Parameter>
+					<srv:name>
+						<gco:aName>
+							<gco:CharacterString>requestid</gco:CharacterString>
+						</gco:aName>
+						<gco:attributeType>
+							<gco:TypeName>
+								<gco:aName>
+									<gco:CharacterString/>
+								</gco:aName>
+							</gco:TypeName>
+						</gco:attributeType>
+					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>out</srv:SV_ParameterDirection>
+					</srv:direction>
+					<srv:description>
+						<gco:CharacterString>The unique id of the request</gco:CharacterString>
+					</srv:description>
+					<srv:optionality>
+						<gco:CharacterString>true</gco:CharacterString>
+					</srv:optionality>
+					<srv:repeatability>
+						<gco:Boolean>false</gco:Boolean>
+					</srv:repeatability>
+					<srv:valueType>
+						<gco:TypeName>
+							<gco:aName>
+								<gco:CharacterString>long</gco:CharacterString>
+							</gco:aName>
+						</gco:TypeName>
+					</srv:valueType>
+				</srv:SV_Parameter>
+			</srv:parameters>																					
+			<srv:parameters>
+				<srv:SV_Parameter>
+					<srv:name>
+						<gco:aName>
+							<gco:CharacterString>status</gco:CharacterString>
+						</gco:aName>
+						<gco:attributeType>
+							<gco:TypeName>
+								<gco:aName>
+									<gco:CharacterString/>
+								</gco:aName>
+							</gco:TypeName>
+						</gco:attributeType>
+					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>out</srv:SV_ParameterDirection>
+					</srv:direction>
+					<srv:description>
+						<gco:CharacterString>Status of a request. 1 = DONE, 	2 = ERROR, 3 = PENDING, 	4 = IN PROGRESS</gco:CharacterString>
+					</srv:description>
+					<srv:optionality>
+						<gco:CharacterString>true</gco:CharacterString>
+					</srv:optionality>
+					<srv:repeatability>
+						<gco:Boolean>false</gco:Boolean>
+					</srv:repeatability>
+					<srv:valueType>
+						<gco:TypeName>
+							<gco:aName>
+								<gco:CharacterString>string</gco:CharacterString>
+							</gco:aName>
+						</gco:TypeName>
+					</srv:valueType>
+				</srv:SV_Parameter>
+			</srv:parameters>	
+			<srv:parameters>
+				<srv:SV_Parameter>
+					<srv:name>
+						<gco:aName>
+							<gco:CharacterString>code</gco:CharacterString>
+						</gco:aName>
+						<gco:attributeType>
+							<gco:TypeName>
+								<gco:aName>
+									<gco:CharacterString/>
+								</gco:aName>
+							</gco:TypeName>
+						</gco:attributeType>
+					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>out</srv:SV_ParameterDirection>
+					</srv:direction>
+					<srv:description>
+						<gco:CharacterString>Code returned by the operation</gco:CharacterString>
+					</srv:description>
+					<srv:optionality>
+						<gco:CharacterString>true</gco:CharacterString>
+					</srv:optionality>
+					<srv:repeatability>
+						<gco:Boolean>false</gco:Boolean>
+					</srv:repeatability>
+					<srv:valueType>
+						<gco:TypeName>
+							<gco:aName>
+								<gco:CharacterString>integer</gco:CharacterString>
+							</gco:aName>
+						</gco:TypeName>
+					</srv:valueType>
+				</srv:SV_Parameter>
+			</srv:parameters>																					
+			<srv:parameters>
+				<srv:SV_Parameter>
+					<srv:name>
+						<gco:aName>
+							<gco:CharacterString>message</gco:CharacterString>
+						</gco:aName>
+						<gco:attributeType>
+							<gco:TypeName>
+								<gco:aName>
+									<gco:CharacterString/>
+								</gco:aName>
+							</gco:TypeName>
+						</gco:attributeType>
+					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>out</srv:SV_ParameterDirection>
+					</srv:direction>
+					<srv:description>
+						<gco:CharacterString>Message returned by the operation</gco:CharacterString>
+					</srv:description>
+					<srv:optionality>
+						<gco:CharacterString>true</gco:CharacterString>
+					</srv:optionality>
+					<srv:repeatability>
+						<gco:Boolean>false</gco:Boolean>
+					</srv:repeatability>
+					<srv:valueType>
+						<gco:TypeName>
+							<gco:aName>
+								<gco:CharacterString>string</gco:CharacterString>
+							</gco:aName>
+						</gco:TypeName>
+					</srv:valueType>
+				</srv:SV_Parameter>
+			</srv:parameters>																					
 			<srv:connectPoint>
 				<gmd:CI_OnlineResource>
 					<gmd:linkage>
@@ -474,5 +789,4 @@
 			</srv:connectPoint>
 		</srv:SV_OperationMetadata>
 	</srv:containsOperations>
-	
 </srv:SV_ServiceIdentification>
