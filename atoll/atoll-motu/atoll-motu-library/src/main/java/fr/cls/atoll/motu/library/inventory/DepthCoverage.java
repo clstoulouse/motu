@@ -8,6 +8,7 @@
 
 package fr.cls.atoll.motu.library.inventory;
 
+import javax.measure.DecimalMeasure;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -15,10 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import fr.cls.atoll.motu.library.converter.jaxb.JodaPeriodAdapter;
-import fr.cls.atoll.motu.library.converter.jaxb.JodaTimeAdapter;
-import org.joda.time.DateTime;
-import org.joda.time.Period;
+import fr.cls.atoll.motu.library.converter.jaxb.DecimalMeasureAdapter;
 
 
 /**
@@ -30,9 +28,9 @@ import org.joda.time.Period;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="end" use="required" type="{http://www.w3.org/2001/XMLSchema}dateTime" />
- *       &lt;attribute name="step" type="{http://www.w3.org/2001/XMLSchema}duration" />
- *       &lt;attribute name="start" use="required" type="{http://www.w3.org/2001/XMLSchema}dateTime" />
+ *       &lt;attribute name="min" use="required" type="{http://www.w3.org/2001/XMLSchema}decimal" />
+ *       &lt;attribute name="max" use="required" type="{http://www.w3.org/2001/XMLSchema}decimal" />
+ *       &lt;attribute name="units" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -42,92 +40,90 @@ import org.joda.time.Period;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "theoricalTimePeriod")
-public class TheoricalTimePeriod {
+@XmlRootElement(name = "depthCoverage")
+public class DepthCoverage {
 
     @XmlAttribute(required = true)
-    @XmlJavaTypeAdapter(JodaTimeAdapter.class)
-    @XmlSchemaType(name = "dateTime")
-    protected DateTime end;
-    @XmlAttribute
-    @XmlJavaTypeAdapter(JodaPeriodAdapter.class)
-    @XmlSchemaType(name = "duration")
-    protected Period step;
+    @XmlJavaTypeAdapter(DecimalMeasureAdapter.class)
+    @XmlSchemaType(name = "decimal")
+    protected DecimalMeasure min;
     @XmlAttribute(required = true)
-    @XmlJavaTypeAdapter(JodaTimeAdapter.class)
-    @XmlSchemaType(name = "dateTime")
-    protected DateTime start;
+    @XmlJavaTypeAdapter(DecimalMeasureAdapter.class)
+    @XmlSchemaType(name = "decimal")
+    protected DecimalMeasure max;
+    @XmlAttribute(required = true)
+    protected String units;
 
     /**
-     * Gets the value of the end property.
+     * Gets the value of the min property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public DateTime getEnd() {
-        return end;
+    public DecimalMeasure getMin() {
+        return min;
     }
 
     /**
-     * Sets the value of the end property.
+     * Sets the value of the min property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setEnd(DateTime value) {
-        this.end = value;
+    public void setMin(DecimalMeasure value) {
+        this.min = value;
     }
 
     /**
-     * Gets the value of the step property.
+     * Gets the value of the max property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public Period getStep() {
-        return step;
+    public DecimalMeasure getMax() {
+        return max;
     }
 
     /**
-     * Sets the value of the step property.
+     * Sets the value of the max property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setStep(Period value) {
-        this.step = value;
+    public void setMax(DecimalMeasure value) {
+        this.max = value;
     }
 
     /**
-     * Gets the value of the start property.
+     * Gets the value of the units property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public DateTime getStart() {
-        return start;
+    public String getUnits() {
+        return units;
     }
 
     /**
-     * Sets the value of the start property.
+     * Sets the value of the units property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setStart(DateTime value) {
-        this.start = value;
+    public void setUnits(String value) {
+        this.units = value;
     }
 
 }

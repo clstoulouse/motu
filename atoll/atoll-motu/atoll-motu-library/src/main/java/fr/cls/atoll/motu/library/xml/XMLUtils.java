@@ -27,13 +27,16 @@ import fr.cls.atoll.motu.library.intfce.Organizer;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-08-20 16:10:02 $
+ * @version $Revision: 1.4 $ - $Date: 2009-08-25 13:58:06 $
  */
 public class XMLUtils {
 
+     /** The Constant JAXP_SCHEMA_LANGUAGE. */
      static final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
     
+     /** The Constant JAXP_SCHEMA_SOURCE. */
      static final String JAXP_SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";     
+    
     /**
      * The Constructor.
      */
@@ -55,19 +58,58 @@ public class XMLUtils {
         
         return XMLUtils.validateXML(inSchema, inXml, XMLConstants.W3C_XML_SCHEMA_NS_URI);
     }
+    
+    /**
+     * Validate xml.
+     * 
+     * @param inSchemas the in schemas
+     * @param inXml the in xml
+     * 
+     * @return the xML error handler
+     * 
+     * @throws MotuException the motu exception
+     */
     public static XMLErrorHandler validateXML(InputStream[] inSchemas, InputStream inXml) throws MotuException {
         
         return XMLUtils.validateXML(inSchemas, inXml, XMLConstants.W3C_XML_SCHEMA_NS_URI);
     }
+    
+    /**
+     * Validate xml.
+     * 
+     * @param inSchemas the in schemas
+     * @param inXml the in xml
+     * 
+     * @return the xML error handler
+     * 
+     * @throws MotuException the motu exception
+     */
     public static XMLErrorHandler validateXML(String[] inSchemas, InputStream inXml) throws MotuException {
         
         return XMLUtils.validateXML(inSchemas, inXml, XMLConstants.W3C_XML_SCHEMA_NS_URI);
     }
+    
+    /**
+     * Validate xml.
+     * 
+     * @param inSchemas the in schemas
+     * @param inXml the in xml
+     * 
+     * @return the xML error handler
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static XMLErrorHandler validateXML(String[] inSchemas, String inXml) throws MotuException {
+        
+        return XMLUtils.validateXML(inSchemas, inXml, XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    }
+    
     /**
      * Validate XML.
      * 
      * @param inXml the in xml
      * @param inSchema the in schema
+     * @param schemaLanguage the schema language
      * 
      * @return the XML error handler
      * 
@@ -117,6 +159,17 @@ public class XMLUtils {
 //        return errorHandler;
     }
     
+    /**
+     * Validate xml.
+     * 
+     * @param inSchemas the in schemas
+     * @param inXml the in xml
+     * @param schemaLanguage the schema language
+     * 
+     * @return the xML error handler
+     * 
+     * @throws MotuException the motu exception
+     */
     public static XMLErrorHandler validateXML(InputStream[] inSchemas, InputStream inXml, String schemaLanguage) throws MotuException {
         // parse an XML document into a DOM tree
         Document document;
@@ -172,6 +225,17 @@ public class XMLUtils {
     }
         
     
+    /**
+     * Validate xml.
+     * 
+     * @param inSchemas the in schemas
+     * @param inXml the in xml
+     * @param schemaLanguage the schema language
+     * 
+     * @return the xML error handler
+     * 
+     * @throws MotuException the motu exception
+     */
     public static XMLErrorHandler validateXML(String[] inSchemas, InputStream inXml, String schemaLanguage) throws MotuException {
 
         XMLErrorHandler errorHandler = new XMLErrorHandler();
@@ -220,5 +284,63 @@ public class XMLUtils {
         return errorHandler;
     }
     
+    /**
+     * Validate xml.
+     * 
+     * @param inSchemas the in schemas
+     * @param inXml the in xml
+     * @param schemaLanguage the schema language
+     * 
+     * @return the xML error handler
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static XMLErrorHandler validateXML(String[] inSchemas, String inXml, String schemaLanguage) throws MotuException {
 
+        XMLErrorHandler errorHandler = new XMLErrorHandler();
+
+        try {
+
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            documentBuilderFactory.setNamespaceAware(true); // Must enable namespace processing!!!!!
+            try {
+                documentBuilderFactory.setXIncludeAware(true);
+            } catch (Exception e) {
+                // Do Nothing
+            }
+            documentBuilderFactory.setExpandEntityReferences(true);
+
+            documentBuilderFactory.setAttribute(XMLUtils.JAXP_SCHEMA_LANGUAGE, schemaLanguage);
+//            final String[] srcSchemas = {"http://schemas.opengis.net/iso/19139/20060504/srv/serviceMetadata.xsd",
+//                     };
+            
+//            final String[] srcSchemas = {"http://opendap.aviso.oceanobs.com/data/ISO_19139/srv/serviceMetadata.xsd",
+//                    "http://opendap.aviso.oceanobs.com/data/ISO_19139/gco/gco.xsd", };
+            
+//            C:\Documents and Settings\dearith\Mes documents\Atoll\SchemaIso\gml
+//            final String[] srcSchemas = {"C:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/srv/serviceMetadata.xsd",
+//            };
+//            final String[] srcSchemas = {"schema/iso/srv/serviceMetadata.xsd",
+//            };
+
+            documentBuilderFactory.setAttribute(XMLUtils.JAXP_SCHEMA_SOURCE, inSchemas);
+            //URL url = Organizer.findResource("schema/iso/srv/srv.xsd");
+            //URL url = Organizer.findResource("iso/19139/20070417/srv/serviceMetadata.xsd");
+            //documentBuilderFactory.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaSource", url.toString());
+            documentBuilderFactory.setValidating(true);
+            
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            // document = documentBuilder.parse(new File(xmlUrl.toURI()));
+            documentBuilder.setErrorHandler(errorHandler);
+            documentBuilder.parse(inXml);
+
+
+        } catch (Exception e) {
+            throw new MotuException(e);
+            // instance document is invalid!
+        }
+
+        return errorHandler;
+    }
+    
 }

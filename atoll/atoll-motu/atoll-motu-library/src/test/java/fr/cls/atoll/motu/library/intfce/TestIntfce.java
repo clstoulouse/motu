@@ -78,7 +78,7 @@ import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.18 $ - $Date: 2009-07-08 13:38:37 $
+ * @version $Revision: 1.19 $ - $Date: 2009-08-25 13:58:06 $
  * 
  */
 public class TestIntfce {
@@ -328,9 +328,9 @@ public class TestIntfce {
         // productExtractDataCatsat();
         // productExtractDataAvisofromExtractionParameters();
         // productExtractDataMerseaFromHttp();
-        testLoadInventoryOLA();
+        //testLoadInventoryOLA();
         // testLoadCatalogOLA();
-        // productInformationFromInventory();
+        productInformationFromInventory();
         //productExtractDataFromInventory();
 
     }
@@ -379,8 +379,8 @@ public class TestIntfce {
         //
         // return productInformationFromLocationData(service, xmlUri);
 
-        String service = "atoll:service:ftp-catsat:ftp";
-        String productId = "atoll:product:nrt-med-infrared-sst-timestamp";
+        String service = "http://atoll.cls.fr/2009/resource/individual/atoll#atoll:service:ftp-catsat:ftp";
+        String productId = "http://atoll.cls.fr/2009/resource/individual/atoll#datafile-nrt-med-infrared-sst-timestamp";
         Product product = null;
         try {
             Organizer organizer = new Organizer();

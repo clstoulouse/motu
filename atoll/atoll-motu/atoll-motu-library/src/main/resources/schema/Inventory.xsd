@@ -17,6 +17,13 @@
 		adapter="fr.cls.atoll.motu.library.converter.jaxb.DecimalMeasureAdapter"/>
 		</jaxb:globalBindings> </xs:appinfo></xs:annotation>
 	-->
+	<xs:element name="depthCoverage">
+		<xs:complexType>
+			<xs:attribute name="min" type="xs:decimal" use="required" />
+			<xs:attribute name="max" type="xs:decimal" use="required" />
+			<xs:attribute name="units" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="access">
 		<xs:complexType>
 			<xs:attribute name="urlPath" type="xs:anyURI" use="required" />
@@ -96,6 +103,7 @@
 			<xs:sequence>
 				<xs:element ref="access" />
 				<xs:element ref="geospatialCoverage" />
+				<xs:element ref="depthCoverage" minOccurs="0" />
 				<xs:element ref="timePeriod" />
 				<xs:element ref="theoricalTimePeriod" />
 				<xs:element ref="variables" />

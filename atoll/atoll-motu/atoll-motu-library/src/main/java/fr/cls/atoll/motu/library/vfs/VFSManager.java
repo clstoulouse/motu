@@ -37,13 +37,13 @@ import fr.cls.commons.util.io.ConfigLoader;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.11 $ - $Date: 2009-08-20 16:10:02 $
+ * @version $Revision: 1.12 $ - $Date: 2009-08-25 13:58:06 $
  */
 public class VFSManager {
 
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(VFSManager.class);
-    
+
     /** The Constant DEFAULT_SCHEME. */
     public static final String DEFAULT_SCHEME = "local";
 
@@ -170,7 +170,7 @@ public class VFSManager {
         try {
             standardFileSystemManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderConfig()));
             standardFileSystemManager.setCacheStrategy(CacheStrategy.ON_CALL);
-            //standardFileSystemManager.setFilesCache(new SoftRefFilesCache());
+            // standardFileSystemManager.setFilesCache(new SoftRefFilesCache());
             // standardFileSystemManager.addProvider("moi", new DefaultLocalFileProvider());
             standardFileSystemManager.init();
             open = true;
@@ -260,19 +260,21 @@ public class VFSManager {
 
                 fscb = standardFileSystemManager.getFileSystemConfigBuilder(VFSManager.DEFAULT_SCHEME);
             }
-            
+
             if (fscb instanceof FtpFileSystemConfigBuilder) {
                 FtpFileSystemConfigBuilder ftpFscb = (FtpFileSystemConfigBuilder) fscb;
-                //ftpFscb.setUserDirIsRoot(opts, true);
+                // ftpFscb.setUserDirIsRoot(opts, true);
 
             }
-            
+
             if (fscb instanceof HttpFileSystemConfigBuilder) {
                 HttpFileSystemConfigBuilder httpFscb = (HttpFileSystemConfigBuilder) fscb;
-                String proxyHost = Organizer.getMotuConfigInstance().getProxyHost();
-                String proxyPort = Organizer.getMotuConfigInstance().getProxyPort();
-                httpFscb.setProxyHost(opts, proxyHost);
-                httpFscb.setProxyPort(opts, Integer.parseInt(proxyPort));
+                if (Organizer.getMotuConfigInstance().isUseProxy()) {
+                    String proxyHost = Organizer.getMotuConfigInstance().getProxyHost();
+                    String proxyPort = Organizer.getMotuConfigInstance().getProxyPort();
+                    httpFscb.setProxyHost(opts, proxyHost);
+                    httpFscb.setProxyPort(opts, Integer.parseInt(proxyPort));
+                }
 
             }
 
@@ -288,7 +290,7 @@ public class VFSManager {
                                                           Integer.MAX_VALUE));
                 }
 
-                if (sftpTimeOut > 0) {                    
+                if (sftpTimeOut > 0) {
                     sftpFscb.setTimeout(opts, (int) sftpTimeOut);
                 }
 
@@ -377,7 +379,7 @@ public class VFSManager {
         }
         return returnFileObject;
     }
-    
+
     /**
      * Resolve file.
      * 
@@ -394,15 +396,15 @@ public class VFSManager {
         }
 
         FileObject fileObject = null;
-        
+
         open();
 
-//        if (fileSystemOptions == null) {
-//            fileSystemOptions = new FileSystemOptions();
-//        }
+        // if (fileSystemOptions == null) {
+        // fileSystemOptions = new FileSystemOptions();
+        // }
 
         try {
-            //URI uriObject = new URI(uri);
+            // URI uriObject = new URI(uri);
             URI uriObject = Organizer.newURI(uri);
 
             fileSystemOptions = setSchemeOpts(uriObject.getScheme());
@@ -424,7 +426,7 @@ public class VFSManager {
         return fileObject;
 
     }
-    
+
     /**
      * Resolve file.
      * 
@@ -447,7 +449,7 @@ public class VFSManager {
         }
 
         try {
-            
+
             setSchemeOpts(baseFile.getName().getScheme());
 
             fileObject = standardFileSystemManager.resolveFile(baseFile, file, opts);
@@ -486,7 +488,7 @@ public class VFSManager {
         FileObject foSrc = null;
         FileObject foDest = null;
         String uri = "";
-        
+
         try {
             File newFile = VFSManager.createLocalFile(fileDest);
 
@@ -509,7 +511,8 @@ public class VFSManager {
         } catch (Exception e) {
             LOG.error("copyFileToLocalFile(String, String, String, String, String, String)", e);
 
-            //throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
+            // throw new MotuException(String.format("Unable to copy file '%s' to '%s'",
+            // foSrc.getURL().toString(), foDest.getURL().toString()), e);
             throw new MotuException(String.format("Unable to copy file '%s' to '%s'", uri.toString(), fileDest), e);
         }
 
@@ -613,7 +616,7 @@ public class VFSManager {
      * @param file the file to delete
      * 
      * @return true, if successful
-     * @throws MotuException 
+     * @throws MotuException
      */
     public boolean deleteFile(String file) throws MotuException {
         if (LOG.isDebugEnabled()) {
@@ -627,47 +630,47 @@ public class VFSManager {
         }
         return returnboolean;
     }
-    
-//    public static boolean deleteDirectory(String path) {
-//        return VFSManager.deleteDirectory(new File(path));
-//        
-//    }
+
+    // public static boolean deleteDirectory(String path) {
+    // return VFSManager.deleteDirectory(new File(path));
+    //        
+    // }
 
     /**
- * Delete directory.
- * 
- * @param path the path
- * 
- * @return true, if successful
-     * @throws MotuException 
- */
-public boolean deleteDirectory(String path) throws MotuException {
+     * Delete directory.
+     * 
+     * @param path the path
+     * 
+     * @return true, if successful
+     * @throws MotuException
+     */
+    public boolean deleteDirectory(String path) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("deleteDirectory(String) - entering");
         }
-    
-    StringBuffer stringBuffer = new StringBuffer();
-    stringBuffer.append(path);
-    
-    if (!(path.endsWith("/") || path.endsWith("\\"))) {
-        stringBuffer.append("/");
-    }
+
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append(path);
+
+        if (!(path.endsWith("/") || path.endsWith("\\"))) {
+            stringBuffer.append("/");
+        }
         FileObject pathToDelete = resolveFile(stringBuffer.toString());
         boolean returnboolean = deleteDirectory(pathToDelete);
         if (LOG.isDebugEnabled()) {
             LOG.debug("deleteDirectory(String) - exiting");
         }
         return returnboolean;
-        
+
     }
-    
+
     /**
      * Delete directory ând all descendents of the file.
      * 
      * @param file the file
      * 
      * @return true, if successful
-     * @throws MotuException 
+     * @throws MotuException
      */
     public boolean deleteDirectory(FileObject file) throws MotuException {
         if (LOG.isDebugEnabled()) {
@@ -709,20 +712,20 @@ public boolean deleteDirectory(String path) throws MotuException {
         }
         return returnboolean;
     }
-    
+
     /**
      * Delete the file repsented by the file parameter.
      * 
      * @param file the file
      * 
      * @return true, if successful
-     * @throws MotuException 
+     * @throws MotuException
      */
     public boolean deleteFile(FileObject file) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("deleteFile(FileObject) - entering");
         }
-        
+
         boolean deleted = false;
         try {
 
@@ -730,13 +733,14 @@ public boolean deleteDirectory(String path) throws MotuException {
                 if (file.getType() != FileType.FILE) {
                     throw new MotuException(String.format("Delete file '%s' is rejected: it is a folder. ", file.getName().toString()));
                 }
-                
+
                 deleted = file.delete();
             }
         } catch (FileSystemException e) {
             LOG.error("deleteFile(FileObject)", e);
 
-            //throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
+            // throw new MotuException(String.format("Unable to copy file '%s' to '%s'",
+            // foSrc.getURL().toString(), foDest.getURL().toString()), e);
             throw new MotuException(String.format("Unable to delete '%s'", file.getName().toString()), e);
         }
 
@@ -745,7 +749,7 @@ public boolean deleteDirectory(String path) throws MotuException {
         }
         return deleted;
     }
-    
+
     /**
      * Delete all descendents of this file that match a selector.
      * 
@@ -753,13 +757,13 @@ public boolean deleteDirectory(String path) throws MotuException {
      * @param selector the selector
      * 
      * @return true, if successful
-     * @throws MotuException 
+     * @throws MotuException
      */
     public boolean delete(FileObject file, FileSelector selector) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("delete(FileObject, FileSelector) - entering");
         }
-        
+
         int deleted = 0;
         try {
             if (file.exists()) {
@@ -768,7 +772,8 @@ public boolean deleteDirectory(String path) throws MotuException {
         } catch (FileSystemException e) {
             LOG.error("delete(FileObject, FileSelector)", e);
 
-            //throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
+            // throw new MotuException(String.format("Unable to copy file '%s' to '%s'",
+            // foSrc.getURL().toString(), foDest.getURL().toString()), e);
             throw new MotuException(String.format("Unable to delete '%s'", file.getName().toString()), e);
         }
         boolean returnboolean = (deleted > 0);
@@ -777,8 +782,7 @@ public boolean deleteDirectory(String path) throws MotuException {
         }
         return returnboolean;
     }
-    
-     
+
     /**
      * Copy file.
      * 
@@ -791,9 +795,9 @@ public boolean deleteDirectory(String path) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("copyFile(String, String) - entering");
         }
-        
-        //FileObject originBase = fsManager.resolveFile(uri, opts);
-        //fsManager.setBaseFile(originBase);
+
+        // FileObject originBase = fsManager.resolveFile(uri, opts);
+        // fsManager.setBaseFile(originBase);
 
         FileObject src = resolveFile(from);
         FileObject dest = resolveFile(to);
@@ -803,7 +807,7 @@ public boolean deleteDirectory(String path) throws MotuException {
             LOG.debug("copyFile(String, String) - exiting");
         }
     }
-    
+
     /**
      * Copy file.
      * 
@@ -827,7 +831,7 @@ public boolean deleteDirectory(String path) throws MotuException {
             LOG.debug("copyFile(String, String, FileSystemOptions, FileSystemOptions) - exiting");
         }
     }
-    
+
     /**
      * Copy file.
      * 
@@ -847,17 +851,17 @@ public boolean deleteDirectory(String path) throws MotuException {
 
         opts = null;
         if (!Organizer.isNullOrEmpty(userFrom)) {
-            opts = setUserInfo(userFrom, pwdFrom);            
+            opts = setUserInfo(userFrom, pwdFrom);
         }
         FileObject src = resolveFile(from, opts);
 
         opts = null;
         if (!Organizer.isNullOrEmpty(userTo)) {
-            opts = setUserInfo(userTo, pwdTo);            
+            opts = setUserInfo(userTo, pwdTo);
         }
 
         FileObject dest = resolveFile(to, opts);
-        
+
         copyFile(src, dest);
 
         if (LOG.isDebugEnabled()) {
@@ -879,8 +883,13 @@ public boolean deleteDirectory(String path) throws MotuException {
         }
 
         try {
-            if ((to.exists())&& (to.getType() == FileType.FOLDER)) {
-                throw new MotuException(String.format("File copy from '%s' to '%s' is rejected: the destination already exists and is a folder. You were about to loose all of the content of '%s' ", from.getName().toString(), to.getName().toString(), to.getName().toString()));
+            if ((to.exists()) && (to.getType() == FileType.FOLDER)) {
+                throw new MotuException(
+                        String
+                                .format("File copy from '%s' to '%s' is rejected: the destination already exists and is a folder. You were about to loose all of the content of '%s' ",
+                                        from.getName().toString(),
+                                        to.getName().toString(),
+                                        to.getName().toString()));
             }
             to.copyFrom(from, Selectors.SELECT_ALL);
         } catch (MotuException e) {
@@ -890,7 +899,8 @@ public boolean deleteDirectory(String path) throws MotuException {
         } catch (Exception e) {
             LOG.error("copyFile(FileObject, FileObject)", e);
 
-            //throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
+            // throw new MotuException(String.format("Unable to copy file '%s' to '%s'",
+            // foSrc.getURL().toString(), foDest.getURL().toString()), e);
             throw new MotuException(String.format("Unable to copy file '%s' to '%s'", from.getName().toString(), to.getName().toString()), e);
         }
 
