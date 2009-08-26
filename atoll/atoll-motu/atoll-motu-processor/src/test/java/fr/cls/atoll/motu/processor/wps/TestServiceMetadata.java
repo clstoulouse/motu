@@ -41,7 +41,7 @@ import fr.cls.atoll.motu.library.xml.XMLUtils;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-08-25 14:45:43 $
+ * @version $Revision: 1.4 $ - $Date: 2009-08-26 14:57:19 $
  */
 public class TestServiceMetadata {
 
@@ -202,6 +202,7 @@ public class TestServiceMetadata {
             for (SVOperationMetadataPropertyType operationMetadataPropertyType : operationMetadataPropertyTypeList) {
 
                 SVOperationMetadataType operationMetadataType = operationMetadataPropertyType.getSVOperationMetadata();
+                System.out.println("---------------------------------------------");
                 System.out.println(operationMetadataType.getOperationName().getCharacterString().getValue());
                 System.out.println(operationMetadataType.getInvocationName().getCharacterString().getValue());
                 System.out.println(operationMetadataType.getOperationDescription().getCharacterString().getValue());
