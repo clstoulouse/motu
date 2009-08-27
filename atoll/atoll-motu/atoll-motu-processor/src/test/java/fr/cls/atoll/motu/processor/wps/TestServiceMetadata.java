@@ -1,5 +1,7 @@
 package fr.cls.atoll.motu.processor.wps;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -13,6 +15,7 @@ import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -41,7 +44,7 @@ import fr.cls.atoll.motu.library.xml.XMLUtils;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-08-26 14:57:19 $
+ * @version $Revision: 1.5 $ - $Date: 2009-08-27 15:06:13 $
  */
 public class TestServiceMetadata {
 
@@ -114,6 +117,13 @@ public class TestServiceMetadata {
         // }
         //        
 
+//        try {
+//            Organizer.removeVFSSystemManager();
+//        } catch (MotuException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+
     }
 
     public static void testLoadGeomatysServiceMetadata() {
@@ -154,9 +164,10 @@ public class TestServiceMetadata {
     }
 
     public static void testLoadOGCServiceMetadata() {
-        //String xmlFile = "J:/dev/atoll-v2/atoll-motu/atoll-motu-processor/src/test/resources/xml/TestServiceMetadata.xml";
+        // String xmlFile =
+        // "J:/dev/atoll-v2/atoll-motu/atoll-motu-processor/src/test/resources/xml/TestServiceMetadata.xml";
         String xmlFile = "C:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml";
-        
+
         String schemaPath = "schema/iso19139";
 
         try {
@@ -192,7 +203,7 @@ public class TestServiceMetadata {
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             Source srcFile = new StreamSource(xmlFile);
             JAXBElement<?> element = (JAXBElement<?>) unmarshaller.unmarshal(srcFile);
-            //JAXBElement<?> element = (JAXBElement<?>) unmarshaller.unmarshal(in);
+            // JAXBElement<?> element = (JAXBElement<?>) unmarshaller.unmarshal(in);
             serviceIdentificationType = (SVServiceIdentificationType) element.getValue();
             // serviceIdentificationType = (SVServiceIdentificationType) unmarshaller.unmarshal(in);
             System.out.println(serviceIdentificationType.toString());
@@ -203,6 +214,9 @@ public class TestServiceMetadata {
 
                 SVOperationMetadataType operationMetadataType = operationMetadataPropertyType.getSVOperationMetadata();
                 System.out.println("---------------------------------------------");
+                if (operationMetadataType == null) {
+                    continue;
+                }
                 System.out.println(operationMetadataType.getOperationName().getCharacterString().getValue());
                 System.out.println(operationMetadataType.getInvocationName().getCharacterString().getValue());
                 System.out.println(operationMetadataType.getOperationDescription().getCharacterString().getValue());
@@ -237,8 +251,20 @@ public class TestServiceMetadata {
                 }
 
             }
+            FileWriter writer = new FileWriter("c:/tempVFS/test.xml");
+
+            Marshaller marshaller = jc.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.marshal(element, writer);
+
+            writer.flush();
+            writer.close();
+
             System.out.println("End testLoadOGCServiceMetadata");
         } catch (JAXBException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -297,40 +323,65 @@ public class TestServiceMetadata {
     public static String[] getServiceMetadataSchemaAsString(String schemaPath) throws MotuException {
 
         List<String> stringList = new ArrayList<String>();
+        String localIso19139SchemaPath = "file:///c:/tempVFS/testISO";
+        String localIso19139RootSchemaRelPath = "/srv/srv.xsd";
+        String localIso19139RootSchemaPath = String.format("%s%s", localIso19139SchemaPath, localIso19139RootSchemaRelPath);
 
-        // URL url = Organizer.findResource("schema/iso/srv/srv.xsd");
-        // URL url =
-        // Organizer.findResource("J:/dev/iso/19139/20070417/schema/src/main/resources/iso/19139/20070417/srv/srv.xsd");
-        // URL url = Organizer.findResource("iso/19139/20070417/srv/srv.xsd");
-        URL url = Organizer.findResource(schemaPath);
-        System.out.println(url);
-
-        // String[] arr = url.toString().split("!");
-
-        // FileObject jarFile = Organizer.resolveFile(arr[0]);
-        FileObject jarFile = Organizer.resolveFile(url.toString());
-
-        // List the children of the Jar file
-        FileObject[] children = null;
+        FileObject dest = Organizer.resolveFile(localIso19139RootSchemaPath);
+        boolean hasIso19139asLocalSchema = false;
         try {
-            children = jarFile.getChildren();
-        } catch (FileSystemException e) {
+            if (dest != null) {
+                hasIso19139asLocalSchema = dest.exists();
+            }
+        } catch (FileSystemException e1) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        System.out.println("Children of " + jarFile.getName().getURI());
-        for (int i = 0; i < children.length; i++) {
-            System.out.println(children[i].getName().getBaseName());
+            e1.printStackTrace();
         }
 
-        FileObject dest = Organizer.resolveFile("file:c:/tempVFS/testISO");
-        Organizer.deleteDirectory(dest);
+        if (hasIso19139asLocalSchema) {
+            try {
+                dest.close();
+            } catch (FileSystemException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
-        Organizer.copyFile(jarFile, dest);
+        } else {
 
-        // stringList.add(url.toString());
+            // URL url = Organizer.findResource("schema/iso/srv/srv.xsd");
+            // URL url =
+            // Organizer.findResource("J:/dev/iso/19139/20070417/schema/src/main/resources/iso/19139/20070417/srv/srv.xsd");
+            // URL url = Organizer.findResource("iso/19139/20070417/srv/srv.xsd");
+            URL url = Organizer.findResource(schemaPath);
+            System.out.println(url);
+
+            // String[] arr = url.toString().split("!");
+
+            // FileObject jarFile = Organizer.resolveFile(arr[0]);
+            FileObject jarFile = Organizer.resolveFile(url.toString());
+
+            // List the children of the Jar file
+            FileObject[] children = null;
+            try {
+                children = jarFile.getChildren();
+            } catch (FileSystemException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            System.out.println("Children of " + jarFile.getName().getURI());
+            for (int i = 0; i < children.length; i++) {
+                System.out.println(children[i].getName().getBaseName());
+            }
+
+            dest = Organizer.resolveFile(localIso19139SchemaPath);
+            Organizer.deleteDirectory(dest);
+
+            Organizer.copyFile(jarFile, dest);
+        }
+
+        //stringList.add(url.toString());
         // stringList.add("J:/dev/iso/19139/20070417/schema/src/main/resources/iso/19139/20070417/srv/srv.xsd");
-        stringList.add(dest.getName() + "/srv/srv.xsd");
+        stringList.add(localIso19139RootSchemaPath);
         // stringList.add("C:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/srv/serviceMetadata.xsd");
         String[] inS = new String[stringList.size()];
         inS = stringList.toArray(inS);
@@ -369,13 +420,15 @@ public class TestServiceMetadata {
         }
         // InputStream inXml =
         // Organizer.getUriAsInputStream("J:/dev/atoll-v2/atoll-motu/atoll-motu-processor/src/test/resources/xml/TestServiceMetadata.xml");
-//        InputStream inXml = Organizer.getUriAsInputStream(xmlFile);
-//        if (inXml == null) {
-//            throw new MotuException(String.format("ERROR in validateServiceMetadata - Motu configuration xml ('%s') not found:", Organizer
-//                    .getMotuConfigXmlName()));
-//        }
+        // InputStream inXml = Organizer.getUriAsInputStream(xmlFile);
+        // if (inXml == null) {
+        // throw new
+        // MotuException(String.format("ERROR in validateServiceMetadata - Motu configuration xml ('%s') not found:",
+        // Organizer
+        // .getMotuConfigXmlName()));
+        // }
 
-        //XMLErrorHandler errorHandler = XMLUtils.validateXML(inSchema, inXml);
+        // XMLErrorHandler errorHandler = XMLUtils.validateXML(inSchema, inXml);
         XMLErrorHandler errorHandler = XMLUtils.validateXML(inSchema, xmlFile);
 
         if (errorHandler == null) {
