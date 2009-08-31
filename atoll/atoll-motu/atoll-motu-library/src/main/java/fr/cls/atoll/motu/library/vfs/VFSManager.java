@@ -21,6 +21,7 @@ import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
 import org.apache.commons.vfs.impl.StandardFileSystemManager;
 import org.apache.commons.vfs.provider.ftp.FtpFileSystemConfigBuilder;
 import org.apache.commons.vfs.provider.http.HttpFileSystemConfigBuilder;
+import org.apache.commons.vfs.provider.jar.JarFileProvider;
 import org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder;
 import org.apache.log4j.Logger;
 
@@ -37,7 +38,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.12 $ - $Date: 2009-08-25 13:58:06 $
+ * @version $Revision: 1.13 $ - $Date: 2009-08-31 11:47:15 $
  */
 public class VFSManager {
 
@@ -167,11 +168,12 @@ public class VFSManager {
 
         standardFileSystemManager = new StandardFileSystemManager();
         standardFileSystemManager.setLogger(LogFactory.getLog(VFS.class));
+        standardFileSystemManager.setClassLoader(this.getClass().getClassLoader());
         try {
             standardFileSystemManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderConfig()));
             standardFileSystemManager.setCacheStrategy(CacheStrategy.ON_CALL);
             // standardFileSystemManager.setFilesCache(new SoftRefFilesCache());
-            // standardFileSystemManager.addProvider("moi", new DefaultLocalFileProvider());
+            //standardFileSystemManager.addProvider("jar", new JarFileProvider());
             standardFileSystemManager.init();
             open = true;
         } catch (FileSystemException e) {
