@@ -27,7 +27,7 @@ import fr.cls.atoll.motu.library.intfce.Organizer;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-08-25 13:58:06 $
+ * @version $Revision: 1.5 $ - $Date: 2009-09-01 14:24:21 $
  */
 public class XMLUtils {
 
@@ -298,7 +298,6 @@ public class XMLUtils {
     public static XMLErrorHandler validateXML(String[] inSchemas, String inXml, String schemaLanguage) throws MotuException {
 
         XMLErrorHandler errorHandler = new XMLErrorHandler();
-
         try {
 
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();

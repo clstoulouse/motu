@@ -27,11 +27,17 @@
 			<artifactId>freemarker</artifactId>
 			<version>2.3.15</version>
 		</dependency>
-        <dependency>
-            <groupId>org.geotoolkit</groupId>
-            <artifactId>geotk-referencing</artifactId>
-            <version>SNAPSHOT</version>
-        </dependency>				
+		<dependency>
+			<groupId>net.sourceforge.fmpp</groupId>
+			<artifactId>fmpp</artifactId>
+			<version>0.9.14</version>
+		</dependency>
+
+		<!--
+			<dependency> <groupId>org.geotoolkit</groupId>
+			<artifactId>geotk-referencing</artifactId>
+			<version>SNAPSHOT</version> </dependency>
+		-->
 		<dependency>
 			<groupId>org.globus</groupId>
 			<artifactId>cog-jglobus</artifactId>
@@ -63,46 +69,22 @@
 		<dependency>
 			<groupId>jscience</groupId>
 			<artifactId>jscience</artifactId>
-			<version>4.3.1</version>
+			<version>4.3.1-PATCH-CLS</version>
 		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
 			<version>1.6</version>
 		</dependency>
-		<!-- 
+		<!--
+			<dependency> <groupId>org.apache.commons</groupId>
+			<artifactId>commons-vfs</artifactId> <version>2.0-SNAPSHOT</version>
+			</dependency>
+		-->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-vfs</artifactId>
-			<version>2.0-SNAPSHOT</version>
-		</dependency>
-		 -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-vfs</artifactId>
-			<version>2.0-PATCH-CLS</version> 
-		</dependency>
-	    <dependency>
-	      <groupId>commons-net</groupId>
-	      <artifactId>commons-net</artifactId>
-	      <version>1.4.1</version>
-	    </dependency>
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-			<version>3.1</version>
-		</dependency>
-	    <dependency>
-	      <groupId>com.jcraft</groupId>
-	      <artifactId>jsch</artifactId>
-	      <version>0.1.31</version>
-	    </dependency>
-		
-<!-- 		
-		<dependency>
-			<groupId>commons-vfs</groupId>
-			<artifactId>commons-vfs</artifactId>
-			<version>1.0</version>
+			<version>2.0-PATCH-CLS</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-net</groupId>
@@ -117,9 +99,19 @@
 		<dependency>
 			<groupId>com.jcraft</groupId>
 			<artifactId>jsch</artifactId>
-			<version>0.1.23</version>
+			<version>0.1.31</version>
 		</dependency>
- -->		
+
+		<!--
+			<dependency> <groupId>commons-vfs</groupId>
+			<artifactId>commons-vfs</artifactId> <version>1.0</version>
+			</dependency> <dependency> <groupId>commons-net</groupId>
+			<artifactId>commons-net</artifactId> <version>1.4.1</version>
+			</dependency> <dependency> <groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId> <version>3.1</version>
+			</dependency> <dependency> <groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId> <version>0.1.23</version> </dependency>
+		-->
 		<dependency>
 			<groupId>quartz</groupId>
 			<artifactId>quartz</artifactId>
@@ -132,13 +124,13 @@
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>		
-			<version>${dependencies.version.slf4j}</version>			
+			<artifactId>slf4j-api</artifactId>
+			<version>${dependencies.version.slf4j}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>${dependencies.version.slf4j}</version>			
+			<version>${dependencies.version.slf4j}</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -208,24 +200,24 @@
 	</dependencies>
 	<repositories>
 	</repositories>
-  <pluginRepositories>
-  </pluginRepositories>
-  <reporting>
-  	<plugins>
-  	</plugins>
-  </reporting>
-  <build>
-    <plugins>
-      <plugin>
-  			<groupId>com.googlecode.maven-overview-plugin</groupId>
-  			<artifactId>maven-overview-plugin</artifactId>
-  			<version>1.4</version>
-        <configuration>
-          <url>http://kungfoo-m2.googlecode.com/svn/release-rep</url>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+	<pluginRepositories>
+	</pluginRepositories>
+	<reporting>
+		<plugins>
+		</plugins>
+	</reporting>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.googlecode.maven-overview-plugin</groupId>
+				<artifactId>maven-overview-plugin</artifactId>
+				<version>1.4</version>
+				<configuration>
+					<url>http://kungfoo-m2.googlecode.com/svn/release-rep</url>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
-  
+
 </project>
