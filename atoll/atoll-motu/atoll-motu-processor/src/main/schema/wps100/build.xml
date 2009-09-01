@@ -34,6 +34,8 @@
 		<fileset dir="${m2repository.dir}/com/sun/codemodel/codemodel/2.1" includes="*.jar" />
 		<fileset dir="${m2repository.dir}/com/sun/xsom/xsom/20081112" includes="*.jar" />
 		<fileset dir="${m2repository.dir}/org/kohsuke/rngom/rngom/20061207" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/cls/atoll/motu/atoll-motu-processor/2.0.0-SNAPSHOT" includes="*.jar" />
+		<!-- <fileset dir="${project.dir}/target/classes/fr/cls/atoll/motu/processor/ant" includes="*.class" /> -->
 		
 		<!-- <pathelement location="${m2repository.dir}/javax/xml/defaultvalueplugin/1.0/defaultvalueplugin-1.0.jar"/> -->
 		<!-- <fileset dir="C:\Downloads\jaxb-ri-20090410\lib" includes="*.jar" /> -->
@@ -100,6 +102,20 @@
             </fileset>
         </delete>
 	</target>
+	
+	
+	  <target name="declare">
+
+	<taskdef name="mytask" classname="fr.cls.atoll.motu.processor.ant.Expander" 
+	classpathref="classpath" />
+	  	</target>
+	
+	  <target name="main" depends="declare">
+	    <mytask message="Hello World! MyVeryOwnTask works!"/>
+	  </target>
+
+		
+
 
 </project>
 

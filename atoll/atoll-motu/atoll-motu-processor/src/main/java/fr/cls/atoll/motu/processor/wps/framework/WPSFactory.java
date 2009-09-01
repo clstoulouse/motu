@@ -55,7 +55,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.6 $ - $Date: 2009-08-18 15:12:19 $
+ * @version $Revision: 1.7 $ - $Date: 2009-09-01 14:24:39 $
  */
 public class WPSFactory {
     /**
@@ -417,14 +417,17 @@ public class WPSFactory {
 
         BoundingBoxType boundingBoxType = objectFactoryOWS.createBoundingBoxType();
 
-        double[] values = {0d};
+        double[] values = { 0d };
         try {
             values = parameterValue.doubleValueList();
         } catch (InvalidParameterTypeException e) {
-            throw new MotuException(String.format("WPSFactory#createBoundingBoxInputType : parameter '%s' (value type '%s') - Unable to get values : '%s' type was expected.",
-                                                  parameterValue.getDescriptor().getName(),
-                                                  parameterValue.getValue().getClass().getName(),
-                                                  values.getClass().getCanonicalName()), e);
+            throw new MotuException(
+                    String
+                            .format("WPSFactory#createBoundingBoxInputType : parameter '%s' (value type '%s') - Unable to get values : '%s' type was expected.",
+                                    parameterValue.getDescriptor().getName(),
+                                    parameterValue.getValue().getClass().getName(),
+                                    values.getClass().getCanonicalName()),
+                    e);
         }
 
         if (values == null) {
@@ -500,15 +503,22 @@ public class WPSFactory {
         parameter.setValue(value);
         return parameter;
     }
+
     public static Parameter<?> createParameter(final String name, final int value) {
         return Parameter.create(name, value);
+//        final ParameterDescriptor<Integer> descriptor = new DefaultParameterDescriptor<Integer>(name, Integer.class, null, null);
+//        final Parameter<Integer> parameter = new Parameter<Integer>(descriptor);
+//        parameter.setValue(value);
+//        return parameter;
+
     }
+
     public static Parameter<?> createParameter(final String name, final double value) {
         return Parameter.create(name, value, null);
     }
+
     public static Parameter<?> createParameter(final String name, final long value) {
-        final ParameterDescriptor<Long> descriptor =
-                new DefaultParameterDescriptor<Long>(name, Long.class, null, null);
+        final ParameterDescriptor<Long> descriptor = new DefaultParameterDescriptor<Long>(name, Long.class, null, null);
         final Parameter<Long> parameter = new Parameter<Long>(descriptor);
         parameter.setValue(value);
         return parameter;

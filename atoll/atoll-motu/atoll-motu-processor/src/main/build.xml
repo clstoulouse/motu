@@ -1,0 +1,38 @@
+<?xml version="1.0" standalone="yes"?>
+<project basedir=".">
+
+	<!-- =================================================================== -->
+	<!-- Initialisation de toutes les variables                              -->
+	<!-- =================================================================== -->
+		    	
+	<property name="project.dir"  value="../.." />
+	<property name="m2repository.dir" value="${user.home}/.m2/repository" />
+
+	<path id="classpath">
+		<!-- <fileset dir="${project.dir}/target/classes/fr/cls/atoll/motu/processor/ant" includes="*.class" /> -->		
+		<fileset dir="${m2repository.dir}/org/apache/commons/commons-vfs/2.0-PATCH-CLS" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/cls/atoll/motu/atoll-motu-library/2.0.0-SNAPSHOT" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/org/jvnet/ogc/iso-19139-d_2006_05_04-schema/1.0.0" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/org/jvnet/jaxb2_commons/jaxb-xjc/2.1.10" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-impl/2.1.10" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/com/sun/istack/istack-commons-tools/1.1" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-impl/2.1.10" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/com/sun/codemodel/codemodel/2.1" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/com/sun/xsom/xsom/20081112" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/org/kohsuke/rngom/rngom/20061207" includes="*.jar" />
+		<!-- <fileset dir="${m2repository.dir}/cls/atoll/motu/atoll-motu-processor/2.0.0-SNAPSHOT" includes="*.jar" /> -->
+		<fileset dir="${project.dir}/target/" includes="*.jar" />
+	</path>
+
+	<target name="declare">
+
+		<taskdef name="mytask" classname="fr.cls.atoll.motu.processor.ant.ServiceMetadataBuilder" 
+			classpathref="classpath" />
+	  	</target>
+	
+	<target name="main" depends="declare">
+		<mytask message="Hello World! MyVeryOwnTask works!"/>
+	</target>
+
+</project>
+

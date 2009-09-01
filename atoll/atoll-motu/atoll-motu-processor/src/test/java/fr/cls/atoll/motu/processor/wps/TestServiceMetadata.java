@@ -28,13 +28,14 @@ import org.isotc211.iso19139.d_2006_05_04.srv.SVOperationMetadataType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterPropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVServiceIdentificationType;
-import org.opengis.service.OperationMetadata;
-import org.opengis.service.ServiceIdentification;
+//import org.opengis.service.OperationMetadata;
+//import org.opengis.service.ServiceIdentification;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.xml.XMLErrorHandler;
 import fr.cls.atoll.motu.library.xml.XMLUtils;
+import fr.cls.atoll.motu.processor.ant.ServiceMetadataBuilder;
 
 /**
  * <br>
@@ -44,7 +45,7 @@ import fr.cls.atoll.motu.library.xml.XMLUtils;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-08-27 15:06:13 $
+ * @version $Revision: 1.6 $ - $Date: 2009-09-01 14:24:39 $
  */
 public class TestServiceMetadata {
 
@@ -107,7 +108,8 @@ public class TestServiceMetadata {
         // Authenticator.setDefault(new MyAuthenticator());
 
         // testLoadGeomatysServiceMetadata();
-        testLoadOGCServiceMetadata();
+        //testLoadOGCServiceMetadata();
+        testServiceMetadataBuilder();
 
         // try {
         // getServiceMetadataSchemaAsString();
@@ -127,39 +129,39 @@ public class TestServiceMetadata {
     }
 
     public static void testLoadGeomatysServiceMetadata() {
-
-        InputStream in = null;
-        try {
-            in = Organizer.getUriAsInputStream("J:/dev/atoll-v2/atoll-motu/atoll-motu-processor/src/test/resources/xml/TestServiceMetadata.xml");
-        } catch (MotuException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        JAXBContext jc = null;
-        ServiceIdentification serviceIdentification = null;
-        try {
-            jc = JAXBContext.newInstance("org.geotools.service");
-            Unmarshaller unmarshaller = jc.createUnmarshaller();
-            JAXBElement<?> element = (JAXBElement<?>) unmarshaller.unmarshal(in);
-            serviceIdentification = (ServiceIdentification) element.getValue();
-            System.out.println(serviceIdentification.toString());
-
-        } catch (JAXBException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        Collection<OperationMetadata> operationMetadataPropertyTypeList = serviceIdentification.getContainsOperations();
-
-        for (OperationMetadata operationMetadata : operationMetadataPropertyTypeList) {
-
-            System.out.println(operationMetadata.getOperationName());
-            System.out.println(operationMetadata.getInvocationName());
-            System.out.println(operationMetadata.getOperationDescription());
-
-        }
-
-        System.out.println("End testLoadOGCServiceMetadata");
+//
+//        InputStream in = null;
+//        try {
+//            in = Organizer.getUriAsInputStream("J:/dev/atoll-v2/atoll-motu/atoll-motu-processor/src/test/resources/xml/TestServiceMetadata.xml");
+//        } catch (MotuException e1) {
+//            // TODO Auto-generated catch block
+//            e1.printStackTrace();
+//        }
+//        JAXBContext jc = null;
+//        ServiceIdentification serviceIdentification = null;
+//        try {
+//            jc = JAXBContext.newInstance("org.geotools.service");
+//            Unmarshaller unmarshaller = jc.createUnmarshaller();
+//            JAXBElement<?> element = (JAXBElement<?>) unmarshaller.unmarshal(in);
+//            serviceIdentification = (ServiceIdentification) element.getValue();
+//            System.out.println(serviceIdentification.toString());
+//
+//        } catch (JAXBException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//
+//        Collection<OperationMetadata> operationMetadataPropertyTypeList = serviceIdentification.getContainsOperations();
+//
+//        for (OperationMetadata operationMetadata : operationMetadataPropertyTypeList) {
+//
+//            System.out.println(operationMetadata.getOperationName());
+//            System.out.println(operationMetadata.getInvocationName());
+//            System.out.println(operationMetadata.getOperationDescription());
+//
+//        }
+//
+//        System.out.println("End testLoadOGCServiceMetadata");
 
     }
 
@@ -459,4 +461,10 @@ public class TestServiceMetadata {
         }
     }
 
+    public static void testServiceMetadataBuilder() {
+        ServiceMetadataBuilder serviceMetadataBuilder = new ServiceMetadataBuilder();
+        serviceMetadataBuilder.setXmlTemplate("file:c:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml");
+        serviceMetadataBuilder.setTempPath("file:///c:/tempVFS");
+        serviceMetadataBuilder.execute();
+    }
 }
