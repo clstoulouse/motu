@@ -29,6 +29,7 @@ import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterPropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVServiceIdentificationType;
 
+import fmpp.tools.AntTask;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.intfce.Organizer;
@@ -43,9 +44,9 @@ import fr.cls.atoll.motu.library.xml.XMLUtils;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-09-03 07:28:35 $
+ * @version $Revision: 1.3 $ - $Date: 2009-09-03 09:16:28 $
  */
-public class ServiceMetadataBuilder extends Task {
+public class ServiceMetadataBuilder extends AntTask {
 
     private String outputXml = "ServiceMetadata.xml";
 
@@ -56,10 +57,13 @@ public class ServiceMetadataBuilder extends Task {
     private String localIso19139SchemaPath;
     private String localIso19139RootSchemaRelPath = "/srv/srv.xsd";
 
-    private String destSrcPath;
-    private String fmppSrc;
+    // private String destSrcPath;
+    // private String fmppSrc;
 
     private boolean validate = true;
+    private boolean expand = true;
+    private boolean fmpp = true;
+
     private JAXBContext jc = null;
 
     public void setXmlTemplate(String xmlTemplate) {
@@ -73,71 +77,92 @@ public class ServiceMetadataBuilder extends Task {
     public void setTempPath(String tempPath) {
         this.tempPath = tempPath;
     }
-    
+
     public void setOutputXml(String outputXml) {
         this.outputXml = outputXml;
     }
 
-//    public void setLocalIso19139SchemaPath(String localIso19139SchemaPath) {
-//        this.localIso19139SchemaPath = localIso19139SchemaPath;
-//    }
+    // public void setLocalIso19139SchemaPath(String localIso19139SchemaPath) {
+    // this.localIso19139SchemaPath = localIso19139SchemaPath;
+    // }
 
     public void setLocalIso19139RootSchemaRelPath(String localIso19139RootSchemaRelPath) {
         this.localIso19139RootSchemaRelPath = localIso19139RootSchemaRelPath;
     }
 
-    public void setDestSrcPath(String destSrcPath) {
-        this.destSrcPath = destSrcPath;
-    }
-
-    public void setFmppSrc(String fmppSrc) {
-        this.fmppSrc = fmppSrc;
-    }
+    // public void setDestSrcPath(String destSrcPath) {
+    // this.destSrcPath = destSrcPath;
+    // }
+    //
+    // public void setFmppSrc(String fmppSrc) {
+    // this.fmppSrc = fmppSrc;
+    // }
 
     public void setValidate(boolean validate) {
         this.validate = validate;
     }
 
-//    private String msg;
-//
-//    // The setter for the "message" attribute
-//    public void setMessage(String msg) {
-//        this.msg = msg;
-//    }
+    public void setExpand(boolean expand) {
+        this.expand = expand;
+    }
+
+    public void setFmpp(boolean fmpp) {
+        this.fmpp = fmpp;
+    }
+
+    // private String msg;
+    //
+    // // The setter for the "message" attribute
+    // public void setMessage(String msg) {
+    // this.msg = msg;
+    // }
 
     /** {@inheritDoc} */
     @Override
     public void execute() throws BuildException {
-        //System.out.println(msg);
+        // System.out.println(msg);
 
         try {
             localIso19139SchemaPath = String.format("%s/%s", tempPath, ISO19139);
-            System.out.println(localIso19139SchemaPath);
 
             jc = JAXBContext.newInstance(new Class[] { org.isotc211.iso19139.d_2006_05_04.srv.ObjectFactory.class });
 
-            if (validate) {
-                System.out.println(validate);
-                List<String> errors = validateServiceMetadataFromString();
-                if (errors.size() > 0) {
-                    StringBuffer stringBuffer = new StringBuffer();
-                    for (String str : errors) {
-                        stringBuffer.append(str);
-                        stringBuffer.append("\n");
+            if (expand) {
+
+                System.out.println(String.format("Step : Expand from template '%s'\n", xmlTemplate));
+
+                if (validate) {
+                    System.out.println(String.format("Step : XML validation using schema located in '%s'\n", localIso19139SchemaPath));
+                    List<String> errors = validateServiceMetadataFromString();
+                    if (errors.size() > 0) {
+                        StringBuffer stringBuffer = new StringBuffer();
+                        for (String str : errors) {
+                            stringBuffer.append(str);
+                            stringBuffer.append("\n");
+                        }
+                        throw new BuildException(String.format("ERROR - XML file '%s' is not valid - See errors below:\n%s",
+                                                               xmlTemplate,
+                                                               stringBuffer.toString()));
+                    } else {
+                        System.out.println(String.format("XML file '%s' is valid\n", xmlTemplate));
                     }
-                    throw new BuildException(String.format("ERROR - XML file '%s' is not valid - See errors below:\n%s", xmlTemplate, stringBuffer
-                            .toString()));
+
                 } else {
-                    System.out.println(String.format("XML file '%s' is valid", xmlTemplate));
+                    System.out.println("Step XML validation  is skipped\n");
                 }
 
+                JAXBElement<?> element = unmarshallXmlTemplate();
+
+                marshallXmlTemplate(element);
+
+            } else {
+                System.out.println("Step Expand is skipped\n");
             }
 
-            System.out.println("unmarshallXmlTemplate");
-
-            JAXBElement<?> element = unmarshallXmlTemplate();
-
-            marshallXmlTemplate(element);
+            if (fmpp) {
+                System.out.println("Step : substitution (fmpp task)\n");
+                super.execute();
+            }
 
         } catch (MotuExceptionBase e) {
             throw new BuildException(e.notifyException(), e);
@@ -153,9 +178,7 @@ public class ServiceMetadataBuilder extends Task {
         if (inSchema == null) {
             throw new MotuException("ERROR in validateServiceMetadata - No schema(s) found.");
         }
-        System.out.println(inSchema.toString());
-        System.out.println(xmlTemplate);
-        
+
         XMLErrorHandler errorHandler = XMLUtils.validateXML(inSchema, xmlTemplate);
 
         if (errorHandler == null) {
@@ -166,7 +189,7 @@ public class ServiceMetadataBuilder extends Task {
     }
 
     public String[] getServiceMetadataSchemaAsString(String schemaPath) throws MotuException, FileSystemException {
-        System.out.println("getServiceMetadataSchemaAsString");
+        // System.out.println("getServiceMetadataSchemaAsString");
 
         List<String> stringList = new ArrayList<String>();
         String localIso19139RootSchemaPath = String.format("%s%s", localIso19139SchemaPath, localIso19139RootSchemaRelPath);
@@ -201,116 +224,124 @@ public class ServiceMetadataBuilder extends Task {
             // }
 
             dest = Organizer.resolveFile(localIso19139SchemaPath);
-//            FileObject old = Organizer.resolveFile(localIso19139SchemaPath + ".old");
-//
-//            System.out.println("Dest exists ?");
-//            System.out.println(dest.toString());
-//
-//            System.out.println(old.toString());
-//            System.out.println("old");
-//            Organizer.deleteDirectory(old);
-//            System.out.println("Delete old");
-//            Organizer.copyFile(dest, old);
-//            System.out.println("Copy to old");
-            Organizer.deleteDirectory(dest);
-            System.out.println("delete dest");
+            // FileObject old = Organizer.resolveFile(localIso19139SchemaPath + ".old");
+            //
+            // System.out.println("Dest exists ?");
+            // System.out.println(dest.toString());
+            //
+            // System.out.println(old.toString());
+            // System.out.println("old");
+            // Organizer.deleteDirectory(old);
+            // System.out.println("Delete old");
+            // Organizer.copyFile(dest, old);
+            // System.out.println("Copy to old");
+            // Organizer.deleteDirectory(dest);
+            // System.out.println("delete dest");
 
             Organizer.copyFile(jarFile, dest);
-            System.out.println("copy to dest");
+            System.out.println(String.format("Step : Copy Iso19139 schema from  '%s' to '%s'\n", jarFile.getName().toString(), dest.getName()
+                    .toString()));
         }
 
         stringList.add(localIso19139RootSchemaPath);
         String[] inS = new String[stringList.size()];
         inS = stringList.toArray(inS);
-//        System.out.println("exit getServiceMetadataSchemaAsString");
+        // System.out.println("exit getServiceMetadataSchemaAsString");
 
         return inS;
     }
 
     public JAXBElement<?> unmarshallXmlTemplate() throws MotuException, FileSystemException, JAXBException {
 
-        SVServiceIdentificationType serviceIdentificationType = null;
-        System.out.println("unmarshall");
-        
+        System.out.println(String.format("Step : unmarshall XML from '%s'\n", xmlTemplate));
+
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         Source srcFile = new StreamSource(xmlTemplate);
 
         JAXBElement<?> element = (JAXBElement<?>) unmarshaller.unmarshal(srcFile);
 
-        serviceIdentificationType = (SVServiceIdentificationType) element.getValue();
-        System.out.println(serviceIdentificationType.toString());
-
-        List<SVOperationMetadataPropertyType> operationMetadataPropertyTypeList = serviceIdentificationType.getContainsOperations();
-
-        for (SVOperationMetadataPropertyType operationMetadataPropertyType : operationMetadataPropertyTypeList) {
-
-            SVOperationMetadataType operationMetadataType = operationMetadataPropertyType.getSVOperationMetadata();
-            System.out.println("---------------------------------------------");
-            if (operationMetadataType == null) {
-                continue;
-            }
-            System.out.println(operationMetadataType.getOperationName().getCharacterString().getValue());
-            System.out.println(operationMetadataType.getInvocationName().getCharacterString().getValue());
-            System.out.println(operationMetadataType.getOperationDescription().getCharacterString().getValue());
-
-            CIOnlineResourcePropertyType onlineResourcePropertyType = operationMetadataType.getConnectPoint().get(0);
-            if (onlineResourcePropertyType != null) {
-                System.out.println(operationMetadataType.getConnectPoint().get(0).getCIOnlineResource().getLinkage().getURL());
-            }
-
-            List<SVParameterPropertyType> parameterPropertyTypeList = operationMetadataType.getParameters();
-
-            for (SVParameterPropertyType parameterPropertyType : parameterPropertyTypeList) {
-                SVParameterType parameterType = parameterPropertyType.getSVParameter();
-
-                if (parameterType.getName().getAName().getCharacterString() != null) {
-                    System.out.println(parameterType.getName().getAName().getCharacterString().getValue());
-                } else {
-                    System.out.println("WARNING - A parameter has no name");
-
-                }
-                if (parameterType.getDescription() != null) {
-                    if (parameterType.getDescription().getCharacterString() != null) {
-                        System.out.println(parameterType.getDescription().getCharacterString().getValue());
-                    } else {
-                        System.out.println("WARNING - A parameter has no description");
-
-                    }
-                } else {
-                    System.out.println("WARNING - A parameter has no description");
-
-                }
-            }
-
-        }
+        //        
+        // SVServiceIdentificationType serviceIdentificationType = (SVServiceIdentificationType)
+        // element.getValue();
+        // System.out.println(serviceIdentificationType.toString());
+        //
+        // List<SVOperationMetadataPropertyType> operationMetadataPropertyTypeList =
+        // serviceIdentificationType.getContainsOperations();
+        //
+        // for (SVOperationMetadataPropertyType operationMetadataPropertyType :
+        // operationMetadataPropertyTypeList) {
+        //
+        // SVOperationMetadataType operationMetadataType =
+        // operationMetadataPropertyType.getSVOperationMetadata();
+        // System.out.println("---------------------------------------------");
+        // if (operationMetadataType == null) {
+        // continue;
+        // }
+        // System.out.println(operationMetadataType.getOperationName().getCharacterString().getValue());
+        // System.out.println(operationMetadataType.getInvocationName().getCharacterString().getValue());
+        // System.out.println(operationMetadataType.getOperationDescription().getCharacterString().getValue());
+        //
+        // CIOnlineResourcePropertyType onlineResourcePropertyType =
+        // operationMetadataType.getConnectPoint().get(0);
+        // if (onlineResourcePropertyType != null) {
+        // System.out.println(operationMetadataType.getConnectPoint().get(0).getCIOnlineResource().getLinkage().getURL());
+        // }
+        //
+        // List<SVParameterPropertyType> parameterPropertyTypeList = operationMetadataType.getParameters();
+        //
+        // for (SVParameterPropertyType parameterPropertyType : parameterPropertyTypeList) {
+        // SVParameterType parameterType = parameterPropertyType.getSVParameter();
+        //
+        // if (parameterType.getName().getAName().getCharacterString() != null) {
+        // System.out.println(parameterType.getName().getAName().getCharacterString().getValue());
+        // } else {
+        // System.out.println("WARNING - A parameter has no name");
+        //
+        // }
+        // if (parameterType.getDescription() != null) {
+        // if (parameterType.getDescription().getCharacterString() != null) {
+        // System.out.println(parameterType.getDescription().getCharacterString().getValue());
+        // } else {
+        // System.out.println("WARNING - A parameter has no description");
+        //
+        // }
+        // } else {
+        // System.out.println("WARNING - A parameter has no description");
+        //
+        // }
+        // }
+        //
+        // }
 
         return element;
     }
 
     public void marshallXmlTemplate(JAXBElement<?> element) throws MotuException, JAXBException, IOException, URISyntaxException {
-        //FileWriter writer = new FileWriter(String.format("%s/%s/%s.xml", tempPath, SERVICE_METADATA, SERVICE_METADATA));
-        //FileObject fileobj = Organizer.resolveFile(String.format("%s/%s", tempPath, outputXml));
+        // FileWriter writer = new FileWriter(String.format("%s/%s/%s.xml", tempPath, SERVICE_METADATA,
+        // SERVICE_METADATA));
+        // FileObject fileobj = Organizer.resolveFile(String.format("%s/%s", tempPath, outputXml));
+        System.out.println(String.format("Step : marshall XML to '%s'\n", outputXml));
+
         FileObject fileobj = Organizer.resolveFile(outputXml);
-        System.out.println("ezrezrezrezr");
-        //URI uri = new URI(String.format("%s/%s/%s.xml", tempPath, SERVICE_METADATA, SERVICE_METADATA));
+        // URI uri = new URI(String.format("%s/%s/%s.xml", tempPath, SERVICE_METADATA, SERVICE_METADATA));
         System.out.println(fileobj.getName().toString());
-        //file.createNewFile();
+        // file.createNewFile();
         fileobj.createFile();
-//        FileWriter writer = new FileWriter(fileobj.getName().getURI());
-        System.out.println("ezrezrezrezr 3");
-        
+        // FileWriter writer = new FileWriter(fileobj.getName().getURI());
 
         Marshaller marshaller = jc.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        //marshaller.marshal(element, writer);
-        
+        // marshaller.marshal(element, writer);
+
         marshaller.marshal(element, fileobj.getContent().getOutputStream());
-        System.out.println("ezrezrezrezr 3");
 
         fileobj.close();
-        //writer.flush();
-        //writer.close();
-        
+        // writer.flush();
+        // writer.close();
+
+    }
+
+    public static void fmpp() {
 
     }
 

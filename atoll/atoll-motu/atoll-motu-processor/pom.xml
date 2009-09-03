@@ -43,7 +43,11 @@
 			<artifactId>geotk-referencing</artifactId>
 			<version>SNAPSHOT</version>
 		</dependency>
-
+		<dependency>
+		    <groupId>jgrapht</groupId>
+		    <artifactId>jgrapht</artifactId>
+		    <version>0.7.3</version>
+		</dependency> 
 		<dependency>
 			<groupId>org.jvnet.ogc</groupId>
 			<artifactId>iso-19139-d_2006_05_04-schema</artifactId>
@@ -142,15 +146,35 @@
 						<taskdef name="buildServiceMetadata"
 							classname="fr.cls.atoll.motu.processor.ant.ServiceMetadataBuilder"
 							classpathref="maven.runtime.classpath" />
+							
+						<property name="fmpp.config" value="src/main/resources/fmpp/configServiceOpendap.fmpp" />
+
 						<property name="tempPath" value="file:///c:/tempVFS/" />
-						<property name="outputXml" value="file:///${base.dir}/src/main/resources/fmpp/src/ServiceMetadataExpanded.xml" />
+						<property name="iso19139Schema.path" value="schema/iso19139" />
+						<property name="localIso19139RootSchemaRel.path" value="/srv/srv.xsd" />
+						
+						<echo message="tempPath: ${tempPath}"/>
+						<echo message="fmpp.config: ${fmpp.config}"/>
+						<echo message="iso19139Schema.path: ${iso19139Schema.path}"/>
+						<echo message="localIso19139RootSchemaRel.path: ${localIso19139RootSchemaRel.path}"/>
+
+						<property name="outputXmlOpendap" value="file:///${base.dir}/src/main/resources/fmpp/src/ServiceMetadataOpendap.xml" />
+						<echo message="outputXmlOpendap: ${outputXmlOpendap}"/>
 
 						<buildServiceMetadata
 							xmlTemplate="file:///${base.dir}/src/main/resources/fmpp/src/base/serviceMetadataTemplateOpendapBase.xml"
-							tempPath="${tempPath}" iso19139Schema="schema/iso19139"
-							localIso19139RootSchemaRelPath="/srv/srv.xsd" validate="true"
-							outputXml="${outputXml}" />
+							tempPath="${tempPath}" iso19139Schema="${iso19139Schema.path}"
+							localIso19139RootSchemaRelPath="${localIso19139RootSchemaRel.path}" 
+							outputXml="${outputXmlOpendap}" 
+							configuration="${fmpp.config}"
+							excludes="**/*"
+							expand="true"
+							validate="true"
+							fmpp="true"
+							/>
 
+
+						<!--
 						<taskdef name="freemarker" classname="freemarker.ext.ant.FreemarkerXmlTask">
 							<classpath>
 								<pathelement location="freemarker.jar" />
@@ -158,16 +182,17 @@
 						</taskdef>
 						<taskdef name="fmpp" classname="fmpp.tools.AntTask" />
 
-						<!--
 							<fmpp sourceroot="c:/tempVFS/" outputroot="out"
 							logfile="log.fmpp"
 							includesFile="c:/tempVFS/ServiceMetadataExpanded2s.xml"> <data>
 							validate: true servicesXml: xml(c:/tempVFS/data/services.xml)
 							</data> </fmpp>
 						-->
+						<!-- 
 						<fmpp configuration="src/main/resources/fmpp/configServiceOpendap.fmpp"
 							excludes="**/*">
 						</fmpp>
+						 -->
 
 					</tasks>
 				</configuration>

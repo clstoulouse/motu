@@ -45,7 +45,7 @@ import fr.cls.atoll.motu.processor.ant.ServiceMetadataBuilder;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.7 $ - $Date: 2009-09-03 07:28:35 $
+ * @version $Revision: 1.8 $ - $Date: 2009-09-03 09:16:28 $
  */
 public class TestServiceMetadata {
 
@@ -108,8 +108,8 @@ public class TestServiceMetadata {
         // Authenticator.setDefault(new MyAuthenticator());
 
         // testLoadGeomatysServiceMetadata();
-        //testLoadOGCServiceMetadata();
-        testServiceMetadataBuilder();
+        testLoadOGCServiceMetadata();
+        //testServiceMetadataBuilder();
 
         // try {
         // getServiceMetadataSchemaAsString();
@@ -201,7 +201,8 @@ public class TestServiceMetadata {
         SVServiceIdentificationType serviceIdentificationType = null;
         try {
             // jc = JAXBContext.newInstance("org.isotc211.iso19139.d_2006_05_04.srv");
-            jc = JAXBContext.newInstance("org.isotc211.iso19139.d_2006_05_04.srv");
+            //jc = JAXBContext.newInstance("org.isotc211.iso19139.d_2006_05_04.srv");
+            jc = JAXBContext.newInstance(new Class[] { org.isotc211.iso19139.d_2006_05_04.srv.ObjectFactory.class });
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             Source srcFile = new StreamSource(xmlFile);
             JAXBElement<?> element = (JAXBElement<?>) unmarshaller.unmarshal(srcFile);

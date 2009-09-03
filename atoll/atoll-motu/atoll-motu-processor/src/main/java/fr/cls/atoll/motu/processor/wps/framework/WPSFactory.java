@@ -12,17 +12,13 @@ import java.util.concurrent.ConcurrentMap;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.apache.log4j.Logger;
 import org.geotoolkit.parameter.DefaultParameterDescriptor;
 import org.geotoolkit.parameter.Parameter;
-import org.geotoolkit.parameter.Parameters;
 import org.opengis.parameter.InvalidParameterTypeException;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
-
-import com.sun.xml.bind.v2.model.core.Adapter;
 
 import fr.cls.atoll.motu.library.data.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.library.exception.MotuException;
@@ -55,7 +51,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.7 $ - $Date: 2009-09-01 14:24:39 $
+ * @version $Revision: 1.8 $ - $Date: 2009-09-03 09:16:28 $
  */
 public class WPSFactory {
     /**

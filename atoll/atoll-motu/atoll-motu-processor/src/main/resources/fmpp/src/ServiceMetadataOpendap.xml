@@ -1,7 +1,3 @@
-<@pp.dropOutputFile />
-<#list servicesXml.services.service as p>
-<@pp.changeOutputFile name="serviceMetadata_${p.name}.xml" />
-<#assign connectPoint = p.url/>
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns5:SV_ServiceIdentification xmlns:ns1="http://www.isotc211.org/2005/gco" xmlns:ns2="http://www.isotc211.org/2005/gmx" xmlns:ns3="http://www.w3.org/1999/xlink" xmlns:ns4="http://www.isotc211.org/2005/gmd" xmlns:ns5="http://www.isotc211.org/2005/srv" xmlns:ns6="http://www.opengis.net/gml" xmlns:ns7="http://www.isotc211.org/2005/gts">
     <ns4:citation ns3:type="simple">
@@ -3462,6 +3458,3 @@ The purpose of this operation is to compress data extraction, from a request ide
         </ns5:SV_OperationMetadata>
     </ns5:containsOperations>
 </ns5:SV_ServiceIdentification>
-
-
-</#list>
