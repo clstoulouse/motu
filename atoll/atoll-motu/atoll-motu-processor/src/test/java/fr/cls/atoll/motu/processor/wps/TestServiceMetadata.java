@@ -1,15 +1,17 @@
 package fr.cls.atoll.motu.processor.wps;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -22,20 +24,26 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+import org.dom4j.jaxb.JAXBWriter;
 import org.isotc211.iso19139.d_2006_05_04.gmd.CIOnlineResourcePropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVOperationMetadataPropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVOperationMetadataType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterPropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVServiceIdentificationType;
-//import org.opengis.service.OperationMetadata;
-//import org.opengis.service.ServiceIdentification;
+import org.xml.sax.SAXException;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.xml.XMLErrorHandler;
 import fr.cls.atoll.motu.library.xml.XMLUtils;
 import fr.cls.atoll.motu.processor.ant.ServiceMetadataBuilder;
+import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
 
 /**
  * <br>
@@ -45,7 +53,7 @@ import fr.cls.atoll.motu.processor.ant.ServiceMetadataBuilder;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.8 $ - $Date: 2009-09-03 09:16:28 $
+ * @version $Revision: 1.9 $ - $Date: 2009-09-03 14:47:41 $
  */
 public class TestServiceMetadata {
 
@@ -108,8 +116,9 @@ public class TestServiceMetadata {
         // Authenticator.setDefault(new MyAuthenticator());
 
         // testLoadGeomatysServiceMetadata();
-        testLoadOGCServiceMetadata();
+        //testLoadOGCServiceMetadata();
         //testServiceMetadataBuilder();
+        testdom4j();
 
         // try {
         // getServiceMetadataSchemaAsString();
@@ -198,7 +207,6 @@ public class TestServiceMetadata {
             e1.printStackTrace();
         }
         JAXBContext jc = null;
-        SVServiceIdentificationType serviceIdentificationType = null;
         try {
             // jc = JAXBContext.newInstance("org.isotc211.iso19139.d_2006_05_04.srv");
             //jc = JAXBContext.newInstance("org.isotc211.iso19139.d_2006_05_04.srv");
@@ -207,7 +215,7 @@ public class TestServiceMetadata {
             Source srcFile = new StreamSource(xmlFile);
             JAXBElement<?> element = (JAXBElement<?>) unmarshaller.unmarshal(srcFile);
             // JAXBElement<?> element = (JAXBElement<?>) unmarshaller.unmarshal(in);
-            serviceIdentificationType = (SVServiceIdentificationType) element.getValue();
+            SVServiceIdentificationType serviceIdentificationType = (SVServiceIdentificationType) element.getValue();
             // serviceIdentificationType = (SVServiceIdentificationType) unmarshaller.unmarshal(in);
             System.out.println(serviceIdentificationType.toString());
 
@@ -470,5 +478,64 @@ public class TestServiceMetadata {
         serviceMetadataBuilder.setOutputXml("file:///J:/dev/atoll-v2/atoll-motu/atoll-motu-processor/src/main/resources/fmpp/src/ServiceMetadataExpanded.xml");
         serviceMetadataBuilder.setValidate(false);
         serviceMetadataBuilder.execute();
+    }
+    
+    public static void testdom4j()  {
+        
+        URL url = null;
+        try {
+//          url = new URL("file:///c:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml");
+            url = Organizer.findResource("src/main/resources/fmpp/src/ServiceMetadataOpendap.xml");
+            SAXReader reader = new SAXReader();
+            Document document = reader.read(url);
+            Element root = document.getRootElement();
+
+            // iterate through child elements of root
+//            for ( Iterator<Element> i = root.elementIterator(); i.hasNext(); ) {
+//                Element element = (Element) i.next();
+//                System.out.println(element);
+//                // do something
+//            }
+
+            JAXBWriter  jaxbWriter = new JAXBWriter(ServiceMetadata.ISO19139_SHEMA_PACK_NAME);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            jaxbWriter.setOutput(byteArrayOutputStream);
+            
+//            FileWriter fileWriter = new FileWriter("./testdom4j.xml");
+//            jaxbWriter.setOutput(fileWriter);
+            jaxbWriter.startDocument();
+            jaxbWriter.writeElement(root);
+            jaxbWriter.endDocument();
+//            fileWriter.close();
+            
+            ServiceMetadata serviceMetadata = new ServiceMetadata();
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            JAXBElement<?> jaxbElement = serviceMetadata.unmarshallIso19139(byteArrayInputStream);
+            
+            ServiceMetadata.dump(jaxbElement);
+            
+            
+            
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (DocumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (SAXException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MotuException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MotuMarshallException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    
     }
 }

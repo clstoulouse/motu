@@ -1,8 +1,9 @@
 package fr.cls.atoll.motu.library.xml;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.util.List;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -14,10 +15,13 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.dom4j.Element;
+import org.dom4j.jaxb.JAXBWriter;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 
 /**
  * <br>
@@ -27,7 +31,7 @@ import fr.cls.atoll.motu.library.intfce.Organizer;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-09-01 14:24:21 $
+ * @version $Revision: 1.6 $ - $Date: 2009-09-03 14:46:41 $
  */
 public class XMLUtils {
 
@@ -340,6 +344,38 @@ public class XMLUtils {
         }
 
         return errorHandler;
+    }
+    
+    /**
+     * Dom4j to intput stream.
+     * 
+     * @param document the document
+     * @param contextPath the context path
+     * 
+     * @return the input stream
+     * 
+     * @throws MotuExceptionBase the motu exception base
+     */
+    public static InputStream dom4jToIntputStream(org.dom4j.Document document, String contextPath) throws MotuExceptionBase {
+        ByteArrayInputStream byteArrayInputStream = null;
+        try {
+            Element root = document.getRootElement();
+            JAXBWriter  jaxbWriter = new JAXBWriter(contextPath);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            jaxbWriter.setOutput(byteArrayOutputStream);
+            
+            jaxbWriter.startDocument();
+            jaxbWriter.writeElement(root);
+            jaxbWriter.endDocument();
+            
+            byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+        } catch (IOException e) {
+            throw new MotuException("ERROR in XMLUtils#dom4jToIntputStream", e);
+        } catch (SAXException e) {
+            throw new MotuException("ERROR in XMLUtils#dom4jToIntputStream", e);
+        }        
+        return byteArrayInputStream;
+        
     }
     
 }
