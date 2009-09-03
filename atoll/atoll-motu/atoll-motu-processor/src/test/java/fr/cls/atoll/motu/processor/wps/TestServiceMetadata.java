@@ -45,7 +45,7 @@ import fr.cls.atoll.motu.processor.ant.ServiceMetadataBuilder;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.6 $ - $Date: 2009-09-01 14:24:39 $
+ * @version $Revision: 1.7 $ - $Date: 2009-09-03 07:28:35 $
  */
 public class TestServiceMetadata {
 
@@ -462,9 +462,12 @@ public class TestServiceMetadata {
     }
 
     public static void testServiceMetadataBuilder() {
+        
         ServiceMetadataBuilder serviceMetadataBuilder = new ServiceMetadataBuilder();
         serviceMetadataBuilder.setXmlTemplate("file:c:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml");
         serviceMetadataBuilder.setTempPath("file:///c:/tempVFS");
+        serviceMetadataBuilder.setOutputXml("file:///J:/dev/atoll-v2/atoll-motu/atoll-motu-processor/src/main/resources/fmpp/src/ServiceMetadataExpanded.xml");
+        serviceMetadataBuilder.setValidate(false);
         serviceMetadataBuilder.execute();
     }
 }

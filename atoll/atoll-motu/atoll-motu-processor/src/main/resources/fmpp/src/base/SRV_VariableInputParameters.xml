@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+			<srv:parameters>
+				<srv:SV_Parameter>
+					<srv:name>
+						<gco:aName>
+							<gco:CharacterString>variable</gco:CharacterString>
+						</gco:aName>
+						<gco:attributeType>
+							<gco:TypeName>
+								<gco:aName>
+									<gco:CharacterString/>
+								</gco:aName>
+							</gco:TypeName>
+						</gco:attributeType>
+					</srv:name>
+					<srv:direction>
+						<srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+					</srv:direction>
+					<srv:description>
+						<gco:CharacterString>Variable to extract</gco:CharacterString>
+					</srv:description>
+					<srv:optionality>
+						<gco:CharacterString>false</gco:CharacterString>
+					</srv:optionality>
+					<srv:repeatability>
+						<gco:Boolean>true</gco:Boolean>
+					</srv:repeatability>
+					<srv:valueType>
+						<gco:TypeName>
+							<gco:aName>
+								<gco:CharacterString>string</gco:CharacterString>
+							</gco:aName>
+						</gco:TypeName>
+					</srv:valueType>
+				</srv:SV_Parameter>
+			</srv:parameters>

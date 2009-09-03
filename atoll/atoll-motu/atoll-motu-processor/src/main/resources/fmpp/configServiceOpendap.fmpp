@@ -1,0 +1,8 @@
+sourceRoot: src
+sources: ServiceMetadataTemplateOpendap.xml
+outputRoot: out
+logFile: log.fmpp
+data: {
+	validate: true
+	servicesXml: xml(data/servicesOpendap.xml)
+}

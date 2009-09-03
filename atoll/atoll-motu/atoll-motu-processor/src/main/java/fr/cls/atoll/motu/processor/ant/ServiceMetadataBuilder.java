@@ -43,7 +43,7 @@ import fr.cls.atoll.motu.library.xml.XMLUtils;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-09-01 14:24:39 $
+ * @version $Revision: 1.2 $ - $Date: 2009-09-03 07:28:35 $
  */
 public class ServiceMetadataBuilder extends Task {
 
@@ -289,10 +289,11 @@ public class ServiceMetadataBuilder extends Task {
 
     public void marshallXmlTemplate(JAXBElement<?> element) throws MotuException, JAXBException, IOException, URISyntaxException {
         //FileWriter writer = new FileWriter(String.format("%s/%s/%s.xml", tempPath, SERVICE_METADATA, SERVICE_METADATA));
-        FileObject fileobj = Organizer.resolveFile(String.format("%s/%s", tempPath, outputXml));
+        //FileObject fileobj = Organizer.resolveFile(String.format("%s/%s", tempPath, outputXml));
+        FileObject fileobj = Organizer.resolveFile(outputXml);
         System.out.println("ezrezrezrezr");
         //URI uri = new URI(String.format("%s/%s/%s.xml", tempPath, SERVICE_METADATA, SERVICE_METADATA));
-        System.out.println("ezrezrezrezr 2");
+        System.out.println(fileobj.getName().toString());
         //file.createNewFile();
         fileobj.createFile();
 //        FileWriter writer = new FileWriter(fileobj.getName().getURI());
@@ -306,6 +307,7 @@ public class ServiceMetadataBuilder extends Task {
         marshaller.marshal(element, fileobj.getContent().getOutputStream());
         System.out.println("ezrezrezrezr 3");
 
+        fileobj.close();
         //writer.flush();
         //writer.close();
         

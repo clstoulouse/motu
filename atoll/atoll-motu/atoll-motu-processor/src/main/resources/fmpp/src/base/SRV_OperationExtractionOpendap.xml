@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+		<srv:SV_OperationMetadata>
+			<srv:operationName>
+				<gco:CharacterString>Extraction</gco:CharacterString>
+			</srv:operationName>
+			<srv:DCP>
+				<srv:DCPList codeList="" codeListValue=""/>
+			</srv:DCP>
+			<srv:operationDescription>
+				<gco:CharacterString>Extract and download dataset</gco:CharacterString>
+			</srv:operationDescription>
+			<srv:invocationName>
+				<gco:CharacterString>ExtractData</gco:CharacterString>
+			</srv:invocationName>
+		&commonBasicInputParameters;
+		&variableInputParameters;
+		&geoBBoxInputParameters;
+		&depthInputParameters;
+		&timeCoverageInputParameters;
+		&dataFormatInputParameters;
+		&commonInternalInputParameters;
+		&requestIdOutputParameters;
+		&statusResponseOutputParameters;
+		&commonBasicOutputParameters;
+																				
+			<srv:connectPoint>
+				<gmd:CI_OnlineResource>
+					<gmd:linkage>
+						<gmd:URL><![CDATA[${connectPoint}]]></gmd:URL>
+					</gmd:linkage>
+				</gmd:CI_OnlineResource>
+			</srv:connectPoint>
+		</srv:SV_OperationMetadata>

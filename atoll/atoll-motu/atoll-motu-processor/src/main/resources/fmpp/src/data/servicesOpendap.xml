@@ -1,0 +1,17 @@
+<services>
+  <service>
+    <name>catsat ftp</name>
+    <url>http://localhost:8080/atoll-motuservlet/services</url>
+    <description>description ftp catsat.</description>
+  </service>
+  <service>
+    <name>catsat opendap</name>
+    <url>http://localhost:8180/atoll-motuservlet/services</url>
+    <description>description catsat opendap.</description>
+  </service>
+  <service>
+    <name>mercator opendap</name>
+    <url>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</url>
+    <description>description catsat opendap.</description>
+  </service>
+</services>

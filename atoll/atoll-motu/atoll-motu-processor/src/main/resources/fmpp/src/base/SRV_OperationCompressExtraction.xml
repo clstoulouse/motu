@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+		<srv:SV_OperationMetadata>
+			<srv:operationName>
+				<gco:CharacterString>Zip</gco:CharacterString>
+			</srv:operationName>
+			<srv:DCP>
+				<srv:DCPList codeList="" codeListValue=""/>
+			</srv:DCP>			
+			<srv:operationDescription>
+				<gco:CharacterString>Process for data compression. 	  
+The purpose of this operation is to compress data extraction, from a request identifier.
+	The request identifier is provided by the result of an extraction process 
+	The return values are the input request identifier of the data and the return process code (ok or error code) and the correponding message.
+	The input request identifier is set to output to be able to chain this operation with an another one					
+				</gco:CharacterString>
+			</srv:operationDescription>
+			<srv:invocationName>
+				<gco:CharacterString>CompressExtraction</gco:CharacterString>
+			</srv:invocationName>
+		&requestIdInputParameters;
+		&requestIdOutputParameters;
+		&commonBasicOutputParameters;
+																				
+			<srv:connectPoint>
+				<gmd:CI_OnlineResource>
+					<gmd:linkage>
+						<gmd:URL><![CDATA[${connectPoint}]]></gmd:URL>
+					</gmd:linkage>
+				</gmd:CI_OnlineResource>
+			</srv:connectPoint>
+			<srv:dependsOn>
+			&operationExtraction;
+			</srv:dependsOn>
+			
+		</srv:SV_OperationMetadata>
