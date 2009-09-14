@@ -7,7 +7,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -30,6 +35,9 @@ import org.isotc211.iso19139.d_2006_05_04.srv.SVOperationMetadataType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterPropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVServiceIdentificationType;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
 import org.xml.sax.SAXException;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
@@ -47,7 +55,7 @@ import fr.cls.atoll.motu.library.xml.XMLUtils;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-09-03 14:47:41 $
+ * @version $Revision: 1.2 $ - $Date: 2009-09-14 14:39:01 $
  */
 public class ServiceMetadata {
     /**
@@ -239,40 +247,258 @@ public class ServiceMetadata {
 
     public JAXBElement<?> dom4jToJaxb(Document document) throws MotuExceptionBase {
         InputStream inputStream = XMLUtils.dom4jToIntputStream(document, ServiceMetadata.ISO19139_SHEMA_PACK_NAME);
-        
+
         JAXBElement<?> jaxbElement = unmarshallIso19139(inputStream);
-        
+
         return jaxbElement;
     }
 
-    public void getOperations(String xmlFile, List<String> listOperation) throws MotuMarshallException {
+    public void getOperations(String xmlFile, Collection<SVOperationMetadataType> listOperation) throws MotuMarshallException {
         Source srcFile = new StreamSource(xmlFile);
         getOperations(srcFile, listOperation);
 
     }
 
-    public void getOperations(Source xmlFile, List<String> listOperation) throws MotuMarshallException {
+    public void getOperations(URL xmlUrl, Collection<SVOperationMetadataType> listOperation) throws MotuMarshallException {
+        getOperations(xmlUrl.getPath(), listOperation);
+
+    }
+
+    public void getOperations(Source xmlFile, Collection<SVOperationMetadataType> listOperation) throws MotuMarshallException {
 
         JAXBElement<?> element = unmarshallIso19139(xmlFile);
         getOperations(element, listOperation);
 
     }
 
-    public void getOperations(Document document, List<String> listOperation) throws MotuExceptionBase {
+    public void getOperations(Document document, Collection<SVOperationMetadataType> listOperation) throws MotuExceptionBase {
         JAXBElement<?> element = dom4jToJaxb(document);
         getOperations(element, listOperation);
 
     }
 
-    public void getOperations(JAXBElement<?> root, List<String> listOperation) {
+    public void getOperations(JAXBElement<?> root, Collection<SVOperationMetadataType> listOperation) {
         SVServiceIdentificationType serviceIdentificationType = (SVServiceIdentificationType) root.getValue();
         getOperations(serviceIdentificationType, listOperation);
 
     }
 
-    public void getOperations(SVServiceIdentificationType serviceIdentificationType, List<String> listOperation) {
+    public void getOperations(SVServiceIdentificationType serviceIdentificationType, Collection<SVOperationMetadataType> listOperation) {
         // TODO add source code
+        List<SVOperationMetadataPropertyType> operationMetadataPropertyTypeList = serviceIdentificationType.getContainsOperations();
+        getOperations(operationMetadataPropertyTypeList, listOperation);
+    }
 
+    public void getOperations(Collection<SVOperationMetadataPropertyType> operationMetadataPropertyTypeList,
+                              Collection<SVOperationMetadataType> listOperation) {
+
+        for (SVOperationMetadataPropertyType operationMetadataPropertyType : operationMetadataPropertyTypeList) {
+
+            SVOperationMetadataType operationMetadataType = operationMetadataPropertyType.getSVOperationMetadata();
+            if (operationMetadataType == null) {
+                continue;
+            }
+            if (listOperation != null) {
+                listOperation.add(operationMetadataType);
+            }
+
+            getOperations(operationMetadataType.getDependsOn(), listOperation);
+        }
+
+    }
+
+    
+    
+    
+    
+    public void getOperations(String xmlFile, DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph) throws MotuMarshallException {
+        Source srcFile = new StreamSource(xmlFile);
+        getOperations(srcFile, directedGraph);
+
+    }
+
+    public void getOperations(URL xmlUrl, DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph) throws MotuMarshallException {
+        getOperations(xmlUrl.getPath(), directedGraph);
+
+    }
+
+    public void getOperations(Source xmlFile, DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph) throws MotuMarshallException {
+
+        JAXBElement<?> element = unmarshallIso19139(xmlFile);
+        getOperations(element, directedGraph);
+
+    }
+
+    public void getOperations(Document document, DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph) throws MotuExceptionBase {
+        JAXBElement<?> element = dom4jToJaxb(document);
+        getOperations(element, directedGraph);
+
+    }
+
+    public void getOperations(JAXBElement<?> root, DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph) {
+        SVServiceIdentificationType serviceIdentificationType = (SVServiceIdentificationType) root.getValue();
+        getOperations(serviceIdentificationType, directedGraph);
+
+    }
+
+    public void getOperations(SVServiceIdentificationType serviceIdentificationType, DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph) {
+        // TODO add source code
+        List<SVOperationMetadataPropertyType> operationMetadataPropertyTypeList = serviceIdentificationType.getContainsOperations();
+        getOperations(operationMetadataPropertyTypeList, directedGraph);
+    }
+    
+    
+    
+    
+    public void getOperations(Collection<SVOperationMetadataPropertyType> operationMetadataPropertyTypeList,
+                              DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph) {
+        getOperations(operationMetadataPropertyTypeList,
+                                  directedGraph, null);
+
+
+    }
+
+    public void getOperations(Collection<SVOperationMetadataPropertyType> operationMetadataPropertyTypeList,
+                              DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph,
+                              SVOperationMetadataType parent) {
+
+        for (SVOperationMetadataPropertyType operationMetadataPropertyType : operationMetadataPropertyTypeList) {
+
+            SVOperationMetadataType operationMetadataType = operationMetadataPropertyType.getSVOperationMetadata();
+            if (operationMetadataType == null) {
+                continue;
+            }
+            if (directedGraph != null) {
+                directedGraph.addVertex(operationMetadataType);
+                if (parent != null) {
+                    directedGraph.addEdge(parent, operationMetadataType);
+
+                }
+            }
+
+            getOperations(operationMetadataType.getDependsOn(), directedGraph, operationMetadataType);
+        }
+
+    }
+
+    public void getOperationsNameUnique(Collection<SVOperationMetadataType> listOperation, Collection<String> listOperationName) {
+        Set<String> names = new HashSet<String>();
+
+        for (SVOperationMetadataType operationMetadataType : listOperation) {
+
+            if (operationMetadataType == null) {
+                continue;
+            }
+            if (operationMetadataType.getOperationName() == null) {
+                continue;
+            }
+            if (operationMetadataType.getOperationName().getCharacterString() == null) {
+                continue;
+            }
+            String value = (String) operationMetadataType.getOperationName().getCharacterString().getValue();
+            names.add(value);
+        }
+
+        listOperationName.addAll(names);
+
+    }
+
+    public void getOperationsInvocationNameUnique(Collection<SVOperationMetadataType> listOperation, Collection<String> listInvocationName) {
+        Set<String> names = new HashSet<String>();
+
+        for (SVOperationMetadataType operationMetadataType : listOperation) {
+
+            if (operationMetadataType == null) {
+                continue;
+            }
+            if (operationMetadataType.getInvocationName() == null) {
+                continue;
+            }
+            if (operationMetadataType.getInvocationName().getCharacterString() == null) {
+                continue;
+            }
+            String value = (String) operationMetadataType.getInvocationName().getCharacterString().getValue();
+            names.add(value);
+        }
+
+        listInvocationName.addAll(names);
+
+    }
+
+    public void getOperationsUnique(Collection<SVOperationMetadataType> listOperation, Collection<SVOperationMetadataType> listOperationUnique) {
+        Map<String, SVOperationMetadataType> operations = new HashMap<String, SVOperationMetadataType>();
+
+        for (SVOperationMetadataType operationMetadataType : listOperation) {
+
+            if (operationMetadataType == null) {
+                continue;
+            }
+            if (operationMetadataType.getOperationName() == null) {
+                continue;
+            }
+            if (operationMetadataType.getOperationName().getCharacterString() == null) {
+                continue;
+            }
+            String value = (String) operationMetadataType.getOperationName().getCharacterString().getValue();
+            operations.put(value, operationMetadataType);
+        }
+
+        listOperationUnique.addAll(operations.values());
+
+    }
+
+    public DirectedGraph<String, DefaultEdge> getOperations() {
+
+        DirectedGraph<String, DefaultEdge> directedGraph = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+        return directedGraph;
+    }
+
+    public static void dump(Collection<SVOperationMetadataType> listOperation) {
+
+        if (listOperation == null) {
+            return;
+        }
+
+        for (SVOperationMetadataType operationMetadataType : listOperation) {
+
+            System.out.println("---------------------------------------------");
+            if (operationMetadataType == null) {
+                continue;
+            }
+            System.out.println(operationMetadataType.getOperationName().getCharacterString().getValue());
+            System.out.println(operationMetadataType.getInvocationName().getCharacterString().getValue());
+            System.out.println(operationMetadataType.getOperationDescription().getCharacterString().getValue());
+
+            CIOnlineResourcePropertyType onlineResourcePropertyType = operationMetadataType.getConnectPoint().get(0);
+            if (onlineResourcePropertyType != null) {
+                System.out.println(operationMetadataType.getConnectPoint().get(0).getCIOnlineResource().getLinkage().getURL());
+            }
+
+            List<SVParameterPropertyType> parameterPropertyTypeList = operationMetadataType.getParameters();
+
+            for (SVParameterPropertyType parameterPropertyType : parameterPropertyTypeList) {
+                SVParameterType parameterType = parameterPropertyType.getSVParameter();
+
+                if (parameterType.getName().getAName().getCharacterString() != null) {
+                    System.out.println(parameterType.getName().getAName().getCharacterString().getValue());
+                } else {
+                    System.out.println("WARNING - A parameter has no name");
+
+                }
+                if (parameterType.getDescription() != null) {
+                    if (parameterType.getDescription().getCharacterString() != null) {
+                        System.out.println(parameterType.getDescription().getCharacterString().getValue());
+                    } else {
+                        System.out.println("WARNING - A parameter has no description");
+
+                    }
+                } else {
+                    System.out.println("WARNING - A parameter has no description");
+
+                }
+            }
+
+        }
     }
 
     public static void dump(JAXBElement<?> element) {

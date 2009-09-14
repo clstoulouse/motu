@@ -12,7 +12,9 @@ import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -35,6 +37,12 @@ import org.isotc211.iso19139.d_2006_05_04.srv.SVOperationMetadataType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterPropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVServiceIdentificationType;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.alg.DijkstraShortestPath;
+import org.jgrapht.alg.StrongConnectivityInspector;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DirectedSubgraph;
 import org.xml.sax.SAXException;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
@@ -53,7 +61,7 @@ import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.9 $ - $Date: 2009-09-03 14:47:41 $
+ * @version $Revision: 1.10 $ - $Date: 2009-09-14 14:39:01 $
  */
 public class TestServiceMetadata {
 
@@ -118,7 +126,8 @@ public class TestServiceMetadata {
         // testLoadGeomatysServiceMetadata();
         //testLoadOGCServiceMetadata();
         //testServiceMetadataBuilder();
-        testdom4j();
+        //testdom4j();
+        testIso19139Operations();
 
         // try {
         // getServiceMetadataSchemaAsString();
@@ -480,9 +489,10 @@ public class TestServiceMetadata {
         serviceMetadataBuilder.execute();
     }
     
-    public static void testdom4j()  {
+    public static JAXBElement<?> testdom4j()  {
         
         URL url = null;
+        JAXBElement<?> jaxbElement = null;
         try {
 //          url = new URL("file:///c:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml");
             url = Organizer.findResource("src/main/resources/fmpp/src/ServiceMetadataOpendap.xml");
@@ -510,7 +520,7 @@ public class TestServiceMetadata {
             
             ServiceMetadata serviceMetadata = new ServiceMetadata();
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-            JAXBElement<?> jaxbElement = serviceMetadata.unmarshallIso19139(byteArrayInputStream);
+            jaxbElement = serviceMetadata.unmarshallIso19139(byteArrayInputStream);
             
             ServiceMetadata.dump(jaxbElement);
             
@@ -535,7 +545,98 @@ public class TestServiceMetadata {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        return jaxbElement;
 
     
+    }
+    public static void testIso19139Operations () {
+//        
+//        JAXBElement<?> element = testdom4j();
+//        if (element == null) {
+//            return;
+//        }
+        
+        try {
+            ServiceMetadata serviceMetadata = new ServiceMetadata();
+            URL url = null;
+            Set<SVOperationMetadataType> listOperation = new HashSet<SVOperationMetadataType>();
+//          url = new URL("file:///c:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml");
+            url = Organizer.findResource("src/main/resources/fmpp/src/ServiceMetadataOpendap.xml");
+            serviceMetadata.getOperations(url, listOperation);
+            ServiceMetadata.dump(listOperation);
+            List<String> listOperationNamesUnique = new ArrayList<String>();
+
+            
+            serviceMetadata.getOperationsNameUnique(listOperation, listOperationNamesUnique);
+            
+            
+            for (String name  : listOperationNamesUnique) {
+
+                System.out.println("==================");
+                if (name == null) {
+                    continue;
+                }
+                System.out.println(name);
+            }
+            listOperationNamesUnique.clear();
+            serviceMetadata.getOperationsInvocationNameUnique(listOperation, listOperationNamesUnique);
+            for (String name  : listOperationNamesUnique) {
+
+                System.out.println("------+++++==================");
+                if (name == null) {
+                    continue;
+                }
+                System.out.println(name);
+            }
+
+            List<SVOperationMetadataType> listOperationUnique = new ArrayList<SVOperationMetadataType>();
+
+            
+            serviceMetadata.getOperationsUnique(listOperation, listOperationUnique);
+            for (SVOperationMetadataType operationMetadataType : listOperationUnique) {
+
+                System.out.println("---------------------------------------------");
+                if (operationMetadataType == null) {
+                    continue;
+                }
+                System.out.println(operationMetadataType.getOperationName().getCharacterString().getValue());
+            }
+            
+            DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph = new DefaultDirectedGraph<SVOperationMetadataType, DefaultEdge>(DefaultEdge.class);
+            serviceMetadata.getOperations(url, directedGraph);
+
+            StrongConnectivityInspector<SVOperationMetadataType, DefaultEdge> sci = new StrongConnectivityInspector<SVOperationMetadataType, DefaultEdge>(directedGraph);
+            List<DirectedSubgraph<SVOperationMetadataType, DefaultEdge>> stronglyConnectedSubgraphs = sci.stronglyConnectedSubgraphs();
+
+            // prints the strongly connected components
+            System.out.println("Strongly connected components:");
+            for (int i = 0; i < stronglyConnectedSubgraphs.size(); i++) {
+                System.out.println(stronglyConnectedSubgraphs.get(i));
+            }
+            System.out.println();
+
+//            // Prints the shortest path from vertex i to vertex c. This certainly
+//            // exists for our particular directed graph.
+//            System.out.println("Shortest path from i to c:");
+//            List path = DijkstraShortestPath.findPathBetween(directedGraph, "i", "c");
+//            System.out.println(path + "\n");
+
+//            // Prints the shortest path from vertex c to vertex i. This path does
+//            // NOT exist for our particular directed graph. Hence the path is
+//            // empty and the variable "path" must be null.
+//            System.out.println("Shortest path from c to i:");
+//            path = DijkstraShortestPath.findPathBetween(directedGraph, "c", "i");
+//            System.out.println(path);
+            
+            
+
+        } catch (MotuException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MotuMarshallException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
     }
 }
