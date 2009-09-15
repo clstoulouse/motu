@@ -36,6 +36,8 @@ import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterPropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVServiceIdentificationType;
 import org.jgrapht.DirectedGraph;
+import org.jgrapht.Graph;
+import org.jgrapht.alg.DirectedNeighborIndex;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.xml.sax.SAXException;
@@ -55,7 +57,7 @@ import fr.cls.atoll.motu.library.xml.XMLUtils;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-09-14 14:39:01 $
+ * @version $Revision: 1.3 $ - $Date: 2009-09-15 14:28:53 $
  */
 public class ServiceMetadata {
     /**
@@ -307,60 +309,62 @@ public class ServiceMetadata {
 
     }
 
-    
-    
-    
-    
-    public void getOperations(String xmlFile, DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph) throws MotuMarshallException {
+    public void getOperations(String xmlFile, DirectedGraph<OperationMetadata, DefaultEdge> directedGraph) throws MotuMarshallException {
         Source srcFile = new StreamSource(xmlFile);
         getOperations(srcFile, directedGraph);
 
     }
 
-    public void getOperations(URL xmlUrl, DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph) throws MotuMarshallException {
+    public void getOperations(URL xmlUrl, DirectedGraph<OperationMetadata, DefaultEdge> directedGraph) throws MotuMarshallException {
         getOperations(xmlUrl.getPath(), directedGraph);
 
     }
 
-    public void getOperations(Source xmlFile, DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph) throws MotuMarshallException {
+    public void getOperations(Source xmlFile, DirectedGraph<OperationMetadata, DefaultEdge> directedGraph) throws MotuMarshallException {
 
         JAXBElement<?> element = unmarshallIso19139(xmlFile);
         getOperations(element, directedGraph);
 
     }
 
-    public void getOperations(Document document, DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph) throws MotuExceptionBase {
+    public void getOperations(Document document, DirectedGraph<OperationMetadata, DefaultEdge> directedGraph) throws MotuExceptionBase {
         JAXBElement<?> element = dom4jToJaxb(document);
         getOperations(element, directedGraph);
 
     }
 
-    public void getOperations(JAXBElement<?> root, DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph) {
+    public void getOperations(JAXBElement<?> root, DirectedGraph<OperationMetadata, DefaultEdge> directedGraph) {
         SVServiceIdentificationType serviceIdentificationType = (SVServiceIdentificationType) root.getValue();
         getOperations(serviceIdentificationType, directedGraph);
 
     }
 
-    public void getOperations(SVServiceIdentificationType serviceIdentificationType, DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph) {
+    public void getOperations(SVServiceIdentificationType serviceIdentificationType, DirectedGraph<OperationMetadata, DefaultEdge> directedGraph) {
         // TODO add source code
         List<SVOperationMetadataPropertyType> operationMetadataPropertyTypeList = serviceIdentificationType.getContainsOperations();
         getOperations(operationMetadataPropertyTypeList, directedGraph);
     }
-    
-    
-    
-    
-    public void getOperations(Collection<SVOperationMetadataPropertyType> operationMetadataPropertyTypeList,
-                              DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph) {
-        getOperations(operationMetadataPropertyTypeList,
-                                  directedGraph, null);
 
+    public void getOperations(Collection<SVOperationMetadataPropertyType> operationMetadataPropertyTypeList,
+                              DirectedGraph<OperationMetadata, DefaultEdge> directedGraph) {
+        getOperations(operationMetadataPropertyTypeList, directedGraph, null);
 
     }
 
+    public OperationMetadata findVertex(Graph<OperationMetadata, DefaultEdge> graph, OperationMetadata obj) {
+        Set<OperationMetadata> set = graph.vertexSet();
+
+        for (OperationMetadata o : set) {
+            if (o.equals(obj)) {
+                return o;
+            }
+        }
+        return null;
+    }
+
     public void getOperations(Collection<SVOperationMetadataPropertyType> operationMetadataPropertyTypeList,
-                              DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph,
-                              SVOperationMetadataType parent) {
+                              DirectedGraph<OperationMetadata, DefaultEdge> directedGraph,
+                              OperationMetadata parent) {
 
         for (SVOperationMetadataPropertyType operationMetadataPropertyType : operationMetadataPropertyTypeList) {
 
@@ -368,15 +372,21 @@ public class ServiceMetadata {
             if (operationMetadataType == null) {
                 continue;
             }
+            OperationMetadata operationMetadataTmp = new OperationMetadata(operationMetadataType);
+            OperationMetadata operationMetadata = null;
             if (directedGraph != null) {
-                directedGraph.addVertex(operationMetadataType);
+                operationMetadata = (OperationMetadata) findVertex(directedGraph, operationMetadataTmp);
+                if (operationMetadata == null) {
+                    operationMetadata = operationMetadataTmp;
+                    directedGraph.addVertex(operationMetadata);
+                }
                 if (parent != null) {
-                    directedGraph.addEdge(parent, operationMetadataType);
+                    directedGraph.addEdge(parent, operationMetadata);
 
                 }
             }
 
-            getOperations(operationMetadataType.getDependsOn(), directedGraph, operationMetadataType);
+            getOperations(operationMetadataType.getDependsOn(), directedGraph, operationMetadata);
         }
 
     }
@@ -447,10 +457,73 @@ public class ServiceMetadata {
 
     }
 
-    public DirectedGraph<String, DefaultEdge> getOperations() {
+    public static boolean isSourceOperation(DirectedGraph<OperationMetadata, DefaultEdge> directedGraph, OperationMetadata op) {
+        DirectedNeighborIndex<OperationMetadata, DefaultEdge> ni = new DirectedNeighborIndex<OperationMetadata, DefaultEdge>(directedGraph);
+        if (directedGraph == null) {
+            return false;
 
-        DirectedGraph<String, DefaultEdge> directedGraph = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
-        return directedGraph;
+        }
+        if (op == null) {
+            return false;
+
+        }
+        if (ni.predecessorsOf(op).isEmpty()) {
+            return true;
+        }
+
+        return false;
+
+    }
+
+    public static boolean isSinkOperation(DirectedGraph<OperationMetadata, DefaultEdge> directedGraph, OperationMetadata op) {
+        DirectedNeighborIndex<OperationMetadata, DefaultEdge> ni = new DirectedNeighborIndex<OperationMetadata, DefaultEdge>(directedGraph);
+        if (directedGraph == null) {
+            return false;
+
+        }
+        if (op == null) {
+            return false;
+
+        }
+        if (ni.successorsOf(op).isEmpty()) {
+            return true;
+        }
+
+        return false;
+
+    }
+
+    public static void getSourceOperations(DirectedGraph<OperationMetadata, DefaultEdge> directedGraph, Collection<OperationMetadata> sourceOperations) {
+        if (directedGraph == null) {
+            return;
+
+        }
+        if (sourceOperations == null) {
+            return;
+
+        }
+        for (OperationMetadata v : directedGraph.vertexSet()) {
+            if (ServiceMetadata.isSourceOperation(directedGraph, v)) {
+                sourceOperations.add(v);
+            }
+        }
+
+    }
+
+    public static void getSinkOperations(DirectedGraph<OperationMetadata, DefaultEdge> directedGraph, Collection<OperationMetadata> sinkOperations) {
+        if (directedGraph == null) {
+            return;
+
+        }
+        if (sinkOperations == null) {
+            return;
+
+        }
+        for (OperationMetadata v : directedGraph.vertexSet()) {
+            if (ServiceMetadata.isSinkOperation(directedGraph, v)) {
+                sinkOperations.add(v);
+            }
+        }
     }
 
     public static void dump(Collection<SVOperationMetadataType> listOperation) {

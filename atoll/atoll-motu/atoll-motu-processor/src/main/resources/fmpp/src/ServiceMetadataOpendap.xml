@@ -1850,6 +1850,7 @@ The purpose of this operation is to compress data extraction, from a request ide
             </ns5:dependsOn>
         </ns5:SV_OperationMetadata>
     </ns5:containsOperations>
+    
     <ns5:containsOperations ns3:type="simple">
         <ns5:SV_OperationMetadata>
             <ns5:operationName>
@@ -3456,5 +3457,5 @@ The purpose of this operation is to compress data extraction, from a request ide
                 </ns5:SV_OperationMetadata>
             </ns5:dependsOn>
         </ns5:SV_OperationMetadata>
-    </ns5:containsOperations>
+    </ns5:containsOperations>   
 </ns5:SV_ServiceIdentification>

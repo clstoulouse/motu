@@ -38,7 +38,11 @@ import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterPropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVServiceIdentificationType;
 import org.jgrapht.DirectedGraph;
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.alg.DijkstraShortestPath;
+import org.jgrapht.alg.DirectedNeighborIndex;
+import org.jgrapht.alg.KShortestPaths;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -51,6 +55,7 @@ import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.xml.XMLErrorHandler;
 import fr.cls.atoll.motu.library.xml.XMLUtils;
 import fr.cls.atoll.motu.processor.ant.ServiceMetadataBuilder;
+import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
 import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
 
 /**
@@ -61,7 +66,7 @@ import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.10 $ - $Date: 2009-09-14 14:39:01 $
+ * @version $Revision: 1.11 $ - $Date: 2009-09-15 14:28:53 $
  */
 public class TestServiceMetadata {
 
@@ -602,19 +607,58 @@ public class TestServiceMetadata {
                 System.out.println(operationMetadataType.getOperationName().getCharacterString().getValue());
             }
             
-            DirectedGraph<SVOperationMetadataType, DefaultEdge> directedGraph = new DefaultDirectedGraph<SVOperationMetadataType, DefaultEdge>(DefaultEdge.class);
+            DirectedGraph<OperationMetadata, DefaultEdge> directedGraph = new DefaultDirectedGraph<OperationMetadata, DefaultEdge>(DefaultEdge.class);
             serviceMetadata.getOperations(url, directedGraph);
 
-            StrongConnectivityInspector<SVOperationMetadataType, DefaultEdge> sci = new StrongConnectivityInspector<SVOperationMetadataType, DefaultEdge>(directedGraph);
-            List<DirectedSubgraph<SVOperationMetadataType, DefaultEdge>> stronglyConnectedSubgraphs = sci.stronglyConnectedSubgraphs();
-
+            StrongConnectivityInspector<OperationMetadata, DefaultEdge> sci = new StrongConnectivityInspector<OperationMetadata, DefaultEdge>(directedGraph);
+            List<DirectedSubgraph<OperationMetadata, DefaultEdge>> stronglyConnectedSubgraphs = sci.stronglyConnectedSubgraphs();
+            sci.stronglyConnectedSets();
+            System.out.println(sci.isStronglyConnected());
+            
             // prints the strongly connected components
             System.out.println("Strongly connected components:");
             for (int i = 0; i < stronglyConnectedSubgraphs.size(); i++) {
                 System.out.println(stronglyConnectedSubgraphs.get(i));
             }
             System.out.println();
+            
+            System.out.println (directedGraph.edgeSet());
+            
+            ConnectivityInspector<OperationMetadata, DefaultEdge> ci = new ConnectivityInspector<OperationMetadata, DefaultEdge>(directedGraph);
+            System.out.println (ci.isGraphConnected());
+            
+            DirectedNeighborIndex<OperationMetadata, DefaultEdge> ni = new DirectedNeighborIndex<OperationMetadata, DefaultEdge>(directedGraph);
 
+            List<OperationMetadata> sourceOperations = new ArrayList<OperationMetadata>();
+            List<OperationMetadata> sinkOperations = new ArrayList<OperationMetadata>();
+            
+            ServiceMetadata.getSourceOperations(directedGraph, sourceOperations);
+            ServiceMetadata.getSinkOperations(directedGraph, sinkOperations);
+
+            System.out.println("%%%%%%%% SOURCE %%%%%%%%%%%%");
+            System.out.println(sourceOperations);
+            System.out.println("%%%%%%%% SINK %%%%%%%%%%%%");
+            System.out.println(sinkOperations);
+
+            for (OperationMetadata source : sourceOperations) {
+                System.out.print("%%%%%%%% PATHS FROM  %%%%%%%%%%%%");
+                System.out.println(source);
+                    KShortestPaths<OperationMetadata, DefaultEdge> paths = new KShortestPaths<OperationMetadata, DefaultEdge>(directedGraph,
+                            source,
+                            100);
+                    
+                    for (OperationMetadata sink : sinkOperations) {
+                        System.out.print(" %%%%%%%%%%%% TO");
+                        System.out.println(sink);
+                        List<GraphPath<OperationMetadata, DefaultEdge>> listPath = paths.getPaths(sink);
+                        for (GraphPath<OperationMetadata, DefaultEdge> gp : listPath) {
+                        System.out.println(gp.getEdgeList());
+                        }
+                    }
+                    
+            }
+            
+            
 //            // Prints the shortest path from vertex i to vertex c. This certainly
 //            // exists for our particular directed graph.
 //            System.out.println("Shortest path from i to c:");

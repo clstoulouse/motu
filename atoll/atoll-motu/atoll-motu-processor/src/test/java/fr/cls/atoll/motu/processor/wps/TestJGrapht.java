@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.UndirectedGraph;
+import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -21,7 +22,7 @@ import org.jgrapht.graph.SimpleGraph;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-09-03 09:16:28 $
+ * @version $Revision: 1.2 $ - $Date: 2009-09-15 14:28:53 $
  */
 public class TestJGrapht {
 
@@ -43,7 +44,8 @@ public class TestJGrapht {
         // note directed edges are printed as: (<v1>,<v2>)
         System.out.println(hrefGraph.toString());
 
-        TestDirectedGraph();
+        //TestDirectedGraph();
+        TestDirectedGraph2();
 
     }
 
@@ -149,6 +151,44 @@ public class TestJGrapht {
         System.out.println("Shortest path from c to i:");
         path = DijkstraShortestPath.findPathBetween(directedGraph, "c", "i");
         System.out.println(path);
-    }
+        
+        System.out.println (directedGraph.edgeSet());
 
+    }
+    public static void TestDirectedGraph2() {
+        // constructs a directed graph with the specified vertices and edges
+        DirectedGraph<String, DefaultEdge> directedGraph = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+        directedGraph.addVertex("P");
+        directedGraph.addVertex("E");
+        directedGraph.addVertex("Z");
+        directedGraph.addVertex("G");
+        directedGraph.addEdge("P", "E");
+        directedGraph.addEdge("P", "Z");
+        directedGraph.addEdge("Z", "E");
+        directedGraph.addEdge("G", "E");
+        directedGraph.addEdge("G", "Z");
+
+        // computes all the strongly connected components of the directed graph
+        ConnectivityInspector<String, DefaultEdge> ci = new ConnectivityInspector(directedGraph);
+        System.out.println(ci.connectedSets());
+        System.out.println();
+        System.out.println(ci.connectedSetOf("E"));
+        System.out.println();
+
+        // Prints the shortest path from vertex i to vertex c. This certainly
+        // exists for our particular directed graph.
+        System.out.println("Shortest path from i to c:");
+        List path = DijkstraShortestPath.findPathBetween(directedGraph, "P", "E");
+        System.out.println(path + "\n");
+
+        // Prints the shortest path from vertex c to vertex i. This path does
+        // NOT exist for our particular directed graph. Hence the path is
+        // empty and the variable "path" must be null.
+        System.out.println("Shortest path from c to i:");
+        path = DijkstraShortestPath.findPathBetween(directedGraph, "E", "P");
+        System.out.println(path);
+        
+        System.out.println (directedGraph.edgeSet());
+
+    }
 }
