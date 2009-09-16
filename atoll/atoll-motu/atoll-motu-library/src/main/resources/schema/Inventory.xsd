@@ -39,7 +39,7 @@
 			<xs:attribute name="availabilityServiceDate" type="xs:dateTime"
 				use="optional" />
 			<xs:attribute name="modelPrediction" type="xs:anyURI"
-				use="required" />
+				use="optional" />
 			<xs:attribute name="availabilitySIDate" type="xs:dateTime"
 				use="optional" />
 			<xs:attribute name="creationDate" type="xs:dateTime"
