@@ -1,0 +1,17 @@
+<services>
+  <service>
+    <name>aviso_ftp</name>
+    <url>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</url>
+    <description>description aviso ftp.</description>
+  </service>
+  <service>
+    <name>catsat_ftp</name>
+    <url>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</url>
+    <description>description catsat ftp.</description>
+  </service>
+  <service>
+    <name>mercator_ftp</name>
+    <url>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</url>
+    <description>description mercator ftp.</description>
+  </service>
+</services>

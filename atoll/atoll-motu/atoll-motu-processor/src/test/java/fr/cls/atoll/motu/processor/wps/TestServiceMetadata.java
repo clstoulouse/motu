@@ -2,6 +2,7 @@ package fr.cls.atoll.motu.processor.wps;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,7 +67,7 @@ import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.11 $ - $Date: 2009-09-15 14:28:53 $
+ * @version $Revision: 1.12 $ - $Date: 2009-09-16 14:22:29 $
  */
 public class TestServiceMetadata {
 
@@ -130,9 +131,9 @@ public class TestServiceMetadata {
 
         // testLoadGeomatysServiceMetadata();
         //testLoadOGCServiceMetadata();
-        //testServiceMetadataBuilder();
+        testServiceMetadataBuilder();
         //testdom4j();
-        testIso19139Operations();
+        //testIso19139Operations();
 
         // try {
         // getServiceMetadataSchemaAsString();
@@ -487,10 +488,22 @@ public class TestServiceMetadata {
     public static void testServiceMetadataBuilder() {
         
         ServiceMetadataBuilder serviceMetadataBuilder = new ServiceMetadataBuilder();
-        serviceMetadataBuilder.setXmlTemplate("file:c:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml");
+        URL url = null;
+        try {
+            url = Organizer.findResource("src/main/resources/fmpp/src/base/serviceMetadataTemplateOpendapBase.xml");
+        } catch (MotuException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        serviceMetadataBuilder.setXmlTemplate(url.getPath());
         serviceMetadataBuilder.setTempPath("file:///c:/tempVFS");
-        serviceMetadataBuilder.setOutputXml("file:///J:/dev/atoll-v2/atoll-motu/atoll-motu-processor/src/main/resources/fmpp/src/ServiceMetadataExpanded.xml");
+        serviceMetadataBuilder.setOutputXml("file:///J:/dev/atoll-v2/atoll-motu/atoll-motu-processor/src/main/resources/fmpp/src/ServiceMetadataOpendap.xml");
         serviceMetadataBuilder.setValidate(false);
+        serviceMetadataBuilder.setExpand(false);
+        serviceMetadataBuilder.setFmpp(false);
+        serviceMetadataBuilder.setValidateOutput("src/main/resources/fmpp/out");
+        
+        
         serviceMetadataBuilder.execute();
     }
     
@@ -643,14 +656,12 @@ public class TestServiceMetadata {
             for (OperationMetadata source : sourceOperations) {
                 System.out.print("%%%%%%%% PATHS FROM  %%%%%%%%%%%%");
                 System.out.println(source);
-                    KShortestPaths<OperationMetadata, DefaultEdge> paths = new KShortestPaths<OperationMetadata, DefaultEdge>(directedGraph,
-                            source,
-                            100);
+                    KShortestPaths<OperationMetadata, DefaultEdge> paths = ServiceMetadata.getOperationPaths(directedGraph, source);
                     
                     for (OperationMetadata sink : sinkOperations) {
-                        System.out.print(" %%%%%%%%%%%% TO");
+                        System.out.print(" %%%%%%%%%%%% TO ");
                         System.out.println(sink);
-                        List<GraphPath<OperationMetadata, DefaultEdge>> listPath = paths.getPaths(sink);
+                        List<GraphPath<OperationMetadata, DefaultEdge>> listPath = ServiceMetadata.getOperationPaths(paths, sink);
                         for (GraphPath<OperationMetadata, DefaultEdge> gp : listPath) {
                         System.out.println(gp.getEdgeList());
                         }

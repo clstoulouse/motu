@@ -7,14 +7,17 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -27,6 +30,16 @@ import org.deegree.commons.utils.HttpUtils;
 import org.geotoolkit.io.wkt.Formatter;
 import org.geotoolkit.parameter.DefaultParameterDescriptor;
 import org.geotoolkit.parameter.Parameter;
+import org.isotc211.iso19139.d_2006_05_04.srv.SVOperationMetadataType;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.ConnectivityInspector;
+import org.jgrapht.alg.DirectedNeighborIndex;
+import org.jgrapht.alg.KShortestPaths;
+import org.jgrapht.alg.StrongConnectivityInspector;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DirectedSubgraph;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 import org.w3c.dom.Element;
@@ -34,6 +47,8 @@ import org.w3c.dom.Element;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
+import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
 import fr.cls.atoll.motu.processor.opengis.wps100.DescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.Execute;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
@@ -50,7 +65,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.12 $ - $Date: 2009-08-18 15:12:19 $
+ * @version $Revision: 1.13 $ - $Date: 2009-09-16 14:22:29 $
  */
 public class TestWPS {
     /**
@@ -440,6 +455,59 @@ public class TestWPS {
             e.printStackTrace();
         }
 
+    }
+
+    public static void testBuildChainWPS() {
+        try {
+            ServiceMetadata serviceMetadata = new ServiceMetadata();
+            URL url = null;
+            Set<SVOperationMetadataType> listOperation = new HashSet<SVOperationMetadataType>();
+//          url = new URL("file:///c:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml");
+            url = Organizer.findResource("src/main/resources/fmpp/out/serviceMetadata_mercator_opendap.xml");
+            serviceMetadata.getOperations(url, listOperation);
+            ServiceMetadata.dump(listOperation);
+            
+            DirectedGraph<OperationMetadata, DefaultEdge> directedGraph = new DefaultDirectedGraph<OperationMetadata, DefaultEdge>(DefaultEdge.class);
+            serviceMetadata.getOperations(url, directedGraph);
+
+            List<OperationMetadata> sourceOperations = new ArrayList<OperationMetadata>();
+            List<OperationMetadata> sinkOperations = new ArrayList<OperationMetadata>();
+            
+            
+            ServiceMetadata.getSourceOperations(directedGraph, sourceOperations);
+            ServiceMetadata.getSinkOperations(directedGraph, sinkOperations);
+
+            System.out.println("%%%%%%%% SOURCE %%%%%%%%%%%%");
+            System.out.println(sourceOperations);
+            System.out.println("%%%%%%%% SINK %%%%%%%%%%%%");
+            System.out.println(sinkOperations);
+
+            for (OperationMetadata source : sourceOperations) {
+                System.out.print("%%%%%%%% PATHS FROM  %%%%%%%%%%%%");
+                System.out.println(source);
+                    KShortestPaths<OperationMetadata, DefaultEdge> paths = ServiceMetadata.getOperationPaths(directedGraph, source);
+                    
+                    for (OperationMetadata sink : sinkOperations) {
+                        System.out.print(" %%%%%%%%%%%% TO ");
+                        System.out.println(sink);
+                        List<GraphPath<OperationMetadata, DefaultEdge>> listPath = ServiceMetadata.getOperationPaths(paths, sink);
+                        for (GraphPath<OperationMetadata, DefaultEdge> gp : listPath) {
+                        System.out.println(gp.getEdgeList());
+                        }
+                    }
+                    
+            }
+            
+            
+
+        } catch (MotuException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MotuMarshallException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
     }
 
 }

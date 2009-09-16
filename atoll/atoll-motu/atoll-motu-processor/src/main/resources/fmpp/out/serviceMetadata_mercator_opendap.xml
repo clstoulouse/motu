@@ -1,7 +1,8 @@
+
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns5:MD_Metadata xmlns:ns1="http://www.isotc211.org/2005/gco" xmlns:ns2="http://www.isotc211.org/2005/gmx" xmlns:ns3="http://www.w3.org/1999/xlink" xmlns:ns4="http://www.isotc211.org/2005/srv" xmlns:ns5="http://www.isotc211.org/2005/gmd" xmlns:ns6="http://www.opengis.net/gml" xmlns:ns7="http://www.isotc211.org/2005/gts">
     <ns5:fileIdentifier>
-        <ns1:CharacterString>${fileIdentifier}</ns1:CharacterString>
+        <ns1:CharacterString>http://atoll.cls.fr/2009/resource/individual/atoll#motu-opendap-mercator</ns1:CharacterString>
     </ns5:fileIdentifier>
     <ns5:language>
         <ns5:LanguageCode codeListValue="eng" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode">eng
@@ -14,14 +15,14 @@
     <ns5:contact ns3:type="simple">
         <ns5:CI_ResponsibleParty>
             <ns5:organisationName>
-                <ns1:CharacterString>${organisationName}</ns1:CharacterString>
+                <ns1:CharacterString>CLS</ns1:CharacterString>
             </ns5:organisationName>
             <ns5:contactInfo ns3:type="simple">
                 <ns5:CI_Contact>
                     <ns5:address ns3:type="simple">
                         <ns5:CI_Address>
                             <ns5:electronicMailAddress>
-<ns1:CharacterString>${electronicMailAddress}</ns1:CharacterString>
+<ns1:CharacterString>tjolibois@cls.fr</ns1:CharacterString>
                             </ns5:electronicMailAddress>
                         </ns5:CI_Address>
                     </ns5:address>
@@ -33,7 +34,7 @@
         </ns5:CI_ResponsibleParty>
     </ns5:contact>
     <ns5:dateStamp>
-        <ns1:Date>${dateStamp}</ns1:Date>
+        <ns1:Date>2009-09-16</ns1:Date>
     </ns5:dateStamp>
     <ns5:metadataStandardName>
         <ns1:CharacterString>ISO19119</ns1:CharacterString>
@@ -51,7 +52,7 @@
                     <ns5:date ns3:type="simple">
                         <ns5:CI_Date>
                             <ns5:date>
-<ns1:Date>${dateStamp}</ns1:Date>
+<ns1:Date>2009-09-16</ns1:Date>
                             </ns5:date>
                             <ns5:dateType>
 <ns5:CI_DateTypeCode codeListValue="publication" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode">publication
@@ -78,7 +79,7 @@
                             <ns5:address ns3:type="simple">
 <ns5:CI_Address>
     <ns5:electronicMailAddress>
-        <ns1:CharacterString>${electronicMailAddress}</ns1:CharacterString>
+        <ns1:CharacterString>tjolibois@cls.fr</ns1:CharacterString>
     </ns5:electronicMailAddress>
 </ns5:CI_Address>
                             </ns5:address>
@@ -483,7 +484,7 @@
                     <ns4:connectPoint ns3:type="simple">
                         <ns5:CI_OnlineResource>
                             <ns5:linkage>
-<ns5:URL>${connectPoint}</ns5:URL>
+<ns5:URL>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</ns5:URL>
                             </ns5:linkage>
                         </ns5:CI_OnlineResource>
                     </ns4:connectPoint>
@@ -1099,7 +1100,7 @@
                             <ns4:connectPoint ns3:type="simple">
 <ns5:CI_OnlineResource>
     <ns5:linkage>
-        <ns5:URL>${connectPoint}</ns5:URL>
+        <ns5:URL>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</ns5:URL>
     </ns5:linkage>
 </ns5:CI_OnlineResource>
                             </ns4:connectPoint>
@@ -1267,7 +1268,7 @@ The purpose of this operation is to compress data extraction, from a request ide
                             <ns4:connectPoint ns3:type="simple">
 <ns5:CI_OnlineResource>
     <ns5:linkage>
-        <ns5:URL>${connectPoint}</ns5:URL>
+        <ns5:URL>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</ns5:URL>
     </ns5:linkage>
 </ns5:CI_OnlineResource>
                             </ns4:connectPoint>
@@ -1883,7 +1884,7 @@ The purpose of this operation is to compress data extraction, from a request ide
     <ns4:connectPoint ns3:type="simple">
         <ns5:CI_OnlineResource>
             <ns5:linkage>
-                <ns5:URL>${connectPoint}</ns5:URL>
+                <ns5:URL>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</ns5:URL>
             </ns5:linkage>
         </ns5:CI_OnlineResource>
     </ns4:connectPoint>
@@ -2090,7 +2091,7 @@ The purpose of this process is get the url of an extraction process from a reque
                     <ns4:connectPoint ns3:type="simple">
                         <ns5:CI_OnlineResource>
                             <ns5:linkage>
-<ns5:URL>${connectPoint}</ns5:URL>
+<ns5:URL>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</ns5:URL>
                             </ns5:linkage>
                         </ns5:CI_OnlineResource>
                     </ns4:connectPoint>
@@ -2706,7 +2707,7 @@ The purpose of this process is get the url of an extraction process from a reque
                             <ns4:connectPoint ns3:type="simple">
 <ns5:CI_OnlineResource>
     <ns5:linkage>
-        <ns5:URL>${connectPoint}</ns5:URL>
+        <ns5:URL>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</ns5:URL>
     </ns5:linkage>
 </ns5:CI_OnlineResource>
                             </ns4:connectPoint>
@@ -2874,7 +2875,7 @@ The purpose of this operation is to compress data extraction, from a request ide
                             <ns4:connectPoint ns3:type="simple">
 <ns5:CI_OnlineResource>
     <ns5:linkage>
-        <ns5:URL>${connectPoint}</ns5:URL>
+        <ns5:URL>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</ns5:URL>
     </ns5:linkage>
 </ns5:CI_OnlineResource>
                             </ns4:connectPoint>
@@ -3490,7 +3491,7 @@ The purpose of this operation is to compress data extraction, from a request ide
     <ns4:connectPoint ns3:type="simple">
         <ns5:CI_OnlineResource>
             <ns5:linkage>
-                <ns5:URL>${connectPoint}</ns5:URL>
+                <ns5:URL>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</ns5:URL>
             </ns5:linkage>
         </ns5:CI_OnlineResource>
     </ns4:connectPoint>
@@ -3503,3 +3504,5 @@ The purpose of this operation is to compress data extraction, from a request ide
         </ns4:SV_ServiceIdentification>
     </ns5:identificationInfo>
 </ns5:MD_Metadata>
+
+

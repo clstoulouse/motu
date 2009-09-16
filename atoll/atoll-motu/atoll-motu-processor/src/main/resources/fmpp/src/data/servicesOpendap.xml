@@ -1,17 +1,29 @@
 <services>
   <service>
-    <name>catsat ftp</name>
-    <url>http://localhost:8080/atoll-motuservlet/services</url>
-    <description>description ftp catsat.</description>
+    <name>aviso_opendap</name>
+    <url>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</url>
+    <description>description aviso opendap.</description>
+    <fileIdentifier>http://atoll.cls.fr/2009/resource/individual/atoll#motu-opendap-aviso</fileIdentifier>
+    <organisationName>CLS</organisationName>
+    <electronicMailAddress>tjolibois@cls.fr</electronicMailAddress>
+    <dateStamp>2009-09-16</dateStamp>
   </service>
   <service>
-    <name>catsat opendap</name>
-    <url>http://localhost:8180/atoll-motuservlet/services</url>
-    <description>description catsat opendap.</description>
-  </service>
-  <service>
-    <name>mercator opendap</name>
+    <name>catsat_opendap</name>
     <url>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</url>
     <description>description catsat opendap.</description>
+    <fileIdentifier>http://atoll.cls.fr/2009/resource/individual/atoll#motu-opendap-catsat</fileIdentifier>
+    <organisationName>CLS</organisationName>
+    <electronicMailAddress>tjolibois@cls.fr</electronicMailAddress>
+    <dateStamp>2009-09-16</dateStamp>
+  </service>
+  <service>
+    <name>mercator_opendap</name>
+    <url>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</url>
+    <description>description mercator opendap.</description>
+    <fileIdentifier>http://atoll.cls.fr/2009/resource/individual/atoll#motu-opendap-mercator</fileIdentifier>
+    <organisationName>CLS</organisationName>
+    <electronicMailAddress>tjolibois@cls.fr</electronicMailAddress>
+    <dateStamp>2009-09-16</dateStamp>
   </service>
 </services>

@@ -1,7 +1,5 @@
 package fr.cls.atoll.motu.processor.iso19139;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,10 +24,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.jaxb.JAXBWriter;
 import org.isotc211.iso19139.d_2006_05_04.gmd.CIOnlineResourcePropertyType;
-import org.isotc211.iso19139.d_2006_05_04.srv.ObjectFactory;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVOperationMetadataPropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVOperationMetadataType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterPropertyType;
@@ -37,10 +32,10 @@ import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVServiceIdentificationType;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graph;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.DirectedNeighborIndex;
-import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.alg.KShortestPaths;
 import org.jgrapht.graph.DefaultEdge;
-import org.xml.sax.SAXException;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
@@ -57,7 +52,7 @@ import fr.cls.atoll.motu.library.xml.XMLUtils;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-09-15 14:28:53 $
+ * @version $Revision: 1.4 $ - $Date: 2009-09-16 14:22:04 $
  */
 public class ServiceMetadata {
     /**
@@ -65,7 +60,7 @@ public class ServiceMetadata {
      */
     private static final Logger LOG = Logger.getLogger(ServiceMetadata.class);
 
-    public static final String ISO19139_SHEMA_PACK_NAME = "org.isotc211.iso19139.d_2006_05_04.srv";
+    public static final String ISO19139_SHEMA_PACK_NAME = "org.isotc211.iso19139.d_2006_05_04.gmd";
 
     public ServiceMetadata() throws MotuException {
 
@@ -87,7 +82,7 @@ public class ServiceMetadata {
         }
 
         try {
-            ServiceMetadata.jaxbContextIso19139 = JAXBContext.newInstance(new Class[] { ObjectFactory.class });
+            ServiceMetadata.jaxbContextIso19139 = JAXBContext.newInstance(new Class[] { org.isotc211.iso19139.d_2006_05_04.gmd.ObjectFactory.class });
 
             ServiceMetadata.marshallerIso19139 = ServiceMetadata.jaxbContextIso19139.createMarshaller();
             ServiceMetadata.marshallerIso19139.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -524,6 +519,63 @@ public class ServiceMetadata {
                 sinkOperations.add(v);
             }
         }
+    }
+    
+    public static KShortestPaths<OperationMetadata, DefaultEdge> getOperationPaths(DirectedGraph<OperationMetadata, DefaultEdge> directedGraph, OperationMetadata source) {
+        return  new KShortestPaths<OperationMetadata, DefaultEdge>(directedGraph,
+                source,
+                100);
+        
+    }
+    public static List<GraphPath<OperationMetadata, DefaultEdge>> getOperationPaths(KShortestPaths<OperationMetadata, DefaultEdge> paths, OperationMetadata sink) {
+        return paths.getPaths(sink);
+
+       
+   }
+    public static List<GraphPath<OperationMetadata, DefaultEdge>> getOperationPaths(DirectedGraph<OperationMetadata, DefaultEdge> directedGraph, OperationMetadata source, OperationMetadata sink) {
+        KShortestPaths<OperationMetadata, DefaultEdge> paths = getOperationPaths(directedGraph, source);
+        return paths.getPaths(sink);
+
+       
+   }
+    public static OperationMetadata findOperationByName(DirectedGraph<OperationMetadata, DefaultEdge> directedGraph, String operationName) {
+        Set<OperationMetadata> set = directedGraph.vertexSet();
+
+        for (OperationMetadata o : set) {
+            if (o.getOperationName().equals(operationName)) {
+                return o;
+            }
+        }
+        return null;
+        
+    }
+    public static OperationMetadata findSourceOperationByName(DirectedGraph<OperationMetadata, DefaultEdge> directedGraph, String operationName) {
+        
+        List<OperationMetadata> sourceOperations = new ArrayList<OperationMetadata>();
+        ServiceMetadata.getSourceOperations(directedGraph, sourceOperations);
+
+        for (OperationMetadata o : sourceOperations) {
+            if (o.getOperationName().equals(operationName)) {
+                return o;
+            }
+        }
+        
+        return null;
+        
+    }
+    public static OperationMetadata findSinkOperationByName(DirectedGraph<OperationMetadata, DefaultEdge> directedGraph, String operationName) {
+        
+        List<OperationMetadata> sinkOperations = new ArrayList<OperationMetadata>();
+        ServiceMetadata.getSinkOperations(directedGraph, sinkOperations);
+
+        for (OperationMetadata o : sinkOperations) {
+            if (o.getOperationName().equals(operationName)) {
+                return o;
+            }
+        }
+        
+        return null;
+        
     }
 
     public static void dump(Collection<SVOperationMetadataType> listOperation) {
