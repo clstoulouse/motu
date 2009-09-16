@@ -30,7 +30,7 @@ import fr.cls.atoll.motu.msg.xml.TimeCoverage;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author Jean-Michel FARENC
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @version $Revision: 1.2 $ - $Date: 2009-09-16 13:54:04 $
  */
 public class MotuRequestMainTest {
 
@@ -46,7 +46,7 @@ public class MotuRequestMainTest {
         // testMode();
         // testMode2();
         // testModeStatusAsString();
-        // testModeStatusAsXMLFile();
+         //testModeStatusAsXMLFile();
         testModeStatusAsXML();
 //        testGetSize();
 //        testGetSize();
@@ -367,9 +367,10 @@ public class MotuRequestMainTest {
 
         //String servletUrl = "http://aviso-motu.cls.fr:8380/atoll-motuservlet/Aviso";
         //String servletUrl = "http://localhost:8080/atoll-motu-servlet/Motu";
-        String servletUrl = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/Aviso";
+        //String servletUrl = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/Aviso";
         //String servletUrl = "http://evetkar:p61mlkm@atoll-motu.mercator-ocean.fr/";
-
+        String servletUrl = "http://evetkar:p61mlkm@mercator-data1.cls.fr:33080/atoll-motu-servlet/Motu";
+//        String servletUrl = "http://aviso-data1.cls.fr:33080/atoll-motu-servlet/Motu";
         motuRequest.setServletUrl(servletUrl);
 
         MotuRequestParameters motuRequestParameters = new MotuRequestParameters();
@@ -378,22 +379,22 @@ public class MotuRequestMainTest {
         // motuRequest.setServletUrl("http://aviso-motu.cls.fr:8380/atoll-motuservlet/Aviso");
         // motuRequest.setServletUrl("http://localhost:8080/atoll-motu-servlet/Aviso");
 
-        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_LOGIN, "toto");
-        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PWD, "pass");
+//        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_LOGIN, "toto");
+//        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PWD, "pass");
         //motuRequestParameters.setParameter(MotuRequestParameters.PARAM_ANONYMOUS, "true");
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_ANONYMOUS, "false");
 
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_ACTION, MotuRequestParameters.ACTION_PRODUCT_DOWNLOAD);
-        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_SERVICE, "Aviso");
-//        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_SERVICE, "Mercator");
-        // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_DATA,
-        // "http://opendap.aviso.oceanobs.com/thredds/dodsC/duacs_global_nrt_madt_merged_h");
-        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PRODUCT, "duacs_global_nrt_madt_merged_h");
-        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_VARIABLE, "Grid_0001");
-//        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PRODUCT, "mercatorPsy2v2R1v_nat_mean_best_estimate");
-//        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_VARIABLE, "temperature");
-        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_START_DATE, "2007-08-19");
-        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_END_DATE, "2007-08-19");
+//        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_SERVICE, "Aviso");
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_SERVICE, "Mercator");
+//         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_DATA,
+//         "http://opendap.aviso.oceanobs.com/thredds/dodsC/duacs_global_nrt_madt_merged_h");
+//        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PRODUCT, "dt_ref_global_merged_madt_h");
+//        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_VARIABLE, "Grid_0001");
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PRODUCT, "mercatorPsy3v2_nat_mean_best_estimate");
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_VARIABLE, "temperature");
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_START_DATE, "2009-08-19");
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_END_DATE, "2009-08-19");
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_LOW_LAT, "-40.0");
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_LOW_LON, "-40.0");
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_HIGH_LAT, "40.0");

@@ -38,7 +38,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author Jean-Michel FARENC
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @version $Revision: 1.2 $ - $Date: 2009-09-16 13:54:04 $
  */
 public class MotuRequest {
 
@@ -50,7 +50,7 @@ public class MotuRequest {
 
     private static Unmarshaller unmarshallerMotuMsg = null;
 
-    private static Map<String, String> requestExtraInfo = null;
+    // private static Map<String, String> requestExtraInfo = null;
 
     /**
      * The Constructor.
@@ -137,9 +137,9 @@ public class MotuRequest {
     }
 
     /**
-     * Exécute de la requête et retourne du résultat dans un flux. Le flux contient le fichier netcdf en mode
-     * console, l'url du fichier extrait en mode url ou l'url du fichier de status en mode status (ce fichier
-     * contiendra l'état de la requête en cours : INPRGRESS ou ERROR msg_erreur ou DONE.
+     * Exécute de la requête et retourne du résultat dans un flux. Le flux contient le fichier netcdf en
+     * mode console, l'url du fichier extrait en mode url ou l'url du fichier de status en mode status (ce
+     * fichier contiendra l'état de la requête en cours : INPRGRESS ou ERROR msg_erreur ou DONE.
      * 
      * @return le flux résultat de la requête
      * 
@@ -162,8 +162,15 @@ public class MotuRequest {
 
         URL url = null;
 
+        Map<String, String> requestExtraInfo = MotuRequest.searchUrlUserPwd(servletUrl);
+        String targetUrl = servletUrl;
+
+        if (requestExtraInfo != null) {
+            targetUrl = requestExtraInfo.get(MotuRequestParametersConstant.PARAM_MODE_URL);
+        }
+
         try {
-            url = new URL(servletUrl);
+            url = new URL(targetUrl);
         } catch (MalformedURLException ex) {
             LOG.error("execute()", ex);
 
@@ -272,8 +279,8 @@ public class MotuRequest {
     }
 
     /**
-     * Méthode utilitaire qui fait une requête via {@code execute()} et retourne ne résultat sous forme d'une
-     * string. Trés utilisé en mode url et mode status.
+     * Méthode utilitaire qui fait une requête via {@code execute()} et retourne ne résultat sous forme
+     * d'une string. Trés utilisé en mode url et mode status.
      * 
      * @return La chaine qui contient le résultat de la requête: en mode url, l'url du fichier extrait, en
      *         mode status, l'url du fichier de status.
@@ -935,16 +942,16 @@ public class MotuRequest {
 
         this.servletUrl = servletUrl;
 
-        requestExtraInfo = MotuRequest.searchUrlUserPwd(servletUrl);
-
-        if (requestExtraInfo == null) {
-            return;
-        }
-
-        this.servletUrl = requestExtraInfo.get(MotuRequestParametersConstant.PARAM_MODE_URL);
-        // System.out.println(requestExtraInfo.get(MotuRequestParametersConstant.PARAM_LOGIN));
-        // System.out.println(requestExtraInfo.get(MotuRequestParametersConstant.PARAM_PWD));
-        // System.out.println(requestExtraInfo.get(MotuRequestParametersConstant.PARAM_MODE_URL));
+        // requestExtraInfo = MotuRequest.searchUrlUserPwd(servletUrl);
+        //
+        // if (requestExtraInfo == null) {
+        // return;
+        // }
+        //
+        // this.servletUrl = requestExtraInfo.get(MotuRequestParametersConstant.PARAM_MODE_URL);
+        // // System.out.println(requestExtraInfo.get(MotuRequestParametersConstant.PARAM_LOGIN));
+        // // System.out.println(requestExtraInfo.get(MotuRequestParametersConstant.PARAM_PWD));
+        // // System.out.println(requestExtraInfo.get(MotuRequestParametersConstant.PARAM_MODE_URL));
 
     }
 
