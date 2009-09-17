@@ -28,10 +28,10 @@ The purpose of this process is get the url of an extraction process from a reque
 					</gmd:linkage>
 				</gmd:CI_OnlineResource>
 			</srv:connectPoint>
-			<srv:dependsOn>
+			<srv:dependsOn uuidref="requestid,requestid">
 			&operationExtraction;
 			</srv:dependsOn>
-			<srv:dependsOn>
+			<srv:dependsOn uuidref="requestid,requestid">
 			&operationCompressExtraction;
 			</srv:dependsOn>								
 		</srv:SV_OperationMetadata>

@@ -29,7 +29,7 @@ The purpose of this operation is to compress data extraction, from a request ide
 					</gmd:linkage>
 				</gmd:CI_OnlineResource>
 			</srv:connectPoint>
-			<srv:dependsOn>
+			<srv:dependsOn uuidref="requestid,requestid">
 			&operationExtraction;
 			</srv:dependsOn>
 			

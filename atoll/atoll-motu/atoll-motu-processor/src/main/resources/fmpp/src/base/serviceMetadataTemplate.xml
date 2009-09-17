@@ -15,7 +15,7 @@
 	<!ENTITY urlOutputParameters SYSTEM "./SRV_UrlOutputParameters.xml">
 	<!ENTITY statusResponseOutputParameters SYSTEM "./SRV_StatusResponseOutputParameters.xml">
 
-	<!ENTITY operationExtraction SYSTEM "./SRV_OperationExtractionOpendap.xml">
+	<!ENTITY operationExtraction SYSTEM "./SRV_OperationExtraction${serviceType}.xml">
 	<!ENTITY operationPushData SYSTEM "./SRV_OperationPushData.xml">
 	<!ENTITY operationCompressExtraction SYSTEM "./SRV_OperationCompressExtraction.xml">
 	<!ENTITY operationGetExtractedProductUrl SYSTEM "./SRV_OperationGetExtractedProductUrl.xml">
@@ -104,7 +104,7 @@
 		</gmd:MD_LegalConstraints>
 	</gmd:resourceConstraints>
 	<srv:serviceType>
-		<gco:LocalName>Motu-Opendap</gco:LocalName>
+		<gco:LocalName>Motu-${serviceType}</gco:LocalName>
 	</srv:serviceType>
 	<srv:serviceTypeVersion>
 		<gco:CharacterString>1.0</gco:CharacterString>
