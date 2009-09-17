@@ -68,7 +68,7 @@ import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.13 $ - $Date: 2009-09-17 08:31:43 $
+ * @version $Revision: 1.14 $ - $Date: 2009-09-17 14:00:26 $
  */
 public class TestServiceMetadata {
 
@@ -515,7 +515,7 @@ public class TestServiceMetadata {
         try {
 //          url = new URL("file:///c:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml");
 //            url = Organizer.findResource("src/main/resources/fmpp/src/ServiceMetadataOpendap.xml");
-            url = Organizer.findResource("src/main/resources/fmpp/out/serviceMetadata_aviso_opendap.xml");
+            url = Organizer.findResource("src/main/resources/fmpp/out/serviceMetadata_motu-opendap-aviso.xml");
             SAXReader reader = new SAXReader();
             Document document = reader.read(url);
             Element root = document.getRootElement();
@@ -664,7 +664,7 @@ public class TestServiceMetadata {
             for (OperationMetadata source : sourceOperations) {
                 System.out.print("%%%%%%%% PATHS FROM  %%%%%%%%%%%%");
                 System.out.println(source);
-                    KShortestPaths<OperationMetadata, DefaultEdge> paths = ServiceMetadata.getOperationPaths(directedGraph, source);
+                    KShortestPaths<OperationMetadata, DefaultEdge> paths = ServiceMetadata.getOperationPaths(directedGraph, source, 10);
                     
                     for (OperationMetadata sink : sinkOperations) {
                         System.out.print(" %%%%%%%%%%%% TO ");

@@ -440,7 +440,7 @@
             <ns4:connectPoint ns3:type="simple">
                 <ns5:CI_OnlineResource>
                     <ns5:linkage>
-                        <ns5:URL>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</ns5:URL>
+                        <ns5:URL>${connectPoint}</ns5:URL>
                     </ns5:linkage>
                 </ns5:CI_OnlineResource>
             </ns4:connectPoint>
@@ -916,7 +916,7 @@
                     <ns4:connectPoint ns3:type="simple">
                         <ns5:CI_OnlineResource>
                             <ns5:linkage>
-<ns5:URL>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</ns5:URL>
+<ns5:URL>${connectPoint}</ns5:URL>
                             </ns5:linkage>
                         </ns5:CI_OnlineResource>
                     </ns4:connectPoint>
@@ -1084,7 +1084,7 @@ The purpose of this operation is to compress data extraction, from a request ide
                     <ns4:connectPoint ns3:type="simple">
                         <ns5:CI_OnlineResource>
                             <ns5:linkage>
-<ns5:URL>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</ns5:URL>
+<ns5:URL>${connectPoint}</ns5:URL>
                             </ns5:linkage>
                         </ns5:CI_OnlineResource>
                     </ns4:connectPoint>
@@ -1560,7 +1560,7 @@ The purpose of this operation is to compress data extraction, from a request ide
                             <ns4:connectPoint ns3:type="simple">
 <ns5:CI_OnlineResource>
     <ns5:linkage>
-        <ns5:URL>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</ns5:URL>
+        <ns5:URL>${connectPoint}</ns5:URL>
     </ns5:linkage>
 </ns5:CI_OnlineResource>
                             </ns4:connectPoint>
@@ -1767,7 +1767,7 @@ The purpose of this process is get the url of an extraction process from a reque
             <ns4:connectPoint ns3:type="simple">
                 <ns5:CI_OnlineResource>
                     <ns5:linkage>
-                        <ns5:URL>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</ns5:URL>
+                        <ns5:URL>${connectPoint}</ns5:URL>
                     </ns5:linkage>
                 </ns5:CI_OnlineResource>
             </ns4:connectPoint>
@@ -2243,7 +2243,7 @@ The purpose of this process is get the url of an extraction process from a reque
                     <ns4:connectPoint ns3:type="simple">
                         <ns5:CI_OnlineResource>
                             <ns5:linkage>
-<ns5:URL>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</ns5:URL>
+<ns5:URL>${connectPoint}</ns5:URL>
                             </ns5:linkage>
                         </ns5:CI_OnlineResource>
                     </ns4:connectPoint>
@@ -2411,7 +2411,7 @@ The purpose of this operation is to compress data extraction, from a request ide
                     <ns4:connectPoint ns3:type="simple">
                         <ns5:CI_OnlineResource>
                             <ns5:linkage>
-<ns5:URL>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</ns5:URL>
+<ns5:URL>${connectPoint}</ns5:URL>
                             </ns5:linkage>
                         </ns5:CI_OnlineResource>
                     </ns4:connectPoint>
@@ -2887,7 +2887,7 @@ The purpose of this operation is to compress data extraction, from a request ide
                             <ns4:connectPoint ns3:type="simple">
 <ns5:CI_OnlineResource>
     <ns5:linkage>
-        <ns5:URL>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</ns5:URL>
+        <ns5:URL>${connectPoint}</ns5:URL>
     </ns5:linkage>
 </ns5:CI_OnlineResource>
                             </ns4:connectPoint>

@@ -144,6 +144,13 @@
 							message="test classpath: ${test_classpath}" /> <echo
 							message="plugin classpath: ${plugin_classpath}" />
 						-->
+<!-- 
+						<taskdef name="fmpp" classname="fmpp.tools.AntTask" />
+
+						<fmpp configuration="src/main/resources/fmpp/configServiceTemplate.fmpp"
+							excludes="**/*">
+						</fmpp>
+ -->						
 						
 						<property name="base.dir"  value="J:/dev/atoll-v2/atoll-motu/atoll-motu-processor" />
 						<echo message="base.dir: ${base.dir}"/>
@@ -152,14 +159,14 @@
 							classname="fr.cls.atoll.motu.processor.ant.ServiceMetadataBuilder"
 							classpathref="maven.runtime.classpath" />
 							
-						<property name="fmpp.config" value="src/main/resources/fmpp/configServiceOpendap.fmpp" />
+						<property name="fmppOpendap.config" value="src/main/resources/fmpp/configServiceOpendap.fmpp" />
 
 						<property name="tempPath" value="file:///c:/tempVFS/" />
 						<property name="iso19139Schema.path" value="schema/iso19139" />
 						<property name="localIso19139RootSchemaRel.path" value="/srv/srv.xsd" />
 						
 						<echo message="tempPath: ${tempPath}"/>
-						<echo message="fmpp.config: ${fmpp.config}"/>
+						<echo message="fmppOpdendap.config: ${fmppOpendap.config}"/>
 						<echo message="iso19139Schema.path: ${iso19139Schema.path}"/>
 						<echo message="localIso19139RootSchemaRel.path: ${localIso19139RootSchemaRel.path}"/>
 
@@ -171,7 +178,7 @@
 							tempPath="${tempPath}" iso19139Schema="${iso19139Schema.path}"
 							localIso19139RootSchemaRelPath="${localIso19139RootSchemaRel.path}" 
 							outputXml="${outputXmlOpendap}" 
-							configuration="${fmpp.config}"
+							configuration="${fmppOpendap.config}"
 							excludes="**/*"
 							expand="true"
 							validate="false"
@@ -179,7 +186,25 @@
 							validateOutput="src/main/resources/fmpp/out"
 							/>
 
+						<property name="fmppFtp.config" value="src/main/resources/fmpp/configServiceFtp.fmpp" />
+						<echo message="fmppFtp.config: ${fmppFtp.config}"/>
 
+						<property name="outputXmlFtp" value="file:///${base.dir}/src/main/resources/fmpp/src/ServiceMetadataFtp.xml" />
+						<echo message="outputXmlFtp outputXmlFtp"/>
+
+						<buildServiceMetadata
+							xmlTemplate="file:///${base.dir}/src/main/resources/fmpp/src/base/serviceMetadataTemplateFtpBase.xml"
+							tempPath="${tempPath}" iso19139Schema="${iso19139Schema.path}"
+							localIso19139RootSchemaRelPath="${localIso19139RootSchemaRel.path}" 
+							outputXml="${outputXmlFtp}" 
+							configuration="${fmppFtp.config}"
+							excludes="**/*"
+							expand="true"
+							validate="false"
+							fmpp="true"
+							validateOutput="src/main/resources/fmpp/out"
+							/>
+ -->
 						<!--
 						<taskdef name="freemarker" classname="freemarker.ext.ant.FreemarkerXmlTask">
 							<classpath>

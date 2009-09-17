@@ -55,7 +55,7 @@ import fr.cls.atoll.motu.library.xml.XMLUtils;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-09-17 08:31:43 $
+ * @version $Revision: 1.6 $ - $Date: 2009-09-17 14:00:26 $
  */
 public class ServiceMetadata {
     /**
@@ -278,7 +278,7 @@ public class ServiceMetadata {
     }
 
     public void getOperations(JAXBElement<?> root, Collection<SVOperationMetadataType> listOperation) {
-        SVServiceIdentificationType serviceIdentificationType = (SVServiceIdentificationType) root.getValue();
+        SVServiceIdentificationType serviceIdentificationType = ServiceMetadata.getServiceIdentificationType(root);
         getOperations(serviceIdentificationType, listOperation);
 
     }
@@ -332,7 +332,7 @@ public class ServiceMetadata {
     }
 
     public void getOperations(JAXBElement<?> root, DirectedGraph<OperationMetadata, DefaultEdge> directedGraph) {
-        SVServiceIdentificationType serviceIdentificationType = (SVServiceIdentificationType) root.getValue();
+        SVServiceIdentificationType serviceIdentificationType = ServiceMetadata.getServiceIdentificationType(root);
         getOperations(serviceIdentificationType, directedGraph);
 
     }
@@ -524,10 +524,10 @@ public class ServiceMetadata {
         }
     }
     
-    public static KShortestPaths<OperationMetadata, DefaultEdge> getOperationPaths(DirectedGraph<OperationMetadata, DefaultEdge> directedGraph, OperationMetadata source) {
+    public static KShortestPaths<OperationMetadata, DefaultEdge> getOperationPaths(DirectedGraph<OperationMetadata, DefaultEdge> directedGraph, OperationMetadata source, int numPathsToBeComputed) {
         return  new KShortestPaths<OperationMetadata, DefaultEdge>(directedGraph,
                 source,
-                100);
+                numPathsToBeComputed);
         
     }
     public static List<GraphPath<OperationMetadata, DefaultEdge>> getOperationPaths(KShortestPaths<OperationMetadata, DefaultEdge> paths, OperationMetadata sink) {
@@ -535,8 +535,8 @@ public class ServiceMetadata {
 
        
    }
-    public static List<GraphPath<OperationMetadata, DefaultEdge>> getOperationPaths(DirectedGraph<OperationMetadata, DefaultEdge> directedGraph, OperationMetadata source, OperationMetadata sink) {
-        KShortestPaths<OperationMetadata, DefaultEdge> paths = getOperationPaths(directedGraph, source);
+    public static List<GraphPath<OperationMetadata, DefaultEdge>> getOperationPaths(DirectedGraph<OperationMetadata, DefaultEdge> directedGraph, OperationMetadata source, OperationMetadata sink, int numPathsToBeComputed) {
+        KShortestPaths<OperationMetadata, DefaultEdge> paths = getOperationPaths(directedGraph, source, numPathsToBeComputed);
         return paths.getPaths(sink);
 
        
@@ -661,7 +661,9 @@ public class ServiceMetadata {
     
     public static void dump(JAXBElement<?> element) {
         SVServiceIdentificationType serviceIdentificationType = ServiceMetadata.getServiceIdentificationType(element);
-        // serviceIdentificationType = (SVServiceIdentificationType) unmarshaller.unmarshal(in);
+        if (serviceIdentificationType == null) {
+            return;
+        }
         System.out.println(serviceIdentificationType.toString());
 
         List<SVOperationMetadataPropertyType> operationMetadataPropertyTypeList = serviceIdentificationType.getContainsOperations();

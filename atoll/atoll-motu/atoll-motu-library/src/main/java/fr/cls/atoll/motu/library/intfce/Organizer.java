@@ -95,7 +95,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.24 $ - $Date: 2009-08-20 16:10:02 $
+ * @version $Revision: 1.25 $ - $Date: 2009-09-17 14:01:46 $
  */
 public class Organizer {
 
@@ -915,8 +915,8 @@ public class Organizer {
                 stringBuffer.append(str);
                 stringBuffer.append("\n");
             }
-            throw new MotuException(String.format("ERROR - Inventory file '%s' is not valid - See errors below:\n%s", xmlUri, stringBuffer
-                    .toString()));
+            throw new MotuException(String
+                    .format("ERROR - Inventory file '%s' is not valid - See errors below:\n%s", xmlUri, stringBuffer.toString()));
         }
 
         InputStream in = Organizer.getUriAsInputStream(xmlUri);
@@ -1053,19 +1053,19 @@ public class Organizer {
         return Organizer.getUriAsInputStream(Organizer.getMotuConfigXmlName());
     }
 
-    
     /**
      * New uri.
      * 
      * @param uri the uri
      * 
      * @return the uRI
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
     public static URI newURI(String uri) throws URISyntaxException {
         return new URI(uri.replace("\\", "/"));
 
     }
+
     /**
      * Resolve file.
      * 
@@ -1090,7 +1090,7 @@ public class Organizer {
     public static void copyFile(String from, String to) throws MotuException {
         Organizer.getVFSSystemManager().copyFile(from, to);
     }
-    
+
     /**
      * Copy file.
      * 
@@ -1105,7 +1105,7 @@ public class Organizer {
      */
     public static void copyFile(String from, String to, String userFrom, String pwdFrom, String userTo, String pwdTo) throws MotuException {
         Organizer.getVFSSystemManager().copyFile(from, to, userFrom, pwdFrom, userTo, pwdTo);
-        
+
     }
 
     /**
@@ -1119,7 +1119,7 @@ public class Organizer {
     public static void copyFile(FileObject from, FileObject to) throws MotuException {
         Organizer.getVFSSystemManager().copyFile(from, to);
     }
-    
+
     /**
      * Delete a file.
      * 
@@ -1132,6 +1132,7 @@ public class Organizer {
     public static boolean deleteFile(String file) throws MotuException {
         return Organizer.getVFSSystemManager().deleteFile(file);
     }
+
     /**
      * Delete a file.
      * 
@@ -1144,7 +1145,7 @@ public class Organizer {
     public static boolean deleteFile(FileObject file) throws MotuException {
         return Organizer.getVFSSystemManager().deleteFile(file);
     }
-    
+
     /**
      * Delete directory all the descendents of this directory.
      * 
@@ -1157,6 +1158,7 @@ public class Organizer {
     public static boolean deleteDirectory(FileObject path) throws MotuException {
         return Organizer.getVFSSystemManager().deleteDirectory(path);
     }
+
     /**
      * Delete directory all the descendents of this directory.
      * 
@@ -1170,35 +1172,34 @@ public class Organizer {
         return Organizer.getVFSSystemManager().deleteDirectory(path);
     }
 
-    
     /**
      * Find resource.
      * 
      * @param name the name or the resource
      * 
      * @return the uRL of the resource or null if not found
-     * @throws MotuException 
+     * @throws MotuException
      */
     public static URL findResource(String name) throws MotuException {
-        //first see if the resource is a plain file
+        // first see if the resource is a plain file
         URL url = null;
         File f = new File(name);
-        if(f.exists()) {
-          try {
-            url = f.toURI().toURL();
-          } catch (MalformedURLException e) {
-            throw new MotuException(String.format("Organizer#findResource - Could not create URL from path: '%s'", f), e);
-          }
-          return url;
+        if (f.exists()) {
+            try {
+                url = f.toURI().toURL();
+            } catch (MalformedURLException e) {
+                throw new MotuException(String.format("Organizer#findResource - Could not create URL from path: '%s'", f), e);
+            }
+            return url;
         }
-        
-        //search for the resource on the classpath
-        
-        //get the default class/resource loader 
-        //ClassLoader cl = getClass().getClassLoader();
+
+        // search for the resource on the classpath
+
+        // get the default class/resource loader
+        // ClassLoader cl = getClass().getClassLoader();
         ClassLoader cl = Organizer.class.getClassLoader();
         return cl.getResource(name);
-      }
+    }
 
     /**
      * Gets the uri as input stream.
@@ -4222,6 +4223,7 @@ public class Organizer {
     public static String getFileSeparator() {
         return System.getProperty("file.separator");
     }
+
     /**
      * fill in the services' list.
      * 
@@ -4471,7 +4473,7 @@ public class Organizer {
         // replace all non-words character except '.' by "-"
         return temp.replaceAll("[\\W&&[^\\.]]", "-");
     }
-    
+
     /**
      * Error typefrom value.
      * 
@@ -4480,7 +4482,7 @@ public class Organizer {
      * @return the error type
      */
     public static ErrorType errorTypefromValue(String v) {
-        for (ErrorType c: ErrorType.values()) {
+        for (ErrorType c : ErrorType.values()) {
             if (c.toString().equalsIgnoreCase(v)) {
                 return c;
             }
@@ -4502,6 +4504,48 @@ public class Organizer {
             }
         }
         throw new IllegalArgumentException(String.valueOf(v));
+    }
+
+    /**
+     * Gets the files recursively.
+     * 
+     * @param file the file
+     * @param all the all
+     * @param recursive the recursive
+     */
+    public static void getFiles(File file, Collection<File> all, boolean recursive) {
+        final File[] children = file.listFiles();
+        if (children != null) {
+            for (File child : children) {
+                if (child.isFile()) {
+                    all.add(child);
+                }
+                if (recursive) {
+                    Organizer.getFiles(child, all, recursive);
+                }
+            }
+        }
+    }
+
+    /**
+     * Gets the files as string recursively.
+     * 
+     * @param file the file
+     * @param all the all
+     * @param recursive the recursive
+     */
+    public static void getFilesAsString(File file, Collection<String> all, boolean recursive) {
+        final File[] children = file.listFiles();
+        if (children != null) {
+            for (File child : children) {
+                if (child.isFile()) {
+                    all.add(child.getAbsolutePath());
+                }
+                if (recursive) {
+                    Organizer.getFilesAsString(child, all, recursive);
+                }
+            }
+        }
     }
 
 }

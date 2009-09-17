@@ -1,0 +1,10 @@
+<@pp.dropOutputFile />
+<#list servicesXml.services.service as p>
+<@pp.changeOutputFile name="serviceMetadata_${p.name}.xml" />
+<#assign connectPoint = p.url/>
+<#assign electronicMailAddress = p.electronicMailAddress/>
+<#assign fileIdentifier = p.fileIdentifier/>
+<#assign organisationName = p.organisationName/>
+<#assign dateStamp = p.dateStamp/>
+<#include "ServiceMetadataFtp.xml"> 
+</#list>

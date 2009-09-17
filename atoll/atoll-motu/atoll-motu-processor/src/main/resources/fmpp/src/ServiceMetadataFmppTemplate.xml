@@ -1,6 +1,0 @@
-<@pp.dropOutputFile />
-<#list serviceMetadataConfigXml.serviceMetadataConfigs.serviceMetadataConfig as p>
-<@pp.changeOutputFile name="serviceMetadataTemplate${p.name}Base.xml"/>
-<#assign serviceType = p.serviceType/>
-<#include "ServiceMetadataTemplate.xml"> 
-</#list>

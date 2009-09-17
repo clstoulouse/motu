@@ -487,7 +487,7 @@
                             </ns5:linkage>
                         </ns5:CI_OnlineResource>
                     </ns4:connectPoint>
-                    <ns4:dependsOn ns3:type="simple">
+                    <ns4:dependsOn ns3:type="simple" uuidref="requestid,requestid">
                         <ns4:SV_OperationMetadata>
                             <ns4:operationName>
 <ns1:CharacterString>Extraction</ns1:CharacterString>
@@ -1105,7 +1105,7 @@
                             </ns4:connectPoint>
                         </ns4:SV_OperationMetadata>
                     </ns4:dependsOn>
-                    <ns4:dependsOn ns3:type="simple">
+                    <ns4:dependsOn ns3:type="simple" uuidref="requestid,requestid">
                         <ns4:SV_OperationMetadata>
                             <ns4:operationName>
 <ns1:CharacterString>Zip</ns1:CharacterString>
@@ -1271,7 +1271,7 @@ The purpose of this operation is to compress data extraction, from a request ide
     </ns5:linkage>
 </ns5:CI_OnlineResource>
                             </ns4:connectPoint>
-                            <ns4:dependsOn ns3:type="simple">
+                            <ns4:dependsOn ns3:type="simple" uuidref="requestid,requestid">
 <ns4:SV_OperationMetadata>
     <ns4:operationName>
         <ns1:CharacterString>Extraction</ns1:CharacterString>
@@ -2094,7 +2094,7 @@ The purpose of this process is get the url of an extraction process from a reque
                             </ns5:linkage>
                         </ns5:CI_OnlineResource>
                     </ns4:connectPoint>
-                    <ns4:dependsOn ns3:type="simple">
+                    <ns4:dependsOn ns3:type="simple" uuidref="requestid,requestid">
                         <ns4:SV_OperationMetadata>
                             <ns4:operationName>
 <ns1:CharacterString>Extraction</ns1:CharacterString>
@@ -2712,7 +2712,7 @@ The purpose of this process is get the url of an extraction process from a reque
                             </ns4:connectPoint>
                         </ns4:SV_OperationMetadata>
                     </ns4:dependsOn>
-                    <ns4:dependsOn ns3:type="simple">
+                    <ns4:dependsOn ns3:type="simple" uuidref="requestid,requestid">
                         <ns4:SV_OperationMetadata>
                             <ns4:operationName>
 <ns1:CharacterString>Zip</ns1:CharacterString>
@@ -2878,7 +2878,7 @@ The purpose of this operation is to compress data extraction, from a request ide
     </ns5:linkage>
 </ns5:CI_OnlineResource>
                             </ns4:connectPoint>
-                            <ns4:dependsOn ns3:type="simple">
+                            <ns4:dependsOn ns3:type="simple" uuidref="requestid,requestid">
 <ns4:SV_OperationMetadata>
     <ns4:operationName>
         <ns1:CharacterString>Extraction</ns1:CharacterString>

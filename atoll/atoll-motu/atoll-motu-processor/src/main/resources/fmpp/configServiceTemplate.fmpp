@@ -1,8 +1,0 @@
-sourceRoot: src
-sources: ServiceMetadataFmppTemplate.xml
-outputRoot: src
-logFile: log.fmpp
-data: {
-	validate: true
-	serviceMetadataConfigXml: xml(data/serviceMetadataConfig.xml)
-}
