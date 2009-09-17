@@ -24,7 +24,10 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
+import org.isotc211.iso19139.d_2006_05_04.gmd.AbstractMDIdentificationType;
 import org.isotc211.iso19139.d_2006_05_04.gmd.CIOnlineResourcePropertyType;
+import org.isotc211.iso19139.d_2006_05_04.gmd.MDIdentificationPropertyType;
+import org.isotc211.iso19139.d_2006_05_04.gmd.MDMetadataType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVOperationMetadataPropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVOperationMetadataType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterPropertyType;
@@ -52,7 +55,7 @@ import fr.cls.atoll.motu.library.xml.XMLUtils;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-09-16 14:22:04 $
+ * @version $Revision: 1.5 $ - $Date: 2009-09-17 08:31:43 $
  */
 public class ServiceMetadata {
     /**
@@ -626,8 +629,38 @@ public class ServiceMetadata {
         }
     }
 
+    public static SVServiceIdentificationType getServiceIdentificationType(JAXBElement<?> element) {
+        if (element == null) {
+            return null;
+        }
+        
+        MDMetadataType metadataType = (MDMetadataType) element.getValue();
+        if (metadataType == null) {
+            return null;
+        }
+        
+        List<MDIdentificationPropertyType> identificationPropertyTypeList = metadataType.getIdentificationInfo();
+        if (identificationPropertyTypeList == null) {
+            return null;
+        }
+        
+        for (MDIdentificationPropertyType identificationPropertyType : identificationPropertyTypeList) {
+            AbstractMDIdentificationType abstractMDIdentificationType = identificationPropertyType.getAbstractMDIdentification().getValue();
+            if (abstractMDIdentificationType == null) {
+                continue;
+            }
+            if (abstractMDIdentificationType instanceof SVServiceIdentificationType) {
+                return (SVServiceIdentificationType) abstractMDIdentificationType;
+            
+            }
+                        
+        }
+        
+        return null;
+    }    
+    
     public static void dump(JAXBElement<?> element) {
-        SVServiceIdentificationType serviceIdentificationType = (SVServiceIdentificationType) element.getValue();
+        SVServiceIdentificationType serviceIdentificationType = ServiceMetadata.getServiceIdentificationType(element);
         // serviceIdentificationType = (SVServiceIdentificationType) unmarshaller.unmarshal(in);
         System.out.println(serviceIdentificationType.toString());
 

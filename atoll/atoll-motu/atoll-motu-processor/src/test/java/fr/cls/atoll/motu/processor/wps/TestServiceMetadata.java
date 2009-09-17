@@ -51,6 +51,7 @@ import org.jgrapht.graph.DirectedSubgraph;
 import org.xml.sax.SAXException;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.xml.XMLErrorHandler;
@@ -67,7 +68,7 @@ import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.12 $ - $Date: 2009-09-16 14:22:29 $
+ * @version $Revision: 1.13 $ - $Date: 2009-09-17 08:31:43 $
  */
 public class TestServiceMetadata {
 
@@ -131,8 +132,8 @@ public class TestServiceMetadata {
 
         // testLoadGeomatysServiceMetadata();
         //testLoadOGCServiceMetadata();
-        testServiceMetadataBuilder();
-        //testdom4j();
+        //testServiceMetadataBuilder();
+        testdom4j();
         //testIso19139Operations();
 
         // try {
@@ -513,7 +514,8 @@ public class TestServiceMetadata {
         JAXBElement<?> jaxbElement = null;
         try {
 //          url = new URL("file:///c:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml");
-            url = Organizer.findResource("src/main/resources/fmpp/src/ServiceMetadataOpendap.xml");
+//            url = Organizer.findResource("src/main/resources/fmpp/src/ServiceMetadataOpendap.xml");
+            url = Organizer.findResource("src/main/resources/fmpp/out/serviceMetadata_aviso_opendap.xml");
             SAXReader reader = new SAXReader();
             Document document = reader.read(url);
             Element root = document.getRootElement();
@@ -540,7 +542,10 @@ public class TestServiceMetadata {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
             jaxbElement = serviceMetadata.unmarshallIso19139(byteArrayInputStream);
             
-            ServiceMetadata.dump(jaxbElement);
+            ServiceMetadata.dump(jaxbElement);            
+
+            ServiceMetadata servMetadata = new ServiceMetadata();
+            jaxbElement = servMetadata.dom4jToJaxb(document);
             
             
             
@@ -560,6 +565,9 @@ public class TestServiceMetadata {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (MotuMarshallException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MotuExceptionBase e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

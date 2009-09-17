@@ -2,6 +2,7 @@ package fr.cls.atoll.motu.processor.ant;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -27,11 +28,9 @@ import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-09-16 14:22:04 $
+ * @version $Revision: 1.6 $ - $Date: 2009-09-17 08:31:43 $
  */
 public class ServiceMetadataBuilder extends AntTask {
-
-    private Properties initialOptions = new Properties();
 
     protected ServiceMetadata serviceMetadata = null;
 
@@ -70,7 +69,7 @@ public class ServiceMetadataBuilder extends AntTask {
     public void setOutputXml(String outputXml) {
         this.outputXml = outputXml;
     }
-    
+
     public void setValidateOutput(String validateOutput) {
         this.validateOutput = validateOutput;
     }
@@ -180,30 +179,54 @@ public class ServiceMetadataBuilder extends AntTask {
             System.out.println("Step output xml validation is skipped \n");
             return;
         }
-        
-        System.out.println("Step : output xml validation\n");
 
+        System.out.println("Step : output xml validation\n");
 
         try {
             URL url = Organizer.findResource(validateOutput);
             File scannerBase = new File(url.getPath());
+            List<String> files = new ArrayList<String>();
+            Organizer.getFilesAsString(scannerBase, files, false);
+            List<String> allErrors = new ArrayList<String>();
 
-            String[] scanResults = MiscUtil.add(getDirectoryScanner(scannerBase).getIncludedFiles(), getDirectoryScanner(scannerBase)
-                    .getIncludedDirectories());
-            String[] outputFiles = new String[scanResults.length];
-            for (int i = 0; i < scanResults.length; i++) {
-                File f = new File(scannerBase, scanResults[i]);
-                outputFiles[i] = f.getAbsolutePath();
+            if (serviceMetadata == null) {
+                serviceMetadata = new ServiceMetadata();
             }
-            
-            System.out.println(outputFiles);
+
+            for (String file : files) {
+                System.out.println(String.format("Step : validation of '%s' using schema located in '%s'\n", file, localIso19139SchemaPath));
+                List<String> errors = serviceMetadata.validateServiceMetadataFromString(iso19139Schema,
+                                                                                        localIso19139SchemaPath,
+                                                                                        localIso19139RootSchemaRelPath,
+                                                                                        file);
+                if (errors.size() > 0) {
+                    StringBuffer stringBuffer = new StringBuffer();
+                    for (String str : errors) {
+                        stringBuffer.append(str);
+                        stringBuffer.append("\n");
+                    }
+                    allErrors.add(String.format("ERROR - XML file '%s' is not valid - See errors below:\n%s", file, stringBuffer.toString()));
+                } else {
+                    System.out.println(String.format("XML file '%s' is valid\n", file));
+                }
+
+            }
+            if (allErrors.size() > 0) {
+                StringBuffer stringBuffer = new StringBuffer();
+                for (String str : allErrors) {
+                    stringBuffer.append(str);
+                    stringBuffer.append("\n");
+                }
+                throw new BuildException(stringBuffer.toString());
+
+            }
 
         } catch (MotuExceptionBase e) {
             throw new BuildException(String.format("Error during output XML validation:\n%s\n", e.notifyException()), e);
-        
-    } catch (Exception e) {
-        throw new BuildException("Error during output XML validation", e);
-    }
+
+        } catch (Exception e) {
+            throw new BuildException("Error during output XML validation", e);
+        }
 
     }
 

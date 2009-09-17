@@ -176,6 +176,7 @@
 							expand="true"
 							validate="false"
 							fmpp="true"
+							validateOutput="src/main/resources/fmpp/out"
 							/>
 
 

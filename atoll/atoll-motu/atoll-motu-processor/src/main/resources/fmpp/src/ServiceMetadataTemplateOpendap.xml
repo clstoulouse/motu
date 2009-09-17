@@ -6,8 +6,5 @@
 <#assign fileIdentifier = p.fileIdentifier/>
 <#assign organisationName = p.organisationName/>
 <#assign dateStamp = p.dateStamp/>
-
 <#include "ServiceMetadataOpendap.xml"> 
-
-
 </#list>
