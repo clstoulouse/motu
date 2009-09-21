@@ -59,7 +59,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.14 $ - $Date: 2009-09-17 14:00:26 $
+ * @version $Revision: 1.15 $ - $Date: 2009-09-21 14:14:10 $
  */
 public class TestWPS {
     /**
@@ -78,7 +78,7 @@ public class TestWPS {
      * @param args
      */
     public static void main(String[] args) {
-
+        
         //testBuildWPS();
         testBuildChainWPS();
         // for (ErrorType c: ErrorType.values()) {
@@ -467,32 +467,9 @@ public class TestWPS {
             List<OperationMetadata> sourceOperations = new ArrayList<OperationMetadata>();
             List<OperationMetadata> sinkOperations = new ArrayList<OperationMetadata>();          
             
-            ServiceMetadata.getSourceOperations(directedGraph, sourceOperations);
-            ServiceMetadata.getSinkOperations(directedGraph, sinkOperations);
-
-            
-            System.out.println("%%%%%%%% SOURCE %%%%%%%%%%%%");
-            System.out.println(sourceOperations);
-            System.out.println("%%%%%%%% SINK %%%%%%%%%%%%");
-            System.out.println(sinkOperations);
-
-            for (OperationMetadata source : sourceOperations) {
-                System.out.print("%%%%%%%% PATHS FROM  %%%%%%%%%%%%");
-                System.out.println(source);
-                    KShortestPaths<OperationMetadata, DefaultEdge> paths = ServiceMetadata.getOperationPaths(directedGraph, source, 10);
-                    
-                    for (OperationMetadata sink : sinkOperations) {
-                        System.out.print(" %%%%%%%%%%%% TO ");
-                        System.out.println(sink);
-                        List<GraphPath<OperationMetadata, DefaultEdge>> listPath = ServiceMetadata.getOperationPaths(paths, sink);
-                        for (GraphPath<OperationMetadata, DefaultEdge> gp : listPath) {
-                        System.out.println(gp.getEdgeList());
-                        }
-                    }
-                    
-            }
             
             EdgeReversedGraph<OperationMetadata, DefaultEdge> edgeReversedGraph  = new EdgeReversedGraph<OperationMetadata, DefaultEdge>(directedGraph);          
+
             sourceOperations.clear();
             sinkOperations.clear();
             
@@ -522,6 +499,47 @@ public class TestWPS {
                     
             }
 
+            sourceOperations.clear();
+            sinkOperations.clear();
+            
+            ServiceMetadata.getSourceOperations(directedGraph, sourceOperations);
+            ServiceMetadata.getSinkOperations(directedGraph, sinkOperations);
+
+            
+            System.out.println("%%%%%%%% SOURCE %%%%%%%%%%%%");
+            System.out.println(sourceOperations);
+            System.out.println("%%%%%%%% SINK %%%%%%%%%%%%");
+            System.out.println(sinkOperations);
+            
+            Map<String, Map<String, ParameterValue<?>>> operationsInputValues = new HashMap<String, Map<String,ParameterValue<?>>>();
+
+            Map<String, ParameterValue<?>> dataInputValues = null;
+            
+            for (OperationMetadata source : sourceOperations) {
+                System.out.print("%%%%%%%% PATHS FROM  %%%%%%%%%%%%");
+                System.out.println(source);
+                    KShortestPaths<OperationMetadata, DefaultEdge> paths = ServiceMetadata.getOperationPaths(directedGraph, source, 10);
+                    
+                    for (OperationMetadata sink : sinkOperations) {
+                        System.out.print(" %%%%%%%%%%%% TO ");
+                        System.out.println(sink);
+                        List<GraphPath<OperationMetadata, DefaultEdge>> listPath = ServiceMetadata.getOperationPaths(paths, sink);
+                        for (GraphPath<OperationMetadata, DefaultEdge> gp : listPath) {
+                        System.out.println(gp.getEdgeList());
+                        
+                        OperationMetadata operationMetadata = gp.getEndVertex();
+                        operationMetadata.dump();
+
+                        dataInputValues = operationMetadata.createParameterValues();
+                        operationsInputValues.put(sink.getOperationName(), dataInputValues);
+                        
+                        }
+                    }
+                    
+            }
+            
+            
+            // TODO Add ParameterValue depending on service (Ftp, Opendap).
 //            WPSFactory wpsFactory = new WPSFactory(serverURL);
 //
 //            Map<String, ParameterValue<?>> dataInputValues = new HashMap<String, ParameterValue<?>>();
