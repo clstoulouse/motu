@@ -12,6 +12,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.xerces.jaxp.datatype.DatatypeFactoryImpl;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVOperationMetadataType;
+import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterDirectionType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterPropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterType;
 import org.kohsuke.rngom.dt.builtin.BuiltinDatatypeLibrary;
@@ -36,7 +37,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-09-21 14:14:10 $
+ * @version $Revision: 1.3 $ - $Date: 2009-09-22 14:39:04 $
  */
 public class OperationMetadata {
 
@@ -48,6 +49,7 @@ public class OperationMetadata {
         XML_JAVA_CLASS_MAPPING.put("boolean", java.lang.Boolean.class);
         XML_JAVA_CLASS_MAPPING.put("decimal", java.math.BigDecimal.class);
         XML_JAVA_CLASS_MAPPING.put("dateTime", javax.xml.datatype.XMLGregorianCalendar.class);
+        XML_JAVA_CLASS_MAPPING.put("datetime", javax.xml.datatype.XMLGregorianCalendar.class);
         XML_JAVA_CLASS_MAPPING.put("time", javax.xml.datatype.XMLGregorianCalendar.class);
         XML_JAVA_CLASS_MAPPING.put("date", javax.xml.datatype.XMLGregorianCalendar.class);
         XML_JAVA_CLASS_MAPPING.put("duration", javax.xml.datatype.Duration.class);
@@ -62,6 +64,7 @@ public class OperationMetadata {
 
         // custom type for bounding box : array of double number (latitude/longitude lower corner,
         // latitude/longitude upper corner).
+        XML_JAVA_CLASS_MAPPING.put("boundingBox", double[].class);
         XML_JAVA_CLASS_MAPPING.put("boundingbox", double[].class);
 
     };
@@ -195,6 +198,31 @@ public class OperationMetadata {
         return (String) parameterType.getName().getAName().getCharacterString().getValue();
 
     }
+    public SVParameterDirectionType getParameterDirection(SVParameterPropertyType parameterPropertyType) throws MotuException {
+        return getParameterDirection(parameterPropertyType.getSVParameter());
+    }
+    public SVParameterDirectionType getParameterDirection(SVParameterType parameterType) throws MotuException {
+        if (parameterType == null) {
+            throw new MotuException(String.format("ERROR - ISO 19139 parameter is null (operation : '%s')", getOperationName()));
+        }
+        if (parameterType.getDirection() == null) {
+            throw new MotuException(String.format("ERROR - ISO 19139 parameter has no direction (operation : '%s')", getOperationName()));
+        }
+
+        if (parameterType.getDirection().getSVParameterDirection() == null) {
+            throw new MotuException(String.format("ERROR - ISO 19139 parameter has no direction (operation : '%s')", getOperationName()));
+        }
+
+        if (parameterType.getDirection().getSVParameterDirection().value() == null) {
+            throw new MotuException(String.format("ERROR - ISO 19139 parameter has no direction (operation : '%s')", getOperationName()));
+        }
+        if (parameterType.getName().getAName().getCharacterString() == null) {
+            throw new MotuException(String.format("ERROR - ISO 19139 parameter has no direction (operation : '%s')", getOperationName()));
+        }
+
+        return SVParameterDirectionType.fromValue(parameterType.getDirection().getSVParameterDirection().value());
+
+    }
 
     public String getParameterValueType(SVParameterPropertyType parameterPropertyType) throws MotuException {
         return getParameterValueType(parameterPropertyType.getSVParameter());
@@ -222,9 +250,7 @@ public class OperationMetadata {
         return (String) parameterType.getValueType().getTypeName().getAName().getCharacterString().getValue();
 
     }
-
-    public Map<String, ParameterValue<?>> createParameterValues() throws MotuException {
-
+    public Map<String, ParameterValue<?>> createParameterValues(boolean inParameter, boolean outParameter) throws MotuException {
         Map<String, ParameterValue<?>> parameterValueMap = new HashMap<String, ParameterValue<?>>();
 
         List<SVParameterPropertyType> parameterPropertyTypeList = svOperationMetadataType.getParameters();
@@ -233,6 +259,13 @@ public class OperationMetadata {
 
             SVParameterType parameterType = parameterPropertyType.getSVParameter();
 
+            if (getParameterDirection(parameterType).equals(SVParameterDirectionType.IN) && !inParameter) {
+                continue;
+            }
+            if (getParameterDirection(parameterType).equals(SVParameterDirectionType.OUT) && !outParameter) {
+                continue;
+            }
+            
             String paramName = getParameterName(parameterType);
 
             ParameterValue<?> parameterValue = createParameterValue(parameterType);
@@ -240,6 +273,10 @@ public class OperationMetadata {
         }
 
         return parameterValueMap;
+        
+    }
+    public Map<String, ParameterValue<?>> createParameterValues() throws MotuException {
+        return createParameterValues(true, true);
     }
 
     public ParameterValue<?> createParameterValue(SVParameterType parameterType) throws MotuException {
@@ -247,13 +284,13 @@ public class OperationMetadata {
         String paramValueType = getParameterValueType(parameterType);
         Class<?> clazz = XML_JAVA_CLASS_MAPPING.get(paramValueType);
         if (clazz == null) {
-            throw new MotuException(String.format("ERROR - ISO 19139 - operation '%' - parameter '%s' has unknown type '%s'. Valid type are : %s",
+            throw new MotuException(String.format("ERROR - ISO 19139 - operation '%s' - parameter '%s' has unknown type '%s'. Valid type are : %s",
                                                   getOperationName(),
                                                   paramName,
                                                   paramValueType,
                                                   XML_JAVA_CLASS_MAPPING.keySet().toString()));
         }
-        return WPSFactory.createParameter(paramName, clazz.getClass(), null);
+        return WPSFactory.createParameter(paramName, clazz, null);
     }
 
     public void dump() {
