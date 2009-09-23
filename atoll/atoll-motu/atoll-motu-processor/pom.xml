@@ -41,8 +41,15 @@
 		<dependency>
 			<groupId>org.geotoolkit</groupId>
 			<artifactId>geotk-referencing</artifactId>
-			<version>SNAPSHOT</version>
+			<version>3.03</version>
 		</dependency>
+	<dependency>
+		<groupId>org.opengis</groupId>
+		<artifactId>geoapi</artifactId>
+		<version>2.3-M4</version>
+		<scope>compile</scope>
+	</dependency>
+		
 		<dependency>
 		    <groupId>jgrapht</groupId>
 		    <artifactId>jgrapht</artifactId>
