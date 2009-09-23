@@ -37,7 +37,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-09-22 14:39:04 $
+ * @version $Revision: 1.4 $ - $Date: 2009-09-23 14:21:08 $
  */
 public class OperationMetadata {
 
@@ -69,12 +69,26 @@ public class OperationMetadata {
 
     };
 
+    public OperationMetadata() {
+    }
     public OperationMetadata(SVOperationMetadataType svOperationMetadataType) {
-        super();
         this.svOperationMetadataType = svOperationMetadataType;
     }
 
     SVOperationMetadataType svOperationMetadataType = null;
+
+    Map<String, ParameterValue<?>> parameterValueMap = null;
+
+
+    public void setSvOperationMetadataType(SVOperationMetadataType svOperationMetadataType) {
+        this.svOperationMetadataType = svOperationMetadataType;
+    }
+    public void setParameterValueMap(Map<String, ParameterValue<?>> parameterValueMap) {
+        this.parameterValueMap = parameterValueMap;
+    }
+    public Map<String, ParameterValue<?>> getParameterValueMap() {
+        return parameterValueMap;
+    }
 
     public SVOperationMetadataType getSvOperationMetadataType() {
         return svOperationMetadataType;
@@ -251,7 +265,8 @@ public class OperationMetadata {
 
     }
     public Map<String, ParameterValue<?>> createParameterValues(boolean inParameter, boolean outParameter) throws MotuException {
-        Map<String, ParameterValue<?>> parameterValueMap = new HashMap<String, ParameterValue<?>>();
+        
+        parameterValueMap = new HashMap<String, ParameterValue<?>>();
 
         List<SVParameterPropertyType> parameterPropertyTypeList = svOperationMetadataType.getParameters();
 

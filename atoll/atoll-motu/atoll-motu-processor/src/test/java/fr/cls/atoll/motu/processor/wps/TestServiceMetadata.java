@@ -70,7 +70,7 @@ import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.15 $ - $Date: 2009-09-22 14:37:49 $
+ * @version $Revision: 1.16 $ - $Date: 2009-09-23 14:21:08 $
  */
 public class TestServiceMetadata {
 
@@ -630,11 +630,11 @@ public class TestServiceMetadata {
                 System.out.println(operationMetadataType.getOperationName().getCharacterString().getValue());
             }
             
-            DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph = new DefaultDirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>>((Class<? extends OperationRelationshipEdge<ParameterValue<?>>>) OperationRelationshipEdge.class);
+            DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph = new DefaultDirectedGraph<OperationMetadata, OperationRelationshipEdge<String>>((Class<? extends OperationRelationshipEdge<String>>) OperationRelationshipEdge.class);
             serviceMetadata.getOperations(url, directedGraph);
 
-            StrongConnectivityInspector<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> sci = new StrongConnectivityInspector<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>>(directedGraph);
-            List<DirectedSubgraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>>> stronglyConnectedSubgraphs = sci.stronglyConnectedSubgraphs();
+            StrongConnectivityInspector<OperationMetadata, OperationRelationshipEdge<String>> sci = new StrongConnectivityInspector<OperationMetadata, OperationRelationshipEdge<String>>(directedGraph);
+            List<DirectedSubgraph<OperationMetadata, OperationRelationshipEdge<String>>> stronglyConnectedSubgraphs = sci.stronglyConnectedSubgraphs();
             sci.stronglyConnectedSets();
             System.out.println(sci.isStronglyConnected());
             
@@ -647,10 +647,10 @@ public class TestServiceMetadata {
             
             System.out.println (directedGraph.edgeSet());
             
-            ConnectivityInspector<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> ci = new ConnectivityInspector<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>>(directedGraph);
+            ConnectivityInspector<OperationMetadata, OperationRelationshipEdge<String>> ci = new ConnectivityInspector<OperationMetadata, OperationRelationshipEdge<String>>(directedGraph);
             System.out.println (ci.isGraphConnected());
             
-            DirectedNeighborIndex<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> ni = new DirectedNeighborIndex<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>>(directedGraph);
+            DirectedNeighborIndex<OperationMetadata, OperationRelationshipEdge<String>> ni = new DirectedNeighborIndex<OperationMetadata, OperationRelationshipEdge<String>>(directedGraph);
 
             List<OperationMetadata> sourceOperations = new ArrayList<OperationMetadata>();
             List<OperationMetadata> sinkOperations = new ArrayList<OperationMetadata>();
@@ -666,13 +666,13 @@ public class TestServiceMetadata {
             for (OperationMetadata source : sourceOperations) {
                 System.out.print("%%%%%%%% PATHS FROM  %%%%%%%%%%%%");
                 System.out.println(source);
-                    KShortestPaths<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> paths = ServiceMetadata.getOperationPaths(directedGraph, source, 10);
+                    KShortestPaths<OperationMetadata, OperationRelationshipEdge<String>> paths = ServiceMetadata.getOperationPaths(directedGraph, source, 10);
                     
                     for (OperationMetadata sink : sinkOperations) {
                         System.out.print(" %%%%%%%%%%%% TO ");
                         System.out.println(sink);
-                        List<GraphPath<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>>> listPath = ServiceMetadata.getOperationPaths(paths, sink);
-                        for (GraphPath<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> gp : listPath) {
+                        List<GraphPath<OperationMetadata, OperationRelationshipEdge<String>>> listPath = ServiceMetadata.getOperationPaths(paths, sink);
+                        for (GraphPath<OperationMetadata, OperationRelationshipEdge<String>> gp : listPath) {
                         System.out.println(gp.getEdgeList());
                         }
                     }

@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -16,6 +19,9 @@ import javax.xml.bind.Marshaller;
 import org.apache.log4j.Logger;
 import org.geotoolkit.parameter.DefaultParameterDescriptor;
 import org.geotoolkit.parameter.Parameter;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.KShortestPaths;
 import org.opengis.parameter.InvalidParameterTypeException;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
@@ -24,6 +30,9 @@ import fr.cls.atoll.motu.library.data.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
+import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
+import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
 import fr.cls.atoll.motu.processor.opengis.ows110.BoundingBoxType;
 import fr.cls.atoll.motu.processor.opengis.ows110.CodeType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ComplexDataCombinationsType;
@@ -33,6 +42,7 @@ import fr.cls.atoll.motu.processor.opengis.wps100.DataInputsType;
 import fr.cls.atoll.motu.processor.opengis.wps100.DataType;
 import fr.cls.atoll.motu.processor.opengis.wps100.Execute;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
+import fr.cls.atoll.motu.processor.opengis.wps100.InputReferenceType;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputType;
 import fr.cls.atoll.motu.processor.opengis.wps100.LiteralDataType;
 import fr.cls.atoll.motu.processor.opengis.wps100.LiteralInputType;
@@ -51,13 +61,16 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.8 $ - $Date: 2009-09-03 09:16:28 $
+ * @version $Revision: 1.9 $ - $Date: 2009-09-23 14:21:08 $
  */
 public class WPSFactory {
     /**
      * Logger for this class
      */
     private static final Logger LOG = Logger.getLogger(WPSFactory.class);
+
+    public static final String UTF8 = "UTF-8";
+    public static final String METHOD_POST = "POST";
 
     private static JAXBContext jaxbContextWPS = null;
     private static Marshaller marshallerWPS = null;
@@ -121,22 +134,76 @@ public class WPSFactory {
         }
     }
 
-    public Execute createExecuteProcessRequest(Map<String, ParameterValue<?>> dataInputValues, String processName) throws MotuException {
+    // public Execute createExecuteProcessRequest(DirectedGraph<OperationMetadata,
+    // OperationRelationshipEdge<String>> directedGraph,
+    // GraphPath<OperationMetadata, OperationRelationshipEdge<String>> graphPath) throws MotuException {
+    // List<OperationRelationshipEdge<String>> edges = graphPath.getEdgeList();
+    //
+    // return createExecuteProcessRequest(directedGraph, edges);
+    //
+    // }
+    //
+    // public Execute createExecuteProcessRequest(DirectedGraph<OperationMetadata,
+    // OperationRelationshipEdge<String>> directedGraph,
+    // List<OperationRelationshipEdge<String>> edges) throws MotuException {
+    //
+    // ListIterator<OperationRelationshipEdge<String>> edgeIterator = edges.listIterator();
+    //
+    // return createExecuteProcessRequest(directedGraph, edgeIterator, null);
+    //
+    // }
+    //
+    // public Execute createExecuteProcessRequest(DirectedGraph<OperationMetadata,
+    // OperationRelationshipEdge<String>> directedGraph,
+    // ListIterator<OperationRelationshipEdge<String>> edgeIterator,
+    // Execute parent) throws MotuException {
+    //
+    // if (!edgeIterator.hasNext()) {
+    // return parent;
+    // }
+    //
+    // OperationRelationshipEdge<String> edge = edgeIterator.next();
+    // OperationMetadata operationMetadata = directedGraph.getEdgeSource(edge);
+    //
+    // List<OperationRelationshipEdge<String>> edges = new ArrayList<OperationRelationshipEdge<String>>();
+    // edges.add(edge);
+    //
+    // Execute execute = createExecuteProcessRequest(directedGraph, operationMetadata.getParameterValueMap(),
+    // operationMetadata.getInvocationName(), edges);
+    //
+    // return createExecuteProcessRequest(directedGraph, edgeIterator, execute);
+    //
+    // }
 
-        ProcessDescriptionType processDescriptionType = getWpsInfoInstance().getProcessDescription(processName);
+    // public Execute createExecuteProcessRequest(DirectedGraph<OperationMetadata,
+    // OperationRelationshipEdge<String>> directedGraph,
+    // Map<String, ParameterValue<?>> dataInputValues,
+    // String processName,
+    // List<OperationRelationshipEdge<String>> sourceEdges) throws MotuException {
+    //
+    // ProcessDescriptionType processDescriptionType =
+    // getWpsInfoInstance().getProcessDescription(processName);
+    //
+    // if (processDescriptionType == null) {
+    // throw new
+    // MotuException(String.format("WPSFactory#createExecuteProcessRequest : Unknown process name '%s'",
+    // processName));
+    // }
+    // return createExecuteProcessRequest(directedGraph, dataInputValues, processDescriptionType,
+    // sourceEdges);
+    //
+    // }
+
+    public Execute createExecuteProcessRequest(OperationMetadata operationMetadata,
+                                               DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph
+                                               ) throws MotuException {
+    
+        Map<String, ParameterValue<?>> dataInputValues = operationMetadata.getParameterValueMap(); 
+
+        ProcessDescriptionType processDescriptionType = getWpsInfoInstance().getProcessDescription(operationMetadata.getInvocationName());
 
         if (processDescriptionType == null) {
-            throw new MotuException(String.format("WPSFactory#createExecuteProcessRequest : Unknown process name '%s'", processName));
-        }
-        return createExecuteProcessRequest(dataInputValues, processDescriptionType);
-
-    }
-
-    public Execute createExecuteProcessRequest(Map<String, ParameterValue<?>> dataInputValues, ProcessDescriptionType processDescriptionType)
-            throws MotuException {
-
-        if (processDescriptionType == null) {
-            throw new MotuException("WPSFactory#createExecuteProcessRequest : processDescriptionType is null");
+            throw new MotuException(String.format("WPSFactory#createExecuteProcessRequest : Unknown process name '%s'", operationMetadata.getInvocationName()));
         }
 
         ProcessDescriptions processDescriptions = wpsInfo.getProcessDescriptions();
@@ -196,14 +263,38 @@ public class WPSFactory {
                 parameterValueUsed.setValue(inValue);
 
                 InputType inputType = createInputType(inputDescriptionType);
-                DataType dataType = createInputDataType(inputDescriptionType, parameterValueUsed);
 
-                if (dataType == null) {
-                    continue;
+                Set<OperationRelationshipEdge<String>> edges = null;
+                OperationRelationshipEdge<String> edge = null;
+                
+                if (directedGraph != null) {
+                    edges = directedGraph.outgoingEdgesOf(operationMetadata); 
+                    edge = WPSFactory.getEdgeParameter(edges, identifier);                    
                 }
+                                               
+                if (edge == null) {
+                    
+                    DataType dataType = createInputDataType(inputDescriptionType, parameterValueUsed);
 
-                inputType.setData(dataType);
-                // inputType.setReference(value)
+                    if (dataType == null) {
+                        continue;
+                    }
+                    inputType.setData(dataType);
+                    
+                } else {
+
+                    OperationMetadata operationMetadataTarget = directedGraph.getEdgeTarget(edge);
+                    directedGraph.getEdgeTarget(edge);
+
+                    Execute executeChain = createExecuteProcessRequest(operationMetadataTarget, 
+                                                                       directedGraph);
+
+                    InputReferenceType inputReferenceType = createInputReferenceType(executeChain);
+
+                    // InputReferenceType inputReferenceType = createInputReferenceType(inputDescriptionType,
+                    // parameterValueUsed)e(inputDescriptionType, parameterValueUsed);
+                    inputType.setReference(inputReferenceType);
+                }
 
                 dataInputsType.getInput().add(inputType);
             }
@@ -468,6 +559,16 @@ public class WPSFactory {
 
     }
 
+    public InputReferenceType createInputReferenceType(Object body) {
+
+        InputReferenceType inputReferenceType = objectFactoryWPS.createInputReferenceType();
+        inputReferenceType.setEncoding(WPSFactory.UTF8);
+        inputReferenceType.setMethod(WPSFactory.METHOD_POST);
+        inputReferenceType.setBody(body);
+
+        return inputReferenceType;
+    }
+
     public static void marshallExecute(Execute execute, Writer writer, String schemaLocation) throws MotuMarshallException {
         if (writer == null) {
             return;
@@ -502,10 +603,11 @@ public class WPSFactory {
 
     public static Parameter<?> createParameter(final String name, final int value) {
         return Parameter.create(name, value);
-//        final ParameterDescriptor<Integer> descriptor = new DefaultParameterDescriptor<Integer>(name, Integer.class, null, null);
-//        final Parameter<Integer> parameter = new Parameter<Integer>(descriptor);
-//        parameter.setValue(value);
-//        return parameter;
+        // final ParameterDescriptor<Integer> descriptor = new DefaultParameterDescriptor<Integer>(name,
+        // Integer.class, null, null);
+        // final Parameter<Integer> parameter = new Parameter<Integer>(descriptor);
+        // parameter.setValue(value);
+        // return parameter;
 
     }
 
@@ -520,4 +622,26 @@ public class WPSFactory {
         return parameter;
     }
 
+    public static boolean isEdgeParameter(OperationRelationshipEdge<String> edge, String identifier) {
+        if (edge == null) {
+            return false;
+        }
+
+        return edge.getParamOutStartVertex().contains(identifier);
+    }
+
+    public static OperationRelationshipEdge<String> getEdgeParameter(Collection<OperationRelationshipEdge<String>> edges, String identifier) {
+
+        if (edges == null) {
+            return null;
+        }
+
+        for (OperationRelationshipEdge<String> edge : edges) {
+            if (WPSFactory.isEdgeParameter(edge, identifier)) {
+                return edge;
+            }
+        }
+
+        return null;
+    }
 }

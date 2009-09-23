@@ -58,7 +58,7 @@ import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.7 $ - $Date: 2009-09-22 14:39:04 $
+ * @version $Revision: 1.8 $ - $Date: 2009-09-23 14:21:08 $
  */
 public class ServiceMetadata {
     /**
@@ -310,20 +310,20 @@ public class ServiceMetadata {
 
     }
 
-    public void getOperations(String xmlFile, DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph)
+    public void getOperations(String xmlFile, DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph)
             throws MotuMarshallException, MotuException {
         Source srcFile = new StreamSource(xmlFile);
         getOperations(srcFile, directedGraph);
 
     }
 
-    public void getOperations(URL xmlUrl, DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph)
+    public void getOperations(URL xmlUrl, DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph)
             throws MotuMarshallException, MotuException {
         getOperations(xmlUrl.getPath(), directedGraph);
 
     }
 
-    public void getOperations(Source xmlFile, DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph)
+    public void getOperations(Source xmlFile, DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph)
             throws MotuMarshallException, MotuException {
 
         JAXBElement<?> element = unmarshallIso19139(xmlFile);
@@ -331,33 +331,34 @@ public class ServiceMetadata {
 
     }
 
-    public void getOperations(Document document, DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph)
+    public void getOperations(Document document, DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph)
             throws MotuExceptionBase {
         JAXBElement<?> element = dom4jToJaxb(document);
         getOperations(element, directedGraph);
 
     }
 
-    public void getOperations(JAXBElement<?> root, DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph) throws MotuException {
+    public void getOperations(JAXBElement<?> root, DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph)
+            throws MotuException {
         SVServiceIdentificationType serviceIdentificationType = ServiceMetadata.getServiceIdentificationType(root);
         getOperations(serviceIdentificationType, directedGraph);
 
     }
 
     public void getOperations(SVServiceIdentificationType serviceIdentificationType,
-                              DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph) throws MotuException {
+                              DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph) throws MotuException {
         // TODO add source code
         List<SVOperationMetadataPropertyType> operationMetadataPropertyTypeList = serviceIdentificationType.getContainsOperations();
         getOperations(operationMetadataPropertyTypeList, directedGraph);
     }
 
     public void getOperations(Collection<SVOperationMetadataPropertyType> operationMetadataPropertyTypeList,
-                              DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph) throws MotuException {
+                              DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph) throws MotuException {
         getOperations(operationMetadataPropertyTypeList, directedGraph, null);
 
     }
 
-    public OperationMetadata findVertex(Graph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> graph, OperationMetadata obj) {
+    public OperationMetadata findVertex(Graph<OperationMetadata, OperationRelationshipEdge<String>> graph, OperationMetadata obj) {
         Set<OperationMetadata> set = graph.vertexSet();
 
         for (OperationMetadata o : set) {
@@ -369,7 +370,7 @@ public class ServiceMetadata {
     }
 
     public void getOperations(Collection<SVOperationMetadataPropertyType> operationMetadataPropertyTypeList,
-                              DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph,
+                              DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph,
                               OperationMetadata parent) throws MotuException {
 
         for (SVOperationMetadataPropertyType operationMetadataPropertyType : operationMetadataPropertyTypeList) {
@@ -410,9 +411,8 @@ public class ServiceMetadata {
                                                 operationMetadata.getOperationName()));
                     }
 
-//                     OperationRelationshipEdge<ParameterValue<?>> edge = new 
-//                     OperationRelationshipEdge<ParameterValue<?>>(outOp1, inOp2);
-                    directedGraph.addEdge(parent, operationMetadata);
+                    OperationRelationshipEdge<String> edge = new OperationRelationshipEdge<String>(outOp1, inOp2);
+                    directedGraph.addEdge(parent, operationMetadata, edge);
 
                 }
             }
@@ -424,24 +424,21 @@ public class ServiceMetadata {
 
     public void getParemetersEdge(String parametersEdge, List<String> outOp1, List<String> inOp2) throws MotuException {
         if (ServiceMetadata.isNullOrEmpty(parametersEdge)) {
-            throw new MotuException(
-                    "ERROR - ISO 19139 parameters edge have not been set");
+            throw new MotuException("ERROR - ISO 19139 parameters edge have not been set");
         }
 
         String[] paramList = parametersEdge.split(",");
 
         if (paramList.length <= 0) {
-            throw new MotuException(
-            "ERROR - ISO 19139 parameters edge have not been set");
+            throw new MotuException("ERROR - ISO 19139 parameters edge have not been set");
         }
         if (paramList.length % 2 != 0) {
-            throw new MotuException(
-            "ERROR - ISO 19139 parameters edge have not been set correctly : not pairs of 'out,in,out,in ...')");
+            throw new MotuException("ERROR - ISO 19139 parameters edge have not been set correctly : not pairs of 'out,in,out,in ...')");
         }
-        
-        for (int i = 0; i < paramList.length ; i=i+2) {
+
+        for (int i = 0; i < paramList.length; i = i + 2) {
             outOp1.add(paramList[i]);
-            inOp2.add(paramList[i+1]);            
+            inOp2.add(paramList[i + 1]);
         }
     }
 
@@ -511,9 +508,8 @@ public class ServiceMetadata {
 
     }
 
-    public static boolean isSourceOperation(DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph,
-                                            OperationMetadata op) {
-        DirectedNeighborIndex<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> ni = new DirectedNeighborIndex<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>>(
+    public static boolean isSourceOperation(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph, OperationMetadata op) {
+        DirectedNeighborIndex<OperationMetadata, OperationRelationshipEdge<String>> ni = new DirectedNeighborIndex<OperationMetadata, OperationRelationshipEdge<String>>(
                 directedGraph);
         if (directedGraph == null) {
             return false;
@@ -531,9 +527,8 @@ public class ServiceMetadata {
 
     }
 
-    public static boolean isSinkOperation(DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph,
-                                          OperationMetadata op) {
-        DirectedNeighborIndex<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> ni = new DirectedNeighborIndex<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>>(
+    public static boolean isSinkOperation(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph, OperationMetadata op) {
+        DirectedNeighborIndex<OperationMetadata, OperationRelationshipEdge<String>> ni = new DirectedNeighborIndex<OperationMetadata, OperationRelationshipEdge<String>>(
                 directedGraph);
         if (directedGraph == null) {
             return false;
@@ -551,7 +546,7 @@ public class ServiceMetadata {
 
     }
 
-    public static void getSourceOperations(DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph,
+    public static void getSourceOperations(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph,
                                            Collection<OperationMetadata> sourceOperations) {
         if (directedGraph == null) {
             return;
@@ -569,7 +564,7 @@ public class ServiceMetadata {
 
     }
 
-    public static void getSinkOperations(DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph,
+    public static void getSinkOperations(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph,
                                          Collection<OperationMetadata> sinkOperations) {
         if (directedGraph == null) {
             return;
@@ -586,31 +581,34 @@ public class ServiceMetadata {
         }
     }
 
-    public static KShortestPaths<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> getOperationPaths(DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph,
-                                                                                                                    OperationMetadata source,
-                                                                                                                    int numPathsToBeComputed) {
-        return new KShortestPaths<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>>(directedGraph, source, numPathsToBeComputed);
+    public static KShortestPaths<OperationMetadata, OperationRelationshipEdge<String>> getOperationPaths(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph,
+                                                                                                         OperationMetadata source) {
+        return getOperationPaths(directedGraph, source, Integer.MAX_VALUE);
+
+    }
+    public static KShortestPaths<OperationMetadata, OperationRelationshipEdge<String>> getOperationPaths(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph,
+                                                                                                         OperationMetadata source,
+                                                                                                         int numPathsToBeComputed) {
+        return new KShortestPaths<OperationMetadata, OperationRelationshipEdge<String>>(directedGraph, source, numPathsToBeComputed);
 
     }
 
-    public static List<GraphPath<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>>> getOperationPaths(KShortestPaths<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> paths,
-                                                                                                                     OperationMetadata sink) {
+    public static List<GraphPath<OperationMetadata, OperationRelationshipEdge<String>>> getOperationPaths(KShortestPaths<OperationMetadata, OperationRelationshipEdge<String>> paths,
+                                                                                                          OperationMetadata sink) {
         return paths.getPaths(sink);
 
     }
 
-    public static List<GraphPath<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>>> getOperationPaths(DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph,
-                                                                                                                     OperationMetadata source,
-                                                                                                                     OperationMetadata sink,
-                                                                                                                     int numPathsToBeComputed) {
-        KShortestPaths<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> paths = getOperationPaths(directedGraph,
-                                                                                                                  source,
-                                                                                                                  numPathsToBeComputed);
+    public static List<GraphPath<OperationMetadata, OperationRelationshipEdge<String>>> getOperationPaths(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph,
+                                                                                                          OperationMetadata source,
+                                                                                                          OperationMetadata sink,
+                                                                                                          int numPathsToBeComputed) {
+        KShortestPaths<OperationMetadata, OperationRelationshipEdge<String>> paths = getOperationPaths(directedGraph, source, numPathsToBeComputed);
         return paths.getPaths(sink);
 
     }
 
-    public static OperationMetadata findOperationByName(DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph,
+    public static OperationMetadata findOperationByName(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph,
                                                         String operationName) {
         Set<OperationMetadata> set = directedGraph.vertexSet();
 
@@ -623,7 +621,7 @@ public class ServiceMetadata {
 
     }
 
-    public static OperationMetadata findSourceOperationByName(DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph,
+    public static OperationMetadata findSourceOperationByName(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph,
                                                               String operationName) {
 
         List<OperationMetadata> sourceOperations = new ArrayList<OperationMetadata>();
@@ -639,7 +637,7 @@ public class ServiceMetadata {
 
     }
 
-    public static OperationMetadata findSinkOperationByName(DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> directedGraph,
+    public static OperationMetadata findSinkOperationByName(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph,
                                                             String operationName) {
 
         List<OperationMetadata> sinkOperations = new ArrayList<OperationMetadata>();
@@ -785,10 +783,10 @@ public class ServiceMetadata {
         }
     }
 
-    public static DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> createDirectedGraph() {
-        ClassBasedEdgeFactory<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> classBasedEdgeFactory = new ClassBasedEdgeFactory<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>>(
-                (Class<? extends OperationRelationshipEdge<ParameterValue<?>>>) OperationRelationshipEdge.class);
-        DirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>> graph = new DefaultDirectedGraph<OperationMetadata, OperationRelationshipEdge<ParameterValue<?>>>(
+    public static DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> createDirectedGraph() {
+        ClassBasedEdgeFactory<OperationMetadata, OperationRelationshipEdge<String>> classBasedEdgeFactory = new ClassBasedEdgeFactory<OperationMetadata, OperationRelationshipEdge<String>>(
+                (Class<? extends OperationRelationshipEdge<String>>) OperationRelationshipEdge.class);
+        DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> graph = new DefaultDirectedGraph<OperationMetadata, OperationRelationshipEdge<String>>(
                 classBasedEdgeFactory);
         return graph;
     }
