@@ -40,7 +40,7 @@ import org.jgrapht.alg.DirectedNeighborIndex;
 import org.jgrapht.alg.KShortestPaths;
 import org.jgrapht.graph.ClassBasedEdgeFactory;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.opengis.parameter.ParameterValue;
+import org.jgrapht.graph.DirectedSubgraph;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
@@ -58,7 +58,7 @@ import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.8 $ - $Date: 2009-09-23 14:21:08 $
+ * @version $Revision: 1.9 $ - $Date: 2009-09-24 16:06:22 $
  */
 public class ServiceMetadata {
     /**
@@ -287,7 +287,6 @@ public class ServiceMetadata {
     }
 
     public void getOperations(SVServiceIdentificationType serviceIdentificationType, Collection<SVOperationMetadataType> listOperation) {
-        // TODO add source code
         List<SVOperationMetadataPropertyType> operationMetadataPropertyTypeList = serviceIdentificationType.getContainsOperations();
         getOperations(operationMetadataPropertyTypeList, listOperation);
     }
@@ -789,6 +788,9 @@ public class ServiceMetadata {
         DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> graph = new DefaultDirectedGraph<OperationMetadata, OperationRelationshipEdge<String>>(
                 classBasedEdgeFactory);
         return graph;
+    }
+    public static DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> createDirectedSubGraph(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>>base, Set<OperationMetadata> vertexSubset, Set<OperationRelationshipEdge<String>>edgeSubset) {
+        return new DirectedSubgraph<OperationMetadata, OperationRelationshipEdge<String>>(base, vertexSubset, edgeSubset);
     }
 
     static public boolean isNullOrEmpty(String value) {

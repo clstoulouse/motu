@@ -1,12 +1,11 @@
 package fr.cls.atoll.motu.processor.wps.framework;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,23 +14,29 @@ import java.util.concurrent.ConcurrentMap;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
+import org.apache.xerces.dom.CoreDocumentImpl;
+import org.apache.xerces.dom.DocumentImpl;
+import org.apache.xerces.dom.ElementNSImpl;
+import org.apache.xerces.dom.NodeImpl;
 import org.geotoolkit.parameter.DefaultParameterDescriptor;
 import org.geotoolkit.parameter.Parameter;
 import org.jgrapht.DirectedGraph;
-import org.jgrapht.GraphPath;
-import org.jgrapht.alg.KShortestPaths;
 import org.opengis.parameter.InvalidParameterTypeException;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.Element;
 
 import fr.cls.atoll.motu.library.data.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
-import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
 import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
 import fr.cls.atoll.motu.processor.opengis.ows110.BoundingBoxType;
 import fr.cls.atoll.motu.processor.opengis.ows110.CodeType;
@@ -61,7 +66,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.9 $ - $Date: 2009-09-23 14:21:08 $
+ * @version $Revision: 1.10 $ - $Date: 2009-09-24 16:06:22 $
  */
 public class WPSFactory {
     /**
@@ -72,10 +77,24 @@ public class WPSFactory {
     public static final String UTF8 = "UTF-8";
     public static final String METHOD_POST = "POST";
 
+
     private static JAXBContext jaxbContextWPS = null;
     private static Marshaller marshallerWPS = null;
+    private static Unmarshaller unmarshallerWPS = null;
     private static ObjectFactory objectFactoryWPS = null;
     private static fr.cls.atoll.motu.processor.opengis.ows110.ObjectFactory objectFactoryOWS = null;
+    
+//    public static JAXBContext getJaxbContextWPS() {
+//        return jaxbContextWPS;
+//    }
+//
+//    public static Marshaller getMarshallerWPS() {
+//        return marshallerWPS;
+//    }
+//
+//    public static Unmarshaller getUnmarshallerWPS() {
+//        return unmarshallerWPS;
+//    }
 
     protected static WPSInfo wpsInfo = null;
 
@@ -119,6 +138,8 @@ public class WPSFactory {
             WPSFactory.jaxbContextWPS = JAXBContext.newInstance(MotuWPSProcess.WPS100_SHEMA_PACK_NAME);
             WPSFactory.marshallerWPS = WPSFactory.jaxbContextWPS.createMarshaller();
             WPSFactory.marshallerWPS.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+            WPSFactory.unmarshallerWPS = WPSFactory.jaxbContextWPS.createUnmarshaller();
 
         } catch (JAXBException e) {
             LOG.error("initJAXBWPS()", e);
@@ -228,6 +249,9 @@ public class WPSFactory {
             if (parameterValue == null) {
                 continue;
             }
+            if (parameterValue.getValue() == null) {
+                continue;
+            }
 
             Object inputValue = parameterValue.getValue();
             List<?> valueList = null;
@@ -253,10 +277,11 @@ public class WPSFactory {
             }
 
             Object object = valueList.get(0);
-            @SuppressWarnings("unchecked")
-            ParameterDescriptor parameterDescriptor = new DefaultParameterDescriptor(identifier, null, object.getClass(), null, true);
-            @SuppressWarnings("unchecked")
-            Parameter parameterValueUsed = new Parameter(parameterDescriptor);
+            ParameterValue<?>parameterValueUsed = operationMetadata.createParameterValue(identifier);
+//            @SuppressWarnings("unchecked")
+//            ParameterDescriptor parameterDescriptor = new DefaultParameterDescriptor(identifier, null, object.getClass(), null, true);
+//            @SuppressWarnings("unchecked")
+//            Parameter parameterValueUsed = new Parameter(parameterDescriptor);
 
             for (Object inValue : valueList) {
 
@@ -445,6 +470,9 @@ public class WPSFactory {
         if (parameterValue == null) {
             return null;
         }
+        if (parameterValue.getValue() == null) {
+            return null;
+        }
 
         LiteralDataType literalDataType = objectFactoryWPS.createLiteralDataType();
         literalDataType.setDataType(literalInputType.getDataType().getValue());
@@ -470,6 +498,10 @@ public class WPSFactory {
         if (parameterValue == null) {
             return null;
         }
+        if (parameterValue.getValue() == null) {
+            return null;
+        }
+        
 
         ComplexDataType complexDataType = objectFactoryWPS.createComplexDataType();
         complexDataType.getContent().add(parameterValue.getValue().toString());
@@ -499,6 +531,9 @@ public class WPSFactory {
             throw new MotuException("WPSFactory#createBoundingBoxInputType : boundingBoxInputType is null");
         }
         if (parameterValue == null) {
+            return null;
+        }
+        if (parameterValue.getValue() == null) {
             return null;
         }
 
@@ -564,8 +599,18 @@ public class WPSFactory {
         InputReferenceType inputReferenceType = objectFactoryWPS.createInputReferenceType();
         inputReferenceType.setEncoding(WPSFactory.UTF8);
         inputReferenceType.setMethod(WPSFactory.METHOD_POST);
-        inputReferenceType.setBody(body);
-
+        
+        DocumentImpl documentImpl = new DocumentImpl();
+        //Element elementNSImpl = coreDocumentImpl.createElementNS(arg0, arg1);
+        org.w3c.dom.Element element= documentImpl.createElement("Body");
+        CDATASection section = documentImpl.createCDATASection("XXXXX");
+        section.appendData("<Execute/>");
+        
+        
+        //org.w3c.dom.Element element= coreDocumentImpl.createElementNS("", "Body", body);
+        //element.setNodeValue((String) body);
+        //element.setUserData("Body", body, null);
+        inputReferenceType.setBody(element);
         return inputReferenceType;
     }
 
@@ -592,7 +637,53 @@ public class WPSFactory {
         }
 
     }
+    
+    
+    public Execute unmarshallExecute(String xmlFile) throws MotuMarshallException {
+        Source srcFile = new StreamSource(xmlFile);
 
+        return unmarshallExecute(srcFile);
+    }
+
+    public Execute unmarshallExecute(Source xmlSource) throws MotuMarshallException {
+
+        if (WPSFactory.marshallerWPS == null) {
+            return null;
+        }
+        Execute execute = null;
+        try {
+            synchronized (WPSFactory.marshallerWPS) {
+
+                execute =  (Execute) WPSFactory.unmarshallerWPS.unmarshal(xmlSource);
+            }
+        } catch (JAXBException e) {
+            throw new MotuMarshallException("Error in WPSFactory - unmarshallExecute", e);
+        }
+
+        return execute;
+
+
+    }
+
+    public Execute unmarshallExecute(InputStream xmlSource) throws MotuMarshallException {
+
+        if (WPSFactory.marshallerWPS == null) {
+            return null;
+        }
+        Execute execute = null;
+        try {
+            synchronized (WPSFactory.marshallerWPS) {
+
+                execute =  (Execute) WPSFactory.unmarshallerWPS.unmarshal(xmlSource);
+            }
+        } catch (JAXBException e) {
+            throw new MotuMarshallException("Error in WPSFactory - unmarshallExecute", e);
+        }
+
+        return execute;
+
+    }    
+ 
     @SuppressWarnings("unchecked")
     public static Parameter<?> createParameter(final String name, final Class<?> type, final Object value) {
         final ParameterDescriptor<?> descriptor = new DefaultParameterDescriptor(name, null, type, null, true);

@@ -34,6 +34,7 @@ import org.jgrapht.DirectedGraph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.KShortestPaths;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DirectedSubgraph;
 import org.jgrapht.graph.EdgeReversedGraph;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
@@ -59,7 +60,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.17 $ - $Date: 2009-09-23 14:21:08 $
+ * @version $Revision: 1.18 $ - $Date: 2009-09-24 16:06:22 $
  */
 public class TestWPS {
     /**
@@ -79,8 +80,9 @@ public class TestWPS {
      */
     public static void main(String[] args) {
 
-         testBuildWPS();
-        //testBuildChainWPS();
+        // testBuildWPS();
+        testBuildChainWPS();
+        //testUnmarshallWPS();
         // for (ErrorType c: ErrorType.values()) {
         // if (c.toString().equalsIgnoreCase("system")) {
         // System.out.println(c.toString());
@@ -367,6 +369,16 @@ public class TestWPS {
         String serverURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/services";
 
         try {
+            // ServiceMetadata serviceMetadata = new ServiceMetadata();
+            // URL url = null;
+            // Set<SVOperationMetadataType> listOperation = new HashSet<SVOperationMetadataType>();
+            // // url = new
+            // //
+            // URL("file:///c:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml");
+            // url =
+            // Organizer.findResource("src/main/resources/fmpp/out/serviceMetadata_motu-opendap-mercator.xml");
+            // serviceMetadata.getOperations(url, listOperation);
+
             WPSFactory wpsFactory = new WPSFactory(serverURL);
 
             Map<String, ParameterValue<?>> dataInputValues = new HashMap<String, ParameterValue<?>>();
@@ -410,8 +422,9 @@ public class TestWPS {
             dataInputValues.put(parameterValue.getDescriptor().getName().getCode(), parameterValue);
 
             OperationMetadata operationMetadata = new OperationMetadata();
+            operationMetadata.setInvocationName("ExtractData");
             operationMetadata.setParameterValueMap(dataInputValues);
-            
+
             Execute execute = wpsFactory.createExecuteProcessRequest(operationMetadata, null);
 
             FileWriter writer = new FileWriter("WPSExecute.xml");
@@ -433,6 +446,7 @@ public class TestWPS {
 
             dataInputValues.put(parameterValue.getDescriptor().getName().getCode(), parameterValue);
 
+            operationMetadata.setInvocationName("CompressExtraction");
             operationMetadata.setParameterValueMap(dataInputValues);
 
             execute = wpsFactory.createExecuteProcessRequest(operationMetadata, null);
@@ -466,14 +480,16 @@ public class TestWPS {
             serviceMetadata.getOperations(url, listOperation);
             ServiceMetadata.dump(listOperation);
 
-            //DirectedGraph<OperationMetadata, DefaultEdge> directedGraph = new DefaultDirectedGraph<OperationMetadata, DefaultEdge>(DefaultEdge.class);
-            DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>> directedGraph = ServiceMetadata.createDirectedGraph();
+            // DirectedGraph<OperationMetadata, DefaultEdge> directedGraph = new
+            // DefaultDirectedGraph<OperationMetadata, DefaultEdge>(DefaultEdge.class);
+            DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph = ServiceMetadata.createDirectedGraph();
             serviceMetadata.getOperations(url, directedGraph);
 
             List<OperationMetadata> sourceOperations = new ArrayList<OperationMetadata>();
             List<OperationMetadata> sinkOperations = new ArrayList<OperationMetadata>();
 
-            EdgeReversedGraph<OperationMetadata, OperationRelationshipEdge<String>> edgeReversedGraph = new EdgeReversedGraph<OperationMetadata, OperationRelationshipEdge<String>>(directedGraph);
+            EdgeReversedGraph<OperationMetadata, OperationRelationshipEdge<String>> edgeReversedGraph = new EdgeReversedGraph<OperationMetadata, OperationRelationshipEdge<String>>(
+                    directedGraph);
 
             sourceOperations.clear();
             sinkOperations.clear();
@@ -490,7 +506,9 @@ public class TestWPS {
             for (OperationMetadata source : sourceOperations) {
                 System.out.print("%%%%%%%% PATHS FROM  %%%%%%%%%%%%");
                 System.out.println(source);
-                KShortestPaths<OperationMetadata, OperationRelationshipEdge<String>> paths = ServiceMetadata.getOperationPaths(edgeReversedGraph, source, 10);
+                KShortestPaths<OperationMetadata, OperationRelationshipEdge<String>> paths = ServiceMetadata.getOperationPaths(edgeReversedGraph,
+                                                                                                                               source,
+                                                                                                                               10);
 
                 for (OperationMetadata sink : sinkOperations) {
                     System.out.print(" %%%%%%%%%%%% TO ");
@@ -522,36 +540,39 @@ public class TestWPS {
                 System.out.print("%%%%%%%% PATHS FROM  %%%%%%%%%%%%");
                 System.out.println(source);
 
-                //source.dump();
+                // source.dump();
 
-//                dataInputValues = source.createParameterValues();
-//                operationsInputValues.put(source.getOperationName(), dataInputValues);
+                // dataInputValues = source.createParameterValues();
+                // operationsInputValues.put(source.getOperationName(), dataInputValues);
 
-                KShortestPaths<OperationMetadata, OperationRelationshipEdge<String>> paths = ServiceMetadata.getOperationPaths(directedGraph, source, 10);
+                KShortestPaths<OperationMetadata, OperationRelationshipEdge<String>> paths = ServiceMetadata.getOperationPaths(directedGraph,
+                                                                                                                               source,
+                                                                                                                               10);
 
                 for (OperationMetadata sink : sinkOperations) {
                     System.out.print(" %%%%%%%%%%%% TO ");
                     System.out.println(sink);
                     List<GraphPath<OperationMetadata, OperationRelationshipEdge<String>>> listPath = ServiceMetadata.getOperationPaths(paths, sink);
-                    
+
                     for (GraphPath<OperationMetadata, OperationRelationshipEdge<String>> gp : listPath) {
-                        
+
                         System.out.println(gp.getEdgeList());
                         System.out.println("Sink: " + sink.getOperationName());
-                        
+
                         for (OperationRelationshipEdge<String> edge : gp.getEdgeList()) {
                             OperationMetadata operationMetadata1 = directedGraph.getEdgeSource(edge);
                             OperationMetadata operationMetadata2 = directedGraph.getEdgeTarget(edge);
                             System.out.println("StartVertex: " + operationMetadata1.getOperationName());
                             System.out.println("EndVertex: " + operationMetadata2.getOperationName());
-                            System.out.println("Parameters Edge: " + edge.getParamOutStartVertex().toString() + " / " + edge.getParamInStartVertex().toString());
+                            System.out.println("Parameters Edge: " + edge.getParamOutStartVertex().toString() + " / "
+                                    + edge.getParamInStartVertex().toString());
 
                             dataInputValues = operationMetadata1.createParameterValues(true, false);
                             operationsInputValues.put(operationMetadata1.getOperationName(), dataInputValues);
 
                             dataInputValues = operationMetadata2.createParameterValues(true, false);
                             operationsInputValues.put(operationMetadata2.getOperationName(), dataInputValues);
-                            
+
                         }
 
                     }
@@ -563,7 +584,7 @@ public class TestWPS {
                 System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$");
                 System.out.println(pair.getKey());
                 System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$");
-                
+
                 for (Map.Entry<String, ParameterValue<?>> pair2 : pair.getValue().entrySet()) {
                     System.out.println("µµµµµµµµµµµµµµµµµµµµµµµ");
                     System.out.println(pair2.getKey());
@@ -591,83 +612,80 @@ public class TestWPS {
                 }
             }
 
-            // TODO Add ParameterValue depending on service (Ftp, Opendap).
-            // WPSFactory wpsFactory = new WPSFactory(serverURL);
-            //
-            // Map<String, ParameterValue<?>> dataInputValues = new HashMap<String, ParameterValue<?>>();
-            //
-            // List<String> list = new ArrayList<String>();
-            // list.add("a");
-            // list.add("b");
-            // list.add("c");
-            //            
-            // ParameterDescriptor<String> descriptor = new DefaultParameterDescriptor<String>("service",
-            // String.class, null, null);
-            // ParameterValue<?> parameter = new Parameter<String>(descriptor);
-            // parameter.setValue("myservice");
-            //
-            // System.out.println(descriptor.getName().getCode());
-            //
-            // dataInputValues.put(descriptor.getName().getCode(), parameter);
-            //
-            // ParameterDescriptor<List<String>> descriptor2 = new
-            // DefaultParameterDescriptor<List<String>>("variable", (Class<List<String>>) list
-            // .getClass(), null, null);
-            // parameter = new Parameter<List<String>>(descriptor2);
-            // parameter.setValue(list);
-            //
-            // System.out.println(descriptor2.getName().getCode());
-            //
-            // dataInputValues.put(descriptor2.getName().getCode(), parameter);
-            //
-            // //Map geobbox = new HashMap<String, String>();
-            // //String geobbox ="-10, -60, 45, 120";
-            // double[] geobbox = new double[]{-10d, -60d, 45d, 120d};
-            // System.out.println(geobbox.getClass());
-            //
-            // ParameterValue<?> parameterValue = WPSFactory.createParameter("geobbox", geobbox.getClass(),
-            // geobbox);
-            // System.out.println(parameterValue.getValue().getClass());
-            //
-            // dataInputValues.put(parameterValue.getDescriptor().getName().getCode(), parameterValue);
-            //            
-            // double depth = 0d;
-            // parameterValue = WPSFactory.createParameter("lowdepth", depth);
-            // System.out.println(parameterValue.getValue().getClass());
-            //
-            // dataInputValues.put(parameterValue.getDescriptor().getName().getCode(), parameterValue);
-            //            
-            //            
-            // Execute execute = wpsFactory.createExecuteProcessRequest(dataInputValues, "ExtractData");
-            //
-            // FileWriter writer = new FileWriter("WPSExecute.xml");
-            //
-            // String schemaLocationKey = String.format("%s%s",
-            // wpsFactory.getWpsInfoInstance().getProcessDescriptions().getService(), wpsFactory
-            // .getWpsInfoInstance().getProcessDescriptions().getVersion());
-            // WPSFactory.marshallExecute(execute, writer,
-            // WPSFactory.getSchemaLocations().get(schemaLocationKey));
-            //
-            // dataInputValues.clear();
-            //
-            // Long val = 1023654l;
-            // //Integer val = 1023654;
-            // //Double val = 1023654d;
-            // //String val = "1023654";
-            // System.out.println(val.getClass());
-            //
-            // parameterValue = WPSFactory.createParameter("requestid", val.getClass(), val);
-            // System.out.println(parameterValue.getValue().getClass());
-            //
-            // dataInputValues.put(parameterValue.getDescriptor().getName().getCode(), parameterValue);
-            //
-            // execute = wpsFactory.createExecuteProcessRequest(dataInputValues, "CompressExtraction");
-            //
-            // writer = new FileWriter("WPSExecute2.xml");
-            //
-            // WPSFactory.marshallExecute(execute, writer,
-            // WPSFactory.getSchemaLocations().get(schemaLocationKey));
-            //            
+            Set<OperationMetadata> setSubGraph = new HashSet<OperationMetadata>();
+            Set<OperationMetadata> setGraph = directedGraph.vertexSet();
+
+            for (OperationMetadata op : setGraph) {
+                if (op.getInvocationName().equalsIgnoreCase("ExtractData")) {
+                    setSubGraph.add(op);
+                }
+                if (op.getInvocationName().equalsIgnoreCase("CompressExtraction")) {
+                    setSubGraph.add(op);
+                }
+            }
+
+            DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedSubGraph = ServiceMetadata
+                    .createDirectedSubGraph(directedGraph, setSubGraph, null);
+            System.out.println(directedSubGraph.toString());
+
+            sourceOperations.clear();
+            sinkOperations.clear();
+
+            ServiceMetadata.getSourceOperations(directedSubGraph, sourceOperations);
+            ServiceMetadata.getSinkOperations(directedSubGraph, sinkOperations);
+
+            System.out.println("%%%%%%%% SUB GRAPH %%%%%%%%%%%%");
+            System.out.println("%%%%%%%% SOURCE %%%%%%%%%%%%");
+            System.out.println(sourceOperations);
+            System.out.println("%%%%%%%% SINK %%%%%%%%%%%%");
+            System.out.println(sinkOperations);
+
+            for (OperationMetadata source : sourceOperations) {
+                System.out.print("%%%%%%%% PATHS FROM  %%%%%%%%%%%%");
+                System.out.println(source);
+                KShortestPaths<OperationMetadata, OperationRelationshipEdge<String>> paths = ServiceMetadata.getOperationPaths(directedSubGraph,
+                                                                                                                               source,
+                                                                                                                               10);
+
+                for (OperationMetadata sink : sinkOperations) {
+                    System.out.print(" %%%%%%%%%%%% TO ");
+                    System.out.println(sink);
+                    List<GraphPath<OperationMetadata, OperationRelationshipEdge<String>>> listPath = ServiceMetadata.getOperationPaths(paths, sink);
+                    for (GraphPath<OperationMetadata, OperationRelationshipEdge<String>> gp : listPath) {
+                        System.out.println(gp.getEdgeList());
+                        System.out.println(gp.getEdgeList());
+                        System.out.println("Sink: " + sink.getOperationName());
+
+                        for (OperationRelationshipEdge<String> edge : gp.getEdgeList()) {
+                            OperationMetadata operationMetadata1 = directedSubGraph.getEdgeSource(edge);
+                            OperationMetadata operationMetadata2 = directedSubGraph.getEdgeTarget(edge);
+                            System.out.println("StartVertex: " + operationMetadata1.getOperationName());
+                            System.out.println("EndVertex: " + operationMetadata2.getOperationName());
+                            System.out.println("Parameters Edge: " + edge.getParamOutStartVertex().toString() + " / "
+                                    + edge.getParamInStartVertex().toString());
+
+                            System.out.println("operationMetadata1: " + operationMetadata1.getParameterValueMap());
+                            System.out.println("operationMetadata2: " + operationMetadata2.getParameterValueMap());
+
+                        }
+
+                    }
+                }
+
+            }
+
+            String serverURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/services";
+            WPSFactory wpsFactory = new WPSFactory(serverURL);
+
+            Execute execute = wpsFactory.createExecuteProcessRequest(sourceOperations.get(0), directedSubGraph);
+
+            FileWriter writer = new FileWriter("WPSExecuteChain.xml");
+
+            String schemaLocationKey = String.format("%s%s", wpsFactory.getWpsInfoInstance().getProcessDescriptions().getService(), wpsFactory
+                    .getWpsInfoInstance().getProcessDescriptions().getVersion());
+            WPSFactory.marshallExecute(execute, writer, WPSFactory.getSchemaLocations().get(schemaLocationKey));
+
+  
 
         } catch (MotuException e) {
             // TODO Auto-generated catch block
@@ -675,8 +693,25 @@ public class TestWPS {
         } catch (MotuMarshallException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
     }
-
+    public static void testUnmarshallWPS() {
+        try {
+            String serverURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/services";
+            WPSFactory wpsFactory = new WPSFactory(serverURL);
+            String file = "J:/dev/atoll-v2/atoll-motu/atoll-motu-processor/src/test/resources/client/requests/wps/example/execute/xml/TestExtractedUrlWithCompressExtraction.xml";
+            Execute execute = wpsFactory.unmarshallExecute(file);
+            System.out.println("END");
+        } catch (MotuException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MotuMarshallException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }

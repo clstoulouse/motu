@@ -104,17 +104,18 @@
 	</target>
 	
 	
+	<!--
 	  <target name="declare">
-
 	<taskdef name="mytask" classname="fr.cls.atoll.motu.processor.ant.Expander" 
 	classpathref="classpath" />
 	  	</target>
-	
+	-->
+	<!--
 	  <target name="main" depends="declare">
 	    <mytask message="Hello World! MyVeryOwnTask works!"/>
 	  </target>
 
-		
+	-->	
 
 
 </project>

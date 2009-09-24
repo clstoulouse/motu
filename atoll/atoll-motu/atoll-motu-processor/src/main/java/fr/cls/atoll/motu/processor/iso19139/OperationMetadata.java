@@ -37,7 +37,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-09-23 14:21:08 $
+ * @version $Revision: 1.5 $ - $Date: 2009-09-24 16:06:22 $
  */
 public class OperationMetadata {
 
@@ -79,7 +79,15 @@ public class OperationMetadata {
 
     Map<String, ParameterValue<?>> parameterValueMap = null;
 
+    private String operationName = null;
+    private String invocationName = null;
 
+    public void setInvocationName(String invocationName) {
+        this.invocationName = invocationName;
+    }
+    public void setOperationName(String operationName) {
+        this.operationName = operationName;
+    }
     public void setSvOperationMetadataType(SVOperationMetadataType svOperationMetadataType) {
         this.svOperationMetadataType = svOperationMetadataType;
     }
@@ -96,6 +104,10 @@ public class OperationMetadata {
 
     public String getOperationName() {
 
+        if (operationName != null) {
+            return operationName;
+        }
+        
         if (this.getSvOperationMetadataType() == null) {
             return null;
         }
@@ -110,6 +122,10 @@ public class OperationMetadata {
     }
 
     public String getInvocationName() {
+        
+        if (invocationName != null) {
+            return invocationName;
+        }
 
         if (this.getSvOperationMetadataType() == null) {
             return null;
@@ -123,7 +139,8 @@ public class OperationMetadata {
         }
         return (String) this.getSvOperationMetadataType().getInvocationName().getCharacterString().getValue();
     }
-
+    
+ 
     @Override
     public String toString() {
         return String.format("%s/%s", this.getOperationName(), this.getInvocationName());
@@ -212,6 +229,22 @@ public class OperationMetadata {
         return (String) parameterType.getName().getAName().getCharacterString().getValue();
 
     }
+    
+    public SVParameterType getParameterType(String paramName) throws MotuException {
+        List<SVParameterPropertyType> parameterPropertyTypeList = svOperationMetadataType.getParameters();
+
+        for (SVParameterPropertyType parameterPropertyType : parameterPropertyTypeList) {
+
+            SVParameterType parameterType = parameterPropertyType.getSVParameter();
+
+            String name = getParameterName(parameterType);
+            if (name.equals(paramName)) {
+                return parameterType;
+            }
+        }
+        
+        return null;
+    }    
     public SVParameterDirectionType getParameterDirection(SVParameterPropertyType parameterPropertyType) throws MotuException {
         return getParameterDirection(parameterPropertyType.getSVParameter());
     }
@@ -294,6 +327,14 @@ public class OperationMetadata {
         return createParameterValues(true, true);
     }
 
+    public ParameterValue<?> createParameterValue(String paramName) throws MotuException {
+        SVParameterType parameterType = getParameterType(paramName);
+        if (parameterType == null) {
+            throw new MotuException(String.format("ERROR - ISO 19139 parameter '%s' unknown in operation : '%s')", paramName, getOperationName()));            
+        }
+        return createParameterValue(parameterType);
+    }
+    
     public ParameterValue<?> createParameterValue(SVParameterType parameterType) throws MotuException {
         String paramName = getParameterName(parameterType);
         String paramValueType = getParameterValueType(parameterType);
@@ -307,6 +348,8 @@ public class OperationMetadata {
         }
         return WPSFactory.createParameter(paramName, clazz, null);
     }
+    
+
 
     public void dump() {
         System.out.println("Operation:");
