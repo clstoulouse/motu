@@ -8,7 +8,7 @@ import org.jgrapht.graph.DefaultEdge;
  * <br><br>Copyright : Copyright (c) 2009.
  * <br><br>Société : CLS (Collecte Localisation Satellites)
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-09-22 14:39:04 $
+ * @version $Revision: 1.2 $ - $Date: 2009-09-28 14:27:04 $
  * @param <T>
  */
 public class OperationRelationshipEdge<T> extends  DefaultEdge {
@@ -37,9 +37,9 @@ public class OperationRelationshipEdge<T> extends  DefaultEdge {
     public OperationRelationshipEdge() {
     }
 
-    public OperationRelationshipEdge(Collection<T> paramOutStartVertex, Collection<T> paramInStartVertex) {
-        this.paramOutStartVertex = paramOutStartVertex;
+    public OperationRelationshipEdge(Collection<T> paramInStartVertex, Collection<T> paramOutStartVertex) {
         this.paramInStartVertex = paramInStartVertex;
+        this.paramOutStartVertex = paramOutStartVertex;
     }
 
     

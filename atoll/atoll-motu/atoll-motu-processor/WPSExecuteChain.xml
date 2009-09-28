@@ -5,8 +5,95 @@
         <ns2:Input>
             <ns1:Identifier>requestid</ns1:Identifier>
             <ns1:Title>The unique id of the request</ns1:Title>
-            <ns2:Reference encoding="UTF-8" method="POST" ns3:href="">
-                <ns2:Body/>
+            <ns2:Reference encoding="UTF-8" method="POST" ns3:href="http://atoll-dev.cls.fr:30080/atoll-motuservlet/services">
+                <ns2:Body>
+                    <ns2:Execute language="en" service="WPS" version="1.0.0">
+                        <ns1:Identifier>ExtractData</ns1:Identifier>
+                        <ns2:DataInputs>
+                            <ns2:Input>
+                                <ns1:Identifier>service</ns1:Identifier>
+                                <ns1:Title>Name a the Motu service</ns1:Title>
+                                <ns1:Abstract>This parameter specifies the name of the Motu service as described in the Motu configuration</ns1:Abstract>
+                                <ns2:Data>
+                                    <ns2:LiteralData dataType="string">param value as string</ns2:LiteralData>
+                                </ns2:Data>
+                            </ns2:Input>
+                            <ns2:Input>
+                                <ns1:Identifier>product</ns1:Identifier>
+                                <ns1:Title>The product identifier (name)</ns1:Title>
+                                <ns2:Data>
+                                    <ns2:LiteralData dataType="string">param value as string</ns2:LiteralData>
+                                </ns2:Data>
+                            </ns2:Input>
+                            <ns2:Input>
+                                <ns1:Identifier>variable</ns1:Identifier>
+                                <ns1:Title>Name or identifier of the data</ns1:Title>
+                                <ns2:Data>
+                                    <ns2:LiteralData dataType="string">param value as string</ns2:LiteralData>
+                                </ns2:Data>
+                            </ns2:Input>
+                            <ns2:Input>
+                                <ns1:Identifier>geobbox</ns1:Identifier>
+                                <ns1:Title>The Latitude/Longitude bounding box</ns1:Title>
+                                <ns2:Data>
+                                    <ns2:BoundingBoxData crs="EPSG:4326">
+                                        <ns1:LowerCorner>-10.0 -60.0</ns1:LowerCorner>
+                                        <ns1:UpperCorner>45.0 120.0</ns1:UpperCorner>
+                                    </ns2:BoundingBoxData>
+                                </ns2:Data>
+                            </ns2:Input>
+                            <ns2:Input>
+                                <ns1:Identifier>lowdepth</ns1:Identifier>
+                                <ns1:Title>The lower depth (z)</ns1:Title>
+                                <ns2:Data>
+                                    <ns2:LiteralData dataType="string">param value as string</ns2:LiteralData>
+                                </ns2:Data>
+                            </ns2:Input>
+                            <ns2:Input>
+                                <ns1:Identifier>highdepth</ns1:Identifier>
+                                <ns1:Title>The higher depth (z)</ns1:Title>
+                                <ns2:Data>
+                                    <ns2:LiteralData dataType="string">param value as string</ns2:LiteralData>
+                                </ns2:Data>
+                            </ns2:Input>
+                            <ns2:Input>
+                                <ns1:Identifier>dataformat</ns1:Identifier>
+                                <ns1:Title>Available data file format</ns1:Title>
+                                <ns2:Data>
+                                    <ns2:LiteralData dataType="string">param value as string</ns2:LiteralData>
+                                </ns2:Data>
+                            </ns2:Input>
+                            <ns2:Input>
+                                <ns1:Identifier>priority</ns1:Identifier>
+                                <ns1:Title>Priority of the request</ns1:Title>
+                                <ns2:Data>
+                                    <ns2:LiteralData dataType="integer">98564</ns2:LiteralData>
+                                </ns2:Data>
+                            </ns2:Input>
+                            <ns2:Input>
+                                <ns1:Identifier>login</ns1:Identifier>
+                                <ns1:Title>login of the user</ns1:Title>
+                                <ns2:Data>
+                                    <ns2:LiteralData dataType="string">param value as string</ns2:LiteralData>
+                                </ns2:Data>
+                            </ns2:Input>
+                            <ns2:Input>
+                                <ns1:Identifier>batch</ns1:Identifier>
+                                <ns1:Title>flag to process as batch or not</ns1:Title>
+                                <ns2:Data>
+                                    <ns2:LiteralData dataType="string">param value as string</ns2:LiteralData>
+                                </ns2:Data>
+                            </ns2:Input>
+                            <ns2:Input>
+                                <ns1:Identifier>isanonymous</ns1:Identifier>
+                                <ns1:Title>flag to process user as an anonymoys one or not</ns1:Title>
+                                <ns2:Data>
+                                    <ns2:LiteralData dataType="string">param value as string</ns2:LiteralData>
+                                </ns2:Data>
+                            </ns2:Input>
+                        </ns2:DataInputs>
+                    </ns2:Execute>
+                </ns2:Body>
             </ns2:Reference>
         </ns2:Input>
     </ns2:DataInputs>

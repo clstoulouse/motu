@@ -15,13 +15,81 @@
 			
 	-->
 	</jaxb:globalBindings>
+
+<!-- ==================================  WPS 1.0.0 ========================== -->
 	<jaxb:bindings xmlns:tns="http://schemas.opengis.net/wps/1.0.0/"
 		xmlns="http://java.sun.com/xml/ns/jaxb" version="2.1">
-		<jaxb:bindings schemaLocation="http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
+		<jaxb:bindings schemaLocation="http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd" node="/xs:schema">
 			<jaxb:schemaBindings>
 				<jaxb:package name="fr.cls.atoll.motu.processor.opengis.wps100" />
 			</jaxb:schemaBindings>
 		</jaxb:bindings>
+	</jaxb:bindings>
+ 
+<!-- ==================================  WPS 1.0.0 ========================== -->
+<!-- 
+
+	<jaxb:bindings xmlns:tns="http://schemas.opengis.net/wps/1.0.0/"
+		xmlns="http://java.sun.com/xml/ns/jaxb" version="2.1">
+		<jaxb:bindings schemaLocation="http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_request.xsd">
+			<jaxb:schemaBindings>
+				<jaxb:package name="fr.cls.atoll.motu.processor.opengis.wps100" />
+			</jaxb:schemaBindings>
+		</jaxb:bindings>
+
+		<jaxb:bindings schemaLocation="http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd">
+			<jaxb:schemaBindings>
+				<jaxb:package name="fr.cls.atoll.motu.processor.opengis.wps100" />
+			</jaxb:schemaBindings>
+		</jaxb:bindings>
+		<jaxb:bindings schemaLocation="http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd" node="/xs:schema">
+			<jaxb:schemaBindings>
+				<jaxb:package name="fr.cls.atoll.motu.processor.opengis.wps100" />
+			</jaxb:schemaBindings>
+		<jaxb:bindings node="//xs:complexType/xs:sequence/xs:choice/xs:element[@name='Body']">
+				<jaxb:property>
+					<jaxb:baseType>
+
+						<xjc:javaType name="java.lang.Object" parseMethod="parseComplexData"
+							printMethod="printComplexData">
+
+						</xjc:javaType>
+
+					</jaxb:baseType>
+				</jaxb:property>
+		</jaxb:bindings>
+
+
+			
+		</jaxb:bindings>
+		<jaxb:bindings schemaLocation="http://schemas.opengis.net/wps/1.0.0/wpsExecute_response.xsd">
+			<jaxb:schemaBindings>
+				<jaxb:package name="fr.cls.atoll.motu.processor.opengis.wps100" />
+			</jaxb:schemaBindings>
+		</jaxb:bindings>
+		
+		<jaxb:bindings schemaLocation="http://schemas.opengis.net/wps/1.0.0/wpsGetCapabilities_request.xsd">
+			<jaxb:schemaBindings>
+				<jaxb:package name="fr.cls.atoll.motu.processor.opengis.wps100" />
+			</jaxb:schemaBindings>
+		</jaxb:bindings>
+
+		<jaxb:bindings schemaLocation="http://schemas.opengis.net/wps/1.0.0/wpsGetCapabilities_response.xsd">
+			<jaxb:schemaBindings>
+				<jaxb:package name="fr.cls.atoll.motu.processor.opengis.wps100" />
+			</jaxb:schemaBindings>
+		</jaxb:bindings>
+
+	</jaxb:bindings>
+ -->
+
+ 
+
+
+
+
+
+
 		
 <!-- 
 		<jaxb:bindings
@@ -46,7 +114,6 @@
  		</jaxb:bindings>
 -->
 
-	</jaxb:bindings>
 
 
 	<!--
@@ -61,6 +128,8 @@
 
 		</jaxb:bindings>
 	-->
+<!-- ==================================  OWS  1.0.0 ========================== -->
+
 	<jaxb:bindings xmlns:tns="http://schemas.opengis.net/ows/1.1.0/"
 		xmlns="http://java.sun.com/xml/ns/jaxb" version="2.1">
 		<jaxb:bindings schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsAll.xsd">

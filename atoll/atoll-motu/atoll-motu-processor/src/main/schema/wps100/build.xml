@@ -84,11 +84,13 @@
 		<xjc  schema="test.xsd" destdir="${src.dir}"  target="2.1" binding="${schema.xjbfile}"  removeOldOutput="no">
 			<arg value="-extension"/>
 			   -->
+
 		<xjc  schema="http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd" destdir="${src.dir}"  target="2.1" binding="${schema.xjbfile}"  removeOldOutput="no">
 			 <arg value="-extension"/>
-				<!-- <arg value="-Xdefault-value"/> -->
 				<produces dir="${src.dir}" />
 		</xjc>
+		
+
 	</target>
 
 	<!-- =================================================================== -->

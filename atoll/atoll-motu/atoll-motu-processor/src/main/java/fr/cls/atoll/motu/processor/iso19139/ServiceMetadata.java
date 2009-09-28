@@ -58,7 +58,7 @@ import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.9 $ - $Date: 2009-09-24 16:06:22 $
+ * @version $Revision: 1.10 $ - $Date: 2009-09-28 14:27:04 $
  */
 public class ServiceMetadata {
     /**
@@ -388,12 +388,12 @@ public class ServiceMetadata {
                     directedGraph.addVertex(operationMetadata);
                 }
                 if (parent != null) {
-                    List<String> outOp1 = new ArrayList<String>();
-                    List<String> inOp2 = new ArrayList<String>();
+                    List<String> inOp1 = new ArrayList<String>();
+                    List<String> outOp2 = new ArrayList<String>();
                     String parametersEdge = operationMetadataPropertyType.getUuidref();
 
                     try {
-                        getParemetersEdge(parametersEdge, outOp1, inOp2);
+                        getParemetersEdge(parametersEdge, inOp1, outOp2);
                     } catch (MotuExceptionBase e) {
                         throw new MotuException(
                                 String
@@ -402,7 +402,7 @@ public class ServiceMetadata {
                                                 operationMetadata.getOperationName()));
                     }
 
-                    if (outOp1.isEmpty() || inOp2.isEmpty()) {
+                    if (inOp1.isEmpty() || outOp2.isEmpty()) {
                         throw new MotuException(
                                 String
                                         .format("ERROR - ISO 19139 parameters edge '%s' between two operations have not been set (or not correctly set) : operation : '%s - set 'uuidref' attribute)",
@@ -410,7 +410,7 @@ public class ServiceMetadata {
                                                 operationMetadata.getOperationName()));
                     }
 
-                    OperationRelationshipEdge<String> edge = new OperationRelationshipEdge<String>(outOp1, inOp2);
+                    OperationRelationshipEdge<String> edge = new OperationRelationshipEdge<String>(inOp1, outOp2);
                     directedGraph.addEdge(parent, operationMetadata, edge);
 
                 }
@@ -421,7 +421,7 @@ public class ServiceMetadata {
 
     }
 
-    public void getParemetersEdge(String parametersEdge, List<String> outOp1, List<String> inOp2) throws MotuException {
+    public void getParemetersEdge(String parametersEdge, List<String> inOp1, List<String> outOp2) throws MotuException {
         if (ServiceMetadata.isNullOrEmpty(parametersEdge)) {
             throw new MotuException("ERROR - ISO 19139 parameters edge have not been set");
         }
@@ -436,8 +436,8 @@ public class ServiceMetadata {
         }
 
         for (int i = 0; i < paramList.length; i = i + 2) {
-            outOp1.add(paramList[i]);
-            inOp2.add(paramList[i + 1]);
+            inOp1.add(paramList[i]);
+            outOp2.add(paramList[i + 1]);
         }
     }
 

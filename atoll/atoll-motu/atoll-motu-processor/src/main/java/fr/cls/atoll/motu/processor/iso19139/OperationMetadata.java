@@ -11,6 +11,7 @@ import javax.xml.datatype.DatatypeFactory;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.xerces.jaxp.datatype.DatatypeFactoryImpl;
+import org.isotc211.iso19139.d_2006_05_04.gmd.CIOnlineResourcePropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVOperationMetadataType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterDirectionType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterPropertyType;
@@ -37,7 +38,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-09-24 16:06:22 $
+ * @version $Revision: 1.6 $ - $Date: 2009-09-28 14:27:04 $
  */
 public class OperationMetadata {
 
@@ -71,6 +72,7 @@ public class OperationMetadata {
 
     public OperationMetadata() {
     }
+
     public OperationMetadata(SVOperationMetadataType svOperationMetadataType) {
         this.svOperationMetadataType = svOperationMetadataType;
     }
@@ -85,15 +87,19 @@ public class OperationMetadata {
     public void setInvocationName(String invocationName) {
         this.invocationName = invocationName;
     }
+
     public void setOperationName(String operationName) {
         this.operationName = operationName;
     }
+
     public void setSvOperationMetadataType(SVOperationMetadataType svOperationMetadataType) {
         this.svOperationMetadataType = svOperationMetadataType;
     }
+
     public void setParameterValueMap(Map<String, ParameterValue<?>> parameterValueMap) {
         this.parameterValueMap = parameterValueMap;
     }
+
     public Map<String, ParameterValue<?>> getParameterValueMap() {
         return parameterValueMap;
     }
@@ -107,7 +113,7 @@ public class OperationMetadata {
         if (operationName != null) {
             return operationName;
         }
-        
+
         if (this.getSvOperationMetadataType() == null) {
             return null;
         }
@@ -122,7 +128,7 @@ public class OperationMetadata {
     }
 
     public String getInvocationName() {
-        
+
         if (invocationName != null) {
             return invocationName;
         }
@@ -139,8 +145,77 @@ public class OperationMetadata {
         }
         return (String) this.getSvOperationMetadataType().getInvocationName().getCharacterString().getValue();
     }
-    
- 
+
+    public String getConnectPoint(int index) throws MotuException {
+
+        if (this.getSvOperationMetadataType() == null) {
+            return null;
+        }
+
+        if (this.getSvOperationMetadataType().getConnectPoint() == null) {
+            return null;
+        }
+
+        List<CIOnlineResourcePropertyType> connectPointList = this.getSvOperationMetadataType().getConnectPoint();
+
+        if (index < 0) {
+            throw new MotuException(String
+                    .format("ERROR in OperationMetadata#getConnectPoint : Out of bounds index %d - Connect point list size is %d.",
+                            index,
+                            connectPointList.size()));
+        }
+
+        if (index >= connectPointList.size()) {
+            throw new MotuException(String
+                    .format("ERROR in OperationMetadata#getConnectPoint : Out of bounds index %d - Connect point list size is %d.",
+                            index,
+                            connectPointList.size()));
+        }
+
+        CIOnlineResourcePropertyType connectPoint = connectPointList.get(index);
+
+        if (connectPoint == null) {
+            return null;
+        }
+
+        if (connectPoint.getCIOnlineResource() == null) {
+            return null;
+        }
+        if (connectPoint.getCIOnlineResource().getLinkage() == null) {
+            return null;
+        }
+
+        return connectPoint.getCIOnlineResource().getLinkage().getURL();
+
+    }
+
+    public List<String> getConnectPoint() throws MotuException {
+
+        if (this.getSvOperationMetadataType() == null) {
+            return null;
+        }
+
+        if (this.getSvOperationMetadataType().getConnectPoint() == null) {
+            return null;
+        }
+
+        List<String> connectPointList = new ArrayList<String>();
+
+        for (int index = 0; index < connectPointList.size(); index++) {
+
+            String connectPoint = getConnectPoint(index);
+
+            if (connectPoint == null) {
+                continue;
+            }
+
+            connectPointList.add(connectPoint);
+        }
+
+        return connectPointList;
+
+    }
+
     @Override
     public String toString() {
         return String.format("%s/%s", this.getOperationName(), this.getInvocationName());
@@ -229,7 +304,7 @@ public class OperationMetadata {
         return (String) parameterType.getName().getAName().getCharacterString().getValue();
 
     }
-    
+
     public SVParameterType getParameterType(String paramName) throws MotuException {
         List<SVParameterPropertyType> parameterPropertyTypeList = svOperationMetadataType.getParameters();
 
@@ -242,12 +317,14 @@ public class OperationMetadata {
                 return parameterType;
             }
         }
-        
+
         return null;
-    }    
+    }
+
     public SVParameterDirectionType getParameterDirection(SVParameterPropertyType parameterPropertyType) throws MotuException {
         return getParameterDirection(parameterPropertyType.getSVParameter());
     }
+
     public SVParameterDirectionType getParameterDirection(SVParameterType parameterType) throws MotuException {
         if (parameterType == null) {
             throw new MotuException(String.format("ERROR - ISO 19139 parameter is null (operation : '%s')", getOperationName()));
@@ -297,8 +374,9 @@ public class OperationMetadata {
         return (String) parameterType.getValueType().getTypeName().getAName().getCharacterString().getValue();
 
     }
+
     public Map<String, ParameterValue<?>> createParameterValues(boolean inParameter, boolean outParameter) throws MotuException {
-        
+
         parameterValueMap = new HashMap<String, ParameterValue<?>>();
 
         List<SVParameterPropertyType> parameterPropertyTypeList = svOperationMetadataType.getParameters();
@@ -313,7 +391,7 @@ public class OperationMetadata {
             if (getParameterDirection(parameterType).equals(SVParameterDirectionType.OUT) && !outParameter) {
                 continue;
             }
-            
+
             String paramName = getParameterName(parameterType);
 
             ParameterValue<?> parameterValue = createParameterValue(parameterType);
@@ -321,8 +399,9 @@ public class OperationMetadata {
         }
 
         return parameterValueMap;
-        
+
     }
+
     public Map<String, ParameterValue<?>> createParameterValues() throws MotuException {
         return createParameterValues(true, true);
     }
@@ -330,11 +409,11 @@ public class OperationMetadata {
     public ParameterValue<?> createParameterValue(String paramName) throws MotuException {
         SVParameterType parameterType = getParameterType(paramName);
         if (parameterType == null) {
-            throw new MotuException(String.format("ERROR - ISO 19139 parameter '%s' unknown in operation : '%s')", paramName, getOperationName()));            
+            throw new MotuException(String.format("ERROR - ISO 19139 parameter '%s' unknown in operation : '%s')", paramName, getOperationName()));
         }
         return createParameterValue(parameterType);
     }
-    
+
     public ParameterValue<?> createParameterValue(SVParameterType parameterType) throws MotuException {
         String paramName = getParameterName(parameterType);
         String paramValueType = getParameterValueType(parameterType);
@@ -348,8 +427,6 @@ public class OperationMetadata {
         }
         return WPSFactory.createParameter(paramName, clazz, null);
     }
-    
-
 
     public void dump() {
         System.out.println("Operation:");

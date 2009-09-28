@@ -60,7 +60,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.18 $ - $Date: 2009-09-24 16:06:22 $
+ * @version $Revision: 1.19 $ - $Date: 2009-09-28 14:27:04 $
  */
 public class TestWPS {
     /**
@@ -607,6 +607,10 @@ public class TestWPS {
                     }
                     if (String.class.equals(type)) {
                         parameterValue.setValue("param value as string");
+                    }
+                    if (double[].class.equals(type)) {
+                        double[] geobbox = new double[] { -10d, -60d, 45d, 120d };                        
+                        parameterValue.setValue(geobbox);
                     }
 
                 }
