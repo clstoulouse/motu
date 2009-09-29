@@ -33,12 +33,11 @@ import org.isotc211.iso19139.d_2006_05_04.srv.SVOperationMetadataType;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.KShortestPaths;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.DirectedSubgraph;
 import org.jgrapht.graph.EdgeReversedGraph;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 
+import fr.cls.atoll.motu.library.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
@@ -60,7 +59,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.19 $ - $Date: 2009-09-28 14:27:04 $
+ * @version $Revision: 1.20 $ - $Date: 2009-09-29 14:09:19 $
  */
 public class TestWPS {
     /**
@@ -79,6 +78,18 @@ public class TestWPS {
      * @param args
      */
     public static void main(String[] args) {
+
+        try {
+            Organizer.initProxyLogin();
+        } catch (MotuException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+//         System.setProperty("proxyHost", "proxy.cls.fr"); // adresse IP
+//         System.setProperty("proxyPort", "8080");
+         //System.setProperty("socksProxyHost", "proxy.cls.fr");
+         //System.setProperty("socksProxyPort", "1080");
+         //Authenticator.setDefault(new MyAuthenticator());
 
         // testBuildWPS();
         testBuildChainWPS();
@@ -164,6 +175,36 @@ public class TestWPS {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+
+    }
+    public static void testBodyPost(String xmlFile, String href) {
+
+        //String href = "http://localhost:8080/atoll-motuservlet/services";
+        
+        Map<String, String> headers = new HashMap<String, String>();
+        try {
+            InputStream is = Organizer.getUriAsInputStream(xmlFile);
+            is = HttpUtils.post(HttpUtils.STREAM, href, is, headers);
+            byte b[] = new byte[1024];
+
+            int bytesRead = 0;
+
+            while ((bytesRead = is.read(b)) != -1) {
+                String nextLine = new String(b, 0, bytesRead);
+                System.out.println(nextLine);
+            }
+
+        } catch (HttpException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MotuException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            System.out.println(e.notifyException());
         }
 
     }
@@ -665,8 +706,8 @@ public class TestWPS {
                             OperationMetadata operationMetadata2 = directedSubGraph.getEdgeTarget(edge);
                             System.out.println("StartVertex: " + operationMetadata1.getOperationName());
                             System.out.println("EndVertex: " + operationMetadata2.getOperationName());
-                            System.out.println("Parameters Edge: " + edge.getParamOutStartVertex().toString() + " / "
-                                    + edge.getParamInStartVertex().toString());
+                            System.out.println("Parameters Edge: " + edge.getParamInStartVertex().toString() + " / "
+                                    + edge.getParamOutStartVertex().toString());
 
                             System.out.println("operationMetadata1: " + operationMetadata1.getParameterValueMap());
                             System.out.println("operationMetadata2: " + operationMetadata2.getParameterValueMap());
@@ -683,17 +724,37 @@ public class TestWPS {
 
             Execute execute = wpsFactory.createExecuteProcessRequest(sourceOperations.get(0), directedSubGraph);
 
-            FileWriter writer = new FileWriter("WPSExecuteChain.xml");
+            String wpsXml = "WPSExecuteChain.xml";
+            
+            FileWriter writer = new FileWriter(wpsXml);
 
             String schemaLocationKey = String.format("%s%s", wpsFactory.getWpsInfoInstance().getProcessDescriptions().getService(), wpsFactory
                     .getWpsInfoInstance().getProcessDescriptions().getVersion());
             WPSFactory.marshallExecute(execute, writer, WPSFactory.getSchemaLocations().get(schemaLocationKey));
 
+            System.out.println("===============> Validate WPS");
   
+            List<String> errors = WPSFactory.validateWPSExecuteRequest("", "file:///c:/tempVFS/OGC_SCHEMA/", "wps/1.0.0/wpsExecute_request.xsd",  wpsXml);
+            if (errors.size() > 0) {
+                StringBuffer stringBuffer = new StringBuffer();
+                for (String str : errors) {
+                    stringBuffer.append(str);
+                    stringBuffer.append("\n");
+                }
+                throw new MotuException(String.format("ERROR - XML file '%s' is not valid - See errors below:\n%s", wpsXml, stringBuffer.toString()));
+            } else {
+                System.out.println(String.format("XML file '%s' is valid", wpsXml));
+            }
 
+            System.out.println("===============> Execute WPS");
+            
+
+            testBodyPost(wpsXml, serverURL);
+            
         } catch (MotuException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            System.out.println(e.notifyException());
         } catch (MotuMarshallException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

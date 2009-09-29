@@ -92,6 +92,11 @@
                                 </ns2:Data>
                             </ns2:Input>
                         </ns2:DataInputs>
+                        <ns2:ResponseForm>
+                            <ns2:RawDataOutput>
+                                <ns1:Identifier>requestid</ns1:Identifier>
+                            </ns2:RawDataOutput>
+                        </ns2:ResponseForm>
                     </ns2:Execute>
                 </ns2:Body>
             </ns2:Reference>

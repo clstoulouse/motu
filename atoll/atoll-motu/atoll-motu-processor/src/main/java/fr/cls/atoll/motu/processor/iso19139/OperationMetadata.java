@@ -1,33 +1,22 @@
 package fr.cls.atoll.motu.processor.iso19139;
 
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.datatype.DatatypeFactory;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.xerces.jaxp.datatype.DatatypeFactoryImpl;
 import org.isotc211.iso19139.d_2006_05_04.gmd.CIOnlineResourcePropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVOperationMetadataType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterDirectionType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterPropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterType;
-import org.kohsuke.rngom.dt.builtin.BuiltinDatatypeLibrary;
-import org.kohsuke.rngom.dt.builtin.BuiltinDatatypeLibraryFactory;
-import org.kohsuke.rngom.xml.util.WellKnownNamespaces;
 import org.opengis.parameter.ParameterValue;
-import org.relaxng.datatype.Datatype;
-import org.relaxng.datatype.DatatypeLibrary;
-import org.relaxng.datatype.helpers.DatatypeLibraryLoader;
-
-import com.sun.xml.bind.api.ClassResolver;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.opendap.server.DataType;
 import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
 
 /**
@@ -38,10 +27,15 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.6 $ - $Date: 2009-09-28 14:27:04 $
+ * @version $Revision: 1.7 $ - $Date: 2009-09-29 14:09:19 $
  */
 public class OperationMetadata {
+    /**
+     * Logger for this class
+     */
+    private static final Logger LOG = Logger.getLogger(OperationMetadata.class);
 
+    /** The Constant XML_JAVA_CLASS_MAPPING. */
     public static final Map<String, Class<?>> XML_JAVA_CLASS_MAPPING = new HashMap<String, Class<?>>();
 
     static {
@@ -70,89 +64,244 @@ public class OperationMetadata {
 
     };
 
+    /**
+     * Instantiates a new operation metadata.
+     */
     public OperationMetadata() {
     }
 
+    /**
+     * Instantiates a new operation metadata.
+     * 
+     * @param svOperationMetadataType the sv operation metadata type
+     */
     public OperationMetadata(SVOperationMetadataType svOperationMetadataType) {
         this.svOperationMetadataType = svOperationMetadataType;
     }
 
+    /** The sv operation metadata type. */
     SVOperationMetadataType svOperationMetadataType = null;
 
+    /** The parameter value map. */
     Map<String, ParameterValue<?>> parameterValueMap = null;
 
+    /** The operation name. */
     private String operationName = null;
+    
+    /** The invocation name. */
     private String invocationName = null;
 
+    /**
+     * Sets the invocation name.
+     * 
+     * @param invocationName the new invocation name
+     */
     public void setInvocationName(String invocationName) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setInvocationName(String) - entering");
+        }
+
         this.invocationName = invocationName;
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setInvocationName(String) - exiting");
+        }
     }
 
+    /**
+     * Sets the operation name.
+     * 
+     * @param operationName the new operation name
+     */
     public void setOperationName(String operationName) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setOperationName(String) - entering");
+        }
+
         this.operationName = operationName;
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setOperationName(String) - exiting");
+        }
     }
 
+    /**
+     * Sets the sv operation metadata type.
+     * 
+     * @param svOperationMetadataType the new sv operation metadata type
+     */
     public void setSvOperationMetadataType(SVOperationMetadataType svOperationMetadataType) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setSvOperationMetadataType(SVOperationMetadataType) - entering");
+        }
+
         this.svOperationMetadataType = svOperationMetadataType;
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setSvOperationMetadataType(SVOperationMetadataType) - exiting");
+        }
     }
 
+    /**
+     * Sets the parameter value map.
+     * 
+     * @param parameterValueMap the parameter value map
+     */
     public void setParameterValueMap(Map<String, ParameterValue<?>> parameterValueMap) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setParameterValueMap(Map<String,ParameterValue<?>>) - entering");
+        }
+
         this.parameterValueMap = parameterValueMap;
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setParameterValueMap(Map<String,ParameterValue<?>>) - exiting");
+        }
     }
 
+    /**
+     * Gets the parameter value map.
+     * 
+     * @return the parameter value map
+     */
     public Map<String, ParameterValue<?>> getParameterValueMap() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterValueMap() - entering");
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterValueMap() - exiting");
+        }
         return parameterValueMap;
     }
 
+    /**
+     * Gets the sv operation metadata type.
+     * 
+     * @return the sv operation metadata type
+     */
     public SVOperationMetadataType getSvOperationMetadataType() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getSvOperationMetadataType() - entering");
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getSvOperationMetadataType() - exiting");
+        }
         return svOperationMetadataType;
     }
 
+    /**
+     * Gets the operation name.
+     * 
+     * @return the operation name
+     */
     public String getOperationName() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getOperationName() - entering");
+        }
 
         if (operationName != null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getOperationName() - exiting");
+            }
             return operationName;
         }
 
         if (this.getSvOperationMetadataType() == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getOperationName() - exiting");
+            }
             return null;
         }
 
         if (this.getSvOperationMetadataType().getOperationName() == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getOperationName() - exiting");
+            }
             return null;
         }
         if (this.getSvOperationMetadataType().getOperationName().getCharacterString() == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getOperationName() - exiting");
+            }
             return null;
         }
-        return (String) this.getSvOperationMetadataType().getOperationName().getCharacterString().getValue();
+        String returnString = (String) this.getSvOperationMetadataType().getOperationName().getCharacterString().getValue();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getOperationName() - exiting");
+        }
+        return returnString;
     }
 
+    /**
+     * Gets the invocation name.
+     * 
+     * @return the invocation name
+     */
     public String getInvocationName() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getInvocationName() - entering");
+        }
 
         if (invocationName != null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getInvocationName() - exiting");
+            }
             return invocationName;
         }
 
         if (this.getSvOperationMetadataType() == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getInvocationName() - exiting");
+            }
             return null;
         }
 
         if (this.getSvOperationMetadataType().getInvocationName() == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getInvocationName() - exiting");
+            }
             return null;
         }
         if (this.getSvOperationMetadataType().getInvocationName().getCharacterString() == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getInvocationName() - exiting");
+            }
             return null;
         }
-        return (String) this.getSvOperationMetadataType().getInvocationName().getCharacterString().getValue();
+        String returnString = (String) this.getSvOperationMetadataType().getInvocationName().getCharacterString().getValue();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getInvocationName() - exiting");
+        }
+        return returnString;
     }
 
+    /**
+     * Gets the connect point.
+     * 
+     * @param index the index
+     * 
+     * @return the connect point
+     * 
+     * @throws MotuException the motu exception
+     */
     public String getConnectPoint(int index) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getConnectPoint(int) - entering");
+        }
 
         if (this.getSvOperationMetadataType() == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getConnectPoint(int) - exiting");
+            }
             return null;
         }
 
         if (this.getSvOperationMetadataType().getConnectPoint() == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getConnectPoint(int) - exiting");
+            }
             return null;
         }
 
@@ -175,27 +324,56 @@ public class OperationMetadata {
         CIOnlineResourcePropertyType connectPoint = connectPointList.get(index);
 
         if (connectPoint == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getConnectPoint(int) - exiting");
+            }
             return null;
         }
 
         if (connectPoint.getCIOnlineResource() == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getConnectPoint(int) - exiting");
+            }
             return null;
         }
         if (connectPoint.getCIOnlineResource().getLinkage() == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getConnectPoint(int) - exiting");
+            }
             return null;
         }
 
-        return connectPoint.getCIOnlineResource().getLinkage().getURL();
+        String returnString = connectPoint.getCIOnlineResource().getLinkage().getURL();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getConnectPoint(int) - exiting");
+        }
+        return returnString;
 
     }
 
+    /**
+     * Gets the connect point.
+     * 
+     * @return the connect point
+     * 
+     * @throws MotuException the motu exception
+     */
     public List<String> getConnectPoint() throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getConnectPoint() - entering");
+        }
 
         if (this.getSvOperationMetadataType() == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getConnectPoint() - exiting");
+            }
             return null;
         }
 
         if (this.getSvOperationMetadataType().getConnectPoint() == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getConnectPoint() - exiting");
+            }
             return null;
         }
 
@@ -212,25 +390,58 @@ public class OperationMetadata {
             connectPointList.add(connectPoint);
         }
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getConnectPoint() - exiting");
+        }
         return connectPointList;
 
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
-        return String.format("%s/%s", this.getOperationName(), this.getInvocationName());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("toString() - entering");
+        }
+
+        String returnString = String.format("%s/%s", this.getOperationName(), this.getInvocationName());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("toString() - exiting");
+        }
+        return returnString;
     }
 
+    /**
+     * Equals.
+     * 
+     * @param object the object
+     * @param equalsBuilder the equals builder
+     */
     public void equals(Object object, EqualsBuilder equalsBuilder) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("equals(Object, EqualsBuilder) - entering");
+        }
+
         if (object == null) {
             equalsBuilder.appendSuper(false);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("equals(Object, EqualsBuilder) - exiting");
+            }
             return;
         }
         if (!(object instanceof OperationMetadata)) {
             equalsBuilder.appendSuper(false);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("equals(Object, EqualsBuilder) - exiting");
+            }
             return;
         }
         if (this == object) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("equals(Object, EqualsBuilder) - exiting");
+            }
             return;
         }
         final OperationMetadata that = ((OperationMetadata) object);
@@ -248,46 +459,132 @@ public class OperationMetadata {
 
         equalsBuilder.append(this.getOperationName(), that.getOperationName());
         equalsBuilder.append(this.getInvocationName(), that.getInvocationName());
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("equals(Object, EqualsBuilder) - exiting");
+        }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object object) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("equals(Object) - entering");
+        }
+
         if (object == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("equals(Object) - exiting");
+            }
             return false;
         }
         if (!(object instanceof OperationMetadata)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("equals(Object) - exiting");
+            }
             return false;
         }
         if (this == object) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("equals(Object) - exiting");
+            }
             return true;
         }
         final EqualsBuilder equalsBuilder = new EqualsBuilder();
         equals(object, equalsBuilder);
-        return equalsBuilder.isEquals();
+        boolean returnboolean = equalsBuilder.isEquals();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("equals(Object) - exiting");
+        }
+        return returnboolean;
     }
 
+    /**
+     * Hash code.
+     * 
+     * @param hashCodeBuilder the hash code builder
+     */
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("hashCode(HashCodeBuilder) - entering");
+        }
+
         hashCodeBuilder.append(this.getOperationName());
         hashCodeBuilder.append(this.getInvocationName());
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("hashCode(HashCodeBuilder) - exiting");
+        }
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("hashCode() - entering");
+        }
+
         final HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
         hashCode(hashCodeBuilder);
-        return hashCodeBuilder.toHashCode();
+        int returnint = hashCodeBuilder.toHashCode();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("hashCode() - exiting");
+        }
+        return returnint;
     }
 
+    /**
+     * Gets the parameters.
+     * 
+     * @return the parameters
+     */
     public List<SVParameterPropertyType> getParameters() {
-        return svOperationMetadataType.getParameters();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameters() - entering");
+        }
+
+        List<SVParameterPropertyType> returnList = svOperationMetadataType.getParameters();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameters() - exiting");
+        }
+        return returnList;
     }
 
+    /**
+     * Gets the parameter name.
+     * 
+     * @param parameterPropertyType the parameter property type
+     * 
+     * @return the parameter name
+     * 
+     * @throws MotuException the motu exception
+     */
     public String getParameterName(SVParameterPropertyType parameterPropertyType) throws MotuException {
-        return getParameterName(parameterPropertyType.getSVParameter());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterName(SVParameterPropertyType) - entering");
+        }
+
+        String returnString = getParameterName(parameterPropertyType.getSVParameter());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterName(SVParameterPropertyType) - exiting");
+        }
+        return returnString;
     }
 
+    /**
+     * Gets the parameter name.
+     * 
+     * @param parameterType the parameter type
+     * 
+     * @return the parameter name
+     * 
+     * @throws MotuException the motu exception
+     */
     public String getParameterName(SVParameterType parameterType) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterName(SVParameterType) - entering");
+        }
+
         if (parameterType == null) {
             throw new MotuException(String.format("ERROR - ISO 19139 parameter is null (operation : '%s')", getOperationName()));
         }
@@ -301,11 +598,28 @@ public class OperationMetadata {
             throw new MotuException(String.format("ERROR - ISO 19139 parameter has no name (operation : '%s')", getOperationName()));
         }
 
-        return (String) parameterType.getName().getAName().getCharacterString().getValue();
+        String returnString = (String) parameterType.getName().getAName().getCharacterString().getValue();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterName(SVParameterType) - exiting");
+        }
+        return returnString;
 
     }
 
+    /**
+     * Gets the parameter type.
+     * 
+     * @param paramName the param name
+     * 
+     * @return the parameter type
+     * 
+     * @throws MotuException the motu exception
+     */
     public SVParameterType getParameterType(String paramName) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterType(String) - entering");
+        }
+
         List<SVParameterPropertyType> parameterPropertyTypeList = svOperationMetadataType.getParameters();
 
         for (SVParameterPropertyType parameterPropertyType : parameterPropertyTypeList) {
@@ -314,18 +628,54 @@ public class OperationMetadata {
 
             String name = getParameterName(parameterType);
             if (name.equals(paramName)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("getParameterType(String) - exiting");
+                }
                 return parameterType;
             }
         }
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterType(String) - exiting");
+        }
         return null;
     }
 
+    /**
+     * Gets the parameter direction.
+     * 
+     * @param parameterPropertyType the parameter property type
+     * 
+     * @return the parameter direction
+     * 
+     * @throws MotuException the motu exception
+     */
     public SVParameterDirectionType getParameterDirection(SVParameterPropertyType parameterPropertyType) throws MotuException {
-        return getParameterDirection(parameterPropertyType.getSVParameter());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterDirection(SVParameterPropertyType) - entering");
+        }
+
+        SVParameterDirectionType returnSVParameterDirectionType = getParameterDirection(parameterPropertyType.getSVParameter());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterDirection(SVParameterPropertyType) - exiting");
+        }
+        return returnSVParameterDirectionType;
     }
 
+    /**
+     * Gets the parameter direction.
+     * 
+     * @param parameterType the parameter type
+     * 
+     * @return the parameter direction
+     * 
+     * @throws MotuException the motu exception
+     */
     public SVParameterDirectionType getParameterDirection(SVParameterType parameterType) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterDirection(SVParameterType) - entering");
+        }
+
         if (parameterType == null) {
             throw new MotuException(String.format("ERROR - ISO 19139 parameter is null (operation : '%s')", getOperationName()));
         }
@@ -344,15 +694,50 @@ public class OperationMetadata {
             throw new MotuException(String.format("ERROR - ISO 19139 parameter has no direction (operation : '%s')", getOperationName()));
         }
 
-        return SVParameterDirectionType.fromValue(parameterType.getDirection().getSVParameterDirection().value());
+        SVParameterDirectionType returnSVParameterDirectionType = SVParameterDirectionType.fromValue(parameterType.getDirection()
+                .getSVParameterDirection().value());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterDirection(SVParameterType) - exiting");
+        }
+        return returnSVParameterDirectionType;
 
     }
 
+    /**
+     * Gets the parameter value type.
+     * 
+     * @param parameterPropertyType the parameter property type
+     * 
+     * @return the parameter value type
+     * 
+     * @throws MotuException the motu exception
+     */
     public String getParameterValueType(SVParameterPropertyType parameterPropertyType) throws MotuException {
-        return getParameterValueType(parameterPropertyType.getSVParameter());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterValueType(SVParameterPropertyType) - entering");
+        }
+
+        String returnString = getParameterValueType(parameterPropertyType.getSVParameter());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterValueType(SVParameterPropertyType) - exiting");
+        }
+        return returnString;
     }
 
+    /**
+     * Gets the parameter value type.
+     * 
+     * @param parameterType the parameter type
+     * 
+     * @return the parameter value type
+     * 
+     * @throws MotuException the motu exception
+     */
     public String getParameterValueType(SVParameterType parameterType) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterValueType(SVParameterType) - entering");
+        }
+
         if (parameterType == null) {
             throw new MotuException(String.format("ERROR - ISO 19139 parameter is null (operation : '%s')", getOperationName()));
         }
@@ -371,11 +756,28 @@ public class OperationMetadata {
         if (parameterType.getValueType().getTypeName().getAName().getCharacterString() == null) {
             throw new MotuException(String.format("ERROR - ISO 19139 parameter has no value type (operation : '%s')", getOperationName()));
         }
-        return (String) parameterType.getValueType().getTypeName().getAName().getCharacterString().getValue();
+        String returnString = (String) parameterType.getValueType().getTypeName().getAName().getCharacterString().getValue();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterValueType(SVParameterType) - exiting");
+        }
+        return returnString;
 
     }
 
+    /**
+     * Creates the parameter values.
+     * 
+     * @param inParameter the in parameter
+     * @param outParameter the out parameter
+     * 
+     * @return the map< string, parameter value<?>>
+     * 
+     * @throws MotuException the motu exception
+     */
     public Map<String, ParameterValue<?>> createParameterValues(boolean inParameter, boolean outParameter) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createParameterValues(boolean, boolean) - entering");
+        }
 
         parameterValueMap = new HashMap<String, ParameterValue<?>>();
 
@@ -398,23 +800,71 @@ public class OperationMetadata {
             parameterValueMap.put(paramName, parameterValue);
         }
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createParameterValues(boolean, boolean) - exiting");
+        }
         return parameterValueMap;
 
     }
 
+    /**
+     * Creates the parameter values.
+     * 
+     * @return the map< string, parameter value<?>>
+     * 
+     * @throws MotuException the motu exception
+     */
     public Map<String, ParameterValue<?>> createParameterValues() throws MotuException {
-        return createParameterValues(true, true);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createParameterValues() - entering");
+        }
+
+        Map<String, ParameterValue<?>> returnMap = createParameterValues(true, true);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createParameterValues() - exiting");
+        }
+        return returnMap;
     }
 
+    /**
+     * Creates the parameter value.
+     * 
+     * @param paramName the param name
+     * 
+     * @return the parameter value<?>
+     * 
+     * @throws MotuException the motu exception
+     */
     public ParameterValue<?> createParameterValue(String paramName) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createParameterValue(String) - entering");
+        }
+
         SVParameterType parameterType = getParameterType(paramName);
         if (parameterType == null) {
             throw new MotuException(String.format("ERROR - ISO 19139 parameter '%s' unknown in operation : '%s')", paramName, getOperationName()));
         }
-        return createParameterValue(parameterType);
+        ParameterValue<?> returnParameterValue = createParameterValue(parameterType);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createParameterValue(String) - exiting");
+        }
+        return returnParameterValue;
     }
 
+    /**
+     * Creates the parameter value.
+     * 
+     * @param parameterType the parameter type
+     * 
+     * @return the parameter value<?>
+     * 
+     * @throws MotuException the motu exception
+     */
     public ParameterValue<?> createParameterValue(SVParameterType parameterType) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createParameterValue(SVParameterType) - entering");
+        }
+
         String paramName = getParameterName(parameterType);
         String paramValueType = getParameterValueType(parameterType);
         Class<?> clazz = XML_JAVA_CLASS_MAPPING.get(paramValueType);
@@ -425,10 +875,21 @@ public class OperationMetadata {
                                                   paramValueType,
                                                   XML_JAVA_CLASS_MAPPING.keySet().toString()));
         }
-        return WPSFactory.createParameter(paramName, clazz, null);
+        ParameterValue<?> returnParameterValue = WPSFactory.createParameter(paramName, clazz, null);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createParameterValue(SVParameterType) - exiting");
+        }
+        return returnParameterValue;
     }
 
+    /**
+     * Dump.
+     */
     public void dump() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("dump() - entering");
+        }
+
         System.out.println("Operation:");
         System.out.print(" Name=");
         System.out.print(getOperationName());
@@ -453,9 +914,15 @@ public class OperationMetadata {
                 // Datatype dataType = datatypeLibrary.createDatatype("string");
 
             } catch (MotuException e) {
+                LOG.error("dump()", e);
+
                 // TODO Auto-generated catch block
                 System.out.print(e.notifyException());
             }
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("dump() - exiting");
         }
     }
 }

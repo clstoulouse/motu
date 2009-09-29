@@ -43,18 +43,18 @@
 			<artifactId>geotk-referencing</artifactId>
 			<version>3.03</version>
 		</dependency>
-	<dependency>
-		<groupId>org.opengis</groupId>
-		<artifactId>geoapi</artifactId>
-		<version>2.3-M4</version>
-		<scope>compile</scope>
-	</dependency>
-		
 		<dependency>
-		    <groupId>jgrapht</groupId>
-		    <artifactId>jgrapht</artifactId>
-		    <version>0.7.3</version>
-		</dependency> 
+			<groupId>org.opengis</groupId>
+			<artifactId>geoapi</artifactId>
+			<version>2.3-M4</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>jgrapht</groupId>
+			<artifactId>jgrapht</artifactId>
+			<version>0.7.3</version>
+		</dependency>
 		<dependency>
 			<groupId>org.jvnet.ogc</groupId>
 			<artifactId>iso-19139-d_2006_05_04-schema</artifactId>
@@ -117,22 +117,60 @@
 			<version>2.1.10</version>
 		</dependency>
 		<dependency>
-		    <groupId>dom4j</groupId>
-		    <artifactId>dom4j</artifactId>
-		    <version>1.6.1</version>
-		</dependency> 		
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>1.6.1</version>
+		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
-
-
+		<dependency>
+			<groupId>org.jvnet.ogc</groupId>
+			<artifactId>schemas</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
+
+	<properties>
+		<atoll.root.path>${project.parent.basedir}</atoll.root.path>
+		<atoll.motu.web.path>${atoll.root.path}/atoll-motu-web</atoll.motu.web.path>
+		<atoll.motu.web.config.path>${atoll.motu.web.path}/src/main/config/</atoll.motu.web.config.path>
+		
+	</properties>
+
 
 	<build>
 		<plugins>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<!-- here the phase you need -->
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${atoll.motu.web.config.path}/${motu.web.config.dir}/WEB-INF</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/resources</directory>
+									<includes>
+										<include>conf/**</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
@@ -151,86 +189,78 @@
 							message="test classpath: ${test_classpath}" /> <echo
 							message="plugin classpath: ${plugin_classpath}" />
 						-->
-<!-- 
-						<taskdef name="fmpp" classname="fmpp.tools.AntTask" />
+						<!--
+							<taskdef name="fmpp" classname="fmpp.tools.AntTask" /> <fmpp
+							configuration="src/main/resources/fmpp/configServiceTemplate.fmpp"
+							excludes="**/*"> </fmpp>
+						-->
+						<!--
 
-						<fmpp configuration="src/main/resources/fmpp/configServiceTemplate.fmpp"
-							excludes="**/*">
-						</fmpp>
- -->						
-						
-						<property name="base.dir"  value="J:/dev/atoll-v2/atoll-motu/atoll-motu-processor" />
-						<echo message="base.dir: ${base.dir}"/>
-						
+							<property name="base.dir"
+							value="J:/dev/atoll-v2/atoll-motu/atoll-motu-processor" />
+						-->
+						<property name="base.dir" value="${basedir}" />
+						<echo message="base.dir: ${base.dir}" />
+
 						<taskdef name="buildServiceMetadata"
 							classname="fr.cls.atoll.motu.processor.ant.ServiceMetadataBuilder"
 							classpathref="maven.runtime.classpath" />
-							
-						<property name="fmppOpendap.config" value="src/main/resources/fmpp/configServiceOpendap.fmpp" />
+
+						<property name="fmppOpendap.config"
+							value="src/main/resources/fmpp/configServiceOpendap.fmpp" />
 
 						<property name="tempPath" value="file:///c:/tempVFS/" />
 						<property name="iso19139Schema.path" value="schema/iso19139" />
 						<property name="localIso19139RootSchemaRel.path" value="/srv/srv.xsd" />
-						
-						<echo message="tempPath: ${tempPath}"/>
-						<echo message="fmppOpdendap.config: ${fmppOpendap.config}"/>
-						<echo message="iso19139Schema.path: ${iso19139Schema.path}"/>
-						<echo message="localIso19139RootSchemaRel.path: ${localIso19139RootSchemaRel.path}"/>
 
-						<property name="outputXmlOpendap" value="file:///${base.dir}/src/main/resources/fmpp/src/ServiceMetadataOpendap.xml" />
-						<echo message="outputXmlOpendap: ${outputXmlOpendap}"/>
+						<echo message="tempPath: ${tempPath}" />
+						<echo message="fmppOpdendap.config: ${fmppOpendap.config}" />
+						<echo message="iso19139Schema.path: ${iso19139Schema.path}" />
+						<echo
+							message="localIso19139RootSchemaRel.path: ${localIso19139RootSchemaRel.path}" />
+
+						<property name="outputXmlOpendap"
+							value="file:///${base.dir}/src/main/resources/fmpp/src/ServiceMetadataOpendap.xml" />
+						<echo message="outputXmlOpendap: ${outputXmlOpendap}" />
 
 						<buildServiceMetadata
 							xmlTemplate="file:///${base.dir}/src/main/resources/fmpp/src/base/serviceMetadataTemplateOpendapBase.xml"
 							tempPath="${tempPath}" iso19139Schema="${iso19139Schema.path}"
-							localIso19139RootSchemaRelPath="${localIso19139RootSchemaRel.path}" 
-							outputXml="${outputXmlOpendap}" 
-							configuration="${fmppOpendap.config}"
-							excludes="**/*"
-							expand="true"
-							validate="false"
-							fmpp="true"
-							validateOutput="src/main/resources/fmpp/out"
-							/>
+							localIso19139RootSchemaRelPath="${localIso19139RootSchemaRel.path}"
+							outputXml="${outputXmlOpendap}" configuration="${fmppOpendap.config}"
+							excludes="**/*" expand="true" validate="false" fmpp="true"
+							validateOutput="src/main/resources/fmpp/out" />
 
-						<property name="fmppFtp.config" value="src/main/resources/fmpp/configServiceFtp.fmpp" />
-						<echo message="fmppFtp.config: ${fmppFtp.config}"/>
+						<property name="fmppFtp.config"
+							value="src/main/resources/fmpp/configServiceFtp.fmpp" />
+						<echo message="fmppFtp.config: ${fmppFtp.config}" />
 
-						<property name="outputXmlFtp" value="file:///${base.dir}/src/main/resources/fmpp/src/ServiceMetadataFtp.xml" />
-						<echo message="outputXmlFtp outputXmlFtp"/>
+						<property name="outputXmlFtp"
+							value="file:///${base.dir}/src/main/resources/fmpp/src/ServiceMetadataFtp.xml" />
+						<echo message="outputXmlFtp outputXmlFtp" />
 
 						<buildServiceMetadata
 							xmlTemplate="file:///${base.dir}/src/main/resources/fmpp/src/base/serviceMetadataTemplateFtpBase.xml"
 							tempPath="${tempPath}" iso19139Schema="${iso19139Schema.path}"
-							localIso19139RootSchemaRelPath="${localIso19139RootSchemaRel.path}" 
-							outputXml="${outputXmlFtp}" 
-							configuration="${fmppFtp.config}"
-							excludes="**/*"
-							expand="true"
-							validate="false"
-							fmpp="true"
-							validateOutput="src/main/resources/fmpp/out"
-							/>
- -->
+							localIso19139RootSchemaRelPath="${localIso19139RootSchemaRel.path}"
+							outputXml="${outputXmlFtp}" configuration="${fmppFtp.config}"
+							excludes="**/*" expand="true" validate="false" fmpp="true"
+							validateOutput="src/main/resources/fmpp/out" />
 						<!--
-						<taskdef name="freemarker" classname="freemarker.ext.ant.FreemarkerXmlTask">
-							<classpath>
-								<pathelement location="freemarker.jar" />
-							</classpath>
-						</taskdef>
-						<taskdef name="fmpp" classname="fmpp.tools.AntTask" />
-
-							<fmpp sourceroot="c:/tempVFS/" outputroot="out"
-							logfile="log.fmpp"
+							<taskdef name="freemarker"
+							classname="freemarker.ext.ant.FreemarkerXmlTask"> <classpath>
+							<pathelement location="freemarker.jar" /> </classpath> </taskdef>
+							<taskdef name="fmpp" classname="fmpp.tools.AntTask" /> <fmpp
+							sourceroot="c:/tempVFS/" outputroot="out" logfile="log.fmpp"
 							includesFile="c:/tempVFS/ServiceMetadataExpanded2s.xml"> <data>
 							validate: true servicesXml: xml(c:/tempVFS/data/services.xml)
 							</data> </fmpp>
 						-->
-						<!-- 
-						<fmpp configuration="src/main/resources/fmpp/configServiceOpendap.fmpp"
-							excludes="**/*">
-						</fmpp>
-						 -->
+						<!--
+							<fmpp
+							configuration="src/main/resources/fmpp/configServiceOpendap.fmpp"
+							excludes="**/*"> </fmpp>
+						-->
 
 					</tasks>
 				</configuration>
@@ -265,5 +295,21 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	<profiles>
+		<profile>
+			<id>localhost</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<motu.web.config.dir>localhost</motu.web.config.dir>
+			</properties>
+		</profile>
+		<profile>
+			<id>atoll-dev</id>
+			<properties>
+				<motu.web.config.dir>atoll-dev</motu.web.config.dir>
+			</properties>
+		</profile>
+	</profiles>
 </project>
