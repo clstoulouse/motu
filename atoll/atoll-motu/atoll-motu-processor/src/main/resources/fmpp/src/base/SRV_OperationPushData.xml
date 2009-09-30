@@ -186,7 +186,7 @@
 					<srv:valueType>
 						<gco:TypeName>
 							<gco:aName>
-								<gco:CharacterString>string</gco:CharacterString>
+								<gco:CharacterString>boolean</gco:CharacterString>
 							</gco:aName>
 						</gco:TypeName>
 					</srv:valueType>
@@ -226,7 +226,7 @@
 					<srv:valueType>
 						<gco:TypeName>
 							<gco:aName>
-								<gco:CharacterString>string</gco:CharacterString>
+								<gco:CharacterString>boolean</gco:CharacterString>
 							</gco:aName>
 						</gco:TypeName>
 					</srv:valueType>

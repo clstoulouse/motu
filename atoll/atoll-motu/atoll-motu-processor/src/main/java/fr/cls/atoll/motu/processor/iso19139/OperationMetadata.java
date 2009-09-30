@@ -1,22 +1,24 @@
 package fr.cls.atoll.motu.processor.iso19139;
 
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.log4j.Logger;
 import org.isotc211.iso19139.d_2006_05_04.gmd.CIOnlineResourcePropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVOperationMetadataType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterDirectionType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterPropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterType;
+import org.joda.time.DateTime;
 import org.opengis.parameter.ParameterValue;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
 
 /**
@@ -27,7 +29,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.7 $ - $Date: 2009-09-29 14:09:19 $
+ * @version $Revision: 1.8 $ - $Date: 2009-09-30 13:35:49 $
  */
 public class OperationMetadata {
     /**
@@ -43,11 +45,11 @@ public class OperationMetadata {
         XML_JAVA_CLASS_MAPPING.put("string", java.lang.String.class);
         XML_JAVA_CLASS_MAPPING.put("boolean", java.lang.Boolean.class);
         XML_JAVA_CLASS_MAPPING.put("decimal", java.math.BigDecimal.class);
-        XML_JAVA_CLASS_MAPPING.put("dateTime", javax.xml.datatype.XMLGregorianCalendar.class);
-        XML_JAVA_CLASS_MAPPING.put("datetime", javax.xml.datatype.XMLGregorianCalendar.class);
-        XML_JAVA_CLASS_MAPPING.put("time", javax.xml.datatype.XMLGregorianCalendar.class);
-        XML_JAVA_CLASS_MAPPING.put("date", javax.xml.datatype.XMLGregorianCalendar.class);
-        XML_JAVA_CLASS_MAPPING.put("duration", javax.xml.datatype.Duration.class);
+        XML_JAVA_CLASS_MAPPING.put("dateTime", org.joda.time.DateTime.class);
+        XML_JAVA_CLASS_MAPPING.put("datetime", org.joda.time.DateTime.class);
+        XML_JAVA_CLASS_MAPPING.put("time", org.joda.time.DateTime.class);
+        XML_JAVA_CLASS_MAPPING.put("date", org.joda.time.DateTime.class);
+        XML_JAVA_CLASS_MAPPING.put("duration", org.joda.time.Duration.class);
         XML_JAVA_CLASS_MAPPING.put("anyURI", java.net.URI.class);
         XML_JAVA_CLASS_MAPPING.put("Name", java.util.Date.class);
         XML_JAVA_CLASS_MAPPING.put("int", java.lang.Integer.class);
@@ -87,7 +89,7 @@ public class OperationMetadata {
 
     /** The operation name. */
     private String operationName = null;
-    
+
     /** The invocation name. */
     private String invocationName = null;
 
@@ -875,11 +877,85 @@ public class OperationMetadata {
                                                   paramValueType,
                                                   XML_JAVA_CLASS_MAPPING.keySet().toString()));
         }
-        ParameterValue<?> returnParameterValue = WPSFactory.createParameter(paramName, clazz, null);
+        ParameterValue<?> returnParameterValue = null;
+        
+        if (parameterType.getRepeatability().isBoolean()) {
+            returnParameterValue = WPSFactory.createParameter(paramName, Collection.class, null);
+
+        } else {
+            returnParameterValue = WPSFactory.createParameter(paramName, clazz, null);
+        }
         if (LOG.isDebugEnabled()) {
             LOG.debug("createParameterValue(SVParameterType) - exiting");
         }
         return returnParameterValue;
+    }
+
+    public ParameterValue<?> getParameterValue(String name) throws MotuException {
+        ParameterValue<?> parameterValue = parameterValueMap.get(name);
+
+        if (parameterValue == null) {
+            throw new MotuException(String.format("Error in OperationMetadata#getParameterValue - Operation '%s' - Parameter '%s' not found",
+                                                  getInvocationName(),
+                                                  name));
+        }
+
+        return parameterValue;
+    }
+
+    public void setParameterValue(String name, Object value) throws MotuException {
+        ParameterValue<?> parameterValue = getParameterValue(name);
+        parameterValue.setValue(value);
+
+    }
+
+    public void setParameterValue(String name, int value) throws MotuException {
+        Integer v = value;
+        setParameterValue(name, v);
+
+    }
+
+    public void setParameterValue(String name, double value) throws MotuException {
+        Double v = value;
+        setParameterValue(name, v);
+    }
+
+    public void setParameterValue(String name, long value) throws MotuException {
+        Long v = value;
+        setParameterValue(name, v);
+    }
+
+    public void setParameterValue(String name, boolean value) throws MotuException {
+        Boolean v = value;
+        setParameterValue(name, v);
+
+    }
+
+    public void setParameterValue(String name, double[] value) throws MotuException {
+        ParameterValue<?> parameterValue = getParameterValue(name);
+        parameterValue.setValue(value, null);
+
+    }
+
+    public void setParameterValue(String name, String value) throws MotuExceptionBase {
+        ParameterValue<?> parameterValue = getParameterValue(name);
+
+        Object v = value;
+        
+        
+        final Class<?> type = parameterValue.getDescriptor().getValueClass();
+        
+        if (DateTime.class.equals(type)) {
+            v = WPSFactory.StringToDateTime(value);
+        }
+        
+        if (Collection.class.equals(type)) {
+            v = new ArrayList<String>();
+            ((ArrayList<String>) v).add(value);
+        }
+
+        parameterValue.setValue(v);
+
     }
 
     /**

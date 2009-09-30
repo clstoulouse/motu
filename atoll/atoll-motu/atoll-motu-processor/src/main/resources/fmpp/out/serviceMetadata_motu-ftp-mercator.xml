@@ -364,7 +364,7 @@
                             <ns4:valueType ns3:type="simple">
 <ns1:TypeName>
     <ns1:aName>
-        <ns1:CharacterString>string</ns1:CharacterString>
+        <ns1:CharacterString>boolean</ns1:CharacterString>
     </ns1:aName>
 </ns1:TypeName>
                             </ns4:valueType>
@@ -404,7 +404,7 @@
                             <ns4:valueType ns3:type="simple">
 <ns1:TypeName>
     <ns1:aName>
-        <ns1:CharacterString>string</ns1:CharacterString>
+        <ns1:CharacterString>boolean</ns1:CharacterString>
     </ns1:aName>
 </ns1:TypeName>
                             </ns4:valueType>

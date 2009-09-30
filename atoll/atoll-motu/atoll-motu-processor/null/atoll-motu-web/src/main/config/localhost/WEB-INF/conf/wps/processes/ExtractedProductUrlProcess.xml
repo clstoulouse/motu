@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE include [
+<!ENTITY requestIdInputParameters SYSTEM "../include/RequestIdInputParameters.xml">
+<!ENTITY commonBasicOutputParameters SYSTEM "../include/CommonBasicOutputParameters.xml">
+<!ENTITY urlOutputParameters SYSTEM "../include/UrlOutputParameters.xml">
+]>
+<ProcessDefinition configVersion="0.1.0"
+	processVersion="1.0.0" statusSupported="false" storeSupported="false"
+	xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/wps/0.1.0/process_definition.xsd">
+	
+	<Identifier>GetExtractedProductUrl</Identifier>
+	<JavaClass>fr.cls.atoll.motu.processor.wps.ExtractedProductUrl</JavaClass>
+	<Title>Get the url of the extracted product.</Title>
+	<Abstract><![CDATA[The purpose of this process is get the url of an extraction process from a request identifier.
+	The request identifier is provided by the result of an extraction process.
+	The return values are url of the data and the return process code (ok or error code) and the correponding message).
+	The url can be empty is the extration has not be done yet (not done yet or in error)]]>
+	</Abstract>
+	<InputParameters>
+	
+		&requestIdInputParameters;
+
+
+	</InputParameters>
+
+	<OutputParameters>
+		
+		&urlOutputParameters;
+		&commonBasicOutputParameters;
+
+	</OutputParameters>
+</ProcessDefinition>

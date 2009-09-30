@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE include [
+<!ENTITY commonBasicInputParameters SYSTEM "../include/CommonBasicInputParameters.xml">
+<!ENTITY commonBasicOutputParameters SYSTEM "../include/CommonBasicOutputParameters.xml">
+<!ENTITY timeCoverageOutputParameters SYSTEM "../include/TimeCoverageOutputParameters.xml">
+]>
+<ProcessDefinition configVersion="0.1.0"
+	processVersion="1.0.0" statusSupported="false" storeSupported="true"
+	xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/wps/0.1.0/process_definition.xsd"
+	xmlns:xi="http://www.w3.org/2001/XInclude">
+	
+	<Identifier>GetProductTimeCoverage</Identifier>
+	<JavaClass>fr.cls.atoll.motu.processor.wps.ProductTimeCoverageProcess</JavaClass>
+	<Title>Process to get the time coverage of a product.</Title>
+	<Abstract><![CDATA[The purpose of this process is to provide the time coverage of a product.
+	A product is identified either by the Service name and Product name input parameters or by the url of the product (Data input parameter)
+	The return values are the status of the request (pending, in progress, done, error) and the return process code (ok or error code) and the correponding message)]]>
+	</Abstract>
+	<InputParameters>
+	
+		&commonBasicInputParameters;
+		
+	</InputParameters>
+	<OutputParameters>
+		
+		&timeCoverageOutputParameters;
+		
+		&commonBasicOutputParameters;
+				
+	</OutputParameters>
+</ProcessDefinition>

@@ -3,10 +3,10 @@ package fr.cls.atoll.motu.processor.wps.framework;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -23,12 +23,15 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
 import org.apache.log4j.Logger;
 import org.apache.xerces.dom.DocumentImpl;
 import org.geotoolkit.parameter.DefaultParameterDescriptor;
 import org.geotoolkit.parameter.Parameter;
 import org.jgrapht.DirectedGraph;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 import org.opengis.parameter.InvalidParameterTypeException;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
@@ -37,6 +40,7 @@ import org.w3c.dom.Element;
 
 import fr.cls.atoll.motu.library.data.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.xml.XMLErrorHandler;
@@ -75,20 +79,31 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.12 $ - $Date: 2009-09-29 14:09:19 $
+ * @version $Revision: 1.13 $ - $Date: 2009-09-30 13:35:49 $
  */
 public class WPSFactory {
 
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(WPSFactory.class);
 
-    /** The Constant SCHEMA_WPS_ALL. */
-//    protected static final String HTTP_SCHEMA_WPS_EXECUTE_REQUEST = "http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd";
-//    protected final static String OGC_WPS = "ogcwps";
-//    protected String wpsSchema = "schema/wps";
-//    protected String localWpsSchemaPath;
-//    protected String localWpsExecuteRequestSchemaRelPath = "/wps/1.0.0/wpsExecute_request.xsd";
+    public static final String DATETIME_PATTERN1 = "yyyy-MM-dd";
+    public static final String DATETIME_PATTERN2 = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final String DATETIME_PATTERN3 = "yyyy-MM-dd' 'HH:mm:ss";
 
+    public static final Map<String, DateTimeFormatter> DATETIME_FORMATTERS = new HashMap<String, DateTimeFormatter>();
+
+    static {
+        DATETIME_FORMATTERS.put(DATETIME_PATTERN1, DateTimeFormat.forPattern(DATETIME_PATTERN1));
+        DATETIME_FORMATTERS.put(DATETIME_PATTERN2, DateTimeFormat.forPattern(DATETIME_PATTERN2));
+        DATETIME_FORMATTERS.put(DATETIME_PATTERN3, DateTimeFormat.forPattern(DATETIME_PATTERN3));
+    }
+    /** The Constant SCHEMA_WPS_ALL. */
+    // protected static final String HTTP_SCHEMA_WPS_EXECUTE_REQUEST =
+    // "http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd";
+    // protected final static String OGC_WPS = "ogcwps";
+    // protected String wpsSchema = "schema/wps";
+    // protected String localWpsSchemaPath;
+    // protected String localWpsExecuteRequestSchemaRelPath = "/wps/1.0.0/wpsExecute_request.xsd";
     /** The Constant UTF8. */
     public static final String UTF8 = "UTF-8";
 
@@ -1674,9 +1689,9 @@ public class WPSFactory {
                 URL url = null;
                 if (!ServiceMetadata.isNullOrEmpty(schemaPath)) {
                     url = Organizer.findResource(schemaPath);
-                    
+
                 } else {
-                    url = Organizer.findResource(localWPSRootSchemaRelPath); 
+                    url = Organizer.findResource(localWPSRootSchemaRelPath);
                     String[] str = url.toString().split(localWPSRootSchemaRelPath);
                     url = new URL(str[0]);
                 }
@@ -1710,4 +1725,54 @@ public class WPSFactory {
 
         return inS;
     }
+
+    /**
+     * Convert a given date into a string representation.
+     * 
+     * @param dt the date to print.
+     * @return the string representation.
+     */
+    public static String DateTimeToString(DateTime dt) {
+        return WPSFactory.DATETIME_FORMATTERS.get(WPSFactory.DATETIME_PATTERN2).print(dt);
+    }
+
+    /**
+     * Convert a given date into a string representation.
+     * 
+     * @param dt the date to print.
+     * @return the string representation.
+     */
+    public static String DateToString(DateTime dt) {
+        return WPSFactory.DATETIME_FORMATTERS.get(WPSFactory.DATETIME_PATTERN1).print(dt);
+    }
+
+    /**
+     * Convert a given string date representation into an instance of Joda time date.
+     * 
+     * @param s the string to convert into a date.
+     * @return a {@link DateTime} instance.
+     * @throws MotuInvalidDateException
+     */
+    public static DateTime StringToDateTime(String s) throws MotuInvalidDateException {
+        DateTime dateTime = null;
+
+        StringBuffer stringBuffer = new StringBuffer();
+        for (DateTimeFormatter dateTimeFormatter : WPSFactory.DATETIME_FORMATTERS.values()) {
+            try {
+                dateTime = dateTimeFormatter.parseDateTime(s);
+            } catch (IllegalArgumentException e) {
+                stringBuffer.append(e.getMessage());
+                stringBuffer.append("\n");
+            }
+        }
+
+        if (dateTime == null) {
+            throw new MotuInvalidDateException(s, new MotuException(String.format("%s.\nAcceptable format are '%s'",
+                                                                                  stringBuffer.toString(),
+                                                                                  WPSFactory.DATETIME_FORMATTERS.keySet().toString())));
+        }
+
+        return dateTime;
+    }
+
 }

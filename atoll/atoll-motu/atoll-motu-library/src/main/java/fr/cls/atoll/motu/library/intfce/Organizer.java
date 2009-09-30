@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.net.Authenticator;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -95,7 +96,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.25 $ - $Date: 2009-09-17 14:01:46 $
+ * @version $Revision: 1.26 $ - $Date: 2009-09-30 13:34:38 $
  */
 public class Organizer {
 
@@ -848,6 +849,43 @@ public class Organizer {
         }
         return motuConfig;
     }
+    
+    /**
+     * Inits the proxy parameters.
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static void initProxyLogin() throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("BEGIN Organizer.initProxyLogin()");
+//            LOG.debug("proxyHost:");
+//            LOG.debug(System.getProperty("proxyHost"));
+//            LOG.debug("proxyPort:");
+//            LOG.debug(System.getProperty("proxyPort"));
+//            LOG.debug("socksProxyHost:");
+//            LOG.debug(System.getProperty("socksProxyHost"));
+//            LOG.debug("socksProxyPort:");
+//            LOG.debug(System.getProperty("socksProxyPort"));
+//            LOG.debug("properties:");
+//            LOG.debug(System.getProperties().toString());
+        }
+
+            if (Organizer.getMotuConfigInstance().isUseProxy()) {
+                String user = Organizer.getMotuConfigInstance().getProxyLogin();
+                String pwd = Organizer.getMotuConfigInstance().getProxyPwd();
+                System.setProperty("proxyHost", Organizer.getMotuConfigInstance().getProxyHost());
+                System.setProperty("proxyPort", Organizer.getMotuConfigInstance().getProxyPort());
+                if (user != null && pwd != null) {
+                    if (!user.equals("") && !pwd.equals("")) {
+                        Authenticator.setDefault(new SimpleAuthenticator(user, pwd));
+                    }
+                }
+            }
+         if (LOG.isDebugEnabled()) {
+            LOG.debug("END Organizer.initProxyLogin()");
+        }
+    }
+    
 
     /**
      * Gets the catalog ola.
