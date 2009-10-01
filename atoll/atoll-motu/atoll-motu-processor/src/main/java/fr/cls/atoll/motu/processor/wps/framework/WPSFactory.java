@@ -3,6 +3,7 @@ package fr.cls.atoll.motu.processor.wps.framework;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,9 +23,15 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.vfs.FileObject;
 import org.apache.log4j.Logger;
 import org.apache.xerces.dom.DocumentImpl;
+import org.deegree.commons.utils.HttpUtils.Worker;
 import org.geotoolkit.parameter.DefaultParameterDescriptor;
 import org.geotoolkit.parameter.Parameter;
 import org.jgrapht.DirectedGraph;
@@ -79,7 +86,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.13 $ - $Date: 2009-09-30 13:35:49 $
+ * @version $Revision: 1.14 $ - $Date: 2009-10-01 14:35:14 $
  */
 public class WPSFactory {
 
@@ -361,6 +368,95 @@ public class WPSFactory {
         for (InputDescriptionType inputDescriptionType : inputs) {
 
             String identifier = inputDescriptionType.getIdentifier().getValue();
+
+            Set<OperationRelationshipEdge<String>> edges = null;
+            OperationRelationshipEdge<String> edge = null;
+
+            if (directedGraph != null) {
+                edges = directedGraph.outgoingEdgesOf(operationMetadata);
+
+                WPSFactory.checkEdgeInputParameter(edges, processDescriptionType);
+
+                edge = WPSFactory.getEdgeParameter(edges, identifier);
+            }
+
+            InputType inputType = null;
+
+            // -------------------------------------------
+            // If edge not null ==> chain to another WPS
+            // -------------------------------------------
+            if (edge != null) {
+
+                OperationMetadata operationMetadataTarget = directedGraph.getEdgeTarget(edge);
+                directedGraph.getEdgeTarget(edge);
+
+                Execute executeChain = createExecuteProcessRequest(operationMetadataTarget, directedGraph);
+
+                int indexParamIn = WPSFactory.getEdgeParameterInIndex(edge, identifier);
+
+                String paramOut = WPSFactory.getEdgeParameterOutByIndex(edge, indexParamIn);
+
+                if (paramOut == null) {
+                    throw new MotuException(
+                            String
+                                    .format("ERROR in WPSFactory#createExecuteProcessRequest - Parameters between two operation doesn't match. Source operation invocation name: '%s', target operation invocation name : '%s', index %d, source operation parameter '%s'.",
+                                            operationMetadata.getInvocationName(),
+                                            operationMetadataTarget.getInvocationName(),
+                                            indexParamIn,
+                                            identifier));
+                }
+
+                ProcessDescriptionType processDescriptionTypeTarget = getWpsInfoInstance().getProcessDescription(operationMetadataTarget
+                        .getInvocationName());
+
+                if (processDescriptionTypeTarget == null) {
+                    throw new MotuException(String.format("WPSFactory#createExecuteProcessRequest : Unknown process name '%s'",
+                                                          operationMetadataTarget.getInvocationName()));
+                }
+
+                WPSFactory.checkEdgeOutputParameter(edges, processDescriptionTypeTarget);
+
+                List<OutputDescriptionType> outputsTarget = processDescriptionTypeTarget.getProcessOutputs().getOutput();
+                CodeType codeTypeTarget = null;
+
+                for (OutputDescriptionType outputDescriptionType : outputsTarget) {
+
+                    String identifierTarget = outputDescriptionType.getIdentifier().getValue();
+                    if (identifierTarget.equals(paramOut)) {
+                        codeTypeTarget = cloneCodeType(outputDescriptionType.getIdentifier());
+                        break;
+                    }
+                }
+
+                if (codeTypeTarget == null) {
+                    throw new MotuException(String
+                            .format("WPSFactory#createExecuteProcessRequest : Unknown output definition  '%s' (process name '%s')",
+                                    paramOut,
+                                    operationMetadataTarget.getInvocationName()));
+                }
+
+                OutputDefinitionType outputDefinitionType = objectFactoryWPS.createOutputDefinitionType();
+                outputDefinitionType.setIdentifier(codeTypeTarget);
+
+                ResponseFormType responseFormType = objectFactoryWPS.createResponseFormType();
+                responseFormType.setRawDataOutput(outputDefinitionType);
+
+                executeChain.setResponseForm(responseFormType);
+
+                InputReferenceType inputReferenceType = createInputReferenceType(executeChain, operationMetadataTarget);
+
+                inputType = createInputType(inputDescriptionType);
+                inputType.setReference(inputReferenceType);
+                dataInputsType.getInput().add(inputType);
+
+                // -------------
+                continue; // next input
+                // -------------
+            } // end if (edge != null)
+
+            // ---------------------------------------------------------
+            // No edge for this input ==> parameter value has to be set.
+            // ---------------------------------------------------------
             ParameterValue<?> parameterValue = dataInputValues.get(identifier);
 
             if (parameterValue == null) {
@@ -393,7 +489,7 @@ public class WPSFactory {
                 continue;
             }
 
-            ParameterValue<?> parameterValueUsed = operationMetadata.createParameterValue(identifier);
+            ParameterValue<?> parameterValueUsed = operationMetadata.createParameterValue(identifier, false);
             // @SuppressWarnings("unchecked")
             // ParameterDescriptor parameterDescriptor = new DefaultParameterDescriptor(identifier, null,
             // object.getClass(), null, true);
@@ -404,92 +500,14 @@ public class WPSFactory {
 
                 parameterValueUsed.setValue(inValue);
 
-                InputType inputType = createInputType(inputDescriptionType);
+                inputType = createInputType(inputDescriptionType);
 
-                Set<OperationRelationshipEdge<String>> edges = null;
-                OperationRelationshipEdge<String> edge = null;
+                DataType dataType = createInputDataType(inputDescriptionType, parameterValueUsed);
 
-                if (directedGraph != null) {
-                    edges = directedGraph.outgoingEdgesOf(operationMetadata);
-
-                    WPSFactory.checkEdgeInputParameter(edges, processDescriptionType);
-
-                    edge = WPSFactory.getEdgeParameter(edges, identifier);
+                if (dataType == null) {
+                    continue;
                 }
-
-                if (edge == null) {
-
-                    DataType dataType = createInputDataType(inputDescriptionType, parameterValueUsed);
-
-                    if (dataType == null) {
-                        continue;
-                    }
-                    inputType.setData(dataType);
-
-                } else {
-
-                    OperationMetadata operationMetadataTarget = directedGraph.getEdgeTarget(edge);
-                    directedGraph.getEdgeTarget(edge);
-
-                    Execute executeChain = createExecuteProcessRequest(operationMetadataTarget, directedGraph);
-
-                    int indexParamIn = WPSFactory.getEdgeParameterInIndex(edge, identifier);
-
-                    String paramOut = WPSFactory.getEdgeParameterOutByIndex(edge, indexParamIn);
-
-                    if (paramOut == null) {
-                        throw new MotuException(
-                                String
-                                        .format("ERROR in WPSFactory#createExecuteProcessRequest - Parameters between two operation doesn't match. Source operation invocation name: '%s', target operation invocation name : '%s', index %d, source operation parameter '%s'.",
-                                                operationMetadata.getInvocationName(),
-                                                operationMetadataTarget.getInvocationName(),
-                                                indexParamIn,
-                                                identifier));
-                    }
-
-                    ProcessDescriptionType processDescriptionTypeTarget = getWpsInfoInstance().getProcessDescription(operationMetadataTarget
-                            .getInvocationName());
-
-                    if (processDescriptionTypeTarget == null) {
-                        throw new MotuException(String.format("WPSFactory#createExecuteProcessRequest : Unknown process name '%s'",
-                                                              operationMetadataTarget.getInvocationName()));
-                    }
-
-                    WPSFactory.checkEdgeOutputParameter(edges, processDescriptionTypeTarget);
-
-                    List<OutputDescriptionType> outputsTarget = processDescriptionTypeTarget.getProcessOutputs().getOutput();
-                    CodeType codeTypeTarget = null;
-
-                    for (OutputDescriptionType outputDescriptionType : outputsTarget) {
-
-                        String identifierTarget = outputDescriptionType.getIdentifier().getValue();
-                        if (identifierTarget.equals(paramOut)) {
-                            codeTypeTarget = cloneCodeType(outputDescriptionType.getIdentifier());
-                            break;
-                        }
-                    }
-
-                    if (codeTypeTarget == null) {
-                        throw new MotuException(String
-                                .format("WPSFactory#createExecuteProcessRequest : Unknown output definition  '%s' (process name '%s')",
-                                        paramOut,
-                                        operationMetadataTarget.getInvocationName()));
-                    }
-
-                    OutputDefinitionType outputDefinitionType = objectFactoryWPS.createOutputDefinitionType();
-                    outputDefinitionType.setIdentifier(codeTypeTarget);
-
-                    ResponseFormType responseFormType = objectFactoryWPS.createResponseFormType();
-                    responseFormType.setRawDataOutput(outputDefinitionType);
-
-                    executeChain.setResponseForm(responseFormType);
-
-                    InputReferenceType inputReferenceType = createInputReferenceType(executeChain, operationMetadataTarget);
-
-                    // InputReferenceType inputReferenceType = createInputReferenceType(inputDescriptionType,
-                    // parameterValueUsed)e(inputDescriptionType, parameterValueUsed);
-                    inputType.setReference(inputReferenceType);
-                }
+                inputType.setData(dataType);
 
                 dataInputsType.getInput().add(inputType);
             }
@@ -1773,6 +1791,28 @@ public class WPSFactory {
         }
 
         return dateTime;
+    }
+
+    public static int postAsync(String url, InputStream postBody, Map<String, String> headers) throws HttpException, IOException {
+        // TODO no proxies used
+        HttpClient client = new HttpClient();
+        HttpMethodParams httpMethodParams = new HttpMethodParams();
+        httpMethodParams.setIntParameter(HttpMethodParams.SO_TIMEOUT, 1);
+        
+        PostMethod post = new PostMethod(url);
+        post.setRequestEntity(new InputStreamRequestEntity(postBody));
+        post.setParams(httpMethodParams);
+        
+        for (String key : headers.keySet()) {
+            post.setRequestHeader(key, headers.get(key));
+        }
+        int retcode = -1;
+        try {
+            retcode = client.executeMethod(post);
+        } catch (SocketTimeoutException e) {
+            // do nothing
+        }
+        return retcode;
     }
 
 }

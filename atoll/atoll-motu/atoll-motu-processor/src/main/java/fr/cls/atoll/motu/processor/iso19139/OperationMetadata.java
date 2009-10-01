@@ -29,7 +29,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.8 $ - $Date: 2009-09-30 13:35:49 $
+ * @version $Revision: 1.9 $ - $Date: 2009-10-01 14:35:14 $
  */
 public class OperationMetadata {
     /**
@@ -827,7 +827,9 @@ public class OperationMetadata {
         }
         return returnMap;
     }
-
+    public ParameterValue<?> createParameterValue(String paramName) throws MotuException {
+        return createParameterValue(paramName, true);
+    }
     /**
      * Creates the parameter value.
      * 
@@ -837,7 +839,7 @@ public class OperationMetadata {
      * 
      * @throws MotuException the motu exception
      */
-    public ParameterValue<?> createParameterValue(String paramName) throws MotuException {
+    public ParameterValue<?> createParameterValue(String paramName, boolean allowCollection) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("createParameterValue(String) - entering");
         }
@@ -846,7 +848,7 @@ public class OperationMetadata {
         if (parameterType == null) {
             throw new MotuException(String.format("ERROR - ISO 19139 parameter '%s' unknown in operation : '%s')", paramName, getOperationName()));
         }
-        ParameterValue<?> returnParameterValue = createParameterValue(parameterType);
+        ParameterValue<?> returnParameterValue = createParameterValue(parameterType, allowCollection);
         if (LOG.isDebugEnabled()) {
             LOG.debug("createParameterValue(String) - exiting");
         }
@@ -863,6 +865,9 @@ public class OperationMetadata {
      * @throws MotuException the motu exception
      */
     public ParameterValue<?> createParameterValue(SVParameterType parameterType) throws MotuException {
+        return createParameterValue(parameterType, true);
+    }
+    public ParameterValue<?> createParameterValue(SVParameterType parameterType, boolean allowCollection) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("createParameterValue(SVParameterType) - entering");
         }
@@ -879,7 +884,7 @@ public class OperationMetadata {
         }
         ParameterValue<?> returnParameterValue = null;
         
-        if (parameterType.getRepeatability().isBoolean()) {
+        if (parameterType.getRepeatability().isBoolean() && allowCollection) {
             returnParameterValue = WPSFactory.createParameter(paramName, Collection.class, null);
 
         } else {

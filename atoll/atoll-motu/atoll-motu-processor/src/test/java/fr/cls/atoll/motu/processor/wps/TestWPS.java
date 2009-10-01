@@ -62,7 +62,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.21 $ - $Date: 2009-09-30 13:35:49 $
+ * @version $Revision: 1.22 $ - $Date: 2009-10-01 14:35:14 $
  */
 class StringList extends ArrayList<String> {
 }
@@ -91,16 +91,23 @@ public class TestWPS {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        Collection<String> tt = new ArrayList<String>();
+//        Collection<String> tt = new ArrayList<String>();
+//        tt.add("qsdfsdf");
+//        
+//        System.out.println(tt.getClass());
+//        System.out.println(tt.getClass().getGenericSuperclass());
+//        ParameterizedType pt = (ParameterizedType) tt.getClass().getGenericSuperclass();
+//        System.out.println(pt.getActualTypeArguments()[0]);
+//        System.out.println(pt.getOwnerType());
+//        System.out.println(pt.getRawType());
+//        System.out.println(tt.getClass().getTypeParameters()[0].getName());
+//        System.out.println(tt.getClass().getTypeParameters()[0].getGenericDeclaration());
+//        System.out.println(tt.getClass().getComponentType());
+//        
+//        
+//        Object o = tt.iterator().next();
+//        System.out.println(o.getClass());
         
-        System.out.println(tt.getClass());
-        System.out.println(tt.getClass().getGenericSuperclass());
-        ParameterizedType pt = (ParameterizedType) tt.getClass().getGenericSuperclass();
-        System.out.println(pt.getActualTypeArguments()[0]);
-        System.out.println(pt.getOwnerType());
-        System.out.println(pt.getRawType());
-        System.out.println(tt.getClass().getTypeParameters()[0].getName());
-        System.out.println(tt.getClass().getTypeParameters()[0].getGenericDeclaration());
 
 //        Type type = StringList.class.getGenericSuperclass();
 //        System.out.println(type); // java.util.ArrayList<java.lang.String>
@@ -220,6 +227,29 @@ public class TestWPS {
                 System.out.println(nextLine);
             }
 
+        } catch (HttpException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MotuException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            System.out.println(e.notifyException());
+        }
+
+    }
+    public static void testBodyPostDontWaitResponse(String xmlFile, String href) {
+
+        //String href = "http://localhost:8080/atoll-motuservlet/services";
+        
+        Map<String, String> headers = new HashMap<String, String>();
+        try {
+            InputStream is = Organizer.getUriAsInputStream(xmlFile);
+            int ret = WPSFactory.postAsync(href, is, headers);
+            System.out.println("WPSFactory.post returned code: ");
+            System.out.println(ret);
         } catch (HttpException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -892,7 +922,8 @@ public class TestWPS {
             System.out.println("===============> Execute WPS");
             
 
-            testBodyPost(wpsXml, serverURL);
+            //testBodyPost(wpsXml, serverURL);
+            testBodyPostDontWaitResponse(wpsXml, serverURL);
             
         } catch (MotuExceptionBase e) {
             // TODO Auto-generated catch block

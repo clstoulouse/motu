@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+		<ComplexOutput>
+			<Identifier>url</Identifier>
+			<Title>Remote data url</Title>			
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
+		</ComplexOutput>
+		<ComplexOutput>
+			<Identifier>localUrl</Identifier>
+			<Title>Local data url</Title>			
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
+		</ComplexOutput>
+		

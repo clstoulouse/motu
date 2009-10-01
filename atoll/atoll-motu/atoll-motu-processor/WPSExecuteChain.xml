@@ -1,5 +1,123 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:Execute language="en" version="1.0.0" service="WPS" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd" xmlns:ns2="http://www.opengis.net/wps/1.0.0" xmlns:ns1="http://www.opengis.net/ows/1.1" xmlns:ns3="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <ns1:Identifier>CompressExtraction</ns1:Identifier>
-    <ns2:DataInputs/>
+    <ns1:Identifier>Push</ns1:Identifier>
+    <ns2:DataInputs>
+        <ns2:Input>
+            <ns1:Identifier>requestid</ns1:Identifier>
+            <ns1:Title>The unique id of the request</ns1:Title>
+            <ns2:Reference encoding="UTF-8" method="POST" ns3:href="http://atoll-dev.cls.fr:30080/atoll-motuservlet/services">
+                <ns2:Body>
+                    <ns2:Execute language="en" service="WPS" version="1.0.0">
+                        <ns1:Identifier>CompressExtraction</ns1:Identifier>
+                        <ns2:DataInputs>
+                            <ns2:Input>
+                                <ns1:Identifier>requestid</ns1:Identifier>
+                                <ns1:Title>The unique id of the request</ns1:Title>
+                                <ns2:Reference encoding="UTF-8" method="POST" ns3:href="http://atoll-dev.cls.fr:30080/atoll-motuservlet/services">
+                                    <ns2:Body>
+                                        <ns2:Execute language="en" service="WPS" version="1.0.0">
+                                            <ns1:Identifier>ExtractData</ns1:Identifier>
+                                            <ns2:DataInputs>
+                                                <ns2:Input>
+                                                    <ns1:Identifier>service</ns1:Identifier>
+                                                    <ns1:Title>Name of the Motu service</ns1:Title>
+                                                    <ns1:Abstract>This parameter specifies the name of the Motu service as described in the Motu configuration</ns1:Abstract>
+                                                    <ns2:Data>
+                                                        <ns2:LiteralData dataType="string">mercator</ns2:LiteralData>
+                                                    </ns2:Data>
+                                                </ns2:Input>
+                                                <ns2:Input>
+                                                    <ns1:Identifier>product</ns1:Identifier>
+                                                    <ns1:Title>The product identifier (name)</ns1:Title>
+                                                    <ns2:Data>
+                                                        <ns2:LiteralData dataType="string">mercatorPsy3v2_nat_mean_best_estimate</ns2:LiteralData>
+                                                    </ns2:Data>
+                                                </ns2:Input>
+                                                <ns2:Input>
+                                                    <ns1:Identifier>starttime</ns1:Identifier>
+                                                    <ns1:Title>The start coverage datetime</ns1:Title>
+                                                    <ns2:Data>
+                                                        <ns2:LiteralData dataType="datetime">2009-04-27T10:00:00.000+02:00</ns2:LiteralData>
+                                                    </ns2:Data>
+                                                </ns2:Input>
+                                                <ns2:Input>
+                                                    <ns1:Identifier>endtime</ns1:Identifier>
+                                                    <ns1:Title>The end coverage datetime</ns1:Title>
+                                                    <ns2:Data>
+                                                        <ns2:LiteralData dataType="datetime">2009-04-28T00:00:00.000+02:00</ns2:LiteralData>
+                                                    </ns2:Data>
+                                                </ns2:Input>
+                                                <ns2:Input>
+                                                    <ns1:Identifier>variable</ns1:Identifier>
+                                                    <ns1:Title>Name or identifier of the data</ns1:Title>
+                                                    <ns2:Data>
+                                                        <ns2:LiteralData dataType="string">u</ns2:LiteralData>
+                                                    </ns2:Data>
+                                                </ns2:Input>
+                                                <ns2:Input>
+                                                    <ns1:Identifier>lowdepth</ns1:Identifier>
+                                                    <ns1:Title>The lower depth (z)</ns1:Title>
+                                                    <ns2:Data>
+                                                        <ns2:LiteralData dataType="string">surface</ns2:LiteralData>
+                                                    </ns2:Data>
+                                                </ns2:Input>
+                                                <ns2:Input>
+                                                    <ns1:Identifier>highdepth</ns1:Identifier>
+                                                    <ns1:Title>The higher depth (z)</ns1:Title>
+                                                    <ns2:Data>
+                                                        <ns2:LiteralData dataType="string">150</ns2:LiteralData>
+                                                    </ns2:Data>
+                                                </ns2:Input>
+                                            </ns2:DataInputs>
+                                            <ns2:ResponseForm>
+                                                <ns2:RawDataOutput>
+                                                    <ns1:Identifier>requestid</ns1:Identifier>
+                                                </ns2:RawDataOutput>
+                                            </ns2:ResponseForm>
+                                        </ns2:Execute>
+                                    </ns2:Body>
+                                </ns2:Reference>
+                            </ns2:Input>
+                        </ns2:DataInputs>
+                        <ns2:ResponseForm>
+                            <ns2:RawDataOutput>
+                                <ns1:Identifier>requestid</ns1:Identifier>
+                            </ns2:RawDataOutput>
+                        </ns2:ResponseForm>
+                    </ns2:Execute>
+                </ns2:Body>
+            </ns2:Reference>
+        </ns2:Input>
+        <ns2:Input>
+            <ns1:Identifier>to</ns1:Identifier>
+            <ns1:Title>Destination uri</ns1:Title>
+            <ns2:Data>
+                <ns2:ComplexData encoding="UTF-8" mimeType="text/plain">ftp://t:t@CLS-EARITH.pc.cls.fr/Dossier4</ns2:ComplexData>
+            </ns2:Data>
+        </ns2:Input>
+        <ns2:Input>
+            <ns1:Identifier>remove</ns1:Identifier>
+            <ns1:Title>Remove the source after transfer.</ns1:Title>
+            <ns1:Abstract>A flag to point out if the source data have to be deleted after transfer.
+			Default value if false.
+			
+			</ns1:Abstract>
+            <ns2:Data>
+                <ns2:LiteralData dataType="boolean">false</ns2:LiteralData>
+            </ns2:Data>
+        </ns2:Input>
+        <ns2:Input>
+            <ns1:Identifier>rename</ns1:Identifier>
+            <ns1:Title>Keep the destination file name</ns1:Title>
+            <ns1:Abstract>A flag to keep the same file name: destination file has the same name than source file.
+			If true: the destination uri doesn't contain the file name (only directories).
+			If false: the destination uri contains the file name.
+			Default value if false.
+			
+			</ns1:Abstract>
+            <ns2:Data>
+                <ns2:LiteralData dataType="boolean">false</ns2:LiteralData>
+            </ns2:Data>
+        </ns2:Input>
+    </ns2:DataInputs>
 </ns2:Execute>

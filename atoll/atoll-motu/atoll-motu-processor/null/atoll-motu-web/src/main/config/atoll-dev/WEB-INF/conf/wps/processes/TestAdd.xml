@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProcessDefinition configVersion="0.1.0"
+	processVersion="1.0.0" statusSupported="true" storeSupported="true"
+	xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/wps/0.1.0/process_definition.xsd">
+	<!--
+		xmlns:wps="http://www.opengis.net/wps/1.0.0"
+		xmlns:ows="http://www.opengis.net/ows/1.1"
+	-->
+	<Identifier>TestAdd</Identifier>
+	<JavaClass>fr.cls.atoll.motu.processor.wps.TestAdd</JavaClass>
+	<Title>Add 2 integer.</Title>
+	<Abstract>Add 2 integer</Abstract>
+	<InputParameters>
+		<ComplexInput minOccurs="1">
+			<Identifier>A</Identifier>		
+			<Title>A value</Title>	
+			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
+		</ComplexInput>
+		<ComplexInput minOccurs="1">
+			<Identifier>B</Identifier>
+			<Title>A value</Title>				
+			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
+		</ComplexInput>
+		<!--
+			<LiteralInput minOccurs="1"> <Title>Number A</Title> <DataType
+			reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
+			</LiteralInput> <LiteralInput minOccurs="1">
+			<Identifier>B</Identifier> <Title>Number B</Title> <DataType
+			reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
+			</LiteralInput>
+		-->
+	</InputParameters>
+	<OutputParameters>
+		<ComplexOutput>
+			<Identifier>C</Identifier>
+			<Title>A + B</Title>			
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
+			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
+		</ComplexOutput>
+	</OutputParameters>
+</ProcessDefinition>
