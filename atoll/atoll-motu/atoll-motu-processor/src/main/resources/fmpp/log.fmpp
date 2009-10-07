@@ -1,8 +1,8 @@
 FMPP log file
-Log file created: Wed Sep 30 14:53:04 CEST 2009
+Log file created: Wed Oct 07 15:57:49 CEST 2009
 
 ===============================================================================
-PROCESSING SESSION STARTED: Wed Sep 30 14:53:04 CEST 2009
+PROCESSING SESSION STARTED: Wed Oct 07 15:57:49 CEST 2009
 FMPP version: 0.9.14 (using FreeMarker 2.3.15)
 
 ===============================================================================
@@ -11,5 +11,5 @@ END OF PROCESSING SESSION
 Summary:
 1 executed + 0 xmlRendered + 0 copied = 1 successfully processed
 0 failed, 0 warning(s)
-Time elapsed: 0.094 seconds
+Time elapsed: 0.109 seconds
 ===============================================================================

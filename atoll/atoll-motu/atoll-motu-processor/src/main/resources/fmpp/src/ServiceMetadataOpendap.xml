@@ -144,6 +144,173 @@
                 <ns4:SV_CouplingType codeListValue="" codeList=""></ns4:SV_CouplingType>
             </ns4:couplingType>
             <ns4:containsOperations ns3:type="simple">
+                <ns4:SV_OperationMetadata>
+                    <ns4:operationName>
+                        <ns1:CharacterString>GetRequestStatus</ns1:CharacterString>
+                    </ns4:operationName>
+                    <ns4:DCP>
+                        <ns4:DCPList codeListValue="" codeList=""></ns4:DCPList>
+                    </ns4:DCP>
+                    <ns4:operationDescription>
+                        <ns1:CharacterString>Process to check the status of a request. 	  
+	The purpose of this process is to to check the status of a request (pending, in progress, done, error) from a request identifier.
+	The request identifier is provided by the result of an extraction process.
+	The return values are the status of the request (pending, in progress, done, error), 
+	the request identifer and the return process code (ok or error code) and the correponding message)				</ns1:CharacterString>
+                    </ns4:operationDescription>
+                    <ns4:invocationName>
+                        <ns1:CharacterString>GetRequestStatus</ns1:CharacterString>
+                    </ns4:invocationName>
+                    <ns4:parameters ns3:type="simple">
+                        <ns4:SV_Parameter>
+                            <ns4:name>
+<ns1:aName>
+    <ns1:CharacterString>requestid</ns1:CharacterString>
+</ns1:aName>
+<ns1:attributeType ns3:type="simple">
+    <ns1:TypeName>
+        <ns1:aName>
+            <ns1:CharacterString></ns1:CharacterString>
+        </ns1:aName>
+    </ns1:TypeName>
+</ns1:attributeType>
+                            </ns4:name>
+                            <ns4:direction>
+<ns4:SV_ParameterDirection>in</ns4:SV_ParameterDirection>
+                            </ns4:direction>
+                            <ns4:description>
+<ns1:CharacterString>The unique id of the request</ns1:CharacterString>
+                            </ns4:description>
+                            <ns4:optionality>
+<ns1:CharacterString>false</ns1:CharacterString>
+                            </ns4:optionality>
+                            <ns4:repeatability>
+<ns1:Boolean>false</ns1:Boolean>
+                            </ns4:repeatability>
+                            <ns4:valueType ns3:type="simple">
+<ns1:TypeName>
+    <ns1:aName>
+        <ns1:CharacterString>long</ns1:CharacterString>
+    </ns1:aName>
+</ns1:TypeName>
+                            </ns4:valueType>
+                        </ns4:SV_Parameter>
+                    </ns4:parameters>
+                    <ns4:parameters ns3:type="simple">
+                        <ns4:SV_Parameter>
+                            <ns4:name>
+<ns1:aName>
+    <ns1:CharacterString>status</ns1:CharacterString>
+</ns1:aName>
+<ns1:attributeType ns3:type="simple">
+    <ns1:TypeName>
+        <ns1:aName>
+            <ns1:CharacterString></ns1:CharacterString>
+        </ns1:aName>
+    </ns1:TypeName>
+</ns1:attributeType>
+                            </ns4:name>
+                            <ns4:direction>
+<ns4:SV_ParameterDirection>out</ns4:SV_ParameterDirection>
+                            </ns4:direction>
+                            <ns4:description>
+<ns1:CharacterString>Status of a request. 1 = DONE, 	2 = ERROR, 3 = PENDING, 	4 = IN PROGRESS</ns1:CharacterString>
+                            </ns4:description>
+                            <ns4:optionality>
+<ns1:CharacterString>true</ns1:CharacterString>
+                            </ns4:optionality>
+                            <ns4:repeatability>
+<ns1:Boolean>false</ns1:Boolean>
+                            </ns4:repeatability>
+                            <ns4:valueType ns3:type="simple">
+<ns1:TypeName>
+    <ns1:aName>
+        <ns1:CharacterString>string</ns1:CharacterString>
+    </ns1:aName>
+</ns1:TypeName>
+                            </ns4:valueType>
+                        </ns4:SV_Parameter>
+                    </ns4:parameters>
+                    <ns4:parameters ns3:type="simple">
+                        <ns4:SV_Parameter>
+                            <ns4:name>
+<ns1:aName>
+    <ns1:CharacterString>code</ns1:CharacterString>
+</ns1:aName>
+<ns1:attributeType ns3:type="simple">
+    <ns1:TypeName>
+        <ns1:aName>
+            <ns1:CharacterString></ns1:CharacterString>
+        </ns1:aName>
+    </ns1:TypeName>
+</ns1:attributeType>
+                            </ns4:name>
+                            <ns4:direction>
+<ns4:SV_ParameterDirection>out</ns4:SV_ParameterDirection>
+                            </ns4:direction>
+                            <ns4:description>
+<ns1:CharacterString>Code returned by the operation</ns1:CharacterString>
+                            </ns4:description>
+                            <ns4:optionality>
+<ns1:CharacterString>true</ns1:CharacterString>
+                            </ns4:optionality>
+                            <ns4:repeatability>
+<ns1:Boolean>false</ns1:Boolean>
+                            </ns4:repeatability>
+                            <ns4:valueType ns3:type="simple">
+<ns1:TypeName>
+    <ns1:aName>
+        <ns1:CharacterString>integer</ns1:CharacterString>
+    </ns1:aName>
+</ns1:TypeName>
+                            </ns4:valueType>
+                        </ns4:SV_Parameter>
+                    </ns4:parameters>
+                    <ns4:parameters ns3:type="simple">
+                        <ns4:SV_Parameter>
+                            <ns4:name>
+<ns1:aName>
+    <ns1:CharacterString>message</ns1:CharacterString>
+</ns1:aName>
+<ns1:attributeType ns3:type="simple">
+    <ns1:TypeName>
+        <ns1:aName>
+            <ns1:CharacterString></ns1:CharacterString>
+        </ns1:aName>
+    </ns1:TypeName>
+</ns1:attributeType>
+                            </ns4:name>
+                            <ns4:direction>
+<ns4:SV_ParameterDirection>out</ns4:SV_ParameterDirection>
+                            </ns4:direction>
+                            <ns4:description>
+<ns1:CharacterString>Message returned by the operation</ns1:CharacterString>
+                            </ns4:description>
+                            <ns4:optionality>
+<ns1:CharacterString>true</ns1:CharacterString>
+                            </ns4:optionality>
+                            <ns4:repeatability>
+<ns1:Boolean>false</ns1:Boolean>
+                            </ns4:repeatability>
+                            <ns4:valueType ns3:type="simple">
+<ns1:TypeName>
+    <ns1:aName>
+        <ns1:CharacterString>string</ns1:CharacterString>
+    </ns1:aName>
+</ns1:TypeName>
+                            </ns4:valueType>
+                        </ns4:SV_Parameter>
+                    </ns4:parameters>
+                    <ns4:connectPoint ns3:type="simple">
+                        <ns5:CI_OnlineResource>
+                            <ns5:linkage>
+<ns5:URL>${connectPoint}</ns5:URL>
+                            </ns5:linkage>
+                        </ns5:CI_OnlineResource>
+                    </ns4:connectPoint>
+                </ns4:SV_OperationMetadata>
+            </ns4:containsOperations>
+            <ns4:containsOperations ns3:type="simple">
                 <ns4:SV_OperationMetadata id="PushData">
                     <ns4:operationName>
                         <ns1:CharacterString>PushData</ns1:CharacterString>

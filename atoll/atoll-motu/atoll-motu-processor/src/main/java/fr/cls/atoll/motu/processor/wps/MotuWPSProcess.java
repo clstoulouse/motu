@@ -36,7 +36,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.21 $ - $Date: 2009-08-06 14:28:57 $
+ * @version $Revision: 1.22 $ - $Date: 2009-10-07 14:00:39 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
@@ -763,6 +763,9 @@ public abstract class MotuWPSProcess implements Processlet {
         }
 
         motuWPSProcessData.setServiceName(serviceName);
+        //Extraire uniquement l'id du dataset
+        productId = Organizer.getDatasetIdFromAtollURI(productId);
+        
         motuWPSProcessData.setProductId(productId);
         motuWPSProcessData.setLocationData(locationData);
 

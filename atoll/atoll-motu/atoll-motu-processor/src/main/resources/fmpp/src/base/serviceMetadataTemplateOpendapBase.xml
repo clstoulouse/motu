@@ -19,6 +19,7 @@
 	<!ENTITY operationPushData SYSTEM "./SRV_OperationPushData.xml">
 	<!ENTITY operationCompressExtraction SYSTEM "./SRV_OperationCompressExtraction.xml">
 	<!ENTITY operationGetExtractedProductUrl SYSTEM "./SRV_OperationGetExtractedProductUrl.xml">
+	<!ENTITY operationGetRequestStatus SYSTEM "./SRV_OperationGetStatus.xml">
 	<!ENTITY header SYSTEM "./MD_MetadataTemplateHeader.xml">
 	<!ENTITY footer SYSTEM "./MD_MetadataTemplateFooter.xml">
 ]>
@@ -132,6 +133,9 @@
 	<srv:couplingType>
 		<srv:SV_CouplingType codeList="" codeListValue=""/>
 	</srv:couplingType>
+	<srv:containsOperations>	
+&operationGetRequestStatus;
+	</srv:containsOperations>	
 	<srv:containsOperations>	
 &operationPushData;
 	</srv:containsOperations>	

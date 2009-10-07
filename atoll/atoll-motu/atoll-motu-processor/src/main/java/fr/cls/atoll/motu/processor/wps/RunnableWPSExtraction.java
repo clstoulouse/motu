@@ -1,23 +1,16 @@
 package fr.cls.atoll.motu.processor.wps;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletOutputs;
-import org.deegree.services.wps.output.LiteralOutput;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.queueserver.RunnableExtraction;
-import fr.cls.atoll.motu.msg.xml.ErrorType;
-import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
-import fr.cls.atoll.motu.msg.xml.StatusModeType;
 
 /**
  * <br>
@@ -27,7 +20,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.8 $ - $Date: 2009-06-11 14:46:23 $
+ * @version $Revision: 1.9 $ - $Date: 2009-10-07 14:00:39 $
  */
 public class RunnableWPSExtraction extends RunnableExtraction {
     /**
