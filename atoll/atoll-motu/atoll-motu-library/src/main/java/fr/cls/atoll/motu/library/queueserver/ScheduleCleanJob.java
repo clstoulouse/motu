@@ -29,8 +29,8 @@ import org.quartz.StatefulJob;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-10-07 08:08:41 $
  */
 public class ScheduleCleanJob implements StatefulJob {
 
@@ -168,9 +168,9 @@ public class ScheduleCleanJob implements StatefulJob {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(getFilePatterns(context));
 
-        // add temporary extract file extension
-        stringBuffer.append(".*\\");
-        stringBuffer.append(NetCdfWriter.NETCDF_FILE_EXTENSION_EXTRACT);
+//        // add temporary extract file extension
+//        stringBuffer.append("|.*\\");
+//        stringBuffer.append(NetCdfWriter.NETCDF_FILE_EXTENSION_EXTRACT);
 
         String filePatterns = stringBuffer.toString();
 
