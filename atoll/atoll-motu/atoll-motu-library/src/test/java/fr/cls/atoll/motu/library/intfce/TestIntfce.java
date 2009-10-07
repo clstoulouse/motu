@@ -78,7 +78,7 @@ import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.19 $ - $Date: 2009-08-25 13:58:06 $
+ * @version $Revision: 1.20 $ - $Date: 2009-10-07 11:19:43 $
  * 
  */
 public class TestIntfce {
@@ -93,7 +93,9 @@ public class TestIntfce {
      */
     public static void main(String[] args) {
                
-            
+//        System.out.println(Organizer.getDatasetIdFromAtollURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#dataset-identifiant"));            
+//        System.out.println(Organizer.getDatasetIdFromAtollURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#identifiant"));            
+//        System.out.println(Organizer.getDatasetIdFromAtollURI("bidon"));            
 
         // if (LOGQUEUE.isInfoEnabled()) {
         // LOGQUEUE.info("main(String[]) - xxx jentering");
@@ -330,7 +332,7 @@ public class TestIntfce {
         // productExtractDataMerseaFromHttp();
         //testLoadInventoryOLA();
         // testLoadCatalogOLA();
-        productInformationFromInventory();
+        //productInformationFromInventory();
         //productExtractDataFromInventory();
 
     }

@@ -96,7 +96,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.26 $ - $Date: 2009-09-30 13:34:38 $
+ * @version $Revision: 1.27 $ - $Date: 2009-10-07 11:19:43 $
  */
 public class Organizer {
 
@@ -167,21 +167,17 @@ public class Organizer {
         }
 
     }
+    
+    /** The Constant SHARP_DATASET_REGEXP. */
+    public static final String SHARP_DATASET_REGEXP = ".*#dataset-";
 
     /** Number of milliseconds per hour, except when a leap second is inserted. */
     public static final long MILLISECS_PER_HOUR = 60 * Organizer.MILLISECS_PER_MINUTE;
 
-    /**
-     * All minutes have this many milliseconds except the last minute of the day on a day defined with a leap
-     * second.
-     */
+    /** All minutes have this many milliseconds except the last minute of the day on a day defined with a leap second. */
     public static final long MILLISECS_PER_MINUTE = 60 * 1000;
 
-    /**
-     * Number of leap seconds per day expect on <BR/>
-     * 1. days when a leap second has been inserted, e.g. 1999 JAN 1. <BR/>
-     * 2. Daylight-savings "spring forward" or "fall back" days.
-     */
+    /** Number of leap seconds per day expect on <BR/> 1. days when a leap second has been inserted, e.g. 1999 JAN 1. <BR/> 2. Daylight-savings "spring forward" or "fall back" days. */
     protected static final long MILLISECS_PER_DAY = 24 * MILLISECS_PER_HOUR;
 
     /** The Constant CONFIG_SCHEMA_PACK_NAME. */
@@ -293,8 +289,7 @@ public class Organizer {
     /**
      * Removes the vfs system manager.
      * 
-     * @throws MotuException
-     * 
+     * @throws MotuException the motu exception
      */
     public static synchronized final void removeVFSSystemManager() throws MotuException {
         Organizer.closeVFSSystemManager();
@@ -349,9 +344,7 @@ public class Organizer {
     //
     // };
 
-    /**
-     * Free resources.
-     */
+    /** Free resources. */
     // public static void freeResources() {
     // Organizer.FILE_SYSTEM_MANAGER.remove();
     // // try {
@@ -1097,7 +1090,8 @@ public class Organizer {
      * @param uri the uri
      * 
      * @return the uRI
-     * @throws URISyntaxException
+     * 
+     * @throws URISyntaxException the URI syntax exception
      */
     public static URI newURI(String uri) throws URISyntaxException {
         return new URI(uri.replace("\\", "/"));
@@ -1216,7 +1210,8 @@ public class Organizer {
      * @param name the name or the resource
      * 
      * @return the uRL of the resource or null if not found
-     * @throws MotuException
+     * 
+     * @throws MotuException the motu exception
      */
     public static URL findResource(String name) throws MotuException {
         // first see if the resource is a plain file
@@ -1348,7 +1343,7 @@ public class Organizer {
      * @param key key whose associated value is to be returned.
      * 
      * @return the value to which this map maps the specified key, or <tt>null</tt> if the map contains no
-     *         mapping for this key.
+     * mapping for this key.
      * 
      * @see java.util.Map#get(Object)
      */
@@ -2224,11 +2219,11 @@ public class Organizer {
      * @return product object corresponding to the extraction
      * 
      * @throws NetCdfAttributeException @throws MotuInvalidDateException * @throws MotuInvalidDepthException * @throws
-     *             MotuInvalidLatitudeException * @throws MotuInvalidLongitudeException * @throws
-     *             MotuException * @throws MotuExceedingCapacityException * @throws
-     *             MotuNotImplementedException * @throws MotuInvalidDateRangeException * @throws
-     *             MotuInvalidDepthRangeException * @throws NetCdfVariableException * @throws
-     *             MotuNoVarException
+     * MotuInvalidLatitudeException * @throws MotuInvalidLongitudeException * @throws
+     * MotuException * @throws MotuExceedingCapacityException * @throws
+     * MotuNotImplementedException * @throws MotuInvalidDateRangeException * @throws
+     * MotuInvalidDepthRangeException * @throws NetCdfVariableException * @throws
+     * MotuNoVarException
      */
     // public Product extractData(String serviceName,
     // String locationData,
@@ -2452,7 +2447,7 @@ public class Organizer {
      * @param selectData logical expression if it's true extract th data, if it's failse ignore the data.
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
+     * be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * 
@@ -2503,7 +2498,7 @@ public class Organizer {
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
      * @param responseFormat response output format (HTML, XML, Ascii).
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
+     * be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * @param out writer in which response of the extraction will be list.
@@ -2601,7 +2596,7 @@ public class Organizer {
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
      * @param locationData locaton of the data to download (url, filename)
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
+     * be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * 
@@ -2658,10 +2653,11 @@ public class Organizer {
      * @param locationData locaton of the data to download (url, filename)
      * @param responseFormat response output format (HTML, XML, Ascii).
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
+     * be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * @param out writer in which response of the extraction will be list.
+     * @param productId the product id
      * 
      * @return product object corresponding to the extraction
      * 
@@ -2715,7 +2711,7 @@ public class Organizer {
      * @param selectData logical expression if it's true extract th data, if it's failse ignore the data.
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
+     * be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * @param serviceName name of the service for the product
@@ -2784,7 +2780,7 @@ public class Organizer {
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
      * @param responseFormat response output format (HTML, XML, Ascii).
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
+     * be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * @param serviceName name of the service for the product
@@ -2875,11 +2871,12 @@ public class Organizer {
      * @param locationData locaton of the data to download (url, filename)
      * @param responseFormat response output format (HTML, XML, Ascii).
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
+     * be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * @param serviceName name of the service for the product
      * @param out writer in which response of the extraction will be list.
+     * @param productId the product id
      * 
      * @return product object corresponding to the extraction
      * 
@@ -2991,6 +2988,7 @@ public class Organizer {
      * @param listLatLonCoverage the list lat lon coverage
      * @param listDepthCoverage the list depth coverage
      * @param listTemporalCoverage the list temporal coverage
+     * @param productId the product id
      * 
      * @return the amount data size
      * 
@@ -3252,6 +3250,7 @@ public class Organizer {
      * @param listDepthCoverage the list depth coverage
      * @param listTemporalCoverage the list temporal coverage
      * @param out the out
+     * @param productId the product id
      * 
      * @return the amount data size
      * 
@@ -3718,7 +3717,7 @@ public class Organizer {
      * @param key key whose associated value is to be returned.
      * 
      * @return the value to which this map maps the specified key, or <tt>null</tt> if the map contains no
-     *         mapping for this key.
+     * mapping for this key.
      * 
      * @see java.util.Map#get(Object)
      * @uml.property name="services"
@@ -4494,7 +4493,6 @@ public class Organizer {
      * @param suffix the suffix of the file name
      * 
      * @return a unique NetCdf file name based on system time.
-     * 
      */
     public static String getUniqueFileName(String prefix, String suffix) {
         // Gets a temporary fle name for the file to create.
@@ -4586,6 +4584,20 @@ public class Organizer {
         }
     }
 
+    /**
+     * Gets the dataset id from atoll uri.
+     * 
+     * @param uri the uri
+     * 
+     * @return the dataset id from atoll uri
+     */
+    public static String getDatasetIdFromAtollURI(String uri) {
+        String[] split = uri.split(SHARP_DATASET_REGEXP);
+        if (split.length <= 1) {
+            return uri;
+        }
+        return split[1];
+    }
 }
 
 // CSON: MultipleStringLiterals

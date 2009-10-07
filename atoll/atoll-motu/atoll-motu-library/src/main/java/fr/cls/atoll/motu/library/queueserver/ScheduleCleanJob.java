@@ -30,7 +30,7 @@ import org.quartz.StatefulJob;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-10-07 08:08:41 $
+ * @version $Revision: 1.3 $ - $Date: 2009-10-07 11:19:43 $
  */
 public class ScheduleCleanJob implements StatefulJob {
 
