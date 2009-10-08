@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-04-21 14:51:34 $
+ * @version $Revision: 1.3 $ - $Date: 2009-10-08 14:37:40 $
  */
 
 public class RunnableExtraction implements Runnable, Comparable<RunnableExtraction> {
@@ -686,8 +686,7 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
 
     /**
      * Init.
-     * @throws MotuException 
-     */
+      */
     private void init() {
 
         statusModeResponse = Organizer.createStatusModeResponse();

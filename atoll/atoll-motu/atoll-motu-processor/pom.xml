@@ -167,6 +167,24 @@
 							</resources>
 						</configuration>
 					</execution>
+					<execution>
+						<id>copy-resources-test</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${atoll.motu.web.config.path}/${motu.web.config.dir}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/test/resources</directory>
+									<includes>
+										<include>client/**</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 

@@ -49,6 +49,15 @@ http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
 				<wps:LiteralData>0</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
+		<wps:Input>
+			<wps:Data>
+				<wps:BoundingBoxData>
+					<ows:LowerCorner>-20 10</ows:LowerCorner>
+					<ows:UpperCorner>25 60</ows:UpperCorner>
+				</wps:BoundingBoxData>
+			</wps:Data>
+		</wps:Input>
+		
 	</wps:DataInputs>
 
 </wps:Execute>

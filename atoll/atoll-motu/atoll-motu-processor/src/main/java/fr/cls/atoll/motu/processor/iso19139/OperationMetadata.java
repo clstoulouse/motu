@@ -29,7 +29,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.9 $ - $Date: 2009-10-01 14:35:14 $
+ * @version $Revision: 1.10 $ - $Date: 2009-10-08 14:33:36 $
  */
 public class OperationMetadata {
     /**
@@ -936,11 +936,11 @@ public class OperationMetadata {
 
     }
 
-    public void setParameterValue(String name, double[] value) throws MotuException {
-        ParameterValue<?> parameterValue = getParameterValue(name);
-        parameterValue.setValue(value, null);
-
-    }
+//    public void setParameterValue(String name, double[] value) throws MotuException {
+//        ParameterValue<?> parameterValue = getParameterValue(name);
+//        parameterValue.setValue((Object)value);
+//
+//    }
 
     public void setParameterValue(String name, String value) throws MotuExceptionBase {
         ParameterValue<?> parameterValue = getParameterValue(name);

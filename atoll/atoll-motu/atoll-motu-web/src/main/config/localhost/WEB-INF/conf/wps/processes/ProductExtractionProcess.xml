@@ -52,7 +52,7 @@
 		</LiteralInput>
 		<LiteralInput minOccurs="0" maxOccurs="1">
 			<Identifier>isanonymous</Identifier>
-			<Title>flag to process user as an anonymoys one or not</Title>
+			<Title>flag to process user as an anonymous one or not</Title>
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
 			<DefaultValue>true</DefaultValue>		
 		</LiteralInput>

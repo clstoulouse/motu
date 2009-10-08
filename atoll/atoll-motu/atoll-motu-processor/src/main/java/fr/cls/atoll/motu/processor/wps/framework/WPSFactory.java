@@ -86,7 +86,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.14 $ - $Date: 2009-10-01 14:35:14 $
+ * @version $Revision: 1.15 $ - $Date: 2009-10-08 14:33:36 $
  */
 public class WPSFactory {
 
@@ -866,7 +866,7 @@ public class WPSFactory {
         }
         }
 
-        boundingBoxType.setCrs(boundingBoxInputType.getDefault().getCRS());
+        //boundingBoxType.setCrs(boundingBoxInputType.getDefault().getCRS());
 
         DataType dataType = objectFactoryWPS.createDataType();
         dataType.setBoundingBoxData(boundingBoxType);
@@ -1798,11 +1798,11 @@ public class WPSFactory {
         HttpClient client = new HttpClient();
         HttpMethodParams httpMethodParams = new HttpMethodParams();
         httpMethodParams.setIntParameter(HttpMethodParams.SO_TIMEOUT, 1);
-        
+
         PostMethod post = new PostMethod(url);
         post.setRequestEntity(new InputStreamRequestEntity(postBody));
         post.setParams(httpMethodParams);
-        
+
         for (String key : headers.keySet()) {
             post.setRequestHeader(key, headers.get(key));
         }

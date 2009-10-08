@@ -63,7 +63,7 @@ import org.apache.log4j.Logger;
  * The Class MotuServlet.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-06-11 14:46:35 $
+ * @version $Revision: 1.3 $ - $Date: 2009-10-08 14:36:52 $
  */
 public class MotuServlet extends HttpServlet implements MotuRequestParametersConstant {
 
@@ -2665,21 +2665,23 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     private void initProxyLogin() throws ServletException {
 
         try {
-            MotuConfig motuConfig = Organizer.getMotuConfigInstance();
-            if (motuConfig.isUseProxy()) {
-                String user = Organizer.getMotuConfigInstance().getProxyLogin();
-                String pwd = Organizer.getMotuConfigInstance().getProxyPwd();
-                System.setProperty("proxyHost", Organizer.getMotuConfigInstance().getProxyHost());
-                System.setProperty("proxyPort", Organizer.getMotuConfigInstance().getProxyPort());
-                if (user != null && pwd != null) {
-                    if (!user.equals("") && !pwd.equals("")) {
-                        Authenticator.setDefault(new SimpleAuthenticator(user, pwd));
-                    }
-                }
-            }
+            // MotuConfig motuConfig = Organizer.getMotuConfigInstance();
+            // if (motuConfig.isUseProxy()) {
+            // String user = Organizer.getMotuConfigInstance().getProxyLogin();
+            // String pwd = Organizer.getMotuConfigInstance().getProxyPwd();
+            // System.setProperty("proxyHost", Organizer.getMotuConfigInstance().getProxyHost());
+            // System.setProperty("proxyPort", Organizer.getMotuConfigInstance().getProxyPort());
+            // if (user != null && pwd != null) {
+            // if (!user.equals("") && !pwd.equals("")) {
+            // Authenticator.setDefault(new SimpleAuthenticator(user, pwd));
+            // }
+            // }
+            // }
+            Organizer.initProxyLogin();
         } catch (MotuException e) {
             throw new ServletException(String.format("Proxy initialisation failure - %s", e.notifyException()), e);
         }
+
     }
 
     /**

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE include [
+<!ENTITY requestIdInputParametersOptional SYSTEM "../include/RequestIdInputParametersOptional.xml">
 <!ENTITY commonBasicOutputParameters SYSTEM "../include/CommonBasicOutputParameters.xml">
 ]>
 <ProcessDefinition configVersion="0.1.0"
@@ -10,7 +11,9 @@
 	<Identifier>Push</Identifier>
 	<JavaClass>fr.cls.atoll.motu.processor.wps.Push</JavaClass>
 	<Title>Data transfer</Title>
-	<Abstract><![CDATA[The purpose of this process is to transfer data from a uri to another uri.
+	<Abstract><![CDATA[The purpose of this process is to transfer data from a uri to another uri or to tranfer the result of an extraction request (identfied by its number) to a specific uri. 	  
+	So, either the input uri or the request identifier have to be set as input parameter.
+	
 	Supported protocoled are ftp, sftp, file.
 	The return values are the return process code (ok or error code) and the correponding message.
 			
@@ -48,7 +51,11 @@
 	]]>
 	</Abstract>
 	<InputParameters>
-		<ComplexInput>
+	
+		&requestIdInputParametersOptional;
+
+		
+		<ComplexInput minOccurs="0" maxOccurs="1">
 			<Identifier>from</Identifier>
 			<Title>Source uri</Title>	
 			<Abstract>
