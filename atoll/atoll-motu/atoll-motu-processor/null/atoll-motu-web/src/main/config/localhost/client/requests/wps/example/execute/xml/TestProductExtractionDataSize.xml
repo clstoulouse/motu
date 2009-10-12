@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
 
-	<ows:Identifier>ExtractData</ows:Identifier>
+	<ows:Identifier>GetDataSize</ows:Identifier>
 	<wps:DataInputs>
 		<wps:Input>
 			<ows:Identifier>service</ows:Identifier>
@@ -49,16 +49,6 @@ http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
 				<wps:LiteralData>0</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
-		<wps:Input>
-            <ows:Identifier>geobbox</ows:Identifier>
-			<wps:Data>
-				<wps:BoundingBoxData>
-					<ows:LowerCorner>-20 10</ows:LowerCorner>
-					<ows:UpperCorner>25 60</ows:UpperCorner>
-				</wps:BoundingBoxData>
-			</wps:Data>
-		</wps:Input>
-		
 	</wps:DataInputs>
 
 </wps:Execute>

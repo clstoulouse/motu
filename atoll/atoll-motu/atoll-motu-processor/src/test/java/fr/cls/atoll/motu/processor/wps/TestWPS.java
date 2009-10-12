@@ -62,7 +62,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSInfo;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.25 $ - $Date: 2009-10-12 09:23:13 $
+ * @version $Revision: 1.26 $ - $Date: 2009-10-12 14:13:29 $
  */
 class StringList extends ArrayList<String> {
 }
@@ -860,11 +860,17 @@ public class TestWPS {
             OperationMetadata opExtractData = null;
             OperationMetadata opCompressExtraction = null;
             OperationMetadata opPush = null;
+            OperationMetadata opGetStatus = null;
 
             for (OperationMetadata op : setGraph) {
 
                 op.createParameterValues(true, false);
 
+//                if (op.getInvocationName().equalsIgnoreCase("GetRequestStatus")) {
+//                    opGetStatus = op;
+//                    setSubGraph.add(op);
+//                    setGetRequestStatusParameterValue(op);
+//                }
                 if (op.getInvocationName().equalsIgnoreCase("ExtractData")) {
                     opExtractData = op;
                     setSubGraph.add(op);
@@ -994,4 +1000,7 @@ public class TestWPS {
         op.setParameterValue("highdepth", "150");
 
     }
+    public static void setGetRequestStatusParameterValue(OperationMetadata op) throws MotuExceptionBase {
+        op.setParameterValue("requestid", 1255350789354L);
+    }    
 }

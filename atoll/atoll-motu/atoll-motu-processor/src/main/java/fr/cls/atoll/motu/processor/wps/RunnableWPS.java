@@ -2,10 +2,16 @@ package fr.cls.atoll.motu.processor.wps;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+
+import org.apache.commons.httpclient.HttpException;
+import org.deegree.commons.utils.HttpUtils;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
@@ -25,7 +31,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-10-08 14:33:36 $
+ * @version $Revision: 1.3 $ - $Date: 2009-10-12 14:13:29 $
  */
 public class RunnableWPS implements Runnable, Comparable<RunnableWPS> {
 
@@ -34,6 +40,7 @@ public class RunnableWPS implements Runnable, Comparable<RunnableWPS> {
     protected Execute execute = null;
     protected String schemaLocationKey = "";
     protected String name = "";
+    protected String serverURL = null;
     
     /** The lock. */
     protected ReentrantLock lock = null;
@@ -47,12 +54,13 @@ public class RunnableWPS implements Runnable, Comparable<RunnableWPS> {
     /** The status mode response. */
     protected StatusModeResponse statusModeResponse = null;
 
-    public RunnableWPS(String name, int range, Execute execute, String schemaLocationKey, Condition requestEndedCondition, ReentrantLock lock) {
+    public RunnableWPS(String name, int range, String serverURL, Execute execute, String schemaLocationKey, Condition requestEndedCondition, ReentrantLock lock) {
 
         init();
 
         this.name = name;
         this.range = range;
+        this.serverURL = serverURL;
         this.execute = execute;
         this.schemaLocationKey = schemaLocationKey;
         
@@ -143,17 +151,25 @@ public class RunnableWPS implements Runnable, Comparable<RunnableWPS> {
                                                                           name), e);
             setError(motuException);
         }
-
+        
+        Map<String, String> headers = new HashMap<String, String>();
+        
+        InputStream response = null;
+        
         try {
-            marshallExecute();
-        } catch (MotuMarshallException e) {
-            MotuException motuException = new MotuException(String.format("An error occurs during marshalling WPS '%s' execution (RunnableWPS.run).",
+            setStatusInProgress();
+
+            response = HttpUtils.post(HttpUtils.STREAM, serverURL, inputStream, headers);
+
+            setStatusDone();
+        
+        } catch (Exception e) {
+            MotuException motuException = new MotuException(String.format("An error occurs during during  WPS request execution '%s' execution (RunnableWPS.run).",
                                                                           name), e);
             setError(motuException);
-
-        } catch (Error e) {
         }
 
+        
     }
 
     /** {@inheritDoc} */
