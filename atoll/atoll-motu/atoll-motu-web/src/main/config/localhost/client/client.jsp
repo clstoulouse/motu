@@ -1,5 +1,5 @@
 <%-- $HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/apps/services-template/trunk/web/client/client.jsp $ --%>
-<%-- $Id: client.jsp,v 1.2 2009-10-08 14:36:52 dearith Exp $ --%>
+<%-- $Id: client.jsp,v 1.3 2009-10-12 09:24:20 dearith Exp $ --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="org.deegree.commons.version.*"%>
 <%@ page import="java.io.File"%>
@@ -219,7 +219,7 @@
                     <td align="left" noWrap>
                         <font size="2">&nbsp;&nbsp;<b>deegree Version: </b>&nbsp;</font>
                         <!-- as of deegree v2.3 use this:
-                        <b>$Revision: 1.2 $ - Version</b>
+                        <b>$Revision: 1.3 $ - Version</b>
                         -->
                     </td>
                     <td align="right" noWrap>

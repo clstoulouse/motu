@@ -2,4 +2,5 @@
 		<BoundingBoxInput minOccurs="0" maxOccurs="1" >
 			<Identifier>geobbox</Identifier>
 			<Title>The Latitude/Longitude bounding box</Title>
+			<DefaultCRS>EPSG:4326</DefaultCRS>						
 		</BoundingBoxInput>

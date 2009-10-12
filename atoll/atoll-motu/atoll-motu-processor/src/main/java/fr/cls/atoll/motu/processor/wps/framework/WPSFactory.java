@@ -86,7 +86,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.15 $ - $Date: 2009-10-08 14:33:36 $
+ * @version $Revision: 1.16 $ - $Date: 2009-10-12 09:23:13 $
  */
 public class WPSFactory {
 
@@ -145,8 +145,7 @@ public class WPSFactory {
     // }
 
     /** The wps info. */
-    protected static WPSInfo wpsInfo = null;
-
+    // protected static WPSInfo wpsInfo = null;
     /** The schema locations. */
     protected static ConcurrentMap<String, String> schemaLocations = new ConcurrentHashMap<String, String>();
 
@@ -173,34 +172,51 @@ public class WPSFactory {
      * 
      * @throws MotuException the motu exception
      */
-    public WPSInfo getWpsInfoInstance() throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getWpsInfoInstance() - entering");
-        }
+//    public WPSInfo getWpsInfoInstance() throws MotuException {
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug("getWpsInfoInstance() - entering");
+//        }
+//
+//        if (wpsInfo == null) {
+//            wpsInfo.loadDescribeProcess();
+//        }
+//
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug("getWpsInfoInstance() - exiting");
+//        }
+//        return wpsInfo;
+//    }
 
-        if (wpsInfo == null) {
-            wpsInfo.loadDescribeProcess();
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getWpsInfoInstance() - exiting");
-        }
+    public static WPSInfo getWpsInfo(String url) throws MotuException {
+        WPSInfo wpsInfo = new WPSInfo(url);
+        wpsInfo.loadDescribeProcess();
         return wpsInfo;
     }
 
+//    /**
+//     * Instantiates a new wPS factory.
+//     * 
+//     * @param url the url
+//     * 
+//     * @throws MotuException the motu exception
+//     */
+//    public WPSFactory(String url) throws MotuException {
+//
+//        WPSFactory.initSchemaLocations();
+//        WPSFactory.initJAXBWPS();
+//        wpsInfo = new WPSInfo(url);
+//        wpsInfo.loadDescribeProcess();
+//
+//    }
     /**
      * Instantiates a new wPS factory.
      * 
-     * @param url the url
-     * 
      * @throws MotuException the motu exception
      */
-    public WPSFactory(String url) throws MotuException {
+    public WPSFactory() throws MotuException {
 
         WPSFactory.initSchemaLocations();
         WPSFactory.initJAXBWPS();
-        wpsInfo = new WPSInfo(url);
-        wpsInfo.loadDescribeProcess();
 
     }
 
@@ -336,23 +352,29 @@ public class WPSFactory {
             LOG
                     .debug("createExecuteProcessRequest(OperationMetadata, DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - entering");
         }
+        if (operationMetadata == null) {
+            throw new MotuException("WPSFactory#createExecuteProcessRequest : Operation Metadata is null");
+        }
 
         Map<String, ParameterValue<?>> dataInputValues = operationMetadata.getParameterValueMap();
 
-        ProcessDescriptionType processDescriptionType = getWpsInfoInstance().getProcessDescription(operationMetadata.getInvocationName());
+        WPSInfo wpsInfo = operationMetadata.getWpsInfo();
+        
+        //ProcessDescriptionType processDescriptionType = getWpsInfoInstance().getProcessDescription(operationMetadata.getInvocationName());
+        ProcessDescriptionType processDescriptionType = wpsInfo.getProcessDescription(operationMetadata.getInvocationName());
 
         if (processDescriptionType == null) {
             throw new MotuException(String.format("WPSFactory#createExecuteProcessRequest : Unknown process name '%s'", operationMetadata
                     .getInvocationName()));
         }
 
-        ProcessDescriptions processDescriptions = wpsInfo.getProcessDescriptions();
-        if (processDescriptions == null) {
-            throw new MotuException("WPSFactory#createExecuteProcessRequest : list of process descriptions is null");
-        }
+//        ProcessDescriptions processDescriptions = wpsInfo.getProcessDescriptions();
+//        if (processDescriptions == null) {
+//            throw new MotuException("WPSFactory#createExecuteProcessRequest : list of process descriptions is null");
+//        }
 
         // create the execute object
-        Execute execute = createExecute(processDescriptionType);
+        Execute execute = createExecute(processDescriptionType, wpsInfo);
 
         // loop through each expected input in the describeprocess, and set it
         // based on what we have in the provided input map.
@@ -405,8 +427,9 @@ public class WPSFactory {
                                             indexParamIn,
                                             identifier));
                 }
+                WPSInfo wpsInfoTarget = operationMetadataTarget.getWpsInfo();
 
-                ProcessDescriptionType processDescriptionTypeTarget = getWpsInfoInstance().getProcessDescription(operationMetadataTarget
+                ProcessDescriptionType processDescriptionTypeTarget = wpsInfoTarget.getProcessDescription(operationMetadataTarget
                         .getInvocationName());
 
                 if (processDescriptionTypeTarget == null) {
@@ -522,7 +545,23 @@ public class WPSFactory {
         return execute;
 
     }
+    public Execute createExecute(ProcessDescriptionType processDescriptionType, WPSInfo wpsInfo) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createExecute(ProcessDescriptionType, WPSInfo) - entering");
+        }
 
+        if (wpsInfo == null) {
+            throw new MotuException("WPSFactory#createExecute : WPS info is null");
+        }
+
+        ProcessDescriptions processDescriptions = wpsInfo.getProcessDescriptions();
+
+        Execute returnExecute = createExecute(processDescriptionType, processDescriptions);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createExecute(ProcessDescriptionType, WPSInfo) - exiting");
+        }
+        return returnExecute;
+    }
     /**
      * Creates a new WPS object.
      * 
@@ -532,21 +571,13 @@ public class WPSFactory {
      * 
      * @throws MotuException the motu exception
      */
-    public Execute createExecute(ProcessDescriptionType processDescriptionType) throws MotuException {
+    public Execute createExecute(ProcessDescriptionType processDescriptionType, ProcessDescriptions processDescriptions) throws MotuException {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("createExecute(ProcessDescriptionType) - entering");
+            LOG.debug("createExecute(ProcessDescriptionType, ProcessDescriptions) - entering");
         }
 
-        if (wpsInfo == null) {
-            throw new MotuException("WPSFactory#createExecute : WPS info is null");
-        }
-        if (processDescriptionType == null) {
-            throw new MotuException("WPSFactory#createExecute : processDescriptionType is null");
-        }
-
-        ProcessDescriptions processDescriptions = wpsInfo.getProcessDescriptions();
         if (processDescriptions == null) {
-            throw new MotuException("WPSFactory#createExecuteProcessRequest : list of process descriptions is null");
+            throw new MotuException("WPSFactory#createExecute : list of process descriptions is null");
         }
 
         Execute execute = objectFactoryWPS.createExecute();
@@ -556,7 +587,7 @@ public class WPSFactory {
         execute.setLanguage(processDescriptions.getLang());
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("createExecute(ProcessDescriptionType) - exiting");
+            LOG.debug("createExecute(ProcessDescriptionType, ProcessDescriptions) - exiting");
         }
         return execute;
 
@@ -866,7 +897,7 @@ public class WPSFactory {
         }
         }
 
-        //boundingBoxType.setCrs(boundingBoxInputType.getDefault().getCRS());
+        // boundingBoxType.setCrs(boundingBoxInputType.getDefault().getCRS());
 
         DataType dataType = objectFactoryWPS.createDataType();
         dataType.setBoundingBoxData(boundingBoxType);

@@ -52,6 +52,7 @@ import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
 import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
+import fr.cls.atoll.motu.processor.wps.framework.WPSInfo;
 
 /**
  * <br>
@@ -61,7 +62,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.24 $ - $Date: 2009-10-08 14:33:36 $
+ * @version $Revision: 1.25 $ - $Date: 2009-10-12 09:23:13 $
  */
 class StringList extends ArrayList<String> {
 }
@@ -474,7 +475,6 @@ public class TestWPS {
             // Organizer.findResource("src/main/resources/fmpp/out/serviceMetadata_motu-opendap-mercator.xml");
             // serviceMetadata.getOperations(url, listOperation);
 
-            WPSFactory wpsFactory = new WPSFactory(serverURL);
 
             Map<String, ParameterValue<?>> dataInputValues = new HashMap<String, ParameterValue<?>>();
 
@@ -520,12 +520,15 @@ public class TestWPS {
             operationMetadata.setInvocationName("ExtractData");
             operationMetadata.setParameterValueMap(dataInputValues);
 
+            WPSFactory wpsFactory = new WPSFactory();
+
             Execute execute = wpsFactory.createExecuteProcessRequest(operationMetadata, null);
 
             FileWriter writer = new FileWriter("WPSExecute.xml");
 
-            String schemaLocationKey = String.format("%s%s", wpsFactory.getWpsInfoInstance().getProcessDescriptions().getService(), wpsFactory
-                    .getWpsInfoInstance().getProcessDescriptions().getVersion());
+            WPSInfo wpInfo = WPSFactory.getWpsInfo(serverURL);
+            
+            String schemaLocationKey = String.format("%s%s", wpInfo.getProcessDescriptions().getService(), wpInfo.getProcessDescriptions().getVersion());
             WPSFactory.marshallExecute(execute, writer, WPSFactory.getSchemaLocations().get(schemaLocationKey));
 
             dataInputValues.clear();
@@ -774,16 +777,18 @@ public class TestWPS {
             }
 
             String serverURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/services";
-            WPSFactory wpsFactory = new WPSFactory(serverURL);
+            WPSFactory wpsFactory = new WPSFactory();
 
+            
             Execute execute = wpsFactory.createExecuteProcessRequest(sourceOperations.get(0), directedSubGraph);
 
             String wpsXml = "WPSExecuteChain.xml";
 
             FileWriter writer = new FileWriter(wpsXml);
 
-            String schemaLocationKey = String.format("%s%s", wpsFactory.getWpsInfoInstance().getProcessDescriptions().getService(), wpsFactory
-                    .getWpsInfoInstance().getProcessDescriptions().getVersion());
+            WPSInfo wpsInfo =WPSFactory.getWpsInfo(serverURL);
+            String schemaLocationKey = String.format("%s%s", wpsInfo.getProcessDescriptions().getService(), 
+                    wpsInfo.getProcessDescriptions().getVersion());
             WPSFactory.marshallExecute(execute, writer, WPSFactory.getSchemaLocations().get(schemaLocationKey));
 
             System.out.println("===============> Validate WPS");
@@ -824,7 +829,7 @@ public class TestWPS {
     public static void testUnmarshallWPS() {
         try {
             String serverURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/services";
-            WPSFactory wpsFactory = new WPSFactory(serverURL);
+            WPSFactory wpsFactory = new WPSFactory();
             String file = "J:/dev/atoll-v2/atoll-motu/atoll-motu-processor/src/test/resources/client/requests/wps/example/execute/xml/TestExtractedUrlWithCompressExtraction.xml";
             Execute execute = wpsFactory.unmarshallExecute(file);
             System.out.println("END");
@@ -895,7 +900,7 @@ public class TestWPS {
 
             //String serverURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/services";
             String serverURL = sourceOperations.get(0).getConnectPoint(0);
-            WPSFactory wpsFactory = new WPSFactory(serverURL);
+            WPSFactory wpsFactory = new WPSFactory();
 
             Execute execute = wpsFactory.createExecuteProcessRequest(sourceOperations.get(0), directedSubGraph);
 
@@ -903,8 +908,10 @@ public class TestWPS {
 
             FileWriter writer = new FileWriter(wpsXml);
 
-            String schemaLocationKey = String.format("%s%s", wpsFactory.getWpsInfoInstance().getProcessDescriptions().getService(), wpsFactory
-                    .getWpsInfoInstance().getProcessDescriptions().getVersion());
+            WPSInfo wpsInfo = WPSFactory.getWpsInfo(serverURL);
+            
+            String schemaLocationKey = String.format("%s%s", wpsInfo.getProcessDescriptions().getService(),
+                                                     wpsInfo.getProcessDescriptions().getVersion());
             
             WPSFactory.marshallExecute(execute, writer, WPSFactory.getSchemaLocations().get(schemaLocationKey));
 
@@ -980,7 +987,7 @@ public class TestWPS {
         op.setParameterValue("variable", "u");
 
         
-        double[] geobbox = new double[] { -10d, -60d, 45d, 120d };
+        double[] geobbox = new double[] { 10d, -60d, 45d, 120d };
         op.setParameterValue("geobbox", geobbox);
         
         op.setParameterValue("lowdepth", "surface");

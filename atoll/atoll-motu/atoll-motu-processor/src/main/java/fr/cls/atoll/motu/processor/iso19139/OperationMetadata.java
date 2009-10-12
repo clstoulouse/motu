@@ -20,6 +20,7 @@ import org.opengis.parameter.ParameterValue;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
+import fr.cls.atoll.motu.processor.wps.framework.WPSInfo;
 
 /**
  * <br>
@@ -29,7 +30,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.10 $ - $Date: 2009-10-08 14:33:36 $
+ * @version $Revision: 1.11 $ - $Date: 2009-10-12 09:23:13 $
  */
 public class OperationMetadata {
     /**
@@ -1006,4 +1007,11 @@ public class OperationMetadata {
             LOG.debug("dump() - exiting");
         }
     }
+    
+    public WPSInfo getWpsInfo() throws MotuException {
+    
+    String url = getConnectPoint(0);
+    return WPSFactory.getWpsInfo(url);
+    }
+    
 }

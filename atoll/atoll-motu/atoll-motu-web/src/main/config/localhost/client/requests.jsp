@@ -1,5 +1,5 @@
 <%-- $HeadURL: https://sushibar/svn/deegree/apps/services-template/trunk/client.jsp $ --%>
-<%-- $Id: requests.jsp,v 1.2 2009-10-08 14:36:52 dearith Exp $ --%>
+<%-- $Id: requests.jsp,v 1.3 2009-10-12 09:24:20 dearith Exp $ --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8" isErrorPage="false" errorPage="error.jsp"
 	import="java.io.*,java.util.*,java.awt.event.*"%>
