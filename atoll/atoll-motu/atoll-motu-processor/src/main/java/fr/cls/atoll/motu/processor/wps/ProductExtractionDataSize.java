@@ -31,7 +31,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.1 $, $Date: 2009-06-03 11:44:23 $
+ * @version $Revision: 1.2 $, $Date: 2009-10-13 14:07:58 $
  */
 public class ProductExtractionDataSize extends MotuWPSProcess {
 
@@ -67,7 +67,7 @@ public class ProductExtractionDataSize extends MotuWPSProcess {
         try {
             getAmountDataSize(in, extractionParameters);
         } catch (MotuExceptionBase e) {
-            setReturnCode(out, e, false);
+            setReturnCode(out, e, true);
         }
 
  
@@ -150,129 +150,5 @@ public class ProductExtractionDataSize extends MotuWPSProcess {
 
     }
 
-    /**
-     * Product download.
-     * 
-     * @param priority the priority
-     * @param extractionParameters the extraction parameters
-     * @param mode the mode
-     * @throws MotuExceptionBase, Exception
-     */
-    private void productDownload(ProcessletInputs in, ExtractionParameters extractionParameters, String mode, int priority) throws MotuExceptionBase,
-            Exception {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("productDownload(ExtractionParameters, String, int) - entering");
-        }
-
-        MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
-
-        // boolean modeConsole = RunnableHttpExtraction.isModeConsole(mode);
-        // boolean modeUrl = RunnableHttpExtraction.isModeUrl(mode);
-        boolean modeStatus = MotuWPSProcess.isModeStatus(mode);
-        // boolean noMode = RunnableHttpExtraction.noMode(mode);
-
-        RunnableWPSExtraction runnableWPSExtraction = null;
-
-        StatusModeResponse statusModeResponse = null;
-
-        final ReentrantLock lock = new ReentrantLock();
-        final Condition requestEndedCondition = lock.newCondition();
-
-        String serviceName = extractionParameters.getServiceName();
-        Organizer organizer = getOrganizer(in);
-        try {
-
-            if (organizer.isGenericService() && !MotuWPSProcess.isNullOrEmpty(serviceName)) {
-                organizer.setCurrentService(serviceName);
-            }
-        } catch (MotuExceptionBase e) {
-            LOG.error("MotuWPSProcess.productDownload(ExtractionParameters, String, int)", e);
-
-            setReturnCode(motuWPSProcessData.getProcessletOutputs(), e, false);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("productDownload(ExtractionParameters, String, int) - exiting");
-            }
-            throw e;
-        }
-
-        runnableWPSExtraction = new RunnableWPSExtraction(
-                priority,
-                organizer,
-                extractionParameters,
-                motuWPSProcessData.getProcessletOutputs(),
-                mode,
-                requestEndedCondition,
-                lock);
-
-        // runnableHttpExtraction.lock = lock;
-
-        // isRequestIdSet = false;
-        long requestId = motuWPSProcessData.getRequestId();
-
-        runnableWPSExtraction.setRequestId(requestId);
-
-        statusModeResponse = runnableWPSExtraction.getStatusModeResponse();
-
-        statusModeResponse.setRequestId(requestId);
-        motuWPSProcessData.setRequestId(requestId);
-
-        try {
-            MotuWPSProcess.setRequestId(motuWPSProcessData.getProcessletOutputs(), Long.toString(requestId));
-        } catch (MotuExceptionBase e) {
-            LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
-            setReturnCode(motuWPSProcessData.getProcessletOutputs(), e, false);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse) - exiting");
-            }
-            return;
-        }
-
-        getRequestManagement().putIfAbsentRequestStatusMap(requestId, statusModeResponse);
-
-        try {
-            // ------------------------------------------------------
-            lock.lock();
-            // ------------------------------------------------------
-
-            getQueueServerManagement().execute(runnableWPSExtraction);
-
-            if (modeStatus) {
-                // $$$$$ response.setContentType(null);
-                // $$$$$ Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());
-                MotuWPSProcess.setStatus(motuWPSProcessData.getProcessletOutputs(), statusModeResponse.getStatus());
-                MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), statusModeResponse, false);
-            } else {
-                // --------- wait for the end of the request -----------
-                requestEndedCondition.await();
-                // ------------------------------------------------------
-            }
-            // } catch (MotuMarshallException e) {
-            // LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)",
-            // e);
-            // setReturnCode(e);
-
-        } catch (MotuExceptionBase e) {
-            LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
-            runnableWPSExtraction.aborted();
-            throw e;
-
-        } catch (Exception e) {
-            LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
-            runnableWPSExtraction.aborted();
-            throw e;
-
-        } finally {
-            // ------------------------------------------------------
-            if (lock.isLocked()) {
-                lock.unlock();
-            }
-            // ------------------------------------------------------
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse) - exiting");
-        }
-    }
 
 }

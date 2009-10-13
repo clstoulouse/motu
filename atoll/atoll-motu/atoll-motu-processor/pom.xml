@@ -167,6 +167,7 @@
 							</resources>
 						</configuration>
 					</execution>
+					<!-- 
 					<execution>
 						<id>copy-resources-test</id>
 						<phase>validate</phase>
@@ -185,6 +186,7 @@
 							</resources>
 						</configuration>
 					</execution>
+					 -->
 				</executions>
 			</plugin>
 

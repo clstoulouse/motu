@@ -36,7 +36,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.22 $ - $Date: 2009-10-07 14:00:39 $
+ * @version $Revision: 1.23 $ - $Date: 2009-10-13 14:07:58 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
@@ -994,7 +994,7 @@ public abstract class MotuWPSProcess implements Processlet {
             break;
         }
 
-        double[] upper = geobboxParam.getLower();
+        double[] upper = geobboxParam.getUpper();
 
         switch (upper.length) {
         case 1:

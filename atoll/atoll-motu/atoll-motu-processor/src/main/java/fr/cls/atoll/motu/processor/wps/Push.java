@@ -28,7 +28,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.2 $, $Date: 2009-08-03 14:59:14 $
+ * @version $Revision: 1.3 $, $Date: 2009-10-13 14:07:58 $
  */
 public class Push extends MotuWPSProcess {
 
@@ -54,7 +54,7 @@ public class Push extends MotuWPSProcess {
         try {
             push(in);
         } catch (MotuException e) {
-            setReturnCode(out, e, false);
+            setReturnCode(out, e, true);
         }
     }
 
@@ -102,8 +102,9 @@ public class Push extends MotuWPSProcess {
             StatusModeResponse statusModeResponse = waitForResponse(motuWPSProcessData.getRequestIdParamIn(), requestId);
 
             if (statusModeResponse == null) {
-                MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuInvalidRequestIdException(requestId), motuWPSProcessData
-                        .getRequestIdParamIn() instanceof ReferencedComplexInput);
+//                MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuInvalidRequestIdException(requestId), motuWPSProcessData
+//                                             .getRequestIdParamIn() instanceof ReferencedComplexInput);
+                MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuInvalidRequestIdException(requestId), true);
                 return;
             }
 

@@ -86,7 +86,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.16 $ - $Date: 2009-10-12 09:23:13 $
+ * @version $Revision: 1.17 $ - $Date: 2009-10-13 14:07:58 $
  */
 public class WPSFactory {
 
@@ -335,18 +335,26 @@ public class WPSFactory {
     //
     // }
 
+    public Execute createExecuteProcessRequest(OperationMetadata operationMetadata,
+                                               DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph) throws MotuException {
+        return createExecuteProcessRequest(operationMetadata, directedGraph, false, false, false);
+    }
+    
     /**
-     * Creates a new WPS object.
+     * Creates the execute process request.
      * 
      * @param operationMetadata the operation metadata
      * @param directedGraph the directed graph
+     * @param storeExecuteResponse indicates if the execute response document shall be stored
+     * @param storeStatus indicates if the stored execute response document shall be updated to provide ongoing reports on the status of execution
+     * @param lineage the lineage indicates if the Execute operation response shall include the DataInputs and OutputDefinitions elements
      * 
      * @return the execute
      * 
      * @throws MotuException the motu exception
      */
     public Execute createExecuteProcessRequest(OperationMetadata operationMetadata,
-                                               DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph)
+                                               DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph, boolean storeExecuteResponse, boolean storeStatus, boolean lineage)
             throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG

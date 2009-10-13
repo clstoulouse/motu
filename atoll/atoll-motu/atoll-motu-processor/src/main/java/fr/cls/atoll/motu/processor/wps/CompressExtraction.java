@@ -22,7 +22,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.4 $, $Date: 2009-06-11 14:46:23 $
+ * @version $Revision: 1.5 $, $Date: 2009-10-13 14:07:58 $
  */
 public class CompressExtraction extends MotuWPSProcess {
 
@@ -48,7 +48,7 @@ public class CompressExtraction extends MotuWPSProcess {
         try {
             zip(in);
         } catch (MotuException e) {
-            setReturnCode(out, e, false);
+            setReturnCode(out, e, true);
         }
     }
 
@@ -86,39 +86,49 @@ public class CompressExtraction extends MotuWPSProcess {
         StatusModeResponse statusModeResponse = waitForResponse(motuWPSProcessData.getRequestIdParamIn(), requestId);
 
         if (statusModeResponse == null) {
-            MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuInvalidRequestIdException(requestId), motuWPSProcessData
-                    .getRequestIdParamIn() instanceof ReferencedComplexInput);
+            // MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), new
+            // MotuInvalidRequestIdException(requestId), motuWPSProcessData
+            // .getRequestIdParamIn() instanceof ReferencedComplexInput);
+            MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuInvalidRequestIdException(requestId), true);
             return;
         }
-        
+
         MotuWPSProcess.setRequestId(motuWPSProcessData.getProcessletOutputs(), requestId);
 
         if (MotuWPSProcess.isStatusDone(statusModeResponse)) {
-            
+
             String fileName = Organizer.extractFileName(statusModeResponse.getRemoteUri());
-            
+
             if (fileName.isEmpty()) {
+                // MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(),
+                // new
+                // MotuException(String.format("Error in CompressExtraction#zip : no file to compress has been found from url %s",
+                // statusModeResponse.getMsg())),
+                // motuWPSProcessData.getRequestIdParamIn() instanceof ReferencedComplexInput);
                 MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(),
-                                             new MotuException(String.format("Error in CompressExtraction#zip : no file to compress has been found from url %s", statusModeResponse.getMsg())),
-                                             motuWPSProcessData.getRequestIdParamIn() instanceof ReferencedComplexInput);
+                                             new MotuException(String
+                                                     .format("Error in CompressExtraction#zip : no file to compress has been found from url %s",
+                                                             statusModeResponse.getMsg())),
+                                             true);
                 return;
             }
-            
+
             String localFileName = Product.getExtractLocationData(fileName);
             String zipFileName = String.format("%s%s", localFileName, Organizer.ZIP_EXTENSION);
             try {
                 Zip.zip(zipFileName, localFileName, false);
             } catch (MotuException e) {
-                MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(),
-                                             e,
-                                             motuWPSProcessData.getRequestIdParamIn() instanceof ReferencedComplexInput);
+                // MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(),
+                // e,
+                // motuWPSProcessData.getRequestIdParamIn() instanceof ReferencedComplexInput);
+                MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), e, true);
                 return;
             }
             File fileTemp = new File(zipFileName);
             String httpUrl = Product.getDownloadUrlPath(fileTemp.getName());
-            statusModeResponse.setMsg(httpUrl);            
-            statusModeResponse.setRemoteUri(httpUrl);            
-            statusModeResponse.setLocalUri(zipFileName);            
+            statusModeResponse.setMsg(httpUrl);
+            statusModeResponse.setRemoteUri(httpUrl);
+            statusModeResponse.setLocalUri(zipFileName);
             fileTemp = new File(localFileName);
             try {
                 fileTemp.delete();
@@ -126,7 +136,6 @@ public class CompressExtraction extends MotuWPSProcess {
                 // Do nothing
             }
         }
-
 
         MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(),
                                      statusModeResponse,

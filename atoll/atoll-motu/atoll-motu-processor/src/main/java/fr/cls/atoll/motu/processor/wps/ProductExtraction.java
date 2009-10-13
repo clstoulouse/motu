@@ -26,7 +26,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.1 $, $Date: 2009-05-05 14:47:20 $
+ * @version $Revision: 1.2 $, $Date: 2009-10-13 14:07:58 $
  */
 public class ProductExtraction extends MotuWPSProcess {
 
@@ -61,8 +61,7 @@ public class ProductExtraction extends MotuWPSProcess {
         // }
         // return;
         // }
-        
-        
+                
         Organizer.Format responseFormat = null;
 
         // String mode = getMode();
@@ -97,7 +96,7 @@ public class ProductExtraction extends MotuWPSProcess {
 
         try {
             productDownload(in, extractionParameters, mode, priority);
-        } catch (Exception e) {
+        } catch (MotuExceptionBase e) {
             LOG.error("process(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo)", e);
 
             try {
@@ -108,6 +107,11 @@ public class ProductExtraction extends MotuWPSProcess {
             } catch (MotuException e1) {
                 LOG.error("process(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo)", e1);
             }
+            throw new ProcessletException(e.notifyException());
+        } catch (Exception e) {
+            LOG.error("process(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo)", e);
+
+            throw new ProcessletException(e.getMessage());
         }
 
         if (LOG.isDebugEnabled()) {
@@ -141,9 +145,9 @@ public class ProductExtraction extends MotuWPSProcess {
      * @param priority the priority
      * @param extractionParameters the extraction parameters
      * @param mode the mode
-     * @throws MotuExceptionBase, Exception 
+     * @throws Exception 
      */
-    private void productDownload(ProcessletInputs in, ExtractionParameters extractionParameters, String mode, int priority) throws MotuExceptionBase, Exception  {
+    private void productDownload(ProcessletInputs in, ExtractionParameters extractionParameters, String mode, int priority) throws Exception  {
         if (LOG.isDebugEnabled()) {
             LOG.debug("productDownload(ExtractionParameters, String, int) - entering");
         }
@@ -225,7 +229,7 @@ public class ProductExtraction extends MotuWPSProcess {
                 // $$$$$ response.setContentType(null);
                 // $$$$$ Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());               
                 MotuWPSProcess.setStatus(motuWPSProcessData.getProcessletOutputs(), statusModeResponse.getStatus());
-                MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), statusModeResponse, false);
+                MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), statusModeResponse, true);
             } else {
                 // --------- wait for the end of the request -----------
                 requestEndedCondition.await();
