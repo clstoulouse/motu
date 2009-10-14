@@ -233,7 +233,7 @@
 				</srv:SV_Parameter>
 			</srv:parameters>			
 		&commonBasicOutputParameters;
-																				
+		&urlOutputParameters;																				
 			<srv:connectPoint>
 				<gmd:CI_OnlineResource>
 					<gmd:linkage>

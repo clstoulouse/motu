@@ -647,6 +647,76 @@
                             </ns4:valueType>
                         </ns4:SV_Parameter>
                     </ns4:parameters>
+                    <ns4:parameters ns3:type="simple">
+                        <ns4:SV_Parameter>
+                            <ns4:name>
+<ns1:aName>
+    <ns1:CharacterString>url</ns1:CharacterString>
+</ns1:aName>
+<ns1:attributeType ns3:type="simple">
+    <ns1:TypeName>
+        <ns1:aName>
+            <ns1:CharacterString></ns1:CharacterString>
+        </ns1:aName>
+    </ns1:TypeName>
+</ns1:attributeType>
+                            </ns4:name>
+                            <ns4:direction>
+<ns4:SV_ParameterDirection>out</ns4:SV_ParameterDirection>
+                            </ns4:direction>
+                            <ns4:description>
+<ns1:CharacterString>Remote data url</ns1:CharacterString>
+                            </ns4:description>
+                            <ns4:optionality>
+<ns1:CharacterString>true</ns1:CharacterString>
+                            </ns4:optionality>
+                            <ns4:repeatability>
+<ns1:Boolean>false</ns1:Boolean>
+                            </ns4:repeatability>
+                            <ns4:valueType ns3:type="simple">
+<ns1:TypeName>
+    <ns1:aName>
+        <ns1:CharacterString>string</ns1:CharacterString>
+    </ns1:aName>
+</ns1:TypeName>
+                            </ns4:valueType>
+                        </ns4:SV_Parameter>
+                    </ns4:parameters>
+                    <ns4:parameters ns3:type="simple">
+                        <ns4:SV_Parameter>
+                            <ns4:name>
+<ns1:aName>
+    <ns1:CharacterString>localUrl</ns1:CharacterString>
+</ns1:aName>
+<ns1:attributeType ns3:type="simple">
+    <ns1:TypeName>
+        <ns1:aName>
+            <ns1:CharacterString></ns1:CharacterString>
+        </ns1:aName>
+    </ns1:TypeName>
+</ns1:attributeType>
+                            </ns4:name>
+                            <ns4:direction>
+<ns4:SV_ParameterDirection>out</ns4:SV_ParameterDirection>
+                            </ns4:direction>
+                            <ns4:description>
+<ns1:CharacterString>Local data url</ns1:CharacterString>
+                            </ns4:description>
+                            <ns4:optionality>
+<ns1:CharacterString>true</ns1:CharacterString>
+                            </ns4:optionality>
+                            <ns4:repeatability>
+<ns1:Boolean>false</ns1:Boolean>
+                            </ns4:repeatability>
+                            <ns4:valueType ns3:type="simple">
+<ns1:TypeName>
+    <ns1:aName>
+        <ns1:CharacterString>string</ns1:CharacterString>
+    </ns1:aName>
+</ns1:TypeName>
+                            </ns4:valueType>
+                        </ns4:SV_Parameter>
+                    </ns4:parameters>
                     <ns4:connectPoint ns3:type="simple">
                         <ns5:CI_OnlineResource>
                             <ns5:linkage>

@@ -2,6 +2,7 @@ package fr.cls.atoll.motu.processor.wps;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +37,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.23 $ - $Date: 2009-10-13 14:07:58 $
+ * @version $Revision: 1.24 $ - $Date: 2009-10-14 14:11:06 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
@@ -599,6 +600,27 @@ public abstract class MotuWPSProcess implements Processlet {
 
     }
     
+    /**
+     * Sets the url.
+     * 
+     * @param response the response
+     * @param uri the uri
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static void setUrl(ProcessletOutputs response, URI uri) throws MotuException {
+
+        if (response == null) {
+            return;
+        }
+        if (uri == null) {
+            return;
+        }
+
+        MotuWPSProcess.setUrl(response, uri.toString());
+
+    }
+
     /**
      * Sets the resquest id.
      * 

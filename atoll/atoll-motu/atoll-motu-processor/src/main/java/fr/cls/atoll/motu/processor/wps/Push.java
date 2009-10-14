@@ -28,7 +28,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.3 $, $Date: 2009-10-13 14:07:58 $
+ * @version $Revision: 1.4 $, $Date: 2009-10-14 14:11:06 $
  */
 public class Push extends MotuWPSProcess {
 
@@ -132,6 +132,7 @@ public class Push extends MotuWPSProcess {
 
         boolean rename = MotuWPSProcess.getLiteralInputValueAsBoolean(motuWPSProcessData.getRenameParamIn(), false);
         
+        URI outputUriToShow = null;
         
         if (!rename) {
             File fileTmp  = new File(from);
@@ -144,8 +145,16 @@ public class Push extends MotuWPSProcess {
             } else {
                 Organizer.copyFile(from, to, userFrom, pwdFrom, userTo, pwdTo);                
             }
+            URI accessUriTemp = new URI(to);
+            outputUriToShow = new URI(accessUriTemp.getScheme(), null, accessUriTemp.getHost(), accessUriTemp.getPort(), accessUriTemp
+                                    .getPath(), accessUriTemp.getQuery(), accessUriTemp.getFragment());
+
+            MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), outputUriToShow);
+            MotuWPSProcess.setLocalUrl(motuWPSProcessData.getProcessletOutputs(), "");
             
         } catch (Exception e) {
+            MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), "");
+            MotuWPSProcess.setLocalUrl(motuWPSProcessData.getProcessletOutputs(), "");
             MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(),
                                          e,
                                          false);
@@ -154,7 +163,7 @@ public class Push extends MotuWPSProcess {
         
         StringBuffer stringBuffer = new StringBuffer();
         
-        stringBuffer.append(String.format("Uri '%s' have been transfered to '%s'", from, to));
+        stringBuffer.append(String.format("Uri '%s' have been transfered to '%s'", from, outputUriToShow.toString()));
         
         ErrorType errorType = ErrorType.OK;
         

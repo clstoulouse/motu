@@ -2,6 +2,7 @@
 <!DOCTYPE include [
 <!ENTITY requestIdInputParametersOptional SYSTEM "../include/RequestIdInputParametersOptional.xml">
 <!ENTITY commonBasicOutputParameters SYSTEM "../include/CommonBasicOutputParameters.xml">
+<!ENTITY urlOutputParameters SYSTEM "../include/UrlOutputParameters.xml">
 ]>
 <ProcessDefinition configVersion="0.1.0"
 	processVersion="1.0.0" statusSupported="true" storeSupported="true"
@@ -120,5 +121,6 @@
 
 	<OutputParameters>
 		&commonBasicOutputParameters;
+		&urlOutputParameters;		
 	</OutputParameters>
 </ProcessDefinition>
