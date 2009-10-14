@@ -57,12 +57,15 @@ import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
 import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
 import fr.cls.atoll.motu.processor.opengis.ows110.BoundingBoxType;
 import fr.cls.atoll.motu.processor.opengis.ows110.CodeType;
+import fr.cls.atoll.motu.processor.opengis.ows110.LanguageStringType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ComplexDataCombinationsType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ComplexDataDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ComplexDataType;
 import fr.cls.atoll.motu.processor.opengis.wps100.DataInputsType;
 import fr.cls.atoll.motu.processor.opengis.wps100.DataType;
+import fr.cls.atoll.motu.processor.opengis.wps100.DocumentOutputDefinitionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.Execute;
+import fr.cls.atoll.motu.processor.opengis.wps100.ExecuteResponse;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputReferenceType;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputType;
@@ -73,6 +76,7 @@ import fr.cls.atoll.motu.processor.opengis.wps100.OutputDefinitionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.OutputDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
+import fr.cls.atoll.motu.processor.opengis.wps100.ResponseDocumentType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ResponseFormType;
 import fr.cls.atoll.motu.processor.opengis.wps100.SupportedCRSsType;
 import fr.cls.atoll.motu.processor.opengis.wps100.SupportedComplexDataInputType;
@@ -86,17 +90,23 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.17 $ - $Date: 2009-10-13 14:07:58 $
+ * @version $Revision: 1.18 $ - $Date: 2009-10-14 12:47:59 $
  */
 public class WPSFactory {
 
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(WPSFactory.class);
 
+    /** The Constant DATETIME_PATTERN1. */
     public static final String DATETIME_PATTERN1 = "yyyy-MM-dd";
+    
+    /** The Constant DATETIME_PATTERN2. */
     public static final String DATETIME_PATTERN2 = "yyyy-MM-dd'T'HH:mm:ss";
+    
+    /** The Constant DATETIME_PATTERN3. */
     public static final String DATETIME_PATTERN3 = "yyyy-MM-dd' 'HH:mm:ss";
 
+    /** The Constant DATETIME_FORMATTERS. */
     public static final Map<String, DateTimeFormatter> DATETIME_FORMATTERS = new HashMap<String, DateTimeFormatter>();
 
     static {
@@ -104,6 +114,7 @@ public class WPSFactory {
         DATETIME_FORMATTERS.put(DATETIME_PATTERN2, DateTimeFormat.forPattern(DATETIME_PATTERN2));
         DATETIME_FORMATTERS.put(DATETIME_PATTERN3, DateTimeFormat.forPattern(DATETIME_PATTERN3));
     }
+    
     /** The Constant SCHEMA_WPS_ALL. */
     // protected static final String HTTP_SCHEMA_WPS_EXECUTE_REQUEST =
     // "http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd";
@@ -168,46 +179,72 @@ public class WPSFactory {
     /**
      * Gets the wps info instance.
      * 
+     * @param url the url
+     * 
      * @return the wps info instance
      * 
      * @throws MotuException the motu exception
      */
-//    public WPSInfo getWpsInfoInstance() throws MotuException {
-//        if (LOG.isDebugEnabled()) {
-//            LOG.debug("getWpsInfoInstance() - entering");
-//        }
-//
-//        if (wpsInfo == null) {
-//            wpsInfo.loadDescribeProcess();
-//        }
-//
-//        if (LOG.isDebugEnabled()) {
-//            LOG.debug("getWpsInfoInstance() - exiting");
-//        }
-//        return wpsInfo;
-//    }
+    // public WPSInfo getWpsInfoInstance() throws MotuException {
+    // if (LOG.isDebugEnabled()) {
+    // LOG.debug("getWpsInfoInstance() - entering");
+    // }
+    //
+    // if (wpsInfo == null) {
+    // wpsInfo.loadDescribeProcess();
+    // }
+    //
+    // if (LOG.isDebugEnabled()) {
+    // LOG.debug("getWpsInfoInstance() - exiting");
+    // }
+    // return wpsInfo;
+    // }
+    public static WPSInfo getWpsInfo(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getWpsInfo(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - entering");
+        }
 
+        OperationMetadata operationMetadata = ServiceMetadata.getSourceOperation(directedGraph);
+
+        String url = operationMetadata.getConnectPoint(0);
+        WPSInfo returnWPSInfo = WPSFactory.getWpsInfo(url);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getWpsInfo(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - exiting");
+        }
+        return returnWPSInfo; 
+    }
     public static WPSInfo getWpsInfo(String url) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getWpsInfo(String) - entering");
+        }
+
+        if (ServiceMetadata.isNullOrEmpty(url)) {
+            throw new MotuException("WPSFactory#getWpsInfo - cannot process because url is null");
+        }
         WPSInfo wpsInfo = new WPSInfo(url);
         wpsInfo.loadDescribeProcess();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getWpsInfo(String) - exiting");
+        }
         return wpsInfo;
     }
 
-//    /**
-//     * Instantiates a new wPS factory.
-//     * 
-//     * @param url the url
-//     * 
-//     * @throws MotuException the motu exception
-//     */
-//    public WPSFactory(String url) throws MotuException {
-//
-//        WPSFactory.initSchemaLocations();
-//        WPSFactory.initJAXBWPS();
-//        wpsInfo = new WPSInfo(url);
-//        wpsInfo.loadDescribeProcess();
-//
-//    }
+    // /**
+    // * Instantiates a new wPS factory.
+    // *
+    // * @param url the url
+    // *
+    // * @throws MotuException the motu exception
+    // */
+    // public WPSFactory(String url) throws MotuException {
+    //
+    // WPSFactory.initSchemaLocations();
+    // WPSFactory.initJAXBWPS();
+    // wpsInfo = new WPSInfo(url);
+    // wpsInfo.loadDescribeProcess();
+    //
+    // }
     /**
      * Instantiates a new wPS factory.
      * 
@@ -231,7 +268,7 @@ public class WPSFactory {
         }
 
         WPSFactory.schemaLocations.putIfAbsent("WPS1.0.0",
-                                               "http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd");
+                                               "http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd");
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("initSchemaLocations() - exiting");
@@ -334,11 +371,65 @@ public class WPSFactory {
     // sourceEdges);
     //
     // }
+    public static Execute createExecuteProcessRequest(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph)
+            throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createExecuteProcessRequest(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - entering");
+        }
 
-    public Execute createExecuteProcessRequest(OperationMetadata operationMetadata,
-                                               DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph) throws MotuException {
-        return createExecuteProcessRequest(operationMetadata, directedGraph, false, false, false);
+        Execute returnExecute = createExecuteProcessRequest(directedGraph, false, false, false);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createExecuteProcessRequest(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - exiting");
+        }
+        return returnExecute;
     }
+
+    /**
+     * Creates a new WPS object.
+     * 
+     * @param operationMetadata the operation metadata
+     * @param directedGraph the directed graph
+     * 
+     * @return the execute
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static Execute createExecuteProcessRequest(OperationMetadata operationMetadata,
+                                               DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph)
+            throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG
+                    .debug("createExecuteProcessRequest(OperationMetadata, DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - entering");
+        }
+
+        Execute returnExecute = createExecuteProcessRequest(operationMetadata, directedGraph, false, false, false);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createExecuteProcessRequest(OperationMetadata, DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - exiting");
+        }
+        return returnExecute;
+    }
+
+    public static Execute createExecuteProcessRequest(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph,
+                                               boolean storeExecuteResponse,
+                                               boolean storeStatus,
+                                               boolean lineage) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG
+                    .debug("createExecuteProcessRequest(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>, boolean, boolean, boolean) - entering");
+        }
+        
+        OperationMetadata operationMetadata = ServiceMetadata.getSourceOperation(directedGraph);
+              
+
+        Execute returnExecute = createExecuteProcessRequest(operationMetadata, directedGraph, storeExecuteResponse, storeStatus, lineage);
+        if (LOG.isDebugEnabled()) {
+            LOG
+                    .debug("createExecuteProcessRequest(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>, boolean, boolean, boolean) - exiting");
+        }
+        return returnExecute;
+    }
+
     
     /**
      * Creates the execute process request.
@@ -346,16 +437,20 @@ public class WPSFactory {
      * @param operationMetadata the operation metadata
      * @param directedGraph the directed graph
      * @param storeExecuteResponse indicates if the execute response document shall be stored
-     * @param storeStatus indicates if the stored execute response document shall be updated to provide ongoing reports on the status of execution
-     * @param lineage the lineage indicates if the Execute operation response shall include the DataInputs and OutputDefinitions elements
+     * @param storeStatus indicates if the stored execute response document shall be updated to provide
+     * ongoing reports on the status of execution
+     * @param lineage the lineage indicates if the Execute operation response shall include the DataInputs and
+     * OutputDefinitions elements
      * 
      * @return the execute
      * 
      * @throws MotuException the motu exception
      */
-    public Execute createExecuteProcessRequest(OperationMetadata operationMetadata,
-                                               DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph, boolean storeExecuteResponse, boolean storeStatus, boolean lineage)
-            throws MotuException {
+    public static Execute createExecuteProcessRequest(OperationMetadata operationMetadata,
+                                               DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph,
+                                               boolean storeExecuteResponse,
+                                               boolean storeStatus,
+                                               boolean lineage) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG
                     .debug("createExecuteProcessRequest(OperationMetadata, DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - entering");
@@ -367,8 +462,9 @@ public class WPSFactory {
         Map<String, ParameterValue<?>> dataInputValues = operationMetadata.getParameterValueMap();
 
         WPSInfo wpsInfo = operationMetadata.getWpsInfo();
-        
-        //ProcessDescriptionType processDescriptionType = getWpsInfoInstance().getProcessDescription(operationMetadata.getInvocationName());
+
+        // ProcessDescriptionType processDescriptionType =
+        // getWpsInfoInstance().getProcessDescription(operationMetadata.getInvocationName());
         ProcessDescriptionType processDescriptionType = wpsInfo.getProcessDescription(operationMetadata.getInvocationName());
 
         if (processDescriptionType == null) {
@@ -376,10 +472,11 @@ public class WPSFactory {
                     .getInvocationName()));
         }
 
-//        ProcessDescriptions processDescriptions = wpsInfo.getProcessDescriptions();
-//        if (processDescriptions == null) {
-//            throw new MotuException("WPSFactory#createExecuteProcessRequest : list of process descriptions is null");
-//        }
+        // ProcessDescriptions processDescriptions = wpsInfo.getProcessDescriptions();
+        // if (processDescriptions == null) {
+        // throw new
+        // MotuException("WPSFactory#createExecuteProcessRequest : list of process descriptions is null");
+        // }
 
         // create the execute object
         Execute execute = createExecute(processDescriptionType, wpsInfo);
@@ -390,6 +487,10 @@ public class WPSFactory {
             throw new MotuException(String.format("WPSFactory#createExecuteProcessRequest : process '%s' has no data input (data input is null)",
                                                   operationMetadata.getInvocationName()));
         }
+
+        // ------------------------------------
+        // Processes data inputs
+        // -----------------------------------
 
         List<InputDescriptionType> inputs = processDescriptionType.getDataInputs().getInput();
 
@@ -420,7 +521,7 @@ public class WPSFactory {
                 OperationMetadata operationMetadataTarget = directedGraph.getEdgeTarget(edge);
                 directedGraph.getEdgeTarget(edge);
 
-                Execute executeChain = createExecuteProcessRequest(operationMetadataTarget, directedGraph);
+                Execute executeChain = createExecuteProcessRequest(operationMetadataTarget, directedGraph, false, false, false);
 
                 int indexParamIn = WPSFactory.getEdgeParameterInIndex(edge, identifier);
 
@@ -437,8 +538,8 @@ public class WPSFactory {
                 }
                 WPSInfo wpsInfoTarget = operationMetadataTarget.getWpsInfo();
 
-                ProcessDescriptionType processDescriptionTypeTarget = wpsInfoTarget.getProcessDescription(operationMetadataTarget
-                        .getInvocationName());
+                ProcessDescriptionType processDescriptionTypeTarget = wpsInfoTarget
+                        .getProcessDescription(operationMetadataTarget.getInvocationName());
 
                 if (processDescriptionTypeTarget == null) {
                     throw new MotuException(String.format("WPSFactory#createExecuteProcessRequest : Unknown process name '%s'",
@@ -454,7 +555,7 @@ public class WPSFactory {
 
                     String identifierTarget = outputDescriptionType.getIdentifier().getValue();
                     if (identifierTarget.equals(paramOut)) {
-                        codeTypeTarget = cloneCodeType(outputDescriptionType.getIdentifier());
+                        codeTypeTarget = WPSFactory.cloneCodeType(outputDescriptionType.getIdentifier());
                         break;
                     }
                 }
@@ -481,7 +582,7 @@ public class WPSFactory {
                 dataInputsType.getInput().add(inputType);
 
                 // -------------
-                continue; // next input
+                continue; // ==========> next input <==================
                 // -------------
             } // end if (edge != null)
 
@@ -547,13 +648,59 @@ public class WPSFactory {
 
         execute.setDataInputs(dataInputsType);
 
+        // --------------------------------------------------
+        // Processes response form and output definitions
+        // --------------------------------------------------
+
+        if (storeExecuteResponse) {            
+
+            ResponseDocumentType responseDocumentType = objectFactoryWPS.createResponseDocumentType();
+            responseDocumentType.setStoreExecuteResponse(storeExecuteResponse);
+            responseDocumentType.setStatus(storeStatus);
+            responseDocumentType.setLineage(lineage);
+            
+            List<OutputDescriptionType> outputsTarget = processDescriptionType.getProcessOutputs().getOutput();            
+
+            DocumentOutputDefinitionType documentOutputDefinitionType = null;
+
+            for (OutputDescriptionType outputDescriptionType : outputsTarget) {
+
+                documentOutputDefinitionType = objectFactoryWPS.createDocumentOutputDefinitionType();
+                                
+                documentOutputDefinitionType.setIdentifier(WPSFactory.cloneCodeType(outputDescriptionType.getIdentifier()));
+
+                documentOutputDefinitionType.setTitle(WPSFactory.cloneLanguageStringType(outputDescriptionType.getTitle()));
+                documentOutputDefinitionType.setAbstract(WPSFactory.cloneLanguageStringType(outputDescriptionType.getAbstract()));
+                
+                responseDocumentType.getOutput().add(documentOutputDefinitionType);
+                
+            }
+            
+            
+            ResponseFormType responseFormType = objectFactoryWPS.createResponseFormType();
+            responseFormType.setResponseDocument(responseDocumentType);
+
+            execute.setResponseForm(responseFormType);
+        }
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("createExecuteProcessRequest(OperationMetadata, DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - exiting");
         }
         return execute;
 
     }
-    public Execute createExecute(ProcessDescriptionType processDescriptionType, WPSInfo wpsInfo) throws MotuException {
+
+    /**
+     * Creates a new WPS object.
+     * 
+     * @param processDescriptionType the process description type
+     * @param wpsInfo the wps info
+     * 
+     * @return the execute
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static Execute createExecute(ProcessDescriptionType processDescriptionType, WPSInfo wpsInfo) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("createExecute(ProcessDescriptionType, WPSInfo) - entering");
         }
@@ -570,16 +717,18 @@ public class WPSFactory {
         }
         return returnExecute;
     }
+
     /**
      * Creates a new WPS object.
      * 
      * @param processDescriptionType the process description type
+     * @param processDescriptions the process descriptions
      * 
      * @return the execute
      * 
      * @throws MotuException the motu exception
      */
-    public Execute createExecute(ProcessDescriptionType processDescriptionType, ProcessDescriptions processDescriptions) throws MotuException {
+    public static Execute createExecute(ProcessDescriptionType processDescriptionType, ProcessDescriptions processDescriptions) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("createExecute(ProcessDescriptionType, ProcessDescriptions) - entering");
         }
@@ -589,7 +738,7 @@ public class WPSFactory {
         }
 
         Execute execute = objectFactoryWPS.createExecute();
-        execute.setIdentifier(cloneCodeType(processDescriptionType.getIdentifier()));
+        execute.setIdentifier(WPSFactory.cloneCodeType(processDescriptionType.getIdentifier()));
         execute.setService(processDescriptions.getService());
         execute.setVersion(processDescriptions.getVersion());
         execute.setLanguage(processDescriptions.getLang());
@@ -610,7 +759,7 @@ public class WPSFactory {
      * 
      * @throws MotuException the motu exception
      */
-    public InputType createInputType(InputDescriptionType inputDescriptionType) throws MotuException {
+    public static InputType createInputType(InputDescriptionType inputDescriptionType) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("createInputType(InputDescriptionType) - entering");
         }
@@ -620,7 +769,7 @@ public class WPSFactory {
         }
 
         InputType inputType = objectFactoryWPS.createInputType();
-        inputType.setIdentifier(cloneCodeType(inputDescriptionType.getIdentifier()));
+        inputType.setIdentifier(WPSFactory.cloneCodeType(inputDescriptionType.getIdentifier()));
         inputType.setAbstract(inputDescriptionType.getAbstract());
         inputType.setTitle(inputDescriptionType.getTitle());
 
@@ -639,7 +788,7 @@ public class WPSFactory {
      * 
      * @throws MotuException the motu exception
      */
-    public CodeType cloneCodeType(CodeType identifier) throws MotuException {
+    public static CodeType cloneCodeType(CodeType identifier) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("cloneCodeType(CodeType) - entering");
         }
@@ -657,7 +806,39 @@ public class WPSFactory {
         }
         return newIdentifier;
     }
+    
+    /**
+     * Clone language string type.
+     * 
+     * @param languageStringType the language string type
+     * 
+     * @return the language string type
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static LanguageStringType cloneLanguageStringType(LanguageStringType languageStringType  ) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("cloneLanguageStringType(LanguageStringType) - entering");
+        }
 
+        if (languageStringType == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("cloneLanguageStringType(LanguageStringType) - exiting");
+            }
+            return null;
+        }
+
+        LanguageStringType newLanguageStringType = objectFactoryOWS.createLanguageStringType();
+        newLanguageStringType.setValue(languageStringType.getValue());
+        newLanguageStringType.setLang(languageStringType.getLang());
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("cloneLanguageStringType(LanguageStringType) - exiting");
+        }
+        return newLanguageStringType;
+    }
+
+    
     /**
      * Creates a new WPS object.
      * 
@@ -668,7 +849,7 @@ public class WPSFactory {
      * 
      * @throws MotuException the motu exception
      */
-    public DataType createInputDataType(InputDescriptionType inputDescriptionType, ParameterValue<?> parameterValue) throws MotuException {
+    public static DataType createInputDataType(InputDescriptionType inputDescriptionType, ParameterValue<?> parameterValue) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("createInputDataType(InputDescriptionType, ParameterValue<?>) - entering");
         }
@@ -712,7 +893,7 @@ public class WPSFactory {
      * 
      * @throws MotuException the motu exception
      */
-    public DataType createLiteralDataType(LiteralInputType literalInputType, ParameterValue<?> parameterValue) throws MotuException {
+    public static DataType createLiteralDataType(LiteralInputType literalInputType, ParameterValue<?> parameterValue) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("createLiteralDataType(LiteralInputType, ParameterValue<?>) - entering");
         }
@@ -765,7 +946,7 @@ public class WPSFactory {
      * 
      * @throws MotuException the motu exception
      */
-    public DataType createComplexDataType(SupportedComplexDataInputType complexDataInputType, ParameterValue<?> parameterValue) throws MotuException {
+    public static DataType createComplexDataType(SupportedComplexDataInputType complexDataInputType, ParameterValue<?> parameterValue) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("createComplexDataType(SupportedComplexDataInputType, ParameterValue<?>) - entering");
         }
@@ -823,7 +1004,7 @@ public class WPSFactory {
      * 
      * @throws MotuException the motu exception
      */
-    public DataType createBoundingBoxInputType(SupportedCRSsType boundingBoxInputType, ParameterValue<?> parameterValue) throws MotuException {
+    public static DataType createBoundingBoxInputType(SupportedCRSsType boundingBoxInputType, ParameterValue<?> parameterValue) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("createBoundingBoxInputType(SupportedCRSsType, ParameterValue<?>) - entering");
         }
@@ -927,7 +1108,7 @@ public class WPSFactory {
      * 
      * @throws MotuException the motu exception
      */
-    public InputReferenceType createInputReferenceType(Object body, OperationMetadata operationMetadata) throws MotuException {
+    public static InputReferenceType createInputReferenceType(Object body, OperationMetadata operationMetadata) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("createInputReferenceType(Object, OperationMetadata) - entering");
         }
@@ -979,7 +1160,7 @@ public class WPSFactory {
      * @throws JAXBException the JAXB exception
      * @throws ParserConfigurationException the parser configuration exception
      */
-    public Document asDOMDocument(
+    public static Document asDOMDocument(
 
     Object pObject, Document result) throws JAXBException, javax.xml.parsers.ParserConfigurationException {
         if (LOG.isDebugEnabled()) {
@@ -1043,7 +1224,43 @@ public class WPSFactory {
             LOG.debug("marshallExecute(Execute, Writer, String) - exiting");
         }
     }
+    public static void marshallExecuteResponse(ExecuteResponse executeResponse, Writer writer, String schemaLocation) throws MotuMarshallException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("marshallExecuteResponse(ExecuteResponse, Writer, String) - entering");
+        }
 
+        if (writer == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("marshallExecuteResponse(ExecuteResponse, Writer, String) - exiting");
+            }
+            return;
+        }
+
+        try {
+            synchronized (WPSFactory.marshallerWPS) {
+                WPSFactory.marshallerWPS.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "");
+                if (!Organizer.isNullOrEmpty(schemaLocation)) {
+                    WPSFactory.marshallerWPS.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaLocation);
+                }
+
+                WPSFactory.marshallerWPS.marshal(executeResponse, writer);
+                writer.flush();
+                writer.close();
+            }
+        } catch (JAXBException e) {
+            LOG.error("marshallExecuteResponse(ExecuteResponse, Writer, String)", e);
+
+            throw new MotuMarshallException("Error in WPSFactory - marshallExecute", e);
+        } catch (IOException e) {
+            LOG.error("marshallExecuteResponse(ExecuteResponse, Writer, String)", e);
+
+            throw new MotuMarshallException("Error in WPSFactory - marshallExecute", e);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("marshallExecuteResponse(ExecuteResponse, Writer, String) - exiting");
+        }
+    }
     /**
      * Unmarshall execute.
      * 
@@ -1053,7 +1270,7 @@ public class WPSFactory {
      * 
      * @throws MotuMarshallException the motu marshall exception
      */
-    public Execute unmarshallExecute(String xmlFile) throws MotuMarshallException {
+    public static Execute unmarshallExecute(String xmlFile) throws MotuMarshallException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("unmarshallExecute(String) - entering");
         }
@@ -1076,7 +1293,7 @@ public class WPSFactory {
      * 
      * @throws MotuMarshallException the motu marshall exception
      */
-    public Execute unmarshallExecute(Source xmlSource) throws MotuMarshallException {
+    public static Execute unmarshallExecute(Source xmlSource) throws MotuMarshallException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("unmarshallExecute(Source) - entering");
         }
@@ -1115,7 +1332,7 @@ public class WPSFactory {
      * 
      * @throws MotuMarshallException the motu marshall exception
      */
-    public Execute unmarshallExecute(InputStream xmlSource) throws MotuMarshallException {
+    public static Execute unmarshallExecute(InputStream xmlSource) throws MotuMarshallException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("unmarshallExecute(InputStream) - entering");
         }
@@ -1145,6 +1362,195 @@ public class WPSFactory {
 
     }
 
+    
+    
+     /**
+      * Unmarshall execute response.
+      * 
+      * @param xmlFile the xml file
+      * 
+      * @return the execute response
+      * 
+      * @throws MotuMarshallException the motu marshall exception
+      */
+     public static ExecuteResponse unmarshallExecuteResponse(String xmlFile) throws MotuMarshallException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("unmarshallExecuteResponse(String) - entering");
+        }
+
+        Source srcFile = new StreamSource(xmlFile);
+
+        ExecuteResponse returnExecuteResponse = unmarshallExecuteResponse(srcFile);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("unmarshallExecuteResponse(String) - exiting");
+        }
+        return returnExecuteResponse;
+    }
+
+    /**
+     * Unmarshall execute response.
+     * 
+     * @param xmlSource the xml source
+     * 
+     * @return the execute response
+     * 
+     * @throws MotuMarshallException the motu marshall exception
+     */
+    public static ExecuteResponse unmarshallExecuteResponse(Source xmlSource) throws MotuMarshallException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("unmarshallExecuteResponse(Source) - entering");
+        }
+
+        if (WPSFactory.marshallerWPS == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("unmarshallExecuteResponse(Source) - exiting");
+            }
+            return null;
+        }
+        ExecuteResponse executeResponse = null;
+        try {
+            synchronized (WPSFactory.marshallerWPS) {
+
+                executeResponse = (ExecuteResponse) WPSFactory.unmarshallerWPS.unmarshal(xmlSource);
+            }
+        } catch (JAXBException e) {
+            LOG.error("unmarshallExecuteResponse(Source)", e);
+
+            throw new MotuMarshallException("Error in WPSFactory - unmarshallExecuteResponse", e);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("unmarshallExecuteResponse(Source) - exiting");
+        }
+        return executeResponse;
+
+    }
+
+     /**
+      * Unmarshall execute response.
+      * 
+      * @param xmlSource the xml source
+      * 
+      * @return the execute response
+      * 
+      * @throws MotuMarshallException the motu marshall exception
+      */
+     public static ExecuteResponse unmarshallExecuteResponse(InputStream xmlSource) throws MotuMarshallException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("unmarshallExecuteResponse(InputStream) - entering");
+        }
+
+        if (WPSFactory.marshallerWPS == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("unmarshallExecuteResponse(InputStream) - exiting");
+            }
+            return null;
+        }
+        ExecuteResponse executeResponse = null;
+        try {
+            synchronized (WPSFactory.marshallerWPS) {
+
+                executeResponse = (ExecuteResponse) WPSFactory.unmarshallerWPS.unmarshal(xmlSource);
+            }
+        } catch (JAXBException e) {
+            LOG.error("unmarshallExecuteResponse(InputStream)", e);
+
+            throw new MotuMarshallException("Error in WPSFactory - unmarshallExecuteResponse", e);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("unmarshallExecuteResponse(InputStream) - exiting");
+        }
+        return executeResponse;
+
+    }
+    
+     public static ExecuteResponse getExecuteResponse(InputStream xmlSource) throws MotuMarshallException, MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getExecuteResponse(InputStream) - entering");
+        }
+
+         ExecuteResponse executeResponse = WPSFactory.unmarshallExecuteResponse(xmlSource);
+        ExecuteResponse returnExecuteResponse = getExecuteResponse(executeResponse);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getExecuteResponse(InputStream) - exiting");
+        }
+         return returnExecuteResponse;
+         
+     }
+    
+     public static ExecuteResponse getExecuteResponse(Source xmlSource) throws MotuMarshallException, MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getExecuteResponse(Source) - entering");
+        }
+         
+         ExecuteResponse executeResponse = WPSFactory.unmarshallExecuteResponse(xmlSource);
+        ExecuteResponse returnExecuteResponse = getExecuteResponse(executeResponse);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getExecuteResponse(Source) - exiting");
+        }
+         return returnExecuteResponse;
+     }
+     
+     /**
+      * Gets the execute response.
+      * 
+      * @param xmlFile the xml file
+      * 
+      * @return the execute response
+      * 
+      * @throws MotuMarshallException the motu marshall exception
+     * @throws MotuException 
+      */
+     public static ExecuteResponse getExecuteResponse(String xmlFile) throws MotuMarshallException, MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getExecuteResponse(String) - entering");
+        }
+
+         ExecuteResponse executeResponse = WPSFactory.unmarshallExecuteResponse(xmlFile);
+        ExecuteResponse returnExecuteResponse = getExecuteResponse(executeResponse);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getExecuteResponse(String) - exiting");
+        }
+         return returnExecuteResponse;
+     }
+    
+     protected static ExecuteResponse getExecuteResponse(ExecuteResponse executeResponse) throws MotuMarshallException, MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getExecuteResponse(ExecuteResponse) - entering");
+        }
+
+         if (executeResponse == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getExecuteResponse(ExecuteResponse) - exiting");
+            }
+             return null;
+         }
+         
+         String statusLocation = executeResponse.getStatusLocation();
+         
+         if (statusLocation == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getExecuteResponse(ExecuteResponse) - exiting");
+            }
+             return executeResponse;
+         }
+         
+         InputStream inputStream = WPSUtils.get(statusLocation);
+         
+         
+
+        ExecuteResponse returnExecuteResponse = WPSFactory.unmarshallExecuteResponse(inputStream);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getExecuteResponse(ExecuteResponse) - exiting");
+        }
+         return  returnExecuteResponse;
+     }
+     
+        
+    
+    
     /**
      * Creates a new WPS object.
      * 
@@ -1704,7 +2110,9 @@ public class WPSFactory {
      * Validate wps from string.
      * 
      * @param xmlFile the xml file
-     * @param schemaPath the schema path
+     * @param wpsSchema the wps schema
+     * @param localWpsSchemaPath the local wps schema path
+     * @param localWpsRootSchemaRelPath the local wps root schema rel path
      * 
      * @return the list< string>
      * 
@@ -1712,6 +2120,9 @@ public class WPSFactory {
      */
     public static List<String> validateWPSExecuteRequest(String wpsSchema, String localWpsSchemaPath, String localWpsRootSchemaRelPath, String xmlFile)
             throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("validateWPSExecuteRequest(String, String, String, String) - entering");
+        }
 
         // String[] inSchema = new String[] { HTTP_SCHEMA_WPS_EXECUTE_REQUEST, };
         String[] inSchema = WPSFactory.getWPSExecuteRequestSchemaAsString(wpsSchema, localWpsSchemaPath, localWpsRootSchemaRelPath);
@@ -1720,12 +2131,30 @@ public class WPSFactory {
         if (errorHandler == null) {
             throw new MotuException("ERROR in WPSFactory.validateWPSExecuteRequest - Motu configuration schema : XMLErrorHandler is null");
         }
-        return errorHandler.getErrors();
+        List<String> returnList = errorHandler.getErrors();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("validateWPSExecuteRequest(String, String, String, String) - exiting");
+        }
+        return returnList;
 
     }
 
+    /**
+     * Gets the wPS execute request schema as string.
+     * 
+     * @param schemaPath the schema path
+     * @param localWPSSchemaPath the local wps schema path
+     * @param localWPSRootSchemaRelPath the local wps root schema rel path
+     * 
+     * @return the wPS execute request schema as string
+     * 
+     * @throws MotuException the motu exception
+     */
     public static String[] getWPSExecuteRequestSchemaAsString(String schemaPath, String localWPSSchemaPath, String localWPSRootSchemaRelPath)
             throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getWPSExecuteRequestSchemaAsString(String, String, String) - entering");
+        }
 
         String[] inS = null;
         try {
@@ -1777,9 +2206,14 @@ public class WPSFactory {
             inS = stringList.toArray(inS);
 
         } catch (Exception e) {
+            LOG.error("getWPSExecuteRequestSchemaAsString(String, String, String)", e);
+
             throw new MotuException("ERROR in WPSFactory#getWPSExecuteRequestSchemaAsString", e);
         }
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getWPSExecuteRequestSchemaAsString(String, String, String) - exiting");
+        }
         return inS;
     }
 
@@ -1787,30 +2221,54 @@ public class WPSFactory {
      * Convert a given date into a string representation.
      * 
      * @param dt the date to print.
+     * 
      * @return the string representation.
      */
     public static String DateTimeToString(DateTime dt) {
-        return WPSFactory.DATETIME_FORMATTERS.get(WPSFactory.DATETIME_PATTERN2).print(dt);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("DateTimeToString(DateTime) - entering");
+        }
+
+        String returnString = WPSFactory.DATETIME_FORMATTERS.get(WPSFactory.DATETIME_PATTERN2).print(dt);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("DateTimeToString(DateTime) - exiting");
+        }
+        return returnString;
     }
 
     /**
      * Convert a given date into a string representation.
      * 
      * @param dt the date to print.
+     * 
      * @return the string representation.
      */
     public static String DateToString(DateTime dt) {
-        return WPSFactory.DATETIME_FORMATTERS.get(WPSFactory.DATETIME_PATTERN1).print(dt);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("DateToString(DateTime) - entering");
+        }
+
+        String returnString = WPSFactory.DATETIME_FORMATTERS.get(WPSFactory.DATETIME_PATTERN1).print(dt);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("DateToString(DateTime) - exiting");
+        }
+        return returnString;
     }
 
     /**
      * Convert a given string date representation into an instance of Joda time date.
      * 
      * @param s the string to convert into a date.
+     * 
      * @return a {@link DateTime} instance.
-     * @throws MotuInvalidDateException
+     * 
+     * @throws MotuInvalidDateException the motu invalid date exception
      */
     public static DateTime StringToDateTime(String s) throws MotuInvalidDateException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("StringToDateTime(String) - entering");
+        }
+
         DateTime dateTime = null;
 
         StringBuffer stringBuffer = new StringBuffer();
@@ -1818,8 +2276,14 @@ public class WPSFactory {
             try {
                 dateTime = dateTimeFormatter.parseDateTime(s);
             } catch (IllegalArgumentException e) {
+                //LOG.error("StringToDateTime(String)", e);
+
                 stringBuffer.append(e.getMessage());
                 stringBuffer.append("\n");
+            }
+            
+            if (dateTime != null) {
+                break;
             }
         }
 
@@ -1829,10 +2293,29 @@ public class WPSFactory {
                                                                                   WPSFactory.DATETIME_FORMATTERS.keySet().toString())));
         }
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("StringToDateTime(String) - exiting");
+        }
         return dateTime;
     }
 
+    /**
+     * Post async.
+     * 
+     * @param url the url
+     * @param postBody the post body
+     * @param headers the headers
+     * 
+     * @return the int
+     * 
+     * @throws HttpException the http exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public static int postAsync(String url, InputStream postBody, Map<String, String> headers) throws HttpException, IOException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("postAsync(String, InputStream, Map<String,String>) - entering");
+        }
+
         // TODO no proxies used
         HttpClient client = new HttpClient();
         HttpMethodParams httpMethodParams = new HttpMethodParams();
@@ -1849,9 +2332,16 @@ public class WPSFactory {
         try {
             retcode = client.executeMethod(post);
         } catch (SocketTimeoutException e) {
+            LOG.error("postAsync(String, InputStream, Map<String,String>)", e);
+
             // do nothing
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("postAsync(String, InputStream, Map<String,String>) - exiting");
         }
         return retcode;
     }
+    
 
 }

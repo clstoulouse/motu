@@ -8,13 +8,16 @@ set CURRENT_DIR=%cd%
 
 cd ..
 
+REM echo validate atoll-motu and  dependencies
+REM call mvn -Dmaven.test.skip=true validate -P %1
+
 echo install atoll-motu and  dependencies
 call mvn -Dmaven.test.skip=true install
 
 cd /D %CURRENT_DIR%
 :install-motu-web
-REM echo install atoll-motu-web
-REM call mvn -Dmaven.test.skip=true install
+echo install atoll-motu-web
+call mvn -Dmaven.test.skip=true install
 
 :deploy
 

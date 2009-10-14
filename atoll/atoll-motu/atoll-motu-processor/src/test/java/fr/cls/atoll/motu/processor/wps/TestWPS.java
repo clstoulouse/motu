@@ -36,9 +36,11 @@ import org.jgrapht.DirectedGraph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.KShortestPaths;
 import org.jgrapht.graph.EdgeReversedGraph;
+import org.joda.time.DateTime;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 
+import fr.cls.atoll.motu.library.converter.jaxb.JodaPeriodAdapter;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.exception.MotuMarshallException;
@@ -48,11 +50,13 @@ import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
 import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
 import fr.cls.atoll.motu.processor.opengis.wps100.DescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.Execute;
+import fr.cls.atoll.motu.processor.opengis.wps100.ExecuteResponse;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
 import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
 import fr.cls.atoll.motu.processor.wps.framework.WPSInfo;
+import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
 
 /**
  * <br>
@@ -62,7 +66,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSInfo;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.26 $ - $Date: 2009-10-12 14:13:29 $
+ * @version $Revision: 1.27 $ - $Date: 2009-10-14 12:47:59 $
  */
 class StringList extends ArrayList<String> {
 }
@@ -209,35 +213,45 @@ public class TestWPS {
 
     }
 
-    public static void testBodyPost(String xmlFile, String href) {
+    public static InputStream testBodyPost(String xmlFile, String href) {
 
         //String href = "http://localhost:8080/atoll-motuservlet/services";
+        InputStream is = null;
         
-        Map<String, String> headers = new HashMap<String, String>();
+//        Map<String, String> headers = new HashMap<String, String>();
+//        try {
+//            is = Organizer.getUriAsInputStream(xmlFile);
+//            is = HttpUtils.post(HttpUtils.STREAM, href, is, headers);
+////            byte b[] = new byte[1024];
+////
+////            int bytesRead = 0;
+////
+////            while ((bytesRead = is.read(b)) != -1) {
+////                String nextLine = new String(b, 0, bytesRead);
+////                System.out.println(nextLine);
+////            }
+//
+//        } catch (HttpException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        } catch (MotuException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//            System.out.println(e.notifyException());
+//        }
+
         try {
-            InputStream is = Organizer.getUriAsInputStream(xmlFile);
-            is = HttpUtils.post(HttpUtils.STREAM, href, is, headers);
-            byte b[] = new byte[1024];
-
-            int bytesRead = 0;
-
-            while ((bytesRead = is.read(b)) != -1) {
-                String nextLine = new String(b, 0, bytesRead);
-                System.out.println(nextLine);
-            }
-
-        } catch (HttpException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            is = WPSUtils.post(href, xmlFile);
         } catch (MotuException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            System.out.println(e.notifyException());
         }
 
+        
+        return is;
     }
 
     public static void testBodyPostDontWaitResponse(String xmlFile, String href) {
@@ -861,6 +875,7 @@ public class TestWPS {
             OperationMetadata opCompressExtraction = null;
             OperationMetadata opPush = null;
             OperationMetadata opGetStatus = null;
+            OperationMetadata opGetExtractedProductUrl = null;
 
             for (OperationMetadata op : setGraph) {
 
@@ -876,6 +891,10 @@ public class TestWPS {
                     setSubGraph.add(op);
                     setExtractDataParameterValue(op);
                 }
+                if (op.getInvocationName().equalsIgnoreCase("GetExtractedProductUrl")) {
+                    opGetExtractedProductUrl = op;
+//                    setSubGraph.add(op);
+                }
                 if (op.getInvocationName().equalsIgnoreCase("CompressExtraction")) {
                     opCompressExtraction = op;
                     setSubGraph.add(op);
@@ -887,6 +906,7 @@ public class TestWPS {
                 }
             }
 
+            //setSubEdge.add(directedGraph.getEdge(opGetExtractedProductUrl, opExtractData));
             setSubEdge.add(directedGraph.getEdge(opPush, opCompressExtraction));
             setSubEdge.add(directedGraph.getEdge(opCompressExtraction, opExtractData));
 
@@ -901,31 +921,32 @@ public class TestWPS {
             List<OperationMetadata> sourceOperations = new ArrayList<OperationMetadata>();
             List<OperationMetadata> sinkOperations = new ArrayList<OperationMetadata>();
 
-            ServiceMetadata.getSourceOperations(directedSubGraph, sourceOperations);
-            ServiceMetadata.getSinkOperations(directedSubGraph, sinkOperations);
-
-            //String serverURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/services";
-            String serverURL = sourceOperations.get(0).getConnectPoint(0);
+//            ServiceMetadata.getSourceOperations(directedSubGraph, sourceOperations);
+//            ServiceMetadata.getSinkOperations(directedSubGraph, sinkOperations);
+//
+//            //String serverURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/services";
+//            String serverURL = sourceOperations.get(0).getConnectPoint(0);
             WPSFactory wpsFactory = new WPSFactory();
 
-            Execute execute = wpsFactory.createExecuteProcessRequest(sourceOperations.get(0), directedSubGraph);
+            Execute execute = WPSFactory.createExecuteProcessRequest(directedSubGraph, true, false, false);
 
+            // Save Execute as XML file, just to check WPS Execute content
+            System.out.println("===============> Marshal WPS Execute");
+            
             String wpsXml = "WPSExecuteChain.xml";
 
             FileWriter writer = new FileWriter(wpsXml);
 
-            WPSInfo wpsInfo = WPSFactory.getWpsInfo(serverURL);
+            WPSInfo wpsInfo = WPSFactory.getWpsInfo(directedSubGraph);
             
-            String schemaLocationKey = String.format("%s%s", wpsInfo.getProcessDescriptions().getService(),
-                                                     wpsInfo.getProcessDescriptions().getVersion());
-            
-            WPSFactory.marshallExecute(execute, writer, WPSFactory.getSchemaLocations().get(schemaLocationKey));
+            WPSFactory.marshallExecute(execute, writer, wpsInfo.getSchemaLocation());
 
+            // Validate WPS Execute content just for checking
             System.out.println("===============> Validate WPS");
 
             List<String> errors = WPSFactory.validateWPSExecuteRequest("",
                                                                        "file:///c:/tempVFS/OGC_SCHEMA/",
-                                                                       "wps/1.0.0/wpsExecute_request.xsd",
+                                                                       "wps/1.0.0/wpsAll.xsd",
                                                                        wpsXml);
             if (errors.size() > 0) {
                 StringBuffer stringBuffer = new StringBuffer();
@@ -957,7 +978,22 @@ public class TestWPS {
 
             System.out.println("===============> Execute WPS");
 
-            testBodyPost(wpsXml, serverURL);
+            InputStream wpsRespStream = testBodyPost(wpsXml, wpsInfo.getServerUrl());
+            
+            System.out.println("===============> Unmarshal WPS Response");
+            
+            ExecuteResponse executeResponse  = WPSFactory.getExecuteResponse(wpsRespStream);
+            
+            // Save Response as XML file, just to check WPS Execute content
+            System.out.println("===============> Marshal WPS Response");
+            
+            wpsXml = "WPSExecuteResponse.xml";
+
+            writer = new FileWriter(wpsXml);
+            
+            WPSFactory.marshallExecuteResponse(executeResponse, writer, wpsInfo.getSchemaLocation());
+
+
             ///testBodyPostDontWaitResponse(wpsXml, serverURL);
 
         } catch (MotuExceptionBase e) {
@@ -981,16 +1017,22 @@ public class TestWPS {
     public static void setExtractDataParameterValue(OperationMetadata op) throws MotuExceptionBase {
         op.setParameterValue("service", "mercator");
         op.setParameterValue("product", "mercatorPsy3v2_nat_mean_best_estimate");
-        op.setParameterValue("starttime", "2009-04-27T10:00:00");
-        op.setParameterValue("endtime", "2009-04-28");
+        
+      
+        // date can be a string or a org.joda.time.DateTime
+        op.setParameterValue("starttime", "2009-04-27T10:00:00");        
+        //op.setParameterValue("endtime", "2009-04-28");
+        op.setParameterValue("endtime", WPSFactory.StringToDateTime("2009-04-28"));
+        
 
+        // Variables can be a List or a string
         List<String> variables = new ArrayList<String>();
         variables.add("temperature");
         variables.add("u");
         variables.add("v");
 
-        // op.setParameterValue("variable", variables);
-        op.setParameterValue("variable", "u");
+         op.setParameterValue("variable", variables);
+        //op.setParameterValue("variable", "u");
 
         
         double[] geobbox = new double[] { 10d, -60d, 45d, 120d };

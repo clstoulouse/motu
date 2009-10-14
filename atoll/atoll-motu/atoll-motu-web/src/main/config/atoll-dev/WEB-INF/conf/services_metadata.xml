@@ -42,9 +42,9 @@
 			request which works fine in most cases and requires no configuration.
 		-->
 		<!--
-			<HTTPGet>http://localhost:8080/deegree/services?</HTTPGet>
-			<HTTPPost>http://localhost:8080/deegree/services</HTTPPost>
-			<SOAP>http://localhost:8080/deegree/services</SOAP>
+			<HTTPGet>http://atoll-dev.cls.fr:30080/deegree/services?</HTTPGet>
+			<HTTPPost>http://atoll-dev.cls.fr:30080/deegree/services</HTTPPost>
+			<SOAP>http://atoll-dev.cls.fr:30080/deegree/services</SOAP>
 		-->
 	</DCP>
 	<!--

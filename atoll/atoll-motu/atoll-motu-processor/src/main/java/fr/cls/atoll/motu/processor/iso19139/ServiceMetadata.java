@@ -58,10 +58,10 @@ import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.11 $ - $Date: 2009-09-29 14:09:19 $
+ * @version $Revision: 1.12 $ - $Date: 2009-10-14 12:47:59 $
  */
 public class ServiceMetadata {
-    
+
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(ServiceMetadata.class);
 
@@ -80,10 +80,10 @@ public class ServiceMetadata {
 
     /** The jaxb context iso19139. */
     private static JAXBContext jaxbContextIso19139 = null;
-    
+
     /** The marshaller iso19139. */
     private static Marshaller marshallerIso19139 = null;
-    
+
     /** The unmarshaller iso19139. */
     private static Unmarshaller unmarshallerIso19139 = null;
 
@@ -1120,6 +1120,29 @@ public class ServiceMetadata {
 
     }
 
+    public static OperationMetadata getSourceOperation(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph)
+            throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getSourceOperation(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - entering");
+        }
+
+        List<OperationMetadata> sourceOperations = new ArrayList<OperationMetadata>();
+
+        ServiceMetadata.getSourceOperations(directedGraph, sourceOperations);
+        if (sourceOperations.size() != 1) {
+            throw new MotuException(
+                    String
+                            .format("ServiceMetadta#getSourceOperation - There are either none or multiple source operations int the graph. Only one source operation is allowed to create a WPS process - Source operations are: %s",
+                                    sourceOperations.toString()));
+        }
+
+        OperationMetadata returnOperationMetadata = sourceOperations.get(0);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getSourceOperation(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - exiting");
+        }
+        return returnOperationMetadata;
+    }
+
     /**
      * Gets the source operations.
      * 
@@ -1229,7 +1252,7 @@ public class ServiceMetadata {
         return returnKShortestPaths;
 
     }
-    
+
     /**
      * Gets the operation paths.
      * 
@@ -1615,7 +1638,7 @@ public class ServiceMetadata {
         }
         return graph;
     }
-    
+
     /**
      * Creates the directed sub graph.
      * 
@@ -1625,7 +1648,9 @@ public class ServiceMetadata {
      * 
      * @return the directed graph< operation metadata, operation relationship edge< string>>
      */
-    public static DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> createDirectedSubGraph(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>>base, Set<OperationMetadata> vertexSubset, Set<OperationRelationshipEdge<String>>edgeSubset) {
+    public static DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> createDirectedSubGraph(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> base,
+                                                                                                             Set<OperationMetadata> vertexSubset,
+                                                                                                             Set<OperationRelationshipEdge<String>> edgeSubset) {
         if (LOG.isDebugEnabled()) {
             LOG
                     .debug("createDirectedSubGraph(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>, Set<OperationMetadata>, Set<OperationRelationshipEdge<String>>) - entering");

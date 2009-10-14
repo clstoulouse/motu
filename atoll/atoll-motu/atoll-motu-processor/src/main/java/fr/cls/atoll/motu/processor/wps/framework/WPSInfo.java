@@ -13,10 +13,13 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.log4j.Logger;
+import org.jgrapht.DirectedGraph;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.utils.ReflectionUtils;
+import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
+import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
 import fr.cls.atoll.motu.processor.opengis.ows110.CodeType;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ObjectFactory;
@@ -33,7 +36,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-08-11 13:50:40 $
+ * @version $Revision: 1.4 $ - $Date: 2009-10-14 12:47:59 $
  */
 public class WPSInfo {
     /**
@@ -87,26 +90,38 @@ public class WPSInfo {
     }
 
     public synchronized ProcessDescriptions loadDescribeProcess() throws MotuException {
-        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadDescribeProcess() - entering");
+        }
+
         if (processDescriptions != null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("loadDescribeProcess() - exiting");
+            }
             return processDescriptions;
         }
 
         if (serverUrl == null) {
             throw new MotuException("WPSInfo - Unable to load WPS Process Descriptions (WPS uri is null)");
         }
-        
+
         InputStream in = WPSUtils.post(serverUrl, MotuWPSProcess.WPS_DESCRIBE_ALL_XML);
         try {
             JAXBContext jc = JAXBContext.newInstance(MotuWPSProcess.WPS100_SHEMA_PACK_NAME);
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             processDescriptions = (ProcessDescriptions) unmarshaller.unmarshal(in);
         } catch (Exception e) {
+            LOG.error("loadDescribeProcess()", e);
+
             throw new MotuException("WPSInfo - Unable to unmarshall WPS Process Descriptions", e);
         }
 
         if (processDescriptions == null) {
             throw new MotuException("Unable to load WPS Process Descriptions (processDescriptions is null)");
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadDescribeProcess() - exiting");
         }
         return processDescriptions;
     }
@@ -200,6 +215,24 @@ public class WPSInfo {
 
     public static boolean isBoundingBoxData(InputDescriptionType inputDescriptionType) {
         return inputDescriptionType.getBoundingBoxData() != null;
+    }
+
+    public String getService() throws MotuException {
+        return getProcessDescriptions().getService();
+    }
+
+    public String getVersion() throws MotuException {
+        return getProcessDescriptions().getVersion();
+    }
+
+    public String getSchemaLocationKey() throws MotuException {
+
+        return String.format("%s%s", getService(), getVersion());
+    }
+
+    public String getSchemaLocation() throws MotuException {
+        String schemaLocationKey = getSchemaLocationKey();
+        return WPSFactory.getSchemaLocations().get(schemaLocationKey);
     }
     /*
      * public String getXmlSchemaNamespace(Class<?> clazz) {

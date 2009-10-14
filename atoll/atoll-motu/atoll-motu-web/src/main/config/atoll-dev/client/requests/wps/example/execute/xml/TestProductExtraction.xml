@@ -50,6 +50,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
+            <ows:Identifier>geobbox</ows:Identifier>
 			<wps:Data>
 				<wps:BoundingBoxData>
 					<ows:LowerCorner>-20 10</ows:LowerCorner>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:ExecuteResponse statusLocation="http://atoll-dev.cls.fr:30080/atoll-motuservlet/services?service=WPS&amp;version=1.0.0&amp;request=GetResponseDocument&amp;identifier=15" serviceInstance="http://atoll-dev.cls.fr:30080/atoll-motuservlet/services?service=WPS&amp;request=GetCapabilities&amp;version=1.0.0" xml:lang="en" version="1.0.0" service="WPS" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd" xmlns:ns2="http://www.opengis.net/wps/1.0.0" xmlns:ns1="http://www.opengis.net/ows/1.1" xmlns:ns3="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ns2:Process ns2:processVersion="1.0.0">
+        <ns1:Identifier>Push</ns1:Identifier>
+        <ns1:Title>Data transfer</ns1:Title>
+        <ns1:Abstract>The purpose of this process is to transfer data from a uri to another uri or to tranfer the result of an extraction request (identfied by its number) to a specific uri. 	  
+	So, either the input uri or the request identifier have to be set as input parameter.
+	
+	Supported protocoled are ftp, sftp, file.
+	The return values are the return process code (ok or error code) and the correponding message.
+			
+	URI formats are :
+   		
+   		ftp://host[:port]/directory/file
+   		sftp://host[:port]/directory/file
+   		
+   	To access to the files on the local physical file system :
+		[file://] absolute-path
+
+	Where absolute-path is a valid absolute file name for the local platform. UNC names are supported under Windows.
+	
+	Examples :
+   		file:///home/someuser/somedir
+  	 	file:///C:/Documents and Settings
+  		file://///somehost/someshare/afile.txt
+  		/home/someuser/somedir
+  		c:\program files\some dir
+  		c:/program files/some dir
+   		     		
+	You can also encode a username and password within a url:
+   		ftp://user:password@host/path
+   		sftp://user:password@host/path
+   		
+   	You can also set a username and password by using the parameters user and pwd.
+   		
+   	To pass through a proxy, you can use the user parameter :
+   	
+   	Example:
+   		Uri: ftp://my.proxy.com/directory/file
+   		User: "username@my.ftp.com"
+   		Pwd: "userpwd"
+ 	  		
+	
+	</ns1:Abstract>
+    </ns2:Process>
+    <ns2:Status creationTime="2009-10-14T12:18:12.687Z">
+        <ns2:ProcessStarted percentCompleted="0">Process execution started@2009-10-14T12:18:12.675Z</ns2:ProcessStarted>
+    </ns2:Status>
+</ns2:ExecuteResponse>

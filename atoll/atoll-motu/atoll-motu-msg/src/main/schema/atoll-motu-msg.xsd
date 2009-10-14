@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema attributeFormDefault="unqualified"
-	elementFormDefault="qualified"
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
-
- 
+	elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	jaxb:version="2.1" jaxb:extensionBindingPrefixes="xjc">
+	<xsd:annotation>
+		<xsd:appinfo>
+			<jaxb:globalBindings>
+				<xjc:generateElementProperty>false
+				</xjc:generateElementProperty>
+			</jaxb:globalBindings>
+		</xsd:appinfo>
+	</xsd:annotation>
 	<xsd:simpleType name="errorType">
 		<xsd:annotation>
 			<xsd:documentation>
 				Motu error codes enumeration
 			</xsd:documentation>
 			<xsd:appinfo>
-				<jaxb:typesafeEnumClass name="ErrorType" />								
+				<jaxb:typesafeEnumClass name="ErrorType" />
 			</xsd:appinfo>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:unsignedShort">
@@ -19,7 +25,7 @@
 				<xsd:annotation>
 					<xsd:documentation>No error</xsd:documentation>
 					<xsd:appinfo>
-						<jaxb:typesafeEnumMember name="OK" />						
+						<jaxb:typesafeEnumMember name="OK" />
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -60,8 +66,7 @@
 						Latitude is invalid or inconsistent
 					</xsd:documentation>
 					<xsd:appinfo>
-						<jaxb:typesafeEnumMember
-							name="INVALID_LATITUDE" />
+						<jaxb:typesafeEnumMember name="INVALID_LATITUDE" />
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -71,8 +76,7 @@
 						Longitude is invalid or inconsistent
 					</xsd:documentation>
 					<xsd:appinfo>
-						<jaxb:typesafeEnumMember
-							name="INVALID_LONGITUDE" />
+						<jaxb:typesafeEnumMember name="INVALID_LONGITUDE" />
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -82,8 +86,7 @@
 						Date range is invalid or inconsistent
 					</xsd:documentation>
 					<xsd:appinfo>
-						<jaxb:typesafeEnumMember
-							name="INVALID_DATE_RANGE" />
+						<jaxb:typesafeEnumMember name="INVALID_DATE_RANGE" />
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -93,8 +96,7 @@
 						Amount of extracted data exceed allowed capacity
 					</xsd:documentation>
 					<xsd:appinfo>
-						<jaxb:typesafeEnumMember
-							name="EXCEEDING_CAPACITY" />
+						<jaxb:typesafeEnumMember name="EXCEEDING_CAPACITY" />
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -105,8 +107,7 @@
 						inconsistent
 					</xsd:documentation>
 					<xsd:appinfo>
-						<jaxb:typesafeEnumMember
-							name="INVALID_LAT_LON_RANGE" />
+						<jaxb:typesafeEnumMember name="INVALID_LAT_LON_RANGE" />
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -117,8 +118,7 @@
 						inconsistent
 					</xsd:documentation>
 					<xsd:appinfo>
-						<jaxb:typesafeEnumMember
-							name="INVALID_DEPTH_RANGE" />
+						<jaxb:typesafeEnumMember name="INVALID_DEPTH_RANGE" />
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -161,8 +161,7 @@
 						varaible)
 					</xsd:documentation>
 					<xsd:appinfo>
-						<jaxb:typesafeEnumMember
-							name="NETCDF_VARIABLE_NOT_FOUND" />
+						<jaxb:typesafeEnumMember name="NETCDF_VARIABLE_NOT_FOUND" />
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -172,8 +171,7 @@
 						Error occurs during NetCDF attribute processing
 					</xsd:documentation>
 					<xsd:appinfo>
-						<jaxb:typesafeEnumMember
-							name="NETCDF_ATTRIBUTE" />
+						<jaxb:typesafeEnumMember name="NETCDF_ATTRIBUTE" />
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -184,8 +182,7 @@
 						is reached
 					</xsd:documentation>
 					<xsd:appinfo>
-						<jaxb:typesafeEnumMember
-							name="EXCEEDING_QUEUE_CAPACITY" />
+						<jaxb:typesafeEnumMember name="EXCEEDING_QUEUE_CAPACITY" />
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -196,8 +193,7 @@
 						user is reached
 					</xsd:documentation>
 					<xsd:appinfo>
-						<jaxb:typesafeEnumMember
-							name="EXCEEDING_USER_CAPACITY" />
+						<jaxb:typesafeEnumMember name="EXCEEDING_USER_CAPACITY" />
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -218,8 +214,7 @@
 						server
 					</xsd:documentation>
 					<xsd:appinfo>
-						<jaxb:typesafeEnumMember
-							name="INVALID_QUEUE_PRIORITY" />
+						<jaxb:typesafeEnumMember name="INVALID_QUEUE_PRIORITY" />
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -229,8 +224,7 @@
 						Unknown request id.
 					</xsd:documentation>
 					<xsd:appinfo>
-						<jaxb:typesafeEnumMember
-							name="UNKNOWN_REQUEST_ID" />
+						<jaxb:typesafeEnumMember name="UNKNOWN_REQUEST_ID" />
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -239,11 +233,11 @@
 					<xsd:documentation>
 						The amount of data of a request is exceeded the
 						maximum data threshold of the queues. No queue
-						lays out such a size (data threshold)
+						lays out such a size
+						(data threshold)
 					</xsd:documentation>
 					<xsd:appinfo>
-						<jaxb:typesafeEnumMember
-							name="EXCEEDING_QUEUE_DATA_CAPACITY" />
+						<jaxb:typesafeEnumMember name="EXCEEDING_QUEUE_DATA_CAPACITY" />
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -289,10 +283,12 @@
 	</xsd:simpleType>
 
 	<xsd:element name="statusModeResponse">
+
 		<xsd:complexType>
 			<xsd:annotation>
 				<xsd:documentation>
-					Réponse à une requete d'extraction en mode 'status'
+					Réponse à une requete d'extraction en mode
+					'status'
 				</xsd:documentation>
 			</xsd:annotation>
 
@@ -305,9 +301,25 @@
 			<xsd:attribute name="remoteUri" type="xsd:string" />
 			<xsd:attribute name="localUri" type="xsd:string" />
 		</xsd:complexType>
-
 	</xsd:element>
 
+
+	<xsd:element name="statusWPS">
+		<xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Réponse à une requete d'extraction en mode
+					'status'
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:complexContent mixed="true">
+				<xsd:extension base='xsd:anyType'>
+					<xsd:attribute name="requestId" type="xsd:long" />
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+
+	</xsd:element>
 
 	<xsd:element name="timeCoverage">
 		<xsd:complexType>
@@ -330,7 +342,8 @@
 		<xsd:complexType>
 			<xsd:annotation>
 				<xsd:documentation>
-					Réponse informations volume de donneés (en octets)
+					Réponse informations volume de donneés (en
+					octets)
 					d'une requête d'extraction.
 				</xsd:documentation>
 			</xsd:annotation>

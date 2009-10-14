@@ -30,7 +30,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSInfo;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.11 $ - $Date: 2009-10-12 09:23:13 $
+ * @version $Revision: 1.12 $ - $Date: 2009-10-14 12:47:59 $
  */
 public class OperationMetadata {
     /**
@@ -829,7 +829,15 @@ public class OperationMetadata {
         return returnMap;
     }
     public ParameterValue<?> createParameterValue(String paramName) throws MotuException {
-        return createParameterValue(paramName, true);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createParameterValue(String) - entering");
+        }
+
+        ParameterValue<?> returnParameterValue = createParameterValue(paramName, true);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createParameterValue(String) - exiting");
+        }
+        return returnParameterValue;
     }
     /**
      * Creates the parameter value.
@@ -866,7 +874,15 @@ public class OperationMetadata {
      * @throws MotuException the motu exception
      */
     public ParameterValue<?> createParameterValue(SVParameterType parameterType) throws MotuException {
-        return createParameterValue(parameterType, true);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createParameterValue(SVParameterType) - entering");
+        }
+
+        ParameterValue<?> returnParameterValue = createParameterValue(parameterType, true);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createParameterValue(SVParameterType) - exiting");
+        }
+        return returnParameterValue;
     }
     public ParameterValue<?> createParameterValue(SVParameterType parameterType, boolean allowCollection) throws MotuException {
         if (LOG.isDebugEnabled()) {
@@ -898,6 +914,10 @@ public class OperationMetadata {
     }
 
     public ParameterValue<?> getParameterValue(String name) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterValue(String) - entering");
+        }
+
         ParameterValue<?> parameterValue = parameterValueMap.get(name);
 
         if (parameterValue == null) {
@@ -906,35 +926,75 @@ public class OperationMetadata {
                                                   name));
         }
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getParameterValue(String) - exiting");
+        }
         return parameterValue;
     }
 
     public void setParameterValue(String name, Object value) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setParameterValue(String, Object) - entering");
+        }
+
         ParameterValue<?> parameterValue = getParameterValue(name);
         parameterValue.setValue(value);
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setParameterValue(String, Object) - exiting");
+        }
     }
 
     public void setParameterValue(String name, int value) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setParameterValue(String, int) - entering");
+        }
+
         Integer v = value;
         setParameterValue(name, v);
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setParameterValue(String, int) - exiting");
+        }
     }
 
     public void setParameterValue(String name, double value) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setParameterValue(String, double) - entering");
+        }
+
         Double v = value;
         setParameterValue(name, v);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setParameterValue(String, double) - exiting");
+        }
     }
 
     public void setParameterValue(String name, long value) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setParameterValue(String, long) - entering");
+        }
+
         Long v = value;
         setParameterValue(name, v);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setParameterValue(String, long) - exiting");
+        }
     }
 
     public void setParameterValue(String name, boolean value) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setParameterValue(String, boolean) - entering");
+        }
+
         Boolean v = value;
         setParameterValue(name, v);
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setParameterValue(String, boolean) - exiting");
+        }
     }
 
 //    public void setParameterValue(String name, double[] value) throws MotuException {
@@ -944,6 +1004,10 @@ public class OperationMetadata {
 //    }
 
     public void setParameterValue(String name, String value) throws MotuExceptionBase {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setParameterValue(String, String) - entering");
+        }
+
         ParameterValue<?> parameterValue = getParameterValue(name);
 
         Object v = value;
@@ -962,6 +1026,9 @@ public class OperationMetadata {
 
         parameterValue.setValue(v);
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setParameterValue(String, String) - exiting");
+        }
     }
 
     /**
@@ -1009,9 +1076,16 @@ public class OperationMetadata {
     }
     
     public WPSInfo getWpsInfo() throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getWpsInfo() - entering");
+        }
     
     String url = getConnectPoint(0);
-    return WPSFactory.getWpsInfo(url);
+        WPSInfo returnWPSInfo = WPSFactory.getWpsInfo(url);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getWpsInfo() - exiting");
+        }
+    return returnWPSInfo;
     }
     
 }

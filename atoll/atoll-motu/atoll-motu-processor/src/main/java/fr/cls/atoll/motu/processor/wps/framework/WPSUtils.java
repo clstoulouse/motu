@@ -18,7 +18,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-08-11 15:04:07 $
+ * @version $Revision: 1.3 $ - $Date: 2009-10-14 12:47:59 $
  */
 public class WPSUtils {
 
@@ -38,11 +38,33 @@ public class WPSUtils {
             in = HttpUtils.post(HttpUtils.STREAM, url, in, headers);
 
         } catch (Exception e) {
-            throw new MotuException("WPSInfo - Unable to process.", e);
+            throw new MotuException("WPSUtils#post - Unable to process.", e);
         }
 
         if (in == null) {
-            throw new MotuException("WPSInfo - Unable to process : post return a null input stream.");
+            throw new MotuException("WPSUtils#post - Unable to process : post return a null input stream.");
+        }
+
+        return in;
+    }
+    
+    public static InputStream get(String url) throws MotuException {
+
+        if (Organizer.isNullOrEmpty(url)) {
+            throw new MotuException("WPSUtils#get - Unable to process : url is null or empty.");
+        }
+
+        InputStream in = null;
+        Map<String, String> headers = new HashMap<String, String>();
+        try {
+            in = HttpUtils.get(HttpUtils.STREAM, url, headers);
+
+        } catch (Exception e) {
+            throw new MotuException("WPSUtils#get - Unable to process.", e);
+        }
+
+        if (in == null) {
+            throw new MotuException("WPSUtils#get - Unable to process : get return a null input stream.");
         }
 
         return in;
