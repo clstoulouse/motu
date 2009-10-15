@@ -57,8 +57,8 @@ import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.12 $ - $Date: 2009-10-14 12:47:59 $
+ * @author $Author: jarnaud $
+ * @version $Revision: 1.13 $ - $Date: 2009-10-15 15:21:03 $
  */
 public class ServiceMetadata {
 
@@ -1627,9 +1627,11 @@ public class ServiceMetadata {
         if (LOG.isDebugEnabled()) {
             LOG.debug("createDirectedGraph() - entering");
         }
-
+        
+        OperationRelationshipEdge<String> edge = new OperationRelationshipEdge<String>();
+        
         ClassBasedEdgeFactory<OperationMetadata, OperationRelationshipEdge<String>> classBasedEdgeFactory = new ClassBasedEdgeFactory<OperationMetadata, OperationRelationshipEdge<String>>(
-                (Class<? extends OperationRelationshipEdge<String>>) OperationRelationshipEdge.class);
+                (Class<? extends OperationRelationshipEdge<String>>) edge.getClass());
         DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> graph = new DefaultDirectedGraph<OperationMetadata, OperationRelationshipEdge<String>>(
                 classBasedEdgeFactory);
 
