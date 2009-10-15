@@ -11,8 +11,8 @@ import javax.xml.bind.annotation.XmlSchema;
 /**
  * <br><br>Copyright : Copyright (c) 2009.
  * <br><br>Société : CLS (Collecte Localisation Satellites)
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-10-15 14:37:59 $
+ * @author $Author: jarnaud $
+ * @version $Revision: 1.3 $ - $Date: 2009-10-15 15:32:39 $
  */
 public class ReflectionUtils {
     
@@ -68,12 +68,12 @@ public class ReflectionUtils {
         
     }
     
-    public static Enumeration<?> makeEnumeration(final Object obj) {
+    public static Enumeration makeEnumeration(final Object obj) {
         Class<?> type = obj.getClass();
         if (!type.isArray()) {
           throw new IllegalArgumentException(obj.getClass().toString());
         } else {
-          return (new Enumeration<?>() {
+          return (new Enumeration() {
             int size = Array.getLength(obj);
 
             int cursor;

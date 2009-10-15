@@ -11,8 +11,6 @@ import java.util.Vector;
 
 import javax.xml.bind.annotation.XmlType;
 
-import org.hamcrest.core.IsAnything;
-
 import opendap.servlet.GetAsciiHandler;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.intfce.Organizer.Format;
@@ -31,8 +29,8 @@ import fr.cls.atoll.motu.processor.opengis.wps100.StatusType;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-10-15 14:38:09 $
+ * @author $Author: jarnaud $
+ * @version $Revision: 1.3 $ - $Date: 2009-10-15 15:32:32 $
  */
 public class MotuExecuteResponse {
 
