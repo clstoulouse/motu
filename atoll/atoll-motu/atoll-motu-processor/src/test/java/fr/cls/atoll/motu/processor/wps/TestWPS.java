@@ -8,12 +8,15 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -25,6 +28,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
@@ -40,11 +44,14 @@ import org.joda.time.DateTime;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 
+
 import fr.cls.atoll.motu.library.converter.jaxb.JodaPeriodAdapter;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.utils.ReflectionUtils;
+import fr.cls.atoll.motu.library.utils.StaticResourceBackedDynamicEnum;
 import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
 import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
 import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
@@ -54,10 +61,14 @@ import fr.cls.atoll.motu.processor.opengis.wps100.ExecuteResponse;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
+import fr.cls.atoll.motu.processor.opengis.wps100.StatusType;
+import fr.cls.atoll.motu.processor.wps.framework.AgentDescriptor;
 import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse;
+import fr.cls.atoll.motu.processor.wps.framework.MotuWPSStatusType;
 import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
 import fr.cls.atoll.motu.processor.wps.framework.WPSInfo;
 import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
+import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse.WPSStatusResponse;
 
 /**
  * <br>
@@ -67,7 +78,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.28 $ - $Date: 2009-10-14 14:11:07 $
+ * @version $Revision: 1.29 $ - $Date: 2009-10-15 14:38:09 $
  */
 class StringList extends ArrayList<String> {
 }
@@ -96,6 +107,25 @@ public class TestWPS {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        
+        AnnotatedElement annotatedElement = StatusType.class;
+        System.out.println(annotatedElement.getAnnotations().toString());
+        for (Annotation annotation : annotatedElement.getAnnotations()) {
+            System.out.println(annotation.toString());
+            System.out.println(annotation.annotationType().toString());
+            
+        }
+        
+        XmlType xmlType = annotatedElement.getAnnotation(XmlType.class);
+        System.out.println(xmlType.propOrder().toString());
+        for (String annotation : xmlType.propOrder()) {
+            System.out.println(annotation);
+            
+        }
+        
+        
+        testArrayToEnum(xmlType.propOrder());
+        
         // Collection<String> tt = new ArrayList<String>();
         // tt.add("qsdfsdf");
         //        
@@ -126,7 +156,7 @@ public class TestWPS {
 
         // testBuildWPS();
         // testBuildChainWPS();
-        testBuildAndRunChainWPS();
+        //testBuildAndRunChainWPS();
         // testUnmarshallWPS();
 
         // for (ErrorType c: ErrorType.values()) {
@@ -1052,4 +1082,25 @@ public class TestWPS {
     public static void setGetRequestStatusParameterValue(OperationMetadata op) throws MotuExceptionBase {
         op.setParameterValue("requestid", 1255350789354L);
     }
+    
+    
+    public static void testArrayToEnum(String args[]) {
+        
+//        StaticResourceBackedDynamicEnum<Integer, AgentDescriptor> agents = new StaticResourceBackedDynamicEnum<Integer, AgentDescriptor>(Arrays.asList(new AgentDescriptor(7, "James Bond", true), 
+//            new AgentDescriptor(1, "James One", true)));
+//        
+//        System.out.println(agents.backingValueOf(1));
+//
+//        System.out.println(agents.ordinal(1));
+//        System.out.println(agents.valueOf("James One"));
+//        
+                
+        StaticResourceBackedDynamicEnum<WPSStatusResponse, MotuWPSStatusType> statusTypes = MotuExecuteResponse.getStatusTypes();
+        System.out.println(statusTypes.backingValueOf(WPSStatusResponse.SUCCEEDED));
+        System.out.println(statusTypes.ordinal(WPSStatusResponse.SUCCEEDED));
+        System.out.println(statusTypes.valueOf("processFailed"));
+
+        
+    }
+
 }

@@ -59,7 +59,7 @@
 			<groupId>org.jvnet.ogc</groupId>
 			<artifactId>iso-19139-d_2006_05_04-schema</artifactId>
 			<!-- <artifactId>iso-19139-d_2007_04_17-schema</artifactId>  -->
-			<version>1.0.0</version>
+			<version>1.0.0-PATCH-CLS</version>
 		</dependency>
 		<!--
 			<dependency> <groupId>org.geotoolkit</groupId>

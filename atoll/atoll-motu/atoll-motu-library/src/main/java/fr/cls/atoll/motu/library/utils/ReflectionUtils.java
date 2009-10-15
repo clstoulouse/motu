@@ -1,7 +1,9 @@
 package fr.cls.atoll.motu.library.utils;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlSchema;
@@ -10,7 +12,7 @@ import javax.xml.bind.annotation.XmlSchema;
  * <br><br>Copyright : Copyright (c) 2009.
  * <br><br>Société : CLS (Collecte Localisation Satellites)
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-08-06 14:28:31 $
+ * @version $Revision: 1.2 $ - $Date: 2009-10-15 14:37:59 $
  */
 public class ReflectionUtils {
     
@@ -65,6 +67,28 @@ public class ReflectionUtils {
         return namespace;
         
     }
+    
+    public static Enumeration<?> makeEnumeration(final Object obj) {
+        Class<?> type = obj.getClass();
+        if (!type.isArray()) {
+          throw new IllegalArgumentException(obj.getClass().toString());
+        } else {
+          return (new Enumeration<?>() {
+            int size = Array.getLength(obj);
+
+            int cursor;
+
+            public boolean hasMoreElements() {
+              return (cursor < size);
+            }
+
+            public Object nextElement() {
+              return Array.get(obj, cursor++);
+            }
+          });
+        }
+      }
+
 
 
 }
