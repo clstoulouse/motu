@@ -21,8 +21,10 @@ import fr.cls.atoll.motu.library.utils.ReflectionUtils;
 import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
 import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
 import fr.cls.atoll.motu.processor.opengis.ows110.CodeType;
+import fr.cls.atoll.motu.processor.opengis.wps100.DataType;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ObjectFactory;
+import fr.cls.atoll.motu.processor.opengis.wps100.OutputDataType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType.DataInputs;
@@ -36,7 +38,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-10-14 12:47:59 $
+ * @version $Revision: 1.5 $ - $Date: 2009-10-16 13:06:54 $
  */
 public class WPSInfo {
     /**
@@ -206,15 +208,66 @@ public class WPSInfo {
     }
 
     public static boolean isComplexData(InputDescriptionType inputDescriptionType) {
+        if (inputDescriptionType == null) {
+            return false;
+        }
         return inputDescriptionType.getComplexData() != null;
     }
 
     public static boolean isLiteralData(InputDescriptionType inputDescriptionType) {
+        if (inputDescriptionType == null) {
+            return false;
+        }
         return inputDescriptionType.getLiteralData() != null;
     }
 
     public static boolean isBoundingBoxData(InputDescriptionType inputDescriptionType) {
+        if (inputDescriptionType == null) {
+            return false;
+        }
         return inputDescriptionType.getBoundingBoxData() != null;
+    }
+
+    public static boolean isComplexData(OutputDataType outputDataType) {
+        if (outputDataType == null) {
+            return false;
+        }
+        return WPSInfo.isComplexData(outputDataType.getData());
+    }
+
+    public static boolean isLiteralData(OutputDataType outputDataType) {
+        if (outputDataType == null) {
+            return false;
+        }
+        return WPSInfo.isLiteralData(outputDataType.getData());
+    }
+
+    public static boolean isBoundingBoxData(OutputDataType outputDataType) {
+        if (outputDataType == null) {
+            return false;
+        }
+        return WPSInfo.isBoundingBoxData(outputDataType.getData());
+    }
+
+    public static boolean isComplexData(DataType dataType) {
+        if (dataType == null) {
+            return false;
+        }
+        return dataType.getComplexData() != null;
+    }
+
+    public static boolean isLiteralData(DataType dataType) {
+        if (dataType == null) {
+            return false;
+        }
+        return dataType.getLiteralData() != null;
+    }
+
+    public static boolean isBoundingBoxData(DataType dataType) {
+        if (dataType == null) {
+            return false;
+        }
+        return dataType.getBoundingBoxData() != null;
     }
 
     public String getService() throws MotuException {

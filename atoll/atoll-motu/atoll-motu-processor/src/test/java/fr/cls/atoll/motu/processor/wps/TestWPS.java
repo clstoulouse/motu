@@ -6,7 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -35,11 +40,16 @@ import org.jgrapht.DirectedGraph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.KShortestPaths;
 import org.jgrapht.graph.EdgeReversedGraph;
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+import org.joda.time.format.ISOPeriodFormat;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 
+import fr.cls.atoll.motu.library.converter.jaxb.JodaPeriodAdapter;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.utils.StaticResourceBackedDynamicEnum;
@@ -67,7 +77,7 @@ import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse.WPSStatusRe
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.30 $ - $Date: 2009-10-16 05:45:45 $
+ * @version $Revision: 1.31 $ - $Date: 2009-10-16 13:06:54 $
  */
 class StringList extends ArrayList<String> {
 }
@@ -96,25 +106,27 @@ public class TestWPS {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
-        AnnotatedElement annotatedElement = StatusType.class;
-        System.out.println(annotatedElement.getAnnotations().toString());
-        for (Annotation annotation : annotatedElement.getAnnotations()) {
-            System.out.println(annotation.toString());
-            System.out.println(annotation.annotationType().toString());
-            
-        }
-        
-        XmlType xmlType = annotatedElement.getAnnotation(XmlType.class);
-        System.out.println(xmlType.propOrder().toString());
-        for (String annotation : xmlType.propOrder()) {
-            System.out.println(annotation);
-            
-        }
-        
-        
-        testArrayToEnum(xmlType.propOrder());
-        
+
+        testCreateObject();
+
+        // AnnotatedElement annotatedElement = StatusType.class;
+        // System.out.println(annotatedElement.getAnnotations().toString());
+        // for (Annotation annotation : annotatedElement.getAnnotations()) {
+        // System.out.println(annotation.toString());
+        // System.out.println(annotation.annotationType().toString());
+        //            
+        // }
+        //        
+        // XmlType xmlType = annotatedElement.getAnnotation(XmlType.class);
+        // System.out.println(xmlType.propOrder().toString());
+        // for (String annotation : xmlType.propOrder()) {
+        // System.out.println(annotation);
+        //            
+        // }
+        //        
+        //        
+        // testArrayToEnum(xmlType.propOrder());
+
         // Collection<String> tt = new ArrayList<String>();
         // tt.add("qsdfsdf");
         //        
@@ -145,7 +157,7 @@ public class TestWPS {
 
         // testBuildWPS();
         // testBuildChainWPS();
-        //testBuildAndRunChainWPS();
+        // testBuildAndRunChainWPS();
         // testUnmarshallWPS();
 
         // for (ErrorType c: ErrorType.values()) {
@@ -933,7 +945,7 @@ public class TestWPS {
             if (testWithPush) {
                 setSubEdge.add(directedGraph.getEdge(opPush, opCompressExtraction));
             } else {
-                setSubEdge.add(directedGraph.getEdge(opGetExtractedProductUrl, opCompressExtraction));                
+                setSubEdge.add(directedGraph.getEdge(opGetExtractedProductUrl, opCompressExtraction));
             }
             setSubEdge.add(directedGraph.getEdge(opCompressExtraction, opExtractData));
 
@@ -953,75 +965,131 @@ public class TestWPS {
             //
             // //String serverURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/services";
             // String serverURL = sourceOperations.get(0).getConnectPoint(0);
-            WPSFactory wpsFactory = new WPSFactory();
 
-            Execute execute = WPSFactory.createExecuteProcessRequest(directedSubGraph, true, false, false);
-
-            // Save Execute as XML file, just to check WPS Execute content
-            System.out.println("===============> Marshal WPS Execute");
-
-            String wpsXml = "WPSExecuteChain.xml";
-
-            FileWriter writer = new FileWriter(wpsXml);
-
-            WPSInfo wpsInfo = WPSFactory.getWpsInfo(directedSubGraph);
-
-            WPSFactory.marshallExecute(execute, writer, wpsInfo.getSchemaLocation());
-
-            // Validate WPS Execute content just for checking
-            System.out.println("===============> Validate WPS");
-
-            List<String> errors = WPSFactory.validateWPSExecuteRequest("", "file:///c:/tempVFS/OGC_SCHEMA/", "wps/1.0.0/wpsAll.xsd", wpsXml);
-            if (errors.size() > 0) {
-                StringBuffer stringBuffer = new StringBuffer();
-                for (String str : errors) {
-                    stringBuffer.append(str);
-                    stringBuffer.append("\n");
-                }
-                throw new MotuException(String.format("ERROR - XML file '%s' is not valid - See errors below:\n%s", wpsXml, stringBuffer.toString()));
-            } else {
-                System.out.println(String.format("XML file '%s' is valid", wpsXml));
-            }
-
-            // ByteArrayOutputStream out = new ByteArrayOutputStream();
-            // OutputStreamWriter writer2 = new OutputStreamWriter(out);
+            // ------------------------------------------------------------------------------
+            // WPSFactory wpsFactory = new WPSFactory();
             //
-            // WPSFactory.marshallExecute(execute, writer2,
-            // WPSFactory.getSchemaLocations().get(schemaLocationKey));
+            // Execute execute = WPSFactory.createExecuteProcessRequest(directedSubGraph, true, false, false);
             //
-            // InputStream inputStream = new ByteArrayInputStream(out.toByteArray());
+            // // Save Execute as XML file, just to check WPS Execute content
+            // System.out.println("===============> Marshal WPS Execute");
             //
-            // byte b[] = new byte[1024];
+            // String wpsXml = "WPSExecuteChain.xml";
             //
-            // int bytesRead = 0;
+            // FileWriter writer = new FileWriter(wpsXml);
             //
-            // while ((bytesRead = inputStream.read(b)) != -1) {
-            // String nextLine = new String(b, 0, bytesRead);
-            // System.out.println(nextLine);
+            // WPSInfo wpsInfo = WPSFactory.getWpsInfo(directedSubGraph);
+            //
+            // WPSFactory.marshallExecute(execute, writer, directedSubGraph);
+            //
+            // // Validate WPS Execute content just for checking
+            // System.out.println("===============> Validate WPS");
+            //
+            // List<String> errors = WPSFactory.validateWPSExecuteRequest("",
+            // "file:///c:/tempVFS/OGC_SCHEMA/", "wps/1.0.0/wpsAll.xsd", wpsXml);
+            // if (errors.size() > 0) {
+            // StringBuffer stringBuffer = new StringBuffer();
+            // for (String str : errors) {
+            // stringBuffer.append(str);
+            // stringBuffer.append("\n");
+            // }
+            // throw new
+            // MotuException(String.format("ERROR - XML file '%s' is not valid - See errors below:\n%s",
+            // wpsXml, stringBuffer.toString()));
+            // } else {
+            // System.out.println(String.format("XML file '%s' is valid", wpsXml));
             // }
             //
+            // // ByteArrayOutputStream out = new ByteArrayOutputStream();
+            // // OutputStreamWriter writer2 = new OutputStreamWriter(out);
+            // //
+            // // WPSFactory.marshallExecute(execute, writer2,
+            // // WPSFactory.getSchemaLocations().get(schemaLocationKey));
+            // //
+            // // InputStream inputStream = new ByteArrayInputStream(out.toByteArray());
+            // //
+            // // byte b[] = new byte[1024];
+            // //
+            // // int bytesRead = 0;
+            // //
+            // // while ((bytesRead = inputStream.read(b)) != -1) {
+            // // String nextLine = new String(b, 0, bytesRead);
+            // // System.out.println(nextLine);
+            // // }
+            // //
+            //
+            // System.out.println("===============> Execute WPS");
+            //
+            // InputStream wpsRespStream = testBodyPost(wpsXml, wpsInfo.getServerUrl());
+            //
+            //            
+            // InputStream wpsRespStream = WPSFactory.ExecuteWPS(directedSubGraph);
+            //            
+            // System.out.println("===============> Unmarshal WPS Response");
+            //
+            // //ExecuteResponse executeResponse = WPSFactory.getExecuteResponse(wpsRespStream);
+            // MotuExecuteResponse motuExecuteResponse = WPSFactory.getMotuExecuteResponse(wpsRespStream);
+            // -------------------------------------------------------------------------------------
 
-            System.out.println("===============> Execute WPS");
+            // Builds, executes and gets WPS response
+            MotuExecuteResponse motuExecuteResponse = WPSFactory.executeMotuWPS(directedSubGraph);
 
-            InputStream wpsRespStream = testBodyPost(wpsXml, wpsInfo.getServerUrl());
+            System.out.println("==>WPS process status location:");
+            System.out.println(motuExecuteResponse.getStatusLocation());
+            System.out.println("==>WPS process status:");
+            System.out.println(motuExecuteResponse.getStatusAsString());
+            System.out.println(motuExecuteResponse.getStatusAsWPSStatusResponse());
+            System.out.println("==>WPS process message:");
+            System.out.println(motuExecuteResponse.getProcessStatusMessage());
+            System.out.println("==>Check status");
+            System.out.println("Accepted (or pending) ? " + motuExecuteResponse.isStatusAccepted());
+            System.out.println("Started ? " + motuExecuteResponse.isStatusStarted());
+            System.out.println("Succeeded ? " + motuExecuteResponse.isStatusSucceeded());
+            System.out.println("Paused ? " + motuExecuteResponse.isStatusPaused());
+            System.out.println("Failed ? " + motuExecuteResponse.isStatusFailed());
+            System.out.println("Process done (succeeded or failed) ? " + motuExecuteResponse.isProcessDone());
+            System.out.println("Process in progress (neither succeeded nor failed) ? " + motuExecuteResponse.isProcessInProgress());
 
-            System.out.println("===============> Unmarshal WPS Response");
+            while (motuExecuteResponse.isProcessInProgress()) {
 
-            //ExecuteResponse executeResponse = WPSFactory.getExecuteResponse(wpsRespStream);
-            MotuExecuteResponse motuExecuteResponse = WPSFactory.getMotuExecuteResponse(wpsRespStream);
+                Thread.sleep(1000);
+                // motuExecuteResponse = WPSFactory.getMotuExecuteResponse(motuExecuteResponse);
+                // or
+                motuExecuteResponse = WPSFactory.getMotuExecuteResponse(motuExecuteResponse.getStatusLocation());
+
+            }
+
+            System.out.println("\n==>WPS process ENDED <=====\n");
+            System.out.println("==>WPS process status location:");
+            System.out.println(motuExecuteResponse.getStatusLocation());
+            System.out.println("==>WPS process status:");
+            System.out.println(motuExecuteResponse.getStatusAsString());
+            System.out.println(motuExecuteResponse.getStatusAsWPSStatusResponse());
+            System.out.println("==>WPS process message:");
+            System.out.println(motuExecuteResponse.getProcessStatusMessage());
+            System.out.println("==>Check status");
+            System.out.println("Accepted (or pending) ? " + motuExecuteResponse.isStatusAccepted());
+            System.out.println("Started ? " + motuExecuteResponse.isStatusStarted());
+            System.out.println("Succeeded ? " + motuExecuteResponse.isStatusSucceeded());
+            System.out.println("Paused ? " + motuExecuteResponse.isStatusPaused());
+            System.out.println("Failed ? " + motuExecuteResponse.isStatusFailed());
+            System.out.println("Process done (succeeded or failed) ? " + motuExecuteResponse.isProcessDone());
+            System.out.println("Process in progress (neither succeeded nor failed) ? " + motuExecuteResponse.isProcessInProgress());
+
+            if (motuExecuteResponse.isStatusFailed()) {
+                // motuExecuteResponse.get
+            }
 
             // Save Response as XML file, just to check WPS Execute content
             System.out.println("===============> Marshal WPS Response");
 
-            wpsXml = "WPSExecuteResponse.xml";
+            String wpsXml = "WPSExecuteResponse.xml";
 
-            writer = new FileWriter(wpsXml);
+            FileWriter writer = new FileWriter(wpsXml);
 
-            //WPSFactory.marshallExecuteResponse(executeResponse, writer, wpsInfo.getSchemaLocation());
-            WPSFactory.marshallExecuteResponse(motuExecuteResponse, writer, wpsInfo.getSchemaLocation());
+            // WPSFactory.marshallExecuteResponse(executeResponse, writer, wpsInfo.getSchemaLocation());
+            WPSFactory.marshallExecuteResponse(motuExecuteResponse, writer, directedSubGraph);
 
-            //TODO to be continue with getStatus, get results ......
-            
             // /testBodyPostDontWaitResponse(wpsXml, serverURL);
 
         } catch (MotuExceptionBase e) {
@@ -1029,6 +1097,9 @@ public class TestWPS {
             e.printStackTrace();
             System.out.println(e.notifyException());
         } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -1049,7 +1120,7 @@ public class TestWPS {
         // date can be a string or a org.joda.time.DateTime
         op.setParameterValue("starttime", "2009-04-27T10:00:00");
         // op.setParameterValue("endtime", "2009-04-28");
-        op.setParameterValue("endtime", WPSFactory.StringToDateTime("2009-04-28"));
+        op.setParameterValue("endtime", WPSFactory.stringToDateTime("2009-04-28"));
 
         // Variables can be a List or a string
         List<String> variables = new ArrayList<String>();
@@ -1071,25 +1142,85 @@ public class TestWPS {
     public static void setGetRequestStatusParameterValue(OperationMetadata op) throws MotuExceptionBase {
         op.setParameterValue("requestid", 1255350789354L);
     }
-    
-    
+
     public static void testArrayToEnum(String args[]) {
-        
-//        StaticResourceBackedDynamicEnum<Integer, AgentDescriptor> agents = new StaticResourceBackedDynamicEnum<Integer, AgentDescriptor>(Arrays.asList(new AgentDescriptor(7, "James Bond", true), 
-//            new AgentDescriptor(1, "James One", true)));
-//        
-//        System.out.println(agents.backingValueOf(1));
-//
-//        System.out.println(agents.ordinal(1));
-//        System.out.println(agents.valueOf("James One"));
-//        
-                
+
+        // StaticResourceBackedDynamicEnum<Integer, AgentDescriptor> agents = new
+        // StaticResourceBackedDynamicEnum<Integer, AgentDescriptor>(Arrays.asList(new AgentDescriptor(7,
+        // "James Bond", true),
+        // new AgentDescriptor(1, "James One", true)));
+        //        
+        // System.out.println(agents.backingValueOf(1));
+        //
+        // System.out.println(agents.ordinal(1));
+        // System.out.println(agents.valueOf("James One"));
+        //        
+
         StaticResourceBackedDynamicEnum<WPSStatusResponse, MotuWPSStatusType> statusTypes = MotuExecuteResponse.getStatusTypes();
         System.out.println(statusTypes.backingValueOf(WPSStatusResponse.SUCCEEDED));
         System.out.println(statusTypes.ordinal(WPSStatusResponse.SUCCEEDED));
         System.out.println(statusTypes.valueOf("processFailed"));
 
-        
     }
 
+    public static void testCreateObject() {
+        Class<?> clazz = null;
+        Class<?> clazzTemp = null;
+        Constructor<?> ctor = null;
+        try {
+            Object[] values = {
+                    "it's a string", true, new BigDecimal(125489.365), WPSFactory.stringToDateTime("2007-10-05"), new DateTime(125236636),
+                    new Period(6539), WPSFactory.stringToPeriod("P5Y2M10DT15H"), new URI("http://www.w3schools.com/Schema/schema_dtypes_date.asp"),
+                    125639, 4526L, 4253.635, (short) 25, 125.36f, (byte) 'a', };
+
+            for (Object value : values) {
+                Object object = null;
+                String valueString = value.toString();
+                clazz = value.getClass();
+                clazzTemp = valueString.getClass();
+                if (DateTime.class.equals(clazz)) {
+                    object = WPSFactory.stringToDateTime(valueString);
+
+                } else if (Period.class.equals(clazz)) {
+                    object = WPSFactory.stringToPeriod(valueString);
+                } else {
+                    ctor = clazz.getConstructor(clazzTemp);
+                    object = ctor.newInstance(valueString);
+                }
+
+                // System.out.print(value.getClass().getName());
+                System.out.print(object.getClass().getName());
+                System.out.print(" --> ");
+                System.out.println(object);
+
+
+            }
+
+        } catch (SecurityException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+
+        } catch (NoSuchMethodException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MotuInvalidDateException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }

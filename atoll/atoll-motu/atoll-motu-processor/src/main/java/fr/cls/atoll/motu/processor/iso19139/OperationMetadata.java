@@ -30,7 +30,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSInfo;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.12 $ - $Date: 2009-10-14 12:47:59 $
+ * @version $Revision: 1.13 $ - $Date: 2009-10-16 13:06:54 $
  */
 public class OperationMetadata {
     /**
@@ -50,9 +50,9 @@ public class OperationMetadata {
         XML_JAVA_CLASS_MAPPING.put("datetime", org.joda.time.DateTime.class);
         XML_JAVA_CLASS_MAPPING.put("time", org.joda.time.DateTime.class);
         XML_JAVA_CLASS_MAPPING.put("date", org.joda.time.DateTime.class);
-        XML_JAVA_CLASS_MAPPING.put("duration", org.joda.time.Duration.class);
+        XML_JAVA_CLASS_MAPPING.put("duration", org.joda.time.Period.class);
         XML_JAVA_CLASS_MAPPING.put("anyURI", java.net.URI.class);
-        XML_JAVA_CLASS_MAPPING.put("Name", java.util.Date.class);
+        XML_JAVA_CLASS_MAPPING.put("Name", java.lang.String.class);
         XML_JAVA_CLASS_MAPPING.put("int", java.lang.Integer.class);
         XML_JAVA_CLASS_MAPPING.put("integer", java.lang.Integer.class);
         XML_JAVA_CLASS_MAPPING.put("long", java.lang.Long.class);
@@ -1016,7 +1016,7 @@ public class OperationMetadata {
         final Class<?> type = parameterValue.getDescriptor().getValueClass();
         
         if (DateTime.class.equals(type)) {
-            v = WPSFactory.StringToDateTime(value);
+            v = WPSFactory.stringToDateTime(value);
         }
         
         if (Collection.class.equals(type)) {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:ExecuteResponse statusLocation="http://atoll-dev.cls.fr:30080/atoll-motuservlet/services?service=WPS&amp;version=1.0.0&amp;request=GetResponseDocument&amp;identifier=2" serviceInstance="http://atoll-dev.cls.fr:30080/atoll-motuservlet/services?service=WPS&amp;request=GetCapabilities&amp;version=1.0.0" xml:lang="en" version="1.0.0" service="WPS" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd" xmlns:ns2="http://www.opengis.net/wps/1.0.0" xmlns:ns1="http://www.opengis.net/ows/1.1" xmlns:ns3="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ns2:ExecuteResponse statusLocation="http://atoll-dev.cls.fr:30080/atoll-motuservlet/services?service=WPS&amp;version=1.0.0&amp;request=GetResponseDocument&amp;identifier=11" serviceInstance="http://atoll-dev.cls.fr:30080/atoll-motuservlet/services?service=WPS&amp;request=GetCapabilities&amp;version=1.0.0" xml:lang="en" version="1.0.0" service="WPS" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd" xmlns:ns2="http://www.opengis.net/wps/1.0.0" xmlns:ns1="http://www.opengis.net/ows/1.1" xmlns:ns3="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <ns2:Process ns2:processVersion="1.0.0">
         <ns1:Identifier>GetExtractedProductUrl</ns1:Identifier>
         <ns1:Title>Get the url of the extracted product.</ns1:Title>
@@ -9,7 +9,37 @@
 	The url can be empty is the extration has not be done yet (not done yet or in error)
 	</ns1:Abstract>
     </ns2:Process>
-    <ns2:Status creationTime="2009-10-14T13:35:58.400Z">
-        <ns2:ProcessStarted percentCompleted="0">Process execution started@2009-10-14T13:35:58.381Z</ns2:ProcessStarted>
+    <ns2:Status creationTime="2009-10-16T11:34:13.607Z">
+        <ns2:ProcessSucceeded>Process execution finished@2009-10-16T11:34:13.607Z</ns2:ProcessSucceeded>
     </ns2:Status>
+    <ns2:ProcessOutputs>
+        <ns2:Output>
+            <ns1:Identifier>url</ns1:Identifier>
+            <ns1:Title>Remote data url</ns1:Title>
+            <ns2:Data>
+                <ns2:ComplexData>http://atoll-dev.cls.fr:30080/motu-extract/mercatorPsy3v2_nat_mean_best_estimate_1255692832485.nc.gz</ns2:ComplexData>
+            </ns2:Data>
+        </ns2:Output>
+        <ns2:Output>
+            <ns1:Identifier>localUrl</ns1:Identifier>
+            <ns1:Title>Local data url</ns1:Title>
+            <ns2:Data>
+                <ns2:ComplexData>/home/atoll/distrib/tomcat-motu-dev/webapps/ROOT/motu-extract/mercatorPsy3v2_nat_mean_best_estimate_1255692832485.nc.gz</ns2:ComplexData>
+            </ns2:Data>
+        </ns2:Output>
+        <ns2:Output>
+            <ns1:Identifier>code</ns1:Identifier>
+            <ns1:Title>Code returned by the process</ns1:Title>
+            <ns2:Data>
+                <ns2:LiteralData>OK</ns2:LiteralData>
+            </ns2:Data>
+        </ns2:Output>
+        <ns2:Output>
+            <ns1:Identifier>message</ns1:Identifier>
+            <ns1:Title>Message returned by the process</ns1:Title>
+            <ns2:Data>
+                <ns2:LiteralData>http://atoll-dev.cls.fr:30080/motu-extract/mercatorPsy3v2_nat_mean_best_estimate_1255692832485.nc.gz</ns2:LiteralData>
+            </ns2:Data>
+        </ns2:Output>
+    </ns2:ProcessOutputs>
 </ns2:ExecuteResponse>

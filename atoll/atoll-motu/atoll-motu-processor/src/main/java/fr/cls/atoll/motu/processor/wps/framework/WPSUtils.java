@@ -5,9 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.deegree.commons.utils.HttpUtils;
+import org.jgrapht.DirectedGraph;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
+import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
 import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
 
 /**
@@ -18,13 +21,13 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-10-14 12:47:59 $
+ * @version $Revision: 1.4 $ - $Date: 2009-10-16 13:06:54 $
  */
 public class WPSUtils {
 
     public WPSUtils() {
     }
-
+    
     public static InputStream post(String url, String xmlFile) throws MotuException {
 
         if (Organizer.isNullOrEmpty(url)) {
@@ -32,20 +35,41 @@ public class WPSUtils {
         }
 
         InputStream in = null;
-        Map<String, String> headers = new HashMap<String, String>();
         try {
             in = Organizer.getUriAsInputStream(xmlFile);
-            in = HttpUtils.post(HttpUtils.STREAM, url, in, headers);
 
         } catch (Exception e) {
             throw new MotuException("WPSUtils#post - Unable to process.", e);
         }
 
         if (in == null) {
+            throw new MotuException("WPSUtils#post - Unable to process : null input stream.");
+        }
+
+        return WPSUtils.post(url, in);
+    }
+    
+
+    public static InputStream post(String url, InputStream in) throws MotuException {
+
+        if (in == null) {
+            throw new MotuException("WPSUtils#post - Unable to process : null input stream.");
+        }
+
+        InputStream is = null;
+        Map<String, String> headers = new HashMap<String, String>();
+        try {
+            is = HttpUtils.post(HttpUtils.STREAM, url, in, headers);
+
+        } catch (Exception e) {
+            throw new MotuException("WPSUtils#post - Unable to process.", e);
+        }
+
+        if (is == null) {
             throw new MotuException("WPSUtils#post - Unable to process : post return a null input stream.");
         }
 
-        return in;
+        return is;
     }
     
     public static InputStream get(String url) throws MotuException {
