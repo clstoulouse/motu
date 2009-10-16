@@ -28,7 +28,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
@@ -42,11 +41,9 @@ import org.jgrapht.alg.KShortestPaths;
 import org.jgrapht.graph.EdgeReversedGraph;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
-import org.joda.time.format.ISOPeriodFormat;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 
-import fr.cls.atoll.motu.library.converter.jaxb.JodaPeriodAdapter;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
@@ -61,7 +58,6 @@ import fr.cls.atoll.motu.processor.opengis.wps100.Execute;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
-import fr.cls.atoll.motu.processor.opengis.wps100.StatusType;
 import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse;
 import fr.cls.atoll.motu.processor.wps.framework.MotuWPSStatusType;
 import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
@@ -77,7 +73,7 @@ import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse.WPSStatusRe
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.31 $ - $Date: 2009-10-16 13:06:54 $
+ * @version $Revision: 1.32 $ - $Date: 2009-10-16 14:25:12 $
  */
 class StringList extends ArrayList<String> {
 }
@@ -107,7 +103,7 @@ public class TestWPS {
             e.printStackTrace();
         }
 
-        testCreateObject();
+        //testCreateObject();
 
         // AnnotatedElement annotatedElement = StatusType.class;
         // System.out.println(annotatedElement.getAnnotations().toString());
@@ -157,7 +153,7 @@ public class TestWPS {
 
         // testBuildWPS();
         // testBuildChainWPS();
-        // testBuildAndRunChainWPS();
+        testBuildAndRunChainWPS();
         // testUnmarshallWPS();
 
         // for (ErrorType c: ErrorType.values()) {
@@ -1077,8 +1073,12 @@ public class TestWPS {
             System.out.println("Process in progress (neither succeeded nor failed) ? " + motuExecuteResponse.isProcessInProgress());
 
             if (motuExecuteResponse.isStatusFailed()) {
-                // motuExecuteResponse.get
+                // TODO
             }
+            if (motuExecuteResponse.isStatusSucceeded()) {
+                System.out.println("Motu message response: " + motuExecuteResponse.getMotuStatusMessage());
+            }
+            
 
             // Save Response as XML file, just to check WPS Execute content
             System.out.println("===============> Marshal WPS Response");

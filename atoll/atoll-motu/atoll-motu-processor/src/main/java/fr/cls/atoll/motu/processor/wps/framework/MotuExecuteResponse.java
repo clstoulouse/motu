@@ -3,13 +3,20 @@ package fr.cls.atoll.motu.processor.wps.framework;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlType;
 
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+
 import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.utils.ReflectionUtils;
 import fr.cls.atoll.motu.library.utils.StaticResourceBackedDynamicEnum;
 import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
@@ -19,7 +26,9 @@ import fr.cls.atoll.motu.processor.opengis.ows110.ExceptionReport;
 import fr.cls.atoll.motu.processor.opengis.ows110.ExceptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.DataType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ExecuteResponse;
+import fr.cls.atoll.motu.processor.opengis.wps100.LiteralDataType;
 import fr.cls.atoll.motu.processor.opengis.wps100.OutputDataType;
+import fr.cls.atoll.motu.processor.opengis.wps100.OutputReferenceType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessStartedType;
 import fr.cls.atoll.motu.processor.opengis.wps100.StatusType;
 import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
@@ -32,7 +41,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-10-16 13:06:54 $
+ * @version $Revision: 1.5 $ - $Date: 2009-10-16 14:25:12 $
  */
 public class MotuExecuteResponse {
 
@@ -51,7 +60,8 @@ public class MotuExecuteResponse {
     }
 
     /** The status types. */
-    protected static StaticResourceBackedDynamicEnum<WPSStatusResponse, MotuWPSStatusType> statusTypes = new StaticResourceBackedDynamicEnum<WPSStatusResponse, MotuWPSStatusType>(MotuExecuteResponse.makeStatusTypeList());
+    protected static StaticResourceBackedDynamicEnum<WPSStatusResponse, MotuWPSStatusType> statusTypes = new StaticResourceBackedDynamicEnum<WPSStatusResponse, MotuWPSStatusType>(
+            MotuExecuteResponse.makeStatusTypeList());
 
     /**
      * Gets the status types.
@@ -78,22 +88,22 @@ public class MotuExecuteResponse {
      * The Enum WPSStatusResponse.
      */
     public enum WPSStatusResponse {
-        
+
         /** The ACCEPTED. */
         ACCEPTED(0),
-        
+
         /** The STARTED. */
         STARTED(1),
-        
+
         /** The PAUSED. */
         PAUSED(2),
-        
+
         /** The SUCCEEDED. */
         SUCCEEDED(3),
-        
+
         /** The FAILED. */
         FAILED(4);
-        
+
         /** The value. */
         private final int value;
 
@@ -131,23 +141,22 @@ public class MotuExecuteResponse {
             throw new IllegalArgumentException(String.valueOf(v));
         }
 
-        
     }
-    
+
     /**
      * The Class MotuProcessAccepted.
      */
     public final class MotuProcessAccepted {
-        
+
     }
-    
+
     /**
      * The Class MotuProcessStartedType.
      */
     public final class MotuProcessStartedType extends ProcessStartedType {
-        
+
     }
-    
+
     /**
      * Gets the status.
      * 
@@ -161,7 +170,7 @@ public class MotuExecuteResponse {
         return executeResponse.getStatus();
 
     }
-    
+
     /**
      * Gets the status location.
      * 
@@ -182,15 +191,15 @@ public class MotuExecuteResponse {
      * @return the status as string
      */
     public String getStatusAsString() {
-        
+
         StatusType statusType = getStatus();
         if (statusType == null) {
             return null;
         }
         String status = "";
-        
+
         if (statusType.getProcessAccepted() != null) {
-            
+
             status = statusTypes.backingValueOf(WPSStatusResponse.ACCEPTED).name();
         }
         if (statusType.getProcessStarted() != null) {
@@ -205,10 +214,10 @@ public class MotuExecuteResponse {
         if (statusType.getProcessFailed() != null) {
             status = statusTypes.backingValueOf(WPSStatusResponse.FAILED).name();
         }
-        
-        return status;        
+
+        return status;
     }
-    
+
     /**
      * Gets the status as wps status response.
      * 
@@ -216,7 +225,7 @@ public class MotuExecuteResponse {
      */
     public WPSStatusResponse getStatusAsWPSStatusResponse() {
         String status = getStatusAsString();
-        
+
         if (ServiceMetadata.isNullOrEmpty(status)) {
             return null;
         }
@@ -234,9 +243,9 @@ public class MotuExecuteResponse {
             return false;
         }
         return statusResponse.equals(WPSStatusResponse.ACCEPTED);
-        
+
     }
-    
+
     /**
      * Checks if is status started.
      * 
@@ -249,7 +258,7 @@ public class MotuExecuteResponse {
         }
         return statusResponse.equals(WPSStatusResponse.STARTED);
     }
-    
+
     /**
      * Checks if is status paused.
      * 
@@ -262,7 +271,7 @@ public class MotuExecuteResponse {
         }
         return statusResponse.equals(WPSStatusResponse.PAUSED);
     }
-    
+
     /**
      * Checks if is status succeeded.
      * 
@@ -275,7 +284,7 @@ public class MotuExecuteResponse {
         }
         return statusResponse.equals(WPSStatusResponse.SUCCEEDED);
     }
-    
+
     /**
      * Checks if is status failed.
      * 
@@ -288,7 +297,7 @@ public class MotuExecuteResponse {
         }
         return statusResponse.equals(WPSStatusResponse.FAILED);
     }
-    
+
     /**
      * Checks if is process done.
      * 
@@ -297,7 +306,7 @@ public class MotuExecuteResponse {
     public boolean isProcessDone() {
         return isStatusFailed() || isStatusSucceeded();
     }
-    
+
     /**
      * Checks if is process in progress.
      * 
@@ -337,17 +346,17 @@ public class MotuExecuteResponse {
         if (xmlType == null) {
             return null;
         }
-        
+
         List<MotuWPSStatusType> list = new ArrayList<MotuWPSStatusType>();
         String[] status = xmlType.propOrder();
-        for (int i = 0 ;  i < status.length ; i++) {
-            list.add(new MotuWPSStatusType(WPSStatusResponse.fromValue(i), status[i] ));
+        for (int i = 0; i < status.length; i++) {
+            list.add(new MotuWPSStatusType(WPSStatusResponse.fromValue(i), status[i]));
         }
-        
+
         return list;
 
     }
-    
+
     /**
      * Format exception report message.
      * 
@@ -356,30 +365,30 @@ public class MotuExecuteResponse {
      * @return the string
      */
     public String formatExceptionReportMessage(ExceptionReport exceptionReport) {
-        
+
         if (exceptionReport == null) {
             return "";
         }
 
-       List<ExceptionType> listExceptionType = exceptionReport.getException();
-       StringBuilder stringBuilder = new StringBuilder();
-       
-       for (ExceptionType exceptionType : listExceptionType) {
-           stringBuilder.append("Exception Code: ");
-           stringBuilder.append(exceptionType.getExceptionCode());
-           stringBuilder.append(" - Exception Locator: ");
-           stringBuilder.append(exceptionType.getLocator());
-           stringBuilder.append(" - Exception Text: ");
-           
-           for (String text : exceptionType.getExceptionText()) {
-               stringBuilder.append(text);
-               stringBuilder.append("\n");               
-           }
-       }
-       return stringBuilder.toString();
-        
+        List<ExceptionType> listExceptionType = exceptionReport.getException();
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (ExceptionType exceptionType : listExceptionType) {
+            stringBuilder.append("Exception Code: ");
+            stringBuilder.append(exceptionType.getExceptionCode());
+            stringBuilder.append(" - Exception Locator: ");
+            stringBuilder.append(exceptionType.getLocator());
+            stringBuilder.append(" - Exception Text: ");
+
+            for (String text : exceptionType.getExceptionText()) {
+                stringBuilder.append(text);
+                stringBuilder.append("\n");
+            }
+        }
+        return stringBuilder.toString();
+
     }
-    
+
     /**
      * Gets the process status message.
      * 
@@ -387,36 +396,43 @@ public class MotuExecuteResponse {
      */
     public String getProcessStatusMessage() {
         String msg = "No process response";
-        
+
         if (executeResponse == null) {
             return msg;
         }
-        if (isStatusAccepted()) {            
+        if (isStatusAccepted()) {
             msg = executeResponse.getStatus().getProcessAccepted();
         }
-        if (isStatusStarted()) {            
+        if (isStatusStarted()) {
             msg = executeResponse.getStatus().getProcessStarted().getValue();
         }
-        if (isStatusSucceeded()) {            
+        if (isStatusSucceeded()) {
             msg = executeResponse.getStatus().getProcessSucceeded();
         }
-        if (isStatusPaused()) {            
+        if (isStatusPaused()) {
             msg = executeResponse.getStatus().getProcessPaused().getValue();
         }
-        if (isStatusFailed()) {            
+        if (isStatusFailed()) {
             msg = formatExceptionReportMessage(executeResponse.getStatus().getProcessFailed().getExceptionReport());
         }
-        
+
         return msg;
 
     }
-    
+
     /**
      * Gets the motu status message.
      * 
      * @return the motu status message
+     * @throws MotuException 
      */
-    public String getMotuStatusMessage() {
+    public String getMotuStatusMessage() throws MotuException {
+        
+        return (String) getResponseValue(MotuWPSProcess.PARAM_MESSAGE);
+    }
+    
+    public Object getResponseValue(String parameterName) throws MotuException {
+        
         String msg = "No process response";
 
         if (executeResponse == null) {
@@ -430,50 +446,98 @@ public class MotuExecuteResponse {
             return msg;
         }
 
-        List<OutputDataType>  outputDataTypeList = processOutputs.getOutput();
-        
+        List<OutputDataType> outputDataTypeList = processOutputs.getOutput();
+
         if (outputDataTypeList == null) {
             return msg;
         }
-        
+
+        Object value = null;
         for (OutputDataType outputDataType : outputDataTypeList) {
             CodeType identifier = outputDataType.getIdentifier();
-            if (identifier.getValue().equals(MotuWPSProcess.PARAM_MESSAGE)) {
-                DataType dataType = outputDataType.getData();
-                if (WPSInfo.isLiteralData(dataType)) {
-                    String valueType = dataType.getLiteralData().getDataType();
-                    Class<?> clazz = OperationMetadata.XML_JAVA_CLASS_MAPPING.get(valueType);
-                    try {
-                        Constructor<?> ctor = clazz.getConstructor();
-                        Object object = ctor.newInstance();
-                        object = dataType.getLiteralData().getValue();
-                    } catch (SecurityException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                        
-                    } catch (NoSuchMethodException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (IllegalArgumentException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (InstantiationException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-
-                }
+            
+            if (identifier.getValue().equals(parameterName)) {
+                
+                value = getResponseValue(outputDataType);
+                break;
             }
+        }
+        
+        return value;
+        
+    }
+    public Object getResponseValue(OutputDataType outputDataType) throws MotuException {
+
+        if (outputDataType == null) {
+            return null;
+        }
+
+        // -------- Data output is a Reference (url)
+        OutputReferenceType outputReferenceType = outputDataType.getReference();
+
+        if (outputReferenceType != null) {
+            return outputReferenceType.getHref();
+        }
+
+        // -------- Data output is a NOT a Reference (url)
+        DataType dataType = outputDataType.getData();
+
+        Object value = null;
+
+        if (WPSInfo.isLiteralData(dataType)) {
+            value = getResponseValue(dataType.getLiteralData());
+        } else if (WPSInfo.isComplexData(dataType)) {
+            
+        } else if (WPSInfo.isBoundingBoxData(dataType)) {
             
         }
-        return msg;
 
+        return value;
     }
 
+    public Object getResponseValue(LiteralDataType literalDataType) throws MotuException {
+
+        if (literalDataType == null) {
+            return null;
+        }
+        String valueType = literalDataType.getDataType();
+        //TODO Get data type from the describe process output definitions
+        if (ServiceMetadata.isNullOrEmpty(valueType)) {
+            throw new MotuException("MotuExecuteResponse#getResponseValue - Data type of a literal output data is null.");
+        }
+
+        Class<?> clazz = OperationMetadata.XML_JAVA_CLASS_MAPPING.get(valueType);
+        if (clazz == null) {
+            throw new MotuException(String.format("MotuExecuteResponse#getResponseValue - Data type '%s' is not mapped to a java class.", valueType));
+        }
+
+        String nativeValue = literalDataType.getValue();
+
+        Object returnedObject = null;
+        
+        Class<?> nativeClazz = nativeValue.getClass();
+        
+        try {
+
+            if (DateTime.class.equals(clazz)) {
+                returnedObject = WPSFactory.stringToDateTime(nativeValue);
+
+            } else if (Period.class.equals(clazz)) {
+                returnedObject = WPSFactory.stringToPeriod(nativeValue);
+            } else {
+                Constructor<?> ctor = clazz.getConstructor(nativeClazz);
+                returnedObject = ctor.newInstance(nativeValue);
+            }
+
+            System.out.print(returnedObject.getClass().getName());
+            System.out.print(" --> ");
+            System.out.println(returnedObject);
+
+        } catch (Exception e) {
+            throw new MotuException("ERROR in MotuExecuteResponse#getResponseValue.", e);
+
+        }
+        
+        return returnedObject;
+    }
 }
