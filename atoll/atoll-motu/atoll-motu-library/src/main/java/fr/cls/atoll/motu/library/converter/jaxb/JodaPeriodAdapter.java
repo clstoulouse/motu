@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * JAXB adapter that converts a xs:dateTime or xs:date into a {@link DateTime} and vice-versa.
  * 
  * @author ccamel
- * @version $Revision: 1.2 $ - $Date: 2009-05-27 16:02:51 $ - $Author: dearith $
+ * @version $Revision: 1.3 $ - $Date: 2009-10-16 12:57:24 $ - $Author: dearith $
  */
 public class JodaPeriodAdapter extends XmlAdapter<String, Period> {
 
@@ -29,8 +29,6 @@ public class JodaPeriodAdapter extends XmlAdapter<String, Period> {
     public JodaPeriodAdapter() {
     }
     
-    /** The Constant DATE_PATTERN. */
-    public static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ssZZ";
 
     /**
      * Format used to print and parse period.
