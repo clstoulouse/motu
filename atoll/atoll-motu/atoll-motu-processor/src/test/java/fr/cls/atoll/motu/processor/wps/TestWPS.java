@@ -1,22 +1,17 @@
 package fr.cls.atoll.motu.processor.wps;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -40,29 +35,23 @@ import org.jgrapht.DirectedGraph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.KShortestPaths;
 import org.jgrapht.graph.EdgeReversedGraph;
-import org.joda.time.DateTime;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 
-
-import fr.cls.atoll.motu.library.converter.jaxb.JodaPeriodAdapter;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.utils.ReflectionUtils;
 import fr.cls.atoll.motu.library.utils.StaticResourceBackedDynamicEnum;
 import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
 import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
 import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
 import fr.cls.atoll.motu.processor.opengis.wps100.DescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.Execute;
-import fr.cls.atoll.motu.processor.opengis.wps100.ExecuteResponse;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
 import fr.cls.atoll.motu.processor.opengis.wps100.StatusType;
-import fr.cls.atoll.motu.processor.wps.framework.AgentDescriptor;
 import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse;
 import fr.cls.atoll.motu.processor.wps.framework.MotuWPSStatusType;
 import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
@@ -78,7 +67,7 @@ import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse.WPSStatusRe
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.29 $ - $Date: 2009-10-15 14:38:09 $
+ * @version $Revision: 1.30 $ - $Date: 2009-10-16 05:45:45 $
  */
 class StringList extends ArrayList<String> {
 }
