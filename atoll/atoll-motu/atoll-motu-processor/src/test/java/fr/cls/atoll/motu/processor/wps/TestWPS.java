@@ -50,6 +50,7 @@ import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.utils.StaticResourceBackedDynamicEnum;
+import fr.cls.atoll.motu.msg.xml.StatusModeType;
 import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
 import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
 import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
@@ -73,7 +74,7 @@ import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse.WPSStatusRe
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.32 $ - $Date: 2009-10-16 14:25:12 $
+ * @version $Revision: 1.33 $ - $Date: 2009-10-19 12:44:58 $
  */
 class StringList extends ArrayList<String> {
 }
@@ -103,6 +104,12 @@ public class TestWPS {
             e.printStackTrace();
         }
 
+        StatusModeType test = StatusModeType.DONE;
+        test.toString();
+        test.valueOf("DONE");
+        Enum.valueOf(StatusModeType.class, "DONE");
+        boolean b  = StatusModeType.class.isEnum();
+        
         //testCreateObject();
 
         // AnnotatedElement annotatedElement = StatusType.class;
@@ -153,7 +160,7 @@ public class TestWPS {
 
         // testBuildWPS();
         // testBuildChainWPS();
-        testBuildAndRunChainWPS();
+        // testBuildAndRunChainWPS();
         // testUnmarshallWPS();
 
         // for (ErrorType c: ErrorType.values()) {

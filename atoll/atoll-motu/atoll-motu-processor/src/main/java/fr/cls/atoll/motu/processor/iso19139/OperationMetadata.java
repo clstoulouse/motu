@@ -30,7 +30,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSInfo;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.13 $ - $Date: 2009-10-16 13:06:54 $
+ * @version $Revision: 1.14 $ - $Date: 2009-10-19 12:44:58 $
  */
 public class OperationMetadata {
     /**
@@ -64,6 +64,10 @@ public class OperationMetadata {
         // latitude/longitude upper corner).
         XML_JAVA_CLASS_MAPPING.put("boundingBox", double[].class);
         XML_JAVA_CLASS_MAPPING.put("boundingbox", double[].class);
+        
+        //custom Motu type
+        XML_JAVA_CLASS_MAPPING.put("errotType", fr.cls.atoll.motu.msg.xml.ErrorType.class);
+        XML_JAVA_CLASS_MAPPING.put("statusModeType", fr.cls.atoll.motu.msg.xml.StatusModeType.class);
 
     };
 
