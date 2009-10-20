@@ -74,7 +74,7 @@ import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse.WPSStatusRe
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.33 $ - $Date: 2009-10-19 12:44:58 $
+ * @version $Revision: 1.34 $ - $Date: 2009-10-20 10:18:30 $
  */
 class StringList extends ArrayList<String> {
 }
@@ -104,11 +104,11 @@ public class TestWPS {
             e.printStackTrace();
         }
 
-        StatusModeType test = StatusModeType.DONE;
-        test.toString();
-        test.valueOf("DONE");
-        Enum.valueOf(StatusModeType.class, "DONE");
-        boolean b  = StatusModeType.class.isEnum();
+//        StatusModeType test = StatusModeType.DONE;
+//        test.toString();
+//        StatusModeType.valueOf("DONE");
+//        Enum.valueOf(StatusModeType.class, "DONE");
+//        boolean b  = StatusModeType.class.isEnum();
         
         //testCreateObject();
 
@@ -160,7 +160,7 @@ public class TestWPS {
 
         // testBuildWPS();
         // testBuildChainWPS();
-        // testBuildAndRunChainWPS();
+        testBuildAndRunChainWPS();
         // testUnmarshallWPS();
 
         // for (ErrorType c: ErrorType.values()) {
@@ -1083,7 +1083,11 @@ public class TestWPS {
                 // TODO
             }
             if (motuExecuteResponse.isStatusSucceeded()) {
-                System.out.println("Motu message response: " + motuExecuteResponse.getMotuStatusMessage());
+                System.out.println("Motu status response: " + motuExecuteResponse.getMotuResponseStatus());
+                System.out.println("Motu code response: " + motuExecuteResponse.getMotuResponseCode());
+                System.out.println("Motu message response: " + motuExecuteResponse.getMotuResponseMessage());
+                System.out.println("Motu url response: " + motuExecuteResponse.getMotuResponseUrl());
+                System.out.println("Motu local url response: " + motuExecuteResponse.getMotuResponseLocalUrl());
             }
             
 

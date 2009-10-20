@@ -97,7 +97,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.20 $ - $Date: 2009-10-16 13:06:54 $
+ * @version $Revision: 1.21 $ - $Date: 2009-10-20 10:18:30 $
  */
 public class WPSFactory {
 
@@ -130,20 +130,20 @@ public class WPSFactory {
 
     /** The Constant PERIOD_FORMATTERS. */
     public static final Map<String, PeriodFormatter> PERIOD_FORMATTERS = new HashMap<String, PeriodFormatter>();
-    
+
     static {
         DATETIME_FORMATTERS.put(DATETIME_PATTERN1, DateTimeFormat.forPattern(DATETIME_PATTERN1));
         DATETIME_FORMATTERS.put(DATETIME_PATTERN2, DateTimeFormat.forPattern(DATETIME_PATTERN2));
         DATETIME_FORMATTERS.put(DATETIME_PATTERN3, DateTimeFormat.forPattern(DATETIME_PATTERN3));
         DATETIME_FORMATTERS.put(DATETIME_PATTERN4, DateTimeFormat.forPattern(DATETIME_PATTERN4));
         DATETIME_FORMATTERS.put(DATETIME_PATTERN5, DateTimeFormat.forPattern(DATETIME_PATTERN5));
-        
+
         PERIOD_FORMATTERS.put(PERIOD_PATTERN_ISO_STANDARD, ISOPeriodFormat.standard());
         PERIOD_FORMATTERS.put(PERIOD_PATTERN_ISO_ALTERNATE, ISOPeriodFormat.alternate());
         PERIOD_FORMATTERS.put(PERIOD_PATTERN_ISO_ALTERNATE_WITH_WEEKS, ISOPeriodFormat.alternateWithWeeks());
         PERIOD_FORMATTERS.put(PERIOD_PATTERN_ISO_ALTERNATE_EXTENDED, ISOPeriodFormat.alternateExtended());
         PERIOD_FORMATTERS.put(PERIOD_PATTERN_ISO_ALTERNATE_EXTENDED_WITH_WEEKS, ISOPeriodFormat.alternateExtendedWithWeeks());
-        
+
     }
 
     /** The Constant SCHEMA_WPS_ALL. */
@@ -505,9 +505,9 @@ public class WPSFactory {
      * @param directedGraph the directed graph
      * @param storeExecuteResponse indicates if the execute response document shall be stored
      * @param storeStatus indicates if the stored execute response document shall be updated to provide
-     * ongoing reports on the status of execution
+     *            ongoing reports on the status of execution
      * @param lineage the lineage indicates if the Execute operation response shall include the DataInputs and
-     * OutputDefinitions elements
+     *            OutputDefinitions elements
      * 
      * @return the execute
      * 
@@ -1249,6 +1249,19 @@ public class WPSFactory {
      * 
      * @param execute the execute
      * @param writer the writer
+     * 
+     * @throws MotuMarshallException the motu marshall exception
+     * @throws MotuException the motu exception
+     */
+    public static void marshallExecute(Execute execute, Writer writer) throws MotuMarshallException, MotuException {
+        marshallExecute(execute, writer, (String) null);
+    }
+
+    /**
+     * Marshall execute.
+     * 
+     * @param execute the execute
+     * @param writer the writer
      * @param directedGraph the directed graph
      * 
      * @throws MotuMarshallException the motu marshall exception
@@ -1763,11 +1776,11 @@ public class WPSFactory {
         if (motuExecuteResponse == null) {
             return null;
         }
-        
+
         return WPSFactory.getExecuteResponse(motuExecuteResponse.getExecuteResponse());
-        
+
     }
-    
+
     /**
      * Gets the execute response.
      * 
@@ -1800,7 +1813,7 @@ public class WPSFactory {
         }
 
         ExecuteResponse returnExecuteResponse = WPSFactory.getExecuteResponseFromUrl(statusLocation);
-        
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("getExecuteResponse(ExecuteResponse) - exiting");
         }
@@ -1826,7 +1839,6 @@ public class WPSFactory {
 
         return WPSFactory.unmarshallExecuteResponse(inputStream);
 
-        
     }
 
     /**
@@ -1839,14 +1851,14 @@ public class WPSFactory {
      * @throws MotuException the motu exception
      * @throws MotuMarshallException the motu marshall exception
      */
-    public static MotuExecuteResponse getMotuExecuteResponse(MotuExecuteResponse motuExecuteResponse) throws  MotuException, MotuMarshallException {
+    public static MotuExecuteResponse getMotuExecuteResponse(MotuExecuteResponse motuExecuteResponse) throws MotuException, MotuMarshallException {
 
         if (motuExecuteResponse == null) {
             return null;
         }
-        
+
         return new MotuExecuteResponse(WPSFactory.getExecuteResponse(motuExecuteResponse.getExecuteResponse()));
-        
+
     }
 
     /**
@@ -1864,7 +1876,7 @@ public class WPSFactory {
         ExecuteResponse executeResponse = WPSFactory.getExecuteResponseFromUrl(url);
 
         return new MotuExecuteResponse(executeResponse);
-        
+
     }
 
     /**
@@ -2614,7 +2626,7 @@ public class WPSFactory {
         }
         return dateTime;
     }
-    
+
     /**
      * String to period.
      * 
@@ -2726,7 +2738,6 @@ public class WPSFactory {
         }
         return returnMotuExecuteResponse;
     }
-
 
     /**
      * Execute wps.
