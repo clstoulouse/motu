@@ -49,7 +49,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.6 $ - $Date: 2009-10-20 10:18:30 $
+ * @version $Revision: 1.7 $ - $Date: 2009-10-20 13:32:37 $
  */
 public class MotuExecuteResponse {
 
@@ -633,7 +633,12 @@ public class MotuExecuteResponse {
         CharsetDecoder decoder = charset.newDecoder();
         CharsetEncoder encoder = charset.newEncoder();
 
-        Object returnedObject = null;
+        Object returnedObject = valueType;
+
+        System.out.print(returnedObject.getClass().getName());
+        System.out.print(" --> ");
+        System.out.println(returnedObject);
+
 //        
 //        charToWrite = charset.decode(valueType).toString();
 //        ByteBuffer bbuf = encoder.encode(CharBuffer.wrap("a string"));

@@ -97,7 +97,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.21 $ - $Date: 2009-10-20 10:18:30 $
+ * @version $Revision: 1.22 $ - $Date: 2009-10-20 13:32:37 $
  */
 public class WPSFactory {
 
@@ -1524,6 +1524,31 @@ public class WPSFactory {
         return execute;
 
     }
+    
+    /**
+     * Unmarshall execute response.
+     * 
+     * @param url the url
+     * 
+     * @return the execute response
+     * 
+     * @throws MotuMarshallException the motu marshall exception
+     * @throws MotuException the motu exception
+     */
+    public static ExecuteResponse unmarshallExecuteResponse(URL url) throws MotuMarshallException, MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("unmarshallExecuteResponse(URL) - entering");
+        }
+
+        InputStream inputStream = Organizer.getUriAsInputStream(url.toString());
+
+        ExecuteResponse returnExecuteResponse = unmarshallExecuteResponse(inputStream);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("unmarshallExecuteResponse(URL) - exiting");
+        }
+        return returnExecuteResponse;
+    }
 
     /**
      * Unmarshall execute response.
@@ -1657,6 +1682,22 @@ public class WPSFactory {
         return WPSFactory.getMotuExecuteResponse(executeResponse);
 
     }
+    
+    /**
+     * Gets the motu execute response.
+     * 
+     * @param url the url
+     * 
+     * @return the motu execute response
+     * 
+     * @throws MotuMarshallException the motu marshall exception
+     * @throws MotuException the motu exception
+     */
+    public static MotuExecuteResponse getMotuExecuteResponse(URL url) throws MotuMarshallException, MotuException {
+        ExecuteResponse executeResponse = WPSFactory.getExecuteResponse(url);
+
+        return WPSFactory.getMotuExecuteResponse(executeResponse);
+    }
 
     /**
      * Gets the motu execute response.
@@ -1688,6 +1729,31 @@ public class WPSFactory {
         ExecuteResponse executeResponse = WPSFactory.getExecuteResponse(xmlFile);
 
         return WPSFactory.getMotuExecuteResponse(executeResponse);
+    }
+    
+    /**
+     * Gets the execute response.
+     * 
+     * @param url the url
+     * 
+     * @return the execute response
+     * 
+     * @throws MotuMarshallException the motu marshall exception
+     * @throws MotuException the motu exception
+     */
+    public static ExecuteResponse getExecuteResponse(URL url) throws MotuMarshallException, MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getExecuteResponse(URL) - entering");
+        }
+
+        ExecuteResponse executeResponse = WPSFactory.unmarshallExecuteResponse(url);
+        ExecuteResponse returnExecuteResponse = WPSFactory.getExecuteResponse(executeResponse);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getExecuteResponse(URL) - exiting");
+        }
+        return returnExecuteResponse;
+
     }
 
     /**

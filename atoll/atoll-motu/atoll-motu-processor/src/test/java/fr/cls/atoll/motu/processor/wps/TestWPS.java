@@ -74,7 +74,7 @@ import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse.WPSStatusRe
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.34 $ - $Date: 2009-10-20 10:18:30 $
+ * @version $Revision: 1.35 $ - $Date: 2009-10-20 13:32:37 $
  */
 class StringList extends ArrayList<String> {
 }
@@ -111,7 +111,9 @@ public class TestWPS {
 //        boolean b  = StatusModeType.class.isEnum();
         
         //testCreateObject();
-
+        
+        testComplexOutputWPSResponse();
+        
         // AnnotatedElement annotatedElement = StatusType.class;
         // System.out.println(annotatedElement.getAnnotations().toString());
         // for (Annotation annotation : annotatedElement.getAnnotations()) {
@@ -160,7 +162,9 @@ public class TestWPS {
 
         // testBuildWPS();
         // testBuildChainWPS();
-        testBuildAndRunChainWPS();
+        
+        //testBuildAndRunChainWPS();
+        
         // testUnmarshallWPS();
 
         // for (ErrorType c: ErrorType.values()) {
@@ -1233,5 +1237,49 @@ public class TestWPS {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+    public static void testComplexOutputWPSResponse() {
+        try {
+            URL url = Organizer.findResource("src/test/resources/xml/TestComplexWPSResponse.xml");
+            
+            MotuExecuteResponse motuExecuteResponse = WPSFactory.getMotuExecuteResponse(url);
+
+            System.out.println("==>WPS process status location:");
+            System.out.println(motuExecuteResponse.getStatusLocation());
+            System.out.println("==>WPS process status:");
+            System.out.println(motuExecuteResponse.getStatusAsString());
+            System.out.println("==>WPS process message:");
+            System.out.println(motuExecuteResponse.getProcessStatusMessage());
+            System.out.println("==>Check status");
+            System.out.println("Accepted (or pending) ? " + motuExecuteResponse.isStatusAccepted());
+            System.out.println("Started ? " + motuExecuteResponse.isStatusStarted());
+            System.out.println("Succeeded ? " + motuExecuteResponse.isStatusSucceeded());
+            System.out.println("Paused ? " + motuExecuteResponse.isStatusPaused());
+            System.out.println("Failed ? " + motuExecuteResponse.isStatusFailed());
+            System.out.println("Process done (succeeded or failed) ? " + motuExecuteResponse.isProcessDone());
+            System.out.println("Process in progress (neither succeeded nor failed) ? " + motuExecuteResponse.isProcessInProgress());
+
+
+            if (motuExecuteResponse.isStatusFailed()) {
+                // TODO
+            }
+            if (motuExecuteResponse.isStatusSucceeded()) {
+//                System.out.println("Motu status response: " + motuExecuteResponse.getMotuResponseStatus());
+//                System.out.println("Motu code response: " + motuExecuteResponse.getMotuResponseCode());
+//                System.out.println("Motu message response: " + motuExecuteResponse.getMotuResponseMessage());
+//                System.out.println("Motu url response: " + motuExecuteResponse.getMotuResponseUrl());
+//                System.out.println("Motu local url response: " + motuExecuteResponse.getMotuResponseLocalUrl());
+            }
+            
+
+
+            // /testBodyPostDontWaitResponse(wpsXml, serverURL);
+
+        } catch (MotuExceptionBase e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            System.out.println(e.notifyException());
+        }
+
     }
 }
