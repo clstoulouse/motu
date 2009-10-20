@@ -2,6 +2,5 @@
 		<ComplexInput>
 			<Identifier>requestid</Identifier>
 			<Title>The unique id of the request</Title>			
-			<DataType reference="http://www.w3.org/TR/xmlschema-2/#long">long</DataType>
 			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
 		</ComplexInput>

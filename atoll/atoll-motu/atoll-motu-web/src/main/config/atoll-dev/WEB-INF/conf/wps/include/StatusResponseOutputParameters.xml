@@ -9,5 +9,5 @@
 		4 = IN PROGRESS
 		]]>
 		</Abstract>
-		<DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">statusModeType</DataType>
+		<DataType>statusModeType</DataType>
 	</LiteralOutput>

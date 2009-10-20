@@ -32,7 +32,6 @@
 		<ComplexOutput>
 			<Identifier>C</Identifier>
 			<Title>A + B</Title>			
-			<DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
 			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
 		</ComplexOutput>
 	</OutputParameters>

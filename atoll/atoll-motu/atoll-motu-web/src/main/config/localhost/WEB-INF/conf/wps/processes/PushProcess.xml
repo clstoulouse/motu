@@ -2,6 +2,7 @@
 <!DOCTYPE include [
 <!ENTITY requestIdInputParametersOptional SYSTEM "../include/RequestIdInputParametersOptional.xml">
 <!ENTITY commonBasicOutputParameters SYSTEM "../include/CommonBasicOutputParameters.xml">
+<!ENTITY urlOutputParameters SYSTEM "../include/UrlOutputParameters.xml">
 ]>
 <ProcessDefinition configVersion="0.1.0"
 	processVersion="1.0.0" statusSupported="true" storeSupported="true"
@@ -60,39 +61,33 @@
 			<Title>Source uri</Title>	
 			<Abstract>
 			</Abstract>
-			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
-			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
+			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />		
 		</ComplexInput>
 		
 		<LiteralInput minOccurs="0" maxOccurs="1">
 			<Identifier>userFrom</Identifier>
 			<Title>User identity (optional)</Title>			
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
-			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
 		</LiteralInput>
 		<LiteralInput minOccurs="0" maxOccurs="1">
 			<Identifier>pwdFrom</Identifier>
 			<Title>User password (optional)</Title>			
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
-			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
 		</LiteralInput>
 		<ComplexInput>
 			<Identifier>to</Identifier>
 			<Title>Destination uri</Title>			
-			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
 			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
 		</ComplexInput>
 		<LiteralInput minOccurs="0" maxOccurs="1">
 			<Identifier>userTo</Identifier>
 			<Title>User identity (optional)</Title>			
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
-			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
 		</LiteralInput>
 		<LiteralInput minOccurs="0" maxOccurs="1">
 			<Identifier>pwdTo</Identifier>
 			<Title>User password (optional)</Title>			
 			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
-			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
 		</LiteralInput>
 		<LiteralInput minOccurs="0" maxOccurs="1">
 			<Identifier>remove</Identifier>
@@ -120,5 +115,6 @@
 
 	<OutputParameters>
 		&commonBasicOutputParameters;
+		&urlOutputParameters;		
 	</OutputParameters>
 </ProcessDefinition>
