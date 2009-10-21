@@ -53,7 +53,6 @@
 			<groupId>org.opengis</groupId>
 			<artifactId>geoapi</artifactId>
 			<version>2.3-M4</version>
-			<scope>compile</scope>
 		</dependency>
 
 		<dependency>

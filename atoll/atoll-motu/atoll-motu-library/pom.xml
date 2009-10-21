@@ -74,7 +74,7 @@
 		<dependency>
 			<groupId>jscience</groupId>
 			<artifactId>jscience</artifactId>
-			<version>4.3.1-PATCH-CLS</version>
+			<version>4.3.1-PATCH-CLS</version>			
 		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>

@@ -26,7 +26,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.2 $, $Date: 2009-10-13 14:07:58 $
+ * @version $Revision: 1.3 $, $Date: 2009-10-21 09:08:23 $
  */
 public class ProductExtraction extends MotuWPSProcess {
 
@@ -176,7 +176,7 @@ public class ProductExtraction extends MotuWPSProcess {
         } catch (MotuExceptionBase e) {
             LOG.error("MotuWPSProcess.productDownload(ExtractionParameters, String, int)", e);
 
-            setReturnCode(motuWPSProcessData.getProcessletOutputs(), e, false);
+            setReturnCode(motuWPSProcessData.getProcessletOutputs(), e, true);
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("productDownload(ExtractionParameters, String, int) - exiting");
@@ -209,7 +209,7 @@ public class ProductExtraction extends MotuWPSProcess {
             MotuWPSProcess.setRequestId(motuWPSProcessData.getProcessletOutputs(), Long.toString(requestId));
         } catch (MotuExceptionBase e) {
             LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
-            setReturnCode(motuWPSProcessData.getProcessletOutputs(), e, false);
+            setReturnCode(motuWPSProcessData.getProcessletOutputs(), e, true);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse) - exiting");
             }

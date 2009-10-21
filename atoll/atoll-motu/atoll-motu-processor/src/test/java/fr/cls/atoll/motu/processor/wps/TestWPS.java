@@ -74,7 +74,7 @@ import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse.WPSStatusRe
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.35 $ - $Date: 2009-10-20 13:32:37 $
+ * @version $Revision: 1.36 $ - $Date: 2009-10-21 09:08:23 $
  */
 class StringList extends ArrayList<String> {
 }
@@ -103,6 +103,14 @@ public class TestWPS {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+//        String serverURL = "http://localhost:8080/atoll-motuservlet/services";
+//
+//        try {
+//            WPSInfo wpsInfo = WPSFactory.getWpsInfo(serverURL);
+//        } catch (MotuException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
 
 //        StatusModeType test = StatusModeType.DONE;
 //        test.toString();
@@ -112,7 +120,7 @@ public class TestWPS {
         
         //testCreateObject();
         
-        testComplexOutputWPSResponse();
+        //testComplexOutputWPSResponse();
         
         // AnnotatedElement annotatedElement = StatusType.class;
         // System.out.println(annotatedElement.getAnnotations().toString());
@@ -163,7 +171,7 @@ public class TestWPS {
         // testBuildWPS();
         // testBuildChainWPS();
         
-        //testBuildAndRunChainWPS();
+        testBuildAndRunChainWPS();
         
         // testUnmarshallWPS();
 
@@ -178,7 +186,7 @@ public class TestWPS {
 
         // TestWPS test = new TestWPS();
         //        
-        // TestWPS.GetObjectId id = test.new GetObjectId();
+        // TestWPS.GetObjectId id = test.new GetObjectId();j
         // System.out.println(id.hashCode());
         // TestWPS.GetObjectId id2 = test.new GetObjectId();
         // System.out.println(id2.hashCode());
@@ -1084,7 +1092,7 @@ public class TestWPS {
             System.out.println("Process in progress (neither succeeded nor failed) ? " + motuExecuteResponse.isProcessInProgress());
 
             if (motuExecuteResponse.isStatusFailed()) {
-                // TODO
+                System.out.println("WPS response: " + motuExecuteResponse.getProcessStatusMessage());
             }
             if (motuExecuteResponse.isStatusSucceeded()) {
                 System.out.println("Motu status response: " + motuExecuteResponse.getMotuResponseStatus());
@@ -1129,8 +1137,12 @@ public class TestWPS {
     }
 
     public static void setExtractDataParameterValue(OperationMetadata op) throws MotuExceptionBase {
-        op.setParameterValue("service", "mercator");
-        op.setParameterValue("product", "mercatorPsy3v2_nat_mean_best_estimate");
+        String prefix = "http://atoll.cls.fr/2009/resource/individual/atoll#";
+        String productId = prefix + "mercatorPsy3v2_nat_mean_best_estimate";
+        String service = prefix +  "motu-opendap-mercator";
+
+        op.setParameterValue("service", service);
+        op.setParameterValue("product", productId);
 
         // date can be a string or a org.joda.time.DateTime
         op.setParameterValue("starttime", "2009-04-27T10:00:00");

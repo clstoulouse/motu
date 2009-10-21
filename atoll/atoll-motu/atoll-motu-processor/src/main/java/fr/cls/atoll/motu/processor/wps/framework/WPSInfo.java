@@ -1,6 +1,7 @@
 package fr.cls.atoll.motu.processor.wps.framework;
 
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -38,7 +39,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-10-16 13:06:54 $
+ * @version $Revision: 1.6 $ - $Date: 2009-10-21 09:08:23 $
  */
 public class WPSInfo {
     /**
@@ -107,7 +108,9 @@ public class WPSInfo {
             throw new MotuException("WPSInfo - Unable to load WPS Process Descriptions (WPS uri is null)");
         }
 
-        InputStream in = WPSUtils.post(serverUrl, MotuWPSProcess.WPS_DESCRIBE_ALL_XML);
+        URL urlFile = Organizer.findResource(MotuWPSProcess.WPS_DESCRIBE_ALL_XML);
+        
+        InputStream in = WPSUtils.post(serverUrl, urlFile);
         try {
             JAXBContext jc = JAXBContext.newInstance(MotuWPSProcess.WPS100_SHEMA_PACK_NAME);
             Unmarshaller unmarshaller = jc.createUnmarshaller();

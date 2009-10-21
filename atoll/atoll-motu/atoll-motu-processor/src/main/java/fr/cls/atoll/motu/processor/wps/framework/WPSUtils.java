@@ -1,6 +1,7 @@
 package fr.cls.atoll.motu.processor.wps.framework;
 
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,13 +22,15 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-10-16 13:06:54 $
+ * @version $Revision: 1.5 $ - $Date: 2009-10-21 09:08:23 $
  */
 public class WPSUtils {
 
     public WPSUtils() {
     }
-    
+    public static InputStream post(String url, URL urlFile) throws MotuException {
+        return WPSUtils.post(url, urlFile.toString());
+    }    
     public static InputStream post(String url, String xmlFile) throws MotuException {
 
         if (Organizer.isNullOrEmpty(url)) {
