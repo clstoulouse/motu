@@ -74,7 +74,7 @@ import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse.WPSStatusRe
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.36 $ - $Date: 2009-10-21 09:08:23 $
+ * @version $Revision: 1.37 $ - $Date: 2009-10-21 10:28:02 $
  */
 class StringList extends ArrayList<String> {
 }
@@ -634,7 +634,7 @@ public class TestWPS {
             Set<SVOperationMetadataType> listOperation = new HashSet<SVOperationMetadataType>();
             // url = new
             // URL("file:///c:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml");
-            url = Organizer.findResource("src/main/resources/fmpp/out/serviceMetadata_motu-opendap-mercator.xml");
+            url = Organizer.findResource("fmpp/out/serviceMetadata_motu-opendap-mercator.xml");
             serviceMetadata.getOperations(url, listOperation);
             ServiceMetadata.dump(listOperation);
 
@@ -905,7 +905,7 @@ public class TestWPS {
         try {
             ServiceMetadata serviceMetadata = new ServiceMetadata();
             URL url = null;
-            url = Organizer.findResource("src/main/resources/fmpp/out/serviceMetadata_motu-opendap-mercator.xml");
+            url = Organizer.findResource("fmpp/out/serviceMetadata_motu-opendap-mercator.xml");
 
             DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph = ServiceMetadata.createDirectedGraph();
             serviceMetadata.getOperations(url, directedGraph);
@@ -1252,7 +1252,7 @@ public class TestWPS {
     }
     public static void testComplexOutputWPSResponse() {
         try {
-            URL url = Organizer.findResource("src/test/resources/xml/TestComplexWPSResponse.xml");
+            URL url = Organizer.findResource("xml/TestComplexWPSResponse.xml");
             
             MotuExecuteResponse motuExecuteResponse = WPSFactory.getMotuExecuteResponse(url);
 

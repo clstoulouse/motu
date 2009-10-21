@@ -70,7 +70,7 @@ import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.16 $ - $Date: 2009-09-23 14:21:08 $
+ * @version $Revision: 1.17 $ - $Date: 2009-10-21 10:28:02 $
  */
 public class TestServiceMetadata {
 
@@ -493,7 +493,7 @@ public class TestServiceMetadata {
         ServiceMetadataBuilder serviceMetadataBuilder = new ServiceMetadataBuilder();
         URL url = null;
         try {
-            url = Organizer.findResource("src/main/resources/fmpp/src/base/serviceMetadataTemplateOpendapBase.xml");
+            url = Organizer.findResource("fmpp/src/base/serviceMetadataTemplateOpendapBase.xml");
         } catch (MotuException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -517,7 +517,7 @@ public class TestServiceMetadata {
         try {
 //          url = new URL("file:///c:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml");
 //            url = Organizer.findResource("src/main/resources/fmpp/src/ServiceMetadataOpendap.xml");
-            url = Organizer.findResource("src/main/resources/fmpp/out/serviceMetadata_motu-opendap-aviso.xml");
+            url = Organizer.findResource("fmpp/out/serviceMetadata_motu-opendap-aviso.xml");
             SAXReader reader = new SAXReader();
             Document document = reader.read(url);
             Element root = document.getRootElement();
@@ -589,7 +589,7 @@ public class TestServiceMetadata {
             URL url = null;
             Set<SVOperationMetadataType> listOperation = new HashSet<SVOperationMetadataType>();
 //          url = new URL("file:///c:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml");
-            url = Organizer.findResource("src/main/resources/fmpp/src/ServiceMetadataOpendap.xml");
+            url = Organizer.findResource("fmpp/src/ServiceMetadataOpendap.xml");
             serviceMetadata.getOperations(url, listOperation);
             ServiceMetadata.dump(listOperation);
             List<String> listOperationNamesUnique = new ArrayList<String>();

@@ -39,7 +39,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.6 $ - $Date: 2009-10-21 09:08:23 $
+ * @version $Revision: 1.7 $ - $Date: 2009-10-21 10:28:02 $
  */
 public class WPSInfo {
     /**
@@ -109,7 +109,10 @@ public class WPSInfo {
         }
 
         URL urlFile = Organizer.findResource(MotuWPSProcess.WPS_DESCRIBE_ALL_XML);
-        
+        if (urlFile == null) {
+            throw new MotuException(String.format("WPSInfo - Unable to find file '%s'", MotuWPSProcess.WPS_DESCRIBE_ALL_XML));
+        }
+   
         InputStream in = WPSUtils.post(serverUrl, urlFile);
         try {
             JAXBContext jc = JAXBContext.newInstance(MotuWPSProcess.WPS100_SHEMA_PACK_NAME);

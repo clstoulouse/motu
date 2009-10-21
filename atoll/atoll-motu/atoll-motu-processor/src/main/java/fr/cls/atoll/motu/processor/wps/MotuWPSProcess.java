@@ -37,7 +37,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.25 $ - $Date: 2009-10-21 09:08:23 $
+ * @version $Revision: 1.26 $ - $Date: 2009-10-21 10:28:02 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
@@ -45,7 +45,7 @@ public abstract class MotuWPSProcess implements Processlet {
     private static final Logger LOG = Logger.getLogger(MotuWPSProcess.class);
 
     public static final String WPS100_SHEMA_PACK_NAME = "fr.cls.atoll.motu.processor.opengis.wps100";
-    public static final String WPS_DESCRIBE_ALL_XML = "src/main/resources/DescribeAll.xml";
+    public static final String WPS_DESCRIBE_ALL_XML = "DescribeAll.xml";
     
     /** The Constant PARAM_FORWARDED_FOR (Real user Ip). */
     public static final String PARAM_ANONYMOUS = "anonymous";
