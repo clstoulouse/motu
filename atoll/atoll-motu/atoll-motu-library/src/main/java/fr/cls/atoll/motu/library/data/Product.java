@@ -50,7 +50,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
  * This class represents a product.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.7 $ - $Date: 2009-06-15 07:38:42 $
+ * @version $Revision: 1.8 $ - $Date: 2009-10-23 14:21:42 $
  */
 public class Product {
 
@@ -1677,7 +1677,18 @@ public class Product {
      * @throws MotuException the motu exception
      */
     public void openNetCdfReader() throws MotuException {
-        getNetCdfReader().open();
+        openNetCdfReader(true);
+    }
+    
+    /**
+     * Open net cdf reader.
+     * 
+     * @param enhanceVar the enhance var
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void openNetCdfReader(boolean enhanceVar) throws MotuException {
+        getNetCdfReader().open(enhanceVar);
     }
 
     /**

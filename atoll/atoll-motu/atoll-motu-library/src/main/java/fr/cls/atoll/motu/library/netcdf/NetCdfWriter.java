@@ -13,6 +13,7 @@
 package fr.cls.atoll.motu.library.netcdf;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,9 +25,17 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import ucar.ma2.Array;
+import ucar.ma2.ArrayBoolean;
+import ucar.ma2.ArrayByte;
+import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayFloat;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.ArrayLong;
+import ucar.ma2.ArrayObject;
+import ucar.ma2.ArrayShort;
 import ucar.ma2.DataType;
+import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
@@ -56,7 +65,7 @@ import fr.cls.atoll.motu.library.intfce.Organizer;
  * these class is not an extend of FileWriter, and some method have copied from FileWriter.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-05-28 09:53:39 $
+ * @version $Revision: 1.3 $ - $Date: 2009-10-23 14:21:41 $
  */
 
 // CSOFF: MultipleStringLiterals : avoid constants and trace duplicate string
@@ -75,10 +84,10 @@ public class NetCdfWriter {
      * Number of bytes in a mega-byte.
      */
     public final static int BYTES_IN_KILOBYTES = 1024;
-    
+
     /** The Constant NETCDF_FILE_EXTENSION_NC. */
     public final static String NETCDF_FILE_EXTENSION_FINAL = ".nc";
-    
+
     /** The Constant NETCDF_FILE_EXTENSION_EXTRACT. */
     public final static String NETCDF_FILE_EXTENSION_EXTRACT = ".extract";
     /**
@@ -143,7 +152,7 @@ public class NetCdfWriter {
      * 
      * @param fileOutName file name to write to.
      * @param fill use fill mode or not
-     * @throws IOException 
+     * @throws IOException
      */
     public NetCdfWriter(String fileOutName, boolean fill) throws IOException {
         init();
@@ -290,8 +299,7 @@ public class NetCdfWriter {
      * Removes the mapping for this key from this map if it is present (optional operation).
      * 
      * @param key key whose mapping is to be removed from the map.
-     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for
-     *         key.
+     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for key.
      * @see java.util.Map#remove(Object)
      */
     public List<Variable> removeVariables(String key) {
@@ -421,28 +429,45 @@ public class NetCdfWriter {
         }
 
         MAMath.MinMax minMax = minMaxHash.get(axis.getName());
-        
+
         if (minMax == null) {
             minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         }
-        
-        
-        NetCdfWriter.applyScaleFactorAndOffset(minMax, axis);
 
-        if (minMax.min > minMax.max) {
-            double center =  minMax.min + 180.0;
-            minMax.max = LatLonPointImpl.lonNormal(minMax.max, center);                        
+        // Don't apply Scale factor and offset on variable attributes
+        // attributes values have to be in accordance with the stored data.
+        // NetCdfWriter.applyScaleFactorAndOffset(minMax, axis);
+
+        // if axis is longitude ==> Normalize longitude if min value > max value
+        if (axis.getAxisType() == AxisType.Lon) {
+
+            if (minMax.min > minMax.max) {
+
+                // Apply scale factor and offset before normalization
+                NetCdfWriter.applyScaleFactorAndOffset(minMax, axis);
+
+                // Normalize
+                double center = minMax.min + 180.0;
+                minMax.max = LatLonPointImpl.lonNormal(minMax.max, center);
+
+                // Undo scale factor and offset to get native value
+                NetCdfWriter.undoScaleFactorAndOffset(minMax, axis);
+
+            }
+
         }
 
-        
         Attribute attribute = null;
         // Array array = null;
 
         // -----------------------------
         // adds or sets valid_min attribute
         // -----------------------------
-        attribute = new Attribute(NetCdfReader.VARIABLEATTRIBUTE_VALID_MIN, minMax.min);
+        // attribute = new Attribute(NetCdfReader.VARIABLEATTRIBUTE_VALID_MIN, minMax.min);
+        Number v = new Double(minMax.min);
+        attribute = NetCdfWriter.createAttribute(NetCdfReader.VARIABLEATTRIBUTE_VALID_MIN, axis, v);
         axis.addAttribute(attribute);
+
         // try {
         // attribute = NetCdfReader.getAttribute(axis, NetCdfReader.VARIABLEATTRIBUTE_VALID_MIN);
         // array = Array.factory( DataType.DOUBLE.getPrimitiveClassType(), new int[] {1}, new double[]
@@ -455,7 +480,9 @@ public class NetCdfWriter {
         // -----------------------------
         // adds or sets valid_max attribute
         // -----------------------------
-        attribute = new Attribute(NetCdfReader.VARIABLEATTRIBUTE_VALID_MAX, minMax.max);
+        // attribute = new Attribute(NetCdfReader.VARIABLEATTRIBUTE_VALID_MAX, minMax.max);
+        v = new Double(minMax.max);
+        attribute = NetCdfWriter.createAttribute(NetCdfReader.VARIABLEATTRIBUTE_VALID_MAX, axis, v);
         axis.addAttribute(attribute);
         // try {
         // attribute = NetCdfReader.getAttribute(axis, NetCdfReader.VARIABLEATTRIBUTE_VALID_MAX);
@@ -495,6 +522,116 @@ public class NetCdfWriter {
             axis.addAttribute(attribute);
         }
 
+    }
+
+    /**
+     * Creates the attribute.
+     * 
+     * @param name the name
+     * @param var the var
+     * @param value the value
+     * 
+     * @return the attribute
+     */
+    public static Attribute createAttribute(String name, Variable var, Number value) {
+        return NetCdfWriter.createAttribute(name, var.getDataType(), value);
+    }
+
+    /**
+     * Creates the attribute.
+     * 
+     * @param name the name
+     * @param dataType the data type
+     * @param value the value
+     * 
+     * @return the attribute
+     */
+    public static Attribute createAttribute(String name, DataType dataType, Number value) {
+        return NetCdfWriter.createAttribute(name, dataType.getPrimitiveClassType(), value);
+    }
+
+    /**
+     * Creates the attribute.
+     * 
+     * @param name the name
+     * @param classType the class type
+     * @param value the value
+     * 
+     * @return the attribute
+     */
+    public static Attribute createAttribute(String name, Class<?> classType, Number value) {
+        int[] shape = new int[1];
+        shape[0] = 1;
+        Array vala = Array.factory(classType, shape);
+        Index ima = vala.getIndex();
+
+        if ((classType == double.class) || (classType == Double.class)) {
+            vala.setDouble(ima, value.doubleValue());
+        } else if ((classType == float.class) || (classType == Float.class)) {
+            vala.setFloat(ima, value.floatValue());
+        } else if ((classType == long.class) || (classType == Long.class)) {
+            vala.setLong(ima, value.longValue());
+        } else if ((classType == int.class) || (classType == Integer.class)) {
+            vala.setInt(ima, value.intValue());
+        } else if ((classType == short.class) || (classType == Short.class)) {
+            vala.setShort(ima, value.shortValue());
+        } else if ((classType == byte.class) || (classType == Byte.class)) {
+            vala.setByte(ima, value.byteValue());
+        }
+
+        return new Attribute(name, vala);
+    }
+
+    /**
+     * Cast value.
+     * 
+     * @param variable the variable
+     * @param value the value
+     * 
+     * @return the number
+     */
+    public static Number castValue(Variable variable, Number value) {
+        return NetCdfWriter.castValue(variable.getDataType(), value);
+    }
+
+    /**
+     * Cast value.
+     * 
+     * @param dataType the data type
+     * @param value the value
+     * 
+     * @return the number
+     */
+    public static Number castValue(DataType dataType, Number value) {
+        return NetCdfWriter.castValue(dataType.getClassType(), value);
+
+    }
+
+    /**
+     * Cast value.
+     * 
+     * @param classType the class type
+     * @param value the value
+     * 
+     * @return the number
+     */
+    public static Number castValue(Class<?> classType, Number value) {
+        Number valueReturned = null;
+        if ((classType == double.class) || (classType == Double.class)) {
+            valueReturned = new Double(value.doubleValue());
+        } else if ((classType == float.class) || (classType == Float.class)) {
+            valueReturned = new Float(value.floatValue());
+        } else if ((classType == long.class) || (classType == Long.class)) {
+            valueReturned = new Long(value.longValue());
+        } else if ((classType == int.class) || (classType == Integer.class)) {
+            valueReturned = new Integer(value.intValue());
+        } else if ((classType == short.class) || (classType == Short.class)) {
+            valueReturned = new Short(value.shortValue());
+        } else if ((classType == byte.class) || (classType == Byte.class)) {
+            valueReturned = new Byte(value.byteValue());
+        }
+
+        return valueReturned;
     }
 
     /**
@@ -568,21 +705,24 @@ public class NetCdfWriter {
     /**
      * Apply scale factor and offset.
      * 
-     * @param minMax the min max
      * @param variable the variable
+     * @param value the value
+     * 
+     * @return the number
      */
-    public static void applyScaleFactorAndOffset(MAMath.MinMax minMax, Variable variable) {
+    public static Number applyScaleFactorAndOffset(Number value, Variable variable) {
+
         if (variable == null) {
-            return;           
+            return value;
         }
-        
+
         Number addOffset = NetCdfReader.getAddOffsetAttributeValue(variable);
         Number scaleFactor = NetCdfReader.getScaleFactorAttributeValue(variable);
-        
+
         if ((addOffset == null) && (scaleFactor == null)) {
-            return;
+            return value;
         }
-        
+
         double offset = 0.0;
         double scale = 1.0;
 
@@ -592,11 +732,125 @@ public class NetCdfWriter {
         if (scaleFactor != null) {
             scale = scaleFactor.doubleValue();
         }
-        
+
+        if (scale == 0.0) {
+            scale = 1.0;
+        }
+
+        return new Double((scale * value.doubleValue()) + offset);
+
+    }
+
+    /**
+     * Apply scale factor and offset.
+     * 
+     * @param minMax the min max
+     * @param variable the variable
+     */
+    public static void applyScaleFactorAndOffset(MAMath.MinMax minMax, Variable variable) {
+        if (variable == null) {
+            return;
+        }
+
+        Number addOffset = NetCdfReader.getAddOffsetAttributeValue(variable);
+        Number scaleFactor = NetCdfReader.getScaleFactorAttributeValue(variable);
+
+        if ((addOffset == null) && (scaleFactor == null)) {
+            return;
+        }
+
+        double offset = 0.0;
+        double scale = 1.0;
+
+        if (addOffset != null) {
+            offset = addOffset.doubleValue();
+        }
+        if (scaleFactor != null) {
+            scale = scaleFactor.doubleValue();
+        }
+
+        if (scale == 0.0) {
+            scale = 1.0;
+        }
+
         minMax.min = (scale * minMax.min) + offset;
         minMax.max = (scale * minMax.max) + offset;
 
-        
+    }
+
+    /**
+     * Undo scale factor and offset.
+     * 
+     * @param value the value
+     * @param variable the variable
+     * 
+     * @return the number
+     */
+    public static Number undoScaleFactorAndOffset(Number value, Variable variable) {
+
+        if (variable == null) {
+            return value;
+        }
+
+        Number addOffset = NetCdfReader.getAddOffsetAttributeValue(variable);
+        Number scaleFactor = NetCdfReader.getScaleFactorAttributeValue(variable);
+
+        if ((addOffset == null) && (scaleFactor == null)) {
+            return value;
+        }
+
+        double offset = 0.0;
+        double scale = 1.0;
+
+        if (addOffset != null) {
+            offset = addOffset.doubleValue();
+        }
+        if (scaleFactor != null) {
+            scale = scaleFactor.doubleValue();
+        }
+
+        if (scale == 0.0) {
+            scale = 1.0;
+        }
+
+        return castValue(variable, (value.doubleValue() - offset) / scale);
+
+    }
+
+    /**
+     * Undo scale factor and offset.
+     * 
+     * @param minMax the min max
+     * @param variable the variable
+     */
+    public static void undoScaleFactorAndOffset(MAMath.MinMax minMax, Variable variable) {
+        if (variable == null) {
+            return;
+        }
+
+        Number addOffset = NetCdfReader.getAddOffsetAttributeValue(variable);
+        Number scaleFactor = NetCdfReader.getScaleFactorAttributeValue(variable);
+
+        if ((addOffset == null) && (scaleFactor == null)) {
+            return;
+        }
+
+        double offset = 0.0;
+        double scale = 1.0;
+
+        if (addOffset != null) {
+            offset = addOffset.doubleValue();
+        }
+        if (scaleFactor != null) {
+            scale = scaleFactor.doubleValue();
+        }
+
+        if (scale == 0.0) {
+            scale = 1.0;
+        }
+        minMax.min = (minMax.min - offset) / scale;
+        minMax.max = (minMax.max - offset) / scale;
+
     }
 
     /**
@@ -695,6 +949,7 @@ public class NetCdfWriter {
             putVariable(var);
         }
     }
+
     /**
      * Adds a variable.
      * 
@@ -933,24 +1188,26 @@ public class NetCdfWriter {
                 computeValidMinMaxVarAttributes(axis);
 
                 AxisType axisType = axis.getAxisType();
-                
-//                // To bypass a bug in Netcdf-java 4.0.31 : axis.getAxisType() returns null.
-//                // This bug will normally fixed in the next Netcdf-java version 4.0.32
-//                if (axisType == null) {              
-//                    List<CoordinateAxis> axesOrigin = geoGridOrigin.getCoordinateSystem().getCoordinateAxes();
-//                    for (CoordinateAxis axisOrigin : axesOrigin) {                        
-//                        if (axisOrigin.getName() != axis.getName()) {
-//                            continue;
-//                        }
-//                        axisType = axisOrigin.getAxisType();
-//                        break;
-//                    }
-//                }
-//                // END To bypass a bug in Netcdf 4.0.31 
-//                if (axisType == null) {
-//                    throw new MotuException(String.format("ERROR - axisType is null (coordinate axis '%s') - (NetCdfWriter.writeVariables)", axis.getName()));                    
-//                }
-                    
+
+                // // To bypass a bug in Netcdf-java 4.0.31 : axis.getAxisType() returns null.
+                // // This bug will normally fixed in the next Netcdf-java version 4.0.32
+                // if (axisType == null) {
+                // List<CoordinateAxis> axesOrigin = geoGridOrigin.getCoordinateSystem().getCoordinateAxes();
+                // for (CoordinateAxis axisOrigin : axesOrigin) {
+                // if (axisOrigin.getName() != axis.getName()) {
+                // continue;
+                // }
+                // axisType = axisOrigin.getAxisType();
+                // break;
+                // }
+                // }
+                // // END To bypass a bug in Netcdf 4.0.31
+                // if (axisType == null) {
+                // throw new
+                // MotuException(String.format("ERROR - axisType is null (coordinate axis '%s') - (NetCdfWriter.writeVariables)",
+                // axis.getName()));
+                // }
+
                 List<Variable> listAxis = mapAxis.get(axisType);
                 if (listAxis == null) {
                     listAxis = new ArrayList<Variable>();
@@ -1622,9 +1879,13 @@ public class NetCdfWriter {
                 // Normalize longitude if necessary.
                 if (axisLon != null) {
                     MAMath.MinMax minMax = minMaxHash.get(axisLon.getName());
-                    if ((minMax.min > minMax.max) || (minMax.max > 180.)){
-                        longitudeCenter =  minMax.min + 180.0;
-                        normalizeLongitudeData(data);                        
+
+                    MAMath.MinMax minMaxTemp = new MAMath.MinMax(minMax.min, minMax.max);
+                    NetCdfWriter.applyScaleFactorAndOffset(minMaxTemp, axisLon);
+
+                    if ((minMaxTemp.min > minMaxTemp.max) || (minMaxTemp.max > 180.)) {
+                        longitudeCenter = minMaxTemp.min + 180.0;
+                        normalizeLongitudeData(data, axisLon);
                     }
                 }
 
@@ -1669,28 +1930,99 @@ public class NetCdfWriter {
      * {@link #longitudeCenter}
      * 
      * @param data data to normalize
+     * @param variable the variable
      */
-    protected void normalizeLongitudeData(ArrayDouble data) {
+    protected void normalizeLongitudeData(ArrayDouble data, Variable variable) {
+
+        IndexIterator indexIt = data.getIndexIterator();
+        
+        while (indexIt.hasNext()) {
+
+            Number lonNativeApply = NetCdfWriter.applyScaleFactorAndOffset(indexIt.getDoubleNext(), variable);
+
+            double lonConverted = (double) LatLonPointImpl.lonNormal(lonNativeApply.doubleValue(), longitudeCenter);
+            indexIt.setDoubleCurrent( NetCdfWriter.undoScaleFactorAndOffset(lonConverted, variable).doubleValue() );
+        }
+
+    }
+
+    /**
+     * Puts longitude into the range [center +/- 180] deg. Center correspond to the class attribute
+     * {@link #longitudeCenter}
+     * 
+     * @param data data to normalize
+     * @param variable the variable
+     */
+    protected void normalizeLongitudeData(ArrayFloat data, Variable variable) {
         
         IndexIterator indexIt = data.getIndexIterator();
+        
         while (indexIt.hasNext()) {
-            double lonConverted = LatLonPointImpl.lonNormal(indexIt.getDoubleNext(), longitudeCenter);
-            indexIt.setDoubleCurrent(lonConverted);
+
+            Number lonNativeApply = NetCdfWriter.applyScaleFactorAndOffset(indexIt.getFloatNext(), variable);
+
+            double lonConverted = (double) LatLonPointImpl.lonNormal(lonNativeApply.doubleValue(), longitudeCenter);
+            indexIt.setFloatCurrent( NetCdfWriter.undoScaleFactorAndOffset(lonConverted, variable).floatValue() );
         }
+
 
     }
 
     /**
-     * Puts longitude into the range [center +/- 180] deg. Center correspond to the class attribute
-     * {@link #longitudeCenter}
+     * Normalize longitude data.
      * 
-     * @param data data to normalize
+     * @param data the data
+     * @param variable the variable
      */
-    protected void normalizeLongitudeData(ArrayFloat data) {
+    protected void normalizeLongitudeData(ArrayShort data, Variable variable) {
+        
         IndexIterator indexIt = data.getIndexIterator();
+        
         while (indexIt.hasNext()) {
-            float lonConverted = (float) LatLonPointImpl.lonNormal((double) indexIt.getFloatNext(), longitudeCenter);
-            indexIt.setFloatCurrent(lonConverted);
+
+            Number lonNativeApply = NetCdfWriter.applyScaleFactorAndOffset(indexIt.getShortNext(), variable);
+
+            double lonConverted = (double) LatLonPointImpl.lonNormal(lonNativeApply.doubleValue(), longitudeCenter);
+            indexIt.setShortCurrent( NetCdfWriter.undoScaleFactorAndOffset(lonConverted, variable).shortValue() );
+        }
+
+    }
+    
+    /**
+     * Normalize longitude data.
+     * 
+     * @param data the data
+     * @param variable the variable
+     */
+    protected void normalizeLongitudeData(ArrayInt data, Variable variable) {
+        
+        IndexIterator indexIt = data.getIndexIterator();
+        
+        while (indexIt.hasNext()) {
+
+            Number lonNativeApply = NetCdfWriter.applyScaleFactorAndOffset(indexIt.getIntNext(), variable);
+
+            double lonConverted = (double) LatLonPointImpl.lonNormal(lonNativeApply.doubleValue(), longitudeCenter);
+            indexIt.setIntCurrent( NetCdfWriter.undoScaleFactorAndOffset(lonConverted, variable).intValue() );
+        }
+
+    }
+    /**
+     * Normalize longitude data.
+     * 
+     * @param data the data
+     * @param variable the variable
+     */
+    protected void normalizeLongitudeData(ArrayLong data, Variable variable) {
+        
+        IndexIterator indexIt = data.getIndexIterator();
+        
+        while (indexIt.hasNext()) {
+
+            Number lonNativeApply = NetCdfWriter.applyScaleFactorAndOffset(indexIt.getLongNext(), variable);
+
+            double lonConverted = (double) LatLonPointImpl.lonNormal(lonNativeApply.doubleValue(), longitudeCenter);
+            indexIt.setLongCurrent( NetCdfWriter.undoScaleFactorAndOffset(lonConverted, variable).longValue() );
         }
 
     }
@@ -1700,15 +2032,23 @@ public class NetCdfWriter {
      * {@link #longitudeCenter}
      * 
      * @param data data to normalize
-     * @throws MotuNotImplementedException
+     * @param variable the variable
+     * 
+     * @throws MotuNotImplementedException the motu not implemented exception
      */
-    protected void normalizeLongitudeData(Array data) throws MotuNotImplementedException {
+    protected void normalizeLongitudeData(Array data, Variable variable) throws MotuNotImplementedException {
         if (data instanceof ArrayDouble) {
-            normalizeLongitudeData((ArrayDouble) data);
+            normalizeLongitudeData((ArrayDouble) data, variable);
         } else if (data instanceof ArrayFloat) {
-            normalizeLongitudeData((ArrayFloat) data);
+            normalizeLongitudeData((ArrayFloat) data, variable);
+        } else if (data instanceof ArrayShort) {
+            normalizeLongitudeData((ArrayShort) data, variable);
+        } else if (data instanceof ArrayInt) {
+            normalizeLongitudeData((ArrayInt) data, variable);
+        } else if (data instanceof ArrayLong) {
+            normalizeLongitudeData((ArrayLong) data, variable);
         } else {
-            throw new MotuNotImplementedException(String.format("Error in NetcdfWriter normalizeLongitudeData - Array type % is not implemented",
+            throw new MotuNotImplementedException(String.format("Error in NetcdfWriter normalizeLongitudeData - Array type %s is not implemented",
                                                                 data.getClass().getName()));
 
         }
@@ -1883,26 +2223,26 @@ public class NetCdfWriter {
     public static MAMath.MinMax getMinMaxSkipMissingData(Array a, Variable var) {
         return getMinMaxSkipMissingData(a, var, true);
     }
-    
-        /**
-         * Get the minimum and the maximum data value of the previously read Array, skipping missing values as
-         * defined by isMissingData(double val).
-         * 
-         * @param a Array to get min/max values
-         * @param var variable corresponding to the array
-         * @param convertScaleOffset true to convert value according to scale factor and offset
-         * 
-         * @return both min and max value.
-         */
-        public static MAMath.MinMax getMinMaxSkipMissingData(Array a, Variable var, boolean convertScaleOffset) {
+
+    /**
+     * Get the minimum and the maximum data value of the previously read Array, skipping missing values as
+     * defined by isMissingData(double val).
+     * 
+     * @param a Array to get min/max values
+     * @param var variable corresponding to the array
+     * @param convertScaleOffset true to convert value according to scale factor and offset
+     * 
+     * @return both min and max value.
+     */
+    public static MAMath.MinMax getMinMaxSkipMissingData(Array a, Variable var, boolean convertScaleOffset) {
 
         // get or create an enhence varaible to get missing/fill value
         VariableDS vs = null;
         if (var instanceof VariableDS) {
             vs = (VariableDS) var;
-//            if (!vs.isEnhanced()) {
-//                vs = new VariableDS(null, var, true);
-//            }
+            // if (!vs.isEnhanced()) {
+            // vs = new VariableDS(null, var, true);
+            // }
         } else {
             vs = new VariableDS(null, var, true);
         }
@@ -1918,10 +2258,10 @@ public class NetCdfWriter {
             double val = iter.getDoubleNext();
             // Apply scale factor and offset before value comparison.
             boolean isMissing = false;
-            if (convertScaleOffset)  {
+            if (convertScaleOffset) {
                 isMissing = vs.isMissing(vs.convertScaleOffsetMissing(val));
             } else {
-                isMissing = vs.isMissing(val);                
+                isMissing = vs.isMissing(val);
             }
             if (isMissing) {
                 continue;
@@ -1994,16 +2334,17 @@ public class NetCdfWriter {
 
         MAMath.MinMax minMaxWork = new MAMath.MinMax(Double.MAX_VALUE, -Double.MAX_VALUE);
 
-        if (!axis.hasMissing()){
+        if (!axis.hasMissing()) {
             minMaxWork.min = axis.getMinValue();
             minMaxWork.max = axis.getMaxValue();
         } else {
             try {
                 Array data = axis.read();
-                minMaxWork  = NetCdfWriter.getMinMaxSkipMissingData(data, axis, false);
-              } catch (IOException ioe) { /* what ?? */ }
+                minMaxWork = NetCdfWriter.getMinMaxSkipMissingData(data, axis, false);
+            } catch (IOException ioe) { /* what ?? */
+            }
         }
-        
+
         if (minMax == null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getMinMaxSkipMissingData() - exiting");

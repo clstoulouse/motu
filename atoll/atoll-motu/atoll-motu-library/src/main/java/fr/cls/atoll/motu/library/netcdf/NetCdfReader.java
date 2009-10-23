@@ -61,8 +61,8 @@ import fr.cls.commons.util.GMTDateFormat;
 /**
  * Class to read netCDF files.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-10-23 14:21:42 $
  */
 
 public class NetCdfReader {
@@ -232,7 +232,7 @@ public class NetCdfReader {
 
     /** Date format. */
     public final static String DATE_FORMAT = "yyyy-MM-dd";
-    
+
     /** Date format with time (DATETIME_FORMAT). */
     public static final FastDateFormat DATETIME_TO_STRING_DEFAULT = FastDateFormat.getInstance(DATETIME_FORMAT, GMTCalendar.GMT_TIMEZONE);
 
@@ -250,7 +250,7 @@ public class NetCdfReader {
 
     /** Names of possible GeoY. */
     public static final String[] GEOY_NAMES = { "y", "Y", };
-    
+
     /** The Constant SCALE_FACTOR_ATTR_NAME. */
     public final static String SCALE_FACTOR_ATTR_NAME = "scale_factor";
 
@@ -262,9 +262,11 @@ public class NetCdfReader {
 
     /** NetCdf dataset. */
     private NetcdfDataset netcdfDataset = null;
+    
+    /** The is open with enhance var. */
+    protected boolean isOpenWithEnhanceVar = true;
 
     private Map<String, Variable> orignalVariables = new HashMap<String, Variable>();
-    
 
     /**
      * Default constructor.
@@ -289,7 +291,7 @@ public class NetCdfReader {
     private void init() {
         NetcdfDataset.setUseNaNs(false);
     }
-    
+
     /**
      * Gets the orignal variables.
      * 
@@ -431,7 +433,7 @@ public class NetCdfReader {
     public Variable getVariable(String fullName) throws NetCdfVariableNotFoundException {
         return NetCdfReader.getVariable(fullName, this.netcdfDataset);
     }
-    
+
     /**
      * Gets the variable.
      * 
@@ -710,12 +712,13 @@ public class NetCdfReader {
     /**
      * Re-opens the reader.
      * 
+     * @param enhanceVar the enhance var
+     * 
      * @throws MotuException the motu exception
-     * @throws NetCdfVariableNotFoundException 
      */
-    public void reOpen() throws MotuException, NetCdfVariableNotFoundException {
+    public void reOpen(boolean enhanceVar) throws MotuException {
         close();
-        open();
+        open(enhanceVar);
     }
 
     /**
@@ -724,27 +727,43 @@ public class NetCdfReader {
      * @param location NetCDF file name or Opendap location data (URL) to read.
      * 
      * @throws MotuException the motu exception
-     * @throws NetCdfVariableNotFoundException 
      */
-    public void open(String location) throws MotuException, NetCdfVariableNotFoundException {
+    public void open(String location, boolean enhanceVar) throws MotuException {
         this.locationData = location;
-        open();
+        open(enhanceVar);
     }
 
     /**
-     * Opens the reader, if it is closed.
+     * Open.
      * 
      * @throws MotuException the motu exception
      */
     public void open() throws MotuException {
 
+        open(true);
+    }
+
+    /**
+     * Opens the reader, if it is closed.
+     * 
+     * @param enhanceVar the enhance var
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void open(boolean enhanceVar) throws MotuException {
+
+        if (this.isOpenWithEnhanceVar != enhanceVar) {
+            this.isOpenWithEnhanceVar = enhanceVar;
+            reOpen(enhanceVar);
+            return;
+        }
         if (!isClosed()) {
             return;
         }
 
         try {
             // this.netcdfDataset = NetcdfDataset.acquireDataset(locationData, null);
-            this.netcdfDataset = acquireDataset(locationData, false, null);
+            this.netcdfDataset = acquireDataset(locationData, enhanceVar, null);
             controlAxes();
         } catch (Exception e) {
             throw new MotuException(String.format("Error in NetCdfReader open - Unable to aquire dataset - location data:'%s'", locationData), e);
@@ -763,7 +782,7 @@ public class NetCdfReader {
             conv.buildCoordinateSystems(netcdfDataset);
         }
     }
-    
+
     /**
      * Inits the original variables.
      * 
@@ -774,8 +793,9 @@ public class NetCdfReader {
         for (Variable var : ds.getVariables()) {
             orignalVariables.put(var.getName(), var);
         }
-        
+
     }
+
     /**
      * Factory method for opening a dataset through the netCDF API, and identifying its coordinate variables.
      * 
@@ -787,7 +807,7 @@ public class NetCdfReader {
      * 
      * @throws IOException the IO exception
      * 
-     * @see #NetcdfDataset.acquireDataset Coordinate Systems are always added
+     * @see #NetcdfDataset Coordinate Systems are always added
      */
     public NetcdfDataset acquireDataset(String location, boolean enhanceVar, ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
@@ -814,13 +834,14 @@ public class NetCdfReader {
         return ds;
     }
 
-    static  public void toNcML(NetcdfDataset ds, String file) throws IOException {
+    static public void toNcML(NetcdfDataset ds, String file) throws IOException {
         OutputStream out = new FileOutputStream(file);
 
         NcMLWriter writer = new NcMLWriter();
         writer.writeXML(ds, out, null);
 
     }
+
     /**
      * Checks if is closed.
      * 
@@ -1312,7 +1333,7 @@ public class NetCdfReader {
         }
         return decimalFormat.format(value);
     }
-    
+
     /**
      * Gets the standard z as string.
      * 
@@ -1323,23 +1344,23 @@ public class NetCdfReader {
      * @return the standard z as fmt string
      */
     public static String getStandardZAsString(double value, RoundingMode roundingMode, int desiredDecimalNumberDigits) {
-         
-        int in =  (int)(value);
+
+        int in = (int) (value);
         double frac = value - in;
-        
+
         if (frac == 0d) {
             return NetCdfReader.getStandardZAsString(value);
         }
-            
+
         DecimalFormat decimalFormat = new DecimalFormat();
-        
+
         decimalFormat.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
         decimalFormat.setGroupingUsed(false);
         decimalFormat.setMinimumFractionDigits(desiredDecimalNumberDigits);
         decimalFormat.setMaximumFractionDigits(desiredDecimalNumberDigits);
-        
+
         decimalFormat.setRoundingMode(roundingMode);
-        
+
         return decimalFormat.format(value);
     }
 
@@ -1393,13 +1414,13 @@ public class NetCdfReader {
     public static Attribute getScaleFactorAttribute(Variable variable) {
         Attribute attribute = null;
         try {
-            attribute = NetCdfReader.getAttribute(variable, SCALE_FACTOR_ATTR_NAME);            
+            attribute = NetCdfReader.getAttribute(variable, SCALE_FACTOR_ATTR_NAME);
         } catch (NetCdfAttributeNotFoundException e) {
-            // Do nothing            
+            // Do nothing
         }
         return attribute;
     }
-    
+
     /**
      * Gets the add offset attribute.
      * 
@@ -1410,13 +1431,13 @@ public class NetCdfReader {
     public static Attribute getAddOffsetAttribute(Variable variable) {
         Attribute attribute = null;
         try {
-            attribute = NetCdfReader.getAttribute(variable, ADD_OFFSET_ATTR_NAME);            
+            attribute = NetCdfReader.getAttribute(variable, ADD_OFFSET_ATTR_NAME);
         } catch (NetCdfAttributeNotFoundException e) {
-            // Do nothing            
+            // Do nothing
         }
         return attribute;
     }
-    
+
     /**
      * Gets the scale factor attribute value.
      * 
@@ -1431,7 +1452,7 @@ public class NetCdfReader {
         }
         return attribute.getNumericValue();
     }
-    
+
     /**
      * Gets the add offset attribute value.
      * 
@@ -1446,7 +1467,7 @@ public class NetCdfReader {
         }
         return attribute.getNumericValue();
     }
-    
+
     /**
      * Parses text from the beginning of the given string to produce a date. The method may not use the entire
      * text of the given string.
@@ -1805,7 +1826,7 @@ public class NetCdfReader {
      * 
      * @return true if axes collection contains GeoX with Longitude equivalence and GeoY with Latitude
      *         equivalenceaxes.
-     * @throws MotuException 
+     * @throws MotuException
      */
     public boolean hasGeoXYAxisWithLonLatEquivalence() throws MotuException {
         return (hasGeoXAxisWithLonEquivalence() && hasGeoYAxisWithLatEquivalence());
@@ -1816,7 +1837,7 @@ public class NetCdfReader {
      * 
      * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable equivalence
      *         (Variable whose name is 'longitude' and with at least two dimensions X/Y).
-     * @throws MotuException 
+     * @throws MotuException
      */
     public boolean hasGeoYAxisWithLatEquivalence() throws MotuException {
         CoordinateAxis coord = getGeoYAxis();
@@ -1840,7 +1861,7 @@ public class NetCdfReader {
      * 
      * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable
      *         equivalence) (Variable whose name isa longitude name' and with at least two dimensions X/Y).
-     * @throws MotuException 
+     * @throws MotuException
      */
     public boolean hasGeoXAxisWithLonEquivalence() throws MotuException {
         CoordinateAxis coord = getGeoXAxis();
@@ -1858,20 +1879,20 @@ public class NetCdfReader {
 
         return hasGeoXYDimensions(listDims);
     }
-    
+
     /**
      * Gets the coordinate variable.
      * 
      * @param dim the dim
      * 
      * @return the coordinate variable
-     * @throws MotuException 
-     *      */
+     * @throws MotuException
+     * */
     public CoordinateAxis getCoordinateVariable(Dimension dim) throws MotuException {
 
         return NetCdfReader.getCoordinateVariable(dim, this.netcdfDataset);
-     }
-    
+    }
+
     /**
      * Gets the coordinate variable.
      * 
@@ -1879,7 +1900,7 @@ public class NetCdfReader {
      * @param ds the ds
      * 
      * @return the coordinate variable
-     * @throws MotuException 
+     * @throws MotuException
      * 
      * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      */
@@ -1891,18 +1912,18 @@ public class NetCdfReader {
         } catch (NetCdfVariableNotFoundException e) {
             throw new MotuException(String.format("Error in getCoordinateVariable - Unable to get variable '%s'", dim.getName()), e);
         }
-        
+
         if (variable == null) {
             return null;
         }
-        if (! variable.isCoordinateVariable()) {
+        if (!variable.isCoordinateVariable()) {
             return null;
         }
-        if (! (variable instanceof CoordinateAxis)) {
+        if (!(variable instanceof CoordinateAxis)) {
             return null;
         }
-        
-        return (CoordinateAxis)variable;
+
+        return (CoordinateAxis) variable;
     }
 
     /**
@@ -1911,7 +1932,7 @@ public class NetCdfReader {
      * @param listDims list of Dimensions to search in.
      * 
      * @return true if a list of Dimension corresponds at least to a GeoX and GeoY axis coordinates variables.
-     * @throws MotuException 
+     * @throws MotuException
      */
     @SuppressWarnings("unchecked")
     public boolean hasGeoXYDimensions(List<Dimension> listDims) throws MotuException {
@@ -2033,24 +2054,24 @@ public class NetCdfReader {
      * @return the list of the coordinate variables.
      * 
      * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException 
+     * @throws MotuException
      */
-    public List<Variable> getCoordinateVariables(Variable var) throws MotuNotImplementedException, MotuException {        
+    public List<Variable> getCoordinateVariables(Variable var) throws MotuNotImplementedException, MotuException {
         return NetCdfReader.getCoordinateVariables(var, this.netcdfDataset);
     }
-    
- /**
- * Gets the coordinate variables.
- * 
- * @param var the var
- * @param netCdfDataset the net cdf dataset
- * 
- * @return the coordinate variables
- * 
- * @throws MotuNotImplementedException the motu not implemented exception
- * @throws MotuException the net cdf variable not found exception
- */
-public static List<Variable> getCoordinateVariables(Variable var, NetcdfDataset ds) throws MotuNotImplementedException, MotuException {
+
+    /**
+     * Gets the coordinate variables.
+     * 
+     * @param var the var
+     * @param netCdfDataset the net cdf dataset
+     * 
+     * @return the coordinate variables
+     * 
+     * @throws MotuNotImplementedException the motu not implemented exception
+     * @throws MotuException the net cdf variable not found exception
+     */
+    public static List<Variable> getCoordinateVariables(Variable var, NetcdfDataset ds) throws MotuNotImplementedException, MotuException {
 
         List<Variable> listCoordVars = new ArrayList<Variable>();
 
@@ -2060,7 +2081,7 @@ public static List<Variable> getCoordinateVariables(Variable var, NetcdfDataset 
 
         List<Dimension> listDims = (List<Dimension>) var.getDimensions();
         for (Dimension dim : listDims) {
-            Variable dimCoordVars =  NetCdfReader.getCoordinateVariable(dim, ds);
+            Variable dimCoordVars = NetCdfReader.getCoordinateVariable(dim, ds);
             listCoordVars.add(dimCoordVars);
         }
 

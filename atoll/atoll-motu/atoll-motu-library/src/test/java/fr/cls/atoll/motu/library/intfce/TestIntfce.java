@@ -78,7 +78,7 @@ import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.20 $ - $Date: 2009-10-07 11:19:43 $
+ * @version $Revision: 1.21 $ - $Date: 2009-10-23 14:21:42 $
  * 
  */
 public class TestIntfce {
@@ -309,7 +309,7 @@ public class TestIntfce {
         // productExtractDataAvisofromProductId();
         // productInformationFromLocationData();
         // productExtractDataAviso2();
-        //productExtractDataMercator();
+        productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
         // productExtractDiversity();
@@ -327,7 +327,7 @@ public class TestIntfce {
         // testLoadStdNameEquiv();
         // testGetAmountDataSize();
         // testSynchronized();
-        // productExtractDataCatsat();
+        //productExtractDataCatsat();
         // productExtractDataAvisofromExtractionParameters();
         // productExtractDataMerseaFromHttp();
         //testLoadInventoryOLA();
@@ -1240,7 +1240,7 @@ public class TestIntfce {
     }
 
     public static void productExtractDataMercator() {
-        String productId = "mercatorPsy2v2R1v_nat_mean_best_estimate";
+        String productId = "mercatorPsy3v2_nat_mean_best_estimate";
         //String productId = "mercatorPsy3v2_glo_mean_best_estimate";
         // String productId = "mercatorPsy3v2R1v_med_levitus_1998";
         String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/" + productId;
@@ -1268,8 +1268,8 @@ public class TestIntfce {
         // second element is end date (optional)
         // if only start date is set, end date equals start date
         List<String> listTemporalCoverage = new ArrayList<String>();
-        listTemporalCoverage.add("2008-10-21");
-        listTemporalCoverage.add("2008-10-21");
+        listTemporalCoverage.add("2009-10-21");
+        listTemporalCoverage.add("2009-10-21");
 
         // add Lat/Lon criteria
         // first element is low latitude
@@ -1277,10 +1277,10 @@ public class TestIntfce {
         // third element is high latitude
         // fourth element is high longitude
         List<String> listLatLonCoverage = new ArrayList<String>();
-        listLatLonCoverage.add("1");
-        listLatLonCoverage.add("-47");
-        listLatLonCoverage.add("-1");
-        listLatLonCoverage.add("44");
+//        listLatLonCoverage.add("1");
+//        listLatLonCoverage.add("-47");
+//        listLatLonCoverage.add("-1");
+//        listLatLonCoverage.add("44");
         //
         // listLatLonCoverage.add("-10");
         // listLatLonCoverage.add("-1");
@@ -1774,13 +1774,15 @@ public class TestIntfce {
     public static void productExtractDataCatsat() {
         // String productId = "mercatorPsy3v1R1v_glo_mean_best_estimate";
         // String productId = "nrt_glo_st_chlorophyll";
-        String productId = "duacs_global_nrt_msla_merged_h_uv";
+        //String productId = "duacs_global_nrt_msla_merged_h_uv";
+        String productId = "nrt_atl_oa_chlorophyll";
         // String productId = "global_sst";
         // String productId = "GLB_TE01_20550.nc";
 
         // http://themismotu.cls.fr:8280/atoll-motuservlet/Catsat?action=productdownload&service=Catsat&data=http%3A%2F%2Fcatsatopendap.cls.fr%3A8080%2Fthredds%2FdodsC%2Fnrt_atl_oa_chlorophyll&nexturl=+&x_lo=-60&x_hi=20&y_lo=-15&y_hi=25&output=netcdf&region=-60.0%2C20.0%2C-15.0%2C25.0&yhi_text=25&xlo_text=-60&xhi_text=20&ylo_text=-15&t_lo_0=2008-02-09&t_lo=2008-02-09&t_hi_0=2008-02-09&t_hi=2008-02-09&variable=Grid_0001
 
-        String locationData = "http://catsatopendap.cls.fr:8080/thredds/dodsC/" + productId;
+        //String locationData = "http://catsatopendap.cls.fr:8080/thredds/dodsC/" + productId;
+        String locationData = "http://catsat-data1.cls.fr:43080/thredds/dodsC/" + productId;
         // String productId = "mercatorPsy3v1R1v_arc_mean_20060628_R20060712.nc";
         // String locationData = "C:/Java/dev/" + productId;
 
@@ -1797,8 +1799,8 @@ public class TestIntfce {
         // second element is end date (optional)
         // if only start date is set, end date equals start date
         List<String> listTemporalCoverage = new ArrayList<String>();
-        listTemporalCoverage.add("2008-08-17");
-        listTemporalCoverage.add("2008-08-17");
+        listTemporalCoverage.add("2009-10-22");
+        listTemporalCoverage.add("2009-10-22");
 
         // add Lat/Lon criteria
         // first element is low latitude
@@ -1806,10 +1808,10 @@ public class TestIntfce {
         // third element is high latitude
         // fourth element is high longitude
         List<String> listLatLonCoverage = new ArrayList<String>();
-        listLatLonCoverage.add("30");
-        listLatLonCoverage.add("20");
-        listLatLonCoverage.add("40");
-        listLatLonCoverage.add("5");
+//        listLatLonCoverage.add("30");
+//        listLatLonCoverage.add("20");
+//        listLatLonCoverage.add("40");
+//        listLatLonCoverage.add("5");
 
         // add depth (Z) criteria
         // first element is low depth

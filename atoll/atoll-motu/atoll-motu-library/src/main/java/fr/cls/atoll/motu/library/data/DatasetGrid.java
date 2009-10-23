@@ -23,6 +23,7 @@ import ucar.ma2.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 
@@ -36,6 +37,7 @@ import fr.cls.atoll.motu.library.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
 
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
@@ -44,7 +46,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
  * Gridded dataset class.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-08-20 16:10:02 $
+ * @version $Revision: 1.3 $ - $Date: 2009-10-23 14:21:42 $
  */
 public class DatasetGrid extends fr.cls.atoll.motu.library.data.DatasetBase {
     /**
@@ -240,8 +242,14 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.data.DatasetBase {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
-*/        
-        GridDataset gds = new GridDataset(product.getNetCdfReaderDataset());
+*/       
+        String locationData = product.getNetCdfReaderDataset().getLocation();
+        NetCdfReader netCdfReader = new NetCdfReader(locationData);
+        netCdfReader.open(false);
+        
+        //GridDataset gds = new GridDataset(product.getNetCdfReaderDataset());
+        GridDataset gds = new GridDataset(netCdfReader.getNetcdfDataset());
+
         List<Attribute> globalFixedAttributes = initializeNetCdfFixedGlobalAttributes();
         List<Attribute> globalDynAttributes = initializeNetCdfDynGlobalAttributes();
 
