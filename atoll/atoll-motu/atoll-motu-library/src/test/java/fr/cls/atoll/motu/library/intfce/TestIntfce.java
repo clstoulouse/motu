@@ -78,7 +78,7 @@ import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.21 $ - $Date: 2009-10-23 14:21:42 $
+ * @version $Revision: 1.22 $ - $Date: 2009-10-28 15:42:52 $
  * 
  */
 public class TestIntfce {
@@ -93,9 +93,13 @@ public class TestIntfce {
      */
     public static void main(String[] args) {
                
-//        System.out.println(Organizer.getDatasetIdFromAtollURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#dataset-identifiant"));            
-//        System.out.println(Organizer.getDatasetIdFromAtollURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#identifiant"));            
-//        System.out.println(Organizer.getDatasetIdFromAtollURI("bidon"));            
+//        System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#dataset-identifiant"));            
+//        System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#identifiant"));            
+//        System.out.println(Organizer.getDatasetIdFromURI("bidon"));            
+//
+//        System.out.println(Organizer.getVariableIdFromURI("bidon"));            
+//        System.out.println(Organizer.getVariableIdFromURI("#bidon"));            
+//        System.out.println(Organizer.getVariableIdFromURI("sfddfjjjsd#bidon"));            
 
         // if (LOGQUEUE.isInfoEnabled()) {
         // LOGQUEUE.info("main(String[]) - xxx jentering");
@@ -309,7 +313,7 @@ public class TestIntfce {
         // productExtractDataAvisofromProductId();
         // productInformationFromLocationData();
         // productExtractDataAviso2();
-        productExtractDataMercator();
+        //productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
         // productExtractDiversity();
@@ -325,7 +329,7 @@ public class TestIntfce {
         // e.printStackTrace();
         // }
         // testLoadStdNameEquiv();
-        // testGetAmountDataSize();
+        //testGetAmountDataSize();
         // testSynchronized();
         //productExtractDataCatsat();
         // productExtractDataAvisofromExtractionParameters();
@@ -1962,9 +1966,11 @@ public class TestIntfce {
 
     public static void testGetAmountDataSize() {
         // String serviceName = "aviso_nrt";
-        String serviceName = "avisoNRT";
+        //String serviceName = "avisoNRT";
+        String serviceName = "Catsat";
 
-        String productId = "duacs_global_nrt_madt_merged_h";
+        //String productId = "duacs_global_nrt_madt_merged_h";
+        String productId = "nrt_glo_hr_infrared_sst";
         // String locationData = "http://opendap.aviso.oceanobs.com/thredds/dodsC/" + productId;
 
         // String locationData = "http://rdp2-jaune.cls.fr:8880/thredds/dodsC/" + productId;
@@ -1973,8 +1979,8 @@ public class TestIntfce {
         listVar.add("Grid_0001");
 
         List<String> listTemporalCoverage = new ArrayList<String>();
-        // listTemporalCoverage.add("2006-09-24");
-        // listTemporalCoverage.add("2006-09-24");
+        listTemporalCoverage.add("2009-10-25");
+         listTemporalCoverage.add("2009-10-26");
 
         List<String> listLatLonCoverage = new ArrayList<String>();
         // listLatLonCoverage.add("46");
@@ -2004,8 +2010,8 @@ public class TestIntfce {
                                                   writer,
                                                   false);
 
-            writer.flush();
-            writer.close();
+//            writer.flush();
+//            writer.close();
 
             double size = product.getAmountDataSizeAsBytes();
             System.out.print("size is ");

@@ -120,6 +120,16 @@
 	sftpSessionTimeOut="PT10S"
 	strictHostKeyChecking="no">
 	
+		<!--===========================================-->
+	<!--                     CatSat  TDS            -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR" description="Catsat"
+		group="Catsat" httpBaseRef="http://www.cls.fr" name="Catsat"
+		veloTemplatePrefix="cls">
+		<catalog name="catalog.xml" type="TDS"
+			urlSite="http://catsat-data1.cls.fr:43080/thredds" />
+	</configService>
+	
 	<!--=====================   CATSAT FTP ===================-->
 	<configService defaultLanguage="UK" description="Ftp Catsat"
 		group="CatsatFTP" httpBaseRef="http://www.cls.fr"
@@ -240,15 +250,6 @@
 		name="MercatorIBI" veloTemplatePrefix="mercator">
 		<catalog name="catalog.xml" type="tds"
 			urlSite="http://opendap2.mercator-ocean.fr/thredds" />
-	</configService>
-	<!--===========================================-->
-	<!--                     CatSat  TDS            -->
-	<!--===========================================-->
-	<configService defaultLanguage="FR" description="Catsat"
-		group="Catsat" httpBaseRef="http://www.cls.fr" name="Catsat"
-		veloTemplatePrefix="cls">
-		<catalog name="catalog.xml" type="TDS"
-			urlSite="http://catsatopendap.cls.fr:8080/thredds" />
 	</configService>
 
 	<!--===========================================-->
