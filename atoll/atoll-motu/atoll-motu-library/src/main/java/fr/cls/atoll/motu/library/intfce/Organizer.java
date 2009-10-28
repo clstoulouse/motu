@@ -96,7 +96,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.27 $ - $Date: 2009-10-07 11:19:43 $
+ * @version $Revision: 1.28 $ - $Date: 2009-10-28 15:41:23 $
  */
 public class Organizer {
 
@@ -170,6 +170,8 @@ public class Organizer {
     
     /** The Constant SHARP_DATASET_REGEXP. */
     public static final String SHARP_DATASET_REGEXP = ".*#dataset-";
+
+    public static final String SHARP_REGEXP = ".*#";
 
     /** Number of milliseconds per hour, except when a leap second is inserted. */
     public static final long MILLISECS_PER_HOUR = 60 * Organizer.MILLISECS_PER_MINUTE;
@@ -4591,13 +4593,29 @@ public class Organizer {
      * 
      * @return the dataset id from atoll uri
      */
-    public static String getDatasetIdFromAtollURI(String uri) {
+    public static String getDatasetIdFromURI(String uri) {
         String[] split = uri.split(SHARP_DATASET_REGEXP);
         if (split.length <= 1) {
             return uri;
         }
         return split[1];
     }
+    
+    /**
+     * Gets the variable id from uri.
+     * 
+     * @param uri the uri
+     * 
+     * @return the variable id from uri
+     */
+    public static String getVariableIdFromURI(String uri) {
+        String[] split = uri.split(SHARP_REGEXP);
+        if (split.length <= 1) {
+            return uri;
+        }
+        return split[1];
+    }
+
 }
 
 // CSON: MultipleStringLiterals
