@@ -65,7 +65,7 @@ import fr.cls.atoll.motu.library.intfce.Organizer;
  * these class is not an extend of FileWriter, and some method have copied from FileWriter.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-10-23 14:21:41 $
+ * @version $Revision: 1.4 $ - $Date: 2009-10-28 15:42:34 $
  */
 
 // CSOFF: MultipleStringLiterals : avoid constants and trace duplicate string
@@ -2463,7 +2463,17 @@ public class NetCdfWriter {
      */
     private static double countVarSize(Variable var) throws MotuException {
 
-        return countVarSize(var.getShape(), var.getDataType());
+        DataType dataType = var.getDataType();
+        
+        // Warning : if variable has scale factor and/or offset attribute
+        // variable datatype is "double"
+        // so, get the original datatype
+        if (var instanceof VariableDS) {
+            VariableDS varDS = (VariableDS) var;
+            dataType = varDS.getOriginalDataType();
+        }
+        
+        return countVarSize(var.getShape(), dataType);
     }
 
     /**
