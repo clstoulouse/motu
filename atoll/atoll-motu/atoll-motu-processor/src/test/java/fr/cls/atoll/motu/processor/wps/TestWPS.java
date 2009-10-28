@@ -44,11 +44,16 @@ import org.joda.time.Period;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 
+import ucar.ma2.Array;
+import ucar.nc2.Attribute;
+
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.library.utils.StaticResourceBackedDynamicEnum;
 import fr.cls.atoll.motu.msg.xml.StatusModeType;
 import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
@@ -74,7 +79,7 @@ import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse.WPSStatusRe
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.37 $ - $Date: 2009-10-21 10:28:02 $
+ * @version $Revision: 1.38 $ - $Date: 2009-10-28 15:48:01 $
  */
 class StringList extends ArrayList<String> {
 }
@@ -103,25 +108,26 @@ public class TestWPS {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-//        String serverURL = "http://localhost:8080/atoll-motuservlet/services";
-//
-//        try {
-//            WPSInfo wpsInfo = WPSFactory.getWpsInfo(serverURL);
-//        } catch (MotuException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
 
-//        StatusModeType test = StatusModeType.DONE;
-//        test.toString();
-//        StatusModeType.valueOf("DONE");
-//        Enum.valueOf(StatusModeType.class, "DONE");
-//        boolean b  = StatusModeType.class.isEnum();
-        
-        //testCreateObject();
-        
-        //testComplexOutputWPSResponse();
-        
+        // String serverURL = "http://localhost:8080/atoll-motuservlet/services";
+        //
+        // try {
+        // WPSInfo wpsInfo = WPSFactory.getWpsInfo(serverURL);
+        // } catch (MotuException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+
+        // StatusModeType test = StatusModeType.DONE;
+        // test.toString();
+        // StatusModeType.valueOf("DONE");
+        // Enum.valueOf(StatusModeType.class, "DONE");
+        // boolean b = StatusModeType.class.isEnum();
+
+        // testCreateObject();
+
+        // testComplexOutputWPSResponse();
+
         // AnnotatedElement annotatedElement = StatusType.class;
         // System.out.println(annotatedElement.getAnnotations().toString());
         // for (Annotation annotation : annotatedElement.getAnnotations()) {
@@ -170,9 +176,9 @@ public class TestWPS {
 
         // testBuildWPS();
         // testBuildChainWPS();
-        
-        testBuildAndRunChainWPS();
-        
+
+        // testBuildAndRunChainWPS();
+
         // testUnmarshallWPS();
 
         // for (ErrorType c: ErrorType.values()) {
@@ -234,7 +240,7 @@ public class TestWPS {
 
         String href = "http://localhost:8080/atoll-motuservlet/services";
 
-        String postBodyString = "<wps:Execute  xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" service=\"WPS\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd\">                        <ows:Identifier>TestAdd</ows:Identifier>                        <wps:DataInputs>                            <wps:Input>                             <ows:Identifier>A</ows:Identifier>                              <wps:Data>                                  <wps:ComplexData>10</wps:ComplexData>                               </wps:Data>                         </wps:Input>                            <wps:Input>                             <ows:Identifier>B</ows:Identifier>                              <wps:Data>                                  <wps:ComplexData>8</wps:ComplexData>                                </wps:Data>                         </wps:Input>                        </wps:DataInputs>                   <wps:ResponseForm>                          <wps:RawDataOutput mimeType=\"text/plain\">                             <ows:Identifier>C</ows:Identifier>                          </wps:RawDataOutput>                        </wps:ResponseForm>           </wps:Execute>              </wps:Body>";
+        String postBodyString = "<wps:Execute  xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" service=\"WPS\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd\">                        <ows:Identifier>TestAddZ</ows:Identifier>                        <wps:DataInputs>                            <wps:Input>                             <ows:Identifier>A</ows:Identifier>                              <wps:Data>                                  <wps:ComplexData>10</wps:ComplexData>                               </wps:Data>                         </wps:Input>                            <wps:Input>                             <ows:Identifier>B</ows:Identifier>                              <wps:Data>                                  <wps:ComplexData>8</wps:ComplexData>                                </wps:Data>                         </wps:Input>                        </wps:DataInputs>                   <wps:ResponseForm>                          <wps:RawDataOutput mimeType=\"text/plain\">                             <ows:Identifier>C</ows:Identifier>                          </wps:RawDataOutput>                        </wps:ResponseForm>           </wps:Execute>              </wps:Body>";
         LOG.debug("Using post body '" + postBodyString + "'");
         // TODO what about the encoding here?
         InputStream is = new ByteArrayInputStream(postBodyString.getBytes());
@@ -1101,7 +1107,6 @@ public class TestWPS {
                 System.out.println("Motu url response: " + motuExecuteResponse.getMotuResponseUrl());
                 System.out.println("Motu local url response: " + motuExecuteResponse.getMotuResponseLocalUrl());
             }
-            
 
             // Save Response as XML file, just to check WPS Execute content
             System.out.println("===============> Marshal WPS Response");
@@ -1138,8 +1143,8 @@ public class TestWPS {
 
     public static void setExtractDataParameterValue(OperationMetadata op) throws MotuExceptionBase {
         String prefix = "http://atoll.cls.fr/2009/resource/individual/atoll#";
-        String productId = prefix + "mercatorPsy3v2_nat_mean_best_estimate";
-        String service = prefix +  "motu-opendap-mercator";
+        String productId = prefix + "dataset-mercatorPsy3v2_nat_mean_best_estimate";
+        String service = prefix + "motu-opendap-mercator";
 
         op.setParameterValue("service", service);
         op.setParameterValue("product", productId);
@@ -1220,7 +1225,6 @@ public class TestWPS {
                 System.out.print(" --> ");
                 System.out.println(object);
 
-
             }
 
         } catch (SecurityException e) {
@@ -1250,10 +1254,11 @@ public class TestWPS {
             e.printStackTrace();
         }
     }
+
     public static void testComplexOutputWPSResponse() {
         try {
             URL url = Organizer.findResource("xml/TestComplexWPSResponse.xml");
-            
+
             MotuExecuteResponse motuExecuteResponse = WPSFactory.getMotuExecuteResponse(url);
 
             System.out.println("==>WPS process status location:");
@@ -1271,19 +1276,18 @@ public class TestWPS {
             System.out.println("Process done (succeeded or failed) ? " + motuExecuteResponse.isProcessDone());
             System.out.println("Process in progress (neither succeeded nor failed) ? " + motuExecuteResponse.isProcessInProgress());
 
-
             if (motuExecuteResponse.isStatusFailed()) {
                 // TODO
             }
             if (motuExecuteResponse.isStatusSucceeded()) {
-//                System.out.println("Motu status response: " + motuExecuteResponse.getMotuResponseStatus());
-//                System.out.println("Motu code response: " + motuExecuteResponse.getMotuResponseCode());
-//                System.out.println("Motu message response: " + motuExecuteResponse.getMotuResponseMessage());
-//                System.out.println("Motu url response: " + motuExecuteResponse.getMotuResponseUrl());
-//                System.out.println("Motu local url response: " + motuExecuteResponse.getMotuResponseLocalUrl());
+                // System.out.println("Motu status response: " + motuExecuteResponse.getMotuResponseStatus());
+                // System.out.println("Motu code response: " + motuExecuteResponse.getMotuResponseCode());
+                // System.out.println("Motu message response: " +
+                // motuExecuteResponse.getMotuResponseMessage());
+                // System.out.println("Motu url response: " + motuExecuteResponse.getMotuResponseUrl());
+                // System.out.println("Motu local url response: " +
+                // motuExecuteResponse.getMotuResponseLocalUrl());
             }
-            
-
 
             // /testBodyPostDontWaitResponse(wpsXml, serverURL);
 
@@ -1293,5 +1297,15 @@ public class TestWPS {
             System.out.println(e.notifyException());
         }
 
+    }
+
+    public static void testDecodeProcessletExceptionErrorMessage() {
+        // String msg = WPSUtils.PROCESSLET_EXCEPTION_FORMAT_CODE + "LE_CODE" +
+        // WPSUtils.PROCESSLET_EXCEPTION_FORMAT_MSG + "LE_MESSAGE";
+        String msg = WPSUtils.PROCESSLET_EXCEPTION_FORMAT_CODE + "" + WPSUtils.PROCESSLET_EXCEPTION_FORMAT_MSG + "";
+        List<String> result = WPSUtils.decodeProcessletExceptionErrorMessage(msg);
+
+        System.out.println(result);
+        System.out.println(WPSUtils.isProcessletExceptionErrorMessageEncode(msg));
     }
 }

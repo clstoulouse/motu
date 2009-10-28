@@ -49,7 +49,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.7 $ - $Date: 2009-10-20 13:32:37 $
+ * @version $Revision: 1.8 $ - $Date: 2009-10-28 15:48:00 $
  */
 public class MotuExecuteResponse {
 
@@ -234,7 +234,7 @@ public class MotuExecuteResponse {
     public WPSStatusResponse getStatusAsWPSStatusResponse() {
         String status = getStatusAsString();
 
-        if (ServiceMetadata.isNullOrEmpty(status)) {
+        if (WPSUtils.isNullOrEmpty(status)) {
             return null;
         }
         return statusTypes.valueOf(status);
@@ -580,7 +580,7 @@ public class MotuExecuteResponse {
             return null;
         }
         String valueType = literalDataType.getDataType();
-        if (ServiceMetadata.isNullOrEmpty(valueType)) {
+        if (WPSUtils.isNullOrEmpty(valueType)) {
             throw new MotuException("MotuExecuteResponse#getResponseValue - Data type of a literal output data is null.");
         }
 
@@ -644,7 +644,7 @@ public class MotuExecuteResponse {
 //        ByteBuffer bbuf = encoder.encode(CharBuffer.wrap("a string"));
 //
 //
-//        if (ServiceMetadata.isNullOrEmpty(valueType)) {
+//        if (WPSUtils.isNullOrEmpty(valueType)) {
 //            throw new MotuException("MotuExecuteResponse#getResponseValue - Data type of a literal output data is null.");
 //        }
 //

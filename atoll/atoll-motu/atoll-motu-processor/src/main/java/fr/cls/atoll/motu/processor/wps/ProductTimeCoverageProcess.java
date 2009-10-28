@@ -16,13 +16,14 @@ import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.msg.xml.ErrorType;
 import fr.cls.atoll.motu.msg.xml.TimeCoverage;
+import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
 
 /**
  * The purpose of this {@link Processlet} is to provide the time coverage of a product
  * 
  * @author last edited by: $Author: dearith $
  * 
- * @version $Revision: 1.10 $, $Date: 2009-05-04 16:16:34 $
+ * @version $Revision: 1.11 $, $Date: 2009-10-28 15:48:01 $
  */
 public class ProductTimeCoverageProcess extends MotuWPSProcess {
 
@@ -50,13 +51,15 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
         // get Time coverage
         // -------------------------------------------------
         try {
-            if (!MotuWPSProcess.isNullOrEmpty(motuWPSProcessData.getLocationDataParamIn())) {
+            if (!WPSUtils.isNullOrEmpty(motuWPSProcessData.getLocationDataParamIn())) {
                 productGetTimeCoverage(in, motuWPSProcessData.getLocationDataParamIn().getValue());
-            } else if (!MotuWPSProcess.isNullOrEmpty(motuWPSProcessData.getServiceNameParamIn()) && !MotuWPSProcess.isNullOrEmpty(motuWPSProcessData.getProductIdParamIn())) {
+            } else if (!WPSUtils.isNullOrEmpty(motuWPSProcessData.getServiceNameParamIn()) && !WPSUtils.isNullOrEmpty(motuWPSProcessData.getProductIdParamIn())) {
                 productGetTimeCoverage(in, motuWPSProcessData.getServiceNameParamIn().getValue(), motuWPSProcessData.getProductIdParamIn().getValue());
             }
         } catch (MotuExceptionBase e) {
-            //throw new ProcessletException(e.notifyException());
+            setReturnCode(out, e, true);
+        } finally {
+            super.afterProcess(in, out, info);
         }
 
         if (LOG.isDebugEnabled()) {

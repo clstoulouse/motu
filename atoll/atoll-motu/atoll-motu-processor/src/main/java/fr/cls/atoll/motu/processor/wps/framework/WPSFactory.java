@@ -97,7 +97,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.22 $ - $Date: 2009-10-20 13:32:37 $
+ * @version $Revision: 1.23 $ - $Date: 2009-10-28 15:48:00 $
  */
 public class WPSFactory {
 
@@ -270,7 +270,7 @@ public class WPSFactory {
             LOG.debug("getWpsInfo(String) - entering");
         }
 
-        if (ServiceMetadata.isNullOrEmpty(url)) {
+        if (WPSUtils.isNullOrEmpty(url)) {
             throw new MotuException("WPSFactory#getWpsInfo - cannot process because url is null");
         }
         WPSInfo wpsInfo = new WPSInfo(url);
@@ -1898,7 +1898,7 @@ public class WPSFactory {
      */
     public static ExecuteResponse getExecuteResponseFromUrl(String url) throws MotuMarshallException, MotuException {
 
-        if (ServiceMetadata.isNullOrEmpty(url)) {
+        if (WPSUtils.isNullOrEmpty(url)) {
             return null;
         }
         InputStream inputStream = WPSUtils.get(url);
@@ -2567,7 +2567,7 @@ public class WPSFactory {
             } else {
 
                 URL url = null;
-                if (!ServiceMetadata.isNullOrEmpty(schemaPath)) {
+                if (!WPSUtils.isNullOrEmpty(schemaPath)) {
                     url = Organizer.findResource(schemaPath);
 
                 } else {

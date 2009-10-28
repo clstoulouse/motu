@@ -31,7 +31,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.3 $, $Date: 2009-10-21 09:08:23 $
+ * @version $Revision: 1.4 $, $Date: 2009-10-28 15:48:01 $
  */
 public class ProductExtractionDataSize extends MotuWPSProcess {
 
@@ -68,6 +68,8 @@ public class ProductExtractionDataSize extends MotuWPSProcess {
             getAmountDataSize(in, extractionParameters);
         } catch (MotuExceptionBase e) {
             setReturnCode(out, e, true);
+        } finally {
+            super.afterProcess(in, out, info);
         }
 
  

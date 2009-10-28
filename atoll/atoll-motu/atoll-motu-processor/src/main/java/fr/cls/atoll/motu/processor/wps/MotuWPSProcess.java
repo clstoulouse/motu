@@ -6,6 +6,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamException;
+
 import org.apache.log4j.Logger;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
@@ -18,16 +20,20 @@ import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.input.ReferencedComplexInput;
 import org.deegree.services.wps.output.ComplexOutput;
+import org.deegree.services.wps.output.ComplexOutputImpl;
 import org.deegree.services.wps.output.LiteralOutput;
+import org.deegree.services.wps.output.ProcessletOutput;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.exception.MotuInvalidRequestIdException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.library.queueserver.RequestManagement;
 import fr.cls.atoll.motu.msg.xml.ErrorType;
 import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
 import fr.cls.atoll.motu.msg.xml.StatusModeType;
+import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
 
 /**
  * <br>
@@ -37,7 +43,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.26 $ - $Date: 2009-10-21 10:28:02 $
+ * @version $Revision: 1.27 $ - $Date: 2009-10-28 15:48:01 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
@@ -46,7 +52,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
     public static final String WPS100_SHEMA_PACK_NAME = "fr.cls.atoll.motu.processor.opengis.wps100";
     public static final String WPS_DESCRIBE_ALL_XML = "DescribeAll.xml";
-    
+
     /** The Constant PARAM_FORWARDED_FOR (Real user Ip). */
     public static final String PARAM_ANONYMOUS = "anonymous";
 
@@ -58,7 +64,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
     /** Process output return code parameter name. */
     public static final String PARAM_CODE = "code";
-    
+
     /** Mode Status parameter value. */
     public static final String PARAM_MODE_CONSOLE = "console";
 
@@ -67,7 +73,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
     /** The Constant PARAM_ENDTIME. */
     public static final String PARAM_ENDTIME = "endtime";
-    
+
     /** The Constant PARAM_FROM. */
     public static final String PARAM_FROM = "from";
 
@@ -79,7 +85,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
     /** Language servlet paremeter name. */
     public static final String PARAM_LANGUAGE = "lang";
-    
+
     /** The Constant PARAM_LOCAL_URL. */
     public static final String PARAM_LOCAL_URL = "localUrl";
 
@@ -88,10 +94,10 @@ public abstract class MotuWPSProcess implements Processlet {
 
     /** The Constant PARAM_LOWDEPTH. */
     public static final String PARAM_LOWDEPTH = "lowdepth";
-    
+
     /** The Constant PARAM_MAX_ALLOWED_SIZE. */
     public static final String PARAM_MAX_ALLOWED_SIZE = "maxAllowedSize";
-    
+
     /** The Constant PARAM_MAX_POOL_ANONYMOUS. */
     public static final String PARAM_MAX_POOL_ANONYMOUS = "maxpoolanonymous";
 
@@ -103,7 +109,6 @@ public abstract class MotuWPSProcess implements Processlet {
 
     /** Mode parameter name. */
     public static final String PARAM_MODE = "mode";
-
 
     /** Mode Status parameter value. */
     public static final String PARAM_MODE_STATUS = "status";
@@ -119,22 +124,22 @@ public abstract class MotuWPSProcess implements Processlet {
 
     /** Product servlet parameter name. */
     public static final String PARAM_PRODUCT = "product";
-    
+
     /** The Constant PARAM_PWDFROM. */
     public static final String PARAM_PWDFROM = "pwdFrom";
-    
+
     /** The Constant PARAM_PWDTO. */
     public static final String PARAM_PWDTO = "pwdTo";
 
     /** The Constant PARAM_REQUESTID. */
     public static final String PARAM_REQUESTID = "requestid";
-    
+
     /** The Constant PARAM_REMOVE. */
     public static final String PARAM_REMOVE = "remove";
 
     /** The Constant PARAM_REMOVE. */
     public static final String PARAM_RENAME = "rename";
-    
+
     /** Service servlet parameter name. */
     public static final String PARAM_SERVICE = "service";
 
@@ -143,7 +148,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
     /** The Constant PARAM_SIZE. */
     public static final String PARAM_SIZE = "size";
-    
+
     /** The Constant PARAM_STATUS. */
     public static final String PARAM_STATUS = "status";
 
@@ -155,10 +160,9 @@ public abstract class MotuWPSProcess implements Processlet {
 
     /** The Constant PARAM_USERTO. */
     public static final String PARAM_USERTO = "userTo";
-    
+
     /** Variable servlet paremeter name. */
     public static final String PARAM_VARIABLE = "variable";
-
 
     // protected RunnableWPS runnableWPS = null;
 
@@ -215,7 +219,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
         LiteralInput languageParam = (LiteralInput) in.getParameter(MotuWPSProcess.PARAM_LANGUAGE);
 
-        if (MotuWPSProcess.isNullOrEmpty(languageParam)) {
+        if (WPSUtils.isNullOrEmpty(languageParam)) {
             return;
         }
 
@@ -279,38 +283,29 @@ public abstract class MotuWPSProcess implements Processlet {
      * @throws ProcessletException the processlet exception
      */
     public void afterProcess(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info) throws ProcessletException {
-    }
-
-    /**
-     * Test if a string is null or empty.
-     * 
-     * @param value string to be tested.
-     * 
-     * @return true if string is null or empty, otherwise false.
-     */
-    public static boolean isNullOrEmpty(String value) {
-        if (value == null) {
-            return true;
-        }
-        if (value.equals("")) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Checks if is null or empty.
-     * 
-     * @param value the value
-     * 
-     * @return true, if is null or empty
-     */
-    public static boolean isNullOrEmpty(LiteralInput value) {
-        if (value == null) {
-            return true;
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("afterProcess(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo) - entering");
         }
 
-        return MotuWPSProcess.isNullOrEmpty(value.getValue());
+        for (ProcessletOutput output : out.getParameters()) {
+            if (output instanceof ComplexOutputImpl) {
+                try {
+                    ((ComplexOutputImpl) output).close();
+                } catch (XMLStreamException e) {
+                    LOG.error("afterProcess(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo)", e);
+
+                    // Do nothing
+                } catch (IOException e) {
+                    LOG.error("afterProcess(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo)", e);
+
+                    // Do nothing
+                }
+            }
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("afterProcess(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo) - exiting");
+        }
     }
 
     /**
@@ -487,9 +482,11 @@ public abstract class MotuWPSProcess implements Processlet {
                 msgParam.setValue(msg);
             }
         }
+
         ErrorType errorType = MotuWPSProcess.errorTypefromValue(code);
+
         if (throwProcessletException && (errorType != ErrorType.OK)) {
-            throw new ProcessletException(String.format("ERROR - Code: %s, Message: %s", code, msg));
+            throw new ProcessletException(WPSUtils.encodeProcessletExceptionErrorMessage(code, msg));
         }
 
     }
@@ -524,7 +521,7 @@ public abstract class MotuWPSProcess implements Processlet {
     public static void setReturnCode(ProcessletOutputs response, ErrorType code, MotuExceptionBase e, boolean throwProcessletException)
             throws ProcessletException {
 
-        setReturnCode(response, code, e.notifyException(), throwProcessletException);
+        MotuWPSProcess.setReturnCode(response, code, e.notifyException(), throwProcessletException);
 
     }
 
@@ -542,13 +539,13 @@ public abstract class MotuWPSProcess implements Processlet {
             throws ProcessletException {
 
         if (e instanceof MotuExceptionBase) {
-            setReturnCode(response, code, (MotuExceptionBase)e, throwProcessletException);            
+            setReturnCode(response, code, (MotuExceptionBase) e, throwProcessletException);
         } else {
             setReturnCode(response, code, e.getMessage(), throwProcessletException);
         }
 
     }
-    
+
     /**
      * Sets the local url.
      * 
@@ -569,7 +566,7 @@ public abstract class MotuWPSProcess implements Processlet {
         MotuWPSProcess.setLocalUrl(response, statusModeResponse.getLocalUri());
 
     }
-    
+
     /**
      * Sets the local url.
      * 
@@ -599,7 +596,7 @@ public abstract class MotuWPSProcess implements Processlet {
         }
 
     }
-    
+
     /**
      * Sets the url.
      * 
@@ -733,7 +730,7 @@ public abstract class MotuWPSProcess implements Processlet {
         LiteralInput locationDataParam = (LiteralInput) motuWPSProcessData.getLocationDataParamIn();
         LiteralInput productIdParam = (LiteralInput) motuWPSProcessData.getProductIdParamIn();
 
-        if (MotuWPSProcess.isNullOrEmpty(locationDataParam) && MotuWPSProcess.isNullOrEmpty(productIdParam)) {
+        if (WPSUtils.isNullOrEmpty(locationDataParam) && WPSUtils.isNullOrEmpty(productIdParam)) {
             if (LOG.isDebugEnabled()) {
                 LOG.info(" empty locationData and empty productId");
                 LOG.debug("END MotuWPSProcess.getProductInfo()");
@@ -748,7 +745,7 @@ public abstract class MotuWPSProcess implements Processlet {
             // throw new ProcessletException(msg);
         }
 
-        if (!MotuWPSProcess.isNullOrEmpty(locationDataParam) && !MotuWPSProcess.isNullOrEmpty(productIdParam)) {
+        if (!WPSUtils.isNullOrEmpty(locationDataParam) && !WPSUtils.isNullOrEmpty(productIdParam)) {
             if (LOG.isDebugEnabled()) {
                 LOG.info(" non empty locationData and non empty productId");
                 LOG.debug("END MotuWPSProcess.process()");
@@ -762,7 +759,7 @@ public abstract class MotuWPSProcess implements Processlet {
             // throw new ProcessletException(msg);
         }
 
-        if (MotuWPSProcess.isNullOrEmpty(serviceNameParam) && !MotuWPSProcess.isNullOrEmpty(productIdParam)) {
+        if (WPSUtils.isNullOrEmpty(serviceNameParam) && !WPSUtils.isNullOrEmpty(productIdParam)) {
             if (LOG.isDebugEnabled()) {
                 LOG.info("empty serviceName  and non empty productId");
                 LOG.debug("END MotuWPSProcess.process()");
@@ -785,9 +782,9 @@ public abstract class MotuWPSProcess implements Processlet {
         }
 
         motuWPSProcessData.setServiceName(serviceName);
-        //Extraire uniquement l'id du dataset
-        productId = Organizer.getDatasetIdFromAtollURI(productId);
-        
+        // Extraire uniquement l'id du dataset
+        productId = Organizer.getDatasetIdFromURI(productId);
+
         motuWPSProcessData.setProductId(productId);
         motuWPSProcessData.setLocationData(locationData);
 
@@ -821,30 +818,75 @@ public abstract class MotuWPSProcess implements Processlet {
     }
 
     /**
-     * Gets the request id as long.
+     * Gets the request id as object.
      * 
      * @param in the in
      * 
-     * @return the request id as long
+     * @return the request id as object
      * 
      * @throws MotuException the motu exception
      * @throws ProcessletException the processlet exception
      */
-    public long getRequestIdAsLong(ProcessletInputs in) throws MotuException, ProcessletException {
+    public Object getRequestIdAsObject(ProcessletInputs in) throws MotuException, ProcessletException {
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
 
-        long requestId = -1;
+        String value = MotuWPSProcess.getComplexInputValueFromBinaryStream(motuWPSProcessData.getRequestIdParamIn());
+
+        Object requestId = -1L;
+
         try {
-            requestId = MotuWPSProcess.getComplexInputValueAsLongFromBinaryStream(motuWPSProcessData.getRequestIdParamIn());
-        } catch (MotuExceptionBase e) {
-            if (motuWPSProcessData.getRequestIdParamIn() instanceof ReferencedComplexInput) {
-                throw new ProcessletException(e.notifyException());
-            }
+            requestId = Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            return value;
         }
 
         return requestId;
     }
-    
+
+     /**
+      * Process request id as long.
+      * 
+      * @param in the in
+      * 
+      * @return the long
+      * 
+      * @throws MotuException the motu exception
+      * @throws ProcessletException the processlet exception
+      */
+     public long processRequestIdAsLong(ProcessletInputs in) throws MotuException, ProcessletException {
+        
+        MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
+        
+        long requestId = -1;
+
+        Object object = getRequestIdAsObject(in);
+
+        if (object == null) {
+            MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuInvalidRequestIdException(requestId), true);
+            return requestId;
+        }
+
+        Class<?> classType = object.getClass();
+
+        if ((classType == long.class) || (classType == Long.class)) {
+            Number number = (Number) object;
+            requestId = number.longValue();
+            MotuWPSProcess.setRequestId(motuWPSProcessData.getProcessletOutputs(), requestId);
+            
+        } else {
+            
+            MotuWPSProcess.setRequestId(motuWPSProcessData.getProcessletOutputs(), object.toString());
+            MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuException(object.toString()), true);
+            
+            if (!(motuWPSProcessData.getRequestIdParamIn() instanceof ReferencedComplexInput)) {
+                throw new ProcessletException(object.toString());
+            }
+            
+        }
+        
+        return requestId;
+    }
+
     /**
      * Gets the literal input value.
      * 
@@ -854,14 +896,14 @@ public abstract class MotuWPSProcess implements Processlet {
      */
     public static String getLiteralInputValue(LiteralInput literalInput) {
         String value = "";
-        
+
         if (literalInput != null) {
             value = literalInput.getValue();
         }
         return value;
 
     }
-    
+
     /**
      * Gets the literal input value as boolean.
      * 
@@ -872,7 +914,7 @@ public abstract class MotuWPSProcess implements Processlet {
      */
     public static boolean getLiteralInputValueAsBoolean(LiteralInput literalInput, boolean defaultValue) {
         String value = "";
-        
+
         if (literalInput == null) {
             return defaultValue;
         }
@@ -890,27 +932,32 @@ public abstract class MotuWPSProcess implements Processlet {
      * 
      * @throws MotuException the motu exception
      */
-    public static long getComplexInputValueAsLongFromBinaryStream(ComplexInput complexInput) throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getComplexInputValueAsLongFromBinaryStream(ComplexInput) - entering");
-        }
-
-        String value = MotuWPSProcess.getComplexInputValueFromBinaryStream(complexInput);
-
-        if (MotuWPSProcess.isNullOrEmpty(value)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getComplexInputValueAsLongFromBinaryStream(ComplexInput) - exiting");
-            }
-            return Long.MAX_VALUE;
-        }
-
-        long returnlong = Long.parseLong(value);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getComplexInputValueAsLongFromBinaryStream(ComplexInput) - exiting");
-        }
-        return returnlong;
-    }
-
+    // public static long getComplexInputValueAsLongFromBinaryStream(ComplexInput complexInput) throws
+    // MotuException {
+    // if (LOG.isDebugEnabled()) {
+    // LOG.debug("getComplexInputValueAsLongFromBinaryStream(ComplexInput) - entering");
+    // }
+    //
+    // String value = MotuWPSProcess.getComplexInputValueFromBinaryStream(complexInput);
+    //
+    // if (WPSUtils.isNullOrEmpty(value)) {
+    // if (LOG.isDebugEnabled()) {
+    // LOG.debug("getComplexInputValueAsLongFromBinaryStream(ComplexInput) - exiting");
+    // }
+    // return Long.MAX_VALUE;
+    // }
+    //
+    // long returnlong = 0;
+    // try {
+    // returnlong = Long.parseLong(value);
+    // } catch (NumberFormatException e) {
+    // throw new MotuException("Error in MotuWPSProcess#getComplexInputValueAsLongFromBinaryStream", e);
+    // }
+    // if (LOG.isDebugEnabled()) {
+    // LOG.debug("getComplexInputValueAsLongFromBinaryStream(ComplexInput) - exiting");
+    // }
+    // return returnlong;
+    // }
     /**
      * Gets the complex input value from binary stream.
      * 
@@ -922,16 +969,22 @@ public abstract class MotuWPSProcess implements Processlet {
      */
     public static String getComplexInputValueFromBinaryStream(ComplexInput complexInput) throws MotuException {
         String value = "";
-        
+
         if (complexInput == null) {
             return value;
         }
-        
+
         try {
 
             byte[] buffer = new byte[1024];
 
             InputStream is = complexInput.getValueAsBinaryStream();
+            // try {
+            // is.reset();
+            // } catch (IOException e) {
+            // // do nothing
+            // }
+
             StringBuffer stringBuffer = new StringBuffer();
             int bytesRead = 0;
             while ((bytesRead = is.read(buffer)) != -1) {
@@ -1131,7 +1184,7 @@ public abstract class MotuWPSProcess implements Processlet {
      * @return true, if no mode
      */
     public static boolean noMode(String mode) {
-        return MotuWPSProcess.isNullOrEmpty(mode);
+        return WPSUtils.isNullOrEmpty(mode);
     }
 
     /**
@@ -1145,7 +1198,7 @@ public abstract class MotuWPSProcess implements Processlet {
      * @throws ProcessletException the processlet exception
      */
     protected boolean isAnonymousUser(ProcessletInputs in, String userId) throws ProcessletException {
-        if (MotuWPSProcess.isNullOrEmpty(userId)) {
+        if (WPSUtils.isNullOrEmpty(userId)) {
             return true;
         }
         boolean anonymousUser = userId.equalsIgnoreCase(MotuWPSProcess.PARAM_ANONYMOUS_USER_VALUE);
@@ -1177,7 +1230,7 @@ public abstract class MotuWPSProcess implements Processlet {
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
 
         LiteralInput batchAsStringParam = (LiteralInput) motuWPSProcessData.getIsBatchParamIn();
-        if (MotuWPSProcess.isNullOrEmpty(batchAsStringParam)) {
+        if (WPSUtils.isNullOrEmpty(batchAsStringParam)) {
             return false;
         }
         String batchAsString = batchAsStringParam.getValue().trim();
@@ -1237,7 +1290,7 @@ public abstract class MotuWPSProcess implements Processlet {
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
 
         LiteralInput priorityParam = (LiteralInput) motuWPSProcessData.getPriorityParamIn();
-        if (MotuWPSProcess.isNullOrEmpty(priorityParam)) {
+        if (WPSUtils.isNullOrEmpty(priorityParam)) {
             return priority;
         }
 
@@ -1270,7 +1323,7 @@ public abstract class MotuWPSProcess implements Processlet {
             for (ProcessletInput v : variables) {
                 if (v instanceof LiteralInput) {
                     LiteralInput var = (LiteralInput) v;
-                    listVar.add(var.getValue());
+                    listVar.add(Organizer.getVariableIdFromURI(var.getValue()));
                 }
             }
         }
@@ -1398,7 +1451,7 @@ public abstract class MotuWPSProcess implements Processlet {
      */
     public static void setStatus(ProcessletOutputs response, StatusModeType status) {
         MotuWPSProcess.setStatus(response, Integer.toString(status.value()));
-        //MotuWPSProcess.setStatus(response, status.toString());
+        // MotuWPSProcess.setStatus(response, status.toString());
 
     }
 
@@ -1433,7 +1486,7 @@ public abstract class MotuWPSProcess implements Processlet {
      * @return the error type
      */
     public static ErrorType errorTypefromValue(String v) {
-        for (ErrorType c: ErrorType.values()) {
+        for (ErrorType c : ErrorType.values()) {
             if (c.toString().equalsIgnoreCase(v)) {
                 return c;
             }
@@ -1456,6 +1509,5 @@ public abstract class MotuWPSProcess implements Processlet {
         }
         throw new IllegalArgumentException(String.valueOf(v));
     }
-    
 
 }

@@ -49,6 +49,7 @@ import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.xml.XMLErrorHandler;
 import fr.cls.atoll.motu.library.xml.XMLUtils;
 import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
+import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
 
 /**
  * <br>
@@ -57,8 +58,8 @@ import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: jarnaud $
- * @version $Revision: 1.13 $ - $Date: 2009-10-15 15:21:03 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.14 $ - $Date: 2009-10-28 15:48:01 $
  */
 public class ServiceMetadata {
 
@@ -900,7 +901,7 @@ public class ServiceMetadata {
             LOG.debug("getParemetersEdge(String, List<String>, List<String>) - entering");
         }
 
-        if (ServiceMetadata.isNullOrEmpty(parametersEdge)) {
+        if (WPSUtils.isNullOrEmpty(parametersEdge)) {
             throw new MotuException("ERROR - ISO 19139 parameters edge have not been set");
         }
 
@@ -1669,35 +1670,5 @@ public class ServiceMetadata {
         return returnDirectedGraph;
     }
 
-    /**
-     * Checks if is null or empty.
-     * 
-     * @param value the value
-     * 
-     * @return true, if is null or empty
-     */
-    static public boolean isNullOrEmpty(String value) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isNullOrEmpty(String) - entering");
-        }
-
-        if (value == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isNullOrEmpty(String) - exiting");
-            }
-            return true;
-        }
-        if (value.equals("")) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isNullOrEmpty(String) - exiting");
-            }
-            return true;
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isNullOrEmpty(String) - exiting");
-        }
-        return false;
-    }
-
+ 
 }

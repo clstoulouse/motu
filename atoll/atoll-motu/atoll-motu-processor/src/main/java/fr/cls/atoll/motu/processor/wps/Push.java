@@ -23,12 +23,13 @@ import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.utils.Zip;
 import fr.cls.atoll.motu.msg.xml.ErrorType;
 import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
+import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
 
 /**
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.4 $, $Date: 2009-10-14 14:11:06 $
+ * @version $Revision: 1.5 $, $Date: 2009-10-28 15:48:01 $
  */
 public class Push extends MotuWPSProcess {
 
@@ -55,7 +56,10 @@ public class Push extends MotuWPSProcess {
             push(in);
         } catch (MotuException e) {
             setReturnCode(out, e, true);
+        } finally {
+            super.afterProcess(in, out, info);
         }
+
     }
 
     /** {@inheritDoc} */
@@ -94,10 +98,12 @@ public class Push extends MotuWPSProcess {
         // Either the the source url (from) or the request id
         // have to be set as input parameter
         // If 'from' is null or empty : use resquest id and get the its remote url as 'from' parameter
-        if (MotuWPSProcess.isNullOrEmpty(from)) {
-            long requestId = -1;
-
-            requestId = getRequestIdAsLong(in);
+        if (WPSUtils.isNullOrEmpty(from)) {
+            long requestId = processRequestIdAsLong(in);
+            
+            if (requestId < 0) {
+                return;
+            }
 
             StatusModeResponse statusModeResponse = waitForResponse(motuWPSProcessData.getRequestIdParamIn(), requestId);
 
@@ -140,7 +146,7 @@ public class Push extends MotuWPSProcess {
         }
         
         try {
-            if ((MotuWPSProcess.isNullOrEmpty(userFrom)) && (MotuWPSProcess.isNullOrEmpty(userTo))) {
+            if ((WPSUtils.isNullOrEmpty(userFrom)) && (WPSUtils.isNullOrEmpty(userTo))) {
                 Organizer.copyFile(from, to);                
             } else {
                 Organizer.copyFile(from, to, userFrom, pwdFrom, userTo, pwdTo);                
