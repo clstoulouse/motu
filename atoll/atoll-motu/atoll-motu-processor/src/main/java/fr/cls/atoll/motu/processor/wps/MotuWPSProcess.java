@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -43,7 +44,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.27 $ - $Date: 2009-10-28 15:48:01 $
+ * @version $Revision: 1.28 $ - $Date: 2009-10-29 10:52:04 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
@@ -435,7 +436,14 @@ public abstract class MotuWPSProcess implements Processlet {
      */
     public static void setReturnCode(ProcessletOutputs response, String msg, boolean throwProcessletException) throws ProcessletException {
 
-        MotuWPSProcess.setReturnCode(response, ErrorType.SYSTEM, msg, throwProcessletException);
+        String valueCode = WPSUtils.getCodeFromProcessletExceptionErrorMessage(msg);
+        String valueMsg = WPSUtils.getMsgFromProcessletExceptionErrorMessage(msg);
+        
+        if (WPSUtils.isNullOrEmpty(valueCode)){
+            MotuWPSProcess.setReturnCode(response, ErrorType.SYSTEM, msg, throwProcessletException);
+        } else {
+            MotuWPSProcess.setReturnCode(response, valueCode, valueMsg, throwProcessletException);
+        }
 
     }
 
@@ -454,7 +462,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
         MotuWPSProcess.setReturnCode(response, code.toString(), msg, throwProcessletException);
     }
-
+ 
     /**
      * Sets the return code.
      * 
@@ -588,11 +596,7 @@ public abstract class MotuWPSProcess implements Processlet {
                 return;
             }
 
-            try {
-                urlParam.getBinaryOutputStream().write(url.getBytes());
-            } catch (IOException e) {
-                throw new MotuException("ERROR MotuWPSProcess#setLocalUrl", e);
-            }
+            MotuWPSProcess.setComplexOutputParameter(urlParam, url);
         }
 
     }
@@ -660,11 +664,8 @@ public abstract class MotuWPSProcess implements Processlet {
                 return;
             }
 
-            try {
-                urlParam.getBinaryOutputStream().write(url.getBytes());
-            } catch (IOException e) {
-                throw new MotuException("ERROR MotuWPSProcess#setUrl", e);
-            }
+            MotuWPSProcess.setComplexOutputParameter(urlParam, url);
+
         }
 
     }
@@ -875,13 +876,10 @@ public abstract class MotuWPSProcess implements Processlet {
             
         } else {
             
-            MotuWPSProcess.setRequestId(motuWPSProcessData.getProcessletOutputs(), object.toString());
+            //MotuWPSProcess.setRequestId(motuWPSProcessData.getProcessletOutputs(), object.toString());
+            MotuWPSProcess.setComplexOutputParameters(motuWPSProcessData.getProcessletOutputs(), object.toString());
             MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuException(object.toString()), true);
-            
-            if (!(motuWPSProcessData.getRequestIdParamIn() instanceof ReferencedComplexInput)) {
-                throw new ProcessletException(object.toString());
-            }
-            
+                        
         }
         
         return requestId;
@@ -1434,15 +1432,75 @@ public abstract class MotuWPSProcess implements Processlet {
                 return;
             }
 
+            MotuWPSProcess.setComplexOutputParameter(requestIdParam, requestId);
+        }
+
+    }
+    
+    /**
+     * Sets the complex output parameters.
+     * 
+     * @param response the response
+     * @param value the value
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static void setComplexOutputParameters(ProcessletOutputs response, String value) throws MotuException {
+
+        synchronized (response) {
+
+            if (response == null) {
+                return;
+            }
+            if (WPSUtils.isNullOrEmpty(value)) {
+                return;
+            }
+            
+            Collection<ProcessletOutput> outputParameters = response.getParameters();
+            
+            for (ProcessletOutput processletOutput : outputParameters) {
+                if (processletOutput == null)  {
+                    continue;
+                }
+                
+                if (processletOutput instanceof ComplexOutput) {
+                    ComplexOutput outputParameter = (ComplexOutput)processletOutput;
+                    setComplexOutputParameter(outputParameter, value);
+                }
+            }
+
+        }
+
+    }
+    
+    /**
+     * Sets the complex output parameter.
+     * 
+     * @param outputParameter the output parameter
+     * @param value the value
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static void setComplexOutputParameter(ComplexOutput outputParameter, String value) throws MotuException {
+
+        synchronized (outputParameter) {
+
+            if (outputParameter == null) {
+                return;
+            }
+            if (WPSUtils.isNullOrEmpty(value)) {
+                return;
+            }
+            
+
             try {
-                requestIdParam.getBinaryOutputStream().write(requestId.getBytes());
+                outputParameter.getBinaryOutputStream().write(value.getBytes());
             } catch (IOException e) {
-                throw new MotuException("ERROR MotuWPSProcess#setResquestId", e);
+                throw new MotuException(String.format("ERROR MotuWPSProcess#setComplexOutputParameter - Parameter Identifier: '%s'", outputParameter.getIdentifier().getCode()), e);
             }
         }
 
     }
-
     /**
      * Sets the status.
      * 

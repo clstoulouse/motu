@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fileset-config file-format-version="1.2.0" simple-config="true">
+    <fileset name="tous" enabled="true" check-config-name="CLS" local="false">
+        <file-match-pattern match-pattern="." include-pattern="true"/>
+    </fileset>
+    <filter name="FilesFromPackage" enabled="true">
+        <filter-data value="src/main/java/fr/cls/atoll/motu/processor/opengis"/>
+        <filter-data value="src/main/resources"/>
+        <filter-data value="src/test/java"/>
+        <filter-data value="src/test/resources"/>
+    </filter>
+</fileset-config>

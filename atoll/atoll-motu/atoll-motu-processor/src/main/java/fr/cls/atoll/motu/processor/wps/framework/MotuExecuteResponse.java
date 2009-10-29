@@ -49,7 +49,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.8 $ - $Date: 2009-10-28 15:48:00 $
+ * @version $Revision: 1.9 $ - $Date: 2009-10-29 10:52:04 $
  */
 public class MotuExecuteResponse {
 
@@ -558,6 +558,7 @@ public class MotuExecuteResponse {
             value = getResponseValue(dataType.getComplexData());
             
         } else if (WPSInfo.isBoundingBoxData(dataType)) {
+            // TODO
             
         }
 

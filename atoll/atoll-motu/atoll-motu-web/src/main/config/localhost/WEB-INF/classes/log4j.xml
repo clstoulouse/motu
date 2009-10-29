@@ -19,42 +19,50 @@
 		<param name="Append" value="true" />
 		<param name="DatePattern" value="'.'yyyy-MM" />
 		<layout class="fr.cls.atoll.motu.library.log4j.MotuXMLLayout"></layout>
-		
+
 		<!--
-		<layout class="fr.cls.atoll.motu.web.servlet.TestLogXML"></layout>
+			<layout class="fr.cls.atoll.motu.web.servlet.TestLogXML"></layout>
 			<layout class="org.apache.log4j.xml.XMLLayout"/>
 		-->
 	</appender>
 
 	<!--
-		<logger name="fr.cls.atoll.motu">
+		<logger name="fr.cls.atoll.motu"> <level value="DEBUG" />
+		<appender-ref ref="CONSOLE" /> </logger>
+	-->
+	<logger name="fr.cls.atoll.motu.processor">
 		<level value="DEBUG" />
 		<appender-ref ref="CONSOLE" />
-		</logger>
-		-->
-		<logger name="fr.cls.atoll.motu.processor">
+	</logger>
+	<logger name="org.deegree.services">
 		<level value="DEBUG" />
 		<appender-ref ref="CONSOLE" />
-		</logger>
-		<logger name="org.deegree.services">
-		<level value="DEBUG" />
-		<appender-ref ref="CONSOLE" />
-		</logger>
-		<logger name="org.apache.commons.vfs">
+	</logger>
+	<logger name="org.apache.commons.vfs">
 		<level value="TRACE" />
 		<appender-ref ref="CONSOLE" />
-		</logger>
-		
-<!--
-	<logger name="atoll.motu.queueserver">
-		<level value="INFO" />
-		<appender-ref ref="XMLFileInfo" />
 	</logger>
--->
+
+	<!--
+		<logger name="atoll.motu.queueserver"> <level value="INFO" />
+		<appender-ref ref="XMLFileInfo" /> </logger>
+	-->
+	<logger name="org.apache.commons.httpclient">
+		<level value="fatal" />
+	</logger>
+
+	<logger name="httpclient.wire.header">
+		<level value="fatal" />
+	</logger>
+
+	<logger name="httpclient.wire.content">
+		<level value="fatal" />
+	</logger>
+	
 	<root>
-	<!-- 
+		<!-- 
 		<level value="INFO" />
 		<appender-ref ref="CONSOLE" />
  -->
- 	</root>
+	</root>
 </log4j:configuration>

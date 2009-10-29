@@ -29,7 +29,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.5 $, $Date: 2009-10-28 15:48:01 $
+ * @version $Revision: 1.6 $, $Date: 2009-10-29 10:52:04 $
  */
 public class Push extends MotuWPSProcess {
 
@@ -126,6 +126,16 @@ public class Push extends MotuWPSProcess {
             
         }
         
+        // if 'from' parameter contains an error message (it has been set by a chield wps)
+        // then throw exception if from i not a referenced input (from a parent wps)
+        if (WPSUtils.isProcessletExceptionErrorMessageEncode(from)) {
+
+            MotuWPSProcess.setComplexOutputParameters(motuWPSProcessData.getProcessletOutputs(), from);            
+            MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), from, motuWPSProcessData.getFromParamIn() instanceof ReferencedComplexInput);
+            
+            return;
+        }
+        
         String to = MotuWPSProcess.getComplexInputValueFromBinaryStream(motuWPSProcessData.getToParamIn());
 
         String userFrom = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getUserFromParamIn());
@@ -163,7 +173,7 @@ public class Push extends MotuWPSProcess {
             MotuWPSProcess.setLocalUrl(motuWPSProcessData.getProcessletOutputs(), "");
             MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(),
                                          e,
-                                         false);
+                                         true);
             return;
         }
         
@@ -183,7 +193,7 @@ public class Push extends MotuWPSProcess {
             }
         }
         
-        MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), errorType, stringBuffer.toString(), false);
+        MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), errorType, stringBuffer.toString(), true);
         
     }
     

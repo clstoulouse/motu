@@ -97,7 +97,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.23 $ - $Date: 2009-10-28 15:48:00 $
+ * @version $Revision: 1.24 $ - $Date: 2009-10-29 10:52:03 $
  */
 public class WPSFactory {
 
@@ -2618,7 +2618,7 @@ public class WPSFactory {
      * 
      * @return the string representation.
      */
-    public static String DateTimeToString(DateTime dt) {
+    public static String dateTimeToString(DateTime dt) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("DateTimeToString(DateTime) - entering");
         }
@@ -2637,7 +2637,7 @@ public class WPSFactory {
      * 
      * @return the string representation.
      */
-    public static String DateToString(DateTime dt) {
+    public static String dateToString(DateTime dt) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("DateToString(DateTime) - entering");
         }

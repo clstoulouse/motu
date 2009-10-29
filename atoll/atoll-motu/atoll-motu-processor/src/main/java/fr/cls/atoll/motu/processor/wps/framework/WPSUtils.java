@@ -28,13 +28,34 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.6 $ - $Date: 2009-10-28 15:48:01 $
+ * @version $Revision: 1.7 $ - $Date: 2009-10-29 10:52:04 $
  */
 public class WPSUtils {
     
+    /** The Constant PROCESSLET_EXCEPTION_FORMAT_CODE. */
     public static final String PROCESSLET_EXCEPTION_FORMAT_CODE = "ERROR - Code: ";
+    
+    /** The Constant PROCESSLET_EXCEPTION_FORMAT_MSG. */
     public static final String PROCESSLET_EXCEPTION_FORMAT_MSG = ", Message: ";
 
+    /** The Constant PROCESSLET_EXCEPTION_INDEX_MAX. */
+    public final static int PROCESSLET_EXCEPTION_INDEX_MAX = 4;
+
+    /** The Constant PROCESSLET_EXCEPTION_FORMAT_CODE_INDEX. */
+    public final static int PROCESSLET_EXCEPTION_FORMAT_CODE_INDEX = 1;
+    
+    /** The Constant PROCESSLET_EXCEPTION_MSG_VALUE_INDEX. */
+    public final static int PROCESSLET_EXCEPTION_FORMAT_MSG_INDEX = 3;
+    
+    /** The Constant PROCESSLET_EXCEPTION_CODE_VALUE_INDEX. */
+    public final static int PROCESSLET_EXCEPTION_CODE_VALUE_INDEX = 2;
+    
+    /** The Constant PROCESSLET_EXCEPTION_MSG_VALUE_INDEX. */
+    public final static int PROCESSLET_EXCEPTION_MSG_VALUE_INDEX = WPSUtils.PROCESSLET_EXCEPTION_INDEX_MAX;
+    
+    /**
+     * Instantiates a new wPS utils.
+     */
     public WPSUtils() {
     }
     
@@ -147,13 +168,37 @@ public class WPSUtils {
         return in;
     }
     
+    /**
+     * Encode processlet exception error message.
+     * 
+     * @param code the code
+     * @param msg the msg
+     * 
+     * @return the string
+     */
     public static String encodeProcessletExceptionErrorMessage(ErrorType code, String msg) {
         return encodeProcessletExceptionErrorMessage(code.toString(), msg);        
     }
+    
+    /**
+     * Encode processlet exception error message.
+     * 
+     * @param code the code
+     * @param msg the msg
+     * 
+     * @return the string
+     */
     public static String encodeProcessletExceptionErrorMessage(String code, String msg) {
         return String.format(WPSUtils.PROCESSLET_EXCEPTION_FORMAT_CODE + "%s" + WPSUtils.PROCESSLET_EXCEPTION_FORMAT_MSG + "%s", code, msg);        
     }
     
+    /**
+     * Decode processlet exception error message.
+     * 
+     * @param msg the msg
+     * 
+     * @return the list< string>
+     */
     public static List<String> decodeProcessletExceptionErrorMessage(String msg) {
 
         List<String> result = new ArrayList<String>();
@@ -177,15 +222,80 @@ public class WPSUtils {
         return result;
     }
     
+    /**
+     * Gets the code from processlet exception error message.
+     * 
+     * @param msg the msg
+     * 
+     * @return the code from processlet exception error message
+     */
+    public static String getCodeFromProcessletExceptionErrorMessage(String msg) {
+                
+        return getCodeFromProcessletExceptionErrorMessage(WPSUtils.decodeProcessletExceptionErrorMessage(msg));
+        
+    }
+
+    /**
+     * Gets the code from processlet exception error message.
+     * 
+     * @param decodedMsg the decoded msg
+     * 
+     * @return the code from processlet exception error message
+     */
+    public static String getCodeFromProcessletExceptionErrorMessage(List<String> decodedMsg) {
+
+        if (decodedMsg.size() != (WPSUtils.PROCESSLET_EXCEPTION_INDEX_MAX + 1)) {
+            return "";
+        }
+        
+        return decodedMsg.get(WPSUtils.PROCESSLET_EXCEPTION_CODE_VALUE_INDEX);
+    }
+    
+    /**
+     * Gets the msg from processlet exception error message.
+     * 
+     * @param msg the msg
+     * 
+     * @return the msg from processlet exception error message
+     */
+    public static String getMsgFromProcessletExceptionErrorMessage(String msg) {
+        
+        return getMsgFromProcessletExceptionErrorMessage(WPSUtils.decodeProcessletExceptionErrorMessage(msg));
+        
+    }
+
+    /**
+     * Gets the msg from processlet exception error message.
+     * 
+     * @param decodedMsg the decoded msg
+     * 
+     * @return the msg from processlet exception error message
+     */
+    public static String getMsgFromProcessletExceptionErrorMessage(List<String> decodedMsg) {
+
+        if (decodedMsg.size() != (WPSUtils.PROCESSLET_EXCEPTION_INDEX_MAX + 1)) {
+            return "";
+        }
+        
+        return decodedMsg.get(WPSUtils.PROCESSLET_EXCEPTION_MSG_VALUE_INDEX);
+    }
+    
+    /**
+     * Checks if is processlet exception error message encode.
+     * 
+     * @param msg the msg
+     * 
+     * @return true, if is processlet exception error message encode
+     */
     public static boolean isProcessletExceptionErrorMessageEncode(String msg) {
 
         List<String> result = decodeProcessletExceptionErrorMessage(msg);
         
-        if (result.size() != 5) {
+        if (result.size() != (WPSUtils.PROCESSLET_EXCEPTION_INDEX_MAX + 1)) {
             return false;
         }
         
-        return (result.get(1).equals(WPSUtils.PROCESSLET_EXCEPTION_FORMAT_CODE) && result.get(3).equals(WPSUtils.PROCESSLET_EXCEPTION_FORMAT_MSG)); 
+        return (result.get(WPSUtils.PROCESSLET_EXCEPTION_FORMAT_CODE_INDEX).equals(WPSUtils.PROCESSLET_EXCEPTION_FORMAT_CODE) && result.get(WPSUtils.PROCESSLET_EXCEPTION_FORMAT_MSG_INDEX).equals(WPSUtils.PROCESSLET_EXCEPTION_FORMAT_MSG)); 
         
     }
     

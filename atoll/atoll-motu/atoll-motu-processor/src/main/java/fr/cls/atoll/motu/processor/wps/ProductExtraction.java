@@ -28,7 +28,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.4 $, $Date: 2009-10-28 15:48:01 $
+ * @version $Revision: 1.5 $, $Date: 2009-10-29 10:52:04 $
  */
 public class ProductExtraction extends MotuWPSProcess {
 
@@ -121,7 +121,8 @@ public class ProductExtraction extends MotuWPSProcess {
             
             if (!isRequestIdSet) {
                 try {
-                    MotuWPSProcess.setRequestId(out, msg);
+                    //MotuWPSProcess.setRequestId(out, msg);
+                    MotuWPSProcess.setComplexOutputParameters(out, msg);
                 } catch (MotuException e1) {
                     // Do nothing
                 }
@@ -221,7 +222,7 @@ public class ProductExtraction extends MotuWPSProcess {
         // motuWPSProcessData.setRequestId(requestId);
 
         try {
-            MotuWPSProcess.setRequestId(motuWPSProcessData.getProcessletOutputs(), Long.toString(requestId));
+            MotuWPSProcess.setRequestId(motuWPSProcessData.getProcessletOutputs(), requestId);
             isRequestIdSet = true;
 
         } catch (MotuExceptionBase e) {

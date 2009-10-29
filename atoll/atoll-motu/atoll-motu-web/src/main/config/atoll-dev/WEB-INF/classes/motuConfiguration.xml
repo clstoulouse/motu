@@ -93,7 +93,7 @@
 	minInclusive value="0"
 	
 -->
-<motuConfig defaultService="aviso" proxyLogin="" proxyPwd=""
+<motuConfig defaultService="&atoll;motu-opendap-aviso" proxyLogin="" proxyPwd=""
 	useAuthentication="false" dataBlockSize="512000" maxSizePerFile="512"
 	extractionPath="/home/atoll/distrib/tomcat-motu-dev/webapps/ROOT/motu-extract"
 	downloadHttpUrl="http://atoll-dev.cls.fr:30080/motu-extract"
@@ -103,18 +103,40 @@
 	extractionFilePatterns=".*\.nc$|.*\\.zip$|.*\.tar$|.*\.gz$"
 	extractionFileCacheSize="1024" runGCInterval="10">
 
-	<!--=====================   CATSAT FTP ===================-->
-	<configService defaultLanguage="UK" description="Ftp Catsat"
-		group="CatsatFTP" httpBaseRef="http://www.cls.fr"
-		name="&atoll;ftp-catsat:ftp" veloTemplatePrefix="generic">
-		<catalog name="catalogCatsatFTP.xml" type="FTP"
-			urlSite="sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll/atoll-distrib/HOA_Catsat/Interface_ATOLL" />
+	<!--===========================================================-->
+	<!--                    motu-opendap-mercator Service          -->
+	<!--===========================================================-->
+	<configService defaultLanguage="FR" description="Ocean data"
+		group="MercatorOpendap" httpBaseRef="http://www.mercator-ocean.fr"
+		name="&atoll;motu-opendap-mercator" veloTemplatePrefix="mercator">
+		<catalog name="catalog.xml" type="tds"
+			urlSite="http://opendap.mercator-ocean.fr/thredds" />
+	</configService>
+	<!--===========================================================-->
+	<!--                    motu-opendap-aviso Service          -->
+	<!--===========================================================-->	
+	<configService defaultLanguage="UK"
+		description="Aviso Near Real Time and Delayed Time data" group="AvisoOpendap"
+		httpBaseRef="http://www.aviso.oceanobs.com" name="&atoll;motu-opendap-aviso"
+		veloTemplatePrefix="aviso">
+		<catalog name="catalog.xml" type="tds"
+			urlSite="http://opendap.aviso.oceanobs.com/thredds" />
+	</configService>
+	<!--===========================================================-->
+	<!--                   motu-ftp-aviso Service                 -->
+	<!--===========================================================-->
+	<configService defaultLanguage="UK" description="Aviso Near Real Time and Delayed Time data FTP"
+		group="AvisoFTP" httpBaseRef="http://www.aviso.oceanobs.com"
+		name="&atoll;motu-ftp-aviso" veloTemplatePrefix="aviso">
+		<catalog name="catalogAvisoFTP.xml" type="FTP"
+			urlSite="sftp://atoll:atoll@aviso-data1.cls.fr/home/atoll/atoll-distrib/HOA_Aviso/Interface_ATOLL" />
 	</configService>
 
 	<!--===========================================-->
 	<!--                     Test Jason 2 ATP TDS        		-->
 	<!--===========================================-->
 	<!--=====================   Aviso TDS  NRT et DT  =================-->
+<!-- 
 	<configService defaultLanguage="UK"
 		description="Test Jason 2 ATP Data" group="Jason2"
 		httpBaseRef="http://www.aviso.oceanobs.com" name="Jason2"
@@ -122,10 +144,12 @@
 		<catalog name="catalog.xml" type="tds"
 			urlSite="http://atoll-dev.cls.fr:60080/thredds" />
 	</configService>
+-->	
 	<!--===========================================-->
 	<!--                     Aviso TDS        		-->
 	<!--===========================================-->
 	<!--=====================   Aviso TDS  NRT et DT  =================-->
+<!-- 
 	<configService defaultLanguage="UK"
 		description="Aviso Near Real Time and Delayed Time data" group="Aviso"
 		httpBaseRef="http://www.aviso.oceanobs.com" name="Aviso"
@@ -133,6 +157,7 @@
 		<catalog name="catalog.xml" type="tds"
 			urlSite="http://opendap.aviso.oceanobs.com/thredds" />
 	</configService>
+-->
 	<!--=====================   Aviso TDS  NRT  =================-->
 	<!--
 		<configService defaultLanguage="UK"
@@ -175,12 +200,14 @@
 	<!--===========================================-->
 	<!--                     Mercator TDS         -->
 	<!--===========================================-->
+<!-- 
 	<configService defaultLanguage="FR" description="Ocean data"
 		group="Mercator" httpBaseRef="http://www.mercator-ocean.fr"
 		name="Mercator" veloTemplatePrefix="mercator">
 		<catalog name="catalog.xml" type="tds"
 			urlSite="http://opendap.mercator-ocean.fr/thredds" />
 	</configService>
+--> 
 	<!--===========================================-->
 	<!--                     Mercator TDS PREVIEW        -->
 	<!--===========================================-->
@@ -193,33 +220,37 @@
 	<!--===========================================-->
 	<!--                     CatSat  TDS            -->
 	<!--===========================================-->
+<!-- 
 	<configService defaultLanguage="FR" description="Catsat"
 		group="Catsat" httpBaseRef="http://www.cls.fr" name="Catsat"
 		veloTemplatePrefix="cls">
 		<catalog name="catalog.xml" type="TDS"
 			urlSite="http://catsatopendap.cls.fr:8080/thredds" />
 	</configService>
-
+-->
 	<!--===========================================-->
 	<!--                     Surcouf  TDS            -->
 	<!--===========================================-->
+<!-- 
 	<configService defaultLanguage="FR" description="Surcouf"
 		group="Surcouf" httpBaseRef="http://www.cls.fr" name="Surcouf"
 		veloTemplatePrefix="cls">
 		<catalog name="catalog.xml" type="TDS"
 			urlSite="http://moustique.cls.fr:8080/thredds" />
 	</configService>
-
+ -->	
+ 
 	<!--===========================================-->
 	<!--                     Aviso RT  TDS         -->
 	<!--===========================================-->
+<!-- 
 	<configService defaultLanguage="UK" description="Aviso RT"
 		group="AvisoRT" httpBaseRef="http://www.cls.fr" name="AvisoRT"
 		veloTemplatePrefix="aviso">
 		<catalog name="catalog.xml" type="TDS"
 			urlSite="http://aviso-opendap.cls.fr:8280/thredds/" />
 	</configService>
-
+ -->	
 	<!-- ==========================  -->
 	<!-- Queue server configuration  -->
 	<!-- ==========================  -->
