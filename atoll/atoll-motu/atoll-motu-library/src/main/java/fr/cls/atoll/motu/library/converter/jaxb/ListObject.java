@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * URI adapter that converts a xs:anyURI into a {@link URI} and vice-versa.
  * 
  * @author ccamel
- * @version $Revision: 1.1 $ - $Date: 2009-08-13 15:38:17 $ - $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-10-29 10:51:20 $ - $Author: dearith $
  */
 public class ListObject extends XmlAdapter<String, List<Object>> {
     /**
@@ -28,7 +28,7 @@ public class ListObject extends XmlAdapter<String, List<Object>> {
     /**
      * Convert a given uri into a string representation.
      * 
-     * @param uri the uri
+     * @param value the value
      * 
      * @return the string representation.
      */

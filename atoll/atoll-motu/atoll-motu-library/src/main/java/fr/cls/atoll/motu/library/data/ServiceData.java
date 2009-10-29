@@ -47,7 +47,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * This class implements a service (AVISO, MERCATOR, ...).
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.8 $ - $Date: 2009-06-15 07:38:42 $
+ * @version $Revision: 1.9 $ - $Date: 2009-10-29 10:51:20 $
  */
 public class ServiceData {
 
@@ -1263,8 +1263,6 @@ public class ServiceData {
      * created
      * @param listDepthCoverage list contains low depth, high depth.
      * 
-     * @throws MotuInvalidLongitudeException @throws MotuInvalidLatitudeException * @throws MotuException the
-     * motu exception
      * @throws MotuInvalidDepthException the motu invalid depth exception
      * @throws MotuException the motu exception
      */
@@ -1842,7 +1840,6 @@ public class ServiceData {
      * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuException the motu exception
      * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException @throws MotuInvalidDateRangeException the motu invalid date
      * range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
      */

@@ -65,7 +65,7 @@ import fr.cls.atoll.motu.library.intfce.Organizer;
  * these class is not an extend of FileWriter, and some method have copied from FileWriter.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-10-28 15:42:34 $
+ * @version $Revision: 1.5 $ - $Date: 2009-10-29 10:51:20 $
  */
 
 // CSOFF: MultipleStringLiterals : avoid constants and trace duplicate string
@@ -953,8 +953,9 @@ public class NetCdfWriter {
     /**
      * Adds a variable.
      * 
-     * @param listVars list of variables
-     * @throws MotuException
+     * @param var the var
+     * 
+     * @throws MotuException the motu exception
      */
     public void putVariable(Variable var) throws MotuException {
 

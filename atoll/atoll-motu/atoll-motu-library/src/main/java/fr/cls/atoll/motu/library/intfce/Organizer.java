@@ -96,7 +96,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.28 $ - $Date: 2009-10-28 15:41:23 $
+ * @version $Revision: 1.29 $ - $Date: 2009-10-29 10:51:20 $
  */
 public class Organizer {
 
@@ -171,6 +171,7 @@ public class Organizer {
     /** The Constant SHARP_DATASET_REGEXP. */
     public static final String SHARP_DATASET_REGEXP = ".*#dataset-";
 
+    /** The Constant SHARP_REGEXP. */
     public static final String SHARP_REGEXP = ".*#";
 
     /** Number of milliseconds per hour, except when a leap second is inserted. */

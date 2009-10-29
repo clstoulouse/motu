@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
  * <br><br>Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-07-08 13:38:37 $
+ * @version $Revision: 1.4 $ - $Date: 2009-10-29 10:51:20 $
  */
 public class DataFile {
 
@@ -116,6 +116,11 @@ public class DataFile {
         return path;
     }
 
+    /**
+     * Sets the path.
+     * 
+     * @param path the new path
+     */
     public void setPath(String path) {
         this.path = path;
     }

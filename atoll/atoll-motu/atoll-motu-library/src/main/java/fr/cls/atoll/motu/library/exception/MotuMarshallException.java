@@ -9,8 +9,8 @@ import javax.xml.bind.JAXBException;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-10-29 10:51:20 $
  */
 public class MotuMarshallException extends MotuExceptionBase {
 
@@ -58,7 +58,6 @@ public class MotuMarshallException extends MotuExceptionBase {
     /**
      * The Constructor.
      * 
-     * @param message the message
      * @param cause the cause
      */
     public MotuMarshallException(JAXBException cause) {

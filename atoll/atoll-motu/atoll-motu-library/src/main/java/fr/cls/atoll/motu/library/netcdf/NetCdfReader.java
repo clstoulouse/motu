@@ -62,7 +62,7 @@ import fr.cls.commons.util.GMTDateFormat;
  * Class to read netCDF files.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-10-23 14:21:42 $
+ * @version $Revision: 1.3 $ - $Date: 2009-10-29 10:51:20 $
  */
 
 public class NetCdfReader {
@@ -438,7 +438,7 @@ public class NetCdfReader {
      * Gets the variable.
      * 
      * @param fullName the full name
-     * @param netcdfDataset the netcdf dataset
+     * @param ds the netcdf dataset
      * 
      * @return the variable
      * 
@@ -725,6 +725,7 @@ public class NetCdfReader {
      * Opens the reader.
      * 
      * @param location NetCDF file name or Opendap location data (URL) to read.
+     * @param enhanceVar the enhance var
      * 
      * @throws MotuException the motu exception
      */
@@ -834,6 +835,14 @@ public class NetCdfReader {
         return ds;
     }
 
+    /**
+     * To nc ml.
+     * 
+     * @param ds the ds
+     * @param file the file
+     * 
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     static public void toNcML(NetcdfDataset ds, String file) throws IOException {
         OutputStream out = new FileOutputStream(file);
 
@@ -1902,7 +1911,6 @@ public class NetCdfReader {
      * @return the coordinate variable
      * @throws MotuException
      * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      */
     public static CoordinateAxis getCoordinateVariable(Dimension dim, NetcdfDataset ds) throws MotuException {
 
@@ -2064,7 +2072,7 @@ public class NetCdfReader {
      * Gets the coordinate variables.
      * 
      * @param var the var
-     * @param netCdfDataset the net cdf dataset
+     * @param ds the net cdf dataset
      * 
      * @return the coordinate variables
      * 

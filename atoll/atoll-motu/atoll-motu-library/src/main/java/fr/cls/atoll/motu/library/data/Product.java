@@ -50,7 +50,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
  * This class represents a product.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.8 $ - $Date: 2009-10-23 14:21:42 $
+ * @version $Revision: 1.9 $ - $Date: 2009-10-29 10:51:20 $
  */
 public class Product {
 
@@ -475,11 +475,6 @@ public class Product {
      * @throws MotuException the motu exception
      */
 
-    /**
-     * Reads product global metadata from an (NetCDF file).
-     * 
-     * @throws MotuException the motu exception
-     */
     public void loadInventoryGlobalMetaData(Inventory inventoryOLA) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadInventoryGlobalMetaData() - entering");

@@ -21,8 +21,8 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2009-10-29 10:51:20 $
  */
 public class XStreamDateConverter implements Converter {
 
@@ -78,6 +78,7 @@ public class XStreamDateConverter implements Converter {
      * 
      * @return true, if can convert
      */
+    @SuppressWarnings("unchecked")
     public boolean canConvert(Class clazz) {
         boolean canConvert = Calendar.class.isAssignableFrom(clazz);
         canConvert |= Date.class.isAssignableFrom(clazz);
