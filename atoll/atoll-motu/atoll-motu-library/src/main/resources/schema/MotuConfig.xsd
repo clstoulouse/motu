@@ -160,7 +160,7 @@
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="extractionFilePatterns" type="xs:string"
-				default=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|.*\.extract$">
+				default=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|.*\.extract$|wps_output_.*$|wps_response_.*$">
 				<xs:annotation>
 					<xs:documentation>
 						Patterns (as regular expression) that match

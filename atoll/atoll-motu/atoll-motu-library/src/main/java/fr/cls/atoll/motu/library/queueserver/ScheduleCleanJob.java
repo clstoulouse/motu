@@ -30,7 +30,7 @@ import org.quartz.StatefulJob;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-10-07 11:19:43 $
+ * @version $Revision: 1.4 $ - $Date: 2009-10-30 15:01:47 $
  */
 public class ScheduleCleanJob implements StatefulJob {
 
@@ -236,6 +236,80 @@ public class ScheduleCleanJob implements StatefulJob {
             LOG.debug("cleanExtractedFile(JobExecutionContext) - exiting");
         }
     }
+    
+    public void cleanTempFile(JobExecutionContext context) throws JobExecutionException {
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("cleanTempFile(JobExecutionContext) - entering");
+        }
+
+//        // add temporary extract file extension
+//        stringBuffer.append("|.*\\");
+//        stringBuffer.append(NetCdfWriter.NETCDF_FILE_EXTENSION_EXTRACT);
+
+        String filePatterns = getFilePatterns(context);
+
+
+        List<Exception> listError = new ArrayList<Exception>();
+
+        Calendar cal = Calendar.getInstance();
+        try {
+            int interval = Organizer.getMotuConfigInstance().getCleanExtractionFileInterval();
+            if (interval > 0) {
+                interval = -interval;
+            }
+            cal.add(Calendar.MINUTE, interval);
+        } catch (MotuException e) {
+            LOG.error("cleanTempFile(JobExecutionContext)", e);
+
+            listError.add(e);
+            context.put(ScheduleCleanJob.ERRORS_KEY_MAP, listError);
+            throw new JobExecutionException(
+                    String
+                            .format("ERROR in SchedulecleanJob.cleanTempFile : %d error(s) - Gets and inspects 'List<Exception>' object (context data map key is '%s'",
+                                    listError.size(),
+                                    ScheduleCleanJob.ERRORS_KEY_MAP));
+        }
+
+        Long timeRef = cal.getTimeInMillis();
+
+        // This filter only returns directories
+        FileFilter fileFilter = new ExtractedFileToDeleteFilter(filePatterns, timeRef);
+        File directoryToScan = new File( System.getProperty( "java.io.tmpdir" ) );
+        File[] files = null;
+        files = directoryToScan.listFiles(fileFilter);
+
+        for (File fileToDelete : files) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(String.format("cleanTempFile(JobExecutionContext) - Deleting file '%s' ", fileToDelete.getPath()));
+            }
+
+            boolean isDeleted = fileToDelete.delete();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(String.format("cleanTempFile(JobExecutionContext) - file '%s' deleted: '%b'", fileToDelete.getPath(), isDeleted));
+            }
+        }
+
+        try {
+
+            deleteOlderFilesBeyondCacheSize(context);
+
+        } catch (MotuException e) {
+            LOG.error("cleanTempFile(JobExecutionContext)", e);
+
+            listError.add(e);
+            context.put(ScheduleCleanJob.ERRORS_KEY_MAP, listError);
+            throw new JobExecutionException(
+                    String
+                            .format("ERROR in SchedulecleanJob.cleanTempFile : %d error(s) - Gets and inspects 'List<Exception>' object (context data map key is '%s'",
+                                    listError.size(),
+                                    ScheduleCleanJob.ERRORS_KEY_MAP));
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("cleanTempFile(JobExecutionContext) - exiting");
+        }
+    }
 
     /**
      * Clean status.
@@ -306,6 +380,7 @@ public class ScheduleCleanJob implements StatefulJob {
 
         cleanStatus(context);
         cleanExtractedFile(context);
+        cleanTempFile(context);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("ScheduleCleanJob.execute(JobExecutionContext) - exiting");
