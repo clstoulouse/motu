@@ -100,7 +100,7 @@
 	httpDocumentRoot="http://atoll-dev.cls.fr"
 	cleanExtractionFileInterval="60" cleanRequestInterval="60"
 	runCleanInterval="1"
-	extractionFilePatterns=".*\.nc$|.*\\.zip$|.*\.tar$|.*\.gz$"
+	extractionFilePatterns=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|.*\.extract$|wps_output_.*$|wps_response_.*$"
 	extractionFileCacheSize="1024" runGCInterval="10">
 
 	<!--===========================================================-->

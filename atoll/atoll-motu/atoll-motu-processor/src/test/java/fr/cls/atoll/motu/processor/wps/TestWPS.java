@@ -28,9 +28,20 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
+import org.apache.xerces.dom.DocumentImpl;
 import org.deegree.commons.utils.HttpUtils;
 import org.geotoolkit.parameter.DefaultParameterDescriptor;
 import org.geotoolkit.parameter.Parameter;
@@ -43,6 +54,13 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import ucar.ma2.Array;
 import ucar.nc2.Attribute;
@@ -79,7 +97,7 @@ import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse.WPSStatusRe
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.38 $ - $Date: 2009-10-28 15:48:01 $
+ * @version $Revision: 1.39 $ - $Date: 2009-10-30 15:02:16 $
  */
 class StringList extends ArrayList<String> {
 }
@@ -126,7 +144,7 @@ public class TestWPS {
 
         // testCreateObject();
 
-        // testComplexOutputWPSResponse();
+        testComplexOutputWPSResponse();
 
         // AnnotatedElement annotatedElement = StatusType.class;
         // System.out.println(annotatedElement.getAnnotations().toString());
@@ -1276,17 +1294,35 @@ public class TestWPS {
             System.out.println("Process done (succeeded or failed) ? " + motuExecuteResponse.isProcessDone());
             System.out.println("Process in progress (neither succeeded nor failed) ? " + motuExecuteResponse.isProcessInProgress());
 
+            while (motuExecuteResponse.isProcessInProgress()) {
+
+                Thread.sleep(1000);
+                // motuExecuteResponse = WPSFactory.getMotuExecuteResponse(motuExecuteResponse);
+                // or
+                motuExecuteResponse = WPSFactory.getMotuExecuteResponse(motuExecuteResponse.getStatusLocation());
+
+            }
+
             if (motuExecuteResponse.isStatusFailed()) {
-                // TODO
+                System.out.println("WPS response: " + motuExecuteResponse.getProcessStatusMessage());
             }
             if (motuExecuteResponse.isStatusSucceeded()) {
-                // System.out.println("Motu status response: " + motuExecuteResponse.getMotuResponseStatus());
-                // System.out.println("Motu code response: " + motuExecuteResponse.getMotuResponseCode());
-                // System.out.println("Motu message response: " +
-                // motuExecuteResponse.getMotuResponseMessage());
-                // System.out.println("Motu url response: " + motuExecuteResponse.getMotuResponseUrl());
-                // System.out.println("Motu local url response: " +
-                // motuExecuteResponse.getMotuResponseLocalUrl());
+                Object o = motuExecuteResponse.getResponseValue("XMLOutput");
+                if (o instanceof List) {
+                    List<Object> list = (List<Object>) o;
+                    for (Object oo : list) {
+                        System.out.println("");
+                        System.out.print(oo.getClass().getName());
+                        System.out.print("-->");
+                        System.out.println(oo.toString());
+                        if (oo instanceof Element) {
+                            TestWPS.readXML((Element)oo);
+                        }                        
+                    }
+                } else {
+                    System.out.println(o.toString());
+                }
+
             }
 
             // /testBodyPostDontWaitResponse(wpsXml, serverURL);
@@ -1295,6 +1331,9 @@ public class TestWPS {
             // TODO Auto-generated catch block
             e.printStackTrace();
             System.out.println(e.notifyException());
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
     }
@@ -1307,5 +1346,42 @@ public class TestWPS {
 
         System.out.println(result);
         System.out.println(WPSUtils.isProcessletExceptionErrorMessageEncode(msg));
+    }
+    
+    public static void readXML(Element object) {
+//        XMLReader parser = XMLReaderFactory.createXMLReader();
+//        InputSource inputSource = new InputSource()
+//        parser.parse(input);
+
+        try {
+                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                        DocumentBuilder db = dbf.newDocumentBuilder();
+                    Source src = new DOMSource(object);
+                    TransformerFactory tFactory = TransformerFactory.newInstance();
+                    Transformer tformer = tFactory.newTransformer();
+                    
+                    Result result = new StreamResult(System.out);
+                    tformer.transform(src, result);
+//                    doc.getDocumentElement().normalize();
+//                    System.out.println("Root element " + doc.getDocumentElement().getNodeName());
+//                    NodeList nodeLst = doc.getElementsByTagName("employee");
+//                    System.out.println("Information of all employees");
+
+                    Element copyElement = (Element) object.cloneNode(true);
+                    Document doc = db.newDocument();
+                    Node node = doc.importNode(copyElement, true);
+                    NodeList nodeList =  doc.getElementsByTagName("Arc");
+                    System.out.println(doc.getElementsByTagName("Curve"));
+                    //Node node = object;
+
+        } catch (ParserConfigurationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (TransformerException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+               
+  
     }
 }

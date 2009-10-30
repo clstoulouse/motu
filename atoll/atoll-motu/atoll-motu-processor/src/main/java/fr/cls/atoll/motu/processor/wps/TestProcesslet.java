@@ -67,7 +67,7 @@ import org.deegree.services.wps.output.LiteralOutput;
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: dearith $
  * 
- * @version $Revision: 1.2 $, $Date: 2009-04-02 15:03:44 $
+ * @version $Revision: 1.3 $, $Date: 2009-10-30 15:02:16 $
  */
 public class TestProcesslet implements Processlet {
 
@@ -117,6 +117,8 @@ public class TestProcesslet implements Processlet {
         LOG.debug( "Setting XML output (requested=" + xmlOutput.isRequested() + ")" );
         try {
             XMLStreamWriter writer = xmlOutput.getXMLStreamWriter();
+            //XMLAdapter.writeElement( writer, xmlInput.getValueAsXMLStream() );
+            //xmlInput.getValueAsElement();
             XMLAdapter.writeElement( writer, xmlInput.getValueAsXMLStream() );
         } catch ( XMLStreamException e ) {
             // TODO Auto-generated catch block

@@ -121,10 +121,12 @@
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
-					<!-- <warName>${project.artifactId}</warName>  -->
+<!-- 
+					<warName>${project.build.finalName}</warName>
+ -->					
 					<webResources>
 						<resource>
-							<directory>src/main/config/${config.dir}</directory>
+							<directory>${basedir}/src/main/config/${config.dir}</directory>
 						</resource>
 					</webResources>
 				</configuration>
@@ -201,7 +203,7 @@
 	<profiles>
 		<profile>
 			<id>localhost</id>
-			<activation>
+ 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>

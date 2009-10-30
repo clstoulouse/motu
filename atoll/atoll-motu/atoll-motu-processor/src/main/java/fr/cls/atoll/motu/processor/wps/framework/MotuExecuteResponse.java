@@ -28,6 +28,7 @@ import fr.cls.atoll.motu.msg.xml.ErrorType;
 import fr.cls.atoll.motu.msg.xml.StatusModeType;
 import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
 import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
+import fr.cls.atoll.motu.processor.opengis.ows110.BoundingBoxType;
 import fr.cls.atoll.motu.processor.opengis.ows110.CodeType;
 import fr.cls.atoll.motu.processor.opengis.ows110.ExceptionReport;
 import fr.cls.atoll.motu.processor.opengis.ows110.ExceptionType;
@@ -49,7 +50,7 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.9 $ - $Date: 2009-10-29 10:52:04 $
+ * @version $Revision: 1.10 $ - $Date: 2009-10-30 15:02:16 $
  */
 public class MotuExecuteResponse {
 
@@ -558,8 +559,7 @@ public class MotuExecuteResponse {
             value = getResponseValue(dataType.getComplexData());
             
         } else if (WPSInfo.isBoundingBoxData(dataType)) {
-            // TODO
-            
+            value = dataType.getBoundingBoxData();           
         }
 
         return value;
@@ -627,61 +627,20 @@ public class MotuExecuteResponse {
         if (complexDataType == null) {
             return null;
         }
-        String encoding = complexDataType.getEncoding();
-        Object valueType = complexDataType.getContent().get(0);
+//        String encoding = complexDataType.getEncoding();
+        Object valueType = null;
+        if (complexDataType.getContent().size() == 1) {
+            valueType = complexDataType.getContent().get(0);
+        } else if (complexDataType.getContent().size() > 1) {
+            valueType = complexDataType.getContent();
+        } 
 
-        Charset charset = Charset.forName(encoding);
-        CharsetDecoder decoder = charset.newDecoder();
-        CharsetEncoder encoder = charset.newEncoder();
+//        Charset charset = Charset.forName(encoding);
+//        CharsetDecoder decoder = charset.newDecoder();
+//        CharsetEncoder encoder = charset.newEncoder();
 
-        Object returnedObject = valueType;
-
-        System.out.print(returnedObject.getClass().getName());
-        System.out.print(" --> ");
-        System.out.println(returnedObject);
-
-//        
-//        charToWrite = charset.decode(valueType).toString();
-//        ByteBuffer bbuf = encoder.encode(CharBuffer.wrap("a string"));
-//
-//
-//        if (WPSUtils.isNullOrEmpty(valueType)) {
-//            throw new MotuException("MotuExecuteResponse#getResponseValue - Data type of a literal output data is null.");
-//        }
-//
-//        Class<?> clazz = OperationMetadata.XML_JAVA_CLASS_MAPPING.get(valueType);
-//        if (clazz == null) {
-//            throw new MotuException(String.format("MotuExecuteResponse#getResponseValue - Data type '%s' is not mapped to a java class.", valueType));
-//        }
-//
-//        String nativeValue = literalDataType.getValue();
-//
-//        
-//        Class<?> nativeClazz = nativeValue.getClass();
-//        
-//        try {
-//
-//            if (DateTime.class.equals(clazz)) {
-//                returnedObject = WPSFactory.stringToDateTime(nativeValue);
-//
-//            } else if (Period.class.equals(clazz)) {
-//                returnedObject = WPSFactory.stringToPeriod(nativeValue);
-//            } else if (clazz.isEnum()) {
-//                returnedObject = Enum.valueOf((Class)clazz, nativeValue);
-//            } else {
-//                Constructor<?> ctor = clazz.getConstructor(nativeClazz);
-//                returnedObject = ctor.newInstance(nativeValue);
-//            }
-//
-////            System.out.print(returnedObject.getClass().getName());
-////            System.out.print(" --> ");
-////            System.out.println(returnedObject);
-//
-//        } catch (Exception e) {
-//            throw new MotuException("ERROR in MotuExecuteResponse#getResponseValue.", e);
-//
-//        }
-//        
-        return returnedObject;
+        return valueType;
     }    
-}
+    
+
+ }
