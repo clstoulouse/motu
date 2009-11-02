@@ -149,51 +149,31 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.4</version>
-				<executions>
-					<execution>
-						<id>copy-resources</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${atoll.motu.web.config.path}/${motu.web.config.dir}/WEB-INF</outputDirectory>
-							<resources>
-								<resource>
-									<directory>src/main/resources</directory>
-									<includes>
-										<include>conf/**</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					<!-- 
-					<execution>
-						<id>copy-resources-test</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${atoll.motu.web.config.path}/${motu.web.config.dir}</outputDirectory>
-							<resources>
-								<resource>
-									<directory>src/test/resources</directory>
-									<includes>
-										<include>client/**</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					 -->
-				</executions>
-			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>org.apache.maven.plugins</groupId>-->
+<!--				<artifactId>maven-resources-plugin</artifactId>-->
+<!--				<version>2.4</version>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<id>copy-resources</id>-->
+<!--						<phase>validate</phase>-->
+<!--						<goals>-->
+<!--							<goal>copy-resources</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<outputDirectory>${atoll.motu.web.config.path}/${motu.web.config.dir}/WEB-INF</outputDirectory>-->
+<!--							<resources>-->
+<!--								<resource>-->
+<!--									<directory>src/main/resources</directory>-->
+<!--									<includes>-->
+<!--										<include>conf/**</include>-->
+<!--									</includes>-->
+<!--								</resource>-->
+<!--							</resources>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
 
 						<!--
 			<plugin>
