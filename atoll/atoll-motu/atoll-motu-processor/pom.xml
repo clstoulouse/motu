@@ -195,14 +195,14 @@
 				</executions>
 			</plugin>
 
-						<!--
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<version>1.3</version>
 				<configuration>
 					<tasks>
-						<!-
+						<!--
 
 							<property name="compile_classpath"
 							refid="maven.compile.classpath" /> <property
@@ -213,17 +213,17 @@
 							<echo message="runtime classpath: ${runtime_classpath}" /> <echo
 							message="test classpath: ${test_classpath}" /> <echo
 							message="plugin classpath: ${plugin_classpath}" />
-						->
-						<!-
+						-->
+						<!--
 							<taskdef name="fmpp" classname="fmpp.tools.AntTask" /> <fmpp
 							configuration="src/main/resources/fmpp/configServiceTemplate.fmpp"
 							excludes="**/*"> </fmpp>
-						->
-						<!-
+						-->
+						<!--
 
 							<property name="base.dir"
 							value="J:/dev/atoll-v2/atoll-motu/atoll-motu-processor" />
-						->
+						-->
 						<property name="base.dir" value="${basedir}" />
 						<echo message="base.dir: ${base.dir}" />
 
@@ -271,7 +271,7 @@
 							outputXml="${outputXmlFtp}" configuration="${fmppFtp.config}"
 							excludes="**/*" expand="true" validate="false" fmpp="true"
 							validateOutput="src/main/resources/fmpp/out" />
-						<!-
+						<!--
 							<taskdef name="freemarker"
 							classname="freemarker.ext.ant.FreemarkerXmlTask"> <classpath>
 							<pathelement location="freemarker.jar" /> </classpath> </taskdef>
@@ -280,21 +280,21 @@
 							includesFile="c:/tempVFS/ServiceMetadataExpanded2s.xml"> <data>
 							validate: true servicesXml: xml(c:/tempVFS/data/services.xml)
 							</data> </fmpp>
-						->
-						<!-
+						-->
+						<!--
 							<fmpp
 							configuration="src/main/resources/fmpp/configServiceOpendap.fmpp"
 							excludes="**/*"> </fmpp>
-						->
+						-->
 
 					</tasks>
 				</configuration>
-				<!-
+				<!--
 
 					<executions> <execution> <id>servicemetadata</id>
 					<phase>package</phase> <goals> <goal>run</goal> </goals>
 					</execution> </executions>
-				->
+				-->
 				<dependencies>
 					<dependency>
 						<groupId>org.apache.ant</groupId>
@@ -318,7 +318,6 @@
 					</dependency>
 				</dependencies>
 			</plugin>
--->
 		</plugins>
 	</build>
 	<profiles>
