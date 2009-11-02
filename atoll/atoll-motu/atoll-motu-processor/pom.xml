@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>atoll-motu</artifactId>
 		<groupId>cls.atoll</groupId>
-		<version>2.0.0-SNAPSHOT</version>
+		<version>2.0.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cls.atoll.motu</groupId>
 	<artifactId>atoll-motu-processor</artifactId>
 	<packaging>jar</packaging>
-	<version>2.0.0-SNAPSHOT</version>
+	<version>2.0.0</version>
 	<name>ATOLL Motu Processors</name>
 	<scm>
 		<connection>scm:cvs:pserver:@cvsserver.cls.fr:/home/cvs/REPOSITORIES/mvn-atoll:atoll/atoll-motu/atoll-motu-processor</connection>
-	</scm>
+	  <tag>atoll-2_0_0</tag>
+  </scm>
 	<description>This package holds the processors in conformance with WPS sepecification.</description>
 	<dependencies>
 		<dependency>
 			<groupId>cls.atoll.motu</groupId>
 			<artifactId>atoll-motu-library</artifactId>
-			<version>2.0.0-SNAPSHOT</version>
+			<version>2.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.ant</groupId>
@@ -31,7 +31,7 @@
 		<dependency>
 			<groupId>cls.atoll.motu</groupId>
 			<artifactId>atoll-motu-msg</artifactId>
-			<version>2.0.0-SNAPSHOT</version>
+			<version>2.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.deegree</groupId>
@@ -184,35 +184,26 @@
 					<tasks>
 						<!-
 
-							<property name="compile_classpath"
-							refid="maven.compile.classpath" /> <property
-							name="runtime_classpath" refid="maven.runtime.classpath" />
+							<property name="compile_classpath" refid="maven.compile.classpath" /> <property name="runtime_classpath" refid="maven.runtime.classpath" />
 							<property name="test_classpath" refid="maven.test.classpath" />
-							<property name="plugin_classpath" refid="maven.plugin.classpath"
-							/> <echo message="compile classpath: ${compile_classpath}" />
-							<echo message="runtime classpath: ${runtime_classpath}" /> <echo
-							message="test classpath: ${test_classpath}" /> <echo
-							message="plugin classpath: ${plugin_classpath}" />
+							<property name="plugin_classpath" refid="maven.plugin.classpath" /> <echo message="compile classpath: ${compile_classpath}" />
+							<echo message="runtime classpath: ${runtime_classpath}" /> <echo message="test classpath: ${test_classpath}" /> <echo message="plugin classpath: ${plugin_classpath}" />
 						->
 						<!-
-							<taskdef name="fmpp" classname="fmpp.tools.AntTask" /> <fmpp
-							configuration="src/main/resources/fmpp/configServiceTemplate.fmpp"
+							<taskdef name="fmpp" classname="fmpp.tools.AntTask" /> <fmpp configuration="src/main/resources/fmpp/configServiceTemplate.fmpp"
 							excludes="**/*"> </fmpp>
 						->
 						<!-
 
-							<property name="base.dir"
-							value="J:/dev/atoll-v2/atoll-motu/atoll-motu-processor" />
+							<property name="base.dir" value="J:/dev/atoll-v2/atoll-motu/atoll-motu-processor" />
 						->
 						<property name="base.dir" value="${basedir}" />
 						<echo message="base.dir: ${base.dir}" />
 
-						<taskdef name="buildServiceMetadata"
-							classname="fr.cls.atoll.motu.processor.ant.ServiceMetadataBuilder"
+						<taskdef name="buildServiceMetadata" classname="fr.cls.atoll.motu.processor.ant.ServiceMetadataBuilder"
 							classpathref="maven.runtime.classpath" />
 
-						<property name="fmppOpendap.config"
-							value="src/main/resources/fmpp/configServiceOpendap.fmpp" />
+						<property name="fmppOpendap.config" value="src/main/resources/fmpp/configServiceOpendap.fmpp" />
 
 						<property name="tempPath" value="file:///c:/tempVFS/" />
 						<property name="iso19139Schema.path" value="schema/iso19139" />
@@ -221,49 +212,40 @@
 						<echo message="tempPath: ${tempPath}" />
 						<echo message="fmppOpdendap.config: ${fmppOpendap.config}" />
 						<echo message="iso19139Schema.path: ${iso19139Schema.path}" />
-						<echo
-							message="localIso19139RootSchemaRel.path: ${localIso19139RootSchemaRel.path}" />
+						<echo message="localIso19139RootSchemaRel.path: ${localIso19139RootSchemaRel.path}" />
 
-						<property name="outputXmlOpendap"
-							value="file:///${base.dir}/src/main/resources/fmpp/src/ServiceMetadataOpendap.xml" />
+						<property name="outputXmlOpendap" value="file:///${base.dir}/src/main/resources/fmpp/src/ServiceMetadataOpendap.xml" />
 						<echo message="outputXmlOpendap: ${outputXmlOpendap}" />
 
-						<buildServiceMetadata
-							xmlTemplate="file:///${base.dir}/src/main/resources/fmpp/src/base/serviceMetadataTemplateOpendapBase.xml"
+						<buildServiceMetadata xmlTemplate="file:///${base.dir}/src/main/resources/fmpp/src/base/serviceMetadataTemplateOpendapBase.xml"
 							tempPath="${tempPath}" iso19139Schema="${iso19139Schema.path}"
 							localIso19139RootSchemaRelPath="${localIso19139RootSchemaRel.path}"
 							outputXml="${outputXmlOpendap}" configuration="${fmppOpendap.config}"
 							excludes="**/*" expand="true" validate="false" fmpp="true"
 							validateOutput="src/main/resources/fmpp/out" />
 
-						<property name="fmppFtp.config"
-							value="src/main/resources/fmpp/configServiceFtp.fmpp" />
+						<property name="fmppFtp.config" value="src/main/resources/fmpp/configServiceFtp.fmpp" />
 						<echo message="fmppFtp.config: ${fmppFtp.config}" />
 
-						<property name="outputXmlFtp"
-							value="file:///${base.dir}/src/main/resources/fmpp/src/ServiceMetadataFtp.xml" />
+						<property name="outputXmlFtp" value="file:///${base.dir}/src/main/resources/fmpp/src/ServiceMetadataFtp.xml" />
 						<echo message="outputXmlFtp outputXmlFtp" />
 
-						<buildServiceMetadata
-							xmlTemplate="file:///${base.dir}/src/main/resources/fmpp/src/base/serviceMetadataTemplateFtpBase.xml"
+						<buildServiceMetadata xmlTemplate="file:///${base.dir}/src/main/resources/fmpp/src/base/serviceMetadataTemplateFtpBase.xml"
 							tempPath="${tempPath}" iso19139Schema="${iso19139Schema.path}"
 							localIso19139RootSchemaRelPath="${localIso19139RootSchemaRel.path}"
 							outputXml="${outputXmlFtp}" configuration="${fmppFtp.config}"
 							excludes="**/*" expand="true" validate="false" fmpp="true"
 							validateOutput="src/main/resources/fmpp/out" />
 						<!-
-							<taskdef name="freemarker"
-							classname="freemarker.ext.ant.FreemarkerXmlTask"> <classpath>
+							<taskdef name="freemarker" classname="freemarker.ext.ant.FreemarkerXmlTask"> <classpath>
 							<pathelement location="freemarker.jar" /> </classpath> </taskdef>
-							<taskdef name="fmpp" classname="fmpp.tools.AntTask" /> <fmpp
-							sourceroot="c:/tempVFS/" outputroot="out" logfile="log.fmpp"
+							<taskdef name="fmpp" classname="fmpp.tools.AntTask" /> <fmpp sourceroot="c:/tempVFS/" outputroot="out" logfile="log.fmpp"
 							includesFile="c:/tempVFS/ServiceMetadataExpanded2s.xml"> <data>
 							validate: true servicesXml: xml(c:/tempVFS/data/services.xml)
 							</data> </fmpp>
 						->
 						<!-
-							<fmpp
-							configuration="src/main/resources/fmpp/configServiceOpendap.fmpp"
+							<fmpp configuration="src/main/resources/fmpp/configServiceOpendap.fmpp"
 							excludes="**/*"> </fmpp>
 						->
 
