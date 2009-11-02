@@ -3,23 +3,24 @@
 	<parent>
 		<artifactId>atoll-motu</artifactId>
 		<groupId>cls.atoll</groupId>
-		<version>2.0.1-SNAPSHOT</version>
+		<version>2.0.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cls.atoll.motu</groupId>
 	<artifactId>atoll-motu-api</artifactId>	
 	<packaging>jar</packaging>
-	<version>2.0.1-SNAPSHOT</version>	
+	<version>2.0.0</version>	
 	<name>ATOLL Motu Api</name>
 	<scm>
 		<connection>scm:cvs:pserver:@cvsserver.cls.fr:/home/cvs/REPOSITORIES/mvn-atoll:atoll/atoll-motu/atoll-motu-api</connection>
+    <tag>atoll-2_0_0</tag>
   </scm>
 	<description>This package holds the api describing the published services.</description>
 	<dependencies>
 		<dependency>
 			<groupId>cls.atoll.motu</groupId>
 			<artifactId>atoll-motu-msg</artifactId>
-			<version>2.0.1-SNAPSHOT</version>
+			<version>2.0.0</version>
 		</dependency>
 		<dependency>
 		    <groupId>commons-codec</groupId>
