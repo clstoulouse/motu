@@ -69,8 +69,8 @@ import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.17 $ - $Date: 2009-10-21 10:28:02 $
+ * @author $Author: jarnaud $
+ * @version $Revision: 1.18 $ - $Date: 2009-11-09 09:27:50 $
  */
 public class TestServiceMetadata {
 
@@ -630,7 +630,8 @@ public class TestServiceMetadata {
                 System.out.println(operationMetadataType.getOperationName().getCharacterString().getValue());
             }
             
-            DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph = new DefaultDirectedGraph<OperationMetadata, OperationRelationshipEdge<String>>((Class<? extends OperationRelationshipEdge<String>>) OperationRelationshipEdge.class);
+            OperationRelationshipEdge<String> edge = new OperationRelationshipEdge<String>();
+            DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph = new DefaultDirectedGraph<OperationMetadata, OperationRelationshipEdge<String>>((Class<? extends OperationRelationshipEdge<String>>) edge.getClass());
             serviceMetadata.getOperations(url, directedGraph);
 
             StrongConnectivityInspector<OperationMetadata, OperationRelationshipEdge<String>> sci = new StrongConnectivityInspector<OperationMetadata, OperationRelationshipEdge<String>>(directedGraph);
