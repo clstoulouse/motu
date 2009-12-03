@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns5:MD_Metadata xmlns:ns1="http://www.isotc211.org/2005/gco" xmlns:ns2="http://www.isotc211.org/2005/gmx" xmlns:ns3="http://www.w3.org/1999/xlink" xmlns:ns4="http://www.isotc211.org/2005/srv" xmlns:ns5="http://www.isotc211.org/2005/gmd" xmlns:ns6="http://www.opengis.net/gml" xmlns:ns7="http://www.isotc211.org/2005/gts">
     <ns5:fileIdentifier>
-        <ns1:CharacterString>http://atoll.cls.fr/2009/resource/metadata/service#motu-opendap-aviso</ns1:CharacterString>
+        <ns1:CharacterString>http://purl.org/cls/atoll/metadata/service#motu-opendap-aviso</ns1:CharacterString>
     </ns5:fileIdentifier>
     <ns5:language>
         <ns5:LanguageCode codeListValue="eng" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode">eng

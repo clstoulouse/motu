@@ -4,7 +4,7 @@
     <name>motu-ftp-aviso</name>
     <url>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</url>
     <description>description aviso ftp.</description>
-    <fileIdentifier>http://atoll.cls.fr/2009/resource/metadata/service#motu-ftp-aviso</fileIdentifier>
+    <fileIdentifier>http://purl.org/cls/atoll/metadata/service#motu-ftp-aviso</fileIdentifier>
     <organisationName>CLS</organisationName>
     <electronicMailAddress>tjolibois@cls.fr</electronicMailAddress>
     <dateStamp>2009-09-16</dateStamp>
@@ -13,7 +13,7 @@
     <name>motu-ftp-catsat</name>
     <url>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</url>
     <description>description catsat ftp.</description>
-    <fileIdentifier>http://atoll.cls.fr/2009/resource/metadata/service#motu-ftp-catsat</fileIdentifier>
+    <fileIdentifier>http://purl.org/cls/atoll/metadata/service#motu-ftp-catsat</fileIdentifier>
     <organisationName>CLS</organisationName>
     <electronicMailAddress>tjolibois@cls.fr</electronicMailAddress>
     <dateStamp>2009-09-16</dateStamp>
@@ -22,7 +22,7 @@
     <name>motu-ftp-mercator</name>
     <url>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</url>
     <description>description mercator ftp.</description>
-    <fileIdentifier>http://atoll.cls.fr/2009/resource/metadata/service#motu-ftp-mercator</fileIdentifier>
+    <fileIdentifier>http://purl.org/cls/atoll/metadata/service#motu-ftp-mercator</fileIdentifier>
     <organisationName>CLS</organisationName>
     <electronicMailAddress>tjolibois@cls.fr</electronicMailAddress>
     <dateStamp>2009-09-16</dateStamp>

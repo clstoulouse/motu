@@ -4,7 +4,7 @@
     <name>motu-opendap-aviso</name>
     <url>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</url>
     <description>description aviso opendap.</description>
-    <fileIdentifier>http://atoll.cls.fr/2009/resource/metadata/service#motu-opendap-aviso</fileIdentifier>
+    <fileIdentifier>http://purl.org/cls/atoll/metadata/service#motu-opendap-aviso</fileIdentifier>
     <organisationName>CLS</organisationName>
     <electronicMailAddress>tjolibois@cls.fr</electronicMailAddress>
     <dateStamp>2009-09-16</dateStamp>
@@ -13,7 +13,7 @@
     <name>motu-opendap-catsat</name>
     <url>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</url>
     <description>description catsat opendap.</description>
-    <fileIdentifier>http://atoll.cls.fr/2009/resource/metadata/service#motu-opendap-catsat</fileIdentifier>
+    <fileIdentifier>http://purl.org/cls/atoll/metadata/service#motu-opendap-catsat</fileIdentifier>
     <organisationName>CLS</organisationName>
     <electronicMailAddress>tjolibois@cls.fr</electronicMailAddress>
     <dateStamp>2009-09-16</dateStamp>
@@ -22,7 +22,7 @@
     <name>motu-opendap-mercator</name>
     <url>http://atoll-dev.cls.fr:30080/atoll-motuservlet/services</url>
     <description>description mercator opendap.</description>
-    <fileIdentifier>http://atoll.cls.fr/2009/resource/metadata/service#motu-opendap-mercator</fileIdentifier>
+    <fileIdentifier>http://purl.org/cls/atoll/metadata/service#motu-opendap-mercator</fileIdentifier>
     <organisationName>CLS</organisationName>
     <electronicMailAddress>tjolibois@cls.fr</electronicMailAddress>
     <dateStamp>2009-09-16</dateStamp>
