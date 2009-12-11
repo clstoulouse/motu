@@ -1,14 +1,13 @@
-<project name="atoll-motu-web" basedir=".">
+<project name="atoll-motuservlet" basedir=".">
 
 	<import file="../cls-commons-config/build.xml" optional="true"/>
 	<import file="../../cls-commons-config/build.xml" optional="true"/>
-	<import file="../../../cls-commons-config/build.xml" optional="true"/>
 
 	<!-- =================================================================== -->
 	<!-- Initialisation communes                                             -->
 	<!-- =================================================================== -->
 
-	<property name="project.name" value="atoll-motu-web" />
+	<property name="project.name" value="atoll-motu-servlet" />
 	<property name="project.home" value="${basedir}" />
 	<property name="web.root" value="atoll-motuservlet" />
 
@@ -135,6 +134,25 @@
 	<target name="deploy-production-themismotu" depends="init-production-themismotu">
 		<antcall target="mvn-deploy" />
 	</target>
+	
+	<!--==================================================================================
+	  == Construction et déploiement pour conf validation-themismotu
+	  =================================================================================-->
+
+	<target name="init-validation-themismotu">
+		<property name="config.dir" value="${project.home}/src/main/config/validation-themismotu" />
+		<property name="war.name" value="atoll-motuservlet" />
+		<property name="tomcat.url" value="http://themismotu.cls.fr:8380" />
+	</target>
+
+	<target name="war-validation-themismotu" depends="init-validation-themismotu">
+		<antcall target="mvn-war" />
+	</target>
+
+	<target name="deploy-validation-themismotu" depends="init-validation-themismotu">
+		<antcall target="mvn-deploy" />
+	</target>
+
 	<!--==================================================================================
 	  == Construction et déploiement pour conf localhost
 	  =================================================================================-->
@@ -171,5 +189,75 @@
 		<antcall target="mvn-deploy" />
 	</target>
 
+	<!--==================================================================================
+	  == Construction et déploiement pour conf production-mercator-data1
+	  =================================================================================-->
 
+	<target name="init-production-mercator-data1">
+		<property name="config.dir" value="${project.home}/src/main/config/production-mercator-data1" />
+		<property name="war.name" value="atoll-motu-servlet" />
+		<property name="tomcat.url" value="http://mercator-data1.cls.fr:33080" />
+	</target>
+
+	<target name="war-production-mercator-data1" depends="init-production-mercator-data1">
+		<antcall target="mvn-war" />
+	</target>
+
+	<target name="deploy-production-mercator-data1" depends="init-production-mercator-data1">
+		<antcall target="mvn-deploy" />
+	</target>
+	
+	<!--==================================================================================
+	  == Construction et déploiement pour conf production-mercator-data1-myocean
+	  =================================================================================-->
+
+	<target name="init-production-mercator-data1-myocean">
+		<property name="config.dir" value="${project.home}/src/main/config/production-mercator-data1-myocean" />
+		<property name="war.name" value="atoll-motu-servlet" />
+		<property name="tomcat.url" value="http://mercator-data1.cls.fr:34080" />
+	</target>
+
+	<target name="war-production-mercator-data1-myocean" depends="init-production-mercator-data1-myocean">
+		<antcall target="mvn-war" />
+	</target>
+
+	<target name="deploy-production-mercator-data1-myocean" depends="init-production-mercator-data1-myocean">
+		<antcall target="mvn-deploy" />
+	</target>
+	
+	<!--==================================================================================
+	  == Construction et déploiement pour conf production-catsat-data1
+	  =================================================================================-->
+
+	<target name="init-production-catsat-data1">
+		<property name="config.dir" value="${project.home}/src/main/config/production-catsat-data1" />
+		<property name="war.name" value="atoll-motu-servlet" />
+		<property name="tomcat.url" value="http://catsat-data1.cls.fr:33080" />
+	</target>
+
+	<target name="war-production-catsat-data1" depends="init-production-catsat-data1">
+		<antcall target="mvn-war" />
+	</target>
+
+	<target name="deploy-production-catsat-data1" depends="init-production-catsat-data1">
+		<antcall target="mvn-deploy" />
+	</target>
+	<!--==================================================================================
+	  == Construction et déploiement pour conf production-aviso-data1
+	  =================================================================================-->
+
+	<target name="init-production-aviso-data1">
+		<property name="config.dir" value="${project.home}/src/main/config/production-aviso-data1" />
+		<property name="war.name" value="atoll-motu-servlet" />
+		<property name="tomcat.url" value="http://aviso-data1.cls.fr:33080" />
+	</target>
+
+	<target name="war-production-aviso-data1" depends="init-production-aviso-data1">
+		<antcall target="mvn-war" />
+	</target>
+
+	<target name="deploy-production-aviso-data1" depends="init-production-aviso-data1">
+		<antcall target="mvn-deploy" />
+	</target>
+		
 </project>
