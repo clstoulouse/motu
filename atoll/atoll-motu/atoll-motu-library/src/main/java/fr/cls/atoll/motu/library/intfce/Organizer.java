@@ -96,7 +96,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.29 $ - $Date: 2009-10-29 10:51:20 $
+ * @version $Revision: 1.30 $ - $Date: 2009-12-11 15:13:07 $
  */
 public class Organizer {
 
@@ -4497,7 +4497,7 @@ public class Organizer {
      * 
      * @return a unique NetCdf file name based on system time.
      */
-    public static String getUniqueFileName(String prefix, String suffix) {
+    public synchronized static String getUniqueFileName(String prefix, String suffix) {
         // Gets a temporary fle name for the file to create.
         StringBuffer stringBuffer = new StringBuffer();
         if (prefix != null) {

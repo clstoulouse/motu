@@ -78,7 +78,7 @@ import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.22 $ - $Date: 2009-10-28 15:42:52 $
+ * @version $Revision: 1.23 $ - $Date: 2009-12-11 15:13:07 $
  * 
  */
 public class TestIntfce {
@@ -316,7 +316,7 @@ public class TestIntfce {
         //productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
-        // productExtractDiversity();
+         productExtractDiversity();
         // testProjection();
         // testJason2Local();
         // testProjection2();
@@ -1400,8 +1400,11 @@ public class TestIntfce {
     public static void productExtractDiversity() {
         // String productId = "Test_Galapagos_20070901_ssh.nc";
         // String locationData = "J:/dev/" + productId;
-        String productId = "dt_upd_global_merged_msla_h_20050831_20050831_20060206.nc";
-        String locationData = "C:/BratData/hangzhou/" + productId;
+        //String productId = "dt_upd_global_merged_msla_h_20050831_20050831_20060206.nc";
+        //String locationData = "C:/BratData/hangzhou/" + productId;
+        //String productId = "GLB_CO03_21880.cdf";
+        String productId = "GLB_CO03_21880.nc";
+        String locationData = "C:/Downloads/" + productId;
 
         // String productId = "mercatorPsy3v1R1v_arc_mean_20060628_R20060712_1170678793644.nc";
         // String locationData = "C:/apache-tomcat-5.5.16/webapps/motu-file-extract/" + productId;
@@ -1425,10 +1428,10 @@ public class TestIntfce {
         // third element is high latitude
         // fourth element is high longitude
         List<String> listLatLonCoverage = new ArrayList<String>();
-        listLatLonCoverage.add("-1");
-        listLatLonCoverage.add("0");
-        listLatLonCoverage.add("1");
-        listLatLonCoverage.add("359.99999");
+        listLatLonCoverage.add("90");
+        listLatLonCoverage.add("-120");
+        listLatLonCoverage.add("-90");
+        listLatLonCoverage.add("-100");
 
         // add depth (Z) criteria
         // first element is low depth
