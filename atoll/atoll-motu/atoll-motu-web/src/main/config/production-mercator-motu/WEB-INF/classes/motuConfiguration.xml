@@ -104,10 +104,10 @@
 	extractionPath="/home/mapserv/html/atoll-motuservlet-downloads"
 	httpDocumentRoot="http://mercator-motu.cls.fr" maxSizePerFile="1024"
 	useProxy="false" 
-	cleanExtractionFileInterval="1440"
+	cleanExtractionFileInterval="60"
 	cleanRequestInterval="60"
 	runCleanInterval="1"
-	extractionFilePatterns=".*\.nc$|.*\\.zip$|.*\.tar$|.*\.gz$"
+	extractionFilePatterns=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|.*\.extract$"
 	extractionFileCacheSize="10240"	
 	runGCInterval="10">
 
