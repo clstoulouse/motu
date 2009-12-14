@@ -13,7 +13,6 @@
 package fr.cls.atoll.motu.library.netcdf;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,14 +24,10 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import ucar.ma2.Array;
-import ucar.ma2.ArrayBoolean;
-import ucar.ma2.ArrayByte;
-import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.ArrayLong;
-import ucar.ma2.ArrayObject;
 import ucar.ma2.ArrayShort;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
@@ -44,13 +39,12 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.geoloc.LatLonPointImpl;
-
 import fr.cls.atoll.motu.library.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuNotImplementedException;
@@ -65,7 +59,7 @@ import fr.cls.atoll.motu.library.intfce.Organizer;
  * these class is not an extend of FileWriter, and some method have copied from FileWriter.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-10-29 10:51:20 $
+ * @version $Revision: 1.6 $ - $Date: 2009-12-14 09:56:13 $
  */
 
 // CSOFF: MultipleStringLiterals : avoid constants and trace duplicate string

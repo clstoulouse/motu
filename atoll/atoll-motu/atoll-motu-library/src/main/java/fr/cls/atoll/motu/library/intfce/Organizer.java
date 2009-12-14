@@ -96,7 +96,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.30 $ - $Date: 2009-12-11 15:13:07 $
+ * @version $Revision: 1.31 $ - $Date: 2009-12-14 09:56:13 $
  */
 public class Organizer {
 
@@ -245,6 +245,9 @@ public class Organizer {
 
     /** The Constant PROPS_STDNAMES_EQUIV_FILE. */
     private static final String PROPS_STDNAMES_EQUIV_FILE = "sdtNameEquiv";
+
+    /** The last unique_ id. */
+    private static long LAST_UNIQUE_ID = System.currentTimeMillis();
 
     /** Persistent info about services and products. */
     private static Map<String, ServicePersistent> servicesPersistent = new HashMap<String, ServicePersistent>();
@@ -4497,20 +4500,43 @@ public class Organizer {
      * 
      * @return a unique NetCdf file name based on system time.
      */
-    public synchronized static String getUniqueFileName(String prefix, String suffix) {
+    public static String getUniqueFileName(String prefix, String suffix) {
         // Gets a temporary fle name for the file to create.
         StringBuffer stringBuffer = new StringBuffer();
         if (prefix != null) {
             stringBuffer.append(prefix);
         }
+                
         stringBuffer.append("_");
-        stringBuffer.append(Long.toString(System.currentTimeMillis()));
+        
+        long numId = Organizer.generateUniqueId();
+        stringBuffer.append(Long.toString(numId));
+        
         if (suffix != null) {
             stringBuffer.append(suffix);
         }
         String temp = Zip.unAccent(stringBuffer.toString());
         // replace all non-words character except '.' by "-"
         return temp.replaceAll("[\\W&&[^\\.]]", "-");
+    }
+    
+    /**
+     * Generate unique id.
+     * 
+     * @return the long
+     */
+    public static synchronized long generateUniqueId() {
+
+        // Compute a unique id from datetime
+        long num = System.currentTimeMillis();
+        
+        while (num <= Organizer.LAST_UNIQUE_ID) {
+            num++;
+        }
+        
+        Organizer.LAST_UNIQUE_ID = num;
+        
+        return Organizer.LAST_UNIQUE_ID;
     }
 
     /**
