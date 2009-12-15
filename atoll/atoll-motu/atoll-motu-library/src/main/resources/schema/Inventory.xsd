@@ -109,6 +109,7 @@
 				<xs:element ref="variables" />
 			</xs:sequence>
 			<xs:attribute name="urn" type="xs:anyURI" use="required" />
+			<xs:attribute name="internalId" type="xs:string" use="required" />			
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="service">
