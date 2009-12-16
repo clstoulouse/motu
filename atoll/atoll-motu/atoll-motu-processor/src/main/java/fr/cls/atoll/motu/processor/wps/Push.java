@@ -2,6 +2,7 @@ package fr.cls.atoll.motu.processor.wps;
 
 import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -29,7 +30,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.6 $, $Date: 2009-10-29 10:52:04 $
+ * @version $Revision: 1.7 $, $Date: 2009-12-16 10:15:24 $
  */
 public class Push extends MotuWPSProcess {
 
@@ -80,17 +81,16 @@ public class Push extends MotuWPSProcess {
 
         // runnableWPS = new
     }
-    
 
-      /**
-       * Push.
-       * 
-       * @param in the in
-       * 
-       * @throws ProcessletException the processlet exception
-       * @throws MotuException the motu exception
-       */
-      private void push(ProcessletInputs in) throws ProcessletException, MotuException {
+    /**
+     * Push.
+     * 
+     * @param in the in
+     * 
+     * @throws ProcessletException the processlet exception
+     * @throws MotuException the motu exception
+     */
+    private void push(ProcessletInputs in) throws ProcessletException, MotuException {
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
 
         String from = MotuWPSProcess.getComplexInputValueFromBinaryStream(motuWPSProcessData.getFromParamIn());
@@ -100,7 +100,7 @@ public class Push extends MotuWPSProcess {
         // If 'from' is null or empty : use resquest id and get the its remote url as 'from' parameter
         if (WPSUtils.isNullOrEmpty(from)) {
             long requestId = processRequestIdAsLong(in);
-            
+
             if (requestId < 0) {
                 return;
             }
@@ -108,8 +108,9 @@ public class Push extends MotuWPSProcess {
             StatusModeResponse statusModeResponse = waitForResponse(motuWPSProcessData.getRequestIdParamIn(), requestId);
 
             if (statusModeResponse == null) {
-//                MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuInvalidRequestIdException(requestId), motuWPSProcessData
-//                                             .getRequestIdParamIn() instanceof ReferencedComplexInput);
+                // MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), new
+                // MotuInvalidRequestIdException(requestId), motuWPSProcessData
+                // .getRequestIdParamIn() instanceof ReferencedComplexInput);
                 MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuInvalidRequestIdException(requestId), true);
                 return;
             }
@@ -122,80 +123,114 @@ public class Push extends MotuWPSProcess {
                                              motuWPSProcessData.getRequestIdParamIn() instanceof ReferencedComplexInput);
                 return;
             }
-            
-            
+
         }
-        
+
         // if 'from' parameter contains an error message (it has been set by a chield wps)
         // then throw exception if from i not a referenced input (from a parent wps)
         if (WPSUtils.isProcessletExceptionErrorMessageEncode(from)) {
 
-            MotuWPSProcess.setComplexOutputParameters(motuWPSProcessData.getProcessletOutputs(), from);            
-            MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), from, motuWPSProcessData.getFromParamIn() instanceof ReferencedComplexInput);
-            
+            MotuWPSProcess.setComplexOutputParameters(motuWPSProcessData.getProcessletOutputs(), from);
+            MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(),
+                                         from,
+                                         motuWPSProcessData.getFromParamIn() instanceof ReferencedComplexInput);
+
             return;
         }
-        
-        String to = MotuWPSProcess.getComplexInputValueFromBinaryStream(motuWPSProcessData.getToParamIn());
 
-        String userFrom = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getUserFromParamIn());
-        String pwdFrom = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getPwdFromParamIn());
-
-        String userTo = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getUserToParamIn());
-        String pwdTo = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getPwdToParamIn());
-        
-        boolean remove = MotuWPSProcess.getLiteralInputValueAsBoolean(motuWPSProcessData.getRemoveParamIn(), false);
-
-        boolean rename = MotuWPSProcess.getLiteralInputValueAsBoolean(motuWPSProcessData.getRenameParamIn(), false);
-        
         URI outputUriToShow = null;
-        
-        if (!rename) {
-            File fileTmp  = new File(from);
-            to = String.format("%s/%s", to, fileTmp.getName());
-        }
-        
-        try {
+        boolean remove = false;
+
+
+            String to = MotuWPSProcess.getComplexInputValueFromBinaryStream(motuWPSProcessData.getToParamIn());
+
+            // Only sftp and ftp protocol are allowed
+            URI uriToControl = null;
+            try {
+                uriToControl = new URI(to);
+            } catch (URISyntaxException e) {
+                MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), "");
+                MotuWPSProcess.setLocalUrl(motuWPSProcessData.getProcessletOutputs(), "");
+                MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), e, true);
+                return;
+            }
+
+            String schemeToControl = "";
+            
+            if (uriToControl.getScheme() != null) {
+                schemeToControl = uriToControl.getScheme();                
+            }
+            
+            if ((schemeToControl.compareToIgnoreCase("sftp") != 0) && (schemeToControl.compareToIgnoreCase("ftp") != 0 )) {
+                MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), "");
+                MotuWPSProcess.setLocalUrl(motuWPSProcessData.getProcessletOutputs(), "");
+                String msg = "Push process allows only 'ftp' and 'sftp' protocols";
+                MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), ErrorType.INCONSISTENCY, msg,  true);
+                return;
+            }
+            
+            
+
+            String userFrom = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getUserFromParamIn());
+            String pwdFrom = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getPwdFromParamIn());
+
+            String userTo = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getUserToParamIn());
+            String pwdTo = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getPwdToParamIn());
+
+            remove = MotuWPSProcess.getLiteralInputValueAsBoolean(motuWPSProcessData.getRemoveParamIn(), false);
+
+            boolean rename = MotuWPSProcess.getLiteralInputValueAsBoolean(motuWPSProcessData.getRenameParamIn(), false);
+
+            if (!rename) {
+                File fileTmp = new File(from);
+                to = String.format("%s/%s", to, fileTmp.getName());
+            }
+            
+            try {
+
             if ((WPSUtils.isNullOrEmpty(userFrom)) && (WPSUtils.isNullOrEmpty(userTo))) {
-                Organizer.copyFile(from, to);                
+                Organizer.copyFile(from, to);
             } else {
-                Organizer.copyFile(from, to, userFrom, pwdFrom, userTo, pwdTo);                
+                Organizer.copyFile(from, to, userFrom, pwdFrom, userTo, pwdTo);
             }
             URI accessUriTemp = new URI(to);
-            outputUriToShow = new URI(accessUriTemp.getScheme(), null, accessUriTemp.getHost(), accessUriTemp.getPort(), accessUriTemp
-                                    .getPath(), accessUriTemp.getQuery(), accessUriTemp.getFragment());
+            outputUriToShow = new URI(
+                    accessUriTemp.getScheme(),
+                    null,
+                    accessUriTemp.getHost(),
+                    accessUriTemp.getPort(),
+                    accessUriTemp.getPath(),
+                    accessUriTemp.getQuery(),
+                    accessUriTemp.getFragment());
 
             MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), outputUriToShow);
             MotuWPSProcess.setLocalUrl(motuWPSProcessData.getProcessletOutputs(), "");
-            
+
         } catch (Exception e) {
             MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), "");
             MotuWPSProcess.setLocalUrl(motuWPSProcessData.getProcessletOutputs(), "");
-            MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(),
-                                         e,
-                                         true);
+            MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), e, true);
             return;
         }
-        
+
         StringBuffer stringBuffer = new StringBuffer();
-        
+
         stringBuffer.append(String.format("Uri '%s' have been transfered to '%s'", from, outputUriToShow.toString()));
-        
+
         ErrorType errorType = ErrorType.OK;
-        
+
         if (remove) {
             try {
                 Organizer.deleteFile(from);
-                stringBuffer.append(String.format("Uri '%s' have been deleted", from));                
+                stringBuffer.append(String.format("Uri '%s' have been deleted", from));
             } catch (MotuException e) {
                 errorType = ErrorType.SYSTEM;
                 stringBuffer.append(e.notifyException());
             }
         }
-        
+
         MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), errorType, stringBuffer.toString(), true);
-        
+
     }
-    
- 
+
 }
