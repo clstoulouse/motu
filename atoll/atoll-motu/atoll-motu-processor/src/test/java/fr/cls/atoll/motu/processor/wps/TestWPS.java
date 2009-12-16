@@ -41,7 +41,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
-import org.apache.xerces.dom.DocumentImpl;
 import org.deegree.commons.utils.HttpUtils;
 import org.geotoolkit.parameter.DefaultParameterDescriptor;
 import org.geotoolkit.parameter.Parameter;
@@ -58,22 +57,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-
-import ucar.ma2.Array;
-import ucar.nc2.Attribute;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.library.utils.StaticResourceBackedDynamicEnum;
-import fr.cls.atoll.motu.msg.xml.StatusModeType;
 import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
 import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
 import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
@@ -97,7 +87,7 @@ import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse.WPSStatusRe
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.39 $ - $Date: 2009-10-30 15:02:16 $
+ * @version $Revision: 1.40 $ - $Date: 2009-12-16 10:16:39 $
  */
 class StringList extends ArrayList<String> {
 }
@@ -126,7 +116,17 @@ public class TestWPS {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
+        
+        try {
+            URI uri  = new URI("sftp://C:/home/data");
+            System.out.println(uri.getScheme());
+        } catch (URISyntaxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+           
+        
         // String serverURL = "http://localhost:8080/atoll-motuservlet/services";
         //
         // try {
@@ -144,7 +144,7 @@ public class TestWPS {
 
         // testCreateObject();
 
-        testComplexOutputWPSResponse();
+        //testComplexOutputWPSResponse();
 
         // AnnotatedElement annotatedElement = StatusType.class;
         // System.out.println(annotatedElement.getAnnotations().toString());
@@ -1384,4 +1384,4 @@ public class TestWPS {
                
   
     }
-}
+ }

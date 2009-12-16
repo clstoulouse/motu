@@ -2,7 +2,6 @@ package fr.cls.atoll.motu.processor.wps;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,14 +40,11 @@ import org.isotc211.iso19139.d_2006_05_04.srv.SVServiceIdentificationType;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.ConnectivityInspector;
-import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.alg.DirectedNeighborIndex;
 import org.jgrapht.alg.KShortestPaths;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedSubgraph;
-import org.opengis.parameter.ParameterValue;
 import org.xml.sax.SAXException;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
@@ -69,8 +65,8 @@ import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: jarnaud $
- * @version $Revision: 1.18 $ - $Date: 2009-11-09 09:27:50 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.19 $ - $Date: 2009-12-16 10:16:39 $
  */
 public class TestServiceMetadata {
 
@@ -133,9 +129,9 @@ public class TestServiceMetadata {
         // Authenticator.setDefault(new MyAuthenticator());
 
         // testLoadGeomatysServiceMetadata();
-        //testLoadOGCServiceMetadata();
+        testLoadOGCServiceMetadata();
         //testServiceMetadataBuilder();
-        testdom4j();
+        //testdom4j();
         //testIso19139Operations();
 
         // try {
@@ -705,4 +701,6 @@ public class TestServiceMetadata {
         }
         
     }
+    
+
 }
