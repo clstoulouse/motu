@@ -103,8 +103,8 @@
 			<Identifier>rename</Identifier>
 			<Title>Keep the destination file name</Title>
 			<Abstract><![CDATA[A flag to keep the same file name: destination file has the same name than source file.
-			If false: the destination uri doesn't contain the file name (only directories).
-			If true: the destination uri contains the file name.
+			If true: the destination uri doesn't contain the file name (only directories).
+			If false: the destination uri contains the file name.
 			Default value if false.
 			]]>
 			</Abstract>			

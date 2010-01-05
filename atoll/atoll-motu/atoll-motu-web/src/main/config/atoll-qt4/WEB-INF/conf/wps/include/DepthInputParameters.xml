@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+		<LiteralInput minOccurs="0" maxOccurs="1">
+			<Identifier>lowdepth</Identifier>
+			<Title>The lower depth (z)</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+		</LiteralInput>
+		<LiteralInput minOccurs="0" maxOccurs="1">
+			<Identifier>highdepth</Identifier>
+			<Title>The higher depth (z)</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+		</LiteralInput>
+		

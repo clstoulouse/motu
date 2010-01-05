@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+		<ComplexInput>
+			<Identifier>url</Identifier>
+			<Title>Data url</Title>			
+			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
+		</ComplexInput>

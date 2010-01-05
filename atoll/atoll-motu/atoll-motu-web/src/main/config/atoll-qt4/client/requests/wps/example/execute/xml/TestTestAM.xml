@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<wps:Execute service="WPS" version="1.0.0"
+	xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
+http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+	<!--
+		Executes the TestProcess with default response behaviour. A
+		ResponseDocument with all available output parameters is returned.
+	-->
+	<ows:Identifier>TestAdd</ows:Identifier>
+	<wps:DataInputs>
+		<wps:Input>
+			<ows:Identifier>A</ows:Identifier>
+			<wps:Data>
+				<wps:ComplexData mimeType="text/plain">252</wps:ComplexData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>B</ows:Identifier>
+			<!--
+				<wps:Reference
+				xlink:href="http://atoll-qt4.cls.fr:33080/atoll-motuservlet/services?REQUEST=Execute&amp;VERSION=1.0.0&amp;SERVICE=WPS&amp;Identifier=TestAdd&amp;DataInputs=A=100@datatype=integer;B=13@datatype=integer;"/>
+				<wps:Reference method="POST"
+				xlink:href="file://J:\dev\atoll-v2\atoll-motu\atoll-motu-processor\src\test\resources\xml\TestTestAM.xml"/>
+			-->
+			<wps:Reference encoding="UTF-8" method="POST"
+				xlink:href="http://atoll-qt4.cls.fr:33080/atoll-motuservlet/services">
+				<wps:Body>
+
+					<wps:Execute service="WPS" version="1.0.0"
+						xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+						xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
+http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+						<ows:Identifier>TestAdd</ows:Identifier>
+						<wps:DataInputs>
+							<wps:Input>
+								<ows:Identifier>A</ows:Identifier>
+								<wps:Reference encoding="UTF-8" method="POST"
+									xlink:href="http://atoll-qt4.cls.fr:33080/atoll-motuservlet/services">
+									<wps:Body>
+										<wps:Execute service="WPS" version="1.0.0"
+											xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+											xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+											xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
+http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+											<ows:Identifier>TestMultiply</ows:Identifier>
+											<wps:DataInputs>
+												<wps:Input>
+													<ows:Identifier>A</ows:Identifier>
+													<wps:Data>
+														<wps:ComplexData mimeType="text/plain">14</wps:ComplexData>
+													</wps:Data>
+												</wps:Input>
+												<wps:Input>
+													<ows:Identifier>B</ows:Identifier>
+													<wps:Data>
+														<wps:ComplexData mimeType="text/plain">5</wps:ComplexData>
+													</wps:Data>
+												</wps:Input>
+											</wps:DataInputs>
+											<wps:ResponseForm>
+									
+												<wps:RawDataOutput mimeType="text/plain">
+													<ows:Identifier>C</ows:Identifier>
+												</wps:RawDataOutput>
+					
+											</wps:ResponseForm>
+										</wps:Execute>
+
+									</wps:Body>
+								</wps:Reference>
+
+							</wps:Input>
+							<wps:Input>
+								<ows:Identifier mimeType="text/plain">B</ows:Identifier>
+								<wps:Data>
+									<wps:ComplexData>8</wps:ComplexData>
+								</wps:Data>
+							</wps:Input>
+						</wps:DataInputs>
+						<wps:ResponseForm>
+
+
+							<wps:RawDataOutput mimeType="text/plain">
+								<ows:Identifier>C</ows:Identifier>
+							</wps:RawDataOutput>
+
+						</wps:ResponseForm>
+					</wps:Execute>
+				</wps:Body>
+			</wps:Reference>
+		</wps:Input>
+	</wps:DataInputs>
+	<wps:ResponseForm>
+		<wps:ResponseDocument>
+			<wps:Output mimeType="text/plain" encoding="ASCII">
+				<ows:Identifier>C</ows:Identifier>
+			</wps:Output>
+		</wps:ResponseDocument>
+		<!--
+			<wps:RawDataOutput mimeType="text/plain" encoding="text">
+			<ows:Identifier>C</ows:Identifier> </wps:RawDataOutput>
+		-->
+	</wps:ResponseForm>
+</wps:Execute>
