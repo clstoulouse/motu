@@ -93,7 +93,7 @@
 	minInclusive value="0"
 	
 -->
-<motuConfig defaultService="&atoll;motu-opendap-aviso" proxyLogin="" proxyPwd=""
+<motuConfig defaultService="aviso" proxyLogin="" proxyPwd=""
 	useAuthentication="false" dataBlockSize="512000" maxSizePerFile="1024"
 	extractionPath="/home/atoll/motu-extract"
 	downloadHttpUrl="http://atoll-qt4.cls.fr/motu-extract"
