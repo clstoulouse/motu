@@ -24,12 +24,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
 		<wps:Input>
 			<ows:Identifier>to</ows:Identifier>
 			<wps:Data>
-		        <wps:ComplexData>ftp://t:t@CLS-EARITH.pc.cls.fr/Dossier4</wps:ComplexData>
-		        <!-- 
-		        <wps:ComplexData>ftp://t:t@CLS-EARITH.pc.cls.fr/test.txt</wps:ComplexData>
-		        <wps:ComplexData>ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.txt</wps:ComplexData>
-		        <wps:ComplexData>sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll/atoll-distrib/HOA_Catsat/Interface_ATOLL/test.txt</wps:ComplexData>
-		         -->
+		        <wps:ComplexData>ftp://myurl</wps:ComplexData>
 			</wps:Data>
 		</wps:Input>
 

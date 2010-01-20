@@ -96,17 +96,17 @@
 <motuConfig defaultService="aviso" proxyLogin="" proxyPwd=""
 	useAuthentication="false" dataBlockSize="512000" maxSizePerFile="1024"
 	extractionPath="/home/atoll/motu-extract"
-	downloadHttpUrl="http://atoll-qt4.cls.fr/motu-extract"
-	httpDocumentRoot="http://atoll-qt4.cls.fr"
-	cleanExtractionFileInterval="60" cleanRequestInterval="60"
+	downloadHttpUrl="http://humboldt-qt.cls.fr"
+	httpDocumentRoot="http://humboldt-qt.cls.fr"
+	cleanExtractionFileInterval="3" cleanRequestInterval="60"
 	runCleanInterval="1"
 	extractionFilePatterns=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|.*\.extract$|wps_output_.*$|wps_response_.*$"
-	extractionFileCacheSize="1024" runGCInterval="10">
+	extractionFileCacheSize="400" runGCInterval="10">
 
 	<!--===========================================================-->
 	<!--                    motu-opendap-mercator Service          -->
 	<!--===========================================================-->
-	<configService defaultLanguage="FR" description="Ocean data"
+	<configService defaultLanguage="UK" description="Ocean data"
 		group="MercatorOpendap" httpBaseRef="http://www.mercator-ocean.fr"
 		name="&atoll;motu-opendap-mercator" veloTemplatePrefix="mercator">
 		<catalog name="catalog.xml" type="tds"
@@ -147,7 +147,7 @@
 	<!--===========================================-->
 	<!--                     Mercator TDS         -->
 	<!--===========================================-->
-	<configService defaultLanguage="FR" description="Ocean data"
+	<configService defaultLanguage="UK" description="Ocean data"
 		group="Mercator" httpBaseRef="http://www.mercator-ocean.fr"
 		name="Mercator" veloTemplatePrefix="mercator">
 		<catalog name="catalog.xml" type="tds"

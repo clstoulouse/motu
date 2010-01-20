@@ -10,9 +10,6 @@ http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
 		<wps:Input>
 			<ows:Identifier>from</ows:Identifier>
 			<wps:Data>
-		        <!--
-		        <wps:ComplexData>http://atoll-qt4.cls.fr:33080/motu-extract/atoll-ressource-dataset-datafile-nrt-med-infrared-sst-timestamp_1244456058793.txt</wps:ComplexData>
-		        -->
 		        <wps:ComplexData>ftp://proxy.cls.fr/pub/README</wps:ComplexData>
 			</wps:Data>			
 		</wps:Input>
@@ -25,18 +22,13 @@ http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
 		<wps:Input>
 			<ows:Identifier>pwdFrom</ows:Identifier>
 			<wps:Data>
-		        <wps:LiteralData>dearith@cls.fr</wps:LiteralData>
+		        <wps:LiteralData>mypdw</wps:LiteralData>
 			</wps:Data>			
 		</wps:Input>
 		<wps:Input>
 			<ows:Identifier>to</ows:Identifier>
 			<wps:Data>
-		        <wps:ComplexData>ftp://CLS-EARITH.pc.cls.fr/test</wps:ComplexData>
-		        <!-- 
-		        <wps:ComplexData>ftp://t:t@CLS-EARITH.pc.cls.fr/test.txt</wps:ComplexData>
-		        <wps:ComplexData>ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.txt</wps:ComplexData>
-		        <wps:ComplexData>sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll/atoll-distrib/HOA_Catsat/Interface_ATOLL/test.txt</wps:ComplexData>
-		         -->
+		        <wps:ComplexData>ftp://myurl</wps:ComplexData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
