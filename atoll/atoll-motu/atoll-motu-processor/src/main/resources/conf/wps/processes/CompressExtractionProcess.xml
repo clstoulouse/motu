@@ -16,7 +16,7 @@
 	<Abstract><![CDATA[The purpose of this process is to compress data extraction, from a request identifier.
 	The request identifier is provided by the result of an extraction process 
 	The return values are the input request identifier of the data and the return process code (ok or error code) and the correponding message.
-	The input request identifier is set to output to be able to chain this process with an another one.]]>
+	The input request identifier is set to output to be able to chain this process to another one.]]>
 	</Abstract>
 	<InputParameters>
 		&requestIdInputParameters;

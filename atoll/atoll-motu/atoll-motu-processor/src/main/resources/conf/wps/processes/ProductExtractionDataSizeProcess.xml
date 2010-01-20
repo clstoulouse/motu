@@ -16,7 +16,7 @@
 	<Identifier>GetDataSize</Identifier>
 	<JavaClass>fr.cls.atoll.motu.processor.wps.ProductExtractionDataSize</JavaClass>
 	<Title>Process to get the data size of an extraction from a product.</Title>
-	<Abstract><![CDATA[The purpose of this process is to extract data from a product.
+	<Abstract><![CDATA[The purpose of this process is to get the data size of an extraction from a product.
 	A product is identified either by the Service name and Product name input parameters or by the url of the product (Data input parameter)
 	Extraction criteria can be specified: geographical coverage, time coverage, depth coverage. They are optional.
 	Variable names to extract have to be set as input parameters.

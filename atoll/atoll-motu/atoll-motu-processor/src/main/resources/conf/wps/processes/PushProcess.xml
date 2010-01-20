@@ -12,11 +12,12 @@
 	<Identifier>Push</Identifier>
 	<JavaClass>fr.cls.atoll.motu.processor.wps.Push</JavaClass>
 	<Title>Data transfer</Title>
-	<Abstract><![CDATA[The purpose of this process is to transfer data from a uri to another uri or to tranfer the result of an extraction request (identfied by its number) to a specific uri. 	  
-	So, either the input uri or the request identifier have to be set as input parameter.
+	<Abstract><![CDATA[The purpose of this process is to transfer data from a uri to another uri or to transfer the result of an extraction request (identified by its number) to a specific uri. 	  
+	So, either the input uri or the request identifier has to be set as input parameter.
 	
-	Supported protocoled are ftp, sftp, file.
-	The return values are the return process code (ok or error code) and the correponding message.
+	Supported input protocols are ftp, sftp, and file. Supported output protocols are ftp and sftp.
+	
+	The return values are the return process code (ok or error code) and the corresponding message.
 			
 	URI formats are :
    		

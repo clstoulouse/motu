@@ -15,7 +15,7 @@
 	<Title>Process to get the time coverage of a product.</Title>
 	<Abstract><![CDATA[The purpose of this process is to provide the time coverage of a product.
 	A product is identified either by the Service name and Product name input parameters or by the url of the product (Data input parameter)
-	The return values are the status of the request (pending, in progress, done, error) and the return process code (ok or error code) and the correponding message)]]>
+	The return values are the start coverage time and the end coverage time of the product]]>
 	</Abstract>
 	<InputParameters>
 	
