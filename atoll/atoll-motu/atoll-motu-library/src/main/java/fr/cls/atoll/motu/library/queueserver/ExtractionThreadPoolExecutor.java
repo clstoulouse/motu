@@ -22,8 +22,8 @@ import fr.cls.atoll.motu.library.exception.MotuInvalidQueuePriorityException;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2010-02-08 10:15:19 $
  */
 public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
@@ -558,15 +558,16 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
         Integer priority = runnableExtraction.getPriority();
         int runningRange = runnableExtraction.getRange();
 
-        int lastRange = getPriorityMap(priority);
+        Integer lastRange = getPriorityMap(priority);
 
-        if (lastRange == runningRange) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug(String.format("adjustPriorityMap priority %d range %d max rage %d - remove priority.", priority.intValue(),  runningRange, lastRange));
+        if (lastRange != null) {
+            if (lastRange == runningRange) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug(String.format("adjustPriorityMap priority %d range %d max rage %d - remove priority.", priority.intValue(),  runningRange, lastRange));
+                }
+                removePriorityMap(priority);
             }
-            removePriorityMap(priority);
         }
-
         if (LOG.isDebugEnabled()) {
             LOG.debug("adjustPriorityMap(RunnableExtraction) - exiting");
         }
