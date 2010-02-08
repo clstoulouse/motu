@@ -50,12 +50,10 @@
 		<appender-ref ref="CONSOLE" />
 		</logger>
 		 -->
-<!--
 	<logger name="atoll.motu.queueserver">
 		<level value="INFO" />
 		<appender-ref ref="XMLFileInfo" />
 	</logger>
--->
 	<root>
 	<!-- 
 		<level value="INFO" />
