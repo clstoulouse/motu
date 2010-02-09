@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+		<LiteralOutput>
+			<Identifier>code</Identifier>
+			<Title>Code returned by the process</Title>
+			<DataType>errorType</DataType>			
+		</LiteralOutput>
+		<LiteralOutput>
+			<Identifier>message</Identifier>
+			<Title>Message returned by the process</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+		</LiteralOutput>

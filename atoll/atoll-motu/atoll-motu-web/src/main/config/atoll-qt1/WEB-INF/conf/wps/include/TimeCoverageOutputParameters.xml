@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+		<LiteralOutput>
+			<Identifier>starttime</Identifier>
+			<Title>The start coverage datetime</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#datetime">datetime</DataType>
+		</LiteralOutput>
+		<LiteralOutput>
+			<Identifier>endtime</Identifier>
+			<Title>The end coverage datetime</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#datetime">datetime</DataType>
+		</LiteralOutput>

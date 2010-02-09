@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.4"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee   http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<!-- Security -->
+	<!-- 
+		<security-constraint>
+		<display-name>Tomcat security</display-name>
+	-->
+	<!-- Protected urls -->
+	<!-- 
+		<web-resource-collection>
+		<web-resource-name>Protected resources</web-resource-name>
+		<url-pattern>/Mercator/*</url-pattern>
+		<http-method>GET</http-method>
+		<http-method>POST</http-method>
+		</web-resource-collection>
+	-->
+	<!-- users roles authorized -->
+	<!-- 
+		<auth-constraint>
+		<role-name>motumercator</role-name>
+		</auth-constraint>
+		</security-constraint>
+	-->
+	<!-- Authentification mode -->
+	<!--
+		<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>Authentification pour les services Motu</realm-name>
+		</login-config>
+	-->
+	<!-- Roles used  -->
+	<!-- 
+		<security-role>
+		<description>Mercator Motu users</description>
+		<role-name>motumercator</role-name>
+		</security-role>	
+	-->
+	<!-- End security -->
+	<display-name>Motu</display-name>
+	<description>Motu</description>
+	<!-- Mapping Servlet -->
+	<servlet>
+		<display-name>Motu</display-name>
+		<servlet-name>Motu</servlet-name>
+		<servlet-class>
+			fr.cls.atoll.motu.web.servlet.MotuServlet
+		</servlet-class>
+		<!--
+			<init-param>
+			<param-name>useQueueServer</param-name>
+			<param-value>false</param-value>
+			</init-param>
+		-->
+		<!--
+			<init-param>
+			<param-name>statusAsFile</param-name>
+			<param-value>true</param-value>
+			</init-param>
+		-->
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>services</servlet-name>
+		<servlet-class>fr.cls.atoll.motu.web.services.MotuOGCFrontController</servlet-class>
+ 		<!--
+			parameter 'ConfigurationFile' is optional (only needed when a
+			non-default location is used for the 'services_metadata.xml' file)
+		-->
+		<!--
+			init-param> <param-name>ConfigurationFile</param-name>
+			<param-value>conf/services_metadata.xml</param-value> </init-param
+		-->
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>services</servlet-name>
+		<url-pattern>/services</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>Motu</servlet-name>
+		<url-pattern>/Aviso</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>Motu</servlet-name>
+		<url-pattern>/Mercator</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>Motu</servlet-name>
+		<url-pattern>/Catsat</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>Motu</servlet-name>
+		<url-pattern>/Motu</url-pattern>
+	</servlet-mapping>
+	
+
+	<!-- End Mapping -->
+</web-app>
