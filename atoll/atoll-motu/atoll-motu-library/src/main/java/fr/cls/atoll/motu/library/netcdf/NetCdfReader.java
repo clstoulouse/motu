@@ -3,6 +3,22 @@
  */
 package fr.cls.atoll.motu.library.netcdf;
 
+import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.library.exception.MotuInvalidDepthException;
+import fr.cls.atoll.motu.library.exception.MotuInvalidLatitudeException;
+import fr.cls.atoll.motu.library.exception.MotuInvalidLongitudeException;
+import fr.cls.atoll.motu.library.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.exception.NetCdfAttributeException;
+import fr.cls.atoll.motu.library.exception.NetCdfAttributeNotFoundException;
+import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.sdtnameequiv.StandardName;
+import fr.cls.atoll.motu.library.sdtnameequiv.StandardNames;
+import fr.cls.commons.util.GMTCalendar;
+import fr.cls.commons.util.GMTDateFormat;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -40,29 +56,13 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDepthException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.library.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.library.exception.NetCdfAttributeNotFoundException;
-import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.sdtnameequiv.StandardName;
-import fr.cls.atoll.motu.library.sdtnameequiv.StandardNames;
-import fr.cls.commons.util.GMTCalendar;
-import fr.cls.commons.util.GMTDateFormat;
-
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
 /**
  * Class to read netCDF files.
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-10-29 10:51:20 $
+ * @author $Author: ccamel $
+ * @version $Revision: 1.4 $ - $Date: 2010-02-19 15:01:51 $
  */
 
 public class NetCdfReader {
@@ -262,11 +262,11 @@ public class NetCdfReader {
 
     /** NetCdf dataset. */
     private NetcdfDataset netcdfDataset = null;
-    
+
     /** The is open with enhance var. */
     protected boolean isOpenWithEnhanceVar = true;
 
-    private Map<String, Variable> orignalVariables = new HashMap<String, Variable>();
+    private final Map<String, Variable> orignalVariables = new HashMap<String, Variable>();
 
     /**
      * Default constructor.
@@ -360,7 +360,7 @@ public class NetCdfReader {
      */
     private void controlAxes() {
 
-        List<CoordinateAxis> coordinateAxes = (List<CoordinateAxis>) this.netcdfDataset.getCoordinateAxes();
+        List<CoordinateAxis> coordinateAxes = this.netcdfDataset.getCoordinateAxes();
         for (CoordinateAxis coord : coordinateAxes) {
             if (coord.getAxisType() != null) {
                 continue;
@@ -458,7 +458,7 @@ public class NetCdfReader {
      * @return all of the variables of the root group.
      */
     public List<Variable> getRootVariables() {
-        return (List<Variable>) this.netcdfDataset.getRootGroup().getVariables();
+        return this.netcdfDataset.getRootGroup().getVariables();
     }
 
     /**
@@ -469,7 +469,7 @@ public class NetCdfReader {
      * @return all of the variables of a group.
      */
     public List<Variable> getVariables(Group group) {
-        return (List<Variable>) group.getVariables();
+        return group.getVariables();
     }
 
     /**
@@ -478,7 +478,7 @@ public class NetCdfReader {
      * @return all of the variables of all groups.
      */
     public List<Variable> getVariables() {
-        return (List<Variable>) this.netcdfDataset.getVariables();
+        return this.netcdfDataset.getVariables();
     }
 
     /**
@@ -487,7 +487,7 @@ public class NetCdfReader {
      * @return global attributes (attributes of the root group).
      */
     public List<Attribute> getAttributes() {
-        return (List<Attribute>) this.netcdfDataset.getRootGroup().getAttributes();
+        return this.netcdfDataset.getRootGroup().getAttributes();
     }
 
     /**
@@ -498,7 +498,7 @@ public class NetCdfReader {
      * @return attributes from a group.
      */
     public List<Attribute> getAttributes(Group group) {
-        return (List<Attribute>) group.getAttributes();
+        return group.getAttributes();
     }
 
     /**
@@ -606,7 +606,7 @@ public class NetCdfReader {
         } catch (Exception e) {
             LOG.error("getGrid()", e);
 
-            throw new NetCdfVariableException(variable, "Error in getGrid ", (Throwable) e);
+            throw new NetCdfVariableException(variable, "Error in getGrid ", e);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -650,7 +650,7 @@ public class NetCdfReader {
         } catch (Exception e) {
             LOG.error("getGrid()", e);
 
-            throw new NetCdfVariableException(var, "Error in getGrid", (Throwable) e);
+            throw new NetCdfVariableException(var, "Error in getGrid", e);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -689,7 +689,7 @@ public class NetCdfReader {
         } catch (Exception e) {
             LOG.error("getGrid()", e);
 
-            throw new NetCdfVariableException(var, String.format("Error in getGrid - range %s", sectionSpec), (Throwable) e);
+            throw new NetCdfVariableException(var, String.format("Error in getGrid - range %s", sectionSpec), e);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -812,6 +812,12 @@ public class NetCdfReader {
      */
     public NetcdfDataset acquireDataset(String location, boolean enhanceVar, ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
+        // MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+        // HttpClient httpClient = new HttpClient(connectionManager);
+        //
+        // NetcdfDataset.setHttpClient(httpClient);
+        // Surcharger : httpClient.executeMethod(hostconfig, method, state)
+
         // if enhanceVar ==> call NetcdfDataset.acquireDataset method
         // else enhance() is not called but Coordinate Systems are added
         if (enhanceVar) {
@@ -878,7 +884,7 @@ public class NetCdfReader {
                 this.netcdfDataset = null;
             }
         } catch (Exception e) {
-            throw new MotuException(String.format("Enable to close NetCDF reader - location: %s", locationData), (Throwable) e);
+            throw new MotuException(String.format("Enable to close NetCDF reader - location: %s", locationData), e);
         }
     }
 
@@ -1055,7 +1061,7 @@ public class NetCdfReader {
             DateUnit dateUnit = new DateUnit(unitsString);
             date = dateUnit.makeDate(value);
         } catch (Exception e) {
-            throw new MotuException("Error in getDate", (Throwable) e);
+            throw new MotuException("Error in getDate", e);
         }
         return date;
     }
@@ -1076,7 +1082,7 @@ public class NetCdfReader {
             DateUnit dateUnit = new DateUnit(unitsString);
             value = dateUnit.makeValue(date);
         } catch (Exception e) {
-            throw new MotuException("Error in getDate", (Throwable) e);
+            throw new MotuException("Error in getDate", e);
         }
         return value;
     }
@@ -1097,7 +1103,7 @@ public class NetCdfReader {
             DateUnit dateUnit = new DateUnit(unitsString);
             date = dateUnit.makeStandardDateString(value);
         } catch (Exception e) {
-            throw new MotuException("Error in getDateAsString", (Throwable) e);
+            throw new MotuException("Error in getDateAsString", e);
         }
         return date;
     }
@@ -1502,7 +1508,7 @@ public class NetCdfReader {
             try {
                 date = parseDate(source, DATE_FORMAT);
             } catch (Exception e2) {
-                throw new MotuInvalidDateException(source, (Throwable) e2);
+                throw new MotuInvalidDateException(source, e2);
             }
         }
         return date;
@@ -1537,7 +1543,7 @@ public class NetCdfReader {
             // fmt.setLenient(true);
             date = fmt.parse(source);
         } catch (Exception e) {
-            throw new MotuInvalidDateException(source, (Throwable) e);
+            throw new MotuInvalidDateException(source, e);
         }
 
         return date;
@@ -1575,7 +1581,7 @@ public class NetCdfReader {
                 }
             }
         } catch (Exception e) {
-            throw new MotuInvalidLongitudeException(value, (Throwable) e);
+            throw new MotuInvalidLongitudeException(value, e);
         }
 
         if (normalize) {
@@ -1628,7 +1634,7 @@ public class NetCdfReader {
                 origVal = -origVal;
             }
         } catch (Exception e) {
-            throw new MotuInvalidLatitudeException(value, (Throwable) e);
+            throw new MotuInvalidLatitudeException(value, e);
         }
         return LatLonPointImpl.latNormal(origVal);
     }
@@ -1652,7 +1658,7 @@ public class NetCdfReader {
                 origVal = Double.parseDouble(value);
             }
         } catch (Exception e) {
-            throw new MotuInvalidDepthException(value, (Throwable) e);
+            throw new MotuInvalidDepthException(value, e);
         }
         return origVal;
     }
@@ -1746,7 +1752,7 @@ public class NetCdfReader {
      * @return CoordinateAxis instance if found, otherwise null
      */
     public CoordinateAxis getCoordinateAxis(AxisType axisType) {
-        List<CoordinateAxis> coordinateAxes = (List<CoordinateAxis>) getCoordinateAxes();
+        List<CoordinateAxis> coordinateAxes = getCoordinateAxes();
 
         CoordinateAxis axis = null;
         for (CoordinateAxis coord : coordinateAxes) {
@@ -2087,7 +2093,7 @@ public class NetCdfReader {
             return listCoordVars;
         }
 
-        List<Dimension> listDims = (List<Dimension>) var.getDimensions();
+        List<Dimension> listDims = var.getDimensions();
         for (Dimension dim : listDims) {
             Variable dimCoordVars = NetCdfReader.getCoordinateVariable(dim, ds);
             listCoordVars.add(dimCoordVars);
