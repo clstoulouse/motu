@@ -27,6 +27,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
+import org.jasig.cas.client.util.AssertionHolder;
+import org.jasig.cas.client.validation.Assertion;
 
 /**
  * <br>
@@ -36,7 +38,7 @@ import org.apache.log4j.Logger;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-10-08 14:37:40 $
+ * @version $Revision: 1.4 $ - $Date: 2010-02-26 13:51:59 $
  */
 
 public class RunnableExtraction implements Runnable, Comparable<RunnableExtraction> {
@@ -414,7 +416,10 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
                 // Do nothing
             }
         }
-
+        Assertion assertion = extractionParameters.getAssertion();
+        if (assertion != null) {
+            AssertionHolder.setAssertion(assertion);
+        }
 
         try {
             setStatusInProgress();
@@ -450,6 +455,11 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
                 // Do Nothing
             }
             setError(motuException);
+
+        } finally {
+            if (assertion != null) {
+                AssertionHolder.clear();
+            }
 
         }
 
@@ -686,14 +696,14 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
 
     /**
      * Init.
-      */
+     */
     private void init() {
 
         statusModeResponse = Organizer.createStatusModeResponse();
         setStatusPending();
 
     }
-    
+
     /**
      * Sets the status done.
      * 
@@ -707,7 +717,8 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
 
     /**
      * Sets the status in progress.
-     * @throws MotuException 
+     * 
+     * @throws MotuException
      */
     protected void setStatusInProgress() {
         statusModeResponse.setStatus(StatusModeType.INPROGRESS);
@@ -718,7 +729,8 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
 
     /**
      * Sets the status pending.
-     * @throws MotuException 
+     * 
+     * @throws MotuException
      */
     protected void setStatusPending() {
         statusModeResponse.setStatus(StatusModeType.PENDING);
@@ -726,7 +738,7 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
         statusModeResponse.setCode(ErrorType.OK);
 
     }
-    
+
     /**
      * Sets the status error.
      * 

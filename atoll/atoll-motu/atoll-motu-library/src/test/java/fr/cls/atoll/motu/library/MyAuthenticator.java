@@ -9,11 +9,11 @@ import java.net.PasswordAuthentication;
 /**
  * 
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2010-02-26 13:52:43 $
  */
 public class MyAuthenticator extends Authenticator {
     protected PasswordAuthentication getPasswordAuthentication() {
-        return new PasswordAuthentication("dearith", "bienvenue".toCharArray());
+        return new PasswordAuthentication("login", "pwd".toCharArray());
     }
 }

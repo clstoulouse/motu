@@ -14,6 +14,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.math.RoundingMode;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
@@ -22,6 +23,7 @@ import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 
@@ -78,7 +81,7 @@ import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.23 $ - $Date: 2009-12-11 15:13:07 $
+ * @version $Revision: 1.24 $ - $Date: 2010-02-26 13:52:43 $
  * 
  */
 public class TestIntfce {
@@ -105,6 +108,13 @@ public class TestIntfce {
         // LOGQUEUE.info("main(String[]) - xxx jentering");
         // }
 
+//        String s = "http://atoll-qt4.cls.fr:33080/atoll-motu-servlet/Motu?action=listproductmetadata&service=http://purl.org/cls/atoll/ontology/individual/atoll%23motu-opendap-aviso&product=duacs_global_nrt_madt_merged_h";
+//        try {
+//            System.out.println(URLEncoder.encode(s, "UTF-8"));
+//        } catch (UnsupportedEncodingException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
         
 //        try {
 //            VFSManager.createLocalFile("c:/tgaga/test.txt");
@@ -313,10 +323,10 @@ public class TestIntfce {
         // productExtractDataAvisofromProductId();
         // productInformationFromLocationData();
         // productExtractDataAviso2();
-        //productExtractDataMercator();
+        productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
-         productExtractDiversity();
+         //productExtractDiversity();
         // testProjection();
         // testJason2Local();
         // testProjection2();
@@ -332,12 +342,13 @@ public class TestIntfce {
         //testGetAmountDataSize();
         // testSynchronized();
         //productExtractDataCatsat();
-        // productExtractDataAvisofromExtractionParameters();
+        //productExtractDataAvisofromExtractionParameters();
         // productExtractDataMerseaFromHttp();
         //testLoadInventoryOLA();
         // testLoadCatalogOLA();
         //productInformationFromInventory();
         //productExtractDataFromInventory();
+        //productListMercator();
 
     }
 
@@ -436,7 +447,7 @@ public class TestIntfce {
         // String productId = "dt_upd_med_tp_sla_vfec_19920925_19920930_20050914.nc";
         // String locationData = "C:/BratData/netCDF/" + productId;
         String productId = "extlink_source.h5";
-        String locationData = "C:/Documents and Settings/dearith/" + productId;
+        String locationData = "C:/Documents and Settings/user+ productId";
 
         try {
             NetcdfDataset.acquireDataset(locationData, null);
@@ -601,7 +612,7 @@ public class TestIntfce {
                 //Organizer.Format.URL,
                 null,
                 null,
-                "dearith",
+                "login",
                 true);
 
         Product product = null;
@@ -1244,11 +1255,13 @@ public class TestIntfce {
     }
 
     public static void productExtractDataMercator() {
-        String productId = "mercatorPsy3v2_nat_mean_best_estimate";
+        String productId = "nrt_glo_hr_infrared_sst";
+        //String productId = "mercatorPsy3v2_nat_mean_best_estimate";
         //String productId = "mercatorPsy3v2_glo_mean_best_estimate";
         // String productId = "mercatorPsy3v2R1v_med_levitus_1998";
-        String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/" + productId;
+        //String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/" + productId;
         // String locationData = "http://rdp1-jaune.cls.fr:8880/thredds/dodsC/" + productId;
+        String locationData = "http://atoll-dev.cls.fr:43080/thredds/dodsC/" + productId;
         
         // String productId = "mercatorPsy3v2R1v_glo_mean_best_estimate_1182752515507.nc";
         // String locationData = "C:/Java/dev/" + productId;
@@ -1262,7 +1275,8 @@ public class TestIntfce {
         // add variable to extract
         // listVar.add("salinity");
         // listVar.add("u");
-        listVar.add("temperature");
+        //listVar.add("temperature");
+        listVar.add("Grid_0001");
         // listVar.add("sea_water_salinity");
         // listVar.add("sea_surface_elevation");
         // listVar.add("ocean_mixed_layer_thickness");
@@ -1296,8 +1310,8 @@ public class TestIntfce {
         // second element is high depth (optional)
         // if only low depth is set, high depth equals low depth value
         List<String> listDepthCoverage = new ArrayList<String>();
-        listDepthCoverage.add("0");
-        listDepthCoverage.add("0");
+//        listDepthCoverage.add("0");
+//        listDepthCoverage.add("0");
 
         Product product = null;
 
@@ -1601,7 +1615,7 @@ public class TestIntfce {
         // String productId = "JA2_IPN_2PTP010_001_20081009_070651_20081009_080304";
         // String locationData = "C:/data/jason-2/igdr/StandardDataset/" + productId;
         // String productId = "extlink_source.h5";
-        // String locationData = "C:/Documents and Settings/dearith/" + productId;
+        // String locationData = "C:/Documents and Settings/us/userroductId;
         String productId = "TestHDF5.h5";
         String locationData = "C:/" + productId;
 
@@ -2260,4 +2274,29 @@ public class TestIntfce {
         System.out.printf("Write %d records from %s to %s took %d msecs %n", count, pfDataset.getLocation(), fileOut, took);
         return count;
     }
+    public static void productListMercator() {
+        //String serviceName = "mercator";
+        String serviceName = "aviso";
+
+        try {
+            Organizer organizer = new Organizer();
+            ServiceData serviceData = organizer.getServices(serviceName);
+            Map<String, Product> mapProducts = serviceData.getCatalog().getProducts();
+            
+            for (String productId : mapProducts.keySet()) {
+                System.out.println(productId);
+            }
+                
+
+   } catch (MotuExceptionBase e) {
+            System.out.println(e.notifyException());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    
+    
+    
 }

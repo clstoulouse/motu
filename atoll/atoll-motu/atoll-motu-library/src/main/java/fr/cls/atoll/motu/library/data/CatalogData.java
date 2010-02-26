@@ -24,6 +24,8 @@ import javax.xml.bind.JAXBElement;
 
 import org.apache.log4j.Logger;
 
+import fr.cls.atoll.motu.library.cas.HttpClientForCAS;
+import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
@@ -50,7 +52,7 @@ import fr.cls.atoll.motu.library.tds.server.TimeCoverageType;
  * This class implements a product's catalog .
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.10 $ - $Date: 2009-07-08 13:38:37 $
+ * @version $Revision: 1.11 $ - $Date: 2010-02-26 13:51:59 $
  */
 public class CatalogData {
 
@@ -1343,7 +1345,7 @@ public class CatalogData {
         try {
             // JAXBContext jc = JAXBContext.newInstance(TDS_SCHEMA_PACK_NAME);
             // Unmarshaller unmarshaller = jc.createUnmarshaller();
-            URL url = new URL(path);
+            URL url = new URL(AssertionUtils.addCASTicket(path));
             URLConnection conn = url.openConnection();
             in = conn.getInputStream();
             synchronized (Organizer.getUnmarshallerTdsConfig()) {

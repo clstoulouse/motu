@@ -3,11 +3,16 @@ package fr.cls.atoll.motu.library.intfce;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.jasig.cas.client.authentication.AttributePrincipal;
+import org.jasig.cas.client.util.AssertionHolder;
+import org.jasig.cas.client.validation.Assertion;
 
+import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuInconsistencyException;
 import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
@@ -21,7 +26,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-06-08 14:44:01 $
+ * @version $Revision: 1.4 $ - $Date: 2010-02-26 13:51:59 $
  */
 public class ExtractionParameters implements Cloneable {
 
@@ -342,6 +347,7 @@ public class ExtractionParameters implements Cloneable {
     /** The list temporal coverage. */
     private List<String> listTemporalCoverage = null;
 
+    /** The temporal coverage in days. */
     private int temporalCoverageInDays = -1;
 
     /** The list lat lon coverage. */
@@ -379,11 +385,38 @@ public class ExtractionParameters implements Cloneable {
 
     /** The protocol scheme. */
     protected String protocolScheme = null;
+    
+    /** The assertion to manage CAS. */
+    protected Assertion assertion = null; 
+
+    /**
+     * Gets the assertion.
+     * 
+     * @return the assertion
+     */
+    public Assertion getAssertion() {
+        return assertion;
+    }
+
+    /**
+     * Sets the assertion.
+     * 
+     * @param assertion the new assertion
+     */
+    public void setAssertion(Assertion assertion) {
+        this.assertion = assertion;
+        // If assetion is not null
+        // --> get he user name from AttributePrincipal and set the user name
+        // --> set anonymous user to false
+        String name = AssertionUtils.getAttributePrincipalName(assertion);
+        if (!Organizer.isNullOrEmpty(name)) {
+            setUserId(name);
+            setAnonymousUser(false);
+        }
+    }
 
     /**
      * Test if a string is null or empty.
-     * 
-     * @param value string to be tested.
      * 
      * @return true if string is null or empty, otherwise false.
      */

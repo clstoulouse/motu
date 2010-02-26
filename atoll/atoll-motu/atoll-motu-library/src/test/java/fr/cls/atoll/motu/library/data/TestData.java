@@ -32,7 +32,7 @@ import fr.cls.atoll.motu.library.opendap.server.Service;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-03-25 15:34:18 $
+ * @version $Revision: 1.3 $ - $Date: 2010-02-26 13:52:43 $
  * 
  */
 public class TestData {
@@ -293,7 +293,7 @@ public class TestData {
 
         // System.setProperty("proxyHost", "proxy.cls.fr"); // adresse IP
         // System.setProperty("proxyPort", "8080");
-        // String authString = "dearith" + ":" + "bienvenue";
+        // String authString = "login" + ":" + "pwd";
         // String auth = "Basic " + new
         // sun.misc.BASE64Encoder().encode(authString.getBytes());
         //

@@ -3,6 +3,7 @@
  */
 package fr.cls.atoll.motu.library.netcdf;
 
+import fr.cls.atoll.motu.library.cas.HttpClientForCAS;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.exception.MotuInvalidDepthException;
@@ -35,6 +36,7 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.log4j.Logger;
 
@@ -61,8 +63,8 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 /**
  * Class to read netCDF files.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.4 $ - $Date: 2010-02-19 15:01:51 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.5 $ - $Date: 2010-02-26 13:51:59 $
  */
 
 public class NetCdfReader {
@@ -812,10 +814,10 @@ public class NetCdfReader {
      */
     public NetcdfDataset acquireDataset(String location, boolean enhanceVar, ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
-        // MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-        // HttpClient httpClient = new HttpClient(connectionManager);
+        MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+        HttpClientForCAS httpClient = new HttpClientForCAS(connectionManager);
         //
-        // NetcdfDataset.setHttpClient(httpClient);
+        NetcdfDataset.setHttpClient(httpClient);
         // Surcharger : httpClient.executeMethod(hostconfig, method, state)
 
         // if enhanceVar ==> call NetcdfDataset.acquireDataset method

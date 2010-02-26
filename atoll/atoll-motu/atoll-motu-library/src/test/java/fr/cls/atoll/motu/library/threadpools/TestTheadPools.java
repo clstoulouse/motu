@@ -305,7 +305,7 @@ public class TestTheadPools {
         // Organizer.Format.NETCDF,
         // null,
         // null,
-        // "dearith",
+        // "login",
         // false);
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 serviceName,
@@ -318,7 +318,7 @@ public class TestTheadPools {
                 Organizer.Format.NETCDF,
                 null,
                 null,
-                "dearith",
+                "login",
                 true);
 
         list.add(extractionParameters);
@@ -337,7 +337,7 @@ public class TestTheadPools {
                 Organizer.Format.NETCDF,
                 null,
                 null,
-                "dearith",
+                "login",
                 true);
         list.add(extractionParameters);
         // ------------------------------------------
@@ -355,7 +355,7 @@ public class TestTheadPools {
                 Organizer.Format.NETCDF,
                 null,
                 null,
-                "dearith",
+                "login",
                 true);
         list.add(extractionParameters);
 

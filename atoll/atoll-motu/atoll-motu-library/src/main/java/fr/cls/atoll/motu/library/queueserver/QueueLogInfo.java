@@ -16,8 +16,8 @@ import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author $Author: dearith $
+ * @version $Revision: 1.2 $ - $Date: 2010-02-26 13:51:59 $
  */
 public class QueueLogInfo {
 
@@ -113,6 +113,7 @@ public class QueueLogInfo {
 
         xStream.omitField(ExtractionParameters.class, "dataOutputFormat");
         xStream.omitField(ExtractionParameters.class, "out");
+        xStream.omitField(ExtractionParameters.class, "assertion");
         
         xStream.omitField(this.getClass(), "xStream");
 

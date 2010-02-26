@@ -31,7 +31,7 @@ import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.6 $ - $Date: 2009-09-03 14:46:41 $
+ * @version $Revision: 1.7 $ - $Date: 2010-02-26 13:51:59 $
  */
 public class XMLUtils {
 
@@ -263,7 +263,7 @@ public class XMLUtils {
 //                    "http://opendap.aviso.oceanobs.com/data/ISO_19139/gco/gco.xsd", };
             
 //            C:\Documents and Settings\dearith\Mes documents\Atoll\SchemaIso\gml
-//            final String[] srcSchemas = {"C:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/srv/serviceMetadata.xsd",
+//            final String[] srcSchemas = {"C:/Documents and Settings/users documents/Atoll/SchemaIso/srv/serviceMetadata.xsd",
 //            };
 //            final String[] srcSchemas = {"schema/iso/srv/serviceMetadata.xsd",
 //            };
@@ -321,7 +321,7 @@ public class XMLUtils {
 //                    "http://opendap.aviso.oceanobs.com/data/ISO_19139/gco/gco.xsd", };
             
 //            C:\Documents and Settings\dearith\Mes documents\Atoll\SchemaIso\gml
-//            final String[] srcSchemas = {"C:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/srv/serviceMetadata.xsd",
+//            final String[] srcSchemas = {"C:/Documents and Settings/us/userocuments/Atoll/SchemaIso/srv/serviceMetadata.xsd",
 //            };
 //            final String[] srcSchemas = {"schema/iso/srv/serviceMetadata.xsd",
 //            };

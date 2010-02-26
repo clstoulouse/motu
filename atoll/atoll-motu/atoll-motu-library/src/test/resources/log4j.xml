@@ -24,12 +24,13 @@
 			<layout class="org.apache.log4j.xml.XMLLayout"/>
 		-->
 	</appender>
-<!-- 
 
 	<logger name="fr.cls.atoll.motu.library">
 		<level value="DEBUG" />
+		<appender-ref ref="CONSOLE" />		
 	</logger>
 
+<!-- 
 	<logger name="atoll.motu.library.queueserver">
 		<level value="INFO" />
 		<appender-ref ref="XMLFileInfo" />

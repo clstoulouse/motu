@@ -8,9 +8,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -47,7 +49,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * This class implements a service (AVISO, MERCATOR, ...).
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.9 $ - $Date: 2009-10-29 10:51:20 $
+ * @version $Revision: 1.10 $ - $Date: 2010-02-26 13:51:59 $
  */
 public class ServiceData {
 
@@ -462,6 +464,11 @@ public class ServiceData {
      */
     public String getName() {
         return this.name;
+//        try {
+//            return URLEncoder.encode(this.name, "UTF-8");
+//        } catch (UnsupportedEncodingException e) {
+//            return this.name;
+//        }
     }
 
     /**

@@ -142,7 +142,7 @@ public class TestFtp {
 
             try {
                 Organizer.getVFSSystemManager().copyFileToLocalFile("anonymous",
-                                                                    "dearith@cls.fr",
+                                                                    "email",
                                                                     "ftp",
                                                                     "ftp.cls.fr/pub/oceano/AVISO/",
                                                                     "NRT-SLA/maps/rt/j2/h/msla_rt_j2_err_21564.nc.gz",
@@ -255,17 +255,15 @@ public class TestFtp {
         // testVFS("atoll", "atoll", "sftp", "catsat-data1.cls.fr/home/atoll",
         // "/atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_20090516.xml");
 
-        // testVFS("anonymous", "dearith@cls.fr", "ftp", "ftp.cls.fr/pub/oceano/AVISO/",
+        // testVFS("anonymous", "email", "email.fr/pub/oceano/AVISO/",
         // "NRT-SLA/maps/rt/j2/h/msla_rt_j2_err_21564.nc.gz");
         //testVFS("anonymous@ftp.unidata.ucar.edu", "", "ftp", "proxy.cls.fr", "/pub/README");
 
         // testVFS("", "", "http", "catsat-data1.cls.fr:43080", "/thredds/catalog.xml");
 
         
-        // testVFS("anonymous@gridftp.bigred.iu.teragrid.org:2811", "dearith@cls.fr", "gsiftp",
-        // "proxy.cls.fr", "/pub/README");
-        // testVFS("anonymous@dcgftp.usatlas.bnl.gov:2811/", "dearith@cls.fr", "gsiftp", "proxy.cls.fr",
-        // "pnfs/usatlas.bnl.gov/arelvalid/loadtest/data1188508850256");
+        // testVFS("anonymous@gridftp.bigred.iu.teragrid.org:2811", "email", "gsiftp",		// "proxy.cls.fr", "/pub/README");
+        // testVFS("anonymous@dcgftp.usatlas.bnl.gov:2811/", "email", "gsiftp", "proxy.clemail  // "pnfs/usatlas.bnl.gov/arelvalid/loadtest/data1188508850256");
         // gsiftp://gridftp.bigred.iu.teragrid.org:2811/
         // gsiftp://155.69.144.160:8080/home/shahand/globus-4.1.2.1/var/DWSSDF/repository/org_globus_examples_services_core_first.0.gar
         // gsiftp://dcgftp.usatlas.bnl.gov/pnfs/usatlas.bnl.gov/arelvalid/loadtest/data1188508850256
@@ -274,8 +272,8 @@ public class TestFtp {
 //        fromUri = "http://proxy.cls.fr/19139/20060504/serviceMetadata.xsd";
 //        toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.txt";
 //        userFrom = "anonymous@schemas.opengis.net/iso";
-//        pwdFrom = "dearith@cls.fr";
-        testVFS("dearith", "bienvenue", "http", "schemas.opengis.net", "iso/19139/20060504/srv/serviceMetadata.xsd");
+//        pwdFrom = "email";
+        testVFS("login", "pwd",  "http", "schemas.opengis.net", "iso/19139/20060504/srv/serviceMetadata.xsd");
         // testVFSThread();
 
         String fromUri = "http://atoll-dev.cls.fr:30080/motu-extract/atoll-ressource-dataset-datafile-nrt-med-infrared-sst-timestamp_1244456058793.txt";
@@ -303,18 +301,18 @@ public class TestFtp {
         //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
 
         userTo = "anonymous";
-        pwdTo = "dearith@cls.fr";
-        toUri = "ftp://ftpsedr.cls.fr/pub/oceano/pistach/test.txt";               
+        pwdTo = "email";
+        toUri = "ftp://ftpsedr.cls.femailistach/test.txt";               
         //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
 
         userTo = "anonymous";
-        pwdTo = "dearith@cls.fr";
-        //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
+        pwdTo = "email";
+        //testPush(fromUri, toUri, userFrom, emailo, pwdTo);
         
         userTo = "anonymous";
-        pwdTo = "dearith@cls.fr";
+        pwdTo = "email";
         toUri = "ftp://CLS-EARITH.pc.cls.fr/test.txt";
-        //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
+        testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
         
         userTo = "t";
         pwdTo = "t";
@@ -332,17 +330,14 @@ public class TestFtp {
         fromUri = "ftp://proxy.cls.fr/pub/README";
         toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.txt";
         userFrom = "anonymous@ftp.unidata.ucar.edu";
-        pwdFrom = "dearith@cls.fr";
-        //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
-
-        
+        pwdFrom = "email";
+        //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pemail    
         fromUri = "http://proxy.cls.fr/19139/20060504/serviceMetadata.xsd";
         toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.txt";
         userFrom = "anonymous@schemas.opengis.net/iso";
-        pwdFrom = "dearith@cls.fr";
+        pwdFrom = "email";
         //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
 
-            
         // URI uriTest = null;
         // try {
         // uriTest =
@@ -364,7 +359,7 @@ public class TestFtp {
         try {
 
             // String user = "anonymous";
-            // String pass = "dearith@cls.fr";
+            // String pass = "email";
             // String server = "ftp.cls.fr";
             //
             // FTPClient client = new FTPClient();
@@ -390,7 +385,7 @@ public class TestFtp {
             String pass = "";
             server = "ftp.cls.fr";
             user = "anonymous";
-            pass = "dearith@cls.fr";
+            pass = "email";
 
             StaticUserAuthenticator auth = new StaticUserAuthenticator(null, user, pass);
             DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
@@ -414,7 +409,7 @@ public class TestFtp {
         try {
 
             // String user = "anonymous";
-            // String pass = "dearith@cls.fr";
+            // String pass = "email";
             // String server = "ftp.cls.fr";
             //
             // FTPClient client = new FTPClient();
