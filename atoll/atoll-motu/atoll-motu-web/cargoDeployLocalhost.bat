@@ -1,8 +1,23 @@
-:begin
+begin
 
-:install
+echo off
 
-REM call mvn -Dmaven.test.skip=true install
+set CURRENT_DIR=%cd%
+
+:install-motu
+
+cd ..
+
+REM echo validate atoll-motu and  dependencies
+REM call mvn -Dmaven.test.skip=true -P %1 validate 
+
+REM echo install atoll-motu and  dependencies
+call mvn -Dmaven.test.skip=true -P %1 clean install 
+
+cd /D %CURRENT_DIR%
+:install-motu-web
+
+call mvn -Dmaven.test.skip=true install
 
 :deploy
 
