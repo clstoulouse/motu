@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>atoll-motu</artifactId>
 		<groupId>cls.atoll</groupId>
@@ -13,13 +14,18 @@
 	<name>ATOLL Motu Library</name>
 	<scm>
 		<connection>scm:cvs:pserver:@cvsserver.cls.fr:/home/cvs/REPOSITORIES/mvn-atoll:atoll/atoll-motu/atoll-motu-library</connection>
-  </scm>
+	</scm>
 	<description>This package holds the core components of the Motu server.</description>
 	<dependencies>
 		<dependency>
 			<groupId>cls.atoll.motu</groupId>
 			<artifactId>atoll-motu-msg</artifactId>
 			<version>2.0.4-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jasig.cas</groupId>
+			<artifactId>cas-client-core</artifactId>
+			<version>3.1.10</version>
 		</dependency>
 		<dependency>
 			<groupId>org.freemarker</groupId>
@@ -73,7 +79,7 @@
 		<dependency>
 			<groupId>jscience</groupId>
 			<artifactId>jscience</artifactId>
-			<version>4.3.1-PATCH-CLS</version>			
+			<version>4.3.1-PATCH-CLS</version>
 		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>
@@ -116,13 +122,11 @@
 			</dependency> <dependency> <groupId>com.jcraft</groupId>
 			<artifactId>jsch</artifactId> <version>0.1.23</version> </dependency>
 		-->
-		<!-- 
-		<dependency>
-			<groupId>quartz</groupId>
-			<artifactId>quartz</artifactId>
-			<version>1.5.2</version>
-		</dependency>
- -->
+		<!--
+			<dependency> <groupId>quartz</groupId>
+			<artifactId>quartz</artifactId> <version>1.5.2</version>
+			</dependency>
+		-->
 		<dependency>
 			<groupId>opensymphony</groupId>
 			<artifactId>quartz</artifactId>

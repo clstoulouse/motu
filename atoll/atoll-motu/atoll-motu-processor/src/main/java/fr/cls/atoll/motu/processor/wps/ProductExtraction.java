@@ -13,6 +13,7 @@ import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.output.ComplexOutput;
 import org.deegree.services.wps.output.LiteralOutput;
+import org.jasig.cas.client.util.AssertionHolder;
 
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
@@ -28,7 +29,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
  * 
  * @author last edited by: $Author: dearith $
- * @version $Revision: 1.5 $, $Date: 2009-10-29 10:52:04 $
+ * @version $Revision: 1.6 $, $Date: 2010-02-26 14:09:43 $
  */
 public class ProductExtraction extends MotuWPSProcess {
 
@@ -85,6 +86,9 @@ public class ProductExtraction extends MotuWPSProcess {
                     .getProductId(), getDataFormat(in), null, responseFormat, userId, anonymousUser);
 
             extractionParameters.setBatchQueue(isBatch(in));
+
+            // Set assertion to manage CAS.
+            extractionParameters.setAssertion(AssertionHolder.getAssertion());
 
             try {
                 productDownload(in, extractionParameters, mode, priority);
