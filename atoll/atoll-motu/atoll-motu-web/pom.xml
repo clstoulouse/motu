@@ -28,6 +28,13 @@
 		</dependency>
 
 		<dependency>
+		     <groupId>org.jasig.cas</groupId>
+		     <artifactId>cas-client-core</artifactId>
+		     <version>3.1.10</version>
+		</dependency>
+		
+
+		<dependency>
 			<groupId>cls.atoll.motu</groupId>
 			<artifactId>atoll-motu-library</artifactId>
 			<version>2.0.4-SNAPSHOT</version>
@@ -153,13 +160,14 @@
 						<deployables>
 							<deployable>
 								<groupId>${project.groupId}</groupId>
-								<artifactId>${project.artifactId}</artifactId>
+								<artifactId>${project.artifactId}</artifactId>								
 								<type>war</type>
 								<properties>
 									<!-- 
 									<context>${project.artifactId}</context>
- 									-->
 									<context>${application.tomcat.context}</context>
+ 									-->
+									<context>${remote.application.tomcat.context}</context>
 								</properties>
 							</deployable>
 						</deployables>
@@ -210,6 +218,7 @@
 				<tomcat.url>http://localhost:8080</tomcat.url>
 				<remote.username>admin</remote.username>
 				<remote.password />
+				<remote.application.tomcat.context>${application.tomcat.context}</remote.application.tomcat.context>				
 			</properties>
 		</profile>
 		<profile>
@@ -219,6 +228,17 @@
 				<tomcat.url>http://atoll-dev.cls.fr:30080</tomcat.url>
 				<remote.username>admin</remote.username>
 				<remote.password />
+				<remote.application.tomcat.context>${application.tomcat.context}</remote.application.tomcat.context>				
+			</properties>
+		</profile>
+		<profile>
+			<id>atoll-qt4</id>
+			<properties>
+				<config.dir>atoll-qt4</config.dir>
+				<tomcat.url>http://atoll-qt4.cls.fr:33080</tomcat.url>
+				<remote.username>admin</remote.username>
+				<remote.password />
+				<remote.application.tomcat.context>atoll-motu-servlet</remote.application.tomcat.context>				
 			</properties>
 		</profile>
 
