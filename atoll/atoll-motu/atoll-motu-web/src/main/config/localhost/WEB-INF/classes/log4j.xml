@@ -10,9 +10,18 @@
 		</layout>
 	</appender>
 
+	<appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="C:/Java/apache-tomcat-6.0.9/logs/localhost-log.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
+		<param name="Append" value="true"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{HH:mm:ss:SSS} - %p - %C{1} - %m%n"/>
+		</layout>
+	</appender>
+
 	<appender class="org.apache.log4j.DailyRollingFileAppender"
 		name="XMLFileInfo">
-		<param name="file" value="infoup.xml" />
+		<param name="file" value="C:/Java/apache-tomcat-6.0.9/logs/motuQSlog.xml" />
 		<!--
 			<param name="encoding" value="UTF-8" />
 		-->
@@ -26,10 +35,29 @@
 		-->
 	</appender>
 
-	<!--
-		<logger name="fr.cls.atoll.motu"> <level value="DEBUG" />
-		<appender-ref ref="CONSOLE" /> </logger>
-	-->
+		<logger name="fr.cls.atoll.motu"> 
+			<level value="DEBUG" />
+			<appender-ref ref="CONSOLE" /> 
+		</logger>
+<!--
+		-->
+<!-- 	
+	<logger name="fr.cls.atoll.motu.cas.proxy">
+		<level value="DEBUG" />
+		<appender-ref ref="FILE" />
+	</logger>
+	<logger name="org.jasig.cas">
+		<level value="ALL" />
+		<appender-ref ref="FILE" />
+	</logger>
+
+ 	<logger name="fr.cls.atoll.motu.library">
+		<level value="DEBUG" />
+		<appender-ref ref="FILE" />
+	</logger>
+-->
+	
+<!-- 	
 	<logger name="fr.cls.atoll.motu.processor">
 		<level value="DEBUG" />
 		<appender-ref ref="CONSOLE" />
@@ -42,15 +70,25 @@
 		<level value="TRACE" />
 		<appender-ref ref="CONSOLE" />
 	</logger>
-
-	<!--
-		<logger name="atoll.motu.queueserver"> <level value="INFO" />
-		<appender-ref ref="XMLFileInfo" /> </logger>
-	-->
-	<logger name="org.apache.commons.httpclient">
-		<level value="fatal" />
+ -->
+	<logger name="atoll.motu.queueserver">
+		<level value="INFO" />
+		<appender-ref ref="XMLFileInfo" /> 
 	</logger>
-
+	<!--
+	-->
+<!--	
+	<logger name="org.apache.commons.httpclient">
+		<level value="DEBUG" />
+		<appender-ref ref="FILE" />
+	</logger>
+	
+	<logger name="httpclient.wire">
+		<level value="DEBUG" />
+		<appender-ref ref="FILE" />
+	</logger>
+-->	
+<!-- 
 	<logger name="httpclient.wire.header">
 		<level value="fatal" />
 	</logger>
@@ -58,10 +96,11 @@
 	<logger name="httpclient.wire.content">
 		<level value="fatal" />
 	</logger>
-	
+	 -->
 	<root>
 		<!-- 
 		<level value="INFO" />
+		<appender-ref ref="FILE" />	
 		<appender-ref ref="CONSOLE" />
  -->
 	</root>

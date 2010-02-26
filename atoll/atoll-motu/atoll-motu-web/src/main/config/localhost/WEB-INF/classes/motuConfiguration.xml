@@ -44,7 +44,7 @@
 <motuConfig defaultService="&atoll;motu-opendap-aviso" proxyLogin="dearith" useProxy="true"
 	proxyPwd="bienvenue" useAuthentication="false" dataBlockSize="102400"
 	maxSizePerFile="1024"
-	extractionPath="C:\Java\apache-tomcat-6.0.9\webapps\motu-file-extract"
+	extractionPath="C:\Java\apache-tomcat-6.0.9\webapps\ROOT\motu-file-extract"
 	downloadHttpUrl="http://localhost:8080/motu-file-extract"
 	extractionFilePatterns=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|.*\.extract$|wps_output_.*$|wps_response_.*$"
 	httpDocumentRoot="http://aviso-motu.cls.fr">
@@ -77,7 +77,35 @@
 		<catalog name="catalogAvisoFTP.xml" type="FTP"
 			urlSite="sftp://atoll:atoll@aviso-data1.cls.fr/home/atoll/atoll-distrib/HOA_Aviso/Interface_ATOLL" />
 	</configService>
-
+	<!--===========================================================-->
+	<!--                    mercator Service          -->
+	<!--===========================================================-->
+	<configService defaultLanguage="FR" description="Ocean data"
+		group="Mercator" httpBaseRef="http://www.mercator-ocean.fr"
+		name="mercator" veloTemplatePrefix="mercator">
+		<catalog name="catalog.xml" type="tds"
+			urlSite="http://opendap.mercator-ocean.fr/thredds" />
+	</configService>
+	<!--===========================================================-->
+	<!--                   aviso Service          -->
+	<!--===========================================================-->	
+	<configService defaultLanguage="UK"
+		description="Aviso Near Real Time and Delayed Time data" group="Aviso"
+		httpBaseRef="http://www.aviso.oceanobs.com" name="aviso"
+		veloTemplatePrefix="aviso">
+		<catalog name="catalog.xml" type="tds"
+			urlSite="http://opendap.aviso.oceanobs.com/thredds" />
+	</configService>
+	<!--===========================================================-->
+	<!--                   OpendapAuth Service          -->
+	<!--===========================================================-->	
+	<configService defaultLanguage="FR"
+		description="Test CASified Opendap " group="opendapauth"
+		httpBaseRef="http://www.aviso.oceanobs.com" name="opendapauth"
+		veloTemplatePrefix="cls">
+		<catalog name="catalog.xml" type="tds"
+			urlSite="http://atoll-dev.cls.fr:43080/thredds" />
+	</configService>
 	<!--===========================================-->
 	<!--      QUEUE SERVER CONFIG      -->
 	<!--===========================================-->

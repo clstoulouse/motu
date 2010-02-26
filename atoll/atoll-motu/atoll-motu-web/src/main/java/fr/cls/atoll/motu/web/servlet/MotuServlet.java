@@ -56,6 +56,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.log4j.Logger;
+import org.jasig.cas.client.util.AssertionHolder;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -63,7 +64,7 @@ import org.apache.log4j.Logger;
  * The Class MotuServlet.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-10-08 14:36:52 $
+ * @version $Revision: 1.4 $ - $Date: 2010-02-26 14:15:03 $
  */
 public class MotuServlet extends HttpServlet implements MotuRequestParametersConstant {
 
@@ -1028,6 +1029,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
         extractionParameters.setBatchQueue(isBatch(request));
 
+        // Set assertion to manage CAS.
+        extractionParameters.setAssertion(AssertionHolder.getAssertion());
+
         response.setContentType(null);
 
         getAmountDataSize(extractionParameters, response);
@@ -1420,6 +1424,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         extractionParameters.setBatchQueue(isBatch(request));
         extractionParameters.setUserHost(userHost);
 
+        // Set assertion to manage CAS.
+        extractionParameters.setAssertion(AssertionHolder.getAssertion());
+
         productDownload(extractionParameters, mode, priority, session, response);
 
         boolean noMode = RunnableHttpExtraction.noMode(mode);
@@ -1487,6 +1494,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 responseFormat,
                 null,
                 true);
+
+        // Set assertion to manage CAS.
+        extractionParameters.setAssertion(AssertionHolder.getAssertion());
 
         setLanguageParameter(request, session, response);
 
