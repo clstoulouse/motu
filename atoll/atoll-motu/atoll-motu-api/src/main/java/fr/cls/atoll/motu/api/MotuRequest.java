@@ -38,7 +38,7 @@ import fr.cls.atoll.motu.msg.xml.StatusModeType;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author Jean-Michel FARENC
- * @version $Revision: 1.2 $ - $Date: 2009-09-16 13:54:04 $
+ * @version $Revision: 1.3 $ - $Date: 2010-02-26 14:06:56 $
  */
 public class MotuRequest {
 
@@ -49,6 +49,8 @@ public class MotuRequest {
     private static JAXBContext jaxbContextMotuMsg = null;
 
     private static Unmarshaller unmarshallerMotuMsg = null;
+
+    private int connectTimeout = 60000;
 
     // private static Map<String, String> requestExtraInfo = null;
 
@@ -183,6 +185,7 @@ public class MotuRequest {
 
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setConnectTimeout(connectTimeout);
         } catch (IOException ex) {
             LOG.error("execute()", ex);
 
@@ -964,6 +967,14 @@ public class MotuRequest {
         return motuRequestParameters;
     }
 
+    public void setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+    
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
+    
     /**
      * Positionne les paramètres de la requête motu.
      * 
