@@ -49,7 +49,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * This class implements a service (AVISO, MERCATOR, ...).
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.10 $ - $Date: 2010-02-26 13:51:59 $
+ * @version $Revision: 1.11 $ - $Date: 2010-03-01 11:14:25 $
  */
 public class ServiceData {
 
@@ -677,11 +677,27 @@ public class ServiceData {
         this.catalogFileName = catalogFileName;
     }
 
-    // /**
-    // * URL of a XML file containing the catalog.
-    // * @uml.property name="catalogLocation"
-    // */
-    // private String catalogLocation = "";
+    /** Does Service needs CAS authentification to access catalog resources and data. */
+    protected boolean casAuthentification = false;
+
+
+    /**
+     * Checks if is cas authentification.
+     * 
+     * @return true, if is cas authentification
+     */
+    public boolean isCasAuthentification() {
+        return casAuthentification;
+    }
+
+    /**
+     * Sets the cas authentification.
+     * 
+     * @param casAuthentification the new cas authentification
+     */
+    public void setCasAuthentification(boolean casAuthentification) {
+        this.casAuthentification = casAuthentification;
+    }
 
     /**
      * Returns the catalog location (urlSite + catalogFileName).
@@ -718,6 +734,7 @@ public class ServiceData {
         if (catalog == null) {
             catalog = new CatalogData();
             catalog.setUrlSite(urlSite);
+            catalog.setCasAuthentification(casAuthentification);
         }
 
         switch (getCatalogType()) {

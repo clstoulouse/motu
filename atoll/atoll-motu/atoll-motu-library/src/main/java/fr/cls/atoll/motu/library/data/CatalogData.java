@@ -52,7 +52,7 @@ import fr.cls.atoll.motu.library.tds.server.TimeCoverageType;
  * This class implements a product's catalog .
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.11 $ - $Date: 2010-02-26 13:51:59 $
+ * @version $Revision: 1.12 $ - $Date: 2010-03-01 11:14:25 $
  */
 public class CatalogData {
 
@@ -1345,6 +1345,7 @@ public class CatalogData {
         try {
             // JAXBContext jc = JAXBContext.newInstance(TDS_SCHEMA_PACK_NAME);
             // Unmarshaller unmarshaller = jc.createUnmarshaller();
+                        
             URL url = new URL(AssertionUtils.addCASTicket(path));
             URLConnection conn = url.openConnection();
             in = conn.getInputStream();
@@ -1747,9 +1748,30 @@ public class CatalogData {
             this.urlSite = urlSite;
         }
     }
+    /** Does Service needs CAS authentification to access catalog resources and data. */
+    protected boolean casAuthentification = false;
+
+
+    /**
+     * Checks if is cas authentification.
+     * 
+     * @return true, if is cas authentification
+     */
+    public boolean isCasAuthentification() {
+        return casAuthentification;
+    }
+
+    /**
+     * Sets the cas authentification.
+     * 
+     * @param casAuthentification the new cas authentification
+     */
+    public void setCasAuthentification(boolean casAuthentification) {
+        this.casAuthentification = casAuthentification;
+    }
 
     /** Temporary variable use to set product id loaded in the catalog. When catalog is loaded only product that are in this set are retained in the products map. */
-    private Set<String> productsLoaded = null;
+    public Set<String> productsLoaded = null;
 
 }
 // CSON: MultipleStringLiterals
