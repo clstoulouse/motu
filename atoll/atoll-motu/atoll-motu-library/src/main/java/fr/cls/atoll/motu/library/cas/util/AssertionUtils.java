@@ -19,7 +19,7 @@ import fr.cls.atoll.motu.library.cas.HttpClientForCAS;
  * <br><br>Copyright : Copyright (c) 2010.
  * <br><br>Société : CLS (Collecte Localisation Satellites)
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2010-02-26 13:51:59 $
+ * @version $Revision: 1.2 $ - $Date: 2010-03-01 16:01:33 $
  */
 public class AssertionUtils {
     /**
@@ -67,6 +67,13 @@ public class AssertionUtils {
             LOG.debug("addCASTicket(Assertion, String) - entering : debugPGTFromSession " + AssertionUtils.debugPGT(assertion));
         }
 
+        if (assertion == null ) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("addCASTicket(String) - exiting - assertion is null");
+            }
+            return targetService;
+        }
+        
         if (AssertionUtils.isNullOrEmpty(targetService)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("addCASTicket(String) - exiting - targetService is null or empty");
@@ -121,9 +128,16 @@ public class AssertionUtils {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProxyTicketFor(Assertion, String) - entering");
         }
-
+        
         String ticket = "";
 
+        if (assertion == null ) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getProxyTicketFor(Assertion, String) - exiting - assertion is null");
+            }
+            return ticket;
+        }
+        
         AttributePrincipal attributePrincipal = AssertionUtils.getAttributePrincipal(assertion);
 
         if (attributePrincipal != null) {
