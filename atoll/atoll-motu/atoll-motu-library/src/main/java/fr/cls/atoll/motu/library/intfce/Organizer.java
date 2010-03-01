@@ -96,7 +96,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.31 $ - $Date: 2009-12-14 09:56:13 $
+ * @version $Revision: 1.32 $ - $Date: 2010-03-01 16:01:17 $
  */
 public class Organizer {
 
@@ -4292,6 +4292,7 @@ public class Organizer {
             service.setUrlSite(confServ.getCatalog().getUrlSite());
             service.setCatalogFileName(confServ.getCatalog().getName());
             service.setCatalogType(confServ.getCatalog().getType());
+            service.setCasAuthentification(confServ.getCatalog().isCasAuthentification());
             service.setVeloTemplatePrefix(confServ.getVeloTemplatePrefix());
             service.setKeepDataFilesList(confServ.isKeepDataFilesList());
 

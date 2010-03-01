@@ -24,6 +24,9 @@ import javax.xml.bind.JAXBElement;
 
 import org.apache.log4j.Logger;
 
+import ucar.ma2.MAMath.MinMax;
+import ucar.unidata.geoloc.LatLonRect;
+
 import fr.cls.atoll.motu.library.cas.HttpClientForCAS;
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.library.exception.MotuException;
@@ -31,6 +34,7 @@ import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.inventory.Access;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
+import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
 import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.inventory.Resource;
 import fr.cls.atoll.motu.library.inventory.ResourceOLA;
@@ -44,6 +48,7 @@ import fr.cls.atoll.motu.library.tds.server.CatalogRef;
 import fr.cls.atoll.motu.library.tds.server.DatasetType;
 import fr.cls.atoll.motu.library.tds.server.DateTypeFormatted;
 import fr.cls.atoll.motu.library.tds.server.DocumentationType;
+import fr.cls.atoll.motu.library.tds.server.SpatialRange;
 import fr.cls.atoll.motu.library.tds.server.TimeCoverageType;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
@@ -52,7 +57,7 @@ import fr.cls.atoll.motu.library.tds.server.TimeCoverageType;
  * This class implements a product's catalog .
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.12 $ - $Date: 2010-03-01 11:14:25 $
+ * @version $Revision: 1.13 $ - $Date: 2010-03-01 16:01:16 $
  */
 public class CatalogData {
 
@@ -159,7 +164,7 @@ public class CatalogData {
      * 
      * @throws MotuException the motu exception
      */
-    public void loadFtpInventory(String xmlUri) throws MotuException {
+    public Product loadFtpInventory(String xmlUri) throws MotuException {
 
         Inventory inventoryOLA = Organizer.getInventoryOLA(xmlUri);
 
@@ -178,20 +183,20 @@ public class CatalogData {
             product = new Product();
             productMetaData = new ProductMetaData();
             productMetaData.setProductId(productId);
+
         } else {
             newProduct = false;
             productMetaData = product.getProductMetaData();
         }
 
         product.setProductMetaData(productMetaData);
-        
+
         product.setLocationMetaData(xmlUri);
 
         productsLoaded.add(productId);
-        
+
         product.loadInventoryGlobalMetaData(inventoryOLA);
-        
-        
+
         URI accessUri = null;
         URI accessUriTemp = null;
         String login = access.getLogin();
@@ -225,14 +230,16 @@ public class CatalogData {
         }
 
         product.setLocationData(accessUri.toString());
-        
+
         List<DataFile> dataFiles = CatalogData.loadFtpDataFiles(inventoryOLA);
-        
+
         product.setDataFiles(dataFiles);
-        
+
         if (newProduct) {
             putProducts(productMetaData.getProductId(), product);
         }
+
+        return product;
 
     }
 
@@ -244,13 +251,13 @@ public class CatalogData {
      * @return the list< data file>
      */
     public static List<DataFile> loadFtpDataFiles(Inventory inventoryOLA) {
-        
+
         if (inventoryOLA.getFiles().getFile().isEmpty()) {
             return null;
         }
-        
+
         List<DataFile> dataFiles = new ArrayList<DataFile>();
-        
+
         for (fr.cls.atoll.motu.library.inventory.File file : inventoryOLA.getFiles().getFile()) {
             DataFile dataFile = new DataFile();
             dataFile.setName(file.getName());
@@ -258,15 +265,16 @@ public class CatalogData {
             dataFile.setStartCoverageDate(file.getStartCoverageDate());
             dataFile.setEndCoverageDate(file.getEndCoverageDate());
             dataFile.setWeight(file.getWeight().doubleValue());
-            
+
             dataFiles.add(dataFile);
         }
-        
+
         DataFileComparator dataFileComparator = new DataFileComparator();
         Collections.sort(dataFiles, dataFileComparator);
-        
+
         return dataFiles;
     }
+
     /**
      * Loads an Opendap catalog..
      * 
@@ -367,7 +375,7 @@ public class CatalogData {
      * Loads an Tds catalog.
      * 
      * @param catalogRef catalog reference(from Tds catalog) from which information will be loaded Dataset
-     * contains a list of datasets, recursivity is use to load.
+     *            contains a list of datasets, recursivity is use to load.
      * 
      * @return the number of path element found in the catalog ref name.
      * 
@@ -617,7 +625,7 @@ public class CatalogData {
      * Loads Opendap products from Opendap catalog.
      * 
      * @param dataset dataset (from Opendap catalog) from which information will be loaded Dataset contains a
-     * list of datasets, recursivity is use to load.
+     *            list of datasets, recursivity is use to load.
      * 
      * @throws MotuException the motu exception
      */
@@ -677,7 +685,7 @@ public class CatalogData {
      * 
      * @param catalogXml Tds catalog
      * @param datasetType dataset (from Tds catalog) from which information will be loaded Dataset contains a
-     * list of datasets, recursivity is use to load.
+     *            list of datasets, recursivity is use to load.
      * 
      * @throws MotuException the motu exception
      */
@@ -932,6 +940,8 @@ public class CatalogData {
 
         // Loads time coverage of the dataset
         loadTdsTimeCoverage(datasetType, productMetaData);
+        
+        loadTdsGeoAndDepthCoverage(datasetType, productMetaData);
 
         product.setProductMetaData(productMetaData);
 
@@ -1250,6 +1260,40 @@ public class CatalogData {
         }
     }
 
+    private void loadTdsGeoAndDepthCoverage(DatasetType datasetType, ProductMetaData productMetaData) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadTdsGeoCoverage(DatasetType, ProductMetaData) - entering");
+        }
+
+        List<Object> listGeoCoverageObject = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), fr.cls.atoll.motu.library.tds.server.GeospatialCoverage.class);
+
+        productMetaData.setGeoBBox(null);
+
+        for (Object objectElt : listGeoCoverageObject) {
+
+            if (!(objectElt instanceof fr.cls.atoll.motu.library.tds.server.GeospatialCoverage)) {
+                continue;
+            }
+            fr.cls.atoll.motu.library.tds.server.GeospatialCoverage geospatialCoverage = (fr.cls.atoll.motu.library.tds.server.GeospatialCoverage) objectElt;
+
+            // Set lat/lon coverage
+            ExtractCriteriaLatLon extractCriteriaLatLon = new ExtractCriteriaLatLon(geospatialCoverage);
+            productMetaData.setGeoBBox(new LatLonRect(extractCriteriaLatLon.getLatLonRect()));
+            
+            // Set depth coverage
+            SpatialRange spatialRangeUpDown = geospatialCoverage.getUpdown();
+            
+            double min = spatialRangeUpDown.getStart();
+            double max = min  + spatialRangeUpDown.getSize();
+            
+            productMetaData.setDepthCoverage(new MinMax(min, max));
+            
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadTdsGeoCoverage(DatasetType, ProductMetaData) - exiting");
+        }
+    }
     /**
      * Loads Opendap products documentations from Opendap catalog.
      * 
@@ -1345,7 +1389,7 @@ public class CatalogData {
         try {
             // JAXBContext jc = JAXBContext.newInstance(TDS_SCHEMA_PACK_NAME);
             // Unmarshaller unmarshaller = jc.createUnmarshaller();
-                        
+
             URL url = new URL(AssertionUtils.addCASTicket(path));
             URLConnection conn = url.openConnection();
             in = conn.getInputStream();
@@ -1413,7 +1457,7 @@ public class CatalogData {
     public void setTitle(String title) {
         this.title = title;
     }
-    
+
     /** The current product. */
     private Product currentProduct = null;
 
@@ -1628,7 +1672,7 @@ public class CatalogData {
      * @param key key whose associated value is to be returned.
      * 
      * @return the value to which this map maps the specified key, or <tt>null</tt> if the map contains no
-     * mapping for this key.
+     *         mapping for this key.
      * 
      * @see java.util.Map#get(Object)
      * @uml.property name="products"
@@ -1748,9 +1792,9 @@ public class CatalogData {
             this.urlSite = urlSite;
         }
     }
+
     /** Does Service needs CAS authentification to access catalog resources and data. */
     protected boolean casAuthentification = false;
-
 
     /**
      * Checks if is cas authentification.
@@ -1770,7 +1814,10 @@ public class CatalogData {
         this.casAuthentification = casAuthentification;
     }
 
-    /** Temporary variable use to set product id loaded in the catalog. When catalog is loaded only product that are in this set are retained in the products map. */
+    /**
+     * Temporary variable use to set product id loaded in the catalog. When catalog is loaded only product
+     * that are in this set are retained in the products map.
+     */
     public Set<String> productsLoaded = null;
 
 }

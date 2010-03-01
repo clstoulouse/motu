@@ -49,14 +49,17 @@ import fr.cls.commons.util.io.ConfigLoader;
  * This class implements a service (AVISO, MERCATOR, ...).
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.11 $ - $Date: 2010-03-01 11:14:25 $
+ * @version $Revision: 1.12 $ - $Date: 2010-03-01 16:01:16 $
  */
 public class ServiceData {
 
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(ServiceData.class);
 
-    /** Name of the file that contents inforamtion of how to get huge data file. With '%s' corresponding to the grup name of the service in lowercase (ie aviso, mercator). */
+    /**
+     * Name of the file that contents inforamtion of how to get huge data file. With '%s' corresponding to the
+     * grup name of the service in lowercase (ie aviso, mercator).
+     */
     private static final String HOW_TO_GET_EXCEED_DATA_INFO_FILENAME = "howToGetExceedData.%s.info";
 
     /** The Constant VELOCITY_TEMPLATE_SUFFIX_FILE. */
@@ -464,11 +467,11 @@ public class ServiceData {
      */
     public String getName() {
         return this.name;
-//        try {
-//            return URLEncoder.encode(this.name, "UTF-8");
-//        } catch (UnsupportedEncodingException e) {
-//            return this.name;
-//        }
+        // try {
+        // return URLEncoder.encode(this.name, "UTF-8");
+        // } catch (UnsupportedEncodingException e) {
+        // return this.name;
+        // }
     }
 
     /**
@@ -680,7 +683,6 @@ public class ServiceData {
     /** Does Service needs CAS authentification to access catalog resources and data. */
     protected boolean casAuthentification = false;
 
-
     /**
      * Checks if is cas authentification.
      * 
@@ -721,6 +723,59 @@ public class ServiceData {
     // }
 
     /**
+     * Creates the catalog data.
+     * 
+     * @return the catalog data
+     */
+    public CatalogData createCatalogData() {
+        CatalogData catalogData = new CatalogData();
+        catalogData = new CatalogData();
+        catalogData.setUrlSite(urlSite);
+        catalogData.setCasAuthentification(casAuthentification);
+        return catalogData;
+    }
+
+    
+    /**
+     * Load catalog info.
+     * 
+     * @param catalogData the catalog data
+     * 
+     * @return the catalog data
+     * 
+     * @throws MotuException the motu exception
+     */
+    public CatalogData loadCatalogInfo(CatalogData catalogData) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadCatalogInfo(CatalogData) - entering");
+        }
+        
+        if (catalogData == null) {
+            catalogData = createCatalogData();
+        }
+
+        switch (getCatalogType()) {
+        case OPENDAP:
+            catalogData.loadOpendapCatalog(this.getCatalogLocation());
+            break;
+        case TDS:
+            catalogData.loadTdsCatalog(this.getCatalogLocation());
+            break;
+        case FTP:
+            catalogData.loadFtpCatalog(this.getCatalogLocation());
+            break;
+        default:
+            throw new MotuException(String.format("Unknown catalog type %d ", getCatalogType()));
+            // break;
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadCatalogInfo(CatalogData) - exiting");
+        }
+        return catalogData;
+    }
+
+    /**
      * Loads the catalog.
      * 
      * @throws MotuException the motu exception
@@ -731,26 +786,26 @@ public class ServiceData {
             LOG.debug("loadCatalogInfo() - entering");
         }
 
-        if (catalog == null) {
-            catalog = new CatalogData();
-            catalog.setUrlSite(urlSite);
-            catalog.setCasAuthentification(casAuthentification);
-        }
+        catalog = loadCatalogInfo(catalog);
 
-        switch (getCatalogType()) {
-        case OPENDAP:
-            catalog.loadOpendapCatalog(this.getCatalogLocation());
-            break;
-        case TDS:
-            catalog.loadTdsCatalog(this.getCatalogLocation());
-            break;
-        case FTP:
-            catalog.loadFtpCatalog(this.getCatalogLocation());
-            break;
-        default:
-            throw new MotuException(String.format("Unknown catalog type %d ", getCatalogType()));
-            // break;
-        }
+//        if (catalog == null) {
+//            catalog = createCatalogData();
+//        }
+//
+//        switch (getCatalogType()) {
+//        case OPENDAP:
+//            catalog.loadOpendapCatalog(this.getCatalogLocation());
+//            break;
+//        case TDS:
+//            catalog.loadTdsCatalog(this.getCatalogLocation());
+//            break;
+//        case FTP:
+//            catalog.loadFtpCatalog(this.getCatalogLocation());
+//            break;
+//        default:
+//            throw new MotuException(String.format("Unknown catalog type %d ", getCatalogType()));
+//            // break;
+//        }
 
         // Chargement de la map des infos persistente pour le service et ses produits
         // Synchronisation pour ne pas que plusieurs threads effectue ce chargement
@@ -867,11 +922,13 @@ public class ServiceData {
 
         Product product = new Product();
         currentProduct = product;
-        product.setLocationData(locationData);
-        product.setProductIdFromLocation();
 
         if (Organizer.isXMLFile(locationData)) {
             this.setCatalogType(CatalogData.CatalogType.FTP);
+            product.setLocationMetaData(locationData);
+        } else {
+            product.setLocationData(locationData);
+            product.setProductIdFromLocation();
         }
         //        
         // try {
@@ -946,7 +1003,8 @@ public class ServiceData {
             product.loadOpendapMetaData();
             break;
         case FTP:
-            // product.loadInventoryMetaData();
+//            String xmlUri = product.getLocationMetaData();
+//            product = catalog.loadFtpInventory(xmlUri);
             break;
         default:
             throw new MotuNotImplementedException(String.format("Unimplemented catalog type %d ", getCatalogType()));
@@ -956,6 +1014,27 @@ public class ServiceData {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductInformation() - exiting");
         }
+        return product;
+    }
+
+    /**
+     * Gets the product information from xml.
+     * 
+     * @param productId the product id
+     * 
+     * @return the product information from xml
+     * 
+     * @throws MotuException the motu exception
+     */
+    public Product getProductInformationFromConfig(String productId, CatalogData catalogData) throws MotuException {
+
+        catalogData = loadCatalogInfo(catalogData);
+        Product product = catalogData.getProducts(productId);     
+        
+        if (getCatalogType() == CatalogData.CatalogType.FTP) {
+            product = catalogData.loadFtpInventory(product.getLocationMetaData());
+        }       
+        
         return product;
     }
 
@@ -1169,7 +1248,7 @@ public class ServiceData {
      * 
      * @param criteria list of criteria (geographical coverage, temporal coverage ...)
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     * be empty string)
+     *            be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * 
@@ -1234,7 +1313,7 @@ public class ServiceData {
      * Add a temporal criteria to a list of {@link ExtractCriteria} objects.
      * 
      * @param criteria list of criteria (geographical coverage, temporal coverage ...), if null list is
-     * created
+     *            created
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * 
      * @throws MotuException the motu exception
@@ -1259,9 +1338,9 @@ public class ServiceData {
      * Add a geographical Lat/Lon criteria to a list of {@link ExtractCriteria} objects.
      * 
      * @param criteria list of criteria (geographical coverage, temporal coverage ...), if null list is
-     * created
+     *            created
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     * be empty string)
+     *            be empty string)
      * 
      * @throws MotuInvalidLongitudeException the motu invalid longitude exception
      * @throws MotuInvalidLatitudeException the motu invalid latitude exception
@@ -1284,7 +1363,7 @@ public class ServiceData {
      * Add a geographical Depth criteria to a list of {@link ExtractCriteria} objects.
      * 
      * @param criteria list of criteria (geographical coverage, temporal coverage ...), if null list is
-     * created
+     *            created
      * @param listDepthCoverage list contains low depth, high depth.
      * 
      * @throws MotuInvalidDepthException the motu invalid depth exception
@@ -1415,13 +1494,13 @@ public class ServiceData {
         if (product == null) {
             throw new MotuException("Error in extractData - product is null");
         }
-        
+
         if (getCatalogType() == CatalogData.CatalogType.FTP) {
-            
+
             getLocationMetaData(product);
             getDataFiles(product);
-            
-            product.setMediaKey(getCatalogType().name());  
+
+            product.setMediaKey(getCatalogType().name());
 
             updateFiles(product);
         }
@@ -1443,7 +1522,7 @@ public class ServiceData {
      * @param listVar list of variables (parameters) or expressions to extract.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     * be empty string)
+     *            be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param selectData logical expression if it's true extract th data, if it's failse ignore the data.
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
@@ -1551,8 +1630,8 @@ public class ServiceData {
      * @throws MotuException the motu exception
      * @throws NetCdfAttributeException @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuExceedingCapacityException @throws MotuInvalidDateRangeException * @throws
-     * MotuInvalidDepthRangeException * @throws NetCdfVariableException * @throws
-     * MotuInvalidLatLonRangeException * @throws MotuNoVarException
+     *             MotuInvalidDepthRangeException * @throws NetCdfVariableException * @throws
+     *             MotuInvalidLatLonRangeException * @throws MotuNoVarException
      * @throws MotuNotImplementedException the motu not implemented exception
      */
 
@@ -1728,15 +1807,15 @@ public class ServiceData {
         }
 
         if (getCatalogType() == CatalogData.CatalogType.FTP) {
-                        
+
             getLocationMetaData(product);
             getDataFiles(product);
-            
-            product.setMediaKey(getCatalogType().name());  
+
+            product.setMediaKey(getCatalogType().name());
 
             updateFiles(product);
         }
-        
+
         // updates variables collection to download
         updateVariables(product, listVar);
 
@@ -1745,7 +1824,7 @@ public class ServiceData {
 
         // updates 'select data' collection
         updateSelectData(product, selectData);
-        
+
         product.extractData(dataOutputFormat);
 
         if (LOG.isDebugEnabled()) {
@@ -1846,7 +1925,7 @@ public class ServiceData {
      * @param listVar list of variables (parameters) or expressions to extract.
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     * be empty string)
+     *            be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * @param out writer in which catalog's information will be listed.
@@ -1863,8 +1942,7 @@ public class ServiceData {
      * @throws MotuInvalidLatitudeException the motu invalid latitude exception
      * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * range exception
+     * @throws MotuInvalidDateException the motu invalid date exception range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
      */
     public Product extractDataHTML(Product product,
@@ -2114,7 +2192,10 @@ public class ServiceData {
         return template;
     }
 
-    /** General velocity template prefix name. If empty, the velocity template prefix is service name in lowercase */
+    /**
+     * General velocity template prefix name. If empty, the velocity template prefix is service name in
+     * lowercase
+     */
     private String veloTemplatePrefix = "";
 
     /**
@@ -2260,7 +2341,7 @@ public class ServiceData {
         if (dataFiles != null) {
             return;
         }
-        
+
         if (product.getLocationMetaData().isEmpty()) {
             getLocationMetaData(product);
         }
@@ -2294,7 +2375,7 @@ public class ServiceData {
         String locationMetaData = productPersistent.getUrlMetaData();
         product.setLocationMetaData(locationMetaData);
     }
-    
+
 }
 
 // CSON: MultipleStringLiterals

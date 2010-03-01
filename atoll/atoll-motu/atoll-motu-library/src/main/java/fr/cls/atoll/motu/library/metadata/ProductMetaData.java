@@ -14,10 +14,12 @@ import java.util.Set;
 import org.joda.time.DateTime;
 
 import ucar.ma2.MAMath;
+import ucar.ma2.MAMath.MinMax;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.unidata.geoloc.LatLonRect;
 
 import fr.cls.atoll.motu.library.data.CatalogData;
 import fr.cls.atoll.motu.library.data.DatasetBase;
@@ -35,14 +37,14 @@ import fr.cls.commons.util5.DatePeriod;
  * This class represents the metadata of a product. The metadata are similar to all products.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-05-27 16:02:50 $
+ * @version $Revision: 1.4 $ - $Date: 2010-03-01 16:01:17 $
  */
 
 /**
  * The Class ProductMetaData.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-05-27 16:02:50 $
+ * @version $Revision: 1.4 $ - $Date: 2010-03-01 16:01:17 $
  */
 public class ProductMetaData {
 
@@ -2509,8 +2511,9 @@ public class ProductMetaData {
     }
 
     /** The time coverage. */
-    DatePeriod timeCoverage = null;
+    private DatePeriod timeCoverage = null;
 
+    
     /**
      * Gets the time coverage.
      * 
@@ -2546,6 +2549,26 @@ public class ProductMetaData {
      */
     public void setTimeCoverage(DatePeriod timeCoverage) {
         this.timeCoverage = timeCoverage;
+    }
+
+    private LatLonRect geoBBox = null;
+
+    public LatLonRect getGeoBBox() {
+        return geoBBox;
+    }
+
+    public void setGeoBBox(LatLonRect geoBBox) {
+        this.geoBBox = geoBBox;
+    }
+
+    private MinMax depthCoverage = null;
+
+    public MinMax getDepthCoverage() {
+        return depthCoverage;
+    }
+
+    public void setDepthCoverage(MinMax depthCoverage) {
+        this.depthCoverage = depthCoverage;
     }
 
 }

@@ -16,12 +16,16 @@ import org.apache.log4j.Logger;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.MAMath;
+import ucar.ma2.MAMath.MinMax;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.library.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
@@ -35,6 +39,8 @@ import fr.cls.atoll.motu.library.exception.NetCdfAttributeNotFoundException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.inventory.DepthCoverage;
+import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
 import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.inventory.Resource;
 import fr.cls.atoll.motu.library.inventory.TimePeriod;
@@ -50,7 +56,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
  * This class represents a product.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.9 $ - $Date: 2009-10-29 10:51:20 $
+ * @version $Revision: 1.10 $ - $Date: 2010-03-01 16:01:16 $
  */
 public class Product {
 
@@ -489,12 +495,19 @@ public class Product {
 
         Resource resource = inventoryOLA.getResource();
 
-        // GeospatialCoverage geospatialCoverage = ressource.getGeospatialCoverage();
-
         TimePeriod timePeriod = resource.getTimePeriod();
 
         productMetaData.setTimeCoverage(timePeriod.getStart(), timePeriod.getEnd());
-
+        
+        GeospatialCoverage geospatialCoverage = resource.getGeospatialCoverage();
+        ExtractCriteriaLatLon criteriaLatLon = new ExtractCriteriaLatLon(geospatialCoverage);
+        
+        productMetaData.setGeoBBox(new LatLonRect(criteriaLatLon.getLatLonRect()));
+        
+        DepthCoverage depthCoverage  = resource.getDepthCoverage();
+        productMetaData.setDepthCoverage(new MinMax(depthCoverage.getMin().getValue().doubleValue(), depthCoverage.getMax().getValue().doubleValue()));
+                
+        
         // Gets variables metadata.
         fr.cls.atoll.motu.library.inventory.Variables variables = resource.getVariables();
 
@@ -1674,7 +1687,7 @@ public class Product {
     public void openNetCdfReader() throws MotuException {
         openNetCdfReader(true);
     }
-    
+
     /**
      * Open net cdf reader.
      * 
