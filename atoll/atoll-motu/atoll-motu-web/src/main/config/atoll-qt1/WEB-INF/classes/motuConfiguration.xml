@@ -139,7 +139,7 @@
 		group="AvisoFTP" httpBaseRef="http://www.aviso.oceanobs.com"
 		name="&atoll;motu-ftp-aviso" veloTemplatePrefix="aviso">
 		<catalog name="catalogAvisoFTP.xml" type="FTP"
-			urlSite="sftp://atoll:atoll@aviso-data1.cls.fr/home/atoll/atoll-distrib/HOA_Aviso/Interface_ATOLL" />
+			urlSite="sftp://atoll:atoll@atoll-qt1.cls.fr/opt/atoll/HOA/Interface_ATOLL" />
 	</configService>
 
 	<!--===========================================-->
