@@ -232,6 +232,16 @@
 			</properties>
 		</profile>
 		<profile>
+			<id>atoll-qt1</id>
+			<properties>
+				<config.dir>atoll-qt1</config.dir>
+				<tomcat.url>http://atoll-qt1.cls.fr:33080</tomcat.url>
+				<remote.username>admin</remote.username>
+				<remote.password />
+				<remote.application.tomcat.context>atoll-motu-servlet</remote.application.tomcat.context>				
+			</properties>
+		</profile>
+		<profile>
 			<id>atoll-qt4</id>
 			<properties>
 				<config.dir>atoll-qt4</config.dir>
