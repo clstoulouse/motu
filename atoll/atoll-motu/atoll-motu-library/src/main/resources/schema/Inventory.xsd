@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://purl.org/cls/atoll/ontology" xmlns="http://purl.org/cls/atoll/ontology"
+	targetNamespace="http://purl.org/cls/atoll" xmlns="http://purl.org/cls/atoll"
 	elementFormDefault="qualified">
 	<!--
 		xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
@@ -109,7 +109,7 @@
 				<xs:element ref="variables" />
 			</xs:sequence>
 			<xs:attribute name="urn" type="xs:anyURI" use="required" />
-			<xs:attribute name="internalId" type="xs:string" use="required" />			
+			<xs:attribute name="internalId" type="xs:string"/>			
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="service">
@@ -143,7 +143,9 @@
 			<xs:sequence>
 				<xs:element ref="variable" maxOccurs="unbounded" />
 			</xs:sequence>
+			<!-- 
 			<xs:attribute name="vocabulary" type="xs:anyURI" use="required" />
+			 -->
 		</xs:complexType>
 	</xs:element>
 </xs:schema>
