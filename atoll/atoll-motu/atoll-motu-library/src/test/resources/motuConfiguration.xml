@@ -137,6 +137,21 @@
 		<catalog name="catalogCatsatFTP.xml" type="FTP"
 			urlSite="sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll/atoll-distrib/HOA_Catsat/Interface_ATOLL" />
 	</configService>
+	<!--=====================   CATSAT FTP ===================-->
+	<configService defaultLanguage="FR" description="Ftp Catsat"
+		group="CatsatFTP" httpBaseRef="http://www.cls.fr"
+		name="catsatftp" veloTemplatePrefix="generic">
+		<catalog name="catalogCatsatFTP.xml" type="FTP"
+			urlSite="sftp://atoll:atoll@atoll-qt1.cls.fr/opt/atoll/HOA/Interface_ATOLL" />
+	</configService>
+	
+	<!--=====================   AVISO FTP ===================-->
+	<configService defaultLanguage="UK" description="Ftp Catsat"
+		group="AvisoFTP" httpBaseRef="http://www.cls.fr"
+		name="avisoftp" veloTemplatePrefix="generic">
+		<catalog name="catalogAvisoFTP.xml" type="FTP"
+			urlSite="sftp://atoll:atoll@atoll-qt1.cls.fr/opt/atoll/HOA/Interface_ATOLL" />
+	</configService>
 	<!--===========================================-->
 	<!--                     AVISO_NRT             -->
 	<!--===========================================-->

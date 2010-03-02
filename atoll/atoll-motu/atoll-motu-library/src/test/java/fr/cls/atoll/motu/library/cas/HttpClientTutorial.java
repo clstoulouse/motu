@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.intfce;
+package fr.cls.atoll.motu.library.cas;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;

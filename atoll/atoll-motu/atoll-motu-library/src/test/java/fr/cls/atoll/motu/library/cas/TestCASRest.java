@@ -1,10 +1,10 @@
-package fr.cls.atoll.motu.library.intfce;
+package fr.cls.atoll.motu.library.cas;
 
 /**
  * <br><br>Copyright : Copyright (c) 2010.
  * <br><br>Société : CLS (Collecte Localisation Satellites)
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2010-02-26 13:52:43 $
+ * @version $Revision: 1.1 $ - $Date: 2010-03-02 13:10:20 $
  */
 
 import java.io.BufferedReader;
@@ -12,9 +12,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
@@ -55,6 +57,8 @@ import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.jasig.cas.client.validation.TicketValidationException;
 import org.xml.sax.SAXException;
 
+import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
+
 
 import ucar.nc2.util.net.EasySSLProtocolSocketFactory;
 
@@ -67,11 +71,53 @@ public class TestCASRest {
     public static void main(String... args) throws Exception {
         String username = "dearith";
         String password = "bienvenue";
-        validateFromCAS(username, password);
+        //validateFromCAS(username, password);
+        //loginToCAS(username, password);
+        getRedirectUrl();
         
 //        validateFromCAS2(username, password);
     }
 
+    public static String getRedirectUrl()  {
+        URL url;
+        String redirectUrl = "";
+        try {
+            url = new URL("http://atoll-dev.cls.fr:43080/thredds/catalog.xml");
+            //url = new URL("http://mercator-data1.cls.fr:43080/thredds/catalog.xml");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            System.out.println(conn.getResponseCode());
+
+            redirectUrl = conn.getHeaderField("location");
+
+            Iterator<?> it = conn.getHeaderFields().entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry entry = (Map.Entry) it.next();
+                System.out.print(entry.getKey());
+                System.out.print(" --> ");
+                System.out.println(entry.getValue());
+            }
+
+            if ((redirectUrl != null) &&  (conn.getResponseCode() == 302) ) {
+                System.out.println(redirectUrl);
+                redirectUrl = redirectUrl.substring(0, redirectUrl.lastIndexOf("/") + 1);
+                System.out.println("redirectUrl is : " + redirectUrl);
+                
+            }
+
+            conn.disconnect();
+            
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return redirectUrl;
+    }
+
+    
     public static boolean validateFromCAS(String username, String password) throws Exception {
 
         String url = casServerUrlPrefix + "/v1/tickets";
@@ -89,7 +135,6 @@ public class TestCASRest {
             out.close();
 
             String tgt = hsu.getHeaderField("location");
-            hsu.getHeaderFields();
             Iterator<?> it = hsu.getHeaderFields().entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry entry = (Map.Entry) it.next();
@@ -174,7 +219,86 @@ public class TestCASRest {
         }
 
     }
+    public static boolean loginToCAS(String username, String password) throws Exception {
 
+        String url = casServerUrlPrefix + "/v1/tickets";
+        try {
+            HttpsURLConnection hsu = (HttpsURLConnection) openConn(url);
+            String s = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(username, "UTF-8");
+            s += "&" + URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
+
+            System.out.println(s);
+            OutputStreamWriter out = new OutputStreamWriter(hsu.getOutputStream());
+            BufferedWriter bwr = new BufferedWriter(out);
+            bwr.write(s);
+            bwr.flush();
+            bwr.close();
+            out.close();
+
+            String tgt = hsu.getHeaderField("location");
+            Iterator<?> it = hsu.getHeaderFields().entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry entry = (Map.Entry) it.next();
+                System.out.print(entry.getKey());
+                System.out.print(" --> ");
+                System.out.println(entry.getValue());
+            }
+            System.out.println(hsu.getResponseCode());
+            if (tgt != null && hsu.getResponseCode() == 201) {
+                System.out.println(tgt);
+
+                System.out.println("Tgt is : " + tgt.substring(tgt.lastIndexOf("/") + 1));
+                tgt = tgt.substring(tgt.lastIndexOf("/") + 1);
+                bwr.close();
+                closeConn(hsu);
+
+                // String serviceURL = "https://myserver.com/testApplication";
+                // String serviceURL = "http://atoll-dev.cls.fr:43080/thredds/dodsC";
+                String serviceURL = "http://atoll-dev.cls.fr:43080/thredds/catalog.xml";
+                
+                String encodedServiceURL = URLEncoder.encode("service", "utf-8") + "=" + URLEncoder.encode(serviceURL, "utf-8");
+                System.out.println("Service url is : " + encodedServiceURL);
+
+                String myURL = url + "/" + tgt;
+                System.out.println(myURL);
+                hsu = (HttpsURLConnection) openConn(myURL);
+                out = new OutputStreamWriter(hsu.getOutputStream());
+                bwr = new BufferedWriter(out);
+                bwr.write(encodedServiceURL);
+                bwr.flush();
+                bwr.close();
+                out.close();
+
+                System.out.println("Response code is:  " + hsu.getResponseCode());
+
+                BufferedReader isr = new BufferedReader(new InputStreamReader(hsu.getInputStream()));
+                String line;
+                System.out.println(hsu.getResponseCode());
+                String ticket = "";
+                while ((line = isr.readLine()) != null) {
+                    System.out.println(line);
+                    ticket = line;
+
+                }
+                isr.close();
+                hsu.disconnect();
+
+                return true;
+
+            } else {
+                return false;
+            }
+
+        } catch (MalformedURLException mue) {
+            mue.printStackTrace();
+            throw mue;
+
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            throw ioe;
+        }
+
+    }
     static URLConnection openConn(String urlk) throws MalformedURLException, IOException {
 
         URL url = new URL(urlk);

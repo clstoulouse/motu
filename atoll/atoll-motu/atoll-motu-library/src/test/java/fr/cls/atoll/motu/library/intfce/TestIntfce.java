@@ -33,6 +33,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
 
@@ -40,6 +42,7 @@ import org.apache.commons.vfs.impl.DecoratedFileObject;
 import org.apache.log4j.Logger;
 
 import ucar.ma2.StructureData;
+import ucar.ma2.MAMath.MinMax;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -58,10 +61,12 @@ import ucar.nc2.ft.TrajectoryFeatureCollection;
 import ucar.nc2.ft.point.writer.CFPointObWriter;
 import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
 import ucar.unidata.geoloc.EarthLocation;
+import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.library.configuration.ConfigService;
 import fr.cls.atoll.motu.library.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.configuration.QueueServerType;
 import fr.cls.atoll.motu.library.configuration.QueueType;
+import fr.cls.atoll.motu.library.data.CatalogData;
 import fr.cls.atoll.motu.library.data.DataFile;
 import fr.cls.atoll.motu.library.data.Product;
 import fr.cls.atoll.motu.library.data.ServiceData;
@@ -78,10 +83,12 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.sdtnameequiv.StandardName;
 import fr.cls.atoll.motu.library.sdtnameequiv.StandardNames;
 import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
+import fr.cls.atoll.motu.msg.xml.TimeCoverage;
+import fr.cls.commons.util.DatePeriod;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.24 $ - $Date: 2010-02-26 13:52:43 $
+ * @version $Revision: 1.25 $ - $Date: 2010-03-02 13:10:20 $
  * 
  */
 public class TestIntfce {
@@ -95,96 +102,97 @@ public class TestIntfce {
      * @param args
      */
     public static void main(String[] args) {
-               
-//        System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#dataset-identifiant"));            
-//        System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#identifiant"));            
-//        System.out.println(Organizer.getDatasetIdFromURI("bidon"));            
-//
-//        System.out.println(Organizer.getVariableIdFromURI("bidon"));            
-//        System.out.println(Organizer.getVariableIdFromURI("#bidon"));            
-//        System.out.println(Organizer.getVariableIdFromURI("sfddfjjjsd#bidon"));            
+
+        // System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#dataset-identifiant"));
+        // System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#identifiant"));
+        // System.out.println(Organizer.getDatasetIdFromURI("bidon"));
+        //
+        // System.out.println(Organizer.getVariableIdFromURI("bidon"));
+        // System.out.println(Organizer.getVariableIdFromURI("#bidon"));
+        // System.out.println(Organizer.getVariableIdFromURI("sfddfjjjsd#bidon"));
 
         // if (LOGQUEUE.isInfoEnabled()) {
         // LOGQUEUE.info("main(String[]) - xxx jentering");
         // }
 
-//        String s = "http://atoll-qt4.cls.fr:33080/atoll-motu-servlet/Motu?action=listproductmetadata&service=http://purl.org/cls/atoll/ontology/individual/atoll%23motu-opendap-aviso&product=duacs_global_nrt_madt_merged_h";
-//        try {
-//            System.out.println(URLEncoder.encode(s, "UTF-8"));
-//        } catch (UnsupportedEncodingException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-        
-//        try {
-//            VFSManager.createLocalFile("c:/tgaga/test.txt");
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-        
-        
-//        URI uri = null;
-//        try {
-//            uri = new URI("sftp://atoll:atoll@catsat-data1.cls.fr/data/atoll/applications/archive/temperature/infrared_timestamp/med/nrt_med_infrared_sst_timestamp_FTP_TEST.xml");
-//        } catch (URISyntaxException e) {
-//            throw new MotuException(String.format("Data extraction - Invalid URI '%s'", uriFile), e);
-//        }
-//        System.out.println(uri.getFragment());
-        
-           
-//        String temp = "sdfsdf:tt!sdf.sdf.txt";
-//        System.out.println(temp.replaceAll("[^\\p{ASCII}]", ""));
-//        System.out.println(temp.replaceAll("[\\W&&[^\\.]]", "-"));
-//        Zip.unAccent(temp);
-        
-//
-//         try {
-//         String uriStr =         "sftp://atoll:atoll@catsat-data1.cls.fr/data/atoll/applications/archive/temperature/infrared_timestamp/med/nrt_med_infrared_sst_timestamp_FTP_TEST.xml";
-//         //String uriStr = "atoll:service:ftp-catsat-ftp:ftp";
-//         //String uriStr = "c:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
-//                    
-//         URI uri = new URI(uriStr);
-//         if (uri.isOpaque()) {
-//         System.out.println("This is an opaque URI.");
-//         System.out.println("The scheme is " + uri.getScheme( ));
-//         System.out.println("The scheme specific part is "
-//         + uri.getSchemeSpecificPart( ));
-//         System.out.println("The fragment ID is " + uri.getFragment( ));
-//        
-//         }
-//         File ff = new File(uriStr);
-//         System.out.println(ff.getName().endsWith(".xml"));
-//                    
-//         System.out.println(uri.getScheme());
-//         System.out.println(uri.getUserInfo());
-//         System.out.println(uri.getHost());
-//         System.out.println(uri.getPort());
-//         System.out.println(uri.getAuthority());
-//         System.out.println("Path");
-//         System.out.println(uri.getPath());
-//         System.out.println(uri.getQuery());
-//         System.out.println(uri.getSchemeSpecificPart());
-//         System.out.println(uri);
-//         
-//         System.out.println("Fragment");
-//         System.out.println(uri.getFragment());
-//       
-//                    
-//         System.out.println(uri.normalize());
-//
-//         File srcFilePath = new File(uri.getPath());
-//         
-//         System.out.println("srcFilePath");
-//         System.out.println(srcFilePath.getParent());
-//         System.out.println("srcFileName");
-//         System.out.println(srcFilePath.getName());
-//
-//         
-//         } catch (URISyntaxException e) {
-//         // TODO Auto-generated catch block
-//         e.printStackTrace();
-//         }
+        // String s =
+        // "http://atoll-qt4.cls.fr:33080/atoll-motu-servlet/Motu?action=listproductmetadata&service=http://purl.org/cls/atoll/ontology/individual/atoll%23motu-opendap-aviso&product=duacs_global_nrt_madt_merged_h";
+        // try {
+        // System.out.println(URLEncoder.encode(s, "UTF-8"));
+        // } catch (UnsupportedEncodingException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+
+        // try {
+        // VFSManager.createLocalFile("c:/tgaga/test.txt");
+        // } catch (IOException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+
+        // URI uri = null;
+        // try {
+        // uri = new
+        // URI("sftp://atoll:atoll@catsat-data1.cls.fr/data/atoll/applications/archive/temperature/infrared_timestamp/med/nrt_med_infrared_sst_timestamp_FTP_TEST.xml");
+        // } catch (URISyntaxException e) {
+        // throw new MotuException(String.format("Data extraction - Invalid URI '%s'", uriFile), e);
+        // }
+        // System.out.println(uri.getFragment());
+
+        // String temp = "sdfsdf:tt!sdf.sdf.txt";
+        // System.out.println(temp.replaceAll("[^\\p{ASCII}]", ""));
+        // System.out.println(temp.replaceAll("[\\W&&[^\\.]]", "-"));
+        // Zip.unAccent(temp);
+
+        //
+        // try {
+        // String uriStr =
+        // "sftp://atoll:atoll@catsat-data1.cls.fr/data/atoll/applications/archive/temperature/infrared_timestamp/med/nrt_med_infrared_sst_timestamp_FTP_TEST.xml";
+        // //String uriStr = "atoll:service:ftp-catsat-ftp:ftp";
+        // //String uriStr = "c:/tempVFS/nrt_med_infrared_sst_timestamp_FTP_20090516.xml";
+        //                    
+        // URI uri = new URI(uriStr);
+        // if (uri.isOpaque()) {
+        // System.out.println("This is an opaque URI.");
+        // System.out.println("The scheme is " + uri.getScheme( ));
+        // System.out.println("The scheme specific part is "
+        // + uri.getSchemeSpecificPart( ));
+        // System.out.println("The fragment ID is " + uri.getFragment( ));
+        //        
+        // }
+        // File ff = new File(uriStr);
+        // System.out.println(ff.getName().endsWith(".xml"));
+        //                    
+        // System.out.println(uri.getScheme());
+        // System.out.println(uri.getUserInfo());
+        // System.out.println(uri.getHost());
+        // System.out.println(uri.getPort());
+        // System.out.println(uri.getAuthority());
+        // System.out.println("Path");
+        // System.out.println(uri.getPath());
+        // System.out.println(uri.getQuery());
+        // System.out.println(uri.getSchemeSpecificPart());
+        // System.out.println(uri);
+        //         
+        // System.out.println("Fragment");
+        // System.out.println(uri.getFragment());
+        //       
+        //                    
+        // System.out.println(uri.normalize());
+        //
+        // File srcFilePath = new File(uri.getPath());
+        //         
+        // System.out.println("srcFilePath");
+        // System.out.println(srcFilePath.getParent());
+        // System.out.println("srcFileName");
+        // System.out.println(srcFilePath.getName());
+        //
+        //         
+        // } catch (URISyntaxException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
 
         // DecimalMeasure x = DecimalMeasure.valueOf("10052");
         // System.out.println(x);
@@ -326,7 +334,7 @@ public class TestIntfce {
         productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
-         //productExtractDiversity();
+        // productExtractDiversity();
         // testProjection();
         // testJason2Local();
         // testProjection2();
@@ -339,16 +347,17 @@ public class TestIntfce {
         // e.printStackTrace();
         // }
         // testLoadStdNameEquiv();
-        //testGetAmountDataSize();
+        // testGetAmountDataSize();
         // testSynchronized();
-        //productExtractDataCatsat();
-        //productExtractDataAvisofromExtractionParameters();
+        // productExtractDataCatsat();
+        // productExtractDataAvisofromExtractionParameters();
         // productExtractDataMerseaFromHttp();
-        //testLoadInventoryOLA();
+        // testLoadInventoryOLA();
         // testLoadCatalogOLA();
-        //productInformationFromInventory();
-        //productExtractDataFromInventory();
-        //productListMercator();
+        // productInformationFromInventory();
+        // productExtractDataFromInventory();
+        // productListMercator();
+        productList();
 
     }
 
@@ -590,7 +599,7 @@ public class TestIntfce {
     public static void productExtractDataFromInventory() {
         String prefix = "http://atoll.cls.fr/2009/resource/individual/atoll#";
         String productId = prefix + "datafile-nrt-med-infrared-sst-timestamp";
-        String service = prefix +  "ftp-catsat:ftp";
+        String service = prefix + "ftp-catsat:ftp";
 
         // add temporal criteria
         // first element is start date
@@ -609,7 +618,7 @@ public class TestIntfce {
                 null,
                 productId,
                 Organizer.Format.NETCDF,
-                //Organizer.Format.URL,
+                // Organizer.Format.URL,
                 null,
                 null,
                 "login",
@@ -1143,7 +1152,7 @@ public class TestIntfce {
             return;
         }
 
-        for (ResourceOLA  resourceOLA : catalogOLA.getResourcesOLA().getResourceOLA()) {
+        for (ResourceOLA resourceOLA : catalogOLA.getResourcesOLA().getResourceOLA()) {
             System.out.print(resourceOLA.getUrn());
             System.out.print(" ");
             System.out.print(resourceOLA.getInventoryUrl());
@@ -1158,7 +1167,8 @@ public class TestIntfce {
 
         Inventory inventoryOLA = null;
         String xmlUri = "C:/tempVFS/nrt_med_st_chlorophyll_FTP_TEST.xml";
-        //String xmlUri = "sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll//atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_TEST.xml";
+        // String xmlUri =
+        // "sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll//atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_TEST.xml";
         try {
             inventoryOLA = Organizer.getInventoryOLA(xmlUri);
             // Organizer.getFileSystemManager().close();
@@ -1190,9 +1200,9 @@ public class TestIntfce {
         TimePeriod timePeriod = resource.getTimePeriod();
         System.out.println(timePeriod.getStart());
         System.out.println(timePeriod.getEnd());
-//        System.out.println(timePeriod.getStep());
-//        System.out.println(timePeriod.getStep().toStandardDuration().getMillis());
-//        System.out.println(timePeriod.getStep().getMillis());
+        // System.out.println(timePeriod.getStep());
+        // System.out.println(timePeriod.getStep().toStandardDuration().getMillis());
+        // System.out.println(timePeriod.getStep().getMillis());
 
         fr.cls.atoll.motu.library.inventory.Variables variables = resource.getVariables();
         for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {
@@ -1256,13 +1266,13 @@ public class TestIntfce {
 
     public static void productExtractDataMercator() {
         String productId = "nrt_glo_hr_infrared_sst";
-        //String productId = "mercatorPsy3v2_nat_mean_best_estimate";
-        //String productId = "mercatorPsy3v2_glo_mean_best_estimate";
+        // String productId = "mercatorPsy3v2_nat_mean_best_estimate";
+        // String productId = "mercatorPsy3v2_glo_mean_best_estimate";
         // String productId = "mercatorPsy3v2R1v_med_levitus_1998";
-        //String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/" + productId;
+        // String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/" + productId;
         // String locationData = "http://rdp1-jaune.cls.fr:8880/thredds/dodsC/" + productId;
         String locationData = "http://atoll-dev.cls.fr:43080/thredds/dodsC/" + productId;
-        
+
         // String productId = "mercatorPsy3v2R1v_glo_mean_best_estimate_1182752515507.nc";
         // String locationData = "C:/Java/dev/" + productId;
 
@@ -1275,7 +1285,7 @@ public class TestIntfce {
         // add variable to extract
         // listVar.add("salinity");
         // listVar.add("u");
-        //listVar.add("temperature");
+        // listVar.add("temperature");
         listVar.add("Grid_0001");
         // listVar.add("sea_water_salinity");
         // listVar.add("sea_surface_elevation");
@@ -1295,10 +1305,10 @@ public class TestIntfce {
         // third element is high latitude
         // fourth element is high longitude
         List<String> listLatLonCoverage = new ArrayList<String>();
-//        listLatLonCoverage.add("1");
-//        listLatLonCoverage.add("-47");
-//        listLatLonCoverage.add("-1");
-//        listLatLonCoverage.add("44");
+        // listLatLonCoverage.add("1");
+        // listLatLonCoverage.add("-47");
+        // listLatLonCoverage.add("-1");
+        // listLatLonCoverage.add("44");
         //
         // listLatLonCoverage.add("-10");
         // listLatLonCoverage.add("-1");
@@ -1310,8 +1320,8 @@ public class TestIntfce {
         // second element is high depth (optional)
         // if only low depth is set, high depth equals low depth value
         List<String> listDepthCoverage = new ArrayList<String>();
-//        listDepthCoverage.add("0");
-//        listDepthCoverage.add("0");
+        // listDepthCoverage.add("0");
+        // listDepthCoverage.add("0");
 
         Product product = null;
 
@@ -1414,9 +1424,9 @@ public class TestIntfce {
     public static void productExtractDiversity() {
         // String productId = "Test_Galapagos_20070901_ssh.nc";
         // String locationData = "J:/dev/" + productId;
-        //String productId = "dt_upd_global_merged_msla_h_20050831_20050831_20060206.nc";
-        //String locationData = "C:/BratData/hangzhou/" + productId;
-        //String productId = "GLB_CO03_21880.cdf";
+        // String productId = "dt_upd_global_merged_msla_h_20050831_20050831_20060206.nc";
+        // String locationData = "C:/BratData/hangzhou/" + productId;
+        // String productId = "GLB_CO03_21880.cdf";
         String productId = "GLB_CO03_21880.nc";
         String locationData = "C:/Downloads/" + productId;
 
@@ -1795,14 +1805,14 @@ public class TestIntfce {
     public static void productExtractDataCatsat() {
         // String productId = "mercatorPsy3v1R1v_glo_mean_best_estimate";
         // String productId = "nrt_glo_st_chlorophyll";
-        //String productId = "duacs_global_nrt_msla_merged_h_uv";
+        // String productId = "duacs_global_nrt_msla_merged_h_uv";
         String productId = "nrt_atl_oa_chlorophyll";
         // String productId = "global_sst";
         // String productId = "GLB_TE01_20550.nc";
 
         // http://themismotu.cls.fr:8280/atoll-motuservlet/Catsat?action=productdownload&service=Catsat&data=http%3A%2F%2Fcatsatopendap.cls.fr%3A8080%2Fthredds%2FdodsC%2Fnrt_atl_oa_chlorophyll&nexturl=+&x_lo=-60&x_hi=20&y_lo=-15&y_hi=25&output=netcdf&region=-60.0%2C20.0%2C-15.0%2C25.0&yhi_text=25&xlo_text=-60&xhi_text=20&ylo_text=-15&t_lo_0=2008-02-09&t_lo=2008-02-09&t_hi_0=2008-02-09&t_hi=2008-02-09&variable=Grid_0001
 
-        //String locationData = "http://catsatopendap.cls.fr:8080/thredds/dodsC/" + productId;
+        // String locationData = "http://catsatopendap.cls.fr:8080/thredds/dodsC/" + productId;
         String locationData = "http://catsat-data1.cls.fr:43080/thredds/dodsC/" + productId;
         // String productId = "mercatorPsy3v1R1v_arc_mean_20060628_R20060712.nc";
         // String locationData = "C:/Java/dev/" + productId;
@@ -1829,10 +1839,10 @@ public class TestIntfce {
         // third element is high latitude
         // fourth element is high longitude
         List<String> listLatLonCoverage = new ArrayList<String>();
-//        listLatLonCoverage.add("30");
-//        listLatLonCoverage.add("20");
-//        listLatLonCoverage.add("40");
-//        listLatLonCoverage.add("5");
+        // listLatLonCoverage.add("30");
+        // listLatLonCoverage.add("20");
+        // listLatLonCoverage.add("40");
+        // listLatLonCoverage.add("5");
 
         // add depth (Z) criteria
         // first element is low depth
@@ -1983,10 +1993,10 @@ public class TestIntfce {
 
     public static void testGetAmountDataSize() {
         // String serviceName = "aviso_nrt";
-        //String serviceName = "avisoNRT";
+        // String serviceName = "avisoNRT";
         String serviceName = "Catsat";
 
-        //String productId = "duacs_global_nrt_madt_merged_h";
+        // String productId = "duacs_global_nrt_madt_merged_h";
         String productId = "nrt_glo_hr_infrared_sst";
         // String locationData = "http://opendap.aviso.oceanobs.com/thredds/dodsC/" + productId;
 
@@ -1997,7 +2007,7 @@ public class TestIntfce {
 
         List<String> listTemporalCoverage = new ArrayList<String>();
         listTemporalCoverage.add("2009-10-25");
-         listTemporalCoverage.add("2009-10-26");
+        listTemporalCoverage.add("2009-10-26");
 
         List<String> listLatLonCoverage = new ArrayList<String>();
         // listLatLonCoverage.add("46");
@@ -2027,8 +2037,8 @@ public class TestIntfce {
                                                   writer,
                                                   false);
 
-//            writer.flush();
-//            writer.close();
+            // writer.flush();
+            // writer.close();
 
             double size = product.getAmountDataSizeAsBytes();
             System.out.print("size is ");
@@ -2274,21 +2284,21 @@ public class TestIntfce {
         System.out.printf("Write %d records from %s to %s took %d msecs %n", count, pfDataset.getLocation(), fileOut, took);
         return count;
     }
+
     public static void productListMercator() {
-        //String serviceName = "mercator";
+        // String serviceName = "mercator";
         String serviceName = "aviso";
 
         try {
             Organizer organizer = new Organizer();
             ServiceData serviceData = organizer.getServices(serviceName);
             Map<String, Product> mapProducts = serviceData.getCatalog().getProducts();
-            
+
             for (String productId : mapProducts.keySet()) {
                 System.out.println(productId);
             }
-                
 
-   } catch (MotuExceptionBase e) {
+        } catch (MotuExceptionBase e) {
             System.out.println(e.notifyException());
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -2296,7 +2306,68 @@ public class TestIntfce {
 
     }
 
-    
-    
-    
+    public static void productList() {
+        CatalogData catalogData = null;
+
+        List<String> services = new ArrayList<String>();
+        services.add("avisoftp");
+        services.add("mercator");
+
+        try {
+            Organizer organizer = new Organizer();
+            System.out.println("List of available services");
+            System.out.println(organizer.getServices().keySet().toString());
+
+            for (String serviceName : services) {
+                ServiceData serviceData = organizer.getServices(serviceName);
+                if (serviceData == null) {
+                     continue;              
+                }
+                catalogData = serviceData.loadCatalogInfo(null);
+                if (catalogData == null) {
+                    continue;              
+               }
+                System.out.println("====================> ");
+                System.out.println("Service ============> " + serviceName);
+                System.out.println("====================> ");
+
+                Map<String, Product> mapProducts = catalogData.getProducts();
+
+                Product product = null;
+
+                for (Entry<String, Product> productEntries : mapProducts.entrySet()) {
+                    product = productEntries.getValue();
+                    System.out.println("==========> ");
+                    System.out.println("Product ==> " + product.getProductId());
+                    System.out.println("==========> ");
+                    ProductMetaData productMetaData = product.getProductMetaData();
+                    if (productMetaData == null) {
+                        continue;
+                    }
+                    DatePeriod timeCoverage = productMetaData.getTimeCoverage();
+                    LatLonRect geoBBox = productMetaData.getGeoBBox();
+                    MinMax depthCoverage = productMetaData.getDepthCoverage();
+
+                    if (timeCoverage != null) {
+                        System.out.println("Time coverage: " + productMetaData.getTimeCoverage().toString());
+                    }
+                    if (geoBBox != null) {
+                        System.out.println("Geo coverage: " + productMetaData.getGeoBBox().toString());
+                    }
+                    if (depthCoverage != null) {
+                        System.out.println(String.format("Depth coverage: %f to %f", productMetaData.getDepthCoverage().min, productMetaData
+                                .getDepthCoverage().max));
+                    }
+
+                }
+            }
+
+        } catch (MotuExceptionBase e) {
+            System.out.println(e.notifyException());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
+
 }
