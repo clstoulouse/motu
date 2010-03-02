@@ -49,7 +49,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * This class implements a service (AVISO, MERCATOR, ...).
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.12 $ - $Date: 2010-03-01 16:01:16 $
+ * @version $Revision: 1.13 $ - $Date: 2010-03-02 13:09:12 $
  */
 public class ServiceData {
 
@@ -1017,26 +1017,6 @@ public class ServiceData {
         return product;
     }
 
-    /**
-     * Gets the product information from xml.
-     * 
-     * @param productId the product id
-     * 
-     * @return the product information from xml
-     * 
-     * @throws MotuException the motu exception
-     */
-    public Product getProductInformationFromConfig(String productId, CatalogData catalogData) throws MotuException {
-
-        catalogData = loadCatalogInfo(catalogData);
-        Product product = catalogData.getProducts(productId);     
-        
-        if (getCatalogType() == CatalogData.CatalogType.FTP) {
-            product = catalogData.loadFtpInventory(product.getLocationMetaData());
-        }       
-        
-        return product;
-    }
 
     /**
      * Writes the product's informations of the current service in HTML format.

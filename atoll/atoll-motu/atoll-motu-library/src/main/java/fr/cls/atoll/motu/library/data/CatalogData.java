@@ -48,6 +48,7 @@ import fr.cls.atoll.motu.library.tds.server.CatalogRef;
 import fr.cls.atoll.motu.library.tds.server.DatasetType;
 import fr.cls.atoll.motu.library.tds.server.DateTypeFormatted;
 import fr.cls.atoll.motu.library.tds.server.DocumentationType;
+import fr.cls.atoll.motu.library.tds.server.Metadata;
 import fr.cls.atoll.motu.library.tds.server.SpatialRange;
 import fr.cls.atoll.motu.library.tds.server.TimeCoverageType;
 
@@ -57,7 +58,7 @@ import fr.cls.atoll.motu.library.tds.server.TimeCoverageType;
  * This class implements a product's catalog .
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.13 $ - $Date: 2010-03-01 16:01:16 $
+ * @version $Revision: 1.14 $ - $Date: 2010-03-02 13:09:12 $
  */
 public class CatalogData {
 
@@ -261,6 +262,13 @@ public class CatalogData {
         for (fr.cls.atoll.motu.library.inventory.File file : inventoryOLA.getFiles().getFile()) {
             DataFile dataFile = new DataFile();
             dataFile.setName(file.getName());
+            if ((file.getPath() == null) || (file.getWeight() == null)) {
+                continue;
+            }
+            if (Organizer.isNullOrEmpty(file.getPath().toString())) {
+                continue;
+            }
+
             dataFile.setPath(file.getPath().toString());
             dataFile.setStartCoverageDate(file.getStartCoverageDate());
             dataFile.setEndCoverageDate(file.getEndCoverageDate());
@@ -705,6 +713,8 @@ public class CatalogData {
             }
         }
 
+        currentGeospatialCoverage = findTdsGeoAndDepthCoverage(datasetType);
+
         // Saves - the product type at the top level product (on the first call,
         // level 0)
         // - the product sub-type, if not top level product
@@ -733,6 +743,9 @@ public class CatalogData {
                 }
             }
         }
+        
+        currentGeospatialCoverage = null;
+        
         if (sameProductTypeDataset.size() > 0) {
             listProductTypeDataset.add(sameProductTypeDataset);
             sameProductTypeDataset = new ArrayList<Product>();
@@ -940,7 +953,8 @@ public class CatalogData {
 
         // Loads time coverage of the dataset
         loadTdsTimeCoverage(datasetType, productMetaData);
-        
+
+        // Loads geo and depth coverage
         loadTdsGeoAndDepthCoverage(datasetType, productMetaData);
 
         product.setProductMetaData(productMetaData);
@@ -1063,12 +1077,21 @@ public class CatalogData {
      */
     static public List<Object> findJaxbElement(List<Object> listObject, Class<?> classObject) {
 
+        if (listObject == null) {
+            return null;
+        }
+
         List<Object> listObjectFound = new ArrayList<Object>();
 
         for (Object elt : listObject) {
             if (elt == null) {
                 continue;
             }
+
+            if (classObject.isInstance(elt)) {
+                listObjectFound.add(elt);
+            }
+
             if (!(elt instanceof JAXBElement)) {
                 continue;
             }
@@ -1080,7 +1103,7 @@ public class CatalogData {
 
             Object objectElt = (Object) jabxElement.getValue();
 
-            if ((classObject.isInstance(objectElt))) {
+            if (classObject.isInstance(objectElt)) {
                 listObjectFound.add(objectElt);
             }
         }
@@ -1265,35 +1288,110 @@ public class CatalogData {
             LOG.debug("loadTdsGeoCoverage(DatasetType, ProductMetaData) - entering");
         }
 
-        List<Object> listGeoCoverageObject = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), fr.cls.atoll.motu.library.tds.server.GeospatialCoverage.class);
+        List<Object> listGeoCoverageObject = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(),
+                                                                         fr.cls.atoll.motu.library.tds.server.GeospatialCoverage.class);
 
         productMetaData.setGeoBBox(null);
+        boolean foundGeospatialCoverage = false;
 
         for (Object objectElt : listGeoCoverageObject) {
 
             if (!(objectElt instanceof fr.cls.atoll.motu.library.tds.server.GeospatialCoverage)) {
                 continue;
             }
+
             fr.cls.atoll.motu.library.tds.server.GeospatialCoverage geospatialCoverage = (fr.cls.atoll.motu.library.tds.server.GeospatialCoverage) objectElt;
 
-            // Set lat/lon coverage
-            ExtractCriteriaLatLon extractCriteriaLatLon = new ExtractCriteriaLatLon(geospatialCoverage);
-            productMetaData.setGeoBBox(new LatLonRect(extractCriteriaLatLon.getLatLonRect()));
-            
-            // Set depth coverage
-            SpatialRange spatialRangeUpDown = geospatialCoverage.getUpdown();
-            
-            double min = spatialRangeUpDown.getStart();
-            double max = min  + spatialRangeUpDown.getSize();
-            
-            productMetaData.setDepthCoverage(new MinMax(min, max));
-            
+            foundGeospatialCoverage = initializeGeoAndDepthCoverage(geospatialCoverage, productMetaData);
+
+        }
+
+        // if there is no geo coverage for this dataset, use geo coverage of the parent datasets
+        if ((!foundGeospatialCoverage) && (currentGeospatialCoverage != null)) {
+
+            initializeGeoAndDepthCoverage(currentGeospatialCoverage, productMetaData);
         }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadTdsGeoCoverage(DatasetType, ProductMetaData) - exiting");
         }
     }
+
+    /**
+     * Initialize geo and depth coverage.
+     * 
+     * @param geospatialCoverage the geospatial coverage
+     * @param productMetaData the product meta data
+     * 
+     * @return true, if successful
+     */
+    private boolean initializeGeoAndDepthCoverage(fr.cls.atoll.motu.library.tds.server.GeospatialCoverage geospatialCoverage,
+                                                  ProductMetaData productMetaData) {
+        if (geospatialCoverage == null) {
+            return false;
+        }
+
+        // Set lat/lon coverage
+        ExtractCriteriaLatLon extractCriteriaLatLon = new ExtractCriteriaLatLon(geospatialCoverage);
+        productMetaData.setGeoBBox(new LatLonRect(extractCriteriaLatLon.getLatLonRect()));
+
+        // Set depth coverage
+        SpatialRange spatialRangeUpDown = geospatialCoverage.getUpdown();
+        if (spatialRangeUpDown != null) {
+            double min = spatialRangeUpDown.getStart();
+            double max = min + spatialRangeUpDown.getSize();
+
+            productMetaData.setDepthCoverage(new MinMax(min, max));
+        }
+        return true;
+    }
+
+    /**
+     * Find tds geo and depth coverage.
+     * 
+     * @param datasetType the dataset type
+     * 
+     * @return the fr.cls.atoll.motu.library.tds.server. geospatial coverage
+     * 
+     * @throws MotuException the motu exception
+     */
+    private fr.cls.atoll.motu.library.tds.server.GeospatialCoverage findTdsGeoAndDepthCoverage(DatasetType datasetType) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("findTdsGeoAndDepthCoverage(DatasetType) - entering");
+        }
+
+        fr.cls.atoll.motu.library.tds.server.GeospatialCoverage geospatialCoverage = null;
+
+        List<Object> listMetadataObject = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(),
+                                                                      fr.cls.atoll.motu.library.tds.server.Metadata.class);
+        if (listMetadataObject == null) {
+            return geospatialCoverage;
+        }
+        for (Object objectMetadataElt : listMetadataObject) {
+
+            if (!(objectMetadataElt instanceof fr.cls.atoll.motu.library.tds.server.Metadata)) {
+                continue;
+            }
+            Metadata metadata = (Metadata) objectMetadataElt;
+            List<Object> listGeoCoverageObject = CatalogData.findJaxbElement(metadata.getThreddsMetadataGroup(),
+                                                                             fr.cls.atoll.motu.library.tds.server.GeospatialCoverage.class);
+            for (Object objectElt : listGeoCoverageObject) {
+
+                if (!(objectElt instanceof fr.cls.atoll.motu.library.tds.server.GeospatialCoverage)) {
+                    continue;
+                }
+
+                geospatialCoverage = (fr.cls.atoll.motu.library.tds.server.GeospatialCoverage) objectElt;
+            }
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("findTdsGeoAndDepthCoverage(DatasetType) - exiting");
+        }
+        return geospatialCoverage;
+
+    }
+
     /**
      * Loads Opendap products documentations from Opendap catalog.
      * 
@@ -1457,6 +1555,8 @@ public class CatalogData {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    fr.cls.atoll.motu.library.tds.server.GeospatialCoverage currentGeospatialCoverage = null;
 
     /** The current product. */
     private Product currentProduct = null;
@@ -1818,7 +1918,15 @@ public class CatalogData {
      * Temporary variable use to set product id loaded in the catalog. When catalog is loaded only product
      * that are in this set are retained in the products map.
      */
-    public Set<String> productsLoaded = null;
+    private Set<String> productsLoaded = null;
+
+    public Set<String> getProductsLoaded() {
+        return productsLoaded;
+    }
+
+    public void setProductsLoaded(Set<String> productsLoaded) {
+        this.productsLoaded = productsLoaded;
+    }
 
 }
 // CSON: MultipleStringLiterals

@@ -51,7 +51,7 @@ import fr.cls.atoll.motu.library.tds.server.SpatialRange;
  * data (for extraction/selection and research).
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.6 $ - $Date: 2010-03-01 16:01:16 $
+ * @version $Revision: 1.7 $ - $Date: 2010-03-02 13:09:12 $
  * 
  */
 public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
@@ -277,7 +277,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      */
     public void setLatLonRect(DecimalMeasure<?> latLow, DecimalMeasure<?> lonLow, DecimalMeasure<?> latHigh, DecimalMeasure<?> lonHigh) {
         double latlowTemp = (latLow != null) ? latLow.getValue().doubleValue() : Double.parseDouble(LATITUDE_MIN);
-        double lonLowTemp = (lonLow != null) ? latLow.getValue().doubleValue() : Double.parseDouble(LONGITUDE_MIN);
+        double lonLowTemp = (lonLow != null) ? lonLow.getValue().doubleValue() : Double.parseDouble(LONGITUDE_MIN);
         double latHighTemp = (latHigh != null) ? latHigh.getValue().doubleValue() : Double.parseDouble(LATITUDE_MAX);
         double lonHighTemp = (lonHigh != null) ? lonHigh.getValue().doubleValue() : Double.parseDouble(LONGITUDE_MAX);        
         

@@ -56,7 +56,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
  * This class represents a product.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.10 $ - $Date: 2010-03-01 16:01:16 $
+ * @version $Revision: 1.11 $ - $Date: 2010-03-02 13:09:12 $
  */
 public class Product {
 
@@ -496,36 +496,42 @@ public class Product {
         Resource resource = inventoryOLA.getResource();
 
         TimePeriod timePeriod = resource.getTimePeriod();
+        if (timePeriod != null) {
+            productMetaData.setTimeCoverage(timePeriod.getStart(), timePeriod.getEnd());
+        }
 
-        productMetaData.setTimeCoverage(timePeriod.getStart(), timePeriod.getEnd());
-        
         GeospatialCoverage geospatialCoverage = resource.getGeospatialCoverage();
-        ExtractCriteriaLatLon criteriaLatLon = new ExtractCriteriaLatLon(geospatialCoverage);
-        
-        productMetaData.setGeoBBox(new LatLonRect(criteriaLatLon.getLatLonRect()));
-        
-        DepthCoverage depthCoverage  = resource.getDepthCoverage();
-        productMetaData.setDepthCoverage(new MinMax(depthCoverage.getMin().getValue().doubleValue(), depthCoverage.getMax().getValue().doubleValue()));
-                
-        
+        if (geospatialCoverage != null) {
+            ExtractCriteriaLatLon criteriaLatLon = new ExtractCriteriaLatLon(geospatialCoverage);
+            productMetaData.setGeoBBox(new LatLonRect(criteriaLatLon.getLatLonRect()));
+        }
+
+        DepthCoverage depthCoverage = resource.getDepthCoverage();
+        if (depthCoverage != null) {
+            productMetaData.setDepthCoverage(new MinMax(depthCoverage.getMin().getValue().doubleValue(), depthCoverage.getMax().getValue()
+                    .doubleValue()));
+        }
+
         // Gets variables metadata.
         fr.cls.atoll.motu.library.inventory.Variables variables = resource.getVariables();
+        if (variables != null) {
+            
+            for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {
 
-        for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {
+                ParameterMetaData parameterMetaData = new ParameterMetaData();
 
-            ParameterMetaData parameterMetaData = new ParameterMetaData();
+                parameterMetaData.setName(variable.getName());
+                parameterMetaData.setLabel(variable.getName());
+                parameterMetaData.setUnit(variable.getUnits());
+                parameterMetaData.setUnitLong(variable.getUnits());
+                parameterMetaData.setStandardName(variable.getVocabularyName());
 
-            parameterMetaData.setName(variable.getName());
-            parameterMetaData.setLabel(variable.getName());
-            parameterMetaData.setUnit(variable.getUnits());
-            parameterMetaData.setUnitLong(variable.getUnits());
-            parameterMetaData.setStandardName(variable.getVocabularyName());
+                if (productMetaData.getParameterMetaDatas() == null) {
+                    productMetaData.setParameterMetaDatas(new HashMap<String, ParameterMetaData>());
+                }
+                productMetaData.putParameterMetaDatas(variable.getName(), parameterMetaData);
 
-            if (productMetaData.getParameterMetaDatas() == null) {
-                productMetaData.setParameterMetaDatas(new HashMap<String, ParameterMetaData>());
             }
-            productMetaData.putParameterMetaDatas(variable.getName(), parameterMetaData);
-
         }
 
         // if (productMetaData.getDocumentations() == null) {
