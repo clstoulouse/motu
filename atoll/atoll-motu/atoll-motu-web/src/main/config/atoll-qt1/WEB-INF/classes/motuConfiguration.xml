@@ -98,7 +98,7 @@
 	extractionPath="/home/atoll/motu-extract"
 	downloadHttpUrl="http://atoll-qt.cls.fr"
 	httpDocumentRoot="http://atoll-qt.cls.fr"
-	cleanExtractionFileInterval="3" cleanRequestInterval="60"
+	cleanExtractionFileInterval="60" cleanRequestInterval="60"
 	runCleanInterval="1"
 	extractionFilePatterns=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|.*\.extract$|wps_output_.*$|wps_response_.*$"
 	extractionFileCacheSize="400" runGCInterval="10">
