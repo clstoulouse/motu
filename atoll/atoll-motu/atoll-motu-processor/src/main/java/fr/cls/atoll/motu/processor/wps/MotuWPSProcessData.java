@@ -20,7 +20,7 @@ import org.deegree.services.wps.output.LiteralOutput;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-08-11 15:04:08 $
+ * @version $Revision: 1.5 $ - $Date: 2010-03-04 16:02:54 $
  */
 public class MotuWPSProcessData {
     /**
@@ -153,24 +153,32 @@ public class MotuWPSProcessData {
         return processletInputs.getParameters(MotuWPSProcess.PARAM_VARIABLE);
     }
 
-    public void setReturnCode(String code, String msg) {
-        synchronized (processletOutputs) {
-            if (processletOutputs == null) {
-                return;
-            }
-
-            LiteralOutput codeParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_CODE);
-            LiteralOutput msgParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_MESSAGE);
-
-            if ((codeParam != null) && (code != null)) {
-                codeParam.setValue(code);
-            }
-            if ((msgParam != null) && (msg != null)) {
-                msgParam.setValue(msg);
-            }
-        }
-
-    }
+//    public void setReturnCode(String code, String msg) {
+//        synchronized (processletOutputs) {
+//            if (processletOutputs == null) {
+//                return;
+//            }
+//
+//            LiteralOutput codeParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_CODE);
+//            LiteralOutput msgParam = (LiteralOutput) processletOutputs.getParameter(MotuWPSProcess.PARAM_MESSAGE);
+//
+//            if ((codeParam != null) && (code != null)) {
+//                codeParam.setValue(code);
+//            }
+//            if ((msgParam != null) && (msg != null)) {
+//                // Message can contains some "invalid" char which must no be parse par XMl (Jaxb).
+//                // Set message value into a  CDATA section 
+//                
+//                StringBuffer  stringBuffer = new StringBuffer();
+//                stringBuffer.append("<![CDATA[");
+//                stringBuffer.append(msg);
+//                stringBuffer.append("]]>");               
+//                
+//                msgParam.setValue(stringBuffer.toString());
+//            }
+//        }
+//
+//    }
 
     /**
      * Valeur de serviceName.

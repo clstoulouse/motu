@@ -44,7 +44,7 @@ import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.28 $ - $Date: 2009-10-29 10:52:04 $
+ * @version $Revision: 1.29 $ - $Date: 2010-03-04 16:02:54 $
  */
 public abstract class MotuWPSProcess implements Processlet {
 
@@ -487,6 +487,15 @@ public abstract class MotuWPSProcess implements Processlet {
                 codeParam.setValue(code);
             }
             if ((msgParam != null) && (msg != null)) {
+                // Message can contains some "invalid" char which must no be parse par XMl (Jaxb).
+                // Set message value into a  CDATA section 
+                
+                StringBuffer  stringBuffer = new StringBuffer();
+                stringBuffer.append("<![CDATA[");
+                stringBuffer.append(msg);
+                stringBuffer.append("]]>");               
+                
+                msgParam.setValue(stringBuffer.toString());
                 msgParam.setValue(msg);
             }
         }
@@ -784,7 +793,8 @@ public abstract class MotuWPSProcess implements Processlet {
 
         motuWPSProcessData.setServiceName(serviceName);
         // Extraire uniquement l'id du dataset
-        productId = Organizer.getDatasetIdFromURI(productId);
+        // Suppression de cette fonctionalité. http://jira.cls.fr:8080/browse/ATOLL-104
+        //productId = Organizer.getDatasetIdFromURI(productId);
 
         motuWPSProcessData.setProductId(productId);
         motuWPSProcessData.setLocationData(locationData);
