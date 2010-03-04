@@ -46,7 +46,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
  * Gridded dataset class.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-10-23 14:21:42 $
+ * @version $Revision: 1.4 $ - $Date: 2010-03-04 16:05:15 $
  */
 public class DatasetGrid extends fr.cls.atoll.motu.library.data.DatasetBase {
     /**
@@ -244,7 +244,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.data.DatasetBase {
         }
 */       
         String locationData = product.getNetCdfReaderDataset().getLocation();
-        NetCdfReader netCdfReader = new NetCdfReader(locationData);
+        NetCdfReader netCdfReader = new NetCdfReader(locationData, product.isCasAuthentification());
         netCdfReader.open(false);
         
         //GridDataset gds = new GridDataset(product.getNetCdfReaderDataset());

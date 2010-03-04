@@ -88,7 +88,7 @@ import fr.cls.commons.util.DatePeriod;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.25 $ - $Date: 2010-03-02 13:10:20 $
+ * @version $Revision: 1.26 $ - $Date: 2010-03-04 16:05:15 $
  * 
  */
 public class TestIntfce {
@@ -355,9 +355,9 @@ public class TestIntfce {
         // testLoadInventoryOLA();
         // testLoadCatalogOLA();
         // productInformationFromInventory();
-        // productExtractDataFromInventory();
+        productExtractDataFromInventory();
         // productListMercator();
-        productList();
+       // productList();
 
     }
 
@@ -597,17 +597,17 @@ public class TestIntfce {
     }
 
     public static void productExtractDataFromInventory() {
-        String prefix = "http://atoll.cls.fr/2009/resource/individual/atoll#";
-        String productId = prefix + "datafile-nrt-med-infrared-sst-timestamp";
-        String service = prefix + "ftp-catsat:ftp";
+        String prefix = "http://purl.org/cls/atoll/ontology/individual/atoll#";
+        String productId = prefix + "dataset-duacs-global-nrt-madt-merged-h";
+        String service = prefix + "motu-ftp-aviso";
 
         // add temporal criteria
         // first element is start date
         // second element is end date (optional)
         // if only start date is set, end date equals start date
         List<String> listTemporalCoverage = new ArrayList<String>();
-        listTemporalCoverage.add("2007-04-06");
-        listTemporalCoverage.add("2007-04-14");
+        listTemporalCoverage.add("2009-12-24");
+        listTemporalCoverage.add("2009-12-25");
 
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 service,

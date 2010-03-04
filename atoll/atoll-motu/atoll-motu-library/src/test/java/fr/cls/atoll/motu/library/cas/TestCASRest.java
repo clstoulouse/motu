@@ -1,16 +1,16 @@
 package fr.cls.atoll.motu.library.cas;
 
+import org.apache.log4j.Logger;
+
 /**
  * <br><br>Copyright : Copyright (c) 2010.
  * <br><br>Société : CLS (Collecte Localisation Satellites)
  * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2010-03-02 13:10:20 $
+ * @version $Revision: 1.2 $ - $Date: 2010-03-04 16:05:15 $
  */
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,20 +18,15 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.security.KeyStore;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLSocketFactory;
-import javax.servlet.http.HttpSession;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
@@ -47,24 +42,29 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.jasig.cas.client.authentication.AttributePrincipal;
-import org.jasig.cas.client.proxy.Cas20ProxyRetriever;
-import org.jasig.cas.client.proxy.ProxyGrantingTicketStorageImpl;
+import org.jasig.cas.client.authentication.AttributePrincipalImpl;
 import org.jasig.cas.client.util.AssertionHolder;
 import org.jasig.cas.client.validation.Assertion;
+import org.jasig.cas.client.validation.AssertionImpl;
+import org.jasig.cas.client.validation.AssertionImplTests;
 import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.jasig.cas.client.validation.TicketValidationException;
-import org.xml.sax.SAXException;
 
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
-
+import fr.cls.atoll.motu.library.cas.util.RestUtil;
+import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.intfce.Organizer;
 
 import ucar.nc2.util.net.EasySSLProtocolSocketFactory;
 
 //import edu.yale.its.tp.cas.client.ProxyTicketValidator;
 
 public class TestCASRest {
+    /**
+     * Logger for this class
+     */
+    private static final Logger LOG = Logger.getLogger(TestCASRest.class);
 
     public static final String casServerUrlPrefix = "https://atoll-dev.cls.fr:8443/cas-server-webapp-3.3.5";
 
@@ -73,9 +73,12 @@ public class TestCASRest {
         String password = "bienvenue";
         //validateFromCAS(username, password);
         //loginToCAS(username, password);
-        getRedirectUrl();
+        //getRedirectUrl();
         
 //        validateFromCAS2(username, password);
+        
+        testgetCASifiedResource();
+        
     }
 
     public static String getRedirectUrl()  {
@@ -755,5 +758,67 @@ public class TestCASRest {
 
 
     }
-                
+    public static void testgetCASifiedResource() throws MotuException, IOException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("testLoginToCAS() - entering");
+        }
+
+        String serviceURL = "http://atoll-dev.cls.fr:43080/thredds/catalog.xml";
+        String username = "dearith";
+        String password = "bienvenue";
+        
+        String casRestUrlSuffix = Organizer.getMotuConfigInstance().getCasRestUrlSuffix();
+        String casRestUrl = RestUtil.getCasRestletUrl(serviceURL, casRestUrlSuffix);
+        
+        String serviceTicket = RestUtil.loginToCAS(casRestUrl, username, password, serviceURL);
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("testLoginToCAS() - serviceTicket:" + serviceTicket);
+        }
+
+//        final Map CONST_ATTRIBUTES = new HashMap();
+//        CONST_ATTRIBUTES.put(username, serviceTicket);
+//
+//        final AttributePrincipal CONST_PRINCIPAL = new AttributePrincipalImpl(username);
+//        final Assertion assertion = new AssertionImpl(CONST_PRINCIPAL,
+//                                                      CONST_ATTRIBUTES);
+//        
+//        
+//        AssertionHolder.setAssertion(assertion);
+        
+        ////////////////String path = AssertionUtils.addCASTicket(serviceTicket, serviceURL);
+        
+//        InputStream in;
+//
+//        fr.cls.atoll.motu.library.tds.server.Catalog catalogXml;
+//        try {
+//            // JAXBContext jc = JAXBContext.newInstance(TDS_SCHEMA_PACK_NAME);
+//            // Unmarshaller unmarshaller = jc.createUnmarshaller();
+//
+//            URL url = new URL(AssertionUtils.addCASTicket(serviceTicket, serviceURL));
+//            URLConnection conn = url.openConnection();
+//            in = conn.getInputStream();
+//            synchronized (Organizer.getUnmarshallerTdsConfig()) {
+//                catalogXml = (fr.cls.atoll.motu.library.tds.server.Catalog) Organizer.getUnmarshallerTdsConfig().unmarshal(in);
+//            }
+//        } catch (Exception e) {
+//            throw new MotuException("Error in loadConfigTds", (Throwable) e);
+//        }
+//        if (catalogXml == null) {
+//            throw new MotuException(String.format("Unable to load Tds configuration (in loadConfigOpendap, cataloXml is null) - url : %s", serviceURL));
+//        }
+//        try {
+//            in.close();
+//        } catch (IOException io) {
+//            io.getMessage();
+//        }
+//
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug("testLoginToCAS() - catalogXml:" + catalogXml);
+//        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("testLoginToCAS() - exiting");
+        }
+
+    }
 }

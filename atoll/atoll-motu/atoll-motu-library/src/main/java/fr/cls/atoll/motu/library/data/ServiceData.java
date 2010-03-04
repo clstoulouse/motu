@@ -49,7 +49,7 @@ import fr.cls.commons.util.io.ConfigLoader;
  * This class implements a service (AVISO, MERCATOR, ...).
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.13 $ - $Date: 2010-03-02 13:09:12 $
+ * @version $Revision: 1.14 $ - $Date: 2010-03-04 16:05:15 $
  */
 public class ServiceData {
 
@@ -920,7 +920,7 @@ public class ServiceData {
             LOG.debug("getProductInformationFromLocation() - entering");
         }
 
-        Product product = new Product();
+        Product product = new Product(this.casAuthentification);
         currentProduct = product;
 
         if (Organizer.isXMLFile(locationData)) {

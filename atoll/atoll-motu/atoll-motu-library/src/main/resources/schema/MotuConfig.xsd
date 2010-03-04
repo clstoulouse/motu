@@ -219,6 +219,17 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
+			<!--
+				casRestUrlSuffix : The relative path to the CAS REST API.
+			-->
+			<xs:attribute name="casRestUrlSuffix" type="xs:string" default="/v1/tickets">
+				<xs:annotation>
+					<xs:documentation>
+						The relative path to the CAS REST API (i.e th servlet mapping of 'restlet' servlet').
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			
 		</xs:complexType>
 
 	</xs:element>

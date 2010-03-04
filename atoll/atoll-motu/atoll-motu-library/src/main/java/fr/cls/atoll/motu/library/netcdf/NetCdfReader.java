@@ -3,7 +3,8 @@
  */
 package fr.cls.atoll.motu.library.netcdf;
 
-import fr.cls.atoll.motu.library.cas.HttpClientForCAS;
+import fr.cls.atoll.motu.library.cas.HttpClientCAS;
+import fr.cls.atoll.motu.library.cas.util.CasAuthentificationHolder;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.exception.MotuInvalidDepthException;
@@ -23,6 +24,7 @@ import fr.cls.commons.util.GMTDateFormat;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -36,7 +38,11 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 
+import opendap.dap.DConnect2;
+
+import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.log4j.Logger;
 
@@ -57,6 +63,7 @@ import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.io.http.HTTPRandomAccessFile;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -64,7 +71,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
  * Class to read netCDF files.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2010-02-26 13:51:59 $
+ * @version $Revision: 1.6 $ - $Date: 2010-03-04 16:05:15 $
  */
 
 public class NetCdfReader {
@@ -273,8 +280,10 @@ public class NetCdfReader {
     /**
      * Default constructor.
      */
-    public NetCdfReader() {
+    public NetCdfReader(boolean casAuthentification) {
         init();
+        this.casAuthentification = casAuthentification;
+
     }
 
     /**
@@ -282,9 +291,10 @@ public class NetCdfReader {
      * 
      * @param locationData NetCDF file name or Opendap location data (URL) to read.
      */
-    public NetCdfReader(String locationData) {
+    public NetCdfReader(String locationData, boolean casAuthentification) {
         init();
         this.locationData = locationData;
+        this.casAuthentification = casAuthentification;
     }
 
     /**
@@ -292,6 +302,27 @@ public class NetCdfReader {
      */
     private void init() {
         NetcdfDataset.setUseNaNs(false);
+    }
+
+    /** Does Service needs CAS authentification to access catalog resources and data. */
+    protected boolean casAuthentification = false;
+
+    /**
+     * Checks if is cas authentification.
+     * 
+     * @return true, if is cas authentification
+     */
+    public boolean isCasAuthentification() {
+        return casAuthentification;
+    }
+
+    /**
+     * Sets the cas authentification.
+     * 
+     * @param casAuthentification the new cas authentification
+     */
+    public void setCasAuthentification(boolean casAuthentification) {
+        this.casAuthentification = casAuthentification;
     }
 
     /**
@@ -799,6 +830,85 @@ public class NetCdfReader {
 
     }
 
+    public void initNetcdfHttpClient() throws MotuException {
+        try {
+            synchronized (this) {
+                Field field = NetcdfDataset.class.getDeclaredField("httpClient");
+                field.setAccessible(true);
+                HttpClient httpClientNetcdfDataset = (HttpClient) field.get(null);
+                HttpClientCAS httpClientCAS = null;
+
+                field = DConnect2.class.getDeclaredField("_httpClient");
+                field.setAccessible(true);
+                HttpClient httpClientDConnect2 = (HttpClient) field.get(null);
+
+                field = HTTPRandomAccessFile.class.getDeclaredField("_client");
+                field.setAccessible(true);
+                HttpClient httpClientHTTPRandomAccessFile = (HttpClient) field.get(null);
+
+                if ((httpClientNetcdfDataset != null) && (httpClientDConnect2 != null) && (httpClientHTTPRandomAccessFile != null)) {
+                    return;
+                }
+
+                if ((httpClientNetcdfDataset == null) && (httpClientDConnect2 == null) && (httpClientHTTPRandomAccessFile == null)) {
+
+                    MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+                    httpClientCAS = new HttpClientCAS(connectionManager);
+
+                    HttpClientParams httpClientParams = new HttpClientParams();
+                    httpClientParams.setParameter("http.protocol.allow-circular-redirects", true);
+                    httpClientCAS.setParams(httpClientParams);
+
+                    NetcdfDataset.setHttpClient(httpClientCAS);
+
+                    connectionManager = new MultiThreadedHttpConnectionManager();
+                    httpClientCAS = new HttpClientCAS(connectionManager);
+
+                    httpClientParams = new HttpClientParams();
+                    httpClientParams.setParameter("http.protocol.allow-circular-redirects", true);
+                    httpClientCAS.setParams(httpClientParams);
+
+                    DConnect2.setHttpClient(httpClientCAS);
+                    
+                    connectionManager = new MultiThreadedHttpConnectionManager();
+                    httpClientCAS = new HttpClientCAS(connectionManager);
+
+                    httpClientParams = new HttpClientParams();
+                    httpClientParams.setParameter("http.protocol.allow-circular-redirects", true);
+                    httpClientCAS.setParams(httpClientParams);
+
+                    HTTPRandomAccessFile.setHttpClient(httpClientCAS);
+                }
+
+                if ((httpClientNetcdfDataset != null) && !(httpClientNetcdfDataset instanceof HttpClientCAS)) {
+                    throw new MotuException(
+                            String
+                                    .format("Error in NetCdfReader acquireDataset - httpClientNetcdfDataset has been set but is no an HttpClientCAS object:'%s'",
+                                            httpClientNetcdfDataset.getClass().getName()));
+                }
+
+                if ((httpClientDConnect2 != null) && !(httpClientDConnect2 instanceof HttpClientCAS)) {
+                    throw new MotuException(String
+                            .format("Error in NetCdfReader acquireDataset - httpClientDConnect2 has been set but is no an HttpClientCAS object:'%s'",
+                                    httpClientDConnect2.getClass().getName()));
+                }
+
+                if ((httpClientHTTPRandomAccessFile != null) && !(httpClientHTTPRandomAccessFile instanceof HttpClientCAS)) {
+                    throw new MotuException(
+                            String
+                                    .format("Error in NetCdfReader acquireDataset - httpClientHTTPRandomAccessFile has been set but is no an HttpClientCAS object:'%s'",
+                                            httpClientHTTPRandomAccessFile.getClass().getName()));
+                }
+
+            }
+        } catch (MotuException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new MotuException("Error in NetCdfReader initNetcdfHttpClient - Unable to initialize httpClient object", e);
+        }
+
+    }
+
     /**
      * Factory method for opening a dataset through the netCDF API, and identifying its coordinate variables.
      * 
@@ -809,16 +919,17 @@ public class NetCdfReader {
      * @return NetcdfDataset object
      * 
      * @throws IOException the IO exception
+     * @throws MotuException
      * 
      * @see #NetcdfDataset Coordinate Systems are always added
      */
-    public NetcdfDataset acquireDataset(String location, boolean enhanceVar, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+    public NetcdfDataset acquireDataset(String location, boolean enhanceVar, ucar.nc2.util.CancelTask cancelTask) throws IOException, MotuException {
 
-        MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-        HttpClientForCAS httpClient = new HttpClientForCAS(connectionManager);
-        //
-        NetcdfDataset.setHttpClient(httpClient);
-        // Surcharger : httpClient.executeMethod(hostconfig, method, state)
+
+        initNetcdfHttpClient();
+
+        //httpClientCAS.getIsCas().set(this.casAuthentification);
+        CasAuthentificationHolder.setCasAuthentification(this.casAuthentification);
 
         // if enhanceVar ==> call NetcdfDataset.acquireDataset method
         // else enhance() is not called but Coordinate Systems are added

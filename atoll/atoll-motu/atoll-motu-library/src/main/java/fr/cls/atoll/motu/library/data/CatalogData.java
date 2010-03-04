@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 import ucar.ma2.MAMath.MinMax;
 import ucar.unidata.geoloc.LatLonRect;
 
-import fr.cls.atoll.motu.library.cas.HttpClientForCAS;
+import fr.cls.atoll.motu.library.cas.HttpClientCAS;
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
@@ -58,7 +58,7 @@ import fr.cls.atoll.motu.library.tds.server.TimeCoverageType;
  * This class implements a product's catalog .
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.14 $ - $Date: 2010-03-02 13:09:12 $
+ * @version $Revision: 1.15 $ - $Date: 2010-03-04 16:05:15 $
  */
 public class CatalogData {
 
@@ -181,7 +181,7 @@ public class CatalogData {
         Product product = getProducts(productId);
 
         if (product == null) {
-            product = new Product();
+            product = new Product(this.casAuthentification);
             productMetaData = new ProductMetaData();
             productMetaData.setProductId(productId);
 
@@ -262,13 +262,9 @@ public class CatalogData {
         for (fr.cls.atoll.motu.library.inventory.File file : inventoryOLA.getFiles().getFile()) {
             DataFile dataFile = new DataFile();
             dataFile.setName(file.getName());
-            if ((file.getPath() == null) || (file.getWeight() == null)) {
+            if (file.getWeight() == null) {
                 continue;
             }
-            if (Organizer.isNullOrEmpty(file.getPath().toString())) {
-                continue;
-            }
-
             dataFile.setPath(file.getPath().toString());
             dataFile.setStartCoverageDate(file.getStartCoverageDate());
             dataFile.setEndCoverageDate(file.getEndCoverageDate());
@@ -790,7 +786,7 @@ public class CatalogData {
 
         Product product = getProducts(productId);
         if (product == null) {
-            product = new Product();
+            product = new Product(this.casAuthentification);
             productMetaData = new ProductMetaData();
             productMetaData.setProductId(productId);
         } else {
@@ -930,7 +926,7 @@ public class CatalogData {
 
         Product product = getProducts(productId);
         if (product == null) {
-            product = new Product();
+            product = new Product(this.casAuthentification);
             productMetaData = new ProductMetaData();
             productMetaData.setProductId(productId);
         } else {
@@ -1488,7 +1484,14 @@ public class CatalogData {
             // JAXBContext jc = JAXBContext.newInstance(TDS_SCHEMA_PACK_NAME);
             // Unmarshaller unmarshaller = jc.createUnmarshaller();
 
-            URL url = new URL(AssertionUtils.addCASTicket(path));
+            String newPath = path;
+            if (casAuthentification) {
+                newPath = AssertionUtils.addCASTicket(path);
+            } else {
+                newPath = path;
+            }
+                
+            URL  url = new URL(newPath);
             URLConnection conn = url.openConnection();
             in = conn.getInputStream();
             synchronized (Organizer.getUnmarshallerTdsConfig()) {

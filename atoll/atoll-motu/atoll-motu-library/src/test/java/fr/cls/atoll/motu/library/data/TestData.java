@@ -32,7 +32,7 @@ import fr.cls.atoll.motu.library.opendap.server.Service;
 
 /**
  * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2010-02-26 13:52:43 $
+ * @version $Revision: 1.4 $ - $Date: 2010-03-04 16:05:15 $
  * 
  */
 public class TestData {
@@ -216,7 +216,7 @@ public class TestData {
                         System.out.print(fileAccess.getUrlPath());
                         System.out.print("\t");
                         System.out.println(fileAccess.getCoord());
-                        NetCdfReader netCdfReader = new NetCdfReader("http://opendap-nrt.aviso.oceanobs.com/thredds/dodsC/" + fileAccess.getUrlPath());
+                        NetCdfReader netCdfReader = new NetCdfReader("http://opendap-nrt.aviso.oceanobs.com/thredds/dodsC/" + fileAccess.getUrlPath(), false);
                         try {
                             netCdfReader.open();
                         } catch (MotuExceptionBase e) {
@@ -364,7 +364,7 @@ public class TestData {
     }
 
     public static void testLoadOpendapMetaData() {
-        Product product = new Product();
+        Product product = new Product(false);
         String url = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v1R1v_glo_mean_bulletin_2006_03_29";
 
         try {

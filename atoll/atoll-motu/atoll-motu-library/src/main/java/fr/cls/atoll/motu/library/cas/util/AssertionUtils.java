@@ -13,13 +13,13 @@ import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.jasig.cas.client.util.AssertionHolder;
 import org.jasig.cas.client.validation.Assertion;
 
-import fr.cls.atoll.motu.library.cas.HttpClientForCAS;
+import fr.cls.atoll.motu.library.cas.HttpClientCAS;
 
 /**
  * <br><br>Copyright : Copyright (c) 2010.
  * <br><br>Société : CLS (Collecte Localisation Satellites)
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2010-03-01 16:01:33 $
+ * @version $Revision: 1.3 $ - $Date: 2010-03-04 16:05:15 $
  */
 public class AssertionUtils {
     /**
@@ -97,6 +97,32 @@ public class AssertionUtils {
             return targetService;
         }
 
+//        StringBuffer stringBuffer = new StringBuffer();
+//        stringBuffer.append(targetService);
+//        stringBuffer.append(targetService.indexOf("?") != -1 ? "&" : "?");
+//
+//        stringBuffer.append("ticket=");
+//        stringBuffer.append(ticket);
+//        return stringBuffer.toString();
+//
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug("addCASTicket(String) - exiting - new URL = " + stringBuffer.toString());
+//        }
+        return addCASTicket(ticket, targetService);
+
+    }
+    
+    public static String addCASTicket(String ticket, String targetService) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("addCASTicket(String, String) - entering");
+        }
+        if (AssertionUtils.isNullOrEmpty(ticket)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("addCASTicket(String, String) - exiting - service/proxy ticket is null or empty");
+            }
+            return targetService;
+        }
+
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(targetService);
         stringBuffer.append(targetService.indexOf("?") != -1 ? "&" : "?");
@@ -105,11 +131,13 @@ public class AssertionUtils {
         stringBuffer.append(ticket);
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("addCASTicket(String) - exiting - new URL = " + stringBuffer.toString());
+            LOG.debug("addCASTicket(String, String) - exiting - new URL = " + stringBuffer.toString());
         }
         return stringBuffer.toString();
-
+    
     }
+
+    
     public static String getProxyTicketFor(String targetService) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProxyTicketFor(String) - entering");

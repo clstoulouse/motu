@@ -56,7 +56,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
  * This class represents a product.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.11 $ - $Date: 2010-03-02 13:09:12 $
+ * @version $Revision: 1.12 $ - $Date: 2010-03-04 16:05:15 $
  */
 public class Product {
 
@@ -76,8 +76,8 @@ public class Product {
     /**
      * Default constructor.
      */
-    public Product() {
-
+    public Product(boolean casAuthentification) {
+        this.casAuthentification = casAuthentification;
     }
 
     /**
@@ -147,7 +147,28 @@ public class Product {
     public void setDataset(DatasetBase dataset) {
         this.dataset = dataset;
     }
+    /** Does Service needs CAS authentification to access catalog resources and data. */
+    protected boolean casAuthentification = false;
 
+    /**
+     * Checks if is cas authentification.
+     * 
+     * @return true, if is cas authentification
+     */
+    public boolean isCasAuthentification() {
+        return casAuthentification;
+    }
+
+    /**
+     * Sets the cas authentification.
+     * 
+     * @param casAuthentification the new cas authentification
+     */
+    public void setCasAuthentification(boolean casAuthentification) {
+        this.casAuthentification = casAuthentification;
+    }
+
+ 
     /**
      * Checks for criteria date time.
      * 
@@ -1657,7 +1678,7 @@ public class Product {
      */
     public NetCdfReader getNetCdfReader() {
         if (netCdfReader == null) {
-            netCdfReader = new NetCdfReader(locationData);
+            netCdfReader = new NetCdfReader(locationData, this.casAuthentification);
         }
         return this.netCdfReader;
     }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rdf:RDF [
-<!ENTITY atoll "http://atoll.cls.fr/2009/resource/individual/atoll#" >
+<!ENTITY atoll "http://purl.org/cls/atoll/ontology/individual/atoll#" >
 ]>
 
 <!--
@@ -119,6 +119,15 @@
 	runGCInterval="10"
 	sftpSessionTimeOut="PT10S"
 	strictHostKeyChecking="no">
+		<!--===========================================================-->
+	<!--                   motu-ftp-aviso Service                 -->
+	<!--===========================================================-->
+	<configService defaultLanguage="UK" description="Aviso Near Real Time and Delayed Time data FTP"
+		group="AvisoFTP" httpBaseRef="http://www.aviso.oceanobs.com"
+		name="&atoll;motu-ftp-aviso" veloTemplatePrefix="aviso">
+		<catalog name="catalogAvisoFTP.xml" type="FTP"
+			urlSite="sftp://atoll:atoll@atoll-qt1.cls.fr/opt/atoll/HOA/Interface_ATOLL" />
+	</configService>
 	
 		<!--===========================================-->
 	<!--                     CatSat  TDS            -->
