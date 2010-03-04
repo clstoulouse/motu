@@ -48,6 +48,13 @@
 	downloadHttpUrl="http://localhost:8080/motu-file-extract"
 	extractionFilePatterns=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|.*\.extract$|wps_output_.*$|wps_response_.*$"
 	httpDocumentRoot="http://aviso-motu.cls.fr">
+	<!--=====================   CATSAT FTP ===================-->
+	<configService defaultLanguage="FR" description="Ftp Catsat"
+		group="CatsatFTP" httpBaseRef="http://www.cls.fr"
+		name="catsatftp" veloTemplatePrefix="generic">
+		<catalog name="catalogCatsatFTP.xml" type="FTP"
+			urlSite="sftp://atoll:atoll@atoll-qt1.cls.fr/opt/atoll/HOA/Interface_ATOLL" />
+	</configService>
 	
 	<!--===========================================================-->
 	<!--                    motu-opendap-mercator Service          -->
@@ -77,6 +84,14 @@
 		<catalog name="catalogAvisoFTP.xml" type="FTP"
 			urlSite="sftp://atoll:atoll@aviso-data1.cls.fr/home/atoll/atoll-distrib/HOA_Aviso/Interface_ATOLL" />
 	</configService>
+	<!--=====================   AVISO FTP ===================-->
+	<configService defaultLanguage="UK" description="Ftp Catsat"
+		group="AvisoFTP" httpBaseRef="http://www.cls.fr"
+		name="avisoFTP" veloTemplatePrefix="generic">
+		<catalog name="catalogAvisoFTP.xml" type="FTP"
+			urlSite="sftp://atoll:atoll@aviso-data1.cls.fr/home/atoll/atoll-distrib/HOA_Aviso/Interface_ATOLL" />
+	</configService>
+	
 	<!--===========================================================-->
 	<!--                    mercator Service          -->
 	<!--===========================================================-->
@@ -96,6 +111,17 @@
 		<catalog name="catalog.xml" type="tds"
 			urlSite="http://opendap.aviso.oceanobs.com/thredds" />
 	</configService>
+	
+    <!--===========================================-->
+	<!--                     CatSat  TDS            -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR" description="Catsat"
+		group="Catsat" httpBaseRef="http://www.cls.fr" name="Catsat"
+		veloTemplatePrefix="cls">
+		<catalog name="catalog.xml" type="TDS"
+			urlSite="http://catsat-data1.cls.fr:43080/thredds" />
+	</configService>
+	
 	<!--===========================================================-->
 	<!--                   OpendapAuth Service          -->
 	<!--===========================================================-->	
@@ -104,7 +130,7 @@
 		httpBaseRef="http://www.aviso.oceanobs.com" name="opendapauth"
 		veloTemplatePrefix="cls">
 		<catalog name="catalog.xml" type="tds"
-			urlSite="http://atoll-dev.cls.fr:43080/thredds" />
+			urlSite="http://atoll-dev.cls.fr:43080/thredds" casAuthentification="true" />
 	</configService>
 	<!--===========================================-->
 	<!--      QUEUE SERVER CONFIG      -->

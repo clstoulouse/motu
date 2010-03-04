@@ -44,7 +44,7 @@
 	<description>Motu</description>
 	
 	
-	
+	<!-- 
 	<filter>
 		<filter-name>CAS Authentication Filter</filter-name>
 		<filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
@@ -100,16 +100,7 @@
 		<filter-name>CAS Assertion Thread Local Filter</filter-name>
 		<filter-class>org.jasig.cas.client.util.AssertionThreadLocalFilter</filter-class>
 	</filter>
--->
-	<!-- ************************* -->
 
-<!-- Sign out not yet implemented -->
-<!-- 
-	<filter-mapping>
-		<filter-name>CAS Single Sign Out Filter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
--->
 	<filter-mapping>
 		<filter-name>CAS Validation Filter</filter-name>
 		<url-pattern>/proxyCallback</url-pattern>	
@@ -134,6 +125,8 @@
 		<filter-name>CAS Assertion Thread Local Filter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+-->
+	
 	<!-- Mapping Servlet -->
 	<servlet>
 		<display-name>Motu</display-name>

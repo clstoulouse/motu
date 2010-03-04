@@ -131,6 +131,36 @@
 		<catalog name="catalogAvisoFTP.xml" type="FTP"
 			urlSite="sftp://atoll:atoll@aviso-data1.cls.fr/home/atoll/atoll-distrib/HOA_Aviso/Interface_ATOLL" />
 	</configService>
+	<!--===========================================================-->
+	<!--                   OpendapAuth Service          -->
+	<!--===========================================================-->	
+	<configService defaultLanguage="FR"
+		description="Test CASified Opendap " group="opendapauth"
+		httpBaseRef="http://www.aviso.oceanobs.com" name="opendapauth"
+		veloTemplatePrefix="cls">
+		<catalog name="catalog.xml" type="tds"
+			urlSite="http://atoll-dev.cls.fr:43080/thredds" casAuthentification="true" />
+	</configService>
+	
+	<!--===========================================================-->
+	<!--                    mercator Service          -->
+	<!--===========================================================-->
+	<configService defaultLanguage="FR" description="Ocean data"
+		group="Mercator" httpBaseRef="http://www.mercator-ocean.fr"
+		name="mercator" veloTemplatePrefix="mercator">
+		<catalog name="catalog.xml" type="tds"
+			urlSite="http://opendap.mercator-ocean.fr/thredds" />
+	</configService>
+	<!--===========================================================-->
+	<!--                   aviso Service          -->
+	<!--===========================================================-->	
+	<configService defaultLanguage="UK"
+		description="Aviso Near Real Time and Delayed Time data" group="Aviso"
+		httpBaseRef="http://www.aviso.oceanobs.com" name="aviso"
+		veloTemplatePrefix="aviso">
+		<catalog name="catalog.xml" type="tds"
+			urlSite="http://opendap.aviso.oceanobs.com/thredds" />
+	</configService>
 
 	<!--===========================================-->
 	<!--                     Test Jason 2 ATP TDS        		-->
