@@ -58,7 +58,7 @@ import fr.cls.atoll.motu.library.tds.server.TimeCoverageType;
  * This class implements a product's catalog .
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.15 $ - $Date: 2010-03-04 16:05:15 $
+ * @version $Revision: 1.16 $ - $Date: 2010-03-05 10:41:46 $
  */
 public class CatalogData {
 
@@ -739,9 +739,9 @@ public class CatalogData {
                 }
             }
         }
-        
+
         currentGeospatialCoverage = null;
-        
+
         if (sameProductTypeDataset.size() > 0) {
             listProductTypeDataset.add(sameProductTypeDataset);
             sameProductTypeDataset = new ArrayList<Product>();
@@ -1487,11 +1487,15 @@ public class CatalogData {
             String newPath = path;
             if (casAuthentification) {
                 newPath = AssertionUtils.addCASTicket(path);
+                if (!AssertionUtils.hasCASTicket(newPath)) {
+                    throw new MotuException(
+                            "Unable to load TDS configuration. TDS has been declared as CASified, but the Motu application is not. \nTo access this TDS, the Motu Application must be CASified.");
+                }
             } else {
                 newPath = path;
             }
-                
-            URL  url = new URL(newPath);
+
+            URL url = new URL(newPath);
             URLConnection conn = url.openConnection();
             in = conn.getInputStream();
             synchronized (Organizer.getUnmarshallerTdsConfig()) {
@@ -1501,7 +1505,7 @@ public class CatalogData {
             throw new MotuException("Error in loadConfigTds", (Throwable) e);
         }
         if (catalogXml == null) {
-            throw new MotuException(String.format("Unable to load Tds configuration (in loadConfigOpendap, cataloXml is null) - url : %s", path));
+            throw new MotuException(String.format("Unable to load Tds configuration (in loadConfigTds, cataloXml is null) - url : %s", path));
         }
         try {
             in.close();

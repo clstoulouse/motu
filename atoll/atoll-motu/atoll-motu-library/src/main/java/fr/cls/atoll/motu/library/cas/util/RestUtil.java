@@ -28,44 +28,44 @@ import javax.net.ssl.HttpsURLConnection;
  * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2010-03-04 16:05:15 $
+ * @version $Revision: 1.3 $ - $Date: 2010-03-05 10:41:46 $
  */
 public class RestUtil {
     /**
      * Logger for this class
      */
     private static final Logger LOG = Logger.getLogger(RestUtil.class);
-
-    private static String CAS_SERVER_URL_PREFIX = null;
-
-    public static String getCAS_SERVER_URL_PREFIX() {
-        return CAS_SERVER_URL_PREFIX;
-    }
-
-    public static void setCAS_SERVER_URL_PREFIX(String cas_server_url_prefix) {
-        CAS_SERVER_URL_PREFIX = cas_server_url_prefix;
-    }
-
-    private static String CAS_RESTLET_URL_SUFFIX = "/v1/tickets";
-
-    public static String getCAS_RESTLET_URL_SUFFIX() {
-        return CAS_RESTLET_URL_SUFFIX;
-    }
-
-    public static void setCAS_RESTLET_URL_SUFFIX(String cas_restlet_url_suffix) {
-        CAS_RESTLET_URL_SUFFIX = cas_restlet_url_suffix;
-    }
-
-    public static String getCasRestletUrl() {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(CAS_SERVER_URL_PREFIX);
-        if (!CAS_SERVER_URL_PREFIX.endsWith("/")) {
-            stringBuffer.append("/");
-        }
-        stringBuffer.append(CAS_RESTLET_URL_SUFFIX);
-
-        return stringBuffer.toString();
-    }
+//
+//    private static String CAS_SERVER_URL_PREFIX = null;
+//
+//    public static String getCAS_SERVER_URL_PREFIX() {
+//        return CAS_SERVER_URL_PREFIX;
+//    }
+//
+//    public static void setCAS_SERVER_URL_PREFIX(String cas_server_url_prefix) {
+//        CAS_SERVER_URL_PREFIX = cas_server_url_prefix;
+//    }
+//
+//    private static String CAS_RESTLET_URL_SUFFIX = "/v1/tickets";
+//
+//    public static String getCAS_RESTLET_URL_SUFFIX() {
+//        return CAS_RESTLET_URL_SUFFIX;
+//    }
+//
+//    public static void setCAS_RESTLET_URL_SUFFIX(String cas_restlet_url_suffix) {
+//        CAS_RESTLET_URL_SUFFIX = cas_restlet_url_suffix;
+//    }
+//
+//    public static String getCasRestletUrl() {
+//        StringBuffer stringBuffer = new StringBuffer();
+//        stringBuffer.append(CAS_SERVER_URL_PREFIX);
+//        if (!CAS_SERVER_URL_PREFIX.endsWith("/")) {
+//            stringBuffer.append("/");
+//        }
+//        stringBuffer.append(CAS_RESTLET_URL_SUFFIX);
+//
+//        return stringBuffer.toString();
+//    }
     
     public static String getCasRestletUrl(String serviceURL, String casRestUrlSuffix) throws IOException {
         

@@ -96,7 +96,7 @@ import fr.cls.commons.util5.DatePeriod;
  * application.
  * 
  * @author $Author: dearith $
- * @version $Revision: 1.32 $ - $Date: 2010-03-01 16:01:17 $
+ * @version $Revision: 1.33 $ - $Date: 2010-03-05 10:41:46 $
  */
 public class Organizer {
 
@@ -262,11 +262,47 @@ public class Organizer {
     private static final String TDS_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.tds.server";
 
     /** The unmarshaller opendap config. */
-    private static Unmarshaller unmarshallerOpendapConfig = null;;
+    private static Unmarshaller unmarshallerOpendapConfig = null;
+    
+    /**
+     * Sets the unmarshaller opendap config.
+     * 
+     * @param unmarshallerOpendapConfig the new unmarshaller opendap config
+     */
+    public static void setUnmarshallerOpendapConfig(Unmarshaller unmarshallerOpendapConfig) {
+        Organizer.unmarshallerOpendapConfig = unmarshallerOpendapConfig;
+    }
+
+    /**
+     * Gets the unmarshaller opendap config.
+     * 
+     * @return the unmarshaller opendap config
+     */
+    public static Unmarshaller getUnmarshallerOpendapConfig() {
+        return unmarshallerOpendapConfig;
+    }
 
     /** The unmarshaller tds config. */
     private static Unmarshaller unmarshallerTdsConfig = null;
 
+    /**
+     * Sets the unmarshaller tds config.
+     * 
+     * @param unmarshallerTdsConfig the new unmarshaller tds config
+     */
+    public static void setUnmarshallerTdsConfig(Unmarshaller unmarshallerTdsConfig) {
+        Organizer.unmarshallerTdsConfig = unmarshallerTdsConfig;
+    }
+ 
+    /**
+     * Gets the unmarshaller tds config.
+     * 
+     * @return the unmarshaller tds config
+     */
+    public static Unmarshaller getUnmarshallerTdsConfig() {
+        return unmarshallerTdsConfig;
+    }
+    
     /** The vfs standard manager. */
     private static final ThreadLocal<VFSManager> VFS_MANAGER = new ThreadLocal<VFSManager>() {
         @Override
@@ -1451,23 +1487,7 @@ public class Organizer {
         return stdNameEquiv;
     }
 
-    /**
-     * Gets the unmarshaller opendap config.
-     * 
-     * @return the unmarshaller opendap config
-     */
-    public static Unmarshaller getUnmarshallerOpendapConfig() {
-        return unmarshallerOpendapConfig;
-    }
 
-    /**
-     * Gets the unmarshaller tds config.
-     * 
-     * @return the unmarshaller tds config
-     */
-    public static Unmarshaller getUnmarshallerTdsConfig() {
-        return unmarshallerTdsConfig;
-    }
 
     /**
      * Inits the request size.
@@ -2104,7 +2124,7 @@ public class Organizer {
      * 
      * @throws MotuException the motu exception
      */
-    private static synchronized void initJAXB() throws MotuException {
+    public static synchronized void initJAXB() throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("initJAXB() - entering");
         }
@@ -2123,7 +2143,7 @@ public class Organizer {
      * 
      * @throws MotuException the motu exception
      */
-    private static void initJAXBMotuMsg() throws MotuException {
+    public static void initJAXBMotuMsg() throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("initJAXBMotuMsg() - entering");
         }
@@ -2152,7 +2172,7 @@ public class Organizer {
      * 
      * @throws MotuException the motu exception
      */
-    private static void initJAXBOpendapConfig() throws MotuException {
+    public static void initJAXBOpendapConfig() throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("initJAXBOpendapConfig() - entering");
         }
@@ -2180,7 +2200,7 @@ public class Organizer {
      * 
      * @throws MotuException the motu exception
      */
-    private static void initJAXBTdsConfig() throws MotuException {
+    public static void initJAXBTdsConfig() throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("initJAXBTdsConfig() - entering");
         }

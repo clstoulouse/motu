@@ -1,14 +1,5 @@
 package fr.cls.atoll.motu.library.cas;
 
-import org.apache.log4j.Logger;
-
-/**
- * <br><br>Copyright : Copyright (c) 2010.
- * <br><br>Société : CLS (Collecte Localisation Satellites)
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2010-03-04 16:05:15 $
- */
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -22,7 +13,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -42,21 +32,18 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.log4j.Logger;
 import org.jasig.cas.client.authentication.AttributePrincipal;
-import org.jasig.cas.client.authentication.AttributePrincipalImpl;
 import org.jasig.cas.client.util.AssertionHolder;
 import org.jasig.cas.client.validation.Assertion;
-import org.jasig.cas.client.validation.AssertionImpl;
-import org.jasig.cas.client.validation.AssertionImplTests;
 import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.jasig.cas.client.validation.TicketValidationException;
 
+import ucar.nc2.util.net.EasySSLProtocolSocketFactory;
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.library.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
-
-import ucar.nc2.util.net.EasySSLProtocolSocketFactory;
 
 //import edu.yale.its.tp.cas.client.ProxyTicketValidator;
 
@@ -71,22 +58,22 @@ public class TestCASRest {
     public static void main(String... args) throws Exception {
         String username = "dearith";
         String password = "bienvenue";
-        //validateFromCAS(username, password);
-        //loginToCAS(username, password);
-        //getRedirectUrl();
-        
-//        validateFromCAS2(username, password);
-        
+        // validateFromCAS(username, password);
+        // loginToCAS(username, password);
+        // getRedirectUrl();
+
+        // validateFromCAS2(username, password);
+
         testgetCASifiedResource();
-        
+
     }
 
-    public static String getRedirectUrl()  {
+    public static String getRedirectUrl() {
         URL url;
         String redirectUrl = "";
         try {
             url = new URL("http://atoll-dev.cls.fr:43080/thredds/catalog.xml");
-            //url = new URL("http://mercator-data1.cls.fr:43080/thredds/catalog.xml");
+            // url = new URL("http://mercator-data1.cls.fr:43080/thredds/catalog.xml");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             System.out.println(conn.getResponseCode());
@@ -101,15 +88,15 @@ public class TestCASRest {
                 System.out.println(entry.getValue());
             }
 
-            if ((redirectUrl != null) &&  (conn.getResponseCode() == 302) ) {
+            if ((redirectUrl != null) && (conn.getResponseCode() == 302)) {
                 System.out.println(redirectUrl);
                 redirectUrl = redirectUrl.substring(0, redirectUrl.lastIndexOf("/") + 1);
                 System.out.println("redirectUrl is : " + redirectUrl);
-                
+
             }
 
             conn.disconnect();
-            
+
         } catch (MalformedURLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -120,7 +107,6 @@ public class TestCASRest {
         return redirectUrl;
     }
 
-    
     public static boolean validateFromCAS(String username, String password) throws Exception {
 
         String url = casServerUrlPrefix + "/v1/tickets";
@@ -160,7 +146,6 @@ public class TestCASRest {
                 String proxyCallbackUrl = "https://atoll-dev.cls.fr:8443/mywebapp/proxyCallback";
                 String targetService = "http://atoll-dev.cls.fr:43080/thredds/dodsC/nrt_glo_hr_infrared_sst.ascii?time[0:1:0]";
 
-                
                 String encodedServiceURL = URLEncoder.encode("service", "utf-8") + "=" + URLEncoder.encode(serviceURL, "utf-8");
                 System.out.println("Service url is : " + encodedServiceURL);
 
@@ -188,24 +173,19 @@ public class TestCASRest {
                 isr.close();
                 hsu.disconnect();
 
+                // Cookie[] cookies = getServiceUrlResponse(ticket, serviceURL);
 
-                //Cookie[] cookies = getServiceUrlResponse(ticket, serviceURL);
-                
-                
-                
-                
-//                Assertion assertion = validateTicket(ticket, serviceURL);
-//                StringBuffer stringBuffer = new StringBuffer();
-//                debugAssertion(stringBuffer, assertion);
-//                System.out.println(stringBuffer.toString());
-//                String proxyTicket = getProxyTicketFor(assertion, targetService);
-//                System.out.println(proxyTicket);
-                
-               proxyValidate(ticket, proxyCallbackUrl,  serviceURL);
-                
+                // Assertion assertion = validateTicket(ticket, serviceURL);
+                // StringBuffer stringBuffer = new StringBuffer();
+                // debugAssertion(stringBuffer, assertion);
+                // System.out.println(stringBuffer.toString());
+                // String proxyTicket = getProxyTicketFor(assertion, targetService);
+                // System.out.println(proxyTicket);
 
-//                validateTicket2(ticket, serviceURL, targetService, proxyCallbackUrl);
-                
+                proxyValidate(ticket, proxyCallbackUrl, serviceURL);
+
+                // validateTicket2(ticket, serviceURL, targetService, proxyCallbackUrl);
+
                 return true;
 
             } else {
@@ -222,6 +202,7 @@ public class TestCASRest {
         }
 
     }
+
     public static boolean loginToCAS(String username, String password) throws Exception {
 
         String url = casServerUrlPrefix + "/v1/tickets";
@@ -258,7 +239,7 @@ public class TestCASRest {
                 // String serviceURL = "https://myserver.com/testApplication";
                 // String serviceURL = "http://atoll-dev.cls.fr:43080/thredds/dodsC";
                 String serviceURL = "http://atoll-dev.cls.fr:43080/thredds/catalog.xml";
-                
+
                 String encodedServiceURL = URLEncoder.encode("service", "utf-8") + "=" + URLEncoder.encode(serviceURL, "utf-8");
                 System.out.println("Service url is : " + encodedServiceURL);
 
@@ -302,6 +283,7 @@ public class TestCASRest {
         }
 
     }
+
     static URLConnection openConn(String urlk) throws MalformedURLException, IOException {
 
         URL url = new URL(urlk);
@@ -317,42 +299,38 @@ public class TestCASRest {
         c.disconnect();
     }
 
-    
-     public static Cookie[] validateFromCAS2(String username, String password) throws Exception {
+    public static Cookie[] validateFromCAS2(String username, String password) throws Exception {
 
         String url = casServerUrlPrefix + "/v1/tickets?";
-        
+
         String s = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(username, "UTF-8");
         s += "&" + URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
 
-
-        
-        
         HttpState initialState = new HttpState();
         // Initial set of cookies can be retrieved from persistent storage and
         // re-created, using a persistence mechanism of choice,
         // Cookie mycookie = new Cookie(".foobar.com", "mycookie", "stuff", "/", null, false);
 
-         // Create an instance of HttpClient.
+        // Create an instance of HttpClient.
         // HttpClient client = new HttpClient();
         HttpClient client = new HttpClient();
 
         Protocol easyhttps = new Protocol("https", new EasySSLProtocolSocketFactory(), 8443);
-        
+
         URI uri = new URI(url + s, true);
         // use relative url only
         PostMethod httpget = new PostMethod(url);
         httpget.addParameter("username", username);
         httpget.addParameter("password", password);
-        
+
         HostConfiguration hc = new HostConfiguration();
         hc.setHost("atoll-dev.cls.fr", 8443, easyhttps);
-        //client.executeMethod(hc, httpget); 
+        // client.executeMethod(hc, httpget);
 
         client.setState(initialState);
 
         // Create a method instance.
-        System.out.println(url +s);                
+        System.out.println(url + s);
 
         GetMethod method = new GetMethod(url + s);
         // GetMethod method = new GetMethod(url );
@@ -370,11 +348,11 @@ public class TestCASRest {
         //           
         // client.getState().setProxyCredentials(authScope, credentials);
         Cookie[] cookies = null;
-        
+
         try {
             // Execute the method.
-            //int statusCode = client.executeMethod(method);
-            int statusCode = client.executeMethod(hc, httpget); 
+            // int statusCode = client.executeMethod(method);
+            int statusCode = client.executeMethod(hc, httpget);
 
             if (statusCode != HttpStatus.SC_OK) {
                 System.err.println("Method failed: " + method.getStatusLine());
@@ -399,7 +377,7 @@ public class TestCASRest {
             for (int i = 0; i < cookies.length; i++) {
                 System.out.println(" - " + cookies[i].toExternalForm());
             }
-                       
+
             Assertion assertion = (Assertion) AssertionHolder.getAssertion();
             if (assertion == null) {
                 System.out.println("<p>Assertion is null</p>");
@@ -417,14 +395,9 @@ public class TestCASRest {
         }
 
         return cookies;
-        
-        
-             
-
 
     }
 
-    
     public static Cookie[] getServiceUrlResponse(String ticket, String url) {
         // Get initial state object
         HttpState initialState = new HttpState();
@@ -458,7 +431,7 @@ public class TestCASRest {
         //           
         // client.getState().setProxyCredentials(authScope, credentials);
         Cookie[] cookies = null;
-        
+
         try {
             // Execute the method.
             int statusCode = client.executeMethod(method);
@@ -482,7 +455,7 @@ public class TestCASRest {
             for (int i = 0; i < cookies.length; i++) {
                 System.out.println(" - " + cookies[i].toExternalForm());
             }
-                       
+
             Assertion assertion = (Assertion) AssertionHolder.getAssertion();
             if (assertion == null) {
                 System.out.println("<p>Assertion is null</p>");
@@ -501,18 +474,17 @@ public class TestCASRest {
 
         return cookies;
     }
-    
-    public static void proxyValidate(String ticket, String proxyCallbackUrl,  String url ) {
+
+    public static void proxyValidate(String ticket, String proxyCallbackUrl, String url) {
         // Get initial state object
         HttpState initialState = new HttpState();
         // Initial set of cookies can be retrieved from persistent storage and
         // re-created, using a persistence mechanism of choice,
         // Cookie mycookie = new Cookie(".foobar.com", "mycookie", "stuff", "/", null, false);
-//        Cookie mycookie = new Cookie();
-//        // and then added to your HTTP state instance
-        //initialState.addCookies(myCookies);
+        // Cookie mycookie = new Cookie();
+        // // and then added to your HTTP state instance
+        // initialState.addCookies(myCookies);
 
-        
         // Create an instance of HttpClient.
         // HttpClient client = new HttpClient();
         HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
@@ -526,15 +498,15 @@ public class TestCASRest {
             s += "&" + URLEncoder.encode("ticket", "UTF-8") + "=" + URLEncoder.encode(ticket, "UTF-8");
             s += "&" + URLEncoder.encode("service", "UTF-8") + "=" + URLEncoder.encode(url, "UTF-8");
             System.out.println(s);
-            
+
         } catch (UnsupportedEncodingException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
 
         GetMethod method = new GetMethod(casServerUrlPrefix + "/proxyValidate?" + s);
-        
-        //   "https://atoll-dev.cls.fr:8443/mywebapp/proxyCallback" + "?ticket=" + ticket);
+
+        // "https://atoll-dev.cls.fr:8443/mywebapp/proxyCallback" + "?ticket=" + ticket);
         // GetMethod method = new GetMethod(url );
 
         HostConfiguration hostConfiguration = new HostConfiguration();
@@ -573,7 +545,7 @@ public class TestCASRest {
             for (int i = 0; i < cookies.length; i++) {
                 System.out.println(" - " + cookies[i].toExternalForm());
             }
-                       
+
             Assertion assertion = (Assertion) AssertionHolder.getAssertion();
             if (assertion == null) {
                 System.out.println("<p>Assertion is null</p>");
@@ -590,16 +562,17 @@ public class TestCASRest {
             method.releaseConnection();
         }
 
-    }    
+    }
+
     public final static Assertion validateTicket(String ticket, String legacyServerServiceUrl) {
-        //AttributePrincipal principal = null;
+        // AttributePrincipal principal = null;
         String casServerUrl = casServerUrlPrefix;
         Cas20ProxyTicketValidator pv = new Cas20ProxyTicketValidator(casServerUrl);
-//        pv.setAcceptAnyProxy(true);        
-//        pv.setProxyCallbackUrl("https://atoll-dev.cls.fr:8443/mywebapp/proxyCallback");
-        
-        //pv.setProxyGrantingTicketStorage(new ProxyGrantingTicketStorageImpl());
-        //pv.setProxyRetriever(new Cas20ProxyRetriever(casServerUrlPrefix));
+        // pv.setAcceptAnyProxy(true);
+        // pv.setProxyCallbackUrl("https://atoll-dev.cls.fr:8443/mywebapp/proxyCallback");
+
+        // pv.setProxyGrantingTicketStorage(new ProxyGrantingTicketStorageImpl());
+        // pv.setProxyRetriever(new Cas20ProxyRetriever(casServerUrlPrefix));
         pv.setRenew(false);
 
         Assertion assertion = null;
@@ -607,91 +580,93 @@ public class TestCASRest {
             // there is no need, that the legacy application is accessible
             // through this URL. But for validation purpose, even a non-web-app
             // needs a valid looking URL as identifier.
-            //String legacyServerServiceUrl = "http://otherserver/legacy/service";
-            assertion = pv.validate(ticket, legacyServerServiceUrl);           
-//            principal = a.getPrincipal();
-//            System.out.println("user name:" + principal.getName());
+            // String legacyServerServiceUrl = "http://otherserver/legacy/service";
+            assertion = pv.validate(ticket, legacyServerServiceUrl);
+            // principal = a.getPrincipal();
+            // System.out.println("user name:" + principal.getName());
         } catch (TicketValidationException e) {
             e.printStackTrace(); // bad style, but only for demonstration purpose.
         }
         return assertion;
     }
-//    
-//    public final static void validateTicket2(String ticket, String legacyServerServiceUrl, String targetService, String proxyCallbackUrl) {
-//        String user = null;
-//        String errorCode = null;
-//        String errorMessage = null;
-//        String xmlResponse = null;
-//        List proxyList = null;
-//
-//        /* instantiate a new ProxyTicketValidator */
-//        ProxyTicketValidator pv = new ProxyTicketValidator(); 
-//
-//        /* set its parameters */
-//        pv.setCasValidateUrl(casServerUrlPrefix + "/proxyValidate");
-//        pv.setService(legacyServerServiceUrl);
-//        pv.setServiceTicket(ticket); 
-//
-//        /*
-//         * If we want to be able to acquire proxy tickets (requires callback servlet to be set up 
-//         * in web.xml -- see below)
-//         */
-//
-//        //String urlOfProxyCallbackServlet = "https://portal.yale.edu/CasProxyServlet";
-//        String urlOfProxyCallbackServlet = proxyCallbackUrl;
-//        pv.setProxyCallbackUrl(urlOfProxyCallbackServlet); 
-//
-//        /* contact CAS and validate */
-//        try {
-//            pv.validate();
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        } catch (SAXException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        } catch (ParserConfigurationException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//
-//        /* if we want to look at the raw response, we can use getResponse() */
-//        xmlResponse = pv.getResponse(); 
-//
-//        /* read the response */
-//        // Yes, this method is misspelled in this way 
-//        // in the ServiceTicketValidator implementation. 
-//        // Sorry.
-//        if(pv.isAuthenticationSuccesful()) {
-//            user = pv.getUser();
-//            proxyList = pv.getProxyList();
-//        } else {
-//            errorCode = pv.getErrorCode();
-//            errorMessage = pv.getErrorMessage();
-//            /* handle the error */
-//        }
-//
-//        /* The user is now authenticated. */
-//
-//        /* If we did set the proxy callback url, we can get proxy tickets with this method call: 
-//         */
-//
-//        //String urlOfTargetService = "http://hkg2.its.yale.edu/someApp/portalFeed";
-//        String urlOfTargetService = targetService;
-//        
-//
-//        try {
-//            String proxyTicket =
-//                edu.yale.its.tp.cas.proxy.ProxyTicketReceptor.getProxyTicket(
-//                    pv.getPgtIou(),urlOfTargetService);
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }    }
-    
+
+    //    
+    // public final static void validateTicket2(String ticket, String legacyServerServiceUrl, String
+    // targetService, String proxyCallbackUrl) {
+    // String user = null;
+    // String errorCode = null;
+    // String errorMessage = null;
+    // String xmlResponse = null;
+    // List proxyList = null;
+    //
+    // /* instantiate a new ProxyTicketValidator */
+    // ProxyTicketValidator pv = new ProxyTicketValidator();
+    //
+    // /* set its parameters */
+    // pv.setCasValidateUrl(casServerUrlPrefix + "/proxyValidate");
+    // pv.setService(legacyServerServiceUrl);
+    // pv.setServiceTicket(ticket);
+    //
+    // /*
+    // * If we want to be able to acquire proxy tickets (requires callback servlet to be set up
+    // * in web.xml -- see below)
+    // */
+    //
+    // //String urlOfProxyCallbackServlet = "https://portal.yale.edu/CasProxyServlet";
+    // String urlOfProxyCallbackServlet = proxyCallbackUrl;
+    // pv.setProxyCallbackUrl(urlOfProxyCallbackServlet);
+    //
+    // /* contact CAS and validate */
+    // try {
+    // pv.validate();
+    // } catch (IOException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // } catch (SAXException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // } catch (ParserConfigurationException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    //
+    // /* if we want to look at the raw response, we can use getResponse() */
+    // xmlResponse = pv.getResponse();
+    //
+    // /* read the response */
+    // // Yes, this method is misspelled in this way
+    // // in the ServiceTicketValidator implementation.
+    // // Sorry.
+    // if(pv.isAuthenticationSuccesful()) {
+    // user = pv.getUser();
+    // proxyList = pv.getProxyList();
+    // } else {
+    // errorCode = pv.getErrorCode();
+    // errorMessage = pv.getErrorMessage();
+    // /* handle the error */
+    // }
+    //
+    // /* The user is now authenticated. */
+    //
+    // /* If we did set the proxy callback url, we can get proxy tickets with this method call:
+    // */
+    //
+    // //String urlOfTargetService = "http://hkg2.its.yale.edu/someApp/portalFeed";
+    // String urlOfTargetService = targetService;
+    //        
+    //
+    // try {
+    // String proxyTicket =
+    // edu.yale.its.tp.cas.proxy.ProxyTicketReceptor.getProxyTicket(
+    // pv.getPgtIou(),urlOfTargetService);
+    // } catch (IOException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // } }
+
     public final static String getProxyTicketFor(Assertion assertion, String targetService) {
         String proxyTicket = "";
-        
+
         if (assertion == null) {
             return proxyTicket;
         }
@@ -704,8 +679,7 @@ public class TestCASRest {
         proxyTicket = attributePrincipal.getProxyTicketFor(targetService);
         return proxyTicket;
     }
-    
- 
+
     public static void debugAssertion(StringBuffer stringBuffer, Assertion assertion) {
         if (assertion == null) {
             stringBuffer.append("\nAssertion is null\n");
@@ -756,8 +730,8 @@ public class TestCASRest {
             stringBuffer.append("\n");
         }
 
-
     }
+
     public static void testgetCASifiedResource() throws MotuException, IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("testLoginToCAS() - entering");
@@ -766,56 +740,60 @@ public class TestCASRest {
         String serviceURL = "http://atoll-dev.cls.fr:43080/thredds/catalog.xml";
         String username = "dearith";
         String password = "bienvenue";
-        
+
         String casRestUrlSuffix = Organizer.getMotuConfigInstance().getCasRestUrlSuffix();
         String casRestUrl = RestUtil.getCasRestletUrl(serviceURL, casRestUrlSuffix);
-        
+
         String serviceTicket = RestUtil.loginToCAS(casRestUrl, username, password, serviceURL);
-        
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("testLoginToCAS() - serviceTicket:" + serviceTicket);
         }
 
-//        final Map CONST_ATTRIBUTES = new HashMap();
-//        CONST_ATTRIBUTES.put(username, serviceTicket);
-//
-//        final AttributePrincipal CONST_PRINCIPAL = new AttributePrincipalImpl(username);
-//        final Assertion assertion = new AssertionImpl(CONST_PRINCIPAL,
-//                                                      CONST_ATTRIBUTES);
-//        
-//        
-//        AssertionHolder.setAssertion(assertion);
+        // final Map CONST_ATTRIBUTES = new HashMap();
+        // CONST_ATTRIBUTES.put(username, serviceTicket);
+        //
+        // final AttributePrincipal CONST_PRINCIPAL = new AttributePrincipalImpl(username);
+        // final Assertion assertion = new AssertionImpl(CONST_PRINCIPAL,
+        // CONST_ATTRIBUTES);
+        //        
+        //        
+        // AssertionHolder.setAssertion(assertion);
+
+        // //////////////String path = AssertionUtils.addCASTicket(serviceTicket, serviceURL);
+
+        InputStream in;
+
+        fr.cls.atoll.motu.library.tds.server.Catalog catalogXml;
+        try {
+            // JAXBContext jc = JAXBContext.newInstance(TDS_SCHEMA_PACK_NAME);
+            // Unmarshaller unmarshaller = jc.createUnmarshaller();
+
+            URL url = new URL(AssertionUtils.addCASTicket(serviceTicket, serviceURL));
+            URLConnection conn = url.openConnection();
+            in = conn.getInputStream();
+            if (Organizer.getUnmarshallerTdsConfig() == null) {
+                Organizer.initJAXBTdsConfig();
+            }
+            synchronized (Organizer.getUnmarshallerTdsConfig()) {
+                catalogXml = (fr.cls.atoll.motu.library.tds.server.Catalog) Organizer.getUnmarshallerTdsConfig().unmarshal(in);
+            }
+        } catch (Exception e) {
+            throw new MotuException("Error in loadConfigTds", (Throwable) e);
+        }
+        if (catalogXml == null) {
+            throw new MotuException(String
+                    .format("Unable to load Tds configuration (in loadConfigOpendap, cataloXml is null) - url : %s", serviceURL));
+        }
+        try {
+            in.close();
+        } catch (IOException io) {
+            io.getMessage();
+        }
         
-        ////////////////String path = AssertionUtils.addCASTicket(serviceTicket, serviceURL);
-        
-//        InputStream in;
-//
-//        fr.cls.atoll.motu.library.tds.server.Catalog catalogXml;
-//        try {
-//            // JAXBContext jc = JAXBContext.newInstance(TDS_SCHEMA_PACK_NAME);
-//            // Unmarshaller unmarshaller = jc.createUnmarshaller();
-//
-//            URL url = new URL(AssertionUtils.addCASTicket(serviceTicket, serviceURL));
-//            URLConnection conn = url.openConnection();
-//            in = conn.getInputStream();
-//            synchronized (Organizer.getUnmarshallerTdsConfig()) {
-//                catalogXml = (fr.cls.atoll.motu.library.tds.server.Catalog) Organizer.getUnmarshallerTdsConfig().unmarshal(in);
-//            }
-//        } catch (Exception e) {
-//            throw new MotuException("Error in loadConfigTds", (Throwable) e);
-//        }
-//        if (catalogXml == null) {
-//            throw new MotuException(String.format("Unable to load Tds configuration (in loadConfigOpendap, cataloXml is null) - url : %s", serviceURL));
-//        }
-//        try {
-//            in.close();
-//        } catch (IOException io) {
-//            io.getMessage();
-//        }
-//
-//        if (LOG.isDebugEnabled()) {
-//            LOG.debug("testLoginToCAS() - catalogXml:" + catalogXml);
-//        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("testLoginToCAS() - catalogXml:" + catalogXml);
+        }
         if (LOG.isDebugEnabled()) {
             LOG.debug("testLoginToCAS() - exiting");
         }

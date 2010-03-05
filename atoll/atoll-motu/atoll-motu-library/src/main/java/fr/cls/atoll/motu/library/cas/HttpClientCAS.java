@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.library.cas.util.CasAuthentificationHolder;
+import fr.cls.atoll.motu.library.exception.MotuException;
 
 public class HttpClientCAS extends HttpClient {
 
@@ -120,7 +121,7 @@ public class HttpClientCAS extends HttpClient {
         return returnint;
     }
 
-    public static void addCASTicket(HttpMethod method) throws URIException {
+    public static void addCASTicket(HttpMethod method) throws IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(HttpMethod) - entering : debugHttpMethod BEFORE  " + HttpClientCAS.debugHttpMethod(method));
         }
@@ -133,6 +134,11 @@ public class HttpClientCAS extends HttpClient {
         }
         
         String newURIAsString = AssertionUtils.addCASTicket(method.getURI().getEscapedURI());
+        if (!AssertionUtils.hasCASTicket(newURIAsString)) {
+            throw new IOException(
+                    "Unable to access resource '%s'. This resource has been declared as CASified, but the Motu application is not. \nTo access this TDS, the Motu Application must be CASified.");
+        }
+
         URI newURI = new URI(newURIAsString, true);
 
         method.setURI(newURI);
