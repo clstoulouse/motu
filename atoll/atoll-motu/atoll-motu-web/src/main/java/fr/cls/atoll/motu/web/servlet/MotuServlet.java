@@ -3158,7 +3158,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         } catch (MotuException e) {
             LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
 
-            response.sendError(400, String.format("ERROR: %s", e.getMessage()));
+            response.sendError(400, String.format("ERROR: %s", e.notifyException()));
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse) - exiting");
