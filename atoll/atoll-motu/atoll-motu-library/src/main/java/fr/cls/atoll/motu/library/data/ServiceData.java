@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -24,6 +26,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.tools.generic.MathTool;
 
+import fr.cls.atoll.motu.library.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
@@ -735,7 +738,6 @@ public class ServiceData {
         return catalogData;
     }
 
-    
     /**
      * Load catalog info.
      * 
@@ -749,7 +751,7 @@ public class ServiceData {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadCatalogInfo(CatalogData) - entering");
         }
-        
+
         if (catalogData == null) {
             catalogData = createCatalogData();
         }
@@ -788,24 +790,24 @@ public class ServiceData {
 
         catalog = loadCatalogInfo(catalog);
 
-//        if (catalog == null) {
-//            catalog = createCatalogData();
-//        }
-//
-//        switch (getCatalogType()) {
-//        case OPENDAP:
-//            catalog.loadOpendapCatalog(this.getCatalogLocation());
-//            break;
-//        case TDS:
-//            catalog.loadTdsCatalog(this.getCatalogLocation());
-//            break;
-//        case FTP:
-//            catalog.loadFtpCatalog(this.getCatalogLocation());
-//            break;
-//        default:
-//            throw new MotuException(String.format("Unknown catalog type %d ", getCatalogType()));
-//            // break;
-//        }
+        // if (catalog == null) {
+        // catalog = createCatalogData();
+        // }
+        //
+        // switch (getCatalogType()) {
+        // case OPENDAP:
+        // catalog.loadOpendapCatalog(this.getCatalogLocation());
+        // break;
+        // case TDS:
+        // catalog.loadTdsCatalog(this.getCatalogLocation());
+        // break;
+        // case FTP:
+        // catalog.loadFtpCatalog(this.getCatalogLocation());
+        // break;
+        // default:
+        // throw new MotuException(String.format("Unknown catalog type %d ", getCatalogType()));
+        // // break;
+        // }
 
         // Chargement de la map des infos persistente pour le service et ses produits
         // Synchronisation pour ne pas que plusieurs threads effectue ce chargement
@@ -906,6 +908,18 @@ public class ServiceData {
     }
 
     /**
+     * Checks if is virtual service.
+     * 
+     * @return true, if is virtual service
+     */
+    public boolean isGenericService() {
+        if (Organizer.isNullOrEmpty(this.name)) {
+            return true;
+        }
+        
+        return this.getName().equalsIgnoreCase(GENERIC_SERVICE_NAME);
+    }
+    /**
      * Loads product metadata.
      * 
      * @param locationData url of the product to load metadata
@@ -918,6 +932,29 @@ public class ServiceData {
     public Product getProductInformationFromLocation(String locationData) throws MotuException, MotuNotImplementedException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductInformationFromLocation() - entering");
+        }
+
+        if (!this.casAuthentification && isGenericService()) {
+
+            // Service could be a virtual service at this point (call directly without service loading),
+            // So check if the url (locationData) is CASified or not
+            try {
+                URI uri = new URI(locationData);
+                if ((uri.getScheme().equalsIgnoreCase("http")) || (uri.getScheme().equalsIgnoreCase("https"))) {
+                    String casUrl = RestUtil.getRedirectUrl(locationData);
+
+                    this.casAuthentification = (casUrl != null);
+                }
+
+            } catch (URISyntaxException e) {
+                throw new MotuException(String
+                        .format("Organizer getProductInformation(String locationData) : location data seems not to be a valid URI : '%s'",
+                                locationData), e);
+            } catch (IOException e) {
+                throw new MotuException(String
+                        .format("Organizer getProductInformation(String locationData) : location data seems not to be a valid URI : '%s'",
+                                locationData), e);
+            }
         }
 
         Product product = new Product(this.casAuthentification);
@@ -1003,8 +1040,8 @@ public class ServiceData {
             product.loadOpendapMetaData();
             break;
         case FTP:
-//            String xmlUri = product.getLocationMetaData();
-//            product = catalog.loadFtpInventory(xmlUri);
+            // String xmlUri = product.getLocationMetaData();
+            // product = catalog.loadFtpInventory(xmlUri);
             break;
         default:
             throw new MotuNotImplementedException(String.format("Unimplemented catalog type %d ", getCatalogType()));
@@ -1016,7 +1053,6 @@ public class ServiceData {
         }
         return product;
     }
-
 
     /**
      * Writes the product's informations of the current service in HTML format.
