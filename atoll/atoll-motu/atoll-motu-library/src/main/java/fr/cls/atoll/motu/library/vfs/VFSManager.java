@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.CacheStrategy;
@@ -15,7 +16,10 @@ import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemOptions;
 import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.Selectors;
+import org.apache.commons.vfs.UserAuthenticationData;
+import org.apache.commons.vfs.UserAuthenticator;
 import org.apache.commons.vfs.VFS;
+import org.apache.commons.vfs.UserAuthenticationData.Type;
 import org.apache.commons.vfs.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
 import org.apache.commons.vfs.impl.StandardFileSystemManager;
@@ -173,7 +177,7 @@ public class VFSManager {
             standardFileSystemManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderConfig()));
             standardFileSystemManager.setCacheStrategy(CacheStrategy.ON_CALL);
             // standardFileSystemManager.setFilesCache(new SoftRefFilesCache());
-            //standardFileSystemManager.addProvider("jar", new JarFileProvider());
+            // standardFileSystemManager.addProvider("jar", new JarFileProvider());
             standardFileSystemManager.init();
             open = true;
         } catch (FileSystemException e) {
@@ -213,16 +217,50 @@ public class VFSManager {
             opts = new FileSystemOptions();
         }
         StaticUserAuthenticator auth = new StaticUserAuthenticator(null, user, pwd);
+
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setUserInfo(String, String) - exiting");
+        }
+
+        return setUserInfo(auth);
+
+    }   
+    
+    /**
+     * Sets the user info.
+     * 
+     * @param auth the auth
+     * 
+     * @return the file system options
+     * 
+     * @throws MotuException the motu exception
+     */
+    public FileSystemOptions setUserInfo(UserAuthenticator auth) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setUserInfo(StaticUserAuthenticator) - entering");
+        }
+
+        if (opts == null) {
+            opts = new FileSystemOptions();
+        }
+
+        if (auth == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("setUserInfo(StaticUserAuthenticator) - exiting");
+            }
+            return opts;
+        }
         try {
             DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
         } catch (FileSystemException e) {
-            LOG.error("setUserInfo(String, String)", e);
+            LOG.error("setUserInfo(StaticUserAuthenticator)", e);
 
             throw new MotuException("Error in VFSManager#setUserInfo", e);
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("setUserInfo(String, String) - exiting");
+            LOG.debug("setUserInfo(StaticUserAuthenticator) - exiting");
         }
         return opts;
 
@@ -266,7 +304,6 @@ public class VFSManager {
             if (fscb instanceof FtpFileSystemConfigBuilder) {
                 FtpFileSystemConfigBuilder ftpFscb = (FtpFileSystemConfigBuilder) fscb;
                 // ftpFscb.setUserDirIsRoot(opts, true);
-
             }
 
             if (fscb instanceof HttpFileSystemConfigBuilder) {
@@ -398,9 +435,23 @@ public class VFSManager {
         }
 
         FileObject fileObject = null;
+//        String userName = "";
+//        String password = "";
+
+        UserAuthenticator auth = DefaultFileSystemConfigBuilder.getInstance().getUserAuthenticator(fileSystemOptions);
+        
+//        if (auth != null) {
+//            UserAuthenticationData.Type[] types = new UserAuthenticationData.Type[] {UserAuthenticationData.USERNAME, UserAuthenticationData.PASSWORD,};
+//            
+//            UserAuthenticationData userAuthenticationData = auth.requestAuthentication(types);
+//            char[] u = userAuthenticationData.getData(UserAuthenticationData.USERNAME);
+//            char[] p = userAuthenticationData.getData(UserAuthenticationData.PASSWORD);
+//            userName = new String(u);
+//            password = new String(p);
+//        }
 
         open();
-
+        
         // if (fileSystemOptions == null) {
         // fileSystemOptions = new FileSystemOptions();
         // }
@@ -409,9 +460,12 @@ public class VFSManager {
             // URI uriObject = new URI(uri);
             URI uriObject = Organizer.newURI(uri);
 
+            fileSystemOptions = setUserInfo(auth);
             fileSystemOptions = setSchemeOpts(uriObject.getScheme());
-
+            
             fileObject = standardFileSystemManager.resolveFile(uri, fileSystemOptions);
+            
+            
         } catch (FileSystemException e) {
             LOG.error("resolveFile(String, FileSystemOptions)", e);
 
