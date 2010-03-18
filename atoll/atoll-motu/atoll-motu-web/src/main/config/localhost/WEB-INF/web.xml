@@ -42,7 +42,6 @@
 
 	<display-name>Motu</display-name>
 	<description>Motu</description>
-<!-- 	
 	
 	<filter>
 		<filter-name>CAS Authentication Filter</filter-name>
@@ -129,6 +128,7 @@
 		<filter-name>CAS Assertion Thread Local Filter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+<!-- 	
 
 -->
 	
