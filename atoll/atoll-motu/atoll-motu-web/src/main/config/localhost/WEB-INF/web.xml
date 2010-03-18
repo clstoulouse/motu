@@ -42,7 +42,7 @@
 
 	<display-name>Motu</display-name>
 	<description>Motu</description>
-	
+<!-- 	
 	
 	<filter>
 		<filter-name>CAS Authentication Filter</filter-name>
@@ -88,6 +88,11 @@
 			<param-name>acceptAnyProxy</param-name>
 			<param-value>true</param-value>
 		</init-param>
+		<init-param>
+			<param-name>redirectAfterValidation</param-name>
+			<param-value>true</param-value>
+		</init-param>	
+		
 	</filter>
 	
 	<filter>
@@ -125,7 +130,6 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
-<!-- 
 -->
 	
 	<!-- Mapping Servlet -->
