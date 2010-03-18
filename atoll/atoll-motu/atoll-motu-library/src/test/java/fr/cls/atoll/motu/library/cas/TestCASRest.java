@@ -64,7 +64,8 @@ public class TestCASRest {
 
         // validateFromCAS2(username, password);
 
-        testgetCASifiedResource();
+        //testgetCASifiedResource();
+        testDownloadCASifiedResource();
 
     }
 
@@ -799,4 +800,70 @@ public class TestCASRest {
         }
 
     }
+    
+    public static void testDownloadCASifiedResource() throws MotuException, IOException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("testDownloadCASifiedResource() - entering");
+        }
+
+        String serviceURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/OpendapAuth?action=productdownload&data=http://atoll-dev.cls.fr:43080/thredds/dodsC/nrt_glo_hr_infrared_sst&x_lo=2&x_hi=3&y_lo=1&y_hi=4&t_lo=2009-12-01&t_hi=2009-12-01&variable=Grid_0001&mode=console";
+        String username = "dearith";
+        String password = "bienvenue";
+
+        String casRestUrlSuffix = Organizer.getMotuConfigInstance().getCasRestUrlSuffix();
+        String casRestUrl = RestUtil.getCasRestletUrl(serviceURL, casRestUrlSuffix);
+
+        String serviceTicket = RestUtil.loginToCAS(casRestUrl, username, password, serviceURL);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("testDownloadCASifiedResource() - serviceTicket:" + serviceTicket);
+        }
+
+        // final Map CONST_ATTRIBUTES = new HashMap();
+        // CONST_ATTRIBUTES.put(username, serviceTicket);
+        //
+        // final AttributePrincipal CONST_PRINCIPAL = new AttributePrincipalImpl(username);
+        // final Assertion assertion = new AssertionImpl(CONST_PRINCIPAL,
+        // CONST_ATTRIBUTES);
+        //        
+        //        
+        // AssertionHolder.setAssertion(assertion);
+
+        // //////////////String path = AssertionUtils.addCASTicket(serviceTicket, serviceURL);
+
+        
+        
+        InputStream is;
+
+        fr.cls.atoll.motu.library.tds.server.Catalog catalogXml;
+        try {
+            // JAXBContext jc = JAXBContext.newInstance(TDS_SCHEMA_PACK_NAME);
+            // Unmarshaller unmarshaller = jc.createUnmarshaller();
+
+            URL url = new URL(AssertionUtils.addCASTicket(serviceTicket, serviceURL));
+            URLConnection conn = url.openConnection();
+            is = conn.getInputStream();
+            InputStreamReader eisr = new InputStreamReader(is);
+            BufferedReader in = new BufferedReader(eisr);
+            String nextLine = "";
+            //StringBuffer stringBuffer = new StringBuffer();
+            while ((nextLine = in.readLine()) != null) {
+                //stringBuffer.append(nextLine);
+                System.out.println(nextLine);
+            }
+            in.close();
+        } catch (Exception e) {
+            throw new MotuException("Error in loadConfigTds", (Throwable) e);
+        }
+        try {
+            is.close();
+        } catch (IOException io) {
+            io.getMessage();
+        }
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("testLoginToCAS() - exiting");
+        }
+
+    }    
 }
