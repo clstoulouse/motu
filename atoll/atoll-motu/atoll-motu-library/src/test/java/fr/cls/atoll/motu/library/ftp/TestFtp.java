@@ -273,7 +273,7 @@ public class TestFtp {
 //        toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.txt";
 //        userFrom = "anonymous@schemas.opengis.net/iso";
 //        pwdFrom = "email";
-        testVFS("login", "pwd",  "http", "schemas.opengis.net", "iso/19139/20060504/srv/serviceMetadata.xsd");
+        //testVFS("login", "pwd",  "http", "schemas.opengis.net", "iso/19139/20060504/srv/serviceMetadata.xsd");
         // testVFSThread();
 
         String fromUri = "http://atoll-dev.cls.fr:30080/motu-extract/atoll-ressource-dataset-datafile-nrt-med-infrared-sst-timestamp_1244456058793.txt";
@@ -312,7 +312,7 @@ public class TestFtp {
         userTo = "anonymous";
         pwdTo = "email";
         toUri = "ftp://CLS-EARITH.pc.cls.fr/test.txt";
-        testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
+        //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
         
         userTo = "t";
         pwdTo = "t";
@@ -331,7 +331,7 @@ public class TestFtp {
         toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.txt";
         userFrom = "anonymous@ftp.unidata.ucar.edu";
         pwdFrom = "email";
-        //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pemail    
+        testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);    
         fromUri = "http://proxy.cls.fr/19139/20060504/serviceMetadata.xsd";
         toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.txt";
         userFrom = "anonymous@schemas.opengis.net/iso";
