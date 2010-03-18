@@ -196,7 +196,7 @@ public class Push extends MotuWPSProcess {
             URI accessUriTemp = new URI(to);
             outputUriToShow = new URI(
                     accessUriTemp.getScheme(),
-                    null,
+                    userTo,
                     accessUriTemp.getHost(),
                     accessUriTemp.getPort(),
                     accessUriTemp.getPath(),
