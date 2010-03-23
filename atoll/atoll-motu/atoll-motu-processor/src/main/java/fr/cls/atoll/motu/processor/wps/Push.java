@@ -126,7 +126,7 @@ public class Push extends MotuWPSProcess {
 
         }
 
-        // if 'from' parameter contains an error message (it has been set by a chield wps)
+        // if 'from' parameter contains an error message (it has been set by a child wps)
         // then throw exception if from i not a referenced input (from a parent wps)
         if (WPSUtils.isProcessletExceptionErrorMessageEncode(from)) {
 
@@ -141,62 +141,86 @@ public class Push extends MotuWPSProcess {
         URI outputUriToShow = null;
         boolean remove = false;
 
+        String to = MotuWPSProcess.getComplexInputValueFromBinaryStream(motuWPSProcessData.getToParamIn());
 
-            String to = MotuWPSProcess.getComplexInputValueFromBinaryStream(motuWPSProcessData.getToParamIn());
+        // Only sftp and ftp protocol are allowed
+        URI uriToControl = null;
+        try {
+            uriToControl = new URI(to);
+        } catch (URISyntaxException e) {
+            MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), "");
+            MotuWPSProcess.setLocalUrl(motuWPSProcessData.getProcessletOutputs(), "");
+            MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), e, true);
+            return;
+        }
 
-            // Only sftp and ftp protocol are allowed
-            URI uriToControl = null;
-            try {
-                uriToControl = new URI(to);
-            } catch (URISyntaxException e) {
-                MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), "");
-                MotuWPSProcess.setLocalUrl(motuWPSProcessData.getProcessletOutputs(), "");
-                MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), e, true);
-                return;
+        String schemeToControl = "";
+
+        if (uriToControl.getScheme() != null) {
+            schemeToControl = uriToControl.getScheme();
+        }
+
+        if ((schemeToControl.compareToIgnoreCase("sftp") != 0) && (schemeToControl.compareToIgnoreCase("ftp") != 0)) {
+            MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), "");
+            MotuWPSProcess.setLocalUrl(motuWPSProcessData.getProcessletOutputs(), "");
+            String msg = "Push process allows only 'ftp' and 'sftp' protocols";
+            MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), ErrorType.INCONSISTENCY, msg, true);
+            return;
+        }
+
+        String userFrom = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getUserFromParamIn());
+        String pwdFrom = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getPwdFromParamIn());
+
+        String userTo = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getUserToParamIn());
+        String pwdTo = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getPwdToParamIn());
+
+        remove = MotuWPSProcess.getLiteralInputValueAsBoolean(motuWPSProcessData.getRemoveParamIn(), false);
+
+        boolean rename = MotuWPSProcess.getLiteralInputValueAsBoolean(motuWPSProcessData.getRenameParamIn(), false);
+
+        if (!rename) {
+            File fileTmp = new File(from);
+            to = String.format("%s/%s", to, fileTmp.getName());
+        }
+
+        URI uriFrom = null;
+        try {
+            // Is user/pwd in the source url ?
+            if (!WPSUtils.isNullOrEmpty(from)) {
+                uriFrom = new URI(from);
+
+                if (WPSUtils.isNullOrEmpty(userFrom)) {
+                    String userInfo[] = uriFrom.getUserInfo().split(":");
+                    if (userInfo.length >= 1) {
+                        userFrom = userInfo[0];
+                    }
+                    if (userInfo.length >= 2) {
+                        pwdFrom = userInfo[1];
+                    }
+                }
             }
-
-            String schemeToControl = "";
-            
-            if (uriToControl.getScheme() != null) {
-                schemeToControl = uriToControl.getScheme();                
+            // Is user/pwd in the destination url ?
+            if (WPSUtils.isNullOrEmpty(userTo)) {
+                String userInfo[] = uriToControl.getUserInfo().split(":");
+                if (userInfo.length >= 1) {
+                    userTo = userInfo[0];
+                }
+                if (userInfo.length >= 2) {
+                    pwdTo = userInfo[1];
+                }
             }
-            
-            if ((schemeToControl.compareToIgnoreCase("sftp") != 0) && (schemeToControl.compareToIgnoreCase("ftp") != 0 )) {
-                MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), "");
-                MotuWPSProcess.setLocalUrl(motuWPSProcessData.getProcessletOutputs(), "");
-                String msg = "Push process allows only 'ftp' and 'sftp' protocols";
-                MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), ErrorType.INCONSISTENCY, msg,  true);
-                return;
-            }
-            
-            
-
-            String userFrom = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getUserFromParamIn());
-            String pwdFrom = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getPwdFromParamIn());
-
-            String userTo = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getUserToParamIn());
-            String pwdTo = MotuWPSProcess.getLiteralInputValue(motuWPSProcessData.getPwdToParamIn());
-
-            remove = MotuWPSProcess.getLiteralInputValueAsBoolean(motuWPSProcessData.getRemoveParamIn(), false);
-
-            boolean rename = MotuWPSProcess.getLiteralInputValueAsBoolean(motuWPSProcessData.getRenameParamIn(), false);
-
-            if (!rename) {
-                File fileTmp = new File(from);
-                to = String.format("%s/%s", to, fileTmp.getName());
-            }
-            
-            try {
 
             if ((WPSUtils.isNullOrEmpty(userFrom)) && (WPSUtils.isNullOrEmpty(userTo))) {
                 Organizer.copyFile(from, to);
             } else {
                 Organizer.copyFile(from, to, userFrom, pwdFrom, userTo, pwdTo);
             }
+            String userToSetInDestUrl = (WPSUtils.isNullOrEmpty(userTo) ? null : userTo);
+            
             URI accessUriTemp = new URI(to);
             outputUriToShow = new URI(
                     accessUriTemp.getScheme(),
-                    userTo,
+                    userToSetInDestUrl,
                     accessUriTemp.getHost(),
                     accessUriTemp.getPort(),
                     accessUriTemp.getPath(),
