@@ -3,16 +3,16 @@
 	<parent>
 		<artifactId>atoll-motu</artifactId>
 		<groupId>cls.atoll</groupId>
-		<version>2.0.6-SNAPSHOT</version>
+		<version>2.0.6</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cls.atoll.motu</groupId>
 	<artifactId>atoll-motu-msg</artifactId>	
 	<packaging>jar</packaging>
-	<version>2.0.6-SNAPSHOT</version>	
+	<version>2.0.6</version>	
 	<name>ATOLL Motu Messages</name>
 	<scm>
-		<connection>scm:cvs:pserver:@cvsserver.cls.fr:/home/cvs/REPOSITORIES/mvn-atoll:atoll/atoll-motu/atoll-motu-msg/tags/atoll-2.0.5</connection>
+		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/tags/atoll-motu-2.0.6</connection>
   </scm>
 	<description>This package holds the messages exchanged by the published services.</description>
 	<dependencies>
