@@ -3,13 +3,13 @@
 	<parent>
 		<artifactId>atoll-motu</artifactId>
 		<groupId>cls.atoll</groupId>
-		<version>2.0.5-SNAPSHOT</version>
+		<version>2.0.5</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cls.atoll.motu</groupId>
 	<artifactId>atoll-motu-web</artifactId>
 	<packaging>war</packaging>
-	<version>2.0.5-SNAPSHOT</version>
+	<version>2.0.5</version>
 	<name>ATOLL Motu Web</name>
 	<scm>
 		<connection>scm:cvs:pserver:@cvsserver.cls.fr:/home/cvs/REPOSITORIES/mvn-atoll:atoll/atoll-motu/atoll-motu-web/tags/atoll-2.0.5</connection>
@@ -37,22 +37,22 @@
 		<dependency>
 			<groupId>cls.atoll.motu</groupId>
 			<artifactId>atoll-motu-library</artifactId>
-			<version>2.0.5-SNAPSHOT</version>
+			<version>2.0.5</version>
 		</dependency>
 		<dependency>
 			<groupId>cls.atoll.motu</groupId>
 			<artifactId>atoll-motu-api</artifactId>
-			<version>2.0.5-SNAPSHOT</version>
+			<version>2.0.5</version>
 		</dependency>
 		<dependency>
 			<groupId>cls.atoll.motu</groupId>
 			<artifactId>atoll-motu-msg</artifactId>
-			<version>2.0.5-SNAPSHOT</version>
+			<version>2.0.5</version>
 		</dependency>
 		<dependency>
 			<groupId>cls.atoll.motu</groupId>
 			<artifactId>atoll-motu-processor</artifactId>
-			<version>2.0.5-SNAPSHOT</version>
+			<version>2.0.5</version>
 		</dependency>
 		<!-- 
 		-->
