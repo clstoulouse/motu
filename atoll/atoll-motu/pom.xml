@@ -12,7 +12,7 @@
 	<version>2.0.5-SNAPSHOT</version>
 	<description>Atoll data dissemination server</description>
 	<scm>
-		<connection>scm:cvs:pserver:@cvsserver.cls.fr:/home/cvs/REPOSITORIES/mvn-atoll:atoll-v2/atoll-motu</connection>
+		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/atoll/atoll-motu</connection>
   </scm>
 	<modules>
 		<module>atoll-motu-library</module>
