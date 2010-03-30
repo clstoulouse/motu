@@ -1021,7 +1021,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 getTemporalCoverage(request),
                 getGeoCoverage(request),
                 getDepthCoverage(request),
-                getProductId(request),
+                getProductId(request, response),
                 Organizer.Format.NETCDF,
                 response.getWriter(),
                 null,
@@ -1072,7 +1072,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
         String locationData = request.getParameter(PARAM_DATA);
 
-        String productId = getProductId(request);
+        String productId = getProductId(request, response);
 
         if (MotuServlet.isNullOrEmpty(locationData) && MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
@@ -1201,7 +1201,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             }
             return false;
         }
-        String productId = getProductId(request);
+        String productId = getProductId(request, response);
         if (MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("isActionListProductDownloadHome() - exiting");
@@ -1251,7 +1251,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             }
             return false;
         }
-        String productId = getProductId(request);
+        String productId = getProductId(request, response);
         if (MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("isActionListProductMetaData() - exiting");
@@ -1415,7 +1415,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 getTemporalCoverage(request),
                 getGeoCoverage(request),
                 getDepthCoverage(request),
-                getProductId(request),
+                getProductId(request, response),
                 Organizer.Format.NETCDF,
                 out,
                 responseFormat,
@@ -1489,7 +1489,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 getTemporalCoverage(request),
                 getGeoCoverage(request),
                 getDepthCoverage(request),
-                getProductId(request),
+                getProductId(request, response),
                 Organizer.Format.NETCDF,
                 out,
                 responseFormat,
@@ -3470,10 +3470,12 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @return the product id
      * 
      * @throws IOException Signals that an I/O exception has occurred.
+     * @throws ServletException 
      */
-    protected String getProductId(HttpServletRequest request, HttpSession session, HttpServletResponse response) throws IOException {
+    protected String getProductId(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String serviceName = request.getParameter(PARAM_SERVICE);
         String productId = request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT);
+        HttpSession session = getSession(request);
         
         Organizer organizer = getOrganizer(session, response);
         
