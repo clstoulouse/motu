@@ -4642,6 +4642,9 @@ public class Organizer {
      * @return the dataset id from atoll uri
      */
     public static String getDatasetIdFromURI(String uri) {
+        if (Organizer.isNullOrEmpty(uri)) {
+            return uri;
+        }
         //String[] split = uri.split(SHARP_DATASET_REGEXP);
         String[] split = uri.split(SHARP_REGEXP);
         if (split.length <= 1) {

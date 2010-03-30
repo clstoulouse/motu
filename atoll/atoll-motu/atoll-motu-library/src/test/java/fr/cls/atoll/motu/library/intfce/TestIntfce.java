@@ -103,9 +103,9 @@ public class TestIntfce {
      */
     public static void main(String[] args) {
 
-        // System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#dataset-identifiant"));
-        // System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#identifiant"));
-        // System.out.println(Organizer.getDatasetIdFromURI("bidon"));
+        //System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#dataset-identifiant"));
+        //System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#identifiant"));
+        //System.out.println(Organizer.getDatasetIdFromURI("bidon"));
         //
         // System.out.println(Organizer.getVariableIdFromURI("bidon"));
         // System.out.println(Organizer.getVariableIdFromURI("#bidon"));
@@ -331,7 +331,7 @@ public class TestIntfce {
         // productExtractDataAvisofromProductId();
         // productInformationFromLocationData();
         // productExtractDataAviso2();
-        productExtractDataMercator();
+        //productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
         // productExtractDiversity();
@@ -355,7 +355,7 @@ public class TestIntfce {
         // testLoadInventoryOLA();
         // testLoadCatalogOLA();
         // productInformationFromInventory();
-        productExtractDataFromInventory();
+        //productExtractDataFromInventory();
         // productListMercator();
        // productList();
 
