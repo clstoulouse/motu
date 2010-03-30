@@ -92,7 +92,7 @@
 	
 	<servlet-mapping>
 		<servlet-name>Motu</servlet-name>
-		<url-pattern>/Catsat</url-pattern>
+		<url-pattern>/Cls</url-pattern>
 	</servlet-mapping>
 	
 	<servlet-mapping>
