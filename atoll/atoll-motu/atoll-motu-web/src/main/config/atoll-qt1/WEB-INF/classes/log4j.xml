@@ -26,6 +26,17 @@
 		-->
 	</appender>
 
+<!-- Syslog appender -->
+    <appender name="log.syslog.all" class="org.apache.log4j.net.SyslogAppender">
+        <param name="SyslogHost" value="10.1.20.44" />
+        <param name="Threshold" value="INFO" />
+        <param name="Facility" value="USER" />
+        <param name="Header" value="false" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="conversionPattern" value="%d{MMM dd HH:mm:ss} atoll-v2 [atoll-motu] %m\n" />
+        </layout>
+	</appender>
+
 	<!--
 		<logger name="fr.cls.atoll.motu">
 		<level value="DEBUG" />
@@ -55,9 +66,11 @@
 		<appender-ref ref="XMLFileInfo" />
 	</logger>
 	<root>
-	<!-- 
 		<level value="INFO" />
 		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="log.syslog.all" />
+		
+	<!-- 
  -->
  	</root>
 </log4j:configuration>
