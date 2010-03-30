@@ -3464,12 +3464,20 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * Gets the product id.
      * 
      * @param request the request
+     * @param session the session
+     * @param response the response
      * 
      * @return the product id
+     * 
+     * @throws IOException Signals that an I/O exception has occurred.
      */
-    protected String getProductId(HttpServletRequest request) {
+    protected String getProductId(HttpServletRequest request, HttpSession session, HttpServletResponse response) throws IOException {
+        String serviceName = request.getParameter(PARAM_SERVICE);
         String productId = request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT);
-        return  Organizer.getDatasetIdFromURI(productId);        
+        
+        Organizer organizer = getOrganizer(session, response);
+        
+        return  organizer.getDatasetIdFromURI(productId, serviceName);      
     }
     /**
      * Tests if service called is Mercator or not.
