@@ -1013,6 +1013,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             return false;
         }
 
+            
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 request.getParameter(MotuRequestParametersConstant.PARAM_SERVICE),
                 request.getParameter(MotuRequestParametersConstant.PARAM_DATA),
@@ -1020,7 +1021,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 getTemporalCoverage(request),
                 getGeoCoverage(request),
                 getDepthCoverage(request),
-                request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT),
+                getProductId(request),
                 Organizer.Format.NETCDF,
                 response.getWriter(),
                 null,
@@ -1071,7 +1072,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
         String locationData = request.getParameter(PARAM_DATA);
 
-        String productId = request.getParameter(PARAM_PRODUCT);
+        String productId = getProductId(request);
 
         if (MotuServlet.isNullOrEmpty(locationData) && MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
@@ -1200,7 +1201,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             }
             return false;
         }
-        String productId = request.getParameter(PARAM_PRODUCT);
+        String productId = getProductId(request);
         if (MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("isActionListProductDownloadHome() - exiting");
@@ -1250,7 +1251,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             }
             return false;
         }
-        String productId = request.getParameter(PARAM_PRODUCT);
+        String productId = getProductId(request);
         if (MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("isActionListProductMetaData() - exiting");
@@ -1414,7 +1415,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 getTemporalCoverage(request),
                 getGeoCoverage(request),
                 getDepthCoverage(request),
-                request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT),
+                getProductId(request),
                 Organizer.Format.NETCDF,
                 out,
                 responseFormat,
@@ -1488,7 +1489,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 getTemporalCoverage(request),
                 getGeoCoverage(request),
                 getDepthCoverage(request),
-                request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT),
+                getProductId(request),
                 Organizer.Format.NETCDF,
                 out,
                 responseFormat,
@@ -3459,6 +3460,17 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     }
 
+    /**
+     * Gets the product id.
+     * 
+     * @param request the request
+     * 
+     * @return the product id
+     */
+    protected String getProductId(HttpServletRequest request) {
+        String productId = request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT);
+        return  Organizer.getDatasetIdFromURI(productId);        
+    }
     /**
      * Tests if service called is Mercator or not.
      * 
