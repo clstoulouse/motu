@@ -38,6 +38,7 @@ import org.apache.velocity.app.VelocityEngine;
 
 import fr.cls.atoll.motu.library.configuration.ConfigService;
 import fr.cls.atoll.motu.library.configuration.MotuConfig;
+import fr.cls.atoll.motu.library.data.CatalogData;
 import fr.cls.atoll.motu.library.data.ExtractCriteria;
 import fr.cls.atoll.motu.library.data.Product;
 import fr.cls.atoll.motu.library.data.ProductPersistent;
@@ -45,6 +46,7 @@ import fr.cls.atoll.motu.library.data.SelectData;
 import fr.cls.atoll.motu.library.data.ServiceData;
 import fr.cls.atoll.motu.library.data.ServicePersistent;
 import fr.cls.atoll.motu.library.data.VarData;
+import fr.cls.atoll.motu.library.data.CatalogData.CatalogType;
 import fr.cls.atoll.motu.library.data.ServiceData.Language;
 import fr.cls.atoll.motu.library.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.exception.MotuExceedingQueueCapacityException;
@@ -4634,6 +4636,33 @@ public class Organizer {
         }
     }
 
+    /**
+     * Gets the dataset id from uri.
+     * 
+     * @param uri the uri
+     * @param serviceName the service name
+     * 
+     * @return the dataset id from uri
+     */
+    public String getDatasetIdFromURI(String uri, String serviceName) {
+        
+        ServiceData serviceData = this.getServices(serviceName);
+        CatalogData.CatalogType catalogType = serviceData.getCatalogType();
+        
+        String productId = uri;
+        
+        if ((catalogType.compareTo(CatalogType.OPENDAP) == 0) || (catalogType.compareTo(CatalogType.TDS) == 0)) {
+            // Extraire uniquement l'id du dataset
+            // Suppression de cette fonctionalité. http://jira.cls.fr:8080/browse/ATOLL-104
+            // Rajout et modification de cette fonctionalité mais uiniquement por TDS etOPENDAP
+            // http://jira.cls.fr:8080/browse/ATOLL-107
+            productId = Organizer.getDatasetIdFromURI(productId);
+        }
+        
+        return productId;
+        
+        
+    }    
     /**
      * Gets the dataset id from atoll uri.
      * 
