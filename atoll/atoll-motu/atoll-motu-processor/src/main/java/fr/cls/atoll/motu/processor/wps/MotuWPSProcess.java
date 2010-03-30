@@ -794,7 +794,8 @@ public abstract class MotuWPSProcess implements Processlet {
         motuWPSProcessData.setServiceName(serviceName);
         // Extraire uniquement l'id du dataset
         // Suppression de cette fonctionalité. http://jira.cls.fr:8080/browse/ATOLL-104
-        //productId = Organizer.getDatasetIdFromURI(productId);
+        // RAjout et modification de cette fonctionalité. http://jira.cls.fr:8080/browse/ATOLL-107
+        productId = Organizer.getDatasetIdFromURI(productId);
 
         motuWPSProcessData.setProductId(productId);
         motuWPSProcessData.setLocationData(locationData);
