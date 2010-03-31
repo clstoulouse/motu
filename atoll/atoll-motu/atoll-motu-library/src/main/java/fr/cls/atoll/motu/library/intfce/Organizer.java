@@ -4646,10 +4646,15 @@ public class Organizer {
      */
     public String getDatasetIdFromURI(String uri, String serviceName) {
         
-        ServiceData serviceData = this.getServices(serviceName);
+        String productId = uri;
+
+        if ((Organizer.isNullOrEmpty(serviceName))  || (Organizer.isNullOrEmpty(productId)) ){
+            return productId;
+        }
+        
+        ServiceData serviceData = this.getServices(serviceName.toLowerCase());
         CatalogData.CatalogType catalogType = serviceData.getCatalogType();
         
-        String productId = uri;
         
         if ((catalogType.compareTo(CatalogType.OPENDAP) == 0) || (catalogType.compareTo(CatalogType.TDS) == 0)) {
             // Extraire uniquement l'id du dataset
