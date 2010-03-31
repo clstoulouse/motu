@@ -3,35 +3,11 @@
  */
 package fr.cls.atoll.motu.web.servlet;
 
-import fr.cls.atoll.motu.api.MotuRequestParametersConstant;
-import fr.cls.atoll.motu.library.configuration.ConfigService;
-import fr.cls.atoll.motu.library.configuration.MotuConfig;
-import fr.cls.atoll.motu.library.configuration.QueueType;
-import fr.cls.atoll.motu.library.data.Product;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.exception.MotuInvalidRequestIdException;
-import fr.cls.atoll.motu.library.exception.MotuMarshallException;
-import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.intfce.SimpleAuthenticator;
-import fr.cls.atoll.motu.library.queueserver.QueueManagement;
-import fr.cls.atoll.motu.library.queueserver.QueueServerManagement;
-import fr.cls.atoll.motu.library.queueserver.RequestManagement;
-import fr.cls.atoll.motu.msg.MotuMsgConstant;
-import fr.cls.atoll.motu.msg.xml.ErrorType;
-import fr.cls.atoll.motu.msg.xml.ObjectFactory;
-import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
-import fr.cls.atoll.motu.msg.xml.StatusModeType;
-import fr.cls.commons.log.LogManager;
-import fr.cls.commons.util.PropertiesUtilities;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.net.Authenticator;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -57,6 +33,28 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.log4j.Logger;
 import org.jasig.cas.client.util.AssertionHolder;
+
+import fr.cls.atoll.motu.api.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.library.configuration.ConfigService;
+import fr.cls.atoll.motu.library.configuration.MotuConfig;
+import fr.cls.atoll.motu.library.configuration.QueueType;
+import fr.cls.atoll.motu.library.data.Product;
+import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.exception.MotuInvalidRequestIdException;
+import fr.cls.atoll.motu.library.exception.MotuMarshallException;
+import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
+import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.queueserver.QueueManagement;
+import fr.cls.atoll.motu.library.queueserver.QueueServerManagement;
+import fr.cls.atoll.motu.library.queueserver.RequestManagement;
+import fr.cls.atoll.motu.msg.MotuMsgConstant;
+import fr.cls.atoll.motu.msg.xml.ErrorType;
+import fr.cls.atoll.motu.msg.xml.ObjectFactory;
+import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
+import fr.cls.atoll.motu.msg.xml.StatusModeType;
+import fr.cls.commons.log.LogManager;
+import fr.cls.commons.util.PropertiesUtilities;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -3474,7 +3472,13 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      */
     protected String getProductId(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String serviceName = request.getParameter(PARAM_SERVICE);
+        
         String productId = request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT);
+
+        if ((MotuServlet.isNullOrEmpty(serviceName)) || (MotuServlet.isNullOrEmpty(productId))){
+            return productId;
+        }
+        
         HttpSession session = getSession(request);
         
         Organizer organizer = getOrganizer(session, response);
