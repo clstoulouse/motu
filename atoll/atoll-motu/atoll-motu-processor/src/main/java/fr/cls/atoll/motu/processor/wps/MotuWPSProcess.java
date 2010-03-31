@@ -25,9 +25,6 @@ import org.deegree.services.wps.output.ComplexOutputImpl;
 import org.deegree.services.wps.output.LiteralOutput;
 import org.deegree.services.wps.output.ProcessletOutput;
 
-import fr.cls.atoll.motu.library.data.CatalogData;
-import fr.cls.atoll.motu.library.data.ServiceData;
-import fr.cls.atoll.motu.library.data.CatalogData.CatalogType;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.exception.MotuInvalidRequestIdException;
@@ -796,8 +793,10 @@ public abstract class MotuWPSProcess implements Processlet {
 
         motuWPSProcessData.setServiceName(serviceName);
         
-        Organizer organizer = getOrganizer(in);
-        productId  = organizer.getDatasetIdFromURI(productId, serviceName);
+        if (! (WPSUtils.isNullOrEmpty(serviceName)) && ! (WPSUtils.isNullOrEmpty(productId)) ){
+            Organizer organizer = getOrganizer(in);
+            productId  = organizer.getDatasetIdFromURI(productId, serviceName);
+        }
         
         motuWPSProcessData.setProductId(productId);
         motuWPSProcessData.setLocationData(locationData);
