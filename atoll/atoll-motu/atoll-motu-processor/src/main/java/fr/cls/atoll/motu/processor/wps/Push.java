@@ -190,23 +190,29 @@ public class Push extends MotuWPSProcess {
                 uriFrom = new URI(from);
 
                 if (WPSUtils.isNullOrEmpty(userFrom)) {
-                    String userInfo[] = uriFrom.getUserInfo().split(":");
-                    if (userInfo.length >= 1) {
-                        userFrom = userInfo[0];
-                    }
-                    if (userInfo.length >= 2) {
-                        pwdFrom = userInfo[1];
+                    String theUserInfo = uriFrom.getUserInfo();
+                    if (!WPSUtils.isNullOrEmpty(theUserInfo)) {
+                        String userInfo[] = theUserInfo.split(":");
+                        if (userInfo.length >= 1) {
+                            userFrom = userInfo[0];
+                        }
+                        if (userInfo.length >= 2) {
+                            pwdFrom = userInfo[1];
+                        }                        
                     }
                 }
             }
             // Is user/pwd in the destination url ?
             if (WPSUtils.isNullOrEmpty(userTo)) {
-                String userInfo[] = uriToControl.getUserInfo().split(":");
-                if (userInfo.length >= 1) {
-                    userTo = userInfo[0];
-                }
-                if (userInfo.length >= 2) {
-                    pwdTo = userInfo[1];
+                String theUserInfo = uriToControl.getUserInfo();
+                if (!WPSUtils.isNullOrEmpty(theUserInfo)) {
+                    String userInfo[] = theUserInfo.split(":");
+                    if (userInfo.length >= 1) {
+                        userTo = userInfo[0];
+                    }
+                    if (userInfo.length >= 2) {
+                        pwdTo = userInfo[1];
+                    }                    
                 }
             }
 
