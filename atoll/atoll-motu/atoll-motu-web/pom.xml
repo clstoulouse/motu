@@ -3,16 +3,16 @@
 	<parent>
 		<artifactId>motu</artifactId>
 		<groupId>cls.atoll.motu</groupId>
-		<version>2.0.6-SNAPSHOT</version>
+		<version>2.0.6</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cls.atoll.motu</groupId>
 	<artifactId>motu-web</artifactId>
 	<packaging>war</packaging>
-	<version>2.0.6-SNAPSHOT</version>
+	<version>2.0.6</version>
 	<name>Motu Web</name>
 	<scm>
-		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/atoll/atoll-motu/atoll-motu-web</connection>
+		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/tags/motu-2.0.6/atoll-motu-web</connection>
   </scm>
 	<description>This package holds the motu web server.</description>
 	<properties>
@@ -37,22 +37,22 @@
 		<dependency>
 			<groupId>cls.atoll.motu</groupId>
 			<artifactId>motu-library</artifactId>
-			<version>2.0.6-SNAPSHOT</version>
+			<version>2.0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>cls.atoll.motu</groupId>
 			<artifactId>motu-api</artifactId>
-			<version>2.0.6-SNAPSHOT</version>
+			<version>2.0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>cls.atoll.motu</groupId>
 			<artifactId>motu-msg</artifactId>
-			<version>2.0.6-SNAPSHOT</version>
+			<version>2.0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>cls.atoll.motu</groupId>
 			<artifactId>motu-processor</artifactId>
-			<version>2.0.6-SNAPSHOT</version>
+			<version>2.0.6</version>
 		</dependency>
 		<!-- 
 		-->
