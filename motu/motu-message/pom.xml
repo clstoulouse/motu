@@ -7,12 +7,12 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cls.atoll.motu</groupId>
-	<artifactId>motu-msg</artifactId>	
+	<artifactId>motu-message</artifactId>	
 	<packaging>jar</packaging>
 	<version>2.0.7-SNAPSHOT</version>	
 	<name>Motu Messages</name>
 	<scm>
-		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/atoll/atoll-motu/atoll-motu-msg</connection>
+		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/motu/motu-message</connection>
   </scm>
 	<description>This package holds the messages exchanged by the published services.</description>
 	<dependencies>

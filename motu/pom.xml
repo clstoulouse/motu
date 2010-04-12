@@ -8,7 +8,7 @@
 	<version>2.0.7-SNAPSHOT</version>
 	<description>Motu, the Atoll Data Dissemination Server.</description>
 	<scm>
-		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/atoll/atoll-motu</connection>
+		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/motu</connection>
   </scm>
   <issueManagement>
         <system>JIRA</system>
@@ -38,11 +38,11 @@
         <url>http://www.cls.fr</url>
     </organization>
 	<modules>
-		<module>atoll-motu-library</module>
-		<module>atoll-motu-processor</module>
-		<module>atoll-motu-api</module>
-		<module>atoll-motu-msg</module>
-		<module>atoll-motu-web</module>		
+		<module>motu-library</module>
+		<module>motu-processor</module>
+		<module>motu-api</module>
+		<module>motu-msg</module>
+		<module>motu-web</module>		
     </modules>
 		<licenses>
 		<license>

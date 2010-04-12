@@ -12,7 +12,7 @@
 	<version>2.0.7-SNAPSHOT</version>	
 	<name>Motu Api</name>
 	<scm>
-		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/atoll/atoll-motu/atoll-motu-api</connection>
+		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/motu/motu-api</connection>
   </scm>
 	<description>This package holds the api describing the published services.</description>
 	<dependencies>
