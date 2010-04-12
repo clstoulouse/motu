@@ -3,23 +3,23 @@
 	<parent>
 		<artifactId>motu</artifactId>
 		<groupId>cls.atoll.motu</groupId>
-		<version>2.0.6</version>
+		<version>2.0.7-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cls.atoll.motu</groupId>
 	<artifactId>motu-api</artifactId>	
 	<packaging>jar</packaging>
-	<version>2.0.6</version>	
+	<version>2.0.7-SNAPSHOT</version>	
 	<name>Motu Api</name>
 	<scm>
-		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/tags/motu-2.0.6/atoll-motu-api</connection>
+		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/atoll/atoll-motu/atoll-motu-api</connection>
   </scm>
 	<description>This package holds the api describing the published services.</description>
 	<dependencies>
 		<dependency>
 			<groupId>cls.atoll.motu</groupId>
 			<artifactId>motu-msg</artifactId>
-			<version>2.0.6</version>
+			<version>2.0.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 		    <groupId>commons-codec</groupId>
