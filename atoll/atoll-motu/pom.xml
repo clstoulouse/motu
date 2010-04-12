@@ -1,19 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<artifactId>atoll</artifactId>
-		<groupId>cls.atoll</groupId>
-		<version>2.0.6-SNAPSHOT</version>
-	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>atoll-motu</artifactId>
+	<groupId>cls.atoll.motu</groupId>
+	<artifactId>motu</artifactId>
 	<packaging>pom</packaging>
-	<name>ATOLL Motu</name>
+	<name>Motu</name>
 	<version>2.0.6-SNAPSHOT</version>
-	<description>Atoll data dissemination server</description>
+	<description>Motu, the Atoll Data Dissemination Server.</description>
 	<scm>
-		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/</connection>
+		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/motu</connection>
   </scm>
+  <issueManagement>
+        <system>JIRA</system>
+        <url>http://jira.cls.fr:8080/browse/ATOLL</url>
+    </issueManagement>
+	<distributionManagement>
+        <repository>
+            <id>repo</id>
+            <name>CLS Entreprise Release Repository</name>
+            <url>http://mvnrepo.cls.fr:8081/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>repo</id>
+            <name>CLS Entreprise Snapshot Repository</name>
+            <url>http://mvnrepo.cls.fr:8081/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+	<properties>
+        <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+   		<jdk.source.version>1.6</jdk.source.version>		
+   		<jdk.source.encoding>ISO-8859-1</jdk.source.encoding>
+		<dependencies.version.slf4j>1.5.8</dependencies.version.slf4j>
+		<dependencies.version.spring>2.5.6</dependencies.version.spring>
+    </properties>
+	 <organization>
+        <name>CLS (Collecte Localisation Satelite)</name>
+        <url>http://www.cls.fr</url>
+    </organization>
 	<modules>
 		<module>atoll-motu-library</module>
 		<module>atoll-motu-processor</module>
@@ -21,4 +44,323 @@
 		<module>atoll-motu-msg</module>
 		<module>atoll-motu-web</module>		
     </modules>
+		<licenses>
+		<license>
+			<name>Copyright</name>
+			<comments>Copyright 2008-2009 CLS.</comments>
+		</license>
+	</licenses>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${dependencies.version.slf4j}</version>
+				<type>jar</type>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>${dependencies.version.slf4j}</version>
+				<type>jar</type>
+				<scope>compile</scope>
+			</dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId> 
+                <artifactId>jul-to-slf4j</artifactId>
+                <version>${dependencies.version.slf4j}</version>
+                <type>jar</type>
+                <scope>compile</scope>
+            </dependency> 
+	</dependencies>
+	</dependencyManagement>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<configuration>
+					<locales>en<!-- ,fr --></locales>
+					<outputEncoding>UTF-8</outputEncoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-changelog-plugin</artifactId>
+				<configuration>
+					<type>range</type>
+					<range>90</range>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<configuration>
+					<linkXref>true</linkXref>
+					<targetJdk>${jdk.source.version}</targetJdk>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<configuration>
+					<xmlOutput>true</xmlOutput>					
+					<effort>Max</effort>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jdepend-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <configLocation>${basedir}/atoll-build-tools/src/main/resources/atoll-build-tools/checkstyle-CLS.xml</configLocation>
+                </configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<additionalJOption>-J-Xmx1024m -J-XX:MaxPermSize=512m</additionalJOption>
+					<aggregate>true</aggregate>				
+					<linksource>true</linksource>
+					<tags>
+                        <tag>
+                            <name>todo</name>
+                            <placement>a</placement>
+                            <head>To do:</head>
+                        </tag>
+						<tag>
+							<name>pre</name>
+							<placement>cm</placement>
+							<head>Precondition:</head>
+						</tag>
+						<tag>
+							<name>uc</name>
+							<placement>t</placement>
+							<head>Use case:</head>
+						</tag>
+                    </tags>		
+                    <header><![CDATA[
+                      <script type="text/javascript" src="http://www.websequencediagrams.com/service.js"></script>
+                      ]]>                      
+                    </header>			
+					<links>
+						<link>http://java.sun.com/javase/6/docs/api/</link>
+						<link>http://java.sun.com/products/servlet/2.5/docs/servlet-2_5-mr2/</link>
+						<link>http://static.springframework.org/spring/docs/2.5.x/api/</link>
+						<link>http://static.springframework.org/spring-security/site/apidocs/</link>
+						<link>http://logging.apache.org/log4j/docs/api/</link>
+			            <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
+			            <link>http://junit.sourceforge.net/javadoc/</link>
+			            <link>http://aopalliance.sourceforge.net/doc/</link>
+			            <link>http://tomcat.apache.org/tomcat-5.5-doc/servletapi/</link>
+			            <link>http://tomcat.apache.org/tomcat-5.5-doc/catalina/docs/api/</link>
+			            <link>http://www.mortbay.org/apidocs/</link>
+					</links>
+				</configuration>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>javadoc</report>
+							<report>test-javadoc</report>
+						</reports>
+					</reportSet>
+				</reportSets>						
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<configuration>
+					<aggregate>true</aggregate>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<configuration>
+					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.1.2</version>
+				<configuration>
+					<aggregate>true</aggregate>
+				</configuration>
+			</plugin> 
+
+			<plugin>
+		        <groupId>org.codehaus.mojo</groupId>
+				<artifactId>taglist-maven-plugin</artifactId>
+                <configuration>
+                    <tags>
+                        <tag>TODO</tag>
+                        <tag>FIXME</tag>
+                        <tag>DOCME</tag>
+                        <tag>ENVDEV</tag>
+                        <tag>XXX</tag>
+                        <tag>@todo</tag>
+                        <tag>@deprecated</tag>
+                    </tags>
+                </configuration>
+	      	</plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>l10n-maven-plugin</artifactId>
+                <configuration>
+                    <locales>
+                        <locale>en</locale>
+                        <locale>es</locale>
+                        <locale>fr</locale>
+                    </locales>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>javancss-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<formats>
+						<format>html</format>
+						<format>xml</format>
+					</formats>
+				</configuration>
+            </plugin>
+            <plugin>
+    			<groupId>org.codehaus.mojo</groupId>
+    			<artifactId>dashboard-maven-plugin</artifactId>
+    		</plugin>
+		</plugins>
+	</reporting>
+	
+	 <build>
+        <plugins>
+		<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${jdk.source.version}</source>
+					<target>${jdk.source.version}</target>
+					<encoding>${jdk.source.encoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>bind-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<!--  Add version, without it copy-resources does not work with multi-module maven project -->
+				<!--  see http://jira.codehaus.org/browse/MRESOURCES-103 -->
+				<version>2.4</version>
+				<configuration>
+					<encoding>${jdk.source.encoding}</encoding>
+					<overwrite>true</overwrite>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>				
+			</plugin>
+		<!--
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2-beta-5</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>${basedir}/src/main/assembly/package-delivery.xml</descriptor>
+                        <descriptor>${basedir}/src/main/assembly/package-checkout.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>-->
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.0</version>
+                <configuration>
+                    <goals>deploy</goals>
+					<preparationGoals>clean install</preparationGoals>
+                </configuration>
+            </plugin>            
+        </plugins>
+    </build>
+	<developers>
+		<developer>
+			<id>dearith</id>
+			<name>Didier Earith</name>
+			<email>dearith@cls.fr</email>
+			<organization>Silogic</organization>
+			<organizationUrl>http://www.silogic.fr</organizationUrl>
+			<roles>
+				<role>Main developer</role>
+			</roles>
+			<timezone>+1</timezone>
+			<properties />			
+		</developer>		
+		<developer>
+			<id>ccamel</id>
+			<name>Christophe Camel</name>
+			<email>ccamel@cls.fr</email>
+			<organization>CLS</organization>
+			<organizationUrl>http://www.cls.fr</organizationUrl>
+			<roles>
+				<role>Architect</role>
+			</roles>
+			<timezone>+1</timezone>
+			<properties />			
+		</developer>
+	</developers>
+	<contributors>
+		<contributor>
+			<name>Tony Jolibois</name>
+			<email>tjolibois@cls.fr</email>
+			<organization>CLS</organization>
+			<organizationUrl>http://www.cls.fr</organizationUrl>
+			<roles>
+				<role>Project Manager</role>
+			</roles>
+			<timezone>+1</timezone>
+			<properties />			
+		</contributor>		
+	</contributors>
+
 </project>

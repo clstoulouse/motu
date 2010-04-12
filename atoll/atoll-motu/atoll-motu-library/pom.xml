@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
-		<artifactId>atoll-motu</artifactId>
-		<groupId>cls.atoll</groupId>
+		<artifactId>motu</artifactId>
+		<groupId>cls.atoll.motu</groupId>
 		<version>2.0.6-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cls.atoll.motu</groupId>
-	<artifactId>atoll-motu-library</artifactId>
+	<artifactId>motu-library</artifactId>
 	<packaging>jar</packaging>
 	<version>2.0.6-SNAPSHOT</version>
-	<name>ATOLL Motu Library</name>
+	<name>Motu Library</name>
 	<scm>
-		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/</connection>
+		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/motu/motu-library</connection>
   </scm>
 	<description>This package holds the core components of the Motu server.</description>
 	<dependencies>
 		<dependency>
 			<groupId>cls.atoll.motu</groupId>
-			<artifactId>atoll-motu-msg</artifactId>
+			<artifactId>motu-msg</artifactId>
 			<version>2.0.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
