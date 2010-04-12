@@ -8,7 +8,7 @@
 	<version>2.0.6-SNAPSHOT</version>
 	<description>Motu, the Atoll Data Dissemination Server.</description>
 	<scm>
-		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/motu</connection>
+		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/atoll/atoll-motu</connection>
   </scm>
   <issueManagement>
         <system>JIRA</system>

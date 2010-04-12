@@ -12,7 +12,7 @@
 	<version>2.0.6-SNAPSHOT</version>	
 	<name>Motu Messages</name>
 	<scm>
-		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/motu/motu-msg</connection>
+		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/atoll/atoll-motu/atoll-motu-msg</connection>
   </scm>
 	<description>This package holds the messages exchanged by the published services.</description>
 	<dependencies>
