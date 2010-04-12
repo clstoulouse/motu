@@ -319,6 +319,8 @@
                 <configuration>
                     <goals>deploy</goals>
 					<preparationGoals>clean install</preparationGoals>
+					<!-- temporary -->
+					<arguments>-Dmaven.test.skip=true</arguments>
                 </configuration>
             </plugin>            
         </plugins>
