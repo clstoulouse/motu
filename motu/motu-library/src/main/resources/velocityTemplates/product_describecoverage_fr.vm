@@ -1,0 +1,438 @@
+##----------------------------------------------------------------------------------
+## WARNING : Macro are prefixed by template file name because of the bug in Velocity when
+## there are the same macro name in different Template. 
+## In case several templates have a common macro name, 
+## the result can be amazing (among others, execution mixes up the same macro with the same name)
+##----------------------------------------------------------------------------------
+## -------------------------------------------- product_downloadhome_uk_setDatetimeMinMax --------------------------------
+#macro(product_downloadhome_fr_setZMinMax)
+	#set($hasZAxis = "false")
+	#if($productMetaData.hasZAxis())	
+		#set($hasZAxis = "true")
+	#end
+	#if($product.hasCriteriaDepth())				
+		#set($depthCriteria = $product.getCriteriaDepth())
+		#set($depthLowValue = $depthCriteria.getFromAsString('###0.00'))
+		#set($depthHighValue = $depthCriteria.getToAsString('###0.00'))
+	#end	
+#end
+## -------------------------------------------- product_downloadhome_fr_setDatetimeMinMax --------------------------------
+#macro(product_downloadhome_fr_setTimeMinMax)
+	#set($hasTimeAxis = "false")
+	#if($productMetaData.hasTimeAxis())	
+		#set($hasTimeAxis = "true")
+	#end
+	#if($product.hasCriteriaDateTime())		
+		#set($datetimeCriteria = $product.getCriteriaDateTime())
+		#set($timeLowValue = $datetimeCriteria.getFromAsString())
+		#set($timeHighValue = $datetimeCriteria.getToAsString())
+	#end
+#end
+## -------------------------------------------- product_downloadhome_fr_setXYMax --------------------------------
+#macro(product_downloadhome_fr_setXYMinMax)
+	#set($XMin = -180)
+	#set($XMax = 180)
+	#set($YMin = -90)
+	#set($YMax = 90)
+	#set($hasGeoAxis = "false")
+		
+	#if(($productMetaData.hasLatLonAxis()) || ($productMetaData.hasGeoXYAxis())) 	  	
+		#set($hasGeoAxis = "true")
+	#end
+
+	#if($productMetaData.hasLatLonAxis())
+		#set($XMin = $productMetaData.getLonNormalAxisMinValue())
+		#set($XMax = $productMetaData.getLonNormalAxisMaxValue())
+		#set($YMin = $productMetaData.getLatNormalAxisMinValue())
+		#set($YMax = $productMetaData.getLatNormalAxisMaxValue())
+	#end
+	#if($productMetaData.hasGeoXYAxis())
+		#if ($product.hasGeoXYAxisWithLonLatEquivalence())
+			#set($XMin = $productMetaData.getGeoXAxisMinValueAsLonNormal(${product}))
+			#set($XMax = $productMetaData.getGeoXAxisMaxValueAsLonNormal(${product}))
+			#set($YMin = $productMetaData.getGeoYAxisMinValueAsLatNormal(${product}))
+			#set($YMax = $productMetaData.getGeoYAxisMaxValueAsLatNormal(${product}))
+        #else				
+			#set($XMin = $productMetaData.getGeoXAxisMinValue())
+			#set($XMax = $productMetaData.getGeoXAxisMaxValue())
+			#set($YMin = $productMetaData.getGeoYAxisMinValue())
+			#set($YMax = $productMetaData.getGeoYAxisMaxValue())
+		#end
+	#end
+	#if($product.hasCriteriaLatLon())				
+		#set($geoCriteria = $product.getCriteriaLatLon())
+		#set($XMinSel = $geoCriteria.getLowerLeftLon())
+		#set($XMaxSel = $geoCriteria.getUpperRightLon())
+		#set($YMinSel = $geoCriteria.getLowerLeftLat())
+		#set($YMaxSel = $geoCriteria.getUpperRightLat())	
+	#end
+##	#set($XMinTmp = $mathTool.min($XMin, $XMax))
+##	#set($XMaxTmp = $mathTool.max($XMin, $XMax))
+##	#set($XMin = $XMinTmp)
+##	#set($XMax = $XMaxTmp)
+		
+		
+#end
+
+## -------------------------------------------- product_downloadhome_fr_printVar --------------------------------
+#macro(product_downloadhome_fr_printVar)
+	
+	#set( $quickLook = ${productMetaData.getQuickLook(${parameterMetadata})} )
+	#if( $product.hasVariableToBeExtracted($parameterMetadata.getName()) )
+		#set( $checked = "checked")
+	#else
+		#set( $checked = "")
+	#end
+	
+	<tr>
+		<td align="center">
+		<input type="checkbox" name="variable" ${checked} value="${parameterMetadata.getName()}" />			
+		</td>
+		<td>
+		<strong>
+		${parameterMetadata.getName()}
+		</strong>
+		</td>
+		<td>
+		$parameterMetadata.getLabel() 
+		</td>			
+		<td>
+		#if($parameterMetadata.getStandardName().equals(""))
+			-
+		#else					
+			$parameterMetadata.getStandardName()			
+		#end
+		</td>
+		<td>
+		$parameterMetadata.getUnit()
+		#if(!$parameterMetadata.getUnitLong().equals(""))
+			(${parameterMetadata.getUnitLong()})					
+		#end
+		</td>
+		<td>
+		#if($parameterMetadata.hasDimensions())
+			$parameterMetadata.getDimensionsAsString()
+		#else
+			<p>Scalar</p>
+		#end
+		</td>
+####		<td style="text-align:center">				
+####		#if( $quickLook != "")
+####			<img src=${quickLook} alt="${parameterMetadata.getName()} quicklook" border="0" align="center">
+####		#else
+####			<p>Not available</p>
+####		#end			
+####		</td>			
+	</tr>
+	
+#end
+
+
+## -------------------------------------------- product_downloadhome_fr_outputSelection --------------------------------
+#macro(product_downloadhome_fr_outputSelection)
+<table  width="60%" cellpadding="1" cellspacing=0 border="0" >
+<tr>
+	<td class=advice_noimg width=160 height=20 align="left">
+	  &nbsp;&nbsp;&nbsp;Format&nbsp;sortie:
+	</td>
+    <td><font size="2">
+	<select name="output" >
+	<option value="netcdf" >NetCDF</option>
+##	<option value="tsv" >Tab separated (text)</option>
+##	<option value="csv" >Comma separated (csv)</option>
+	</select>
+    </font>
+    </td>
+    <td align="right" valign="center">
+      &nbsp;
+    </td>
+  </tr>
+</table>
+#end
+
+## -------------------------------------------- product_downloadhome_fr_regionSelection --------------------------------
+#macro(product_downloadhome_fr_regionSelection)
+<table  width="50%" cellpadding="1" cellspacing=0 border="0" >
+<tr>
+	<td class="advice_noimg" width="160" height="20" align="left">
+	  &nbsp;&nbsp;&nbsp;Région&nbsp;:
+	</td>
+	<td align="left"><font size=2>
+	<select name="region" >
+	#set($selected = "selected")
+	#if($product.hasCriteriaLatLon())				
+		<option value="${XMinSel},${XMaxSel},${YMinSel},${YMaxSel}"  ${selected} >Last Selected Region</option>		
+		#set($selected = "")
+	#end
+		<option value="${XMin},${XMax},${YMin},${YMax}"  ${selected} >Région</option>
+		<option value="-180,180,-90,90">Global</option>
+		<option value="20,120,-75,30" >Océan Indien</option>
+		<option value="-80,20,0,70" >Atlantique Nord</option>
+		<option value="-80,20,-30,30" >Atlantique Tropical</option>
+		<option value="-70,25,-75,10" >Atlantique Sud</option>
+		<option value="110,-100,0,70" >Pacifique Nord</option>
+		<option value="135,-75,-30,30" >Pacific Tropical</option>
+		<option value="150,-70,-75,0" >Pacifique Sud</option>
+		<option value="-6,36.5,30,46" >Mer Mediterranée</option>
+		<option value="-180,180,-90,-30" >Antarctique</option>
+	</select>
+	</font>
+   	<a href="javascript:setRegionWidget()"><img src="${images_dir}/go.gif" alt="Go" border="0"></a>
+	</td>
+	<script language="JavaScript">
+	    aRegionWidget = new RegionWidget("${formName}", "region");
+	</script>
+	<td colspan=3 align="center"> 
+	    <input type="text" size=10 name="yhi_text">
+  	</td>
+</tr>
+<tr> 
+	<td width="160" height="20" align="left">
+	  &nbsp;
+	</td>
+	<td width="180" height="20" align="left">
+	  &nbsp;
+	</td>
+	<td align="right"> 
+		<input type="text" size=10 name="xlo_text">
+	</td>
+	<td width=30>&nbsp;</td>
+	<td align="left"> 
+		<input type="text" size=10 name="xhi_text">
+	</td>
+</tr>
+<tr> 
+	<td width="160" height="20" align="left">
+	  &nbsp;
+	</td>
+	<td width="180" height="20" align="left">
+	  &nbsp;
+	</td>
+	  <td colspan=3 align="center"> 
+	<input type="text" size=10 name="ylo_text">
+	</td>
+</tr>
+</table>
+<!--
+<table  width="60%" cellpadding="1" cellspacing="0" border="0" >
+<tr align="center"><td colspan="3" >&nbsp;</td></tr>
+       	<tr> 
+  <td colspan=3 align="center"> 
+    <input type="text" size=10 name="yhi_text">
+  </td>
+</tr>
+
+<tr> 
+  <td align="right"> 
+    <input type="text" size=10 name="xlo_text">
+  </td>
+  <td width=30>&nbsp;</td>
+  <td align="left"> 
+    <input type="text" size=10 name="xhi_text">
+  </td>
+</tr>
+<tr> 
+  <td colspan=3 align="center"> 
+    <input type="text" size=10 name="ylo_text">
+  </td>
+</tr>
+    <tr>
+      <td colspan=3 align="center"><a href="javascript:updateMap()"><img border="0" src="../images/go.gif"></a></td>
+    <tr>	
+</table>
+-->	
+#end
+
+## -------------------------------------------- product_downloadhome_fr_timeSelection --------------------------------
+#macro(product_downloadhome_fr_timeSelection)
+#set ($listdate = $product.getTimeAxisDataAsString())
+#set ($listdateSize = $listdate.size())
+#if($listdateSize > 0)
+	#set ($lastIndex = ${listdateSize} - 1)
+	#set ($lastdate = $listdate.get(${lastIndex}))
+##	#set ($timeLowValue = $listdate.get(0))
+	#set ($timeLowValue = $lastdate)
+	#set ($timeHighValue = $lastdate)
+##	#set ($timeHighValue = $listdate.get(0))
+	#product_downloadhome_fr_setTimeMinMax()
+#end
+<table width="100%" cellpadding=1 cellspacing=0 border=0>
+	<tr>
+		<td class=advice_noimg width=160 height=20 align="left">
+		  &nbsp;&nbsp;&nbsp;Date&nbsp;début/fin:
+		</td>
+	    <td align="left"><font size="2">
+	  		<select name="t_lo_0" >
+		  	#set ($selected = "")			
+##		  	#set ($selected = "selected")
+			#foreach( $date in $listdate )	
+				#if($date.equalsIgnoreCase($lastdate))
+			  		#set ($selected = "selected")
+			  	#end
+				<option value="${date}"  ${selected}>${date}</option>
+			#end
+			</font>
+			</select>
+			<input type="text" name="t_lo" size="12" value="${timeLowValue}">
+			<script language="JavaScript">
+			var widget30 = new MultiWidget("${formName}", ["t_lo_0","t_lo"], "rtime");widget30.onChange();
+			widget30.setValue("${timeLowValue}");
+			widget30.mWidgets[0].setSelected("${timeLowValue}");
+			</script>		
+		       à <br>
+		    <select name="t_hi_0" >
+			#set ($selected = "")			
+			#foreach( $date in $listdate )	
+				#if($date.equalsIgnoreCase($lastdate))
+			  		#set ($selected = "selected")
+			  	#end
+				<option value="${date}"  ${selected}>${date}</option>
+			#end
+			</select>
+			<input type="text" name="t_hi" size="12" value="${timeHighValue}"" >
+			<script language="JavaScript">
+			var widget31 = new MultiWidget("${formName}", ["t_hi_0","t_hi"], "rtime");widget31.onChange();
+			widget31.setValue("${timeHighValue}");		
+			widget31.mWidgets[0].setSelected("${timeHighValue}");				
+			</script>				
+		    </font>
+		</td>
+	</tr>
+</table>
+ 
+		
+#end
+## -------------------------------------------- product_downloadhome_fr_depthSelection --------------------------------
+#macro(product_downloadhome_fr_depthSelection)
+#set ($listdepthDown = $product.getZAxisRoundedDownDataAsString(2))
+#set ($listdepthUp = $product.getZAxisRoundedUpDataAsString(2))
+#set ($listdepthSize = $listdepthDown.size())
+#if($listdepthSize > 0)
+	#set ($lastIndex = ${listdepthSize} - 1)
+	#set ($lastdepth = $listdepthUp.get(${lastIndex}))
+	#set ($depthLowValue = $listdepthDown.get(0))
+	#set ($depthHighValue = $lastdepth)
+	#product_downloadhome_fr_setZMinMax()
+#end
+#set ($unit = $productMetaData.getZAxis().getUnitsString())
+
+<table width="100%" cellpadding=1 cellspacing=0 border=0>
+	<tr>
+		<td class=advice_noimg width=160 height=20 align="left">
+		  &nbsp;&nbsp;&nbsp;Profondeur&nbsp;($unit):
+		</td>
+     <td align="left"><font size="2">
+	  	<select name="z_lo_0" >
+	  	#set ($selected = "selected")
+		#foreach( $depth in $listdepthDown )	
+			<option value="${depth}"  ${selected}>${depth}</option>
+		  	#set ($selected = "")			
+		#end
+		</select>
+		<input type="text" name="z_lo" size="12" value="${depthLowValue}" >
+		<script language="JavaScript">
+		var widget32 = new MultiWidget("${formName}", ["z_lo_0","z_lo"], "normal");widget32.onChange();
+		widget32.setValue("${depthLowValue}");
+		widget32.mWidgets[0].setSelected("${depthLowValue}");
+		</script>
+		       à <br>
+	    <select name="z_hi_0" >
+		#set ($selected = "")			
+		#foreach( $depth in $listdepthUp )	
+			#if($depth.equalsIgnoreCase($lastdepth))
+		  		#set ($selected = "selected")
+		  	#end
+			<option value="${depth}"  ${selected}>${depth}</option>
+		#end
+		</select>
+		<input type="text" name="z_hi" size="12" value="${depthHighValue}" >
+		<script language="JavaScript">
+		var widget33 = new MultiWidget("${formName}", ["z_hi_0","z_hi"], "normal");widget33.onChange();
+		widget33.setValue("${depthHighValue}");
+		widget33.mWidgets[0].setSelected("${depthHighValue}");
+		</script>				
+    </font></td>
+  </tr>
+			
+</table>
+#end
+## -------------------------------------------- main --------------------------------
+#set($use_java = "false")
+#set($formName = "download")
+#set($productMetaData = $product.getProductMetaData())
+#set($images_dir = "${product.getHpptServerDocumentRoot()}/atoll-motuservlet/images")
+
+#product_downloadhome_fr_setXYMinMax()
+
+<form  method="get" name="${formName}">		
+<input type="hidden" name="action" value="productdownload" />
+<input type="hidden" name="service" value="$service.getName()" />
+<input type="hidden" name="data" value="$product.getLocationData()" />
+<input type="hidden" name="nexturl" value=" " >
+#if(($productMetaData.hasLatLonAxis()) || ($productMetaData.hasGeoXYAxis()))
+	#if($product.hasCriteriaLatLon())				
+	<input type="hidden" name="x_lo" value="${XMinSel}" >
+	<input type="hidden" name="x_hi" value= "${XMaxSel}">
+	<input type="hidden" name="y_lo" value="${YMinSel}" >
+	<input type="hidden" name="y_hi" value="${YMaxSel}" >	
+	#else
+	<input type="hidden" name="x_lo" value="${XMin}" >
+	<input type="hidden" name="x_hi" value= "${XMax}">
+	<input type="hidden" name="y_lo" value="${YMin}" >
+	<input type="hidden" name="y_hi" value="${YMax}" >	
+	#end
+#end
+<!-- 
+<input type="hidden" name="use_java" value="$use_java" >
+-->
+
+<h1>$productMetaData.getTitle()</h1>
+<h2>Sélection</h2>
+
+<table width="100%" cellpadding=1 cellspacing=5 border=0>
+
+<tr><td>
+#product_downloadhome_fr_outputSelection()
+</td></tr>
+
+#if($productMetaData.hasLatLonAxis() || $product.hasGeoXYAxisWithLonLatEquivalence())
+	<tr><td>
+	#product_downloadhome_fr_regionSelection()
+	</td></tr>
+#end
+
+#if($productMetaData.hasTimeAxis())
+	<tr><td>
+	#product_downloadhome_fr_timeSelection()
+	</td></tr>
+#end
+
+#if($productMetaData.hasZAxis())
+	<tr><td>
+	#product_downloadhome_fr_depthSelection()	
+	</td></tr>
+#end
+</table>
+
+<h2>Variable</h2>
+#set ($listParameterMetadata = $productMetaData.getParameterMetaDatas() )
+<table class="encadre" width="80%" border="0" cellspacing="2">
+	<tr>
+		<th>Extraire</th>
+		<th>Nom</th>
+		<th>Description</th>
+		<th>Nom standard</th>
+		<th>Unité</th>
+		<th>Dimensions</th>
+####		<th>Quicklook</th>
+	</tr>
+	#foreach( $parameterMetadata in $listParameterMetadata )	
+		#product_downloadhome_fr_printVar()
+	#end
+</table>
+<p>&nbsp;</p>
+<input onClick="updateMap()" type="submit" value="Télécharger" />
+</form>
+
+
+

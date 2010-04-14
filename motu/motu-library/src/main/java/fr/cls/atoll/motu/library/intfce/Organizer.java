@@ -3,39 +3,6 @@
  */
 package fr.cls.atoll.motu.library.intfce;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
-import java.net.Authenticator;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.apache.commons.vfs.FileObject;
-import org.apache.log4j.Logger;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-
 import fr.cls.atoll.motu.library.configuration.ConfigService;
 import fr.cls.atoll.motu.library.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.data.CatalogData;
@@ -89,6 +56,39 @@ import fr.cls.atoll.motu.msg.xml.TimeCoverage;
 import fr.cls.commons.util.PropertiesUtilities;
 import fr.cls.commons.util.io.ConfigLoader;
 import fr.cls.commons.util5.DatePeriod;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+import java.net.Authenticator;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.apache.commons.vfs.FileObject;
+import org.apache.log4j.Logger;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and
 // trace log.
@@ -169,7 +169,7 @@ public class Organizer {
         }
 
     }
-    
+
     /** The Constant SHARP_DATASET_REGEXP. */
     public static final String SHARP_DATASET_REGEXP = ".*#dataset-";
 
@@ -179,10 +179,17 @@ public class Organizer {
     /** Number of milliseconds per hour, except when a leap second is inserted. */
     public static final long MILLISECS_PER_HOUR = 60 * Organizer.MILLISECS_PER_MINUTE;
 
-    /** All minutes have this many milliseconds except the last minute of the day on a day defined with a leap second. */
+    /**
+     * All minutes have this many milliseconds except the last minute of the day on a day defined with a leap
+     * second.
+     */
     public static final long MILLISECS_PER_MINUTE = 60 * 1000;
 
-    /** Number of leap seconds per day expect on <BR/> 1. days when a leap second has been inserted, e.g. 1999 JAN 1. <BR/> 2. Daylight-savings "spring forward" or "fall back" days. */
+    /**
+     * Number of leap seconds per day expect on <BR/>
+     * 1. days when a leap second has been inserted, e.g. 1999 JAN 1. <BR/>
+     * 2. Daylight-savings "spring forward" or "fall back" days.
+     */
     protected static final long MILLISECS_PER_DAY = 24 * MILLISECS_PER_HOUR;
 
     /** The Constant CONFIG_SCHEMA_PACK_NAME. */
@@ -265,7 +272,7 @@ public class Organizer {
 
     /** The unmarshaller opendap config. */
     private static Unmarshaller unmarshallerOpendapConfig = null;
-    
+
     /**
      * Sets the unmarshaller opendap config.
      * 
@@ -295,7 +302,7 @@ public class Organizer {
     public static void setUnmarshallerTdsConfig(Unmarshaller unmarshallerTdsConfig) {
         Organizer.unmarshallerTdsConfig = unmarshallerTdsConfig;
     }
- 
+
     /**
      * Gets the unmarshaller tds config.
      * 
@@ -304,7 +311,7 @@ public class Organizer {
     public static Unmarshaller getUnmarshallerTdsConfig() {
         return unmarshallerTdsConfig;
     }
-    
+
     /** The vfs standard manager. */
     private static final ThreadLocal<VFSManager> VFS_MANAGER = new ThreadLocal<VFSManager>() {
         @Override
@@ -886,7 +893,7 @@ public class Organizer {
         }
         return motuConfig;
     }
-    
+
     /**
      * Inits the proxy parameters.
      * 
@@ -895,34 +902,33 @@ public class Organizer {
     public static void initProxyLogin() throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("BEGIN Organizer.initProxyLogin()");
-//            LOG.debug("proxyHost:");
-//            LOG.debug(System.getProperty("proxyHost"));
-//            LOG.debug("proxyPort:");
-//            LOG.debug(System.getProperty("proxyPort"));
-//            LOG.debug("socksProxyHost:");
-//            LOG.debug(System.getProperty("socksProxyHost"));
-//            LOG.debug("socksProxyPort:");
-//            LOG.debug(System.getProperty("socksProxyPort"));
-//            LOG.debug("properties:");
-//            LOG.debug(System.getProperties().toString());
+            // LOG.debug("proxyHost:");
+            // LOG.debug(System.getProperty("proxyHost"));
+            // LOG.debug("proxyPort:");
+            // LOG.debug(System.getProperty("proxyPort"));
+            // LOG.debug("socksProxyHost:");
+            // LOG.debug(System.getProperty("socksProxyHost"));
+            // LOG.debug("socksProxyPort:");
+            // LOG.debug(System.getProperty("socksProxyPort"));
+            // LOG.debug("properties:");
+            // LOG.debug(System.getProperties().toString());
         }
 
-            if (Organizer.getMotuConfigInstance().isUseProxy()) {
-                String user = Organizer.getMotuConfigInstance().getProxyLogin();
-                String pwd = Organizer.getMotuConfigInstance().getProxyPwd();
-                System.setProperty("proxyHost", Organizer.getMotuConfigInstance().getProxyHost());
-                System.setProperty("proxyPort", Organizer.getMotuConfigInstance().getProxyPort());
-                if (user != null && pwd != null) {
-                    if (!user.equals("") && !pwd.equals("")) {
-                        Authenticator.setDefault(new SimpleAuthenticator(user, pwd));
-                    }
+        if (Organizer.getMotuConfigInstance().isUseProxy()) {
+            String user = Organizer.getMotuConfigInstance().getProxyLogin();
+            String pwd = Organizer.getMotuConfigInstance().getProxyPwd();
+            System.setProperty("proxyHost", Organizer.getMotuConfigInstance().getProxyHost());
+            System.setProperty("proxyPort", Organizer.getMotuConfigInstance().getProxyPort());
+            if (user != null && pwd != null) {
+                if (!user.equals("") && !pwd.equals("")) {
+                    Authenticator.setDefault(new SimpleAuthenticator(user, pwd));
                 }
             }
-         if (LOG.isDebugEnabled()) {
+        }
+        if (LOG.isDebugEnabled()) {
             LOG.debug("END Organizer.initProxyLogin()");
         }
     }
-    
 
     /**
      * Gets the catalog ola.
@@ -1387,7 +1393,7 @@ public class Organizer {
      * @param key key whose associated value is to be returned.
      * 
      * @return the value to which this map maps the specified key, or <tt>null</tt> if the map contains no
-     * mapping for this key.
+     *         mapping for this key.
      * 
      * @see java.util.Map#get(Object)
      */
@@ -1488,8 +1494,6 @@ public class Organizer {
 
         return stdNameEquiv;
     }
-
-
 
     /**
      * Inits the request size.
@@ -2247,11 +2251,11 @@ public class Organizer {
      * @return product object corresponding to the extraction
      * 
      * @throws NetCdfAttributeException @throws MotuInvalidDateException * @throws MotuInvalidDepthException * @throws
-     * MotuInvalidLatitudeException * @throws MotuInvalidLongitudeException * @throws
-     * MotuException * @throws MotuExceedingCapacityException * @throws
-     * MotuNotImplementedException * @throws MotuInvalidDateRangeException * @throws
-     * MotuInvalidDepthRangeException * @throws NetCdfVariableException * @throws
-     * MotuNoVarException
+     *             MotuInvalidLatitudeException * @throws MotuInvalidLongitudeException * @throws
+     *             MotuException * @throws MotuExceedingCapacityException * @throws
+     *             MotuNotImplementedException * @throws MotuInvalidDateRangeException * @throws
+     *             MotuInvalidDepthRangeException * @throws NetCdfVariableException * @throws
+     *             MotuNoVarException
      */
     // public Product extractData(String serviceName,
     // String locationData,
@@ -2475,7 +2479,7 @@ public class Organizer {
      * @param selectData logical expression if it's true extract th data, if it's failse ignore the data.
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     * be empty string)
+     *            be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * 
@@ -2526,7 +2530,7 @@ public class Organizer {
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
      * @param responseFormat response output format (HTML, XML, Ascii).
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     * be empty string)
+     *            be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * @param out writer in which response of the extraction will be list.
@@ -2624,7 +2628,7 @@ public class Organizer {
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
      * @param locationData locaton of the data to download (url, filename)
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     * be empty string)
+     *            be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * 
@@ -2681,7 +2685,7 @@ public class Organizer {
      * @param locationData locaton of the data to download (url, filename)
      * @param responseFormat response output format (HTML, XML, Ascii).
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     * be empty string)
+     *            be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * @param out writer in which response of the extraction will be list.
@@ -2739,7 +2743,7 @@ public class Organizer {
      * @param selectData logical expression if it's true extract th data, if it's failse ignore the data.
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     * be empty string)
+     *            be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * @param serviceName name of the service for the product
@@ -2808,7 +2812,7 @@ public class Organizer {
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
      * @param responseFormat response output format (HTML, XML, Ascii).
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     * be empty string)
+     *            be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * @param serviceName name of the service for the product
@@ -2899,7 +2903,7 @@ public class Organizer {
      * @param locationData locaton of the data to download (url, filename)
      * @param responseFormat response output format (HTML, XML, Ascii).
      * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     * be empty string)
+     *            be empty string)
      * @param listDepthCoverage list contains low depth, high depth.
      * @param listTemporalCoverage list contains start date and end date (can be empty string)
      * @param serviceName name of the service for the product
@@ -3550,6 +3554,9 @@ public class Organizer {
             break;
 
         case XML:
+            getProductDownloadInfoXML(productId, out);
+            break;
+
         case ASCII:
             throw new MotuNotImplementedException(String.format("getProductDownloadInfo - Format %s not implemented", format.toString()));
             // break;
@@ -3745,7 +3752,7 @@ public class Organizer {
      * @param key key whose associated value is to be returned.
      * 
      * @return the value to which this map maps the specified key, or <tt>null</tt> if the map contains no
-     * mapping for this key.
+     *         mapping for this key.
      * 
      * @see java.util.Map#get(Object)
      * @uml.property name="services"
@@ -4417,6 +4424,32 @@ public class Organizer {
     }
 
     /**
+     * Gets the product's download informations of the current product in XML format.
+     * 
+     * @param productId id of the product on which to get informations.
+     * @param out writer in which catalog's information will be list.
+     * 
+     * @throws MotuNotImplementedException the motu not implemented exception
+     * @throws MotuException the motu exception
+     * @throws NetCdfAttributeException the net cdf attribute exception
+     */
+    private void getProductDownloadInfoXML(String productId, Writer out) throws MotuException, MotuNotImplementedException, NetCdfAttributeException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductDownloadInfoXML() - entering");
+        }
+
+        if (this.currentService == null) {
+            throw new MotuException("Error in getProductDownloadInfoXML - No service has been initialized - currentService is null");
+        }
+
+        currentService.getProductDownloadInfoXML(productId, out);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductDownloadInfoXML() - exiting");
+        }
+    }
+
+    /**
      * Initializes the Organizer service.
      * 
      * @throws MotuException the motu exception
@@ -4529,12 +4562,12 @@ public class Organizer {
         if (prefix != null) {
             stringBuffer.append(prefix);
         }
-                
+
         stringBuffer.append("_");
-        
+
         long numId = Organizer.generateUniqueId();
         stringBuffer.append(Long.toString(numId));
-        
+
         if (suffix != null) {
             stringBuffer.append(suffix);
         }
@@ -4542,7 +4575,7 @@ public class Organizer {
         // replace all non-words character except '.' by "-"
         return temp.replaceAll("[\\W&&[^\\.]]", "-");
     }
-    
+
     /**
      * Generate unique id.
      * 
@@ -4552,13 +4585,13 @@ public class Organizer {
 
         // Compute a unique id from datetime
         long num = System.currentTimeMillis();
-        
+
         while (num <= Organizer.LAST_UNIQUE_ID) {
             num++;
         }
-        
+
         Organizer.LAST_UNIQUE_ID = num;
-        
+
         return Organizer.LAST_UNIQUE_ID;
     }
 
@@ -4645,17 +4678,16 @@ public class Organizer {
      * @return the dataset id from uri
      */
     public String getDatasetIdFromURI(String uri, String serviceName) {
-        
+
         String productId = uri;
 
-        if ((Organizer.isNullOrEmpty(serviceName))  || (Organizer.isNullOrEmpty(productId)) ){
+        if ((Organizer.isNullOrEmpty(serviceName)) || (Organizer.isNullOrEmpty(productId))) {
             return productId;
         }
-        
+
         ServiceData serviceData = this.getServices(serviceName.toLowerCase());
         CatalogData.CatalogType catalogType = serviceData.getCatalogType();
-        
-        
+
         if ((catalogType.compareTo(CatalogType.OPENDAP) == 0) || (catalogType.compareTo(CatalogType.TDS) == 0)) {
             // Extraire uniquement l'id du dataset
             // Suppression de cette fonctionalité. http://jira.cls.fr:8080/browse/ATOLL-104
@@ -4663,11 +4695,11 @@ public class Organizer {
             // http://jira.cls.fr:8080/browse/ATOLL-107
             productId = Organizer.getDatasetIdFromURI(productId);
         }
-        
+
         return productId;
-        
-        
-    }    
+
+    }
+
     /**
      * Gets the dataset id from atoll uri.
      * 
@@ -4679,14 +4711,14 @@ public class Organizer {
         if (Organizer.isNullOrEmpty(uri)) {
             return uri;
         }
-        //String[] split = uri.split(SHARP_DATASET_REGEXP);
+        // String[] split = uri.split(SHARP_DATASET_REGEXP);
         String[] split = uri.split(SHARP_REGEXP);
         if (split.length <= 1) {
             return uri;
         }
         return split[1];
     }
-    
+
     /**
      * Gets the variable id from uri.
      * 

@@ -3,29 +3,6 @@
  */
 package fr.cls.atoll.motu.library.data;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.exception.ResourceNotFoundException;
-import org.apache.velocity.tools.generic.MathTool;
-
 import fr.cls.atoll.motu.library.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.exception.MotuException;
@@ -45,6 +22,27 @@ import fr.cls.atoll.motu.library.intfce.Organizer;
 import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.metadata.ProductMetaData;
 import fr.cls.commons.util.io.ConfigLoader;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Writer;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.exception.ResourceNotFoundException;
+import org.apache.velocity.tools.generic.MathTool;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -321,6 +319,20 @@ public class ServiceData {
     protected String getProductDownloadInfoVeloTemplateName() {
         StringBuffer buffer = new StringBuffer(VELOCITY_TEMPLATE_DIR);
         buffer.append("product_downloadhome_");
+        buffer.append(languageToString());
+        buffer.append(VELOCITY_TEMPLATE_SUFFIX_FILE);
+
+        return buffer.toString();
+    }
+
+    /**
+     * Gets the 'describe coverage info' velo template name.
+     * 
+     * @return the 'describe coverage info' velocity template name.
+     */
+    protected String getDescribeCoverageInfoVeloTemplateName() {
+        StringBuffer buffer = new StringBuffer(VELOCITY_TEMPLATE_DIR);
+        buffer.append("product_describecoverage_");
         buffer.append(languageToString());
         buffer.append(VELOCITY_TEMPLATE_SUFFIX_FILE);
 
@@ -899,7 +911,7 @@ public class ServiceData {
         } catch (Exception e) {
             LOG.error("writeCatalogInformationHTML()", e);
 
-            throw new MotuException("Error in writeCatalogInformationHTML while construct velocity template", (Throwable) e);
+            throw new MotuException("Error in writeCatalogInformationHTML while construct velocity template", e);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -916,9 +928,10 @@ public class ServiceData {
         if (Organizer.isNullOrEmpty(this.name)) {
             return true;
         }
-        
+
         return this.getName().equalsIgnoreCase(GENERIC_SERVICE_NAME);
     }
+
     /**
      * Loads product metadata.
      * 
@@ -1092,7 +1105,7 @@ public class ServiceData {
         } catch (Exception e) {
             LOG.error("writeProductInformationHTML()", e);
 
-            throw new MotuException("Error in writeCatalogInformationHTML while construct velocity template", (Throwable) e);
+            throw new MotuException("Error in writeCatalogInformationHTML while construct velocity template", e);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -1166,6 +1179,30 @@ public class ServiceData {
     }
 
     /**
+     * Gets the product's download informations of the current service in XML format.
+     * 
+     * @param out writer in which product's informations will be listed.
+     * @param productId id of the product on which to get informations.
+     * 
+     * @throws MotuNotImplementedException the motu not implemented exception
+     * @throws MotuException the motu exception
+     * @throws NetCdfAttributeException the net cdf attribute exception
+     */
+    public void getProductDownloadInfoXML(String productId, Writer out) throws MotuException, MotuNotImplementedException, NetCdfAttributeException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductDownloadInfoXML() - entering");
+        }
+
+        Product product = getProduct(productId);
+
+        getProductDownloadInfoXML(product, out);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductDownloadInfoXML() - exiting");
+        }
+    }
+
+    /**
      * Gets the product's download informations of the current service in HTML format.
      * 
      * @param product instance of the product on which to get informations.
@@ -1190,6 +1227,34 @@ public class ServiceData {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductDownloadInfoHTML() - exiting");
+        }
+    }
+
+    /**
+     * Gets the product's download informations of the current service in XML format.
+     * 
+     * @param product instance of the product on which to get informations.
+     * @param out writer in which product's informations will be listed.
+     * 
+     * @throws MotuNotImplementedException the motu not implemented exception
+     * @throws MotuException the motu exception
+     * @throws NetCdfAttributeException the net cdf attribute exception
+     */
+    public void getProductDownloadInfoXML(Product product, Writer out) throws MotuException, MotuNotImplementedException, NetCdfAttributeException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductDownloadInfoXML() - entering");
+        }
+
+        if (product == null) {
+            throw new MotuException("Error in getProductDownloadInfoXML - product is null");
+        }
+
+        getProductInformation(product);
+
+        writeProductDownloadXML(product, out);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductDownloadInfoXML() - exiting");
         }
     }
 
@@ -1250,11 +1315,77 @@ public class ServiceData {
         } catch (Exception e) {
             LOG.error("writeProductDownloadHTML()", e);
 
-            throw new MotuException("Error in writeProductDownloadHTML while construct velocity template", (Throwable) e);
+            throw new MotuException("Error in writeProductDownloadHTML while construct velocity template", e);
         }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("writeProductDownloadHTML() - exiting");
+        }
+        return true;
+    }
+
+    /**
+     * Writes the product's informations of the current service in XML format.
+     * 
+     * @param product instance of product on which to get informations.
+     * @param out writer in which catalog's information will be listed.
+     * 
+     * @return true, if write product download XML
+     * 
+     * @throws MotuException the motu exception
+     */
+    public boolean writeProductDownloadXML(Product product, Writer out) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("writeProductDownloadXML() - entering");
+        }
+        if (product == null) {
+            if (currentProduct != null) {
+                product = currentProduct;
+            } else {
+                return false;
+            }
+        }
+
+        ProductMetaData productMetaData = product.getProductMetaData();
+        if (productMetaData == null) {
+            return false;
+        }
+        if (productMetaData.getCoordinateAxes() == null) {
+            return false;
+        }
+        if (productMetaData.getParameterMetaDatas() == null) {
+            return false;
+        }
+
+        if (velocityEngine == null) {
+            throw new MotuException("Error in writeProductDownloadXML - velocityEngine is null");
+        }
+        // if (product == null) {
+        // throw new MotuException("Error in writeProductDownloadHTML - product has not been set (is null)");
+        // }
+
+        try {
+            Template template = getGlobalVeloTemplate();
+
+            VelocityContext context = new VelocityContext();
+            context.put("body_template", getDescribeCoverageInfoVeloTemplateName());
+            context.put("mathTool", new MathTool());
+            context.put("service", this);
+            context.put("product", product);
+
+            template.merge(context, out);
+
+            currentHtmlPage = HTMLPage.PRODUCT_DOWNLOAD;
+            currentProduct = product;
+
+        } catch (Exception e) {
+            LOG.error("writeProductDownloadXML()", e);
+
+            throw new MotuException("Error in writeProductDownloadXML while construct velocity template", e);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("writeProductDownloadXML() - exiting");
         }
         return true;
     }
