@@ -3,6 +3,28 @@
  */
 package fr.cls.atoll.motu.web.servlet;
 
+import fr.cls.atoll.motu.api.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.library.configuration.ConfigService;
+import fr.cls.atoll.motu.library.configuration.MotuConfig;
+import fr.cls.atoll.motu.library.configuration.QueueType;
+import fr.cls.atoll.motu.library.data.Product;
+import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.exception.MotuInvalidRequestIdException;
+import fr.cls.atoll.motu.library.exception.MotuMarshallException;
+import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
+import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.queueserver.QueueManagement;
+import fr.cls.atoll.motu.library.queueserver.QueueServerManagement;
+import fr.cls.atoll.motu.library.queueserver.RequestManagement;
+import fr.cls.atoll.motu.msg.MotuMsgConstant;
+import fr.cls.atoll.motu.msg.xml.ErrorType;
+import fr.cls.atoll.motu.msg.xml.ObjectFactory;
+import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
+import fr.cls.atoll.motu.msg.xml.StatusModeType;
+import fr.cls.commons.log.LogManager;
+import fr.cls.commons.util.PropertiesUtilities;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -33,28 +55,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.log4j.Logger;
 import org.jasig.cas.client.util.AssertionHolder;
-
-import fr.cls.atoll.motu.api.MotuRequestParametersConstant;
-import fr.cls.atoll.motu.library.configuration.ConfigService;
-import fr.cls.atoll.motu.library.configuration.MotuConfig;
-import fr.cls.atoll.motu.library.configuration.QueueType;
-import fr.cls.atoll.motu.library.data.Product;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.exception.MotuInvalidRequestIdException;
-import fr.cls.atoll.motu.library.exception.MotuMarshallException;
-import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.queueserver.QueueManagement;
-import fr.cls.atoll.motu.library.queueserver.QueueServerManagement;
-import fr.cls.atoll.motu.library.queueserver.RequestManagement;
-import fr.cls.atoll.motu.msg.MotuMsgConstant;
-import fr.cls.atoll.motu.msg.xml.ErrorType;
-import fr.cls.atoll.motu.msg.xml.ObjectFactory;
-import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
-import fr.cls.atoll.motu.msg.xml.StatusModeType;
-import fr.cls.commons.log.LogManager;
-import fr.cls.commons.util.PropertiesUtilities;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -775,6 +775,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      */
     protected void execDefaultRequest(HttpServletRequest request, HttpSession session, HttpServletResponse response) throws ServletException,
             IOException {
+
+        response.setContentType(CONTENT_TYPE_HTML);
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("execDefaultRequest() - entering");
         }
@@ -872,7 +875,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 return;
             }
 
-            response.setContentType(CONTENT_TYPE_HTML);
+            // content returned is the responsibility of each action
+            // response.setContentType(CONTENT_TYPE_HTML);
 
             if (isActionListCatalog(action, request, session, response)) {
                 // Nothing to do
@@ -886,7 +890,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 // Nothing to do
             } else if (isActionRefresh(action, request, session, response)) {
                 // Nothing to do
-            } else {
+            } else if (isActionGetDescribeCoverage(action, request, session, response)) {
                 // No parameter or parameters doesn't match
                 execDefaultRequest(request, session, response);
             }
@@ -1011,7 +1015,6 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             return false;
         }
 
-            
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 request.getParameter(MotuRequestParametersConstant.PARAM_SERVICE),
                 request.getParameter(MotuRequestParametersConstant.PARAM_DATA),
@@ -1138,6 +1141,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      */
     protected boolean isActionListCatalog(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException {
+
+        response.setContentType(CONTENT_TYPE_HTML);
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionListCatalog() - entering");
         }
@@ -1181,6 +1187,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      */
     protected boolean isActionListProductDownloadHome(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException {
+
+        response.setContentType(CONTENT_TYPE_HTML);
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionListProductDownloadHome() - entering");
         }
@@ -1217,6 +1226,61 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     }
 
     /**
+     * Executes the {@link MotuRequestParametersConstant#ACTION_GET_DESCRIBE_COVERAGE} if request's parameters
+     * match.
+     * 
+     * @param response object that contains the response the servlet sends to the client
+     * @param session request session
+     * @param request object that contains the request the client has made of the servlet.
+     * @param action action to be executed.
+     * 
+     * @return true is request is A{@link MotuRequestParametersConstant#ACTION_GET_DESCRIBE_COVERAGE} and have
+     *         been executed, false otherwise.
+     * 
+     * @throws IOException the IO exception
+     * @throws ServletException the servlet exception
+     */
+    protected boolean isActionGetDescribeCoverage(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        response.setContentType(CONTENT_TYPE_XML);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("isActionGetDescribeCoverage() - entering");
+        }
+
+        if (!action.equalsIgnoreCase(ACTION_GET_DESCRIBE_COVERAGE)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("isActionGetDescribeCoverage() - exiting");
+            }
+            return false;
+        }
+
+        String serviceName = request.getParameter(PARAM_SERVICE);
+        if (MotuServlet.isNullOrEmpty(serviceName)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("isActionGetDescribeCoverage() - exiting");
+            }
+            return false;
+        }
+        String productId = getProductId(request, response);
+        if (MotuServlet.isNullOrEmpty(productId)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("isActionGetDescribeCoverage() - exiting");
+            }
+            return false;
+        }
+
+        setLanguageParameter(request, session, response);
+        getDescribeCoverage(serviceName, productId, session, response);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("isActionGetDescribeCoverage() - exiting");
+        }
+        return true;
+    }
+
+    /**
      * Executes the ACTION_LIST_PRODUCT_METADATA if request's parameters match.
      * 
      * @param response object that contains the response the servlet sends to the client
@@ -1231,6 +1295,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      */
     protected boolean isActionListProductMetaData(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setContentType(CONTENT_TYPE_HTML);
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionListProductMetaData() - entering");
         }
@@ -1281,6 +1347,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      */
     protected boolean isActionListServices(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException {
+
+        response.setContentType(CONTENT_TYPE_HTML);
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionListServices() - entering");
         }
@@ -1350,6 +1419,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      */
     protected boolean isActionProductDownload(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws IOException, ServletException {
+
+        response.setContentType(CONTENT_TYPE_HTML);
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionProductDownload(String, HttpServletRequest, HttpSession, HttpServletResponse) - entering");
         }
@@ -1530,6 +1602,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      */
     protected boolean isActionRefresh(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException {
+
+        response.setContentType(CONTENT_TYPE_HTML);
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionRefresh() - entering");
         }
@@ -3259,6 +3334,43 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         }
     }
 
+    /**
+     * Gets the coverage description of a product. Informations are witten if XML format in the writer of the
+     * response.
+     * 
+     * @param response object that contains the response the servlet sends to the client
+     * @param session request sesssion
+     * @param productId id of the product
+     * @param serviceName name of the service for the product
+     * 
+     * @throws IOException the IO exception
+     * @throws ServletException the servlet exception
+     */
+    private void getDescribeCoverage(String serviceName, String productId, HttpSession session, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getDescribeCoverage() - entering");
+        }
+
+        Organizer organizer = getOrganizer(session, response);
+        try {
+            organizer.getProductDownloadInfo(serviceName, productId, response.getWriter(), Organizer.Format.HTML);
+
+        } catch (MotuExceptionBase e) {
+            LOG.error("getDescribeCoverage()", e);
+
+            throw new ServletException(e.notifyException(), e);
+        } catch (Exception e) {
+            LOG.error("getDescribeCoverage()", e);
+
+            throw new ServletException(e);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getDescribeCoverage() - exiting");
+        }
+    }
+
     // /**
     // * Inits the queue server.
     // *
@@ -3468,22 +3580,22 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @return the product id
      * 
      * @throws IOException Signals that an I/O exception has occurred.
-     * @throws ServletException 
+     * @throws ServletException
      */
     protected String getProductId(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String serviceName = request.getParameter(PARAM_SERVICE);
-        
+
         String productId = request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT);
 
-        if ((MotuServlet.isNullOrEmpty(serviceName)) || (MotuServlet.isNullOrEmpty(productId))){
+        if ((MotuServlet.isNullOrEmpty(serviceName)) || (MotuServlet.isNullOrEmpty(productId))) {
             return productId;
         }
-        
+
         HttpSession session = getSession(request);
-        
+
         Organizer organizer = getOrganizer(session, response);
-        
-        return  organizer.getDatasetIdFromURI(productId, serviceName);      
+
+        return organizer.getDatasetIdFromURI(productId, serviceName);
     }
     /**
      * Tests if service called is Mercator or not.
