@@ -36,13 +36,16 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.ResourceNotFoundException;
+import org.apache.velocity.tools.generic.DateTool;
 import org.apache.velocity.tools.generic.MathTool;
+import org.apache.velocity.tools.generic.NumberTool;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -898,7 +901,7 @@ public class ServiceData {
         try {
             Template template = getGlobalVeloTemplate();
 
-            VelocityContext context = new VelocityContext();
+            VelocityContext context = getPrepopulatedVelocityContext();
             // System.out.println(velocityEngine.getProperty("file.resource.loader.path"));
             context.put("body_template", getCatalogVeloTemplateName());
             context.put("service", this);
@@ -1093,7 +1096,7 @@ public class ServiceData {
 
         try {
             Template template = getGlobalVeloTemplate();
-            VelocityContext context = new VelocityContext();
+            VelocityContext context = getPrepopulatedVelocityContext();
             context.put("body_template", getProductMetaDataInfoVeloTemplateName());
             context.put("service", this);
             context.put("product", product);
@@ -1301,9 +1304,8 @@ public class ServiceData {
         try {
             Template template = getGlobalVeloTemplate();
 
-            VelocityContext context = new VelocityContext();
+            VelocityContext context = getPrepopulatedVelocityContext();
             context.put("body_template", getProductDownloadInfoVeloTemplateName());
-            context.put("mathTool", new MathTool());
             context.put("service", this);
             context.put("product", product);
 
@@ -1322,6 +1324,26 @@ public class ServiceData {
             LOG.debug("writeProductDownloadHTML() - exiting");
         }
         return true;
+    }
+
+    /**
+     * @return a new context with some tools initialized.
+     * 
+     * @see NumberTool
+     * @see DateTool
+     * @see MathTool
+     */
+    private VelocityContext getPrepopulatedVelocityContext() {
+        final NumberTool numberTool = new NumberTool();
+        final DateTool dateTool = new DateTool();
+        final MathTool mathTool = new MathTool();
+
+        VelocityContext vc = new VelocityContext();
+        vc.put("numberTool", numberTool);
+        vc.put("dateTool", dateTool);
+        vc.put("mathTool", mathTool);
+        vc.put("enLocale", Locale.ENGLISH);
+        return vc;
     }
 
     /**
@@ -1365,11 +1387,9 @@ public class ServiceData {
         // }
 
         try {
-            Template template = getGlobalVeloTemplate();
+            Template template = getDescribeCoverageXMLVeloTemplate();
 
-            VelocityContext context = new VelocityContext();
-            context.put("body_template", getDescribeCoverageInfoVeloTemplateName());
-            context.put("mathTool", new MathTool());
+            VelocityContext context = getPrepopulatedVelocityContext();
             context.put("service", this);
             context.put("product", product);
 
@@ -2335,6 +2355,30 @@ public class ServiceData {
             }
         } catch (Exception e) {
             throw new MotuException("Error in ServiceData - getGlobalVeloTemplate", e);
+        }
+        return template;
+    }
+
+    /**
+     * Gets the describe coverage XML velo template.
+     * 
+     * @return the Velocity describe coverage XML template
+     * 
+     * @throws MotuException the motu exception
+     */
+    private Template getDescribeCoverageXMLVeloTemplate() throws MotuException {
+        Template template = null;
+        try {
+            template = velocityEngine.getTemplate(getDescribeCoverageInfoVeloTemplateName());
+        } catch (ResourceNotFoundException e) {
+            setLanguage(Language.UK);
+            try {
+                template = velocityEngine.getTemplate(getDescribeCoverageInfoVeloTemplateName());
+            } catch (Exception e1) {
+                throw new MotuException("Error in ServiceData - getDescribeCoverageXMLVeloTemplate", e1);
+            }
+        } catch (Exception e) {
+            throw new MotuException("Error in ServiceData - getDescribeCoverageXMLVeloTemplate", e);
         }
         return template;
     }

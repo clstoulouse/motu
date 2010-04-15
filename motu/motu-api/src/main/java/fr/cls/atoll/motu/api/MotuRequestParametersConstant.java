@@ -14,8 +14,8 @@ public interface MotuRequestParametersConstant {
     /** The Constant ACTION_DELETE. */
     final String ACTION_DELETE = "delete";
 
-    /** Action servlet parameter value to get download product home page. */
-    final String ACTION_GET_DESCRIBE_COVERAGE = "getDescribeCoverage";
+    /** Action servlet parameter value to get the coverage of a dataset (temporal, geographic...) */
+    final String ACTION_DESCRIBE_COVERAGE = "describeCoverage";
 
     /** The Constant ACTION_GET_REQUEST_STATUS. */
     final String ACTION_GET_REQUEST_STATUS = "getreqstatus";
@@ -62,17 +62,23 @@ public interface MotuRequestParametersConstant {
     /** Data parameter name. */
     final String PARAM_DATA = "data";
 
+    /**
+     * Dataset servlet parameter id. This is an alias of {@link #PARAM_PRODUCT} for the
+     * {@link #ACTION_DESCRIBE_COVERAGE} action.
+     */
+    final String PARAM_DATASET_ID = "datasetID";
+
     /** End date servlet paremeter name. */
     final String PARAM_END_DATE = "t_hi";
-
-    /** The Constant PARAM_ANONYMOUS. */
-    final String PARAM_FORWARDED_FOR = "forwarded_for";
 
     // /** High Priority Value. */
     // final int HIGH_PRIORITY_VALUE = 1;
     //
     // /** Low Priority Value. */
     // final int LOW_PRIORITY_VALUE = 2;
+
+    /** The Constant PARAM_ANONYMOUS. */
+    final String PARAM_FORWARDED_FOR = "forwarded_for";
 
     /** High latitude servlet paremeter name. */
     final String PARAM_HIGH_LAT = "y_hi";
@@ -130,6 +136,12 @@ public interface MotuRequestParametersConstant {
 
     /** Service servlet parameter name. */
     final String PARAM_SERVICE = "service";
+
+    /**
+     * Service servlet parameter id. This is an alias of {@link #PARAM_SERVICE} for the
+     * {@link #ACTION_DESCRIBE_COVERAGE} action.
+     */
+    final String PARAM_SERVICE_ID = "serviceID";
 
     /** Start date servlet paremeter name. */
     final String PARAM_START_DATE = "t_lo";

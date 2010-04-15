@@ -890,7 +890,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 // Nothing to do
             } else if (isActionRefresh(action, request, session, response)) {
                 // Nothing to do
-            } else if (isActionGetDescribeCoverage(action, request, session, response)) {
+            } else if (isActionDescribeCoverage(action, request, session, response)) {
+                // Nothing to do
+            } else {
                 // No parameter or parameters doesn't match
                 execDefaultRequest(request, session, response);
             }
@@ -1022,7 +1024,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 getTemporalCoverage(request),
                 getGeoCoverage(request),
                 getDepthCoverage(request),
-                getProductId(request, response),
+                getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response),
                 Organizer.Format.NETCDF,
                 response.getWriter(),
                 null,
@@ -1073,7 +1075,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
         String locationData = request.getParameter(PARAM_DATA);
 
-        String productId = getProductId(request, response);
+        String productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
 
         if (MotuServlet.isNullOrEmpty(locationData) && MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
@@ -1208,7 +1210,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             }
             return false;
         }
-        String productId = getProductId(request, response);
+        String productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
         if (MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("isActionListProductDownloadHome() - exiting");
@@ -1226,7 +1228,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     }
 
     /**
-     * Executes the {@link MotuRequestParametersConstant#ACTION_GET_DESCRIBE_COVERAGE} if request's parameters
+     * Executes the {@link MotuRequestParametersConstant#ACTION_DESCRIBE_COVERAGE} if request's parameters
      * match.
      * 
      * @param response object that contains the response the servlet sends to the client
@@ -1234,24 +1236,24 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @param request object that contains the request the client has made of the servlet.
      * @param action action to be executed.
      * 
-     * @return true is request is A{@link MotuRequestParametersConstant#ACTION_GET_DESCRIBE_COVERAGE} and have
+     * @return true is request is A{@link MotuRequestParametersConstant#ACTION_DESCRIBE_COVERAGE} and have
      *         been executed, false otherwise.
      * 
      * @throws IOException the IO exception
      * @throws ServletException the servlet exception
      */
-    protected boolean isActionGetDescribeCoverage(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
+    protected boolean isActionDescribeCoverage(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException {
 
         response.setContentType(CONTENT_TYPE_XML);
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("isActionGetDescribeCoverage() - entering");
+            LOG.debug("isActionDescribeCoverage() - entering");
         }
 
-        if (!action.equalsIgnoreCase(ACTION_GET_DESCRIBE_COVERAGE)) {
+        if (!action.equalsIgnoreCase(ACTION_DESCRIBE_COVERAGE)) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionGetDescribeCoverage() - exiting");
+                LOG.debug("isActionDescribeCoverage() - exiting");
             }
             return false;
         }
@@ -1259,23 +1261,23 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         String serviceName = request.getParameter(PARAM_SERVICE);
         if (MotuServlet.isNullOrEmpty(serviceName)) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionGetDescribeCoverage() - exiting");
+                LOG.debug("isActionDescribeCoverage() - exiting");
             }
             return false;
         }
-        String productId = getProductId(request, response);
+        String productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_DATASET_ID), request, response);
         if (MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionGetDescribeCoverage() - exiting");
+                LOG.debug("isActionDescribeCoverage() - exiting");
             }
             return false;
         }
 
         setLanguageParameter(request, session, response);
-        getDescribeCoverage(serviceName, productId, session, response);
+        describeCoverage(serviceName, productId, session, response);
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("isActionGetDescribeCoverage() - exiting");
+            LOG.debug("isActionDescribeCoverage() - exiting");
         }
         return true;
     }
@@ -1315,7 +1317,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             }
             return false;
         }
-        String productId = getProductId(request, response);
+        String productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
         if (MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("isActionListProductMetaData() - exiting");
@@ -1485,7 +1487,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 getTemporalCoverage(request),
                 getGeoCoverage(request),
                 getDepthCoverage(request),
-                getProductId(request, response),
+                getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response),
                 Organizer.Format.NETCDF,
                 out,
                 responseFormat,
@@ -1559,7 +1561,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 getTemporalCoverage(request),
                 getGeoCoverage(request),
                 getDepthCoverage(request),
-                getProductId(request, response),
+                getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response),
                 Organizer.Format.NETCDF,
                 out,
                 responseFormat,
@@ -3346,28 +3348,28 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws IOException the IO exception
      * @throws ServletException the servlet exception
      */
-    private void getDescribeCoverage(String serviceName, String productId, HttpSession session, HttpServletResponse response)
-            throws ServletException, IOException {
+    private void describeCoverage(String serviceName, String productId, HttpSession session, HttpServletResponse response) throws ServletException,
+            IOException {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("getDescribeCoverage() - entering");
+            LOG.debug("describeCoverage() - entering");
         }
 
         Organizer organizer = getOrganizer(session, response);
         try {
-            organizer.getProductDownloadInfo(serviceName, productId, response.getWriter(), Organizer.Format.HTML);
+            organizer.getProductDownloadInfo(serviceName, productId, response.getWriter(), Organizer.Format.XML);
 
         } catch (MotuExceptionBase e) {
-            LOG.error("getDescribeCoverage()", e);
+            LOG.error("describeCoverage()", e);
 
             throw new ServletException(e.notifyException(), e);
         } catch (Exception e) {
-            LOG.error("getDescribeCoverage()", e);
+            LOG.error("describeCoverage()", e);
 
             throw new ServletException(e);
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("getDescribeCoverage() - exiting");
+            LOG.debug("describeCoverage() - exiting");
         }
     }
 
@@ -3582,10 +3584,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws ServletException
      */
-    protected String getProductId(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    protected String getProductIdFromParamId(final String productId, HttpServletRequest request, HttpServletResponse response) throws IOException,
+            ServletException {
         String serviceName = request.getParameter(PARAM_SERVICE);
-
-        String productId = request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT);
 
         if ((MotuServlet.isNullOrEmpty(serviceName)) || (MotuServlet.isNullOrEmpty(productId))) {
             return productId;
@@ -3597,6 +3598,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
         return organizer.getDatasetIdFromURI(productId, serviceName);
     }
+
     /**
      * Tests if service called is Mercator or not.
      * 

@@ -3,29 +3,6 @@
  */
 package fr.cls.atoll.motu.library.data;
 
-import java.io.File;
-import java.io.IOException;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
-import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.MAMath;
-import ucar.ma2.MAMath.MinMax;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.Variable;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.library.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
@@ -49,6 +26,32 @@ import fr.cls.atoll.motu.library.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.library.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
+
+import java.io.File;
+import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
+import ucar.ma2.Array;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.MAMath;
+import ucar.ma2.MAMath.MinMax;
+import ucar.nc2.Attribute;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.geoloc.LatLonRect;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -147,6 +150,7 @@ public class Product {
     public void setDataset(DatasetBase dataset) {
         this.dataset = dataset;
     }
+
     /** Does Service needs CAS authentification to access catalog resources and data. */
     protected boolean casAuthentification = false;
 
@@ -168,7 +172,6 @@ public class Product {
         this.casAuthentification = casAuthentification;
     }
 
- 
     /**
      * Checks for criteria date time.
      * 
@@ -477,7 +480,7 @@ public class Product {
         }
 
         for (Iterator<CoordinateAxis> it = coordinateAxes.iterator(); it.hasNext();) {
-            CoordinateAxis coordinateAxis = (CoordinateAxis) it.next();
+            CoordinateAxis coordinateAxis = it.next();
             AxisType axisType = coordinateAxis.getAxisType();
             if (axisType != null) {
                 productMetaData.putCoordinateAxes(axisType, coordinateAxis);
@@ -536,7 +539,7 @@ public class Product {
         // Gets variables metadata.
         fr.cls.atoll.motu.library.inventory.Variables variables = resource.getVariables();
         if (variables != null) {
-            
+
             for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {
 
                 ParameterMetaData parameterMetaData = new ParameterMetaData();
@@ -653,7 +656,7 @@ public class Product {
             parameterMetaData.setName(variable.getName());
             parameterMetaData.setLabel(variable.getDescription());
             parameterMetaData.setUnit(variable.getUnitsString());
-            parameterMetaData.setDimensions((List<Dimension>) variable.getDimensions());
+            parameterMetaData.setDimensions(variable.getDimensions());
 
             unitLong = "";
             try {
@@ -1082,6 +1085,41 @@ public class Product {
     /**
      * Gets time axis data values.
      * 
+     * @return a list constains time axis date values
+     * 
+     * @throws NetCdfVariableException the net cdf variable exception
+     * @throws MotuException the motu exception if string to date conversion fails
+     */
+    public List<Date> getTimeAxisDataAsDate() throws MotuException, NetCdfVariableException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getTimeAxisDataAsDate() - entering");
+        }
+        final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        final Array array = getTimeAxisData();
+        final List<Date> list = new LinkedList<Date>();
+
+        double datetime = 0.0;
+
+        for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
+            datetime = it.getDoubleNext();
+            String dateString = NetCdfReader.getDateAsGMTString(datetime, productMetaData.getTimeAxis().getUnitsString());
+            try {
+                list.add(dateFormatter.parse(dateString));
+            } catch (ParseException e) {
+                throw new MotuException("Failed to parse date '" + dateString + "'. Expected format '" + dateFormatter.toString() + "'");
+            }
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getTimeAxisDataAsDate() - exiting");
+        }
+        return list;
+    }
+
+    /**
+     * Gets time axis data values.
+     * 
      * @return a list constains time axis data values
      * 
      * @throws NetCdfVariableException the net cdf variable exception
@@ -1107,7 +1145,6 @@ public class Product {
             LOG.debug("getTimeAxisDataAsString() - exiting");
         }
         return list;
-
     }
 
     /**
@@ -1228,6 +1265,37 @@ public class Product {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("getZAxisDataAsString() - exiting");
+        }
+        return list;
+
+    }
+
+    /**
+     * Gets the z axis data as double.
+     * 
+     * @return the z axis data as string
+     * 
+     * @throws MotuException the motu exception
+     * @throws NetCdfVariableException the net cdf variable exception
+     */
+    public List<Double> getZAxisDataAsDouble() throws MotuException, NetCdfVariableException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getZAxisDataAsDouble() - entering");
+        }
+
+        List<Double> list = new ArrayList<Double>();
+
+        Array array = getZAxisData();
+
+        double depth = 0.0;
+
+        for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
+            depth = it.getDoubleNext();
+            list.add(depth);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getZAxisDataAsDouble() - exiting");
         }
         return list;
 
