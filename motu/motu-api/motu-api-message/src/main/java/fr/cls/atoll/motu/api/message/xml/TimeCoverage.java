@@ -5,8 +5,7 @@
 // Generated on: 2009.10.12 at 03:41:04 PM CEST 
 //
 
-
-package fr.cls.atoll.motu.msg.xml;
+package fr.cls.atoll.motu.api.message.xml;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -16,16 +15,16 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-
 /**
  * 
- * 					Réponse informations couverture temporelle d'un
- * 					produit.
- * 				
+ * Réponse informations couverture temporelle d'un produit.
  * 
- * <p>Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for anonymous complex type.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -61,10 +60,8 @@ public class TimeCoverage {
     /**
      * Gets the value of the start property.
      * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     * @return possible object is {@link XMLGregorianCalendar }
+     * 
      */
     public XMLGregorianCalendar getStart() {
         return start;
@@ -73,10 +70,8 @@ public class TimeCoverage {
     /**
      * Sets the value of the start property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     * @param value allowed object is {@link XMLGregorianCalendar }
+     * 
      */
     public void setStart(XMLGregorianCalendar value) {
         this.start = value;
@@ -85,10 +80,8 @@ public class TimeCoverage {
     /**
      * Gets the value of the end property.
      * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     * @return possible object is {@link XMLGregorianCalendar }
+     * 
      */
     public XMLGregorianCalendar getEnd() {
         return end;
@@ -97,10 +90,8 @@ public class TimeCoverage {
     /**
      * Sets the value of the end property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     * @param value allowed object is {@link XMLGregorianCalendar }
+     * 
      */
     public void setEnd(XMLGregorianCalendar value) {
         this.end = value;
@@ -109,10 +100,8 @@ public class TimeCoverage {
     /**
      * Gets the value of the msg property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getMsg() {
         return msg;
@@ -121,10 +110,8 @@ public class TimeCoverage {
     /**
      * Sets the value of the msg property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setMsg(String value) {
         this.msg = value;
@@ -133,10 +120,8 @@ public class TimeCoverage {
     /**
      * Gets the value of the code property.
      * 
-     * @return
-     *     possible object is
-     *     {@link ErrorType }
-     *     
+     * @return possible object is {@link ErrorType }
+     * 
      */
     public ErrorType getCode() {
         return code;
@@ -145,10 +130,8 @@ public class TimeCoverage {
     /**
      * Sets the value of the code property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link ErrorType }
-     *     
+     * @param value allowed object is {@link ErrorType }
+     * 
      */
     public void setCode(ErrorType value) {
         this.code = value;
