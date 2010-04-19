@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://purl.org/cls/atoll" xmlns="http://purl.org/cls/atoll"
+	elementFormDefault="qualified">
+	<!--
+		xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+		xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+		jaxb:extensionBindingPrefixes="xjc" jaxb:version="2.1">
+		<xs:annotation><xs:appinfo> <jaxb:globalBindings> <xjc:javaType
+		name="org.joda.time.DateTime" xmlType="xs:dateTime"
+		adapter="fr.cls.atoll.motu.library.converter.jaxb.JodaTimeAdapter"/>
+		<xjc:javaType name="org.joda.time.Period" xmlType="xs:duration"
+		adapter="fr.cls.atoll.motu.library.converter.jaxb.JodaPeriodAdapter"/>
+		<xjc:javaType name="java.net.URI" xmlType="xs:anyURI"
+		adapter="fr.cls.atoll.motu.library.converter.jaxb.UriAdapter"/>
+		<xjc:javaType name="javax.measure.DecimalMeasure" xmlType="xs:decimal"
+		adapter="fr.cls.atoll.motu.library.converter.jaxb.DecimalMeasureAdapter"/>
+		</jaxb:globalBindings> </xs:appinfo></xs:annotation>
+	-->
+	<xs:element name="depthCoverage">
+		<xs:complexType>
+			<xs:attribute name="min" type="xs:decimal" use="required" />
+			<xs:attribute name="max" type="xs:decimal" use="required" />
+			<xs:attribute name="units" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="access">
+		<xs:complexType>
+			<xs:attribute name="urlPath" type="xs:anyURI" use="required" />
+			<xs:attribute name="login" type="xs:string" use="optional" />
+			<xs:attribute name="password" type="xs:string" use="optional" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="file">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:ID" use="required" />
+			<xs:attribute name="path" type="xs:anyURI" use="optional"
+				default="" />
+			<xs:attribute name="availabilityServiceDate" type="xs:dateTime"
+				use="optional" />
+			<xs:attribute name="modelPrediction" type="xs:anyURI"
+				use="optional" />
+			<xs:attribute name="availabilitySIDate" type="xs:dateTime"
+				use="optional" />
+			<xs:attribute name="creationDate" type="xs:dateTime"
+				use="optional" />
+			<xs:attribute name="weight" type="xs:nonNegativeInteger"
+				use="optional" />
+			<xs:attribute name="endCoverageDate" type="xs:dateTime"
+				use="required" />
+			<xs:attribute name="theoreticalAvailabilityDate" type="xs:dateTime"
+				use="required" />
+			<xs:attribute name="startCoverageDate" type="xs:dateTime"
+				use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="files">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="file" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:simpleType name="resolutiontype">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="1\/[1-9][0-9]*" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:element name="geospatialCoverage">
+		<xs:complexType>
+			<xs:attribute name="west" type="xs:decimal" use="required" />
+			<xs:attribute name="eastResolution" type="resolutiontype"
+				use="optional" />
+			<xs:attribute name="units" type="xs:string" use="required" />
+			<xs:attribute name="type" type="xs:anyURI" use="required" />
+			<xs:attribute name="south" type="xs:decimal" use="required" />
+			<xs:attribute name="east" type="xs:decimal" use="required" />
+			<xs:attribute name="northResolution" type="resolutiontype"
+				use="optional" />
+			<xs:attribute name="north" type="xs:decimal" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="inventory">
+		<xs:complexType>
+			<xs:sequence>
+				<!-- <xs:element ref="product" /> -->
+				<xs:element ref="service" />
+				<xs:element ref="resource" />
+				<xs:element ref="files" />
+			</xs:sequence>
+			<xs:attribute name="lastModificationDate" type="xs:dateTime"
+				use="required" />
+		</xs:complexType>
+	</xs:element>
+	<!--
+		<xs:element name="product"> <xs:complexType> <xs:attribute name="urn"
+		type="xs:anyURI" use="required" /> </xs:complexType> </xs:element>
+	-->
+	<xs:element name="resource">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="access" />
+				<xs:element ref="geospatialCoverage" />
+				<xs:element ref="depthCoverage" minOccurs="0" />
+				<xs:element ref="timePeriod" />
+				<xs:element ref="theoricalTimePeriod" />
+				<xs:element ref="variables" />
+			</xs:sequence>
+			<xs:attribute name="urn" type="xs:anyURI" use="required" />
+			<xs:attribute name="internalId" type="xs:string"/>			
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="service">
+		<xs:complexType>
+			<xs:attribute name="urn" type="xs:anyURI" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="timePeriod">
+		<xs:complexType>
+			<xs:attribute name="end" type="xs:dateTime" use="required" />
+			<xs:attribute name="start" type="xs:dateTime" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="theoricalTimePeriod">
+		<xs:complexType>
+			<xs:attribute name="end" type="xs:dateTime" use="required" />
+			<xs:attribute name="step" type="xs:duration" use="optional" />
+			<xs:attribute name="start" type="xs:dateTime" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="variable">
+		<xs:complexType>
+			<xs:attribute name="units" type="xs:string" use="required" />
+			<xs:attribute name="vocabularyName" type="xs:string"
+				use="required" />
+			<xs:attribute name="name" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="variables">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="variable" maxOccurs="unbounded" />
+			</xs:sequence>
+			<!-- 
+			<xs:attribute name="vocabulary" type="xs:anyURI" use="required" />
+			 -->
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
