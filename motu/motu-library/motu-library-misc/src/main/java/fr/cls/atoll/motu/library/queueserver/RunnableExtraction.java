@@ -1,5 +1,8 @@
 package fr.cls.atoll.motu.library.queueserver;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.library.data.Product;
 import fr.cls.atoll.motu.library.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.exception.MotuException;
@@ -19,9 +22,6 @@ import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
 import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.msg.xml.ErrorType;
-import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
-import fr.cls.atoll.motu.msg.xml.StatusModeType;
 
 import java.util.Calendar;
 import java.util.Date;

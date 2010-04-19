@@ -1,9 +1,8 @@
 package fr.cls.atoll.motu.library.queueserver;
 
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
-import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -168,9 +167,9 @@ public class ScheduleCleanJob implements StatefulJob {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(getFilePatterns(context));
 
-//        // add temporary extract file extension
-//        stringBuffer.append("|.*\\");
-//        stringBuffer.append(NetCdfWriter.NETCDF_FILE_EXTENSION_EXTRACT);
+        // // add temporary extract file extension
+        // stringBuffer.append("|.*\\");
+        // stringBuffer.append(NetCdfWriter.NETCDF_FILE_EXTENSION_EXTRACT);
 
         String filePatterns = stringBuffer.toString();
 
@@ -236,19 +235,18 @@ public class ScheduleCleanJob implements StatefulJob {
             LOG.debug("cleanExtractedFile(JobExecutionContext) - exiting");
         }
     }
-    
+
     public void cleanTempFile(JobExecutionContext context) throws JobExecutionException {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("cleanTempFile(JobExecutionContext) - entering");
         }
 
-//        // add temporary extract file extension
-//        stringBuffer.append("|.*\\");
-//        stringBuffer.append(NetCdfWriter.NETCDF_FILE_EXTENSION_EXTRACT);
+        // // add temporary extract file extension
+        // stringBuffer.append("|.*\\");
+        // stringBuffer.append(NetCdfWriter.NETCDF_FILE_EXTENSION_EXTRACT);
 
         String filePatterns = getFilePatterns(context);
-
 
         List<Exception> listError = new ArrayList<Exception>();
 
@@ -275,7 +273,7 @@ public class ScheduleCleanJob implements StatefulJob {
 
         // This filter only returns directories
         FileFilter fileFilter = new ExtractedFileToDeleteFilter(filePatterns, timeRef);
-        File directoryToScan = new File( System.getProperty( "java.io.tmpdir" ) );
+        File directoryToScan = new File(System.getProperty("java.io.tmpdir"));
         File[] files = null;
         files = directoryToScan.listFiles(fileFilter);
 

@@ -3,6 +3,13 @@
  */
 package fr.cls.atoll.motu.library.intfce;
 
+import fr.cls.atoll.motu.api.message.MotuMsgConstant;
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
+import fr.cls.atoll.motu.api.message.xml.RequestSize;
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.api.message.xml.StatusModeType;
+import fr.cls.atoll.motu.api.message.xml.TimeCoverage;
 import fr.cls.atoll.motu.library.configuration.ConfigService;
 import fr.cls.atoll.motu.library.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.data.CatalogData;
@@ -46,13 +53,6 @@ import fr.cls.atoll.motu.library.utils.Zip;
 import fr.cls.atoll.motu.library.vfs.VFSManager;
 import fr.cls.atoll.motu.library.xml.XMLErrorHandler;
 import fr.cls.atoll.motu.library.xml.XMLUtils;
-import fr.cls.atoll.motu.msg.MotuMsgConstant;
-import fr.cls.atoll.motu.msg.xml.ErrorType;
-import fr.cls.atoll.motu.msg.xml.ObjectFactory;
-import fr.cls.atoll.motu.msg.xml.RequestSize;
-import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
-import fr.cls.atoll.motu.msg.xml.StatusModeType;
-import fr.cls.atoll.motu.msg.xml.TimeCoverage;
 import fr.cls.commons.util.PropertiesUtilities;
 import fr.cls.commons.util.io.ConfigLoader;
 import fr.cls.commons.util5.DatePeriod;

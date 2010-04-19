@@ -1,9 +1,9 @@
 package fr.cls.atoll.motu.library.queueserver;
 
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.library.exception.MotuException;
 import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
 
 import java.util.Calendar;
 import java.util.List;
@@ -70,7 +70,7 @@ public class RequestManagement implements JobListener {
     private QueueServerManagement queueServerManagement = null;
 
     /** The resquest status map. */
-    private ConcurrentMap<Long, StatusModeResponse> requestStatusMap = new ConcurrentHashMap<Long, StatusModeResponse>();
+    private final ConcurrentMap<Long, StatusModeResponse> requestStatusMap = new ConcurrentHashMap<Long, StatusModeResponse>();
 
     /** The scheduler. */
     private Scheduler scheduler = null;
@@ -446,18 +446,18 @@ public class RequestManagement implements JobListener {
      * @return true, if checks if is shutdown
      */
     public boolean isShutdown() {
-        
+
         if (scheduler == null) {
-            return true;            
+            return true;
         }
-         try {
+        try {
             return scheduler.isShutdown();
         } catch (SchedulerException e) {
             return true;
         }
-        
+
     }
-    
+
     /**
      * Shutdown.
      * 

@@ -1,9 +1,9 @@
 package fr.cls.atoll.motu.library.queueserver;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+
 import java.util.Calendar;
 import java.util.Date;
-
-import fr.cls.atoll.motu.msg.xml.ErrorType;
 
 /**
  * <br>
@@ -39,6 +39,7 @@ public class QueueLogError {
     /** The date error. */
     @SuppressWarnings("unused")
     private Date dateError = null;
+
     /**
      * Gets the error code.
      * 
@@ -90,11 +91,13 @@ public class QueueLogError {
     public void setDateError() {
         this.dateError = Calendar.getInstance().getTime();
     }
+
     /**
      * To string.
      * 
      * @return the string
      */
+    @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
         buffer.append("ERROR is: ");
@@ -102,7 +105,7 @@ public class QueueLogError {
         buffer.append((errorCode == null ? "null" : errorCode));
         buffer.append(" - cause:");
         buffer.append((message == null ? "null" : message));
-        
+
         return buffer.toString();
 
     }
