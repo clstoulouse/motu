@@ -12,6 +12,16 @@
 //import ucar.nc2.dt.grid.GridCoordSys;
 package fr.cls.atoll.motu.library.misc.data;
 
+import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.library.misc.tds.server.SpatialRange;
+
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -33,16 +43,6 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
-
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.misc.inventory.GeospatialCoverage;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
-import fr.cls.atoll.motu.library.misc.tds.server.SpatialRange;
 
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -111,7 +111,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
     public ExtractCriteriaLatLon(double latLow, double lonLow, double latHigh, double lonHigh) {
         setLatLonRect(latLow, lonLow, latHigh, lonHigh);
     }
-    
+
     /**
      * Instantiates a new extract criteria lat lon.
      * 
@@ -129,7 +129,6 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
     public ExtractCriteriaLatLon(GeospatialCoverage geospatialCoverage) {
         setLatLonRect(geospatialCoverage);
     }
-    
 
     /**
      * Instantiates a new extract criteria lat lon.
@@ -266,7 +265,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         setLatLonRect(NetCdfReader.unconvertLat(latLow), NetCdfReader.unconvertLon(lonLow, false), NetCdfReader.unconvertLat(latHigh), NetCdfReader
                 .unconvertLon(lonHigh, false));
     }
-    
+
     /**
      * Sets the lat lon rect.
      * 
@@ -279,11 +278,11 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         double latlowTemp = (latLow != null) ? latLow.getValue().doubleValue() : Double.parseDouble(LATITUDE_MIN);
         double lonLowTemp = (lonLow != null) ? lonLow.getValue().doubleValue() : Double.parseDouble(LONGITUDE_MIN);
         double latHighTemp = (latHigh != null) ? latHigh.getValue().doubleValue() : Double.parseDouble(LATITUDE_MAX);
-        double lonHighTemp = (lonHigh != null) ? lonHigh.getValue().doubleValue() : Double.parseDouble(LONGITUDE_MAX);        
-        
+        double lonHighTemp = (lonHigh != null) ? lonHigh.getValue().doubleValue() : Double.parseDouble(LONGITUDE_MAX);
+
         setLatLonRect(latlowTemp, lonLowTemp, latHighTemp, lonHighTemp);
     }
-    
+
     /**
      * Sets the lat lon rect.
      * 
@@ -295,7 +294,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         }
         setLatLonRect(geospatialCoverage.getSouth(), geospatialCoverage.getWest(), geospatialCoverage.getNorth(), geospatialCoverage.getEast());
     }
-    
+
     /**
      * Sets the lat lon rect.
      * 
@@ -305,20 +304,20 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         if (geospatialCoverage == null) {
             return;
         }
-        
-        SpatialRange spatialRangeNorthSouth  = geospatialCoverage.getNorthsouth();
+
+        SpatialRange spatialRangeNorthSouth = geospatialCoverage.getNorthsouth();
         SpatialRange spatialRangeEastWest = geospatialCoverage.getEastwest();
-        
-        if ((spatialRangeNorthSouth == null) || (spatialRangeEastWest == null) ) {
+
+        if ((spatialRangeNorthSouth == null) || (spatialRangeEastWest == null)) {
             return;
         }
 
         double latLow = spatialRangeNorthSouth.getStart();
         double latHigh = latLow + spatialRangeNorthSouth.getSize();
-        
+
         double lonLow = spatialRangeEastWest.getStart();
         double lonHigh = lonLow + spatialRangeEastWest.getSize();
-        
+
         setLatLonRect(latLow, lonLow, latHigh, lonHigh);
     }
 
@@ -777,7 +776,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
             if (((minyIndex < 0) && (maxyIndex < 0)) || ((minxIndex < 0) && (maxxIndex < 0))) {
                 // In Netcdf-Java 4.xx, no need to create empty ranges
                 // return now an empty range list
-                //listRanges.add(createEmptyYXRanges());
+                // listRanges.add(createEmptyYXRanges());
                 return listRanges;
             }
 

@@ -3,6 +3,12 @@
  */
 package fr.cls.atoll.motu.library.misc.intfce;
 
+import fr.cls.atoll.motu.library.inventory.CatalogOLA;
+import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
+import fr.cls.atoll.motu.library.inventory.Inventory;
+import fr.cls.atoll.motu.library.inventory.Resource;
+import fr.cls.atoll.motu.library.inventory.ResourceOLA;
+import fr.cls.atoll.motu.library.inventory.TimePeriod;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.misc.configuration.QueueServerType;
@@ -13,12 +19,6 @@ import fr.cls.atoll.motu.library.misc.data.Product;
 import fr.cls.atoll.motu.library.misc.data.ServiceData;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.inventory.CatalogOLA;
-import fr.cls.atoll.motu.library.misc.inventory.GeospatialCoverage;
-import fr.cls.atoll.motu.library.misc.inventory.Inventory;
-import fr.cls.atoll.motu.library.misc.inventory.Resource;
-import fr.cls.atoll.motu.library.misc.inventory.ResourceOLA;
-import fr.cls.atoll.motu.library.misc.inventory.TimePeriod;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
@@ -1200,8 +1200,8 @@ public class TestIntfce {
         // System.out.println(timePeriod.getStep().toStandardDuration().getMillis());
         // System.out.println(timePeriod.getStep().getMillis());
 
-        fr.cls.atoll.motu.library.misc.inventory.Variables variables = resource.getVariables();
-        for (fr.cls.atoll.motu.library.misc.inventory.Variable variable : variables.getVariable()) {
+        fr.cls.atoll.motu.library.inventory.Variables variables = resource.getVariables();
+        for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {
             System.out.print(variable.getName());
             System.out.print(" ");
             System.out.print(variable.getUnits());
@@ -1211,7 +1211,7 @@ public class TestIntfce {
 
         }
 
-        for (fr.cls.atoll.motu.library.misc.inventory.File file : inventoryOLA.getFiles().getFile()) {
+        for (fr.cls.atoll.motu.library.inventory.File file : inventoryOLA.getFiles().getFile()) {
             System.out.print(file.getName());
             System.out.print(" ");
             System.out.print(file.getWeight());

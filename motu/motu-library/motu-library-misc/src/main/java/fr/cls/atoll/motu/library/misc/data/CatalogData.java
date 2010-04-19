@@ -3,16 +3,16 @@
  */
 package fr.cls.atoll.motu.library.misc.data;
 
+import fr.cls.atoll.motu.library.inventory.Access;
+import fr.cls.atoll.motu.library.inventory.CatalogOLA;
+import fr.cls.atoll.motu.library.inventory.Inventory;
+import fr.cls.atoll.motu.library.inventory.Resource;
+import fr.cls.atoll.motu.library.inventory.ResourceOLA;
+import fr.cls.atoll.motu.library.inventory.ResourcesOLA;
 import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.inventory.Access;
-import fr.cls.atoll.motu.library.misc.inventory.CatalogOLA;
-import fr.cls.atoll.motu.library.misc.inventory.Inventory;
-import fr.cls.atoll.motu.library.misc.inventory.Resource;
-import fr.cls.atoll.motu.library.misc.inventory.ResourceOLA;
-import fr.cls.atoll.motu.library.misc.inventory.ResourcesOLA;
 import fr.cls.atoll.motu.library.misc.metadata.DocMetaData;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
@@ -257,7 +257,7 @@ public class CatalogData {
 
         List<DataFile> dataFiles = new ArrayList<DataFile>();
 
-        for (fr.cls.atoll.motu.library.misc.inventory.File file : inventoryOLA.getFiles().getFile()) {
+        for (fr.cls.atoll.motu.library.inventory.File file : inventoryOLA.getFiles().getFile()) {
             DataFile dataFile = new DataFile();
             dataFile.setName(file.getName());
             if (file.getWeight() == null) {
