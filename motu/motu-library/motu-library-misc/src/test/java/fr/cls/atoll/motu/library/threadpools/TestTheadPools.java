@@ -1,20 +1,20 @@
-package fr.cls.atoll.motu.library.threadpools;
+package fr.cls.atoll.motu.library.misc.threadpools;
 
 import com.thoughtworks.xstream.XStream;
 
-import fr.cls.atoll.motu.library.configuration.QueueServerType;
-import fr.cls.atoll.motu.library.configuration.QueueType;
-import fr.cls.atoll.motu.library.exception.MotuExceedingQueueCapacityException;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.queueserver.ExtractionThreadPoolExecutor;
-import fr.cls.atoll.motu.library.queueserver.QueueLogError;
-import fr.cls.atoll.motu.library.queueserver.QueueLogInfo;
-import fr.cls.atoll.motu.library.queueserver.QueueServerManagement;
-import fr.cls.atoll.motu.library.queueserver.RequestManagement;
-import fr.cls.atoll.motu.library.queueserver.RunnableExtraction;
+import fr.cls.atoll.motu.library.misc.configuration.QueueServerType;
+import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueCapacityException;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.queueserver.ExtractionThreadPoolExecutor;
+import fr.cls.atoll.motu.library.misc.queueserver.QueueLogError;
+import fr.cls.atoll.motu.library.misc.queueserver.QueueLogInfo;
+import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
+import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
+import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
 import fr.cls.atoll.motu.msg.xml.ErrorType;
 
 import java.util.ArrayList;

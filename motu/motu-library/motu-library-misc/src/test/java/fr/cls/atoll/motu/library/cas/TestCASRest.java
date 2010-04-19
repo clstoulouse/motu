@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.cas;
+package fr.cls.atoll.motu.library.misc.cas;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -40,10 +40,10 @@ import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.jasig.cas.client.validation.TicketValidationException;
 
 import ucar.nc2.util.net.EasySSLProtocolSocketFactory;
-import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.cas.util.RestUtil;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
+import fr.cls.atoll.motu.library.misc.cas.util.RestUtil;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 
 //import edu.yale.its.tp.cas.client.ProxyTicketValidator;
 
@@ -765,7 +765,7 @@ public class TestCASRest {
 
         InputStream in;
 
-        fr.cls.atoll.motu.library.tds.server.Catalog catalogXml;
+        fr.cls.atoll.motu.library.misc.tds.server.Catalog catalogXml;
         try {
             // JAXBContext jc = JAXBContext.newInstance(TDS_SCHEMA_PACK_NAME);
             // Unmarshaller unmarshaller = jc.createUnmarshaller();
@@ -777,7 +777,7 @@ public class TestCASRest {
                 Organizer.initJAXBTdsConfig();
             }
             synchronized (Organizer.getUnmarshallerTdsConfig()) {
-                catalogXml = (fr.cls.atoll.motu.library.tds.server.Catalog) Organizer.getUnmarshallerTdsConfig().unmarshal(in);
+                catalogXml = (fr.cls.atoll.motu.library.misc.tds.server.Catalog) Organizer.getUnmarshallerTdsConfig().unmarshal(in);
             }
         } catch (Exception e) {
             throw new MotuException("Error in loadConfigTds", (Throwable) e);
@@ -835,7 +835,7 @@ public class TestCASRest {
         
         InputStream is;
 
-        fr.cls.atoll.motu.library.tds.server.Catalog catalogXml;
+        fr.cls.atoll.motu.library.misc.tds.server.Catalog catalogXml;
         try {
             // JAXBContext jc = JAXBContext.newInstance(TDS_SCHEMA_PACK_NAME);
             // Unmarshaller unmarshaller = jc.createUnmarshaller();

@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.cas;
+package fr.cls.atoll.motu.library.misc.cas;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -6,7 +6,7 @@ import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 
-import fr.cls.atoll.motu.library.MyAuthenticator;
+import fr.cls.atoll.motu.library.misc.MyAuthenticator;
 
 import java.io.*;
 import java.net.Authenticator;

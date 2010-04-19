@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.threadpools;
+package fr.cls.atoll.motu.library.misc.threadpools;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

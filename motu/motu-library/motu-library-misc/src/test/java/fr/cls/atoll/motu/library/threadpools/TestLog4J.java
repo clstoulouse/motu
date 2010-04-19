@@ -1,8 +1,8 @@
-package fr.cls.atoll.motu.library.threadpools;
+package fr.cls.atoll.motu.library.misc.threadpools;
 
-import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.queueserver.RunnableExtraction;
+import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
 
 public class TestLog4J extends RunnableExtraction {
 

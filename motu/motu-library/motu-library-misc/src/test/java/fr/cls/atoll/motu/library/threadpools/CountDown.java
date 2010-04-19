@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.threadpools;
+package fr.cls.atoll.motu.library.misc.threadpools;
 
 /*
  * This class counts down from 7 to 0, printing the task ID

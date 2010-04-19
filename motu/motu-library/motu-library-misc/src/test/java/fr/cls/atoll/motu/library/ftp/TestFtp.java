@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.ftp;
+package fr.cls.atoll.motu.library.misc.ftp;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,13 +32,13 @@ import org.apache.log4j.Logger;
 
 import com.jcraft.jsch.Session;
 
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.intfce.TestIntfce;
-import fr.cls.atoll.motu.library.intfce.TestIntfce.Client;
-import fr.cls.atoll.motu.library.intfce.TestIntfce.Client2;
-import fr.cls.atoll.motu.library.intfce.TestIntfce.Client3;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.intfce.TestIntfce;
+import fr.cls.atoll.motu.library.misc.intfce.TestIntfce.Client;
+import fr.cls.atoll.motu.library.misc.intfce.TestIntfce.Client2;
+import fr.cls.atoll.motu.library.misc.intfce.TestIntfce.Client3;
 import fr.cls.commons.util.io.ConfigLoader;
 
 public class TestFtp {

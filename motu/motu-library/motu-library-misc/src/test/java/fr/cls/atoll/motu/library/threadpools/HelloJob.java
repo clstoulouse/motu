@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.threadpools;
+package fr.cls.atoll.motu.library.misc.threadpools;
 
 import java.util.ArrayList;
 import java.util.Date;

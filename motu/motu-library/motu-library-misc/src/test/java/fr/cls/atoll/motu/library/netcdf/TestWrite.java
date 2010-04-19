@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.netcdf;
+package fr.cls.atoll.motu.library.misc.netcdf;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.data;
+package fr.cls.atoll.motu.library.misc.data;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -19,16 +19,16 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import fr.cls.atoll.motu.library.MyAuthenticator;
-import fr.cls.atoll.motu.library.Test;
-import fr.cls.atoll.motu.library.data.Product;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.opendap.server.Aggregation;
-import fr.cls.atoll.motu.library.opendap.server.Catalog;
-import fr.cls.atoll.motu.library.opendap.server.Dataset;
-import fr.cls.atoll.motu.library.opendap.server.Metadata;
-import fr.cls.atoll.motu.library.opendap.server.Service;
+import fr.cls.atoll.motu.library.misc.MyAuthenticator;
+import fr.cls.atoll.motu.library.misc.Test;
+import fr.cls.atoll.motu.library.misc.data.Product;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.opendap.server.Aggregation;
+import fr.cls.atoll.motu.library.misc.opendap.server.Catalog;
+import fr.cls.atoll.motu.library.misc.opendap.server.Dataset;
+import fr.cls.atoll.motu.library.misc.opendap.server.Metadata;
+import fr.cls.atoll.motu.library.misc.opendap.server.Service;
 
 /**
  * @author $Author: dearith $
@@ -209,10 +209,10 @@ public class TestData {
                     Aggregation aggr = (Aggregation) o;
                     System.out.println(aggr.getVarName());
                     System.out.println(aggr.getDateFormat());
-                    for (fr.cls.atoll.motu.library.opendap.server.Variable varAggr : aggr.getVariable()) {
+                    for (fr.cls.atoll.motu.library.misc.opendap.server.Variable varAggr : aggr.getVariable()) {
                         System.out.println(varAggr.getName());
                     }
-                    for (fr.cls.atoll.motu.library.opendap.server.FileAccess fileAccess : aggr.getFileAccess()) {
+                    for (fr.cls.atoll.motu.library.misc.opendap.server.FileAccess fileAccess : aggr.getFileAccess()) {
                         System.out.print(fileAccess.getUrlPath());
                         System.out.print("\t");
                         System.out.println(fileAccess.getCoord());
@@ -234,7 +234,7 @@ public class TestData {
                 continue;
             }
             Service service = (Service) o;
-            if (service.getServiceType() != fr.cls.atoll.motu.library.opendap.server.ServiceType.NET_CDF) {
+            if (service.getServiceType() != fr.cls.atoll.motu.library.misc.opendap.server.ServiceType.NET_CDF) {
                 continue;
             }
             System.out.print(service.getServiceType().value());
@@ -261,7 +261,7 @@ public class TestData {
 
     public static Catalog loadConfigOpendapFromFile(String path) throws JAXBException, IOException {
 
-        JAXBContext jc = JAXBContext.newInstance("fr.cls.atoll.motu.library.opendap.server");
+        JAXBContext jc = JAXBContext.newInstance("fr.cls.atoll.motu.library.misc.opendap.server");
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         FileInputStream in = new FileInputStream(path);
 
@@ -279,7 +279,7 @@ public class TestData {
 
     public static Catalog loadConfigOpendap(String path) throws JAXBException, IOException {
 
-        JAXBContext jc = JAXBContext.newInstance("fr.cls.atoll.motu.library.opendap.server");
+        JAXBContext jc = JAXBContext.newInstance("fr.cls.atoll.motu.library.misc.opendap.server");
         Unmarshaller unmarshaller = jc.createUnmarshaller();
 
         // InputStream in =
@@ -323,7 +323,7 @@ public class TestData {
         OutputStream os = null;
 
         try {
-            JAXBContext jc = JAXBContext.newInstance("fr.cls.atoll.motu.library.opendap.server");
+            JAXBContext jc = JAXBContext.newInstance("fr.cls.atoll.motu.library.misc.opendap.server");
 
             // create a Marshaller and marshal to System.out
             Marshaller m = jc.createMarshaller();

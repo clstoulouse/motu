@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.threadpools;
+package fr.cls.atoll.motu.library.misc.threadpools;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -15,9 +15,9 @@ import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
 import org.quartz.SimpleTrigger;
 
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.queueserver.ScheduleCleanJob;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.queueserver.ScheduleCleanJob;
 
 /**
  * <br>

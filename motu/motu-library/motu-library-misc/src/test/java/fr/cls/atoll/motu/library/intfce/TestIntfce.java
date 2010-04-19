@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.intfce;
+package fr.cls.atoll.motu.library.misc.intfce;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -62,27 +62,27 @@ import ucar.nc2.ft.point.writer.CFPointObWriter;
 import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
-import fr.cls.atoll.motu.library.configuration.ConfigService;
-import fr.cls.atoll.motu.library.configuration.MotuConfig;
-import fr.cls.atoll.motu.library.configuration.QueueServerType;
-import fr.cls.atoll.motu.library.configuration.QueueType;
-import fr.cls.atoll.motu.library.data.CatalogData;
-import fr.cls.atoll.motu.library.data.DataFile;
-import fr.cls.atoll.motu.library.data.Product;
-import fr.cls.atoll.motu.library.data.ServiceData;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.inventory.CatalogOLA;
-import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
-import fr.cls.atoll.motu.library.inventory.Inventory;
-import fr.cls.atoll.motu.library.inventory.Resource;
-import fr.cls.atoll.motu.library.inventory.ResourceOLA;
-import fr.cls.atoll.motu.library.inventory.TimePeriod;
-import fr.cls.atoll.motu.library.metadata.ProductMetaData;
-import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.sdtnameequiv.StandardName;
-import fr.cls.atoll.motu.library.sdtnameequiv.StandardNames;
-import fr.cls.atoll.motu.library.threadpools.TestTheadPools;
+import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
+import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
+import fr.cls.atoll.motu.library.misc.configuration.QueueServerType;
+import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+import fr.cls.atoll.motu.library.misc.data.CatalogData;
+import fr.cls.atoll.motu.library.misc.data.DataFile;
+import fr.cls.atoll.motu.library.misc.data.Product;
+import fr.cls.atoll.motu.library.misc.data.ServiceData;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.inventory.CatalogOLA;
+import fr.cls.atoll.motu.library.misc.inventory.GeospatialCoverage;
+import fr.cls.atoll.motu.library.misc.inventory.Inventory;
+import fr.cls.atoll.motu.library.misc.inventory.Resource;
+import fr.cls.atoll.motu.library.misc.inventory.ResourceOLA;
+import fr.cls.atoll.motu.library.misc.inventory.TimePeriod;
+import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
+import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
+import fr.cls.atoll.motu.library.misc.threadpools.TestTheadPools;
 import fr.cls.atoll.motu.msg.xml.TimeCoverage;
 import fr.cls.commons.util.DatePeriod;
 
@@ -1204,8 +1204,8 @@ public class TestIntfce {
         // System.out.println(timePeriod.getStep().toStandardDuration().getMillis());
         // System.out.println(timePeriod.getStep().getMillis());
 
-        fr.cls.atoll.motu.library.inventory.Variables variables = resource.getVariables();
-        for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {
+        fr.cls.atoll.motu.library.misc.inventory.Variables variables = resource.getVariables();
+        for (fr.cls.atoll.motu.library.misc.inventory.Variable variable : variables.getVariable()) {
             System.out.print(variable.getName());
             System.out.print(" ");
             System.out.print(variable.getUnits());
@@ -1215,7 +1215,7 @@ public class TestIntfce {
 
         }
 
-        for (fr.cls.atoll.motu.library.inventory.File file : inventoryOLA.getFiles().getFile()) {
+        for (fr.cls.atoll.motu.library.misc.inventory.File file : inventoryOLA.getFiles().getFile()) {
             System.out.print(file.getName());
             System.out.print(" ");
             System.out.print(file.getWeight());
