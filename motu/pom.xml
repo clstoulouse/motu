@@ -41,7 +41,7 @@
 		<module>motu-library</module>
 		<module>motu-processor</module>
 		<module>motu-api</module>
-		<module>motu-msg</module>
+		<module>motu-message</module>
 		<module>motu-web</module>		
     </modules>
 		<licenses>
