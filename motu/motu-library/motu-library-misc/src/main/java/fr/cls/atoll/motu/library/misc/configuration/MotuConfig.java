@@ -5,12 +5,14 @@
 // Generated on: 2010.03.02 at 03:04:48 PM CET 
 //
 
-
 package fr.cls.atoll.motu.library.misc.configuration;
+
+import fr.cls.atoll.motu.library.converter.jaxb.JodaPeriodAdapter;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -19,14 +21,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import fr.cls.atoll.motu.library.misc.converter.jaxb.JodaPeriodAdapter;
+
 import org.joda.time.Period;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -103,10 +106,7 @@ import org.joda.time.Period;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "configService",
-    "queueServerConfig"
-})
+@XmlType(name = "", propOrder = { "configService", "queueServerConfig" })
 @XmlRootElement(name = "motuConfig")
 public class MotuConfig {
 
@@ -164,21 +164,20 @@ public class MotuConfig {
      * Gets the value of the configService property.
      * 
      * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the configService property.
+     * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification
+     * you make to the returned list will be present inside the JAXB object. This is why there is not a
+     * <CODE>set</CODE> method for the configService property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getConfigService().add(newItem);
+     * getConfigService().add(newItem);
      * </pre>
      * 
      * 
      * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ConfigService }
+     * Objects of the following type(s) are allowed in the list {@link ConfigService }
      * 
      * 
      */
@@ -192,10 +191,8 @@ public class MotuConfig {
     /**
      * Gets the value of the queueServerConfig property.
      * 
-     * @return
-     *     possible object is
-     *     {@link QueueServerType }
-     *     
+     * @return possible object is {@link QueueServerType }
+     * 
      */
     public QueueServerType getQueueServerConfig() {
         return queueServerConfig;
@@ -204,10 +201,8 @@ public class MotuConfig {
     /**
      * Sets the value of the queueServerConfig property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link QueueServerType }
-     *     
+     * @param value allowed object is {@link QueueServerType }
+     * 
      */
     public void setQueueServerConfig(QueueServerType value) {
         this.queueServerConfig = value;
@@ -216,10 +211,8 @@ public class MotuConfig {
     /**
      * Gets the value of the defaultService property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getDefaultService() {
         if (defaultService == null) {
@@ -232,10 +225,8 @@ public class MotuConfig {
     /**
      * Sets the value of the defaultService property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setDefaultService(String value) {
         this.defaultService = value;
@@ -244,10 +235,8 @@ public class MotuConfig {
     /**
      * Gets the value of the useAuthentication property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     * @return possible object is {@link Boolean }
+     * 
      */
     public boolean isUseAuthentication() {
         if (useAuthentication == null) {
@@ -260,10 +249,8 @@ public class MotuConfig {
     /**
      * Sets the value of the useAuthentication property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     * @param value allowed object is {@link Boolean }
+     * 
      */
     public void setUseAuthentication(Boolean value) {
         this.useAuthentication = value;
@@ -272,10 +259,8 @@ public class MotuConfig {
     /**
      * Gets the value of the authFilePath property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getAuthFilePath() {
         return authFilePath;
@@ -284,10 +269,8 @@ public class MotuConfig {
     /**
      * Sets the value of the authFilePath property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setAuthFilePath(String value) {
         this.authFilePath = value;
@@ -296,10 +279,8 @@ public class MotuConfig {
     /**
      * Gets the value of the useProxy property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     * @return possible object is {@link Boolean }
+     * 
      */
     public boolean isUseProxy() {
         if (useProxy == null) {
@@ -312,10 +293,8 @@ public class MotuConfig {
     /**
      * Sets the value of the useProxy property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     * @param value allowed object is {@link Boolean }
+     * 
      */
     public void setUseProxy(Boolean value) {
         this.useProxy = value;
@@ -324,10 +303,8 @@ public class MotuConfig {
     /**
      * Gets the value of the proxyLogin property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getProxyLogin() {
         return proxyLogin;
@@ -336,10 +313,8 @@ public class MotuConfig {
     /**
      * Sets the value of the proxyLogin property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setProxyLogin(String value) {
         this.proxyLogin = value;
@@ -348,10 +323,8 @@ public class MotuConfig {
     /**
      * Gets the value of the proxyPwd property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getProxyPwd() {
         return proxyPwd;
@@ -360,10 +333,8 @@ public class MotuConfig {
     /**
      * Sets the value of the proxyPwd property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setProxyPwd(String value) {
         this.proxyPwd = value;
@@ -372,10 +343,8 @@ public class MotuConfig {
     /**
      * Gets the value of the proxyHost property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getProxyHost() {
         if (proxyHost == null) {
@@ -388,10 +357,8 @@ public class MotuConfig {
     /**
      * Sets the value of the proxyHost property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setProxyHost(String value) {
         this.proxyHost = value;
@@ -400,10 +367,8 @@ public class MotuConfig {
     /**
      * Gets the value of the proxyPort property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getProxyPort() {
         if (proxyPort == null) {
@@ -416,10 +381,8 @@ public class MotuConfig {
     /**
      * Sets the value of the proxyPort property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setProxyPort(String value) {
         this.proxyPort = value;
@@ -428,10 +391,8 @@ public class MotuConfig {
     /**
      * Gets the value of the dataBlockSize property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
+     * @return possible object is {@link BigInteger }
+     * 
      */
     public BigInteger getDataBlockSize() {
         if (dataBlockSize == null) {
@@ -444,10 +405,8 @@ public class MotuConfig {
     /**
      * Sets the value of the dataBlockSize property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
+     * @param value allowed object is {@link BigInteger }
+     * 
      */
     public void setDataBlockSize(BigInteger value) {
         this.dataBlockSize = value;
@@ -456,10 +415,8 @@ public class MotuConfig {
     /**
      * Gets the value of the maxSizePerFile property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
+     * @return possible object is {@link BigInteger }
+     * 
      */
     public BigInteger getMaxSizePerFile() {
         if (maxSizePerFile == null) {
@@ -472,10 +429,8 @@ public class MotuConfig {
     /**
      * Sets the value of the maxSizePerFile property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
+     * @param value allowed object is {@link BigInteger }
+     * 
      */
     public void setMaxSizePerFile(BigInteger value) {
         this.maxSizePerFile = value;
@@ -484,10 +439,8 @@ public class MotuConfig {
     /**
      * Gets the value of the extractionPath property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getExtractionPath() {
         return extractionPath;
@@ -496,10 +449,8 @@ public class MotuConfig {
     /**
      * Sets the value of the extractionPath property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setExtractionPath(String value) {
         this.extractionPath = value;
@@ -508,10 +459,8 @@ public class MotuConfig {
     /**
      * Gets the value of the downloadHttpUrl property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getDownloadHttpUrl() {
         return downloadHttpUrl;
@@ -520,10 +469,8 @@ public class MotuConfig {
     /**
      * Sets the value of the downloadHttpUrl property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setDownloadHttpUrl(String value) {
         this.downloadHttpUrl = value;
@@ -532,10 +479,8 @@ public class MotuConfig {
     /**
      * Gets the value of the httpDocumentRoot property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getHttpDocumentRoot() {
         return httpDocumentRoot;
@@ -544,10 +489,8 @@ public class MotuConfig {
     /**
      * Sets the value of the httpDocumentRoot property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setHttpDocumentRoot(String value) {
         this.httpDocumentRoot = value;
@@ -556,10 +499,8 @@ public class MotuConfig {
     /**
      * Gets the value of the sftpSessionTimeOut property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public Period getSftpSessionTimeOut() {
         if (sftpSessionTimeOut == null) {
@@ -572,10 +513,8 @@ public class MotuConfig {
     /**
      * Sets the value of the sftpSessionTimeOut property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setSftpSessionTimeOut(Period value) {
         this.sftpSessionTimeOut = value;
@@ -584,10 +523,8 @@ public class MotuConfig {
     /**
      * Gets the value of the strictHostKeyChecking property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getStrictHostKeyChecking() {
         if (strictHostKeyChecking == null) {
@@ -600,10 +537,8 @@ public class MotuConfig {
     /**
      * Sets the value of the strictHostKeyChecking property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setStrictHostKeyChecking(String value) {
         this.strictHostKeyChecking = value;
@@ -612,14 +547,12 @@ public class MotuConfig {
     /**
      * Gets the value of the cleanRequestInterval property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     * @return possible object is {@link Integer }
+     * 
      */
     public int getCleanRequestInterval() {
         if (cleanRequestInterval == null) {
-            return  60;
+            return 60;
         } else {
             return cleanRequestInterval;
         }
@@ -628,10 +561,8 @@ public class MotuConfig {
     /**
      * Sets the value of the cleanRequestInterval property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     * @param value allowed object is {@link Integer }
+     * 
      */
     public void setCleanRequestInterval(Integer value) {
         this.cleanRequestInterval = value;
@@ -640,14 +571,12 @@ public class MotuConfig {
     /**
      * Gets the value of the cleanExtractionFileInterval property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     * @return possible object is {@link Integer }
+     * 
      */
     public int getCleanExtractionFileInterval() {
         if (cleanExtractionFileInterval == null) {
-            return  60;
+            return 60;
         } else {
             return cleanExtractionFileInterval;
         }
@@ -656,10 +585,8 @@ public class MotuConfig {
     /**
      * Sets the value of the cleanExtractionFileInterval property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     * @param value allowed object is {@link Integer }
+     * 
      */
     public void setCleanExtractionFileInterval(Integer value) {
         this.cleanExtractionFileInterval = value;
@@ -668,10 +595,8 @@ public class MotuConfig {
     /**
      * Gets the value of the extractionFilePatterns property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getExtractionFilePatterns() {
         if (extractionFilePatterns == null) {
@@ -684,10 +609,8 @@ public class MotuConfig {
     /**
      * Sets the value of the extractionFilePatterns property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setExtractionFilePatterns(String value) {
         this.extractionFilePatterns = value;
@@ -696,14 +619,12 @@ public class MotuConfig {
     /**
      * Gets the value of the extractionFileCacheSize property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     * @return possible object is {@link Integer }
+     * 
      */
     public int getExtractionFileCacheSize() {
         if (extractionFileCacheSize == null) {
-            return  0;
+            return 0;
         } else {
             return extractionFileCacheSize;
         }
@@ -712,10 +633,8 @@ public class MotuConfig {
     /**
      * Sets the value of the extractionFileCacheSize property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     * @param value allowed object is {@link Integer }
+     * 
      */
     public void setExtractionFileCacheSize(Integer value) {
         this.extractionFileCacheSize = value;
@@ -724,14 +643,12 @@ public class MotuConfig {
     /**
      * Gets the value of the runCleanInterval property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     * @return possible object is {@link Integer }
+     * 
      */
     public int getRunCleanInterval() {
         if (runCleanInterval == null) {
-            return  1;
+            return 1;
         } else {
             return runCleanInterval;
         }
@@ -740,10 +657,8 @@ public class MotuConfig {
     /**
      * Sets the value of the runCleanInterval property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     * @param value allowed object is {@link Integer }
+     * 
      */
     public void setRunCleanInterval(Integer value) {
         this.runCleanInterval = value;
@@ -752,14 +667,12 @@ public class MotuConfig {
     /**
      * Gets the value of the runGCInterval property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     * @return possible object is {@link Integer }
+     * 
      */
     public int getRunGCInterval() {
         if (runGCInterval == null) {
-            return  0;
+            return 0;
         } else {
             return runGCInterval;
         }
@@ -768,10 +681,8 @@ public class MotuConfig {
     /**
      * Sets the value of the runGCInterval property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     * @param value allowed object is {@link Integer }
+     * 
      */
     public void setRunGCInterval(Integer value) {
         this.runGCInterval = value;
@@ -780,10 +691,8 @@ public class MotuConfig {
     /**
      * Gets the value of the casRestUrlSuffix property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getCasRestUrlSuffix() {
         if (casRestUrlSuffix == null) {
@@ -796,10 +705,8 @@ public class MotuConfig {
     /**
      * Sets the value of the casRestUrlSuffix property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setCasRestUrlSuffix(String value) {
         this.casRestUrlSuffix = value;
