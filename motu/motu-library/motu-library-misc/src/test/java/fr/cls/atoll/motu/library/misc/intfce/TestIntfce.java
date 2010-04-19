@@ -3,6 +3,29 @@
  */
 package fr.cls.atoll.motu.library.misc.intfce;
 
+import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
+import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
+import fr.cls.atoll.motu.library.misc.configuration.QueueServerType;
+import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+import fr.cls.atoll.motu.library.misc.data.CatalogData;
+import fr.cls.atoll.motu.library.misc.data.DataFile;
+import fr.cls.atoll.motu.library.misc.data.Product;
+import fr.cls.atoll.motu.library.misc.data.ServiceData;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.inventory.CatalogOLA;
+import fr.cls.atoll.motu.library.misc.inventory.GeospatialCoverage;
+import fr.cls.atoll.motu.library.misc.inventory.Inventory;
+import fr.cls.atoll.motu.library.misc.inventory.Resource;
+import fr.cls.atoll.motu.library.misc.inventory.ResourceOLA;
+import fr.cls.atoll.motu.library.misc.inventory.TimePeriod;
+import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
+import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
+import fr.cls.atoll.motu.library.misc.threadpools.TestTheadPools;
+import fr.cls.commons.util.DatePeriod;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -14,7 +37,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.math.RoundingMode;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
@@ -23,7 +45,6 @@ import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -33,12 +54,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
 
-import org.apache.commons.vfs.impl.DecoratedFileObject;
 import org.apache.log4j.Logger;
 
 import ucar.ma2.StructureData;
@@ -62,29 +81,6 @@ import ucar.nc2.ft.point.writer.CFPointObWriter;
 import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
-import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
-import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
-import fr.cls.atoll.motu.library.misc.configuration.QueueServerType;
-import fr.cls.atoll.motu.library.misc.configuration.QueueType;
-import fr.cls.atoll.motu.library.misc.data.CatalogData;
-import fr.cls.atoll.motu.library.misc.data.DataFile;
-import fr.cls.atoll.motu.library.misc.data.Product;
-import fr.cls.atoll.motu.library.misc.data.ServiceData;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.inventory.CatalogOLA;
-import fr.cls.atoll.motu.library.misc.inventory.GeospatialCoverage;
-import fr.cls.atoll.motu.library.misc.inventory.Inventory;
-import fr.cls.atoll.motu.library.misc.inventory.Resource;
-import fr.cls.atoll.motu.library.misc.inventory.ResourceOLA;
-import fr.cls.atoll.motu.library.misc.inventory.TimePeriod;
-import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
-import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
-import fr.cls.atoll.motu.library.misc.threadpools.TestTheadPools;
-import fr.cls.atoll.motu.msg.xml.TimeCoverage;
-import fr.cls.commons.util.DatePeriod;
 
 /**
  * @author $Author: dearith $
@@ -103,9 +99,9 @@ public class TestIntfce {
      */
     public static void main(String[] args) {
 
-        //System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#dataset-identifiant"));
-        //System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#identifiant"));
-        //System.out.println(Organizer.getDatasetIdFromURI("bidon"));
+        // System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#dataset-identifiant"));
+        // System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#identifiant"));
+        // System.out.println(Organizer.getDatasetIdFromURI("bidon"));
         //
         // System.out.println(Organizer.getVariableIdFromURI("bidon"));
         // System.out.println(Organizer.getVariableIdFromURI("#bidon"));
@@ -331,7 +327,7 @@ public class TestIntfce {
         // productExtractDataAvisofromProductId();
         // productInformationFromLocationData();
         // productExtractDataAviso2();
-        //productExtractDataMercator();
+        // productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
         // productExtractDiversity();
@@ -355,9 +351,9 @@ public class TestIntfce {
         // testLoadInventoryOLA();
         // testLoadCatalogOLA();
         // productInformationFromInventory();
-        //productExtractDataFromInventory();
+        // productExtractDataFromInventory();
         // productListMercator();
-       // productList();
+        // productList();
 
     }
 
@@ -1657,7 +1653,7 @@ public class TestIntfce {
         // }
         // conv.buildCoordinateSystems(ncDataset);
 
-        List<CoordinateSystem> listCoordinateSystems = (List<CoordinateSystem>) ncDataset.getCoordinateSystems();
+        List<CoordinateSystem> listCoordinateSystems = ncDataset.getCoordinateSystems();
 
         for (CoordinateSystem cs : listCoordinateSystems) {
             System.out.println("Coordinate Systems");
@@ -1681,7 +1677,7 @@ public class TestIntfce {
         }
 
         for (Iterator<CoordinateAxis> it = coordinateAxes.iterator(); it.hasNext();) {
-            CoordinateAxis coordinateAxis = (CoordinateAxis) it.next();
+            CoordinateAxis coordinateAxis = it.next();
             AxisType axisType = coordinateAxis.getAxisType();
             if (axisType != null) {
                 if (!(productMetaData.coordinateAxesContainsKey(axisType))) {
@@ -2082,6 +2078,7 @@ public class TestIntfce {
 
         String name;
 
+        @Override
         public void run() {
 
             System.out.print("Start Client ");
@@ -2107,6 +2104,7 @@ public class TestIntfce {
 
         String name;
 
+        @Override
         public void run() {
             System.out.print("Start Client2 ");
             System.out.println(name);
@@ -2129,6 +2127,7 @@ public class TestIntfce {
 
         String name;
 
+        @Override
         public void run() {
             System.out.print("Start Client3 ");
             System.out.println(name);
@@ -2212,8 +2211,9 @@ public class TestIntfce {
 
         Formatter errlog = new Formatter();
         FeatureDataset fd = FeatureDatasetFactoryManager.wrap(FeatureType.ANY_POINT, ncd, null, errlog);
-        if (fd == null)
+        if (fd == null) {
             return false;
+        }
 
         if (fd instanceof FeatureDatasetPoint) {
             TestIntfce.writeTrajectoryFeatureCollection((FeatureDatasetPoint) fd, fileOut);
@@ -2240,11 +2240,13 @@ public class TestIntfce {
         TrajectoryFeatureCollection pointFeatureCollection = null;
         List<FeatureCollection> featureCollectionList = pfDataset.getPointFeatureCollectionList();
         for (FeatureCollection featureCollection : featureCollectionList) {
-            if (featureCollection instanceof TrajectoryFeatureCollection)
+            if (featureCollection instanceof TrajectoryFeatureCollection) {
                 pointFeatureCollection = (TrajectoryFeatureCollection) featureCollection;
+            }
         }
-        if (null == pointFeatureCollection)
+        if (null == pointFeatureCollection) {
             throw new IOException("There is no PointFeatureCollection in  " + pfDataset.getLocation());
+        }
 
         long start = System.currentTimeMillis();
 
@@ -2321,12 +2323,12 @@ public class TestIntfce {
             for (String serviceName : services) {
                 ServiceData serviceData = organizer.getServices(serviceName);
                 if (serviceData == null) {
-                     continue;              
+                    continue;
                 }
                 catalogData = serviceData.loadCatalogInfo(null);
                 if (catalogData == null) {
-                    continue;              
-               }
+                    continue;
+                }
                 System.out.println("====================> ");
                 System.out.println("Service ============> " + serviceName);
                 System.out.println("====================> ");

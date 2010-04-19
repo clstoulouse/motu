@@ -2,6 +2,7 @@ package fr.cls.atoll.motu.library.misc.threadpools;
 
 import com.thoughtworks.xstream.XStream;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.library.misc.configuration.QueueServerType;
 import fr.cls.atoll.motu.library.misc.configuration.QueueType;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueCapacityException;
@@ -15,7 +16,6 @@ import fr.cls.atoll.motu.library.misc.queueserver.QueueLogInfo;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
 import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
-import fr.cls.atoll.motu.msg.xml.ErrorType;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -102,9 +102,9 @@ public class TestTheadPools {
     }
 
     public class RunnableSomething implements Runnable, Comparable<RunnableSomething> {
-        private int thePriority;
-        private int theRange;
-        private String theText;
+        private final int thePriority;
+        private final int theRange;
+        private final String theText;
 
         public RunnableSomething(String text, int priority, int range) {
             theText = text;
@@ -215,8 +215,8 @@ public class TestTheadPools {
     }
 
     private class CallableSomething implements Callable<String>, Comparable<CallableSomething> {
-        private int thePriority;
-        private String theText;
+        private final int thePriority;
+        private final String theText;
 
         public CallableSomething(String text, int priority) {
             theText = text;
