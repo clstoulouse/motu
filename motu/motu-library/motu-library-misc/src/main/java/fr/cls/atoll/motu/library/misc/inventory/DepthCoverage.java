@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import fr.cls.atoll.motu.library.misc.converter.jaxb.DecimalMeasureAdapter;
+import fr.cls.atoll.motu.library.converter.jaxb.DecimalMeasureAdapter;
 
 
 /**

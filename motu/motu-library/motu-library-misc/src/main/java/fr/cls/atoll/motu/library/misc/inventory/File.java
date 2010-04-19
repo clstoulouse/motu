@@ -7,8 +7,8 @@
 
 package fr.cls.atoll.motu.library.misc.inventory;
 
-import fr.cls.atoll.motu.library.misc.converter.jaxb.JodaTimeAdapter;
-import fr.cls.atoll.motu.library.misc.converter.jaxb.UriAdapter;
+import fr.cls.atoll.motu.library.converter.jaxb.JodaTimeAdapter;
+import fr.cls.atoll.motu.library.converter.jaxb.UriAdapter;
 
 import java.math.BigInteger;
 import java.net.URI;
