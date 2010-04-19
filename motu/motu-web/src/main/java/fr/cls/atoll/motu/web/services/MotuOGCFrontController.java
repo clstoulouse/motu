@@ -1,7 +1,13 @@
 package fr.cls.atoll.motu.web.services;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
+import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
+import fr.cls.atoll.motu.processor.wps.WPSRequestManagement;
+
 import java.io.IOException;
-import java.net.Authenticator;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -11,15 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.ProcessletException;
-
-import fr.cls.atoll.motu.library.configuration.MotuConfig;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.intfce.SimpleAuthenticator;
-import fr.cls.atoll.motu.library.queueserver.QueueServerManagement;
-import fr.cls.atoll.motu.library.queueserver.RequestManagement;
-import fr.cls.atoll.motu.processor.wps.WPSRequestManagement;
 
 /**
  * <br><br>Copyright : Copyright (c) 2009.

@@ -1,11 +1,11 @@
 package fr.cls.atoll.motu.web.servlet;
 
-import fr.cls.atoll.motu.api.MotuRequestParameters;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuMarshallException;
-import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.queueserver.RunnableExtraction;
+import fr.cls.atoll.motu.api.rest.MotuRequestParameters;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
+import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
 
 import java.io.IOException;
 import java.io.Writer;

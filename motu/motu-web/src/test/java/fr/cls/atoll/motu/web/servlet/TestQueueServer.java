@@ -1,17 +1,17 @@
 package fr.cls.atoll.motu.web.servlet;
 
-import fr.cls.atoll.motu.api.MotuRequest;
-import fr.cls.atoll.motu.api.MotuRequestException;
-import fr.cls.atoll.motu.api.MotuRequestParameters;
-import fr.cls.atoll.motu.library.data.CatalogData;
-import fr.cls.atoll.motu.library.data.Product;
-import fr.cls.atoll.motu.library.data.ServiceData;
-import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.metadata.ParameterMetaData;
-import fr.cls.atoll.motu.library.metadata.ProductMetaData;
-import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.api.rest.MotuRequest;
+import fr.cls.atoll.motu.api.rest.MotuRequestException;
+import fr.cls.atoll.motu.api.rest.MotuRequestParameters;
+import fr.cls.atoll.motu.library.misc.data.CatalogData;
+import fr.cls.atoll.motu.library.misc.data.Product;
+import fr.cls.atoll.motu.library.misc.data.ServiceData;
+import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.metadata.ParameterMetaData;
+import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -125,10 +125,10 @@ public class TestQueueServer {
      * @param args
      */
 
-    private List<Long> requestIDs = Collections.synchronizedList(new ArrayList<Long>());
-    private List<Long> requestIDs2 = Collections.synchronizedList(new ArrayList<Long>());
+    private final List<Long> requestIDs = Collections.synchronizedList(new ArrayList<Long>());
+    private final List<Long> requestIDs2 = Collections.synchronizedList(new ArrayList<Long>());
 
-    private List<Long> requestIDs3 = Collections.synchronizedList(new ArrayList<Long>());
+    private final List<Long> requestIDs3 = Collections.synchronizedList(new ArrayList<Long>());
 
     // private List<Long> requestIDs = new ArrayList<Long>();
 
