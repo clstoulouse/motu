@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.converter.jaxb;
+package fr.cls.atoll.motu.library.misc.converter.jaxb;
 
 import java.net.URI;
 import java.util.ArrayList;

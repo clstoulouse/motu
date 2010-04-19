@@ -1,19 +1,19 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.data;
+package fr.cls.atoll.motu.library.misc.data;
 
 import org.apache.log4j.Logger;
 
-import fr.cls.atoll.motu.library.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.exception.MotuNoVarException;
-import fr.cls.atoll.motu.library.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -23,7 +23,7 @@ import fr.cls.atoll.motu.library.intfce.Organizer;
  * @author $Author: ccamel $
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
  */
-public class DatasetAlongTrack extends fr.cls.atoll.motu.library.data.DatasetBase {
+public class DatasetAlongTrack extends fr.cls.atoll.motu.library.misc.data.DatasetBase {
     /**
      * Logger for this class.
      */

@@ -1,5 +1,8 @@
 package fr.cls.atoll.motu.library.misc.cas;
 
+import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
+import fr.cls.atoll.motu.library.misc.cas.util.CasAuthentificationHolder;
+
 import java.io.IOException;
 
 import org.apache.commons.httpclient.HostConfiguration;
@@ -14,41 +17,36 @@ import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.log4j.Logger;
 
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.misc.cas.util.CasAuthentificationHolder;
-
 public class HttpClientCAS extends HttpClient {
 
     static {
-//        MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-//        HttpClientCAS httpClient = new HttpClientCAS(connectionManager);
-//
-//        HttpClientParams clientParams = new HttpClientParams();
-//        clientParams.setParameter("http.protocol.allow-circular-redirects", true);
-//        httpClient.setParams(clientParams);
-//
-//        DConnect2.setHttpClient(httpClient);
-//
-//        connectionManager = new MultiThreadedHttpConnectionManager();
-//        httpClient = new HttpClientCAS(connectionManager);
-//
-//        clientParams = new HttpClientParams();
-//        clientParams.setParameter("http.protocol.allow-circular-redirects", true);
-//        httpClient.setParams(clientParams);
-//
-//        HTTPRandomAccessFile.setHttpClient(httpClient);
-//
+        // MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+        // HttpClientCAS httpClient = new HttpClientCAS(connectionManager);
+        //
+        // HttpClientParams clientParams = new HttpClientParams();
+        // clientParams.setParameter("http.protocol.allow-circular-redirects", true);
+        // httpClient.setParams(clientParams);
+        //
+        // DConnect2.setHttpClient(httpClient);
+        //
+        // connectionManager = new MultiThreadedHttpConnectionManager();
+        // httpClient = new HttpClientCAS(connectionManager);
+        //
+        // clientParams = new HttpClientParams();
+        // clientParams.setParameter("http.protocol.allow-circular-redirects", true);
+        // httpClient.setParams(clientParams);
+        //
+        // HTTPRandomAccessFile.setHttpClient(httpClient);
+        //
         // DODSNetcdfFile.debugServerCall = true;
     }
 
-//    /** Does Service needs CAS authentification to access catalog resources and data. */
-//    protected final ThreadLocal<Boolean> isCas = new ThreadLocal<Boolean>();
-//
-//    public ThreadLocal<Boolean> getIsCas() {
-//        return isCas;
-//    }
-
+    // /** Does Service needs CAS authentification to access catalog resources and data. */
+    // protected final ThreadLocal<Boolean> isCas = new ThreadLocal<Boolean>();
+    //
+    // public ThreadLocal<Boolean> getIsCas() {
+    // return isCas;
+    // }
 
     /**
      * Logger for this class
@@ -128,11 +126,12 @@ public class HttpClientCAS extends HttpClient {
 
         if (!CasAuthentificationHolder.isCasAuthentification()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("addCASTicket(HttpMethod) - exiting - NO CAS AUTHENTIFICATION : debugHttpMethod AFTER  " + HttpClientCAS.debugHttpMethod(method));
+                LOG.debug("addCASTicket(HttpMethod) - exiting - NO CAS AUTHENTIFICATION : debugHttpMethod AFTER  "
+                        + HttpClientCAS.debugHttpMethod(method));
             }
-            return;            
+            return;
         }
-        
+
         String newURIAsString = AssertionUtils.addCASTicket(method.getURI().getEscapedURI());
         if (!AssertionUtils.hasCASTicket(newURIAsString)) {
             throw new IOException(

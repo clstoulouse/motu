@@ -5,8 +5,7 @@
 // Generated on: 2009.03.25 at 11:44:51 AM CET 
 //
 
-
-package fr.cls.atoll.motu.library.tds.server;
+package fr.cls.atoll.motu.library.misc.tds.server;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -17,11 +16,12 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-
 /**
- * <p>Java class for access element declaration.
+ * <p>
+ * Java class for access element declaration.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;element name="access">
@@ -43,9 +43,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "dataSize"
-})
+@XmlType(name = "", propOrder = { "dataSize" })
 @XmlRootElement(name = "access")
 public class Access {
 
@@ -62,10 +60,8 @@ public class Access {
     /**
      * Gets the value of the dataSize property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DataSize }
-     *     
+     * @return possible object is {@link DataSize }
+     * 
      */
     public DataSize getDataSize() {
         return dataSize;
@@ -74,10 +70,8 @@ public class Access {
     /**
      * Sets the value of the dataSize property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DataSize }
-     *     
+     * @param value allowed object is {@link DataSize }
+     * 
      */
     public void setDataSize(DataSize value) {
         this.dataSize = value;
@@ -86,10 +80,8 @@ public class Access {
     /**
      * Gets the value of the dataFormat property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getDataFormat() {
         return dataFormat;
@@ -98,10 +90,8 @@ public class Access {
     /**
      * Sets the value of the dataFormat property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setDataFormat(String value) {
         this.dataFormat = value;
@@ -110,10 +100,8 @@ public class Access {
     /**
      * Gets the value of the serviceName property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getServiceName() {
         return serviceName;
@@ -122,10 +110,8 @@ public class Access {
     /**
      * Sets the value of the serviceName property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setServiceName(String value) {
         this.serviceName = value;
@@ -134,10 +120,8 @@ public class Access {
     /**
      * Gets the value of the urlPath property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getUrlPath() {
         return urlPath;
@@ -146,10 +130,8 @@ public class Access {
     /**
      * Sets the value of the urlPath property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setUrlPath(String value) {
         this.urlPath = value;

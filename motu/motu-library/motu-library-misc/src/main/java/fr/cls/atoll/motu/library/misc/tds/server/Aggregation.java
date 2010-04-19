@@ -6,7 +6,7 @@
 //
 
 
-package fr.cls.atoll.motu.library.tds.server;
+package fr.cls.atoll.motu.library.misc.tds.server;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +18,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import fr.cls.atoll.motu.library.tds.server.Aggregation.Scan;
-import fr.cls.atoll.motu.library.tds.server.Aggregation.ScanFmrc;
-import fr.cls.atoll.motu.library.tds.server.Aggregation.VariableAgg;
+import fr.cls.atoll.motu.library.misc.tds.server.Aggregation.Scan;
+import fr.cls.atoll.motu.library.misc.tds.server.Aggregation.ScanFmrc;
+import fr.cls.atoll.motu.library.misc.tds.server.Aggregation.VariableAgg;
 
 
 /**

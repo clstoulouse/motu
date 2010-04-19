@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.metadata;
+package fr.cls.atoll.motu.library.misc.metadata;
 
 /**
  * This class represents a the data provider (Operator of the product).

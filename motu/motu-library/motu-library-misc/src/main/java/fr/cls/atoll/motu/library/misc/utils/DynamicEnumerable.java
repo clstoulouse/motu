@@ -21,7 +21,7 @@
  */
 
 
-package fr.cls.atoll.motu.library.utils;
+package fr.cls.atoll.motu.library.misc.utils;
 
 /**
  * Indicates that an implementing class belongs to a fixed set that may be treated

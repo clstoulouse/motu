@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.netcdf;
+package fr.cls.atoll.motu.library.misc.netcdf;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,9 +27,9 @@ import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.exception.NetCdfAttributeNotFoundException;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
 
 // CSOFF: MultipleStringLiterals : avoid message in '@SuppressWarnings("unchecked")'.
 

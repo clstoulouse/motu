@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.queueserver;
+package fr.cls.atoll.motu.library.misc.queueserver;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -10,27 +10,27 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.quartz.Scheduler;
 
-import fr.cls.atoll.motu.library.configuration.QueueServerType;
-import fr.cls.atoll.motu.library.configuration.QueueType;
-import fr.cls.atoll.motu.library.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.exception.MotuExceedingQueueDataCapacityException;
-import fr.cls.atoll.motu.library.exception.MotuExceedingUserCapacityException;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.exception.MotuInconsistencyException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDepthException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.library.exception.MotuNoVarException;
-import fr.cls.atoll.motu.library.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.configuration.QueueServerType;
+import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueDataCapacityException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceedingUserCapacityException;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.exception.MotuInconsistencyException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 
 /**
  * <br>

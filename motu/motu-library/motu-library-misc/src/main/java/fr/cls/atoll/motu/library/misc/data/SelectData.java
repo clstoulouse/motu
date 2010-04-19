@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.data;
+package fr.cls.atoll.motu.library.misc.data;
 
 /**
  * Select parameter (variable) class. This class allows to defined logical expression to select data from a

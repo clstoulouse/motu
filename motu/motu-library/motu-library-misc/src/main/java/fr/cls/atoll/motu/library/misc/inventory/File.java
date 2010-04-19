@@ -5,11 +5,14 @@
 // Generated on: 2010.03.01 at 05:10:30 PM CET 
 //
 
+package fr.cls.atoll.motu.library.misc.inventory;
 
-package fr.cls.atoll.motu.library.inventory;
+import fr.cls.atoll.motu.library.misc.converter.jaxb.JodaTimeAdapter;
+import fr.cls.atoll.motu.library.misc.converter.jaxb.UriAdapter;
 
 import java.math.BigInteger;
 import java.net.URI;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -19,15 +22,15 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import fr.cls.atoll.motu.library.converter.jaxb.JodaTimeAdapter;
-import fr.cls.atoll.motu.library.converter.jaxb.UriAdapter;
+
 import org.joda.time.DateTime;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -99,10 +102,8 @@ public class File {
     /**
      * Gets the value of the name property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getName() {
         return name;
@@ -111,10 +112,8 @@ public class File {
     /**
      * Sets the value of the name property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setName(String value) {
         this.name = value;
@@ -123,10 +122,8 @@ public class File {
     /**
      * Gets the value of the path property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public URI getPath() {
         if (path == null) {
@@ -139,10 +136,8 @@ public class File {
     /**
      * Sets the value of the path property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setPath(URI value) {
         this.path = value;
@@ -151,10 +146,8 @@ public class File {
     /**
      * Gets the value of the availabilityServiceDate property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public DateTime getAvailabilityServiceDate() {
         return availabilityServiceDate;
@@ -163,10 +156,8 @@ public class File {
     /**
      * Sets the value of the availabilityServiceDate property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setAvailabilityServiceDate(DateTime value) {
         this.availabilityServiceDate = value;
@@ -175,10 +166,8 @@ public class File {
     /**
      * Gets the value of the modelPrediction property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public URI getModelPrediction() {
         return modelPrediction;
@@ -187,10 +176,8 @@ public class File {
     /**
      * Sets the value of the modelPrediction property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setModelPrediction(URI value) {
         this.modelPrediction = value;
@@ -199,10 +186,8 @@ public class File {
     /**
      * Gets the value of the availabilitySIDate property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public DateTime getAvailabilitySIDate() {
         return availabilitySIDate;
@@ -211,10 +196,8 @@ public class File {
     /**
      * Sets the value of the availabilitySIDate property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setAvailabilitySIDate(DateTime value) {
         this.availabilitySIDate = value;
@@ -223,10 +206,8 @@ public class File {
     /**
      * Gets the value of the creationDate property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public DateTime getCreationDate() {
         return creationDate;
@@ -235,10 +216,8 @@ public class File {
     /**
      * Sets the value of the creationDate property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setCreationDate(DateTime value) {
         this.creationDate = value;
@@ -247,10 +226,8 @@ public class File {
     /**
      * Gets the value of the weight property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
+     * @return possible object is {@link BigInteger }
+     * 
      */
     public BigInteger getWeight() {
         return weight;
@@ -259,10 +236,8 @@ public class File {
     /**
      * Sets the value of the weight property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
+     * @param value allowed object is {@link BigInteger }
+     * 
      */
     public void setWeight(BigInteger value) {
         this.weight = value;
@@ -271,10 +246,8 @@ public class File {
     /**
      * Gets the value of the endCoverageDate property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public DateTime getEndCoverageDate() {
         return endCoverageDate;
@@ -283,10 +256,8 @@ public class File {
     /**
      * Sets the value of the endCoverageDate property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setEndCoverageDate(DateTime value) {
         this.endCoverageDate = value;
@@ -295,10 +266,8 @@ public class File {
     /**
      * Gets the value of the theoreticalAvailabilityDate property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public DateTime getTheoreticalAvailabilityDate() {
         return theoreticalAvailabilityDate;
@@ -307,10 +276,8 @@ public class File {
     /**
      * Sets the value of the theoreticalAvailabilityDate property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setTheoreticalAvailabilityDate(DateTime value) {
         this.theoreticalAvailabilityDate = value;
@@ -319,10 +286,8 @@ public class File {
     /**
      * Gets the value of the startCoverageDate property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public DateTime getStartCoverageDate() {
         return startCoverageDate;
@@ -331,10 +296,8 @@ public class File {
     /**
      * Sets the value of the startCoverageDate property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setStartCoverageDate(DateTime value) {
         this.startCoverageDate = value;

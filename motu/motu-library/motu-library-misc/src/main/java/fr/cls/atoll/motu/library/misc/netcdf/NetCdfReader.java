@@ -1,23 +1,23 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.netcdf;
+package fr.cls.atoll.motu.library.misc.netcdf;
 
-import fr.cls.atoll.motu.library.cas.HttpClientCAS;
-import fr.cls.atoll.motu.library.cas.util.CasAuthentificationHolder;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDepthException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.library.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.library.exception.NetCdfAttributeNotFoundException;
-import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.sdtnameequiv.StandardName;
-import fr.cls.atoll.motu.library.sdtnameequiv.StandardNames;
+import fr.cls.atoll.motu.library.misc.cas.HttpClientCAS;
+import fr.cls.atoll.motu.library.misc.cas.util.CasAuthentificationHolder;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
+import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
 import fr.cls.commons.util.GMTCalendar;
 import fr.cls.commons.util.GMTDateFormat;
 

@@ -1,31 +1,31 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.data;
+package fr.cls.atoll.motu.library.misc.data;
 
-import fr.cls.atoll.motu.library.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.exception.MotuNoVarException;
-import fr.cls.atoll.motu.library.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.library.exception.NetCdfAttributeNotFoundException;
-import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.inventory.DepthCoverage;
-import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
-import fr.cls.atoll.motu.library.inventory.Inventory;
-import fr.cls.atoll.motu.library.inventory.Resource;
-import fr.cls.atoll.motu.library.inventory.TimePeriod;
-import fr.cls.atoll.motu.library.metadata.DocMetaData;
-import fr.cls.atoll.motu.library.metadata.ParameterMetaData;
-import fr.cls.atoll.motu.library.metadata.ProductMetaData;
-import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.inventory.DepthCoverage;
+import fr.cls.atoll.motu.library.misc.inventory.GeospatialCoverage;
+import fr.cls.atoll.motu.library.misc.inventory.Inventory;
+import fr.cls.atoll.motu.library.misc.inventory.Resource;
+import fr.cls.atoll.motu.library.misc.inventory.TimePeriod;
+import fr.cls.atoll.motu.library.misc.metadata.DocMetaData;
+import fr.cls.atoll.motu.library.misc.metadata.ParameterMetaData;
+import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 
 import java.io.File;
 import java.io.IOException;
@@ -537,10 +537,10 @@ public class Product {
         }
 
         // Gets variables metadata.
-        fr.cls.atoll.motu.library.inventory.Variables variables = resource.getVariables();
+        fr.cls.atoll.motu.library.misc.inventory.Variables variables = resource.getVariables();
         if (variables != null) {
 
-            for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {
+            for (fr.cls.atoll.motu.library.misc.inventory.Variable variable : variables.getVariable()) {
 
                 ParameterMetaData parameterMetaData = new ParameterMetaData();
 

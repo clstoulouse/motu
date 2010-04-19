@@ -19,7 +19,7 @@
  * THIS FILE HAS BEEN MODIFIED BY CLS
  */
 
-package fr.cls.atoll.motu.library.utils;
+package fr.cls.atoll.motu.library.misc.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;

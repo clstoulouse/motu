@@ -10,7 +10,7 @@
 //import ucar.nc2.dt.grid.GeoGrid;
 //import ucar.nc2.dt.grid.GridDataset;
 //import ucar.nc2.dt.grid.GridCoordSys;
-package fr.cls.atoll.motu.library.netcdf;
+package fr.cls.atoll.motu.library.misc.netcdf;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,11 +45,11 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.geoloc.LatLonPointImpl;
-import fr.cls.atoll.motu.library.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.exception.NetCdfAttributeNotFoundException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 
 /**
  * Copy a metadata and data to a Netcdf-3 local file. All metadata and data is copied into the

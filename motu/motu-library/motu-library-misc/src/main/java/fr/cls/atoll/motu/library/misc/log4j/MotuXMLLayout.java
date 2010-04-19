@@ -1,11 +1,11 @@
-package fr.cls.atoll.motu.library.log4j;
+package fr.cls.atoll.motu.library.misc.log4j;
 
 import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.xml.XMLLayout;
 
-import fr.cls.atoll.motu.library.queueserver.QueueLogInfo;
-import fr.cls.atoll.motu.library.queueserver.RunnableExtraction;
+import fr.cls.atoll.motu.library.misc.queueserver.QueueLogInfo;
+import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
 
 /**
  * <br>

@@ -1,13 +1,13 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.exception;
+package fr.cls.atoll.motu.library.misc.exception;
 
 import java.util.Date;
 
 import org.apache.log4j.Logger;
 
-import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 

@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.metadata;
+package fr.cls.atoll.motu.library.misc.metadata;
 
 /**
  * ThEmatical Portal responsible for the coordination of the current service with other services.

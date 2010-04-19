@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.vfs;
+package fr.cls.atoll.motu.library.misc.vfs;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,9 +29,9 @@ import org.apache.commons.vfs.provider.jar.JarFileProvider;
 import org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder;
 import org.apache.log4j.Logger;
 
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.commons.util.io.ConfigLoader;
 
 /**

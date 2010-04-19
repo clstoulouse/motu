@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.queueserver;
+package fr.cls.atoll.motu.library.misc.queueserver;
 
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -11,9 +11,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-import fr.cls.atoll.motu.library.data.Product;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidQueuePriorityException;
+import fr.cls.atoll.motu.library.misc.data.Product;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidQueuePriorityException;
 
 /**
  * <br>

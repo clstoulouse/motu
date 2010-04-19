@@ -1,19 +1,19 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.data;
+package fr.cls.atoll.motu.library.misc.data;
 
 import java.util.List;
 
 import ucar.ma2.Array;
 import ucar.ma2.Range;
 
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDepthException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 
 /**
  * @author $Author: ccamel $

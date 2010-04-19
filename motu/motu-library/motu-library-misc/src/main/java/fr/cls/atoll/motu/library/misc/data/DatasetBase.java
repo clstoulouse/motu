@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.data;
+package fr.cls.atoll.motu.library.misc.data;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,21 +21,21 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
-import fr.cls.atoll.motu.library.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.exception.MotuNoVarException;
-import fr.cls.atoll.motu.library.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.library.exception.NetCdfAttributeNotFoundException;
-import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.metadata.ProductMetaData;
-import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 

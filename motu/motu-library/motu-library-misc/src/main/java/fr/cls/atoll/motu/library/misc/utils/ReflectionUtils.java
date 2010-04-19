@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.utils;
+package fr.cls.atoll.motu.library.misc.utils;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
@@ -9,26 +9,24 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlSchema;
 
 /**
- * <br><br>Copyright : Copyright (c) 2009.
- * <br><br>Société : CLS (Collecte Localisation Satellites)
-<<<<<<< ReflectionUtils.java
+ * <br>
+ * <br>
+ * Copyright : Copyright (c) 2009. <br>
+ * <br>
+ * Société : CLS (Collecte Localisation Satellites)
  * 
  * @author $Author: dearith $
  * @version $Revision: 1.4 $ - $Date: 2009-10-16 05:47:34 $
-=======
- * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-10-16 05:47:34 $
->>>>>>> 1.3
  */
 public class ReflectionUtils {
-    
+
     /**
      * Instantiates a new reflect utils.
      */
     protected ReflectionUtils() {
-        
+
     }
-    
+
     /**
      * Gets the all fields.
      * 
@@ -42,13 +40,13 @@ public class ReflectionUtils {
             fields = getAllFields(fields, type.getSuperclass());
         }
 
-        for (Field field: type.getDeclaredFields()) {
+        for (Field field : type.getDeclaredFields()) {
             fields.add(field);
         }
 
         return fields;
     }
-    
+
     /**
      * Gets the xml schema namespace.
      * 
@@ -71,9 +69,9 @@ public class ReflectionUtils {
             namespace = "";
         }
         return namespace;
-        
+
     }
-    
+
     /**
      * Make enumeration.
      * 
@@ -85,24 +83,22 @@ public class ReflectionUtils {
     public static Enumeration<?> makeEnumeration(final Object obj) {
         Class<?> type = obj.getClass();
         if (!type.isArray()) {
-          throw new IllegalArgumentException(obj.getClass().toString());
+            throw new IllegalArgumentException(obj.getClass().toString());
         } else {
-          return (new Enumeration() {
-            int size = Array.getLength(obj);
+            return (new Enumeration() {
+                int size = Array.getLength(obj);
 
-            int cursor;
+                int cursor;
 
-            public boolean hasMoreElements() {
-              return (cursor < size);
-            }
+                public boolean hasMoreElements() {
+                    return (cursor < size);
+                }
 
-            public Object nextElement() {
-              return Array.get(obj, cursor++);
-            }
-          });
+                public Object nextElement() {
+                    return Array.get(obj, cursor++);
+                }
+            });
         }
-      }
-
-
+    }
 
 }

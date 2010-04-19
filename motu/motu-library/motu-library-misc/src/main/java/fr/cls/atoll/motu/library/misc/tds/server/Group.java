@@ -5,11 +5,11 @@
 // Generated on: 2009.03.25 at 11:44:51 AM CET 
 //
 
-
-package fr.cls.atoll.motu.library.tds.server;
+package fr.cls.atoll.motu.library.misc.tds.server;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -18,11 +18,12 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for group element declaration.
+ * <p>
+ * Java class for group element declaration.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;element name="group">
@@ -47,19 +48,16 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "dimensionOrVariableOrAttribute"
-})
+@XmlType(name = "", propOrder = { "dimensionOrVariableOrAttribute" })
 @XmlRootElement(name = "group", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2")
 public class Group {
 
-    @XmlElements({
-        @XmlElement(name = "remove", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Remove.class),
-        @XmlElement(name = "dimension", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Dimension.class),
-        @XmlElement(name = "attribute", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Attribute.class),
-        @XmlElement(name = "group", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Group.class),
-        @XmlElement(name = "variable", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Variable.class)
-    })
+    @XmlElements( {
+            @XmlElement(name = "remove", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Remove.class),
+            @XmlElement(name = "dimension", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Dimension.class),
+            @XmlElement(name = "attribute", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Attribute.class),
+            @XmlElement(name = "group", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Group.class),
+            @XmlElement(name = "variable", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Variable.class) })
     protected List<Object> dimensionOrVariableOrAttribute;
     @XmlAttribute(required = true)
     protected String name;
@@ -70,25 +68,21 @@ public class Group {
      * Gets the value of the dimensionOrVariableOrAttribute property.
      * 
      * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the dimensionOrVariableOrAttribute property.
+     * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification
+     * you make to the returned list will be present inside the JAXB object. This is why there is not a
+     * <CODE>set</CODE> method for the dimensionOrVariableOrAttribute property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getDimensionOrVariableOrAttribute().add(newItem);
+     * getDimensionOrVariableOrAttribute().add(newItem);
      * </pre>
      * 
      * 
      * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Remove }
-     * {@link Dimension }
-     * {@link Attribute }
-     * {@link Group }
-     * {@link Variable }
+     * Objects of the following type(s) are allowed in the list {@link Remove } {@link Dimension }
+     * {@link Attribute } {@link Group } {@link Variable }
      * 
      * 
      */
@@ -102,10 +96,8 @@ public class Group {
     /**
      * Gets the value of the name property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getName() {
         return name;
@@ -114,10 +106,8 @@ public class Group {
     /**
      * Sets the value of the name property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setName(String value) {
         this.name = value;
@@ -126,10 +116,8 @@ public class Group {
     /**
      * Gets the value of the orgName property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getOrgName() {
         return orgName;
@@ -138,10 +126,8 @@ public class Group {
     /**
      * Sets the value of the orgName property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setOrgName(String value) {
         this.orgName = value;

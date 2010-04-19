@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.data;
+package fr.cls.atoll.motu.library.misc.data;
 
 import java.util.Collection;
 import java.util.HashMap;

@@ -6,7 +6,7 @@
 //
 
 
-package fr.cls.atoll.motu.library.sdtnameequiv;
+package fr.cls.atoll.motu.library.misc.sdtnameequiv;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
@@ -19,7 +19,7 @@ import javax.xml.namespace.QName;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the fr.cls.atoll.motu.library.sdtnameequiv package. 
+ * generated in the fr.cls.atoll.motu.library.misc.sdtnameequiv package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -36,7 +36,7 @@ public class ObjectFactory {
     private final static QName _NetcdfName_QNAME = new QName("", "netcdfName");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: fr.cls.atoll.motu.library.sdtnameequiv
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: fr.cls.atoll.motu.library.misc.sdtnameequiv
      * 
      */
     public ObjectFactory() {

@@ -1,7 +1,30 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.data;
+package fr.cls.atoll.motu.library.misc.data;
+
+import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.inventory.Access;
+import fr.cls.atoll.motu.library.misc.inventory.CatalogOLA;
+import fr.cls.atoll.motu.library.misc.inventory.Inventory;
+import fr.cls.atoll.motu.library.misc.inventory.Resource;
+import fr.cls.atoll.motu.library.misc.inventory.ResourceOLA;
+import fr.cls.atoll.motu.library.misc.inventory.ResourcesOLA;
+import fr.cls.atoll.motu.library.misc.metadata.DocMetaData;
+import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.opendap.server.Dataset;
+import fr.cls.atoll.motu.library.misc.opendap.server.Service;
+import fr.cls.atoll.motu.library.misc.tds.server.CatalogRef;
+import fr.cls.atoll.motu.library.misc.tds.server.DatasetType;
+import fr.cls.atoll.motu.library.misc.tds.server.DateTypeFormatted;
+import fr.cls.atoll.motu.library.misc.tds.server.DocumentationType;
+import fr.cls.atoll.motu.library.misc.tds.server.Metadata;
+import fr.cls.atoll.motu.library.misc.tds.server.SpatialRange;
+import fr.cls.atoll.motu.library.misc.tds.server.TimeCoverageType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,31 +49,6 @@ import org.apache.log4j.Logger;
 
 import ucar.ma2.MAMath.MinMax;
 import ucar.unidata.geoloc.LatLonRect;
-
-import fr.cls.atoll.motu.library.cas.HttpClientCAS;
-import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.inventory.Access;
-import fr.cls.atoll.motu.library.inventory.CatalogOLA;
-import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
-import fr.cls.atoll.motu.library.inventory.Inventory;
-import fr.cls.atoll.motu.library.inventory.Resource;
-import fr.cls.atoll.motu.library.inventory.ResourceOLA;
-import fr.cls.atoll.motu.library.inventory.ResourcesOLA;
-import fr.cls.atoll.motu.library.metadata.DocMetaData;
-import fr.cls.atoll.motu.library.metadata.ProductMetaData;
-import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.opendap.server.Dataset;
-import fr.cls.atoll.motu.library.opendap.server.Service;
-import fr.cls.atoll.motu.library.tds.server.CatalogRef;
-import fr.cls.atoll.motu.library.tds.server.DatasetType;
-import fr.cls.atoll.motu.library.tds.server.DateTypeFormatted;
-import fr.cls.atoll.motu.library.tds.server.DocumentationType;
-import fr.cls.atoll.motu.library.tds.server.Metadata;
-import fr.cls.atoll.motu.library.tds.server.SpatialRange;
-import fr.cls.atoll.motu.library.tds.server.TimeCoverageType;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -259,7 +257,7 @@ public class CatalogData {
 
         List<DataFile> dataFiles = new ArrayList<DataFile>();
 
-        for (fr.cls.atoll.motu.library.inventory.File file : inventoryOLA.getFiles().getFile()) {
+        for (fr.cls.atoll.motu.library.misc.inventory.File file : inventoryOLA.getFiles().getFile()) {
             DataFile dataFile = new DataFile();
             dataFile.setName(file.getName());
             if (file.getWeight() == null) {
@@ -305,12 +303,12 @@ public class CatalogData {
         }
         productsLoaded.clear();
 
-        fr.cls.atoll.motu.library.opendap.server.Catalog catalogXml = loadConfigOpendap(path);
+        fr.cls.atoll.motu.library.misc.opendap.server.Catalog catalogXml = loadConfigOpendap(path);
         // --------------------------
         // -------- Loads dataset
         // --------------------------
         // ignores top level dataset
-        fr.cls.atoll.motu.library.opendap.server.Dataset topLevelDataset = catalogXml.getDataset();
+        fr.cls.atoll.motu.library.misc.opendap.server.Dataset topLevelDataset = catalogXml.getDataset();
 
         List<Object> list = topLevelDataset.getDatasetOrCatalogRef();
         // int countDataset = list.size();
@@ -322,14 +320,14 @@ public class CatalogData {
             Object o = it.next();
 
             if (o != null) {
-                if (o instanceof fr.cls.atoll.motu.library.opendap.server.Dataset) {
+                if (o instanceof fr.cls.atoll.motu.library.misc.opendap.server.Dataset) {
                     this.currentProductType = "";
                     // this.currentProductSubTypes = null;
                     getCurrentProductSubTypes();
 
                     sameProductTypeDataset = new ArrayList<Product>();
 
-                    loadOpendapProducts((fr.cls.atoll.motu.library.opendap.server.Dataset) o);
+                    loadOpendapProducts((fr.cls.atoll.motu.library.misc.opendap.server.Dataset) o);
 
                     if (sameProductTypeDataset.size() > 0) {
                         listProductTypeDataset.add(sameProductTypeDataset);
@@ -480,7 +478,7 @@ public class CatalogData {
         // products map
         // clearProducts();
 
-        fr.cls.atoll.motu.library.tds.server.Catalog catalogXml = loadConfigTds(path);
+        fr.cls.atoll.motu.library.misc.tds.server.Catalog catalogXml = loadConfigTds(path);
         // --------------------------
         // -------- Loads dataset
         // --------------------------
@@ -492,7 +490,7 @@ public class CatalogData {
             JAXBElement<? extends DatasetType> o = it.next();
             // System.out.println(o.getDeclaredType().getName());
 
-            DatasetType datasetType = (DatasetType) o.getValue();
+            DatasetType datasetType = o.getValue();
             if (datasetType != null) {
                 if (datasetType instanceof CatalogRef) {
                     // System.out.println("is CatalogRef");
@@ -566,7 +564,7 @@ public class CatalogData {
      */
     public void loadTdsSubCatalog(String path) throws MotuException {
 
-        fr.cls.atoll.motu.library.tds.server.Catalog catalogXml = loadConfigTds(path);
+        fr.cls.atoll.motu.library.misc.tds.server.Catalog catalogXml = loadConfigTds(path);
         // --------------------------
         // -------- Loads dataset
         // --------------------------
@@ -576,7 +574,7 @@ public class CatalogData {
             JAXBElement<? extends DatasetType> o = it.next();
             // System.out.println(o.getDeclaredType().getName());
 
-            DatasetType datasetType = (DatasetType) o.getValue();
+            DatasetType datasetType = o.getValue();
             if (datasetType != null) {
                 if (datasetType instanceof CatalogRef) {
                     // System.out.println("is CatalogRef");
@@ -693,7 +691,7 @@ public class CatalogData {
      * 
      * @throws MotuException the motu exception
      */
-    private void loadTdsProducts(DatasetType datasetType, fr.cls.atoll.motu.library.tds.server.Catalog catalogXml) throws MotuException {
+    private void loadTdsProducts(DatasetType datasetType, fr.cls.atoll.motu.library.misc.tds.server.Catalog catalogXml) throws MotuException {
         if (datasetType == null) {
             return;
         }
@@ -726,14 +724,14 @@ public class CatalogData {
         for (Iterator<JAXBElement<? extends DatasetType>> it = list.iterator(); it.hasNext();) {
             JAXBElement<? extends DatasetType> o = it.next();
 
-            DatasetType datasetTypeChild = (DatasetType) o.getValue();
+            DatasetType datasetTypeChild = o.getValue();
             if (datasetTypeChild != null) {
-                if (datasetTypeChild instanceof fr.cls.atoll.motu.library.tds.server.CatalogRef) {
+                if (datasetTypeChild instanceof fr.cls.atoll.motu.library.misc.tds.server.CatalogRef) {
                     // System.out.println("is CatalogRef");
                     int numberSubPaths = loadTdsCatalogRef((CatalogRef) datasetTypeChild);
                     removeListCatalogRefSubPaths(numberSubPaths);
 
-                } else if (datasetType instanceof fr.cls.atoll.motu.library.tds.server.DatasetType) {
+                } else if (datasetType instanceof fr.cls.atoll.motu.library.misc.tds.server.DatasetType) {
                     // System.out.println("is DatasetType");
                     loadTdsProducts(datasetTypeChild, catalogXml);
                 }
@@ -834,7 +832,7 @@ public class CatalogData {
      * 
      * @throws MotuException the motu exception
      */
-    private String getUrlOpendapFromTds(DatasetType datasetType, fr.cls.atoll.motu.library.tds.server.Catalog catalogXml, Product product)
+    private String getUrlOpendapFromTds(DatasetType datasetType, fr.cls.atoll.motu.library.misc.tds.server.Catalog catalogXml, Product product)
             throws MotuException {
         // Search Opendap service for this dataset and get its url
         // Don't use getServiceName --> deprecated - see XML Sschema InvCatalog.1.0.n.xsd
@@ -856,7 +854,7 @@ public class CatalogData {
                                                   datasetType.getName()));
         }
         // search 'opendap' seruce type. If not found search 'dods' service type.
-        fr.cls.atoll.motu.library.tds.server.Service tdsService = findTdsService(tdsServiceName, TDS_OPENDAP_SERVICE, catalogXml.getService());
+        fr.cls.atoll.motu.library.misc.tds.server.Service tdsService = findTdsService(tdsServiceName, TDS_OPENDAP_SERVICE, catalogXml.getService());
 
         if (tdsService == null) {
             tdsService = findTdsService(tdsServiceName, TDS_DODS_SERVICE, catalogXml.getService());
@@ -897,7 +895,7 @@ public class CatalogData {
      * 
      * @throws MotuException the motu exception
      */
-    private void initializeProductFromTds(DatasetType datasetType, fr.cls.atoll.motu.library.tds.server.Catalog catalogXml) throws MotuException {
+    private void initializeProductFromTds(DatasetType datasetType, fr.cls.atoll.motu.library.misc.tds.server.Catalog catalogXml) throws MotuException {
 
         if (datasetType == null) {
             throw new MotuException("Error in initializeProductFromTds - Tds dataset is null");
@@ -981,12 +979,12 @@ public class CatalogData {
      * 
      * @return a Service object if found, otherwhise null.
      */
-    private fr.cls.atoll.motu.library.tds.server.Service findTdsService(String tdsServiceName,
-                                                                        List<fr.cls.atoll.motu.library.tds.server.Service> listTdsService) {
+    private fr.cls.atoll.motu.library.misc.tds.server.Service findTdsService(String tdsServiceName,
+                                                                             List<fr.cls.atoll.motu.library.misc.tds.server.Service> listTdsService) {
 
-        fr.cls.atoll.motu.library.tds.server.Service serviceFound = null;
+        fr.cls.atoll.motu.library.misc.tds.server.Service serviceFound = null;
 
-        for (fr.cls.atoll.motu.library.tds.server.Service service : listTdsService) {
+        for (fr.cls.atoll.motu.library.misc.tds.server.Service service : listTdsService) {
             if (service.getName().equalsIgnoreCase(tdsServiceName)) {
                 serviceFound = service;
                 break;
@@ -1009,12 +1007,12 @@ public class CatalogData {
      * 
      * @return a Service object if found, otherwhise null.
      */
-    private fr.cls.atoll.motu.library.tds.server.Service findTdsServiceType(String tdsServiceType,
-                                                                            List<fr.cls.atoll.motu.library.tds.server.Service> listTdsService) {
+    private fr.cls.atoll.motu.library.misc.tds.server.Service findTdsServiceType(String tdsServiceType,
+                                                                                 List<fr.cls.atoll.motu.library.misc.tds.server.Service> listTdsService) {
 
-        fr.cls.atoll.motu.library.tds.server.Service serviceFound = null;
+        fr.cls.atoll.motu.library.misc.tds.server.Service serviceFound = null;
 
-        for (fr.cls.atoll.motu.library.tds.server.Service service : listTdsService) {
+        for (fr.cls.atoll.motu.library.misc.tds.server.Service service : listTdsService) {
             if (service.getServiceType().equalsIgnoreCase(tdsServiceType)) {
                 serviceFound = service;
                 break;
@@ -1039,12 +1037,12 @@ public class CatalogData {
      * 
      * @return a Service object if found, otherwhise null.
      */
-    private fr.cls.atoll.motu.library.tds.server.Service findTdsService(String tdsServiceName,
-                                                                        String tdsServiceType,
-                                                                        List<fr.cls.atoll.motu.library.tds.server.Service> listTdsService) {
+    private fr.cls.atoll.motu.library.misc.tds.server.Service findTdsService(String tdsServiceName,
+                                                                             String tdsServiceType,
+                                                                             List<fr.cls.atoll.motu.library.misc.tds.server.Service> listTdsService) {
 
         // search service with name
-        fr.cls.atoll.motu.library.tds.server.Service serviceFound = findTdsService(tdsServiceName, listTdsService);
+        fr.cls.atoll.motu.library.misc.tds.server.Service serviceFound = findTdsService(tdsServiceName, listTdsService);
 
         if (serviceFound == null) {
             return null;
@@ -1055,7 +1053,7 @@ public class CatalogData {
         }
 
         // search service with type
-        List<fr.cls.atoll.motu.library.tds.server.Service> listTdsServiceChild = serviceFound.getService();
+        List<fr.cls.atoll.motu.library.misc.tds.server.Service> listTdsServiceChild = serviceFound.getService();
 
         serviceFound = findTdsServiceType(tdsServiceType, listTdsServiceChild);
 
@@ -1097,7 +1095,7 @@ public class CatalogData {
             // System.out.println(jabxElement.getClass().getName());
             // System.out.println(jabxElement.getDeclaredType().getName());
 
-            Object objectElt = (Object) jabxElement.getValue();
+            Object objectElt = jabxElement.getValue();
 
             if (classObject.isInstance(objectElt)) {
                 listObjectFound.add(objectElt);
@@ -1134,7 +1132,7 @@ public class CatalogData {
                 continue;
             }
 
-            listObjectFound.add((Object) jabxElement.getValue());
+            listObjectFound.add(jabxElement.getValue());
         }
 
         return listObjectFound;
@@ -1167,7 +1165,7 @@ public class CatalogData {
                 continue;
             }
 
-            listObjectFound.add((Object) jabxElement.getValue());
+            listObjectFound.add(jabxElement.getValue());
         }
 
         return listObjectFound;
@@ -1285,18 +1283,18 @@ public class CatalogData {
         }
 
         List<Object> listGeoCoverageObject = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(),
-                                                                         fr.cls.atoll.motu.library.tds.server.GeospatialCoverage.class);
+                                                                         fr.cls.atoll.motu.library.misc.tds.server.GeospatialCoverage.class);
 
         productMetaData.setGeoBBox(null);
         boolean foundGeospatialCoverage = false;
 
         for (Object objectElt : listGeoCoverageObject) {
 
-            if (!(objectElt instanceof fr.cls.atoll.motu.library.tds.server.GeospatialCoverage)) {
+            if (!(objectElt instanceof fr.cls.atoll.motu.library.misc.tds.server.GeospatialCoverage)) {
                 continue;
             }
 
-            fr.cls.atoll.motu.library.tds.server.GeospatialCoverage geospatialCoverage = (fr.cls.atoll.motu.library.tds.server.GeospatialCoverage) objectElt;
+            fr.cls.atoll.motu.library.misc.tds.server.GeospatialCoverage geospatialCoverage = (fr.cls.atoll.motu.library.misc.tds.server.GeospatialCoverage) objectElt;
 
             foundGeospatialCoverage = initializeGeoAndDepthCoverage(geospatialCoverage, productMetaData);
 
@@ -1321,7 +1319,7 @@ public class CatalogData {
      * 
      * @return true, if successful
      */
-    private boolean initializeGeoAndDepthCoverage(fr.cls.atoll.motu.library.tds.server.GeospatialCoverage geospatialCoverage,
+    private boolean initializeGeoAndDepthCoverage(fr.cls.atoll.motu.library.misc.tds.server.GeospatialCoverage geospatialCoverage,
                                                   ProductMetaData productMetaData) {
         if (geospatialCoverage == null) {
             return false;
@@ -1347,37 +1345,37 @@ public class CatalogData {
      * 
      * @param datasetType the dataset type
      * 
-     * @return the fr.cls.atoll.motu.library.tds.server. geospatial coverage
+     * @return the fr.cls.atoll.motu.library.misc.tds.server. geospatial coverage
      * 
      * @throws MotuException the motu exception
      */
-    private fr.cls.atoll.motu.library.tds.server.GeospatialCoverage findTdsGeoAndDepthCoverage(DatasetType datasetType) throws MotuException {
+    private fr.cls.atoll.motu.library.misc.tds.server.GeospatialCoverage findTdsGeoAndDepthCoverage(DatasetType datasetType) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("findTdsGeoAndDepthCoverage(DatasetType) - entering");
         }
 
-        fr.cls.atoll.motu.library.tds.server.GeospatialCoverage geospatialCoverage = null;
+        fr.cls.atoll.motu.library.misc.tds.server.GeospatialCoverage geospatialCoverage = null;
 
         List<Object> listMetadataObject = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(),
-                                                                      fr.cls.atoll.motu.library.tds.server.Metadata.class);
+                                                                      fr.cls.atoll.motu.library.misc.tds.server.Metadata.class);
         if (listMetadataObject == null) {
             return geospatialCoverage;
         }
         for (Object objectMetadataElt : listMetadataObject) {
 
-            if (!(objectMetadataElt instanceof fr.cls.atoll.motu.library.tds.server.Metadata)) {
+            if (!(objectMetadataElt instanceof fr.cls.atoll.motu.library.misc.tds.server.Metadata)) {
                 continue;
             }
             Metadata metadata = (Metadata) objectMetadataElt;
             List<Object> listGeoCoverageObject = CatalogData.findJaxbElement(metadata.getThreddsMetadataGroup(),
-                                                                             fr.cls.atoll.motu.library.tds.server.GeospatialCoverage.class);
+                                                                             fr.cls.atoll.motu.library.misc.tds.server.GeospatialCoverage.class);
             for (Object objectElt : listGeoCoverageObject) {
 
-                if (!(objectElt instanceof fr.cls.atoll.motu.library.tds.server.GeospatialCoverage)) {
+                if (!(objectElt instanceof fr.cls.atoll.motu.library.misc.tds.server.GeospatialCoverage)) {
                     continue;
                 }
 
-                geospatialCoverage = (fr.cls.atoll.motu.library.tds.server.GeospatialCoverage) objectElt;
+                geospatialCoverage = (fr.cls.atoll.motu.library.misc.tds.server.GeospatialCoverage) objectElt;
             }
         }
 
@@ -1437,11 +1435,11 @@ public class CatalogData {
      * 
      * @throws MotuException the motu exception
      */
-    private fr.cls.atoll.motu.library.opendap.server.Catalog loadConfigOpendap(String path) throws MotuException {
+    private fr.cls.atoll.motu.library.misc.opendap.server.Catalog loadConfigOpendap(String path) throws MotuException {
 
         InputStream in;
 
-        fr.cls.atoll.motu.library.opendap.server.Catalog catalogXml;
+        fr.cls.atoll.motu.library.misc.opendap.server.Catalog catalogXml;
         try {
             // JAXBContext jc = JAXBContext.newInstance(OPENDAP_SCHEMA_PACK_NAME);
             // Unmarshaller unmarshaller = jc.createUnmarshaller();
@@ -1449,10 +1447,10 @@ public class CatalogData {
             URLConnection conn = url.openConnection();
             in = conn.getInputStream();
             synchronized (Organizer.getUnmarshallerOpendapConfig()) {
-                catalogXml = (fr.cls.atoll.motu.library.opendap.server.Catalog) Organizer.getUnmarshallerOpendapConfig().unmarshal(in);
+                catalogXml = (fr.cls.atoll.motu.library.misc.opendap.server.Catalog) Organizer.getUnmarshallerOpendapConfig().unmarshal(in);
             }
         } catch (Exception e) {
-            throw new MotuException("Error in loadConfigOpendap", (Throwable) e);
+            throw new MotuException("Error in loadConfigOpendap", e);
         }
         if (catalogXml == null) {
             throw new MotuException(String.format("Unable to load Opendap configuration (in loadConfigOpendap, cataloXml is null) - url : %s", path));
@@ -1475,11 +1473,11 @@ public class CatalogData {
      * 
      * @throws MotuException the motu exception
      */
-    private fr.cls.atoll.motu.library.tds.server.Catalog loadConfigTds(String path) throws MotuException {
+    private fr.cls.atoll.motu.library.misc.tds.server.Catalog loadConfigTds(String path) throws MotuException {
 
         InputStream in;
 
-        fr.cls.atoll.motu.library.tds.server.Catalog catalogXml;
+        fr.cls.atoll.motu.library.misc.tds.server.Catalog catalogXml;
         try {
             // JAXBContext jc = JAXBContext.newInstance(TDS_SCHEMA_PACK_NAME);
             // Unmarshaller unmarshaller = jc.createUnmarshaller();
@@ -1499,10 +1497,10 @@ public class CatalogData {
             URLConnection conn = url.openConnection();
             in = conn.getInputStream();
             synchronized (Organizer.getUnmarshallerTdsConfig()) {
-                catalogXml = (fr.cls.atoll.motu.library.tds.server.Catalog) Organizer.getUnmarshallerTdsConfig().unmarshal(in);
+                catalogXml = (fr.cls.atoll.motu.library.misc.tds.server.Catalog) Organizer.getUnmarshallerTdsConfig().unmarshal(in);
             }
         } catch (Exception e) {
-            throw new MotuException("Error in loadConfigTds", (Throwable) e);
+            throw new MotuException("Error in loadConfigTds", e);
         }
         if (catalogXml == null) {
             throw new MotuException(String.format("Unable to load Tds configuration (in loadConfigTds, cataloXml is null) - url : %s", path));
@@ -1563,7 +1561,7 @@ public class CatalogData {
         this.title = title;
     }
 
-    fr.cls.atoll.motu.library.tds.server.GeospatialCoverage currentGeospatialCoverage = null;
+    fr.cls.atoll.motu.library.misc.tds.server.GeospatialCoverage currentGeospatialCoverage = null;
 
     /** The current product. */
     private Product currentProduct = null;
@@ -1788,7 +1786,7 @@ public class CatalogData {
         if (key == null) {
             return null;
         }
-        return (Product) this.productsMap.get(key.trim());
+        return this.productsMap.get(key.trim());
     }
 
     /**
@@ -1841,7 +1839,7 @@ public class CatalogData {
         if (key == null) {
             return null;
         }
-        return (Product) this.productsMap.put(key.trim(), value);
+        return this.productsMap.put(key.trim(), value);
     }
 
     /**
@@ -1855,7 +1853,7 @@ public class CatalogData {
      * @uml.property name="products"
      */
     public Product removeProducts(String key) {
-        return (Product) this.productsMap.remove(key);
+        return this.productsMap.remove(key);
     }
 
     /**

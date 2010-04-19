@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.data;
+package fr.cls.atoll.motu.library.misc.data;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,19 +10,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import fr.cls.atoll.motu.library.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.exception.MotuNoVarException;
-import fr.cls.atoll.motu.library.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.intfce.Organizer.Format;
-import fr.cls.atoll.motu.library.utils.Zip;
-import fr.cls.atoll.motu.library.vfs.VFSManager;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer.Format;
+import fr.cls.atoll.motu.library.misc.utils.Zip;
+import fr.cls.atoll.motu.library.misc.vfs.VFSManager;
 import fr.cls.commons.util.DatePeriod;
 
 /**

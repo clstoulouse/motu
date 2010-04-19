@@ -1,12 +1,12 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.data;
+package fr.cls.atoll.motu.library.misc.data;
 
 import ucar.ma2.Array;
 import ucar.ma2.MAMath;
 
-import fr.cls.atoll.motu.library.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
 
 /**
  * This class introduces criterias to be apply on data (for extraction/selection and research).

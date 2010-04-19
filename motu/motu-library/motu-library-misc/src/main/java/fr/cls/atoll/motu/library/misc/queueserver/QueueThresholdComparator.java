@@ -1,8 +1,8 @@
-package fr.cls.atoll.motu.library.queueserver;
+package fr.cls.atoll.motu.library.misc.queueserver;
 
 import java.util.Comparator;
 
-import fr.cls.atoll.motu.library.configuration.QueueType;
+import fr.cls.atoll.motu.library.misc.configuration.QueueType;
 
 /**
  * <br>

@@ -1,22 +1,19 @@
-package fr.cls.atoll.motu.library.intfce;
+package fr.cls.atoll.motu.library.misc.intfce;
+
+import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInconsistencyException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 
 import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.jasig.cas.client.authentication.AttributePrincipal;
-import org.jasig.cas.client.util.AssertionHolder;
 import org.jasig.cas.client.validation.Assertion;
-
-import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuInconsistencyException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
 
 /**
  * <br>
@@ -385,9 +382,9 @@ public class ExtractionParameters implements Cloneable {
 
     /** The protocol scheme. */
     protected String protocolScheme = null;
-    
+
     /** The assertion to manage CAS. */
-    protected Assertion assertion = null; 
+    protected Assertion assertion = null;
 
     /**
      * Gets the assertion.
@@ -474,7 +471,7 @@ public class ExtractionParameters implements Cloneable {
 
         URI uri = null;
         try {
-            //uri = new URI(locationData);
+            // uri = new URI(locationData);
             uri = Organizer.newURI(locationData);
         } catch (URISyntaxException e) {
             throw new MotuException(String.format("ERROR: location data '%s' has not a valid syntax", locationData), e);
@@ -730,6 +727,7 @@ public class ExtractionParameters implements Cloneable {
      * 
      * @return the string
      */
+    @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
         buffer.append("ExtractionParameters[");

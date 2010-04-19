@@ -6,4 +6,4 @@
 //
 
 @javax.xml.bind.annotation.XmlSchema(namespace = "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0")
-package fr.cls.atoll.motu.library.tds.server;
+package fr.cls.atoll.motu.library.misc.tds.server;

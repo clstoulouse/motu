@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.queueserver;
+package fr.cls.atoll.motu.library.misc.queueserver;
 
 import org.apache.log4j.Logger;
 import org.quartz.JobExecutionContext;

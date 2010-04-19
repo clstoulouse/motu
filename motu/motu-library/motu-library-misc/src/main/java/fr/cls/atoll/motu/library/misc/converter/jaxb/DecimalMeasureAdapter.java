@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.converter.jaxb;
+package fr.cls.atoll.motu.library.misc.converter.jaxb;
 
 import javax.measure.DecimalMeasure;
 import javax.xml.bind.DatatypeConverter;

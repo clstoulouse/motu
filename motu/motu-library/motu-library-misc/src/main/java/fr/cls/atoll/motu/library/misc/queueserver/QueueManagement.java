@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.queueserver;
+package fr.cls.atoll.motu.library.misc.queueserver;
 
 import java.util.Map;
 import java.util.Set;
@@ -18,10 +18,10 @@ import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerUtils;
 
-import fr.cls.atoll.motu.library.configuration.QueueType;
-import fr.cls.atoll.motu.library.exception.MotuExceedingQueueCapacityException;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidQueuePriorityException;
+import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueCapacityException;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidQueuePriorityException;
 
 /**
  * <br>

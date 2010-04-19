@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.exception;
+package fr.cls.atoll.motu.library.misc.exception;
 
 /**
  * No variable Exception class of Motu.

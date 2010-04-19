@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.intfce;
+package fr.cls.atoll.motu.library.misc.intfce;
 
 /**
  * User class.

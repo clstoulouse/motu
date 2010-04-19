@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.xml;
+package fr.cls.atoll.motu.library.misc.xml;
 
 import java.util.ArrayList;
 import java.util.List;

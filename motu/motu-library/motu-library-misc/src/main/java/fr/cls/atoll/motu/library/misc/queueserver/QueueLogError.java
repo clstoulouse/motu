@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.queueserver;
+package fr.cls.atoll.motu.library.misc.queueserver;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 

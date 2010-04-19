@@ -6,14 +6,14 @@
 //
 
 
-package fr.cls.atoll.motu.library.tds.server;
+package fr.cls.atoll.motu.library.misc.tds.server;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import fr.cls.atoll.motu.library.tds.server.SourceType.Contact;
+import fr.cls.atoll.motu.library.misc.tds.server.SourceType.Contact;
 
 
 /**

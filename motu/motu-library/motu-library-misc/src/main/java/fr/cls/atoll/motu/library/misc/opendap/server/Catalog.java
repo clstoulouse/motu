@@ -6,7 +6,7 @@
 //
 
 
-package fr.cls.atoll.motu.library.opendap.server;
+package fr.cls.atoll.motu.library.misc.opendap.server;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

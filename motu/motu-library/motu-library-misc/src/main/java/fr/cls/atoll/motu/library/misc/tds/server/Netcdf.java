@@ -5,11 +5,11 @@
 // Generated on: 2009.03.25 at 11:44:51 AM CET 
 //
 
-
-package fr.cls.atoll.motu.library.tds.server;
+package fr.cls.atoll.motu.library.misc.tds.server;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -18,11 +18,12 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for netcdf element declaration.
+ * <p>
+ * Java class for netcdf element declaration.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;element name="netcdf">
@@ -60,12 +61,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "readMetadata",
-    "explicit",
-    "groupOrDimensionOrVariable",
-    "aggregation"
-})
+@XmlType(name = "", propOrder = { "readMetadata", "explicit", "groupOrDimensionOrVariable", "aggregation" })
 @XmlRootElement(name = "netcdf", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2")
 public class Netcdf {
 
@@ -73,13 +69,12 @@ public class Netcdf {
     protected Object readMetadata;
     @XmlElement(namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2")
     protected Object explicit;
-    @XmlElements({
-        @XmlElement(name = "attribute", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Attribute.class),
-        @XmlElement(name = "dimension", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Dimension.class),
-        @XmlElement(name = "variable", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Variable.class),
-        @XmlElement(name = "group", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Group.class),
-        @XmlElement(name = "remove", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Remove.class)
-    })
+    @XmlElements( {
+            @XmlElement(name = "attribute", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Attribute.class),
+            @XmlElement(name = "dimension", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Dimension.class),
+            @XmlElement(name = "variable", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Variable.class),
+            @XmlElement(name = "group", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Group.class),
+            @XmlElement(name = "remove", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2", required = true, type = Remove.class) })
     protected List<Object> groupOrDimensionOrVariable;
     @XmlElement(namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2")
     protected Aggregation aggregation;
@@ -103,10 +98,8 @@ public class Netcdf {
     /**
      * Gets the value of the readMetadata property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Object }
-     *     
+     * @return possible object is {@link Object }
+     * 
      */
     public Object getReadMetadata() {
         return readMetadata;
@@ -115,10 +108,8 @@ public class Netcdf {
     /**
      * Sets the value of the readMetadata property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Object }
-     *     
+     * @param value allowed object is {@link Object }
+     * 
      */
     public void setReadMetadata(Object value) {
         this.readMetadata = value;
@@ -127,10 +118,8 @@ public class Netcdf {
     /**
      * Gets the value of the explicit property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Object }
-     *     
+     * @return possible object is {@link Object }
+     * 
      */
     public Object getExplicit() {
         return explicit;
@@ -139,10 +128,8 @@ public class Netcdf {
     /**
      * Sets the value of the explicit property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Object }
-     *     
+     * @param value allowed object is {@link Object }
+     * 
      */
     public void setExplicit(Object value) {
         this.explicit = value;
@@ -152,25 +139,21 @@ public class Netcdf {
      * Gets the value of the groupOrDimensionOrVariable property.
      * 
      * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the groupOrDimensionOrVariable property.
+     * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification
+     * you make to the returned list will be present inside the JAXB object. This is why there is not a
+     * <CODE>set</CODE> method for the groupOrDimensionOrVariable property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getGroupOrDimensionOrVariable().add(newItem);
+     * getGroupOrDimensionOrVariable().add(newItem);
      * </pre>
      * 
      * 
      * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Attribute }
-     * {@link Dimension }
-     * {@link Variable }
-     * {@link Group }
-     * {@link Remove }
+     * Objects of the following type(s) are allowed in the list {@link Attribute } {@link Dimension }
+     * {@link Variable } {@link Group } {@link Remove }
      * 
      * 
      */
@@ -184,10 +167,8 @@ public class Netcdf {
     /**
      * Gets the value of the aggregation property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Aggregation }
-     *     
+     * @return possible object is {@link Aggregation }
+     * 
      */
     public Aggregation getAggregation() {
         return aggregation;
@@ -196,10 +177,8 @@ public class Netcdf {
     /**
      * Sets the value of the aggregation property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Aggregation }
-     *     
+     * @param value allowed object is {@link Aggregation }
+     * 
      */
     public void setAggregation(Aggregation value) {
         this.aggregation = value;
@@ -208,10 +187,8 @@ public class Netcdf {
     /**
      * Gets the value of the addRecords property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     * @return possible object is {@link Boolean }
+     * 
      */
     public Boolean isAddRecords() {
         return addRecords;
@@ -220,10 +197,8 @@ public class Netcdf {
     /**
      * Sets the value of the addRecords property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     * @param value allowed object is {@link Boolean }
+     * 
      */
     public void setAddRecords(Boolean value) {
         this.addRecords = value;
@@ -232,10 +207,8 @@ public class Netcdf {
     /**
      * Gets the value of the coordValue property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getCoordValue() {
         return coordValue;
@@ -244,10 +217,8 @@ public class Netcdf {
     /**
      * Sets the value of the coordValue property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setCoordValue(String value) {
         this.coordValue = value;
@@ -256,10 +227,8 @@ public class Netcdf {
     /**
      * Gets the value of the enhance property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     * @return possible object is {@link Boolean }
+     * 
      */
     public Boolean isEnhance() {
         return enhance;
@@ -268,10 +237,8 @@ public class Netcdf {
     /**
      * Sets the value of the enhance property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     * @param value allowed object is {@link Boolean }
+     * 
      */
     public void setEnhance(Boolean value) {
         this.enhance = value;
@@ -280,10 +247,8 @@ public class Netcdf {
     /**
      * Gets the value of the fmrcDefinition property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getFmrcDefinition() {
         return fmrcDefinition;
@@ -292,10 +257,8 @@ public class Netcdf {
     /**
      * Sets the value of the fmrcDefinition property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setFmrcDefinition(String value) {
         this.fmrcDefinition = value;
@@ -304,10 +267,8 @@ public class Netcdf {
     /**
      * Gets the value of the id property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getId() {
         return id;
@@ -316,10 +277,8 @@ public class Netcdf {
     /**
      * Sets the value of the id property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setId(String value) {
         this.id = value;
@@ -328,10 +287,8 @@ public class Netcdf {
     /**
      * Gets the value of the location property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getLocation() {
         return location;
@@ -340,10 +297,8 @@ public class Netcdf {
     /**
      * Sets the value of the location property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setLocation(String value) {
         this.location = value;
@@ -352,10 +307,8 @@ public class Netcdf {
     /**
      * Gets the value of the ncoords property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getNcoords() {
         return ncoords;
@@ -364,10 +317,8 @@ public class Netcdf {
     /**
      * Sets the value of the ncoords property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setNcoords(String value) {
         this.ncoords = value;
@@ -376,10 +327,8 @@ public class Netcdf {
     /**
      * Gets the value of the title property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getTitle() {
         return title;
@@ -388,10 +337,8 @@ public class Netcdf {
     /**
      * Sets the value of the title property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setTitle(String value) {
         this.title = value;

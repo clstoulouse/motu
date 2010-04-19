@@ -6,7 +6,7 @@
 //
 
 
-package fr.cls.atoll.motu.library.configuration;
+package fr.cls.atoll.motu.library.misc.configuration;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

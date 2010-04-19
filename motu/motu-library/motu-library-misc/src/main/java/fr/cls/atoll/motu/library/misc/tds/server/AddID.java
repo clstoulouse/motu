@@ -5,8 +5,7 @@
 // Generated on: 2009.03.25 at 11:44:51 AM CET 
 //
 
-
-package fr.cls.atoll.motu.library.tds.server;
+package fr.cls.atoll.motu.library.misc.tds.server;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -14,11 +13,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for addID element declaration.
+ * <p>
+ * Java class for addID element declaration.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;element name="addID">
@@ -37,9 +37,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "crawlableDatasetLabelerImpl"
-})
+@XmlType(name = "", propOrder = { "crawlableDatasetLabelerImpl" })
 @XmlRootElement(name = "addID")
 public class AddID {
 
@@ -49,10 +47,8 @@ public class AddID {
     /**
      * Gets the value of the crawlableDatasetLabelerImpl property.
      * 
-     * @return
-     *     possible object is
-     *     {@link UserImplType }
-     *     
+     * @return possible object is {@link UserImplType }
+     * 
      */
     public UserImplType getCrawlableDatasetLabelerImpl() {
         return crawlableDatasetLabelerImpl;
@@ -61,10 +57,8 @@ public class AddID {
     /**
      * Sets the value of the crawlableDatasetLabelerImpl property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link UserImplType }
-     *     
+     * @param value allowed object is {@link UserImplType }
+     * 
      */
     public void setCrawlableDatasetLabelerImpl(UserImplType value) {
         this.crawlableDatasetLabelerImpl = value;

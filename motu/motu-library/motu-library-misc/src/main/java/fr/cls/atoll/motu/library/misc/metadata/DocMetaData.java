@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.metadata;
+package fr.cls.atoll.motu.library.misc.metadata;
 
 /**
  * Documentation product class.

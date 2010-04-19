@@ -6,7 +6,7 @@
 //
 
 
-package fr.cls.atoll.motu.library.tds.server;
+package fr.cls.atoll.motu.library.misc.tds.server;
 
 import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;

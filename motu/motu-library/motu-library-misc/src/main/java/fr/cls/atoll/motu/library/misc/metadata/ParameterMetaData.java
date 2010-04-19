@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.metadata;
+package fr.cls.atoll.motu.library.misc.metadata;
 
 import java.util.Collection;
 import java.util.Iterator;

@@ -5,10 +5,12 @@
 // Generated on: 2010.03.01 at 05:10:30 PM CET 
 //
 
+package fr.cls.atoll.motu.library.misc.inventory;
 
-package fr.cls.atoll.motu.library.inventory;
+import fr.cls.atoll.motu.library.misc.converter.jaxb.UriAdapter;
 
 import java.net.URI;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -16,13 +18,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import fr.cls.atoll.motu.library.converter.jaxb.UriAdapter;
-
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -49,10 +51,8 @@ public class Service {
     /**
      * Gets the value of the urn property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public URI getUrn() {
         return urn;
@@ -61,10 +61,8 @@ public class Service {
     /**
      * Sets the value of the urn property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setUrn(URI value) {
         this.urn = value;

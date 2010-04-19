@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.data;
+package fr.cls.atoll.motu.library.misc.data;
 
 import java.util.Date;
 import java.util.List;
@@ -9,10 +9,10 @@ import java.util.List;
 import ucar.ma2.Array;
 import ucar.ma2.Range;
 
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 
 /**
  * This class introduces temporal coverage criterias to be apply on data (for extraction/selection and
@@ -21,7 +21,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
  * @author $Author: ccamel $
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
  */
-public class ExtractCriteriaDatetime extends fr.cls.atoll.motu.library.data.ExtractCriteria {
+public class ExtractCriteriaDatetime extends fr.cls.atoll.motu.library.misc.data.ExtractCriteria {
 
     /**
      * Default constructor.

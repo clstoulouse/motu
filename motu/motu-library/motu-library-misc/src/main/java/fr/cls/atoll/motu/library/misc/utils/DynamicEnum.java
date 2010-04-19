@@ -17,9 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * THIS FILE HAS BEEN MODIFIED BY CLS
-*/
+ */
 
-package fr.cls.atoll.motu.library.utils;
+package fr.cls.atoll.motu.library.misc.utils;
 
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -27,96 +27,91 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * A factory for values of a class that can be treated as a enumeration. The factory
- * provides the &quot;aggregate&quot; functionality inherent in a normal Java <code>Enum</code>,
- * such as retrieval of all known enumerated values of this type.
+ * A factory for values of a class that can be treated as a enumeration. The factory provides the
+ * &quot;aggregate&quot; functionality inherent in a normal Java <code>Enum</code>, such as retrieval of all
+ * known enumerated values of this type.
  * <p>
- * The underlying objects that give rise to the enumeration (which can be seen as a convenience
- * representation of these objects) should implement {@link DynamicEnumerable}.
+ * The underlying objects that give rise to the enumeration (which can be seen as a convenience representation
+ * of these objects) should implement {@link DynamicEnumerable}.
  * <p>
- * Implementation of {@link DynamicEnum#compare(Object, Object)} should be aligned
- * with the &quot;natural&quot; ordering of the enum (as reflected by {@link #ordinal(Object)}). 
- *  
- * @param <E>	the type of the enum values
- * @param <D>	the type of the objects giving rise to the enum values
+ * Implementation of {@link DynamicEnum#compare(Object, Object)} should be aligned with the
+ * &quot;natural&quot; ordering of the enum (as reflected by {@link #ordinal(Object)}).
+ * 
+ * @param <E> the type of the enum values
+ * @param <D> the type of the objects giving rise to the enum values
  * @author anphilli
  * @since 5 Feb 2009
- *
+ * 
  */
 public interface DynamicEnum<E, D extends DynamicEnumerable<E>> extends Comparator<E> {
 
     /**
-     * Checks if an enum constant matching the given purported instance of the enum value
-     * class exists.
+     * Checks if an enum constant matching the given purported instance of the enum value class exists.
      * 
-     * @param enumValue	the instance of the enum value class that should be checked
-     * @return	<code>true</code> iff an enum constant equal to the given value exists.
+     * @param enumValue the instance of the enum value class that should be checked
+     * @return <code>true</code> iff an enum constant equal to the given value exists.
      */
     boolean exists(E enumValue);
-    
-    /**
-     * Returns the enum constant with the specified name, in analogy to 
-     * {@link Enum#valueOf(Class, String)}. 
-     * <p>
-     * The name must match the {@link DynamicEnumerable#name()} value of one of
-     * the enum constants.
 
+    /**
+     * Returns the enum constant with the specified name, in analogy to {@link Enum#valueOf(Class, String)}.
+     * <p>
+     * The name must match the {@link DynamicEnumerable#name()} value of one of the enum constants.
+     * 
      * @param name the name of the constant to return
      * @return the enum constant with the specified name
      * @throws IllegalArgumentException if no constant with the specified name exists
      * @throws NullPointerException if <code>name</code> is null
      */
     E valueOf(String name);
-    
+
     /**
-     * Returns all the enum constants of the enumeration, in the order of their 
+     * Returns all the enum constants of the enumeration, in the order of their
      * {@link #ordinal(DynamicEnumerable) ordinals}.
      * <p>
-     * Analogous to the &quot;magic&quot; <code>values()</code> method provided by
-     * Java for each <code>Enum</code> class.
+     * Analogous to the &quot;magic&quot; <code>values()</code> method provided by Java for each
+     * <code>Enum</code> class.
      * 
-     * @return	all the enum constants in the order of their ordinals
+     * @return all the enum constants in the order of their ordinals
      */
     List<E> values();
-    
+
     /**
-     * Returns the ordinal of the given enumeration constant, in analogy to
-     * {@link Enum#ordinal()}.
+     * Returns the ordinal of the given enumeration constant, in analogy to {@link Enum#ordinal()}.
      * <p>
-     * Implementing classes are free to decide on the ordering - and thus the ordinals 
-     * - of the enumeration values, provided that, for two enum values <code>e1</code> and
-     * <code>e2</code>, <code>ordinal(e1) == ordinal(e2)</code> iff <code>e1.equals(e2)</code>.
-     *
+     * Implementing classes are free to decide on the ordering - and thus the ordinals - of the enumeration
+     * values, provided that, for two enum values <code>e1</code> and <code>e2</code>,
+     * <code>ordinal(e1) == ordinal(e2)</code> iff <code>e1.equals(e2)</code>.
+     * 
      * @param enumValue the enum constant whose ordinal is required
      * @return the ordinal of the given enumeration constant
      * @throws IllegalArgumentException if no constant with the specified name exists
      * @throws NullPointerException if <code>enumValue</code> is null
      */
     int ordinal(E enumValue);
-    
+
     /**
-     * Creates an enum set initially containing all of the elements in the
-     * range defined by the two specified endpoints, in analogy to 
-     * {@link EnumSet#range(Enum, Enum)}.
-     * <p>The returned set will contain the endpoints themselves, which may 
-     * be identical but must not be out of order.
-     *
+     * Creates an enum set initially containing all of the elements in the range defined by the two specified
+     * endpoints, in analogy to {@link EnumSet#range(Enum, Enum)}.
+     * <p>
+     * The returned set will contain the endpoints themselves, which may be identical but must not be out of
+     * order.
+     * 
      * @param from the first element in the range
      * @param to the last element in the range
-     * @return a set containing all of the elements in the range defined by the two 
-     *         specified endpoints
+     * @return a set containing all of the elements in the range defined by the two specified endpoints
      * @throws IllegalArgumentException if either of the endpoints does not exist or
-     *                                  <code>from.compareTo(to) &gt; 0</code>
+     *             <code>from.compareTo(to) &gt; 0</code>
      * @throws NullPointerException if <code>from</code> or <code>to</code> is null
      */
     Set<E> range(E from, E to);
-    
+
     /**
-     * Returns the object underlying the given enum value, i.e. the <code>DynamicEnumValue v</code>
-     * for which <code>v.enumValue().equals(enumValue)</code>.
+     * Returns the object underlying the given enum value, i.e. the <code>DynamicEnumValue v</code> for which
+     * <code>v.enumValue().equals(enumValue)</code>.
      * 
-     * @param enumValue	the enum value whose backing object is required
-     * @return	the backing object for the given enum value
+     * @param enumValue the enum value whose backing object is required
+     * @return the backing object for the given enum value
      * @throws IllegalArgumentException if the given value is not an enum constant
      * @throws NullPointerException if <code>enumValue</code> is null
      */

@@ -1,4 +1,6 @@
-package fr.cls.atoll.motu.library.utils;
+package fr.cls.atoll.motu.library.misc.utils;
+
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -16,8 +18,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
-import fr.cls.atoll.motu.library.exception.MotuException;
 
 /**
  * <br>
@@ -64,15 +64,15 @@ public class Zip {
         files.add("C:/BratWks/thelasttest/Operations/CreateOperations_1.cmd");
         files.add("C:/BratWks/TestPreselection/Operations/CreateEnvisat.nc");
         try {
-//            Zip.zip(zipFileName, files.toArray(new String[files.size()]), false);
-//            List<String> listFiles = Zip.getEntries(zipFileName);
-//            System.out.println(listFiles.toString());
-//            Zip.unzip(zipFileName, "c:\\temp\\testtt");
+            // Zip.zip(zipFileName, files.toArray(new String[files.size()]), false);
+            // List<String> listFiles = Zip.getEntries(zipFileName);
+            // System.out.println(listFiles.toString());
+            // Zip.unzip(zipFileName, "c:\\temp\\testtt");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Zip.
      * 
@@ -100,7 +100,7 @@ public class Zip {
     public static void zip(String zipFileName, List<String> files, boolean storeOrignalFolders) throws MotuException {
         Zip.zip(zipFileName, files.toArray(new String[files.size()]), storeOrignalFolders);
     }
-    
+
     /**
      * Zip.
      * 
@@ -151,13 +151,13 @@ public class Zip {
 
                 String entryName = "";
                 ZipEntry entry = null;
-                
+
                 if (storeOrignalFolders) {
                     entryName = files[i];
                 } else {
                     File f = new File(files[i]);
                     entryName = f.getName();
-                    
+
                 }
 
                 // création d'une entrée Zip pour ce fichier
@@ -307,7 +307,7 @@ public class Zip {
                 String targetFilename = "";
 
                 String entryName = entry.getName();
-                
+
                 if (!restoreOrignalFolders) {
                     File f = new File(entryName);
                     entryName = f.getName();
@@ -395,7 +395,7 @@ public class Zip {
             while (entries.hasMoreElements()) {
 
                 // extraction entrée courante
-                ZipEntry e = ((ZipEntry) entries.nextElement());
+                ZipEntry e = (entries.nextElement());
 
                 // extractions du nom
                 files.add(e.getName());

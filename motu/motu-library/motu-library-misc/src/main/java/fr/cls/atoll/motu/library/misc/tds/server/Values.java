@@ -5,8 +5,7 @@
 // Generated on: 2009.03.25 at 11:44:51 AM CET 
 //
 
-
-package fr.cls.atoll.motu.library.tds.server;
+package fr.cls.atoll.motu.library.misc.tds.server;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -15,11 +14,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
-
 /**
- * <p>Java class for values element declaration.
+ * <p>
+ * Java class for values element declaration.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;element name="values">
@@ -39,9 +39,7 @@ import javax.xml.bind.annotation.XmlValue;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "content"
-})
+@XmlType(name = "", propOrder = { "content" })
 @XmlRootElement(name = "values", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2")
 public class Values {
 
@@ -59,10 +57,8 @@ public class Values {
     /**
      * Gets the value of the content property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getContent() {
         return content;
@@ -71,10 +67,8 @@ public class Values {
     /**
      * Sets the value of the content property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setContent(String value) {
         this.content = value;
@@ -83,10 +77,8 @@ public class Values {
     /**
      * Gets the value of the increment property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Float }
-     *     
+     * @return possible object is {@link Float }
+     * 
      */
     public Float getIncrement() {
         return increment;
@@ -95,10 +87,8 @@ public class Values {
     /**
      * Sets the value of the increment property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Float }
-     *     
+     * @param value allowed object is {@link Float }
+     * 
      */
     public void setIncrement(Float value) {
         this.increment = value;
@@ -107,10 +97,8 @@ public class Values {
     /**
      * Gets the value of the npts property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     * @return possible object is {@link Integer }
+     * 
      */
     public Integer getNpts() {
         return npts;
@@ -119,10 +107,8 @@ public class Values {
     /**
      * Sets the value of the npts property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     * @param value allowed object is {@link Integer }
+     * 
      */
     public void setNpts(Integer value) {
         this.npts = value;
@@ -131,10 +117,8 @@ public class Values {
     /**
      * Gets the value of the separator property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getSeparator() {
         return separator;
@@ -143,10 +127,8 @@ public class Values {
     /**
      * Sets the value of the separator property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setSeparator(String value) {
         this.separator = value;
@@ -155,10 +137,8 @@ public class Values {
     /**
      * Gets the value of the start property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Float }
-     *     
+     * @return possible object is {@link Float }
+     * 
      */
     public Float getStart() {
         return start;
@@ -167,10 +147,8 @@ public class Values {
     /**
      * Sets the value of the start property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Float }
-     *     
+     * @param value allowed object is {@link Float }
+     * 
      */
     public void setStart(Float value) {
         this.start = value;

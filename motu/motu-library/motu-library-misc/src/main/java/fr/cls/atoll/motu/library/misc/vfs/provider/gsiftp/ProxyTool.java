@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.vfs.provider.gsiftp;
+package fr.cls.atoll.motu.library.misc.vfs.provider.gsiftp;
 
 import java.io.IOException;
 import java.io.OutputStream;

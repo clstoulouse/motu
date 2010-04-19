@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.exception;
+package fr.cls.atoll.motu.library.misc.exception;
 
 import org.apache.log4j.Logger;
 

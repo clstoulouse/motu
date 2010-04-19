@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fr.cls.atoll.motu.library.exception;
+package fr.cls.atoll.motu.library.misc.exception;
 
 /**
  * A class to indicate that a block of code has not been implemented.

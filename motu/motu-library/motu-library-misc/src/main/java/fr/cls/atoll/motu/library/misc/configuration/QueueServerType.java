@@ -6,7 +6,7 @@
 //
 
 
-package fr.cls.atoll.motu.library.configuration;
+package fr.cls.atoll.motu.library.misc.configuration;
 
 import java.util.ArrayList;
 import java.util.List;

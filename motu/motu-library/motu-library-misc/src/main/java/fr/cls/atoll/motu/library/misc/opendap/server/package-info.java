@@ -6,4 +6,4 @@
 //
 
 @javax.xml.bind.annotation.XmlSchema(namespace = "http://www.unidata.ucar.edu/thredds")
-package fr.cls.atoll.motu.library.opendap.server;
+package fr.cls.atoll.motu.library.misc.opendap.server;

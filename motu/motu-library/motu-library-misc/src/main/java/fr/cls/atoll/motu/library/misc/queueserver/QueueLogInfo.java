@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.queueserver;
+package fr.cls.atoll.motu.library.misc.queueserver;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.thoughtworks.xstream.XStream;
 
-import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
+import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
 
 /**
  * <br>

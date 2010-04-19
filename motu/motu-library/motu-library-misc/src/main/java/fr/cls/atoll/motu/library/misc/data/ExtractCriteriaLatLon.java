@@ -10,7 +10,7 @@
 //import ucar.nc2.dt.grid.GeoGrid;
 //import ucar.nc2.dt.grid.GridDataset;
 //import ucar.nc2.dt.grid.GridCoordSys;
-package fr.cls.atoll.motu.library.data;
+package fr.cls.atoll.motu.library.misc.data;
 
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -34,15 +34,15 @@ import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
 
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.library.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
-import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
-import fr.cls.atoll.motu.library.tds.server.SpatialRange;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.inventory.GeospatialCoverage;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.library.misc.tds.server.SpatialRange;
 
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -117,7 +117,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      * 
      * @param geospatialCoverage the geospatial coverage
      */
-    public ExtractCriteriaLatLon(fr.cls.atoll.motu.library.tds.server.GeospatialCoverage geospatialCoverage) {
+    public ExtractCriteriaLatLon(fr.cls.atoll.motu.library.misc.tds.server.GeospatialCoverage geospatialCoverage) {
         setLatLonRect(geospatialCoverage);
     }
 
@@ -301,7 +301,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      * 
      * @param geospatialCoverage the new lat lon rect
      */
-    public void setLatLonRect(fr.cls.atoll.motu.library.tds.server.GeospatialCoverage geospatialCoverage) {
+    public void setLatLonRect(fr.cls.atoll.motu.library.misc.tds.server.GeospatialCoverage geospatialCoverage) {
         if (geospatialCoverage == null) {
             return;
         }

@@ -7,7 +7,7 @@
 //import ucar.nc2.dt.grid.GridDataset;
 //import ucar.nc2.dt.grid.GridCoordSys;
 
-package fr.cls.atoll.motu.library.data;
+package fr.cls.atoll.motu.library.misc.data;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,18 +27,18 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 
-import fr.cls.atoll.motu.library.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.exception.MotuNoVarException;
-import fr.cls.atoll.motu.library.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -48,7 +48,7 @@ import fr.cls.atoll.motu.library.netcdf.NetCdfWriter;
  * @author $Author: dearith $
  * @version $Revision: 1.4 $ - $Date: 2010-03-04 16:05:15 $
  */
-public class DatasetGrid extends fr.cls.atoll.motu.library.data.DatasetBase {
+public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase {
     /**
      * Logger for this class.
      */

@@ -1,9 +1,6 @@
 package fr.cls.atoll.motu.library.misc.cas.util;
 
-import org.apache.log4j.Logger;
-
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -11,14 +8,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.Iterator;
-import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
+
+import org.apache.log4j.Logger;
 
 /**
  * <br>
@@ -35,59 +31,58 @@ public class RestUtil {
      * Logger for this class
      */
     private static final Logger LOG = Logger.getLogger(RestUtil.class);
-//
-//    private static String CAS_SERVER_URL_PREFIX = null;
-//
-//    public static String getCAS_SERVER_URL_PREFIX() {
-//        return CAS_SERVER_URL_PREFIX;
-//    }
-//
-//    public static void setCAS_SERVER_URL_PREFIX(String cas_server_url_prefix) {
-//        CAS_SERVER_URL_PREFIX = cas_server_url_prefix;
-//    }
-//
-//    private static String CAS_RESTLET_URL_SUFFIX = "/v1/tickets";
-//
-//    public static String getCAS_RESTLET_URL_SUFFIX() {
-//        return CAS_RESTLET_URL_SUFFIX;
-//    }
-//
-//    public static void setCAS_RESTLET_URL_SUFFIX(String cas_restlet_url_suffix) {
-//        CAS_RESTLET_URL_SUFFIX = cas_restlet_url_suffix;
-//    }
-//
-//    public static String getCasRestletUrl() {
-//        StringBuffer stringBuffer = new StringBuffer();
-//        stringBuffer.append(CAS_SERVER_URL_PREFIX);
-//        if (!CAS_SERVER_URL_PREFIX.endsWith("/")) {
-//            stringBuffer.append("/");
-//        }
-//        stringBuffer.append(CAS_RESTLET_URL_SUFFIX);
-//
-//        return stringBuffer.toString();
-//    }
-    
+
+    //
+    // private static String CAS_SERVER_URL_PREFIX = null;
+    //
+    // public static String getCAS_SERVER_URL_PREFIX() {
+    // return CAS_SERVER_URL_PREFIX;
+    // }
+    //
+    // public static void setCAS_SERVER_URL_PREFIX(String cas_server_url_prefix) {
+    // CAS_SERVER_URL_PREFIX = cas_server_url_prefix;
+    // }
+    //
+    // private static String CAS_RESTLET_URL_SUFFIX = "/v1/tickets";
+    //
+    // public static String getCAS_RESTLET_URL_SUFFIX() {
+    // return CAS_RESTLET_URL_SUFFIX;
+    // }
+    //
+    // public static void setCAS_RESTLET_URL_SUFFIX(String cas_restlet_url_suffix) {
+    // CAS_RESTLET_URL_SUFFIX = cas_restlet_url_suffix;
+    // }
+    //
+    // public static String getCasRestletUrl() {
+    // StringBuffer stringBuffer = new StringBuffer();
+    // stringBuffer.append(CAS_SERVER_URL_PREFIX);
+    // if (!CAS_SERVER_URL_PREFIX.endsWith("/")) {
+    // stringBuffer.append("/");
+    // }
+    // stringBuffer.append(CAS_RESTLET_URL_SUFFIX);
+    //
+    // return stringBuffer.toString();
+    // }
+
     public static String getCasRestletUrl(String serviceURL, String casRestUrlSuffix) throws IOException {
-        
+
         String casServerPrefix = RestUtil.getRedirectUrl(serviceURL);
 
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(casServerPrefix);
-        if ((!casServerPrefix.endsWith("/")) && (!casRestUrlSuffix.startsWith("/"))){
+        if ((!casServerPrefix.endsWith("/")) && (!casRestUrlSuffix.startsWith("/"))) {
             stringBuffer.append("/");
         }
-        
-        if ((casServerPrefix.endsWith("/")) && (casRestUrlSuffix.startsWith("/"))){
+
+        if ((casServerPrefix.endsWith("/")) && (casRestUrlSuffix.startsWith("/"))) {
             stringBuffer.append(casRestUrlSuffix.substring(1));
         } else {
-            stringBuffer.append(casRestUrlSuffix);            
+            stringBuffer.append(casRestUrlSuffix);
         }
 
         return stringBuffer.toString();
-        
-    }
 
-    
+    }
 
     public static String getRedirectUrl(String path) throws IOException {
 
@@ -137,10 +132,8 @@ public class RestUtil {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getTicketGrantingTicket(String, String, String) - entering");
         }
-        
-        
-        if (AssertionUtils.isNullOrEmpty(casRestUrl))
-        {
+
+        if (AssertionUtils.isNullOrEmpty(casRestUrl)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getTicketGrantingTicket(String, String, String) - exiting");
             }
@@ -160,9 +153,8 @@ public class RestUtil {
         stringBuffer.append("=");
         stringBuffer.append(URLEncoder.encode(password, "UTF-8"));
         if (LOG.isDebugEnabled()) {
-            LOG.debug("getTicketGrantingTicket(String, String, String) : "+ stringBuffer.toString());
+            LOG.debug("getTicketGrantingTicket(String, String, String) : " + stringBuffer.toString());
         }
-
 
         OutputStreamWriter out = new OutputStreamWriter(hsu.getOutputStream());
         BufferedWriter bwr = new BufferedWriter(out);
@@ -186,7 +178,6 @@ public class RestUtil {
         // System.out.println(entry.getValue());
         // }
 
-
         if (ticketGrantingTicket == null || hsu.getResponseCode() != 201) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getTicketGrantingTicket(String, String, String) - exiting");
@@ -207,10 +198,12 @@ public class RestUtil {
         return ticketGrantingTicket;
 
     }
+
     public static String loginToCAS(String casRestUrl, String username, String password, String serviceURL) throws IOException, MotuException {
         String ticketGrantingTicket = RestUtil.getTicketGrantingTicket(casRestUrl, username, password);
         return loginToCASWithTGT(casRestUrl, ticketGrantingTicket, serviceURL);
     }
+
     public static String loginToCASWithTGT(String casRestUrl, String ticketGrantingTicket, String serviceURL) throws IOException, MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loginToCAS(String, String, String) - entering");
@@ -246,7 +239,7 @@ public class RestUtil {
             }
             break;
         }
-        
+
         isr.close();
         hsu.disconnect();
 
