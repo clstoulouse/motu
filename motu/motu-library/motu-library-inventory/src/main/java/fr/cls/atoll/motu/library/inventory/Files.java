@@ -5,7 +5,7 @@
 // Generated on: 2010.03.01 at 05:10:30 PM CET 
 //
 
-package fr.cls.atoll.motu.library.misc.inventory;
+package fr.cls.atoll.motu.library.inventory;
 
 import java.util.ArrayList;
 import java.util.List;

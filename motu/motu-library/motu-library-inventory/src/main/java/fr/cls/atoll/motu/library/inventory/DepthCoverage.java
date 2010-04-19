@@ -6,7 +6,7 @@
 //
 
 
-package fr.cls.atoll.motu.library.misc.inventory;
+package fr.cls.atoll.motu.library.inventory;
 
 import javax.measure.DecimalMeasure;
 import javax.xml.bind.annotation.XmlAccessType;
