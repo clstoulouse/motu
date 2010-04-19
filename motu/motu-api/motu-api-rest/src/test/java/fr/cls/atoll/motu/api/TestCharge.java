@@ -1,13 +1,13 @@
 package fr.cls.atoll.motu.api;
 
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.api.rest.MotuRequest;
+import fr.cls.atoll.motu.api.rest.MotuRequestException;
+import fr.cls.atoll.motu.api.rest.MotuRequestParameters;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import fr.cls.atoll.motu.api.MotuRequest;
-import fr.cls.atoll.motu.api.MotuRequestException;
-import fr.cls.atoll.motu.api.MotuRequestParameters;
-import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
 
 /**
  * <br>
@@ -27,10 +27,10 @@ public class TestCharge {
      * @param args
      */
 
-    private List<Long> requestIDs = Collections.synchronizedList(new ArrayList<Long>());
-    private List<Long> requestIDs2 = Collections.synchronizedList(new ArrayList<Long>());
-    private List<Long> requestIDs3 = Collections.synchronizedList(new ArrayList<Long>());
-    //private List<Long> requestIDs = new ArrayList<Long>();
+    private final List<Long> requestIDs = Collections.synchronizedList(new ArrayList<Long>());
+    private final List<Long> requestIDs2 = Collections.synchronizedList(new ArrayList<Long>());
+    private final List<Long> requestIDs3 = Collections.synchronizedList(new ArrayList<Long>());
+    // private List<Long> requestIDs = new ArrayList<Long>();
 
     public Client client = null;
     public Client client2 = null;
@@ -74,8 +74,8 @@ public class TestCharge {
         // String servletUrl = "http://aviso-motu.cls.fr:8380/atoll-motuservlet/Aviso";
         // String servletUrl = "http://localhost:8080/atoll-motu-servlet/Aviso";
         String servletUrl = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/Aviso";
-        //String servletUrl = "http://atoll-qt2.cls.fr:31080/atoll-motu-servlet/Motu";
-        
+        // String servletUrl = "http://atoll-qt2.cls.fr:31080/atoll-motu-servlet/Motu";
+
         client = this.new Client("CLIENT 1", 500, servletUrl, requestIDs);
         client2 = this.new Client("CLIENT 2", 500, servletUrl, requestIDs2);
         client3 = this.new Client("CLIENT 3", 500, servletUrl, requestIDs3);
@@ -83,13 +83,12 @@ public class TestCharge {
         client2.start();
         client3.start();
 
-
         try {
-            for (int i = 0 ; i < 5 ; i++) {
+            for (int i = 0; i < 5; i++) {
 
-                    launchMotuRequest(servletUrl);
-                    // Thread.sleep(10000);
-                    // return;
+                launchMotuRequest(servletUrl);
+                // Thread.sleep(10000);
+                // return;
 
             }
 
@@ -118,7 +117,6 @@ public class TestCharge {
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_START_DATE, "2008-05-27");
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_END_DATE, "2008-05-27");
 
- 
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_MODE, MotuRequestParameters.PARAM_MODE_STATUS);
 
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_BATCH, "true");
@@ -158,7 +156,7 @@ public class TestCharge {
             synchronized (requestIDs3) {
                 requestIDs3.add(requestId);
             }
- 
+
         } catch (Exception e) {
             System.out.print("ERROR in launchMotuRequest : ");
             System.out.println(e.getMessage());
@@ -181,6 +179,8 @@ public class TestCharge {
         private String name = "";
         private int interval = 1000;
         MotuRequest motuRequestGetStatus = null;
+
+        @Override
         public void run() {
 
             while (running) {
@@ -234,11 +234,11 @@ public class TestCharge {
                     requestIDs.removeAll(requestIDsToDelete);
                 }
 
-//                try {
-//                    Thread.sleep(interval);
-//                } catch (InterruptedException e) {
-//                    // Do nothing
-//                }
+                // try {
+                // Thread.sleep(interval);
+                // } catch (InterruptedException e) {
+                // // Do nothing
+                // }
             }
 
         }

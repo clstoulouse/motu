@@ -1,5 +1,14 @@
 package fr.cls.atoll.motu.api;
 
+import fr.cls.atoll.motu.api.message.xml.RequestSize;
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.api.message.xml.StatusModeType;
+import fr.cls.atoll.motu.api.message.xml.TimeCoverage;
+import fr.cls.atoll.motu.api.rest.MotuRequest;
+import fr.cls.atoll.motu.api.rest.MotuRequestException;
+import fr.cls.atoll.motu.api.rest.MotuRequestParameters;
+import fr.cls.atoll.motu.api.rest.MotuRequestParametersConstant;
+
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -12,15 +21,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.datatype.XMLGregorianCalendar;
-
-import fr.cls.atoll.motu.api.MotuRequest;
-import fr.cls.atoll.motu.api.MotuRequestException;
-import fr.cls.atoll.motu.api.MotuRequestParameters;
-import fr.cls.atoll.motu.api.MotuRequestParametersConstant;
-import fr.cls.atoll.motu.msg.xml.RequestSize;
-import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
-import fr.cls.atoll.motu.msg.xml.StatusModeType;
-import fr.cls.atoll.motu.msg.xml.TimeCoverage;
 
 /**
  * Programme de test de l'API motu. <br>
@@ -46,16 +46,16 @@ public class MotuRequestMainTest {
         // testMode();
         // testMode2();
         // testModeStatusAsString();
-         //testModeStatusAsXMLFile();
+        // testModeStatusAsXMLFile();
         testModeStatusAsXML();
-//        testGetSize();
-//        testGetSize();
-//        testGetTimeCoverage();
-//        testGetTimeCoverage();
-        //testDeleteFile();
+        // testGetSize();
+        // testGetSize();
+        // testGetTimeCoverage();
+        // testGetTimeCoverage();
+        // testDeleteFile();
         // testSynchronized();
-        //testUrlWithUserPwd();
-        
+        // testUrlWithUserPwd();
+
     }
 
     public static void testUrlWithUserPwd() {
@@ -67,14 +67,14 @@ public class MotuRequestMainTest {
         Matcher matcher = pattern.matcher(url);
         System.out.println(matcher.groupCount());
         while (matcher.find()) {
-            for (int i = 1 ; i <= matcher.groupCount() ; i++) {
+            for (int i = 1; i <= matcher.groupCount(); i++) {
                 CharSequence line = matcher.group(i);
                 System.out.println(line);
             }
         }
-        
+
         Map<String, String> userInfo = MotuRequest.searchUrlUserPwd(url);
-        
+
         if (userInfo != null) {
             System.out.println(userInfo.get(MotuRequestParametersConstant.PARAM_LOGIN));
             System.out.println(userInfo.get(MotuRequestParametersConstant.PARAM_PWD));
@@ -82,6 +82,7 @@ public class MotuRequestMainTest {
         }
 
     }
+
     public static void testMode() throws Exception {
         MotuRequest motuRequest = new MotuRequest();
 
@@ -365,32 +366,32 @@ public class MotuRequestMainTest {
     public static void testModeStatusAsXML() {
         MotuRequest motuRequest = new MotuRequest();
 
-        //String servletUrl = "http://aviso-motu.cls.fr:8380/atoll-motuservlet/Aviso";
-        //String servletUrl = "http://localhost:8080/atoll-motu-servlet/Motu";
-        //String servletUrl = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/Aviso";
-        //String servletUrl = "http://evetkar:p61mlkm@atoll-motu.mercator-ocean.fr/";
+        // String servletUrl = "http://aviso-motu.cls.fr:8380/atoll-motuservlet/Aviso";
+        // String servletUrl = "http://localhost:8080/atoll-motu-servlet/Motu";
+        // String servletUrl = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/Aviso";
+        // String servletUrl = "http://evetkar:p61mlkm@atoll-motu.mercator-ocean.fr/";
         String servletUrl = "http://evetkar:p61mlkm@mercator-data1.cls.fr:33080/atoll-motu-servlet/Motu";
-//        String servletUrl = "http://aviso-data1.cls.fr:33080/atoll-motu-servlet/Motu";
+        // String servletUrl = "http://aviso-data1.cls.fr:33080/atoll-motu-servlet/Motu";
         motuRequest.setServletUrl(servletUrl);
 
         MotuRequestParameters motuRequestParameters = new MotuRequestParameters();
 
-
         // motuRequest.setServletUrl("http://aviso-motu.cls.fr:8380/atoll-motuservlet/Aviso");
         // motuRequest.setServletUrl("http://localhost:8080/atoll-motu-servlet/Aviso");
 
-//        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_LOGIN, "toto");
-//        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PWD, "pass");
-        //motuRequestParameters.setParameter(MotuRequestParameters.PARAM_ANONYMOUS, "true");
+        // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_LOGIN, "toto");
+        // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PWD, "pass");
+        // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_ANONYMOUS, "true");
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_ANONYMOUS, "false");
 
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_ACTION, MotuRequestParameters.ACTION_PRODUCT_DOWNLOAD);
-//        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_SERVICE, "Aviso");
+        // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_SERVICE, "Aviso");
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_SERVICE, "Mercator");
-//         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_DATA,
-//         "http://opendap.aviso.oceanobs.com/thredds/dodsC/duacs_global_nrt_madt_merged_h");
-//        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PRODUCT, "dt_ref_global_merged_madt_h");
-//        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_VARIABLE, "Grid_0001");
+        // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_DATA,
+        // "http://opendap.aviso.oceanobs.com/thredds/dodsC/duacs_global_nrt_madt_merged_h");
+        // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PRODUCT,
+        // "dt_ref_global_merged_madt_h");
+        // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_VARIABLE, "Grid_0001");
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PRODUCT, "mercatorPsy3v2_nat_mean_best_estimate");
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_VARIABLE, "temperature");
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_START_DATE, "2009-08-19");
@@ -409,12 +410,13 @@ public class MotuRequestMainTest {
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PRIORITY, "1");
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_MAX_POOL_ANONYMOUS, "30");
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_MAX_POOL_AUTHENTICATE, "15");
-        
+
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_BATCH, "false");
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_FORWARDED_FOR, "10.1.253.25");
-        //motuRequestParameters.setParameter(MotuRequestParameters.PARAM_FORWARDED_FOR, "CLS-EARITH.pc.cls.fr");
-        
-        //motuRequestParameters.setParameter(MotuRequestParameters.PARAM_BATCH, "true");
+        // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_FORWARDED_FOR,
+        // "CLS-EARITH.pc.cls.fr");
+
+        // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_BATCH, "true");
 
         motuRequest.setMotuRequestParameters(motuRequestParameters);
 
@@ -433,7 +435,7 @@ public class MotuRequestMainTest {
         // out.close();
 
         // ---------------- Utilisation 1 -------------------------
-        //String str;
+        // String str;
         StatusModeResponse statusModeResponse = null;
         MotuRequest motuRequestGetStatus = new MotuRequest(servletUrl);
 
@@ -473,15 +475,15 @@ public class MotuRequestMainTest {
                 System.out.print("file length is : ");
                 if (statusModeResponse.getSize() != null) {
                     System.out.println(statusModeResponse.getSize());
-                }else {
-                    System.out.print("null");                    
+                } else {
+                    System.out.print("null");
                 }
                 System.out.print("file lastModified is : ");
                 if (statusModeResponse.getDateProc() != null) {
                     XMLGregorianCalendar lastModified = statusModeResponse.getDateProc().normalize();
                     System.out.println(lastModified.toString());
-                }else {
-                    System.out.print("null");                    
+                } else {
+                    System.out.print("null");
                 }
             }
         } catch (Exception e) {
@@ -524,15 +526,15 @@ public class MotuRequestMainTest {
                 System.out.print("file length is : ");
                 if (statusModeResponse.getSize() != null) {
                     System.out.println(statusModeResponse.getSize());
-                }else {
-                    System.out.print("null");                    
+                } else {
+                    System.out.print("null");
                 }
                 System.out.print("file lastModified is : ");
                 if (statusModeResponse.getDateProc() != null) {
                     XMLGregorianCalendar lastModified = statusModeResponse.getDateProc().normalize();
                     System.out.println(lastModified.toString());
-                }else {
-                    System.out.print("null");                    
+                } else {
+                    System.out.print("null");
                 }
             }
 
@@ -547,8 +549,8 @@ public class MotuRequestMainTest {
         MotuRequest motuRequest = new MotuRequest();
 
         motuRequest.setServletUrl("http://atoll-dev.cls.fr:30080/atoll-motuservlet/Aviso");
-        //motuRequest.setServletUrl("http://aviso-motu.cls.fr:8380/atoll-motuservlet/Aviso");
-        //motuRequest.setServletUrl("http://localhost:8080/atoll-motu-servlet/Aviso");
+        // motuRequest.setServletUrl("http://aviso-motu.cls.fr:8380/atoll-motuservlet/Aviso");
+        // motuRequest.setServletUrl("http://localhost:8080/atoll-motu-servlet/Aviso");
 
         MotuRequestParameters motuRequestParameters = new MotuRequestParameters();
 
@@ -556,7 +558,7 @@ public class MotuRequestMainTest {
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PWD, "pass");
 
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_ACTION, MotuRequestParameters.ACTION_GET_TIME_COVERAGE);
-        //motuRequestParameters.setParameter(MotuRequestParameters.PARAM_SERVICE, "AvisoNRT");
+        // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_SERVICE, "AvisoNRT");
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_SERVICE, "Aviso");
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PRODUCT, "duacs_global_nrt_madt_merged_h");
         // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_DATA,
@@ -596,9 +598,9 @@ public class MotuRequestMainTest {
 
     public static void testGetSize() {
         MotuRequest motuRequest = new MotuRequest();
-        //motuRequest.setServletUrl("http://aviso-motu.cls.fr:8380/atoll-motuservlet/Aviso");
+        // motuRequest.setServletUrl("http://aviso-motu.cls.fr:8380/atoll-motuservlet/Aviso");
         motuRequest.setServletUrl("http://atoll-dev.cls.fr:30080/atoll-motuservlet/Aviso");
-        //motuRequest.setServletUrl("http://localhost:8080/atoll-motu-servlet/Aviso");
+        // motuRequest.setServletUrl("http://localhost:8080/atoll-motu-servlet/Aviso");
 
         MotuRequestParameters motuRequestParameters = new MotuRequestParameters();
 
@@ -617,7 +619,6 @@ public class MotuRequestMainTest {
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_LOW_LON, "-40.0");
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_HIGH_LAT, "40.0");
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_HIGH_LON, "40.0");
-
 
         motuRequest.setMotuRequestParameters(motuRequestParameters);
         RequestSize requestSize = null;
@@ -676,7 +677,6 @@ public class MotuRequestMainTest {
 
         MotuRequest motuRequest = new MotuRequest(servletUrl);
 
-       
         try {
 
             List<String> filesToDelete = new ArrayList<String>();
@@ -685,10 +685,9 @@ public class MotuRequestMainTest {
 
             StatusModeResponse statusModeResponse = motuRequest.executeActionDeleteFile(filesToDelete);
             // ou
-           //  String fileToDelete = "http://localhost:8080/motu-file-extract/test.nc";
-           //  StatusModeResponse statusModeResponse2 = motuRequest.executeActionDeleteFile(fileToDelete);
-            
-            
+            // String fileToDelete = "http://localhost:8080/motu-file-extract/test.nc";
+            // StatusModeResponse statusModeResponse2 = motuRequest.executeActionDeleteFile(fileToDelete);
+
             if (statusModeResponse == null) {
                 System.out.println("ERROR - no status found");
                 return;
@@ -719,6 +718,7 @@ public class MotuRequestMainTest {
 
         String name;
 
+        @Override
         public void run() {
 
             System.out.print("Start Client ");
@@ -738,6 +738,7 @@ public class MotuRequestMainTest {
 
         String name;
 
+        @Override
         public void run() {
             System.out.print("Start Client2 ");
             System.out.println(name);
@@ -755,6 +756,7 @@ public class MotuRequestMainTest {
 
         String name;
 
+        @Override
         public void run() {
             System.out.print("Start Client3 ");
             System.out.println(name);
@@ -765,34 +767,34 @@ public class MotuRequestMainTest {
             System.out.println(name);
         }
     }
-    
-//    public static void testQueueServer() {
-//
-//        MotuRequest motuRequest = new MotuRequest();
-//        Organizer organizer = null;
-//        try {
-//            organizer = new Organizer();
-//            Collection<ServiceData> services = organizer.servicesValues();
-//
-//            for (ServiceData service : services) {
-//                if (!service.getName().equalsIgnoreCase("catsat")) {
-//                    continue;
-//                }
-//                CatalogData catalog = service.getCatalog();
-//                Collection<Product> products = catalog.productsValues();
-//
-//                for (Product product : products) {
-//                    String productId = product.getProductId();
-//                    product.loadOpendapGlobalMetaData();
-//                    ProductMetaData productMetaData = product.getProductMetaData();
-//                }
-//
-//            }
-//
-//        } catch (MotuException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//
-//    }
+
+    // public static void testQueueServer() {
+    //
+    // MotuRequest motuRequest = new MotuRequest();
+    // Organizer organizer = null;
+    // try {
+    // organizer = new Organizer();
+    // Collection<ServiceData> services = organizer.servicesValues();
+    //
+    // for (ServiceData service : services) {
+    // if (!service.getName().equalsIgnoreCase("catsat")) {
+    // continue;
+    // }
+    // CatalogData catalog = service.getCatalog();
+    // Collection<Product> products = catalog.productsValues();
+    //
+    // for (Product product : products) {
+    // String productId = product.getProductId();
+    // product.loadOpendapGlobalMetaData();
+    // ProductMetaData productMetaData = product.getProductMetaData();
+    // }
+    //
+    // }
+    //
+    // } catch (MotuException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    //
+    // }
 }
