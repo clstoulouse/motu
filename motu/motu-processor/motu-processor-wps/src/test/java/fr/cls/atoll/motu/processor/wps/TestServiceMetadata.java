@@ -1,5 +1,16 @@
 package fr.cls.atoll.motu.processor.wps;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.xml.XMLErrorHandler;
+import fr.cls.atoll.motu.library.misc.xml.XMLUtils;
+import fr.cls.atoll.motu.processor.ant.ServiceMetadataBuilder;
+import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
+import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
+import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileWriter;
@@ -46,17 +57,6 @@ import org.jgrapht.alg.StrongConnectivityInspector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DirectedSubgraph;
 import org.xml.sax.SAXException;
-
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.exception.MotuMarshallException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.xml.XMLErrorHandler;
-import fr.cls.atoll.motu.library.xml.XMLUtils;
-import fr.cls.atoll.motu.processor.ant.ServiceMetadataBuilder;
-import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
-import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
-import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
 
 /**
  * <br>
@@ -130,9 +130,9 @@ public class TestServiceMetadata {
 
         // testLoadGeomatysServiceMetadata();
         testLoadOGCServiceMetadata();
-        //testServiceMetadataBuilder();
-        //testdom4j();
-        //testIso19139Operations();
+        // testServiceMetadataBuilder();
+        // testdom4j();
+        // testIso19139Operations();
 
         // try {
         // getServiceMetadataSchemaAsString();
@@ -142,49 +142,51 @@ public class TestServiceMetadata {
         // }
         //        
 
-//        try {
-//            Organizer.removeVFSSystemManager();
-//        } catch (MotuException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
+        // try {
+        // Organizer.removeVFSSystemManager();
+        // } catch (MotuException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
 
     }
 
     public static void testLoadGeomatysServiceMetadata() {
-//
-//        InputStream in = null;
-//        try {
-//            in = Organizer.getUriAsInputStream("J:/dev/atoll-v2/atoll-motu/atoll-motu-processor/src/test/resources/xml/TestServiceMetadata.xml");
-//        } catch (MotuException e1) {
-//            // TODO Auto-generated catch block
-//            e1.printStackTrace();
-//        }
-//        JAXBContext jc = null;
-//        ServiceIdentification serviceIdentification = null;
-//        try {
-//            jc = JAXBContext.newInstance("org.geotools.service");
-//            Unmarshaller unmarshaller = jc.createUnmarshaller();
-//            JAXBElement<?> element = (JAXBElement<?>) unmarshaller.unmarshal(in);
-//            serviceIdentification = (ServiceIdentification) element.getValue();
-//            System.out.println(serviceIdentification.toString());
-//
-//        } catch (JAXBException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//
-//        Collection<OperationMetadata> operationMetadataPropertyTypeList = serviceIdentification.getContainsOperations();
-//
-//        for (OperationMetadata operationMetadata : operationMetadataPropertyTypeList) {
-//
-//            System.out.println(operationMetadata.getOperationName());
-//            System.out.println(operationMetadata.getInvocationName());
-//            System.out.println(operationMetadata.getOperationDescription());
-//
-//        }
-//
-//        System.out.println("End testLoadOGCServiceMetadata");
+        //
+        // InputStream in = null;
+        // try {
+        // in =
+        // Organizer.getUriAsInputStream("J:/dev/atoll-v2/atoll-motu/atoll-motu-processor/src/test/resources/xml/TestServiceMetadata.xml");
+        // } catch (MotuException e1) {
+        // // TODO Auto-generated catch block
+        // e1.printStackTrace();
+        // }
+        // JAXBContext jc = null;
+        // ServiceIdentification serviceIdentification = null;
+        // try {
+        // jc = JAXBContext.newInstance("org.geotools.service");
+        // Unmarshaller unmarshaller = jc.createUnmarshaller();
+        // JAXBElement<?> element = (JAXBElement<?>) unmarshaller.unmarshal(in);
+        // serviceIdentification = (ServiceIdentification) element.getValue();
+        // System.out.println(serviceIdentification.toString());
+        //
+        // } catch (JAXBException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+        //
+        // Collection<OperationMetadata> operationMetadataPropertyTypeList =
+        // serviceIdentification.getContainsOperations();
+        //
+        // for (OperationMetadata operationMetadata : operationMetadataPropertyTypeList) {
+        //
+        // System.out.println(operationMetadata.getOperationName());
+        // System.out.println(operationMetadata.getInvocationName());
+        // System.out.println(operationMetadata.getOperationDescription());
+        //
+        // }
+        //
+        // System.out.println("End testLoadOGCServiceMetadata");
 
     }
 
@@ -223,7 +225,7 @@ public class TestServiceMetadata {
         JAXBContext jc = null;
         try {
             // jc = JAXBContext.newInstance("org.isotc211.iso19139.d_2006_05_04.srv");
-            //jc = JAXBContext.newInstance("org.isotc211.iso19139.d_2006_05_04.srv");
+            // jc = JAXBContext.newInstance("org.isotc211.iso19139.d_2006_05_04.srv");
             jc = JAXBContext.newInstance(new Class[] { org.isotc211.iso19139.d_2006_05_04.srv.ObjectFactory.class });
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             Source srcFile = new StreamSource(xmlFile);
@@ -404,7 +406,7 @@ public class TestServiceMetadata {
             Organizer.copyFile(jarFile, dest);
         }
 
-        //stringList.add(url.toString());
+        // stringList.add(url.toString());
         // stringList.add("J:/dev/iso/19139/20070417/schema/src/main/resources/iso/19139/20070417/srv/srv.xsd");
         stringList.add(localIso19139RootSchemaPath);
         // stringList.add("C:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/srv/serviceMetadata.xsd");
@@ -485,7 +487,7 @@ public class TestServiceMetadata {
     }
 
     public static void testServiceMetadataBuilder() {
-        
+
         ServiceMetadataBuilder serviceMetadataBuilder = new ServiceMetadataBuilder();
         URL url = null;
         try {
@@ -496,57 +498,56 @@ public class TestServiceMetadata {
         }
         serviceMetadataBuilder.setXmlTemplate(url.getPath());
         serviceMetadataBuilder.setTempPath("file:///c:/tempVFS");
-        serviceMetadataBuilder.setOutputXml("file:///J:/dev/atoll-v2/atoll-motu/atoll-motu-processor/src/main/resources/fmpp/src/ServiceMetadataOpendap.xml");
+        serviceMetadataBuilder
+                .setOutputXml("file:///J:/dev/atoll-v2/atoll-motu/atoll-motu-processor/src/main/resources/fmpp/src/ServiceMetadataOpendap.xml");
         serviceMetadataBuilder.setValidate(false);
         serviceMetadataBuilder.setExpand(false);
         serviceMetadataBuilder.setFmpp(false);
         serviceMetadataBuilder.setValidateOutput("src/main/resources/fmpp/out");
-        
-        
+
         serviceMetadataBuilder.execute();
     }
-    
-    public static JAXBElement<?> testdom4j()  {
-        
+
+    public static JAXBElement<?> testdom4j() {
+
         URL url = null;
         JAXBElement<?> jaxbElement = null;
         try {
-//          url = new URL("file:///c:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml");
-//            url = Organizer.findResource("src/main/resources/fmpp/src/ServiceMetadataOpendap.xml");
+            // url = new
+            // URL("file:///c:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml");
+            // url = Organizer.findResource("src/main/resources/fmpp/src/ServiceMetadataOpendap.xml");
             url = Organizer.findResource("fmpp/out/serviceMetadata_motu-opendap-aviso.xml");
             SAXReader reader = new SAXReader();
             Document document = reader.read(url);
             Element root = document.getRootElement();
 
             // iterate through child elements of root
-//            for ( Iterator<Element> i = root.elementIterator(); i.hasNext(); ) {
-//                Element element = (Element) i.next();
-//                System.out.println(element);
-//                // do something
-//            }
+            // for ( Iterator<Element> i = root.elementIterator(); i.hasNext(); ) {
+            // Element element = (Element) i.next();
+            // System.out.println(element);
+            // // do something
+            // }
 
-            JAXBWriter  jaxbWriter = new JAXBWriter(ServiceMetadata.ISO19139_SHEMA_PACK_NAME);
+            JAXBWriter jaxbWriter = new JAXBWriter(ServiceMetadata.ISO19139_SHEMA_PACK_NAME);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             jaxbWriter.setOutput(byteArrayOutputStream);
-            
-//            FileWriter fileWriter = new FileWriter("./testdom4j.xml");
-//            jaxbWriter.setOutput(fileWriter);
+
+            // FileWriter fileWriter = new FileWriter("./testdom4j.xml");
+            // jaxbWriter.setOutput(fileWriter);
             jaxbWriter.startDocument();
             jaxbWriter.writeElement(root);
             jaxbWriter.endDocument();
-//            fileWriter.close();
-            
+            // fileWriter.close();
+
             ServiceMetadata serviceMetadata = new ServiceMetadata();
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
             jaxbElement = serviceMetadata.unmarshallIso19139(byteArrayInputStream);
-            
-            ServiceMetadata.dump(jaxbElement);            
+
+            ServiceMetadata.dump(jaxbElement);
 
             ServiceMetadata servMetadata = new ServiceMetadata();
             jaxbElement = servMetadata.dom4jToJaxb(document);
-            
-            
-            
+
         } catch (MalformedURLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -571,30 +572,29 @@ public class TestServiceMetadata {
         }
         return jaxbElement;
 
-    
     }
-    public static void testIso19139Operations () {
-//        
-//        JAXBElement<?> element = testdom4j();
-//        if (element == null) {
-//            return;
-//        }
-        
+
+    public static void testIso19139Operations() {
+        //        
+        // JAXBElement<?> element = testdom4j();
+        // if (element == null) {
+        // return;
+        // }
+
         try {
             ServiceMetadata serviceMetadata = new ServiceMetadata();
             URL url = null;
             Set<SVOperationMetadataType> listOperation = new HashSet<SVOperationMetadataType>();
-//          url = new URL("file:///c:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml");
+            // url = new
+            // URL("file:///c:/Documents and Settings/dearith/Mes documents/Atoll/SchemaIso/TestServiceMetadataOK.xml");
             url = Organizer.findResource("fmpp/src/ServiceMetadataOpendap.xml");
             serviceMetadata.getOperations(url, listOperation);
             ServiceMetadata.dump(listOperation);
             List<String> listOperationNamesUnique = new ArrayList<String>();
 
-            
             serviceMetadata.getOperationsNameUnique(listOperation, listOperationNamesUnique);
-            
-            
-            for (String name  : listOperationNamesUnique) {
+
+            for (String name : listOperationNamesUnique) {
 
                 System.out.println("==================");
                 if (name == null) {
@@ -604,7 +604,7 @@ public class TestServiceMetadata {
             }
             listOperationNamesUnique.clear();
             serviceMetadata.getOperationsInvocationNameUnique(listOperation, listOperationNamesUnique);
-            for (String name  : listOperationNamesUnique) {
+            for (String name : listOperationNamesUnique) {
 
                 System.out.println("------+++++==================");
                 if (name == null) {
@@ -615,7 +615,6 @@ public class TestServiceMetadata {
 
             List<SVOperationMetadataType> listOperationUnique = new ArrayList<SVOperationMetadataType>();
 
-            
             serviceMetadata.getOperationsUnique(listOperation, listOperationUnique);
             for (SVOperationMetadataType operationMetadataType : listOperationUnique) {
 
@@ -625,33 +624,38 @@ public class TestServiceMetadata {
                 }
                 System.out.println(operationMetadataType.getOperationName().getCharacterString().getValue());
             }
-            
+
             OperationRelationshipEdge<String> edge = new OperationRelationshipEdge<String>();
-            DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph = new DefaultDirectedGraph<OperationMetadata, OperationRelationshipEdge<String>>((Class<? extends OperationRelationshipEdge<String>>) edge.getClass());
+            DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph = new DefaultDirectedGraph<OperationMetadata, OperationRelationshipEdge<String>>(
+                    (Class<? extends OperationRelationshipEdge<String>>) edge.getClass());
             serviceMetadata.getOperations(url, directedGraph);
 
-            StrongConnectivityInspector<OperationMetadata, OperationRelationshipEdge<String>> sci = new StrongConnectivityInspector<OperationMetadata, OperationRelationshipEdge<String>>(directedGraph);
-            List<DirectedSubgraph<OperationMetadata, OperationRelationshipEdge<String>>> stronglyConnectedSubgraphs = sci.stronglyConnectedSubgraphs();
+            StrongConnectivityInspector<OperationMetadata, OperationRelationshipEdge<String>> sci = new StrongConnectivityInspector<OperationMetadata, OperationRelationshipEdge<String>>(
+                    directedGraph);
+            List<DirectedSubgraph<OperationMetadata, OperationRelationshipEdge<String>>> stronglyConnectedSubgraphs = sci
+                    .stronglyConnectedSubgraphs();
             sci.stronglyConnectedSets();
             System.out.println(sci.isStronglyConnected());
-            
+
             // prints the strongly connected components
             System.out.println("Strongly connected components:");
             for (int i = 0; i < stronglyConnectedSubgraphs.size(); i++) {
                 System.out.println(stronglyConnectedSubgraphs.get(i));
             }
             System.out.println();
-            
-            System.out.println (directedGraph.edgeSet());
-            
-            ConnectivityInspector<OperationMetadata, OperationRelationshipEdge<String>> ci = new ConnectivityInspector<OperationMetadata, OperationRelationshipEdge<String>>(directedGraph);
-            System.out.println (ci.isGraphConnected());
-            
-            DirectedNeighborIndex<OperationMetadata, OperationRelationshipEdge<String>> ni = new DirectedNeighborIndex<OperationMetadata, OperationRelationshipEdge<String>>(directedGraph);
+
+            System.out.println(directedGraph.edgeSet());
+
+            ConnectivityInspector<OperationMetadata, OperationRelationshipEdge<String>> ci = new ConnectivityInspector<OperationMetadata, OperationRelationshipEdge<String>>(
+                    directedGraph);
+            System.out.println(ci.isGraphConnected());
+
+            DirectedNeighborIndex<OperationMetadata, OperationRelationshipEdge<String>> ni = new DirectedNeighborIndex<OperationMetadata, OperationRelationshipEdge<String>>(
+                    directedGraph);
 
             List<OperationMetadata> sourceOperations = new ArrayList<OperationMetadata>();
             List<OperationMetadata> sinkOperations = new ArrayList<OperationMetadata>();
-            
+
             ServiceMetadata.getSourceOperations(directedGraph, sourceOperations);
             ServiceMetadata.getSinkOperations(directedGraph, sinkOperations);
 
@@ -663,34 +667,33 @@ public class TestServiceMetadata {
             for (OperationMetadata source : sourceOperations) {
                 System.out.print("%%%%%%%% PATHS FROM  %%%%%%%%%%%%");
                 System.out.println(source);
-                    KShortestPaths<OperationMetadata, OperationRelationshipEdge<String>> paths = ServiceMetadata.getOperationPaths(directedGraph, source, 10);
-                    
-                    for (OperationMetadata sink : sinkOperations) {
-                        System.out.print(" %%%%%%%%%%%% TO ");
-                        System.out.println(sink);
-                        List<GraphPath<OperationMetadata, OperationRelationshipEdge<String>>> listPath = ServiceMetadata.getOperationPaths(paths, sink);
-                        for (GraphPath<OperationMetadata, OperationRelationshipEdge<String>> gp : listPath) {
-                        System.out.println(gp.getEdgeList());
-                        }
-                    }
-                    
-            }
-            
-            
-//            // Prints the shortest path from vertex i to vertex c. This certainly
-//            // exists for our particular directed graph.
-//            System.out.println("Shortest path from i to c:");
-//            List path = DijkstraShortestPath.findPathBetween(directedGraph, "i", "c");
-//            System.out.println(path + "\n");
+                KShortestPaths<OperationMetadata, OperationRelationshipEdge<String>> paths = ServiceMetadata.getOperationPaths(directedGraph,
+                                                                                                                               source,
+                                                                                                                               10);
 
-//            // Prints the shortest path from vertex c to vertex i. This path does
-//            // NOT exist for our particular directed graph. Hence the path is
-//            // empty and the variable "path" must be null.
-//            System.out.println("Shortest path from c to i:");
-//            path = DijkstraShortestPath.findPathBetween(directedGraph, "c", "i");
-//            System.out.println(path);
-            
-            
+                for (OperationMetadata sink : sinkOperations) {
+                    System.out.print(" %%%%%%%%%%%% TO ");
+                    System.out.println(sink);
+                    List<GraphPath<OperationMetadata, OperationRelationshipEdge<String>>> listPath = ServiceMetadata.getOperationPaths(paths, sink);
+                    for (GraphPath<OperationMetadata, OperationRelationshipEdge<String>> gp : listPath) {
+                        System.out.println(gp.getEdgeList());
+                    }
+                }
+
+            }
+
+            // // Prints the shortest path from vertex i to vertex c. This certainly
+            // // exists for our particular directed graph.
+            // System.out.println("Shortest path from i to c:");
+            // List path = DijkstraShortestPath.findPathBetween(directedGraph, "i", "c");
+            // System.out.println(path + "\n");
+
+            // // Prints the shortest path from vertex c to vertex i. This path does
+            // // NOT exist for our particular directed graph. Hence the path is
+            // // empty and the variable "path" must be null.
+            // System.out.println("Shortest path from c to i:");
+            // path = DijkstraShortestPath.findPathBetween(directedGraph, "c", "i");
+            // System.out.println(path);
 
         } catch (MotuException e) {
             // TODO Auto-generated catch block
@@ -699,8 +702,7 @@ public class TestServiceMetadata {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
     }
-    
 
 }

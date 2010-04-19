@@ -1,24 +1,20 @@
 package fr.cls.atoll.motu.processor.ant;
 
+import fmpp.tools.AntTask;
+
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
+
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 
 import org.apache.tools.ant.BuildException;
-
-import fmpp.dataloaders.AntTaskDataLoader;
-import fmpp.setting.SettingException;
-import fmpp.setting.Settings;
-import fmpp.tools.AntTask;
-import fmpp.util.MiscUtil;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
 
 /**
  * <br>

@@ -1,5 +1,26 @@
 package fr.cls.atoll.motu.processor.wps;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.utils.StaticResourceBackedDynamicEnum;
+import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
+import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
+import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
+import fr.cls.atoll.motu.processor.opengis.wps100.DescriptionType;
+import fr.cls.atoll.motu.processor.opengis.wps100.Execute;
+import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
+import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType;
+import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
+import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse;
+import fr.cls.atoll.motu.processor.wps.framework.MotuWPSStatusType;
+import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
+import fr.cls.atoll.motu.processor.wps.framework.WPSInfo;
+import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
+import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse.WPSStatusResponse;
+
 import java.io.ByteArrayInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -58,27 +79,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.exception.MotuMarshallException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.utils.StaticResourceBackedDynamicEnum;
-import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
-import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
-import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
-import fr.cls.atoll.motu.processor.opengis.wps100.DescriptionType;
-import fr.cls.atoll.motu.processor.opengis.wps100.Execute;
-import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
-import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType;
-import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
-import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse;
-import fr.cls.atoll.motu.processor.wps.framework.MotuWPSStatusType;
-import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
-import fr.cls.atoll.motu.processor.wps.framework.WPSInfo;
-import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
-import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse.WPSStatusResponse;
-
 /**
  * <br>
  * <br>
@@ -116,17 +116,15 @@ public class TestWPS {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
         try {
-            URI uri  = new URI("sftp://C:/home/data");
+            URI uri = new URI("sftp://C:/home/data");
             System.out.println(uri.getScheme());
         } catch (URISyntaxException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
-           
-        
+
         // String serverURL = "http://localhost:8080/atoll-motuservlet/services";
         //
         // try {
@@ -144,7 +142,7 @@ public class TestWPS {
 
         // testCreateObject();
 
-        //testComplexOutputWPSResponse();
+        // testComplexOutputWPSResponse();
 
         // AnnotatedElement annotatedElement = StatusType.class;
         // System.out.println(annotatedElement.getAnnotations().toString());
@@ -360,8 +358,9 @@ public class TestWPS {
     }
 
     public static void print(ByteBuffer bb) {
-        while (bb.hasRemaining())
+        while (bb.hasRemaining()) {
             System.out.print(bb.get() + " ");
+        }
         System.out.println();
         bb.rewind();
     }
@@ -504,8 +503,9 @@ public class TestWPS {
             Annotation[] annos = DescriptionType.class.getAnnotations();
 
             System.out.println("All annotations for Meta2:");
-            for (Annotation a : annos)
+            for (Annotation a : annos) {
                 System.out.println(a);
+            }
 
         } catch (Exception exc) {
         }
@@ -1316,8 +1316,8 @@ public class TestWPS {
                         System.out.print("-->");
                         System.out.println(oo.toString());
                         if (oo instanceof Element) {
-                            TestWPS.readXML((Element)oo);
-                        }                        
+                            TestWPS.readXML((Element) oo);
+                        }
                     }
                 } else {
                     System.out.println(o.toString());
@@ -1347,32 +1347,32 @@ public class TestWPS {
         System.out.println(result);
         System.out.println(WPSUtils.isProcessletExceptionErrorMessageEncode(msg));
     }
-    
+
     public static void readXML(Element object) {
-//        XMLReader parser = XMLReaderFactory.createXMLReader();
-//        InputSource inputSource = new InputSource()
-//        parser.parse(input);
+        // XMLReader parser = XMLReaderFactory.createXMLReader();
+        // InputSource inputSource = new InputSource()
+        // parser.parse(input);
 
         try {
-                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                        DocumentBuilder db = dbf.newDocumentBuilder();
-                    Source src = new DOMSource(object);
-                    TransformerFactory tFactory = TransformerFactory.newInstance();
-                    Transformer tformer = tFactory.newTransformer();
-                    
-                    Result result = new StreamResult(System.out);
-                    tformer.transform(src, result);
-//                    doc.getDocumentElement().normalize();
-//                    System.out.println("Root element " + doc.getDocumentElement().getNodeName());
-//                    NodeList nodeLst = doc.getElementsByTagName("employee");
-//                    System.out.println("Information of all employees");
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Source src = new DOMSource(object);
+            TransformerFactory tFactory = TransformerFactory.newInstance();
+            Transformer tformer = tFactory.newTransformer();
 
-                    Element copyElement = (Element) object.cloneNode(true);
-                    Document doc = db.newDocument();
-                    Node node = doc.importNode(copyElement, true);
-                    NodeList nodeList =  doc.getElementsByTagName("Arc");
-                    System.out.println(doc.getElementsByTagName("Curve"));
-                    //Node node = object;
+            Result result = new StreamResult(System.out);
+            tformer.transform(src, result);
+            // doc.getDocumentElement().normalize();
+            // System.out.println("Root element " + doc.getDocumentElement().getNodeName());
+            // NodeList nodeLst = doc.getElementsByTagName("employee");
+            // System.out.println("Information of all employees");
+
+            Element copyElement = (Element) object.cloneNode(true);
+            Document doc = db.newDocument();
+            Node node = doc.importNode(copyElement, true);
+            NodeList nodeList = doc.getElementsByTagName("Arc");
+            System.out.println(doc.getElementsByTagName("Curve"));
+            // Node node = object;
 
         } catch (ParserConfigurationException e) {
             // TODO Auto-generated catch block
@@ -1381,7 +1381,6 @@ public class TestWPS {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-               
-  
+
     }
- }
+}

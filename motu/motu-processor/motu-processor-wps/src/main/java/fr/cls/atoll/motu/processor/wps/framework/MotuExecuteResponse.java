@@ -1,34 +1,11 @@
 package fr.cls.atoll.motu.processor.wps.framework;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlType;
-
-import org.joda.time.DateTime;
-import org.joda.time.Period;
-
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.utils.ReflectionUtils;
-import fr.cls.atoll.motu.library.utils.StaticResourceBackedDynamicEnum;
-import fr.cls.atoll.motu.msg.xml.ErrorType;
-import fr.cls.atoll.motu.msg.xml.StatusModeType;
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.message.xml.StatusModeType;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.utils.ReflectionUtils;
+import fr.cls.atoll.motu.library.misc.utils.StaticResourceBackedDynamicEnum;
 import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
-import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
-import fr.cls.atoll.motu.processor.opengis.ows110.BoundingBoxType;
 import fr.cls.atoll.motu.processor.opengis.ows110.CodeType;
 import fr.cls.atoll.motu.processor.opengis.ows110.ExceptionReport;
 import fr.cls.atoll.motu.processor.opengis.ows110.ExceptionType;
@@ -41,6 +18,17 @@ import fr.cls.atoll.motu.processor.opengis.wps100.OutputReferenceType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessStartedType;
 import fr.cls.atoll.motu.processor.opengis.wps100.StatusType;
 import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlType;
+
+import org.joda.time.DateTime;
+import org.joda.time.Period;
 
 /**
  * <br>
@@ -437,10 +425,10 @@ public class MotuExecuteResponse {
      * @throws MotuException the motu exception
      */
     public String getMotuResponseMessage() throws MotuException {
-        
+
         return (String) getResponseValue(MotuWPSProcess.PARAM_MESSAGE);
     }
-    
+
     /**
      * Gets the motu status code.
      * 
@@ -449,14 +437,15 @@ public class MotuExecuteResponse {
      * @throws MotuException the motu exception
      */
     public ErrorType getMotuResponseCode() throws MotuException {
-        
+
         return (ErrorType) getResponseValue(MotuWPSProcess.PARAM_CODE);
     }
+
     public StatusModeType getMotuResponseStatus() throws MotuException {
-        
+
         return (StatusModeType) getResponseValue(MotuWPSProcess.PARAM_MODE_STATUS);
     }
-    
+
     /**
      * Gets the motu response url.
      * 
@@ -465,10 +454,10 @@ public class MotuExecuteResponse {
      * @throws MotuException the motu exception
      */
     public String getMotuResponseUrl() throws MotuException {
-        
+
         return (String) getResponseValue(MotuWPSProcess.PARAM_URL);
     }
-    
+
     /**
      * Gets the motu response local url.
      * 
@@ -477,10 +466,10 @@ public class MotuExecuteResponse {
      * @throws MotuException the motu exception
      */
     public String getMotuResponseLocalUrl() throws MotuException {
-        
+
         return (String) getResponseValue(MotuWPSProcess.PARAM_LOCAL_URL);
     }
-    
+
     /**
      * Gets the response value.
      * 
@@ -491,7 +480,7 @@ public class MotuExecuteResponse {
      * @throws MotuException the motu exception
      */
     public Object getResponseValue(String parameterName) throws MotuException {
-        
+
         String msg = "No process response";
 
         if (executeResponse == null) {
@@ -514,18 +503,18 @@ public class MotuExecuteResponse {
         Object value = null;
         for (OutputDataType outputDataType : outputDataTypeList) {
             CodeType identifier = outputDataType.getIdentifier();
-            
+
             if (identifier.getValue().equals(parameterName)) {
-                
+
                 value = getResponseValue(outputDataType);
                 break;
             }
         }
-        
+
         return value;
-        
+
     }
-    
+
     /**
      * Gets the response value.
      * 
@@ -557,9 +546,9 @@ public class MotuExecuteResponse {
             value = getResponseValue(dataType.getLiteralData());
         } else if (WPSInfo.isComplexData(dataType)) {
             value = getResponseValue(dataType.getComplexData());
-            
+
         } else if (WPSInfo.isBoundingBoxData(dataType)) {
-            value = dataType.getBoundingBoxData();           
+            value = dataType.getBoundingBoxData();
         }
 
         return value;
@@ -593,9 +582,9 @@ public class MotuExecuteResponse {
         String nativeValue = literalDataType.getValue();
 
         Object returnedObject = null;
-        
+
         Class<?> nativeClazz = nativeValue.getClass();
-        
+
         try {
 
             if (DateTime.class.equals(clazz)) {
@@ -604,43 +593,42 @@ public class MotuExecuteResponse {
             } else if (Period.class.equals(clazz)) {
                 returnedObject = WPSFactory.stringToPeriod(nativeValue);
             } else if (clazz.isEnum()) {
-                returnedObject = Enum.valueOf((Class)clazz, nativeValue);
+                returnedObject = Enum.valueOf((Class) clazz, nativeValue);
             } else {
                 Constructor<?> ctor = clazz.getConstructor(nativeClazz);
                 returnedObject = ctor.newInstance(nativeValue);
             }
 
-//            System.out.print(returnedObject.getClass().getName());
-//            System.out.print(" --> ");
-//            System.out.println(returnedObject);
+            // System.out.print(returnedObject.getClass().getName());
+            // System.out.print(" --> ");
+            // System.out.println(returnedObject);
 
         } catch (Exception e) {
             throw new MotuException("ERROR in MotuExecuteResponse#getResponseValue.", e);
 
         }
-        
+
         return returnedObject;
     }
-    
+
     public Object getResponseValue(ComplexDataType complexDataType) throws MotuException {
 
         if (complexDataType == null) {
             return null;
         }
-//        String encoding = complexDataType.getEncoding();
+        // String encoding = complexDataType.getEncoding();
         Object valueType = null;
         if (complexDataType.getContent().size() == 1) {
             valueType = complexDataType.getContent().get(0);
         } else if (complexDataType.getContent().size() > 1) {
             valueType = complexDataType.getContent();
-        } 
+        }
 
-//        Charset charset = Charset.forName(encoding);
-//        CharsetDecoder decoder = charset.newDecoder();
-//        CharsetEncoder encoder = charset.newEncoder();
+        // Charset charset = Charset.forName(encoding);
+        // CharsetDecoder decoder = charset.newDecoder();
+        // CharsetEncoder encoder = charset.newEncoder();
 
         return valueType;
-    }    
-    
+    }
 
- }
+}

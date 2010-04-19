@@ -1,5 +1,10 @@
 package fr.cls.atoll.motu.processor.iso19139;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
+import fr.cls.atoll.motu.processor.wps.framework.WPSInfo;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,11 +21,6 @@ import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterPropertyType;
 import org.isotc211.iso19139.d_2006_05_04.srv.SVParameterType;
 import org.joda.time.DateTime;
 import org.opengis.parameter.ParameterValue;
-
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
-import fr.cls.atoll.motu.processor.wps.framework.WPSInfo;
 
 /**
  * <br>
@@ -64,10 +64,10 @@ public class OperationMetadata {
         // latitude/longitude upper corner).
         XML_JAVA_CLASS_MAPPING.put("boundingBox", double[].class);
         XML_JAVA_CLASS_MAPPING.put("boundingbox", double[].class);
-        
-        //custom Motu type
-        XML_JAVA_CLASS_MAPPING.put("errorType", fr.cls.atoll.motu.msg.xml.ErrorType.class);
-        XML_JAVA_CLASS_MAPPING.put("statusModeType", fr.cls.atoll.motu.msg.xml.StatusModeType.class);
+
+        // custom Motu type
+        XML_JAVA_CLASS_MAPPING.put("errorType", fr.cls.atoll.motu.api.message.xml.ErrorType.class);
+        XML_JAVA_CLASS_MAPPING.put("statusModeType", fr.cls.atoll.motu.api.message.xml.StatusModeType.class);
 
     };
 
@@ -832,6 +832,7 @@ public class OperationMetadata {
         }
         return returnMap;
     }
+
     public ParameterValue<?> createParameterValue(String paramName) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("createParameterValue(String) - entering");
@@ -843,6 +844,7 @@ public class OperationMetadata {
         }
         return returnParameterValue;
     }
+
     /**
      * Creates the parameter value.
      * 
@@ -888,6 +890,7 @@ public class OperationMetadata {
         }
         return returnParameterValue;
     }
+
     public ParameterValue<?> createParameterValue(SVParameterType parameterType, boolean allowCollection) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("createParameterValue(SVParameterType) - entering");
@@ -904,7 +907,7 @@ public class OperationMetadata {
                                                   XML_JAVA_CLASS_MAPPING.keySet().toString()));
         }
         ParameterValue<?> returnParameterValue = null;
-        
+
         if (parameterType.getRepeatability().isBoolean() && allowCollection) {
             returnParameterValue = WPSFactory.createParameter(paramName, Collection.class, null);
 
@@ -1001,11 +1004,11 @@ public class OperationMetadata {
         }
     }
 
-//    public void setParameterValue(String name, double[] value) throws MotuException {
-//        ParameterValue<?> parameterValue = getParameterValue(name);
-//        parameterValue.setValue((Object)value);
-//
-//    }
+    // public void setParameterValue(String name, double[] value) throws MotuException {
+    // ParameterValue<?> parameterValue = getParameterValue(name);
+    // parameterValue.setValue((Object)value);
+    //
+    // }
 
     public void setParameterValue(String name, String value) throws MotuExceptionBase {
         if (LOG.isDebugEnabled()) {
@@ -1015,14 +1018,13 @@ public class OperationMetadata {
         ParameterValue<?> parameterValue = getParameterValue(name);
 
         Object v = value;
-        
-        
+
         final Class<?> type = parameterValue.getDescriptor().getValueClass();
-        
+
         if (DateTime.class.equals(type)) {
             v = WPSFactory.stringToDateTime(value);
         }
-        
+
         if (Collection.class.equals(type)) {
             v = new ArrayList<String>();
             ((ArrayList<String>) v).add(value);
@@ -1078,18 +1080,18 @@ public class OperationMetadata {
             LOG.debug("dump() - exiting");
         }
     }
-    
+
     public WPSInfo getWpsInfo() throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getWpsInfo() - entering");
         }
-    
-    String url = getConnectPoint(0);
+
+        String url = getConnectPoint(0);
         WPSInfo returnWPSInfo = WPSFactory.getWpsInfo(url);
         if (LOG.isDebugEnabled()) {
             LOG.debug("getWpsInfo() - exiting");
         }
-    return returnWPSInfo;
+        return returnWPSInfo;
     }
-    
+
 }

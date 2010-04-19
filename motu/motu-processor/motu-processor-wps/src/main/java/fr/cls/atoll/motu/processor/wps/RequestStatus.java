@@ -1,5 +1,9 @@
 package fr.cls.atoll.motu.processor.wps;
 
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidRequestIdException;
+
 import org.apache.log4j.Logger;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.Processlet;
@@ -8,10 +12,6 @@ import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.input.ReferencedComplexInput;
-
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidRequestIdException;
-import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
 
 /**
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
@@ -77,7 +77,7 @@ public class RequestStatus extends MotuWPSProcess {
     private void getRequestStatus(ProcessletInputs in) throws MotuException, ProcessletException {
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
         long requestId = processRequestIdAsLong(in);
-        
+
         if (requestId < 0) {
             return;
         }
@@ -86,14 +86,17 @@ public class RequestStatus extends MotuWPSProcess {
 
         if (statusModeResponse == null) {
             MotuWPSProcess.setStatus(motuWPSProcessData.getProcessletOutputs(), "");
-//            MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuInvalidRequestIdException(requestId), motuWPSProcessData
-//                                         .getRequestIdParamIn() instanceof ReferencedComplexInput);
+            // MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), new
+            // MotuInvalidRequestIdException(requestId), motuWPSProcessData
+            // .getRequestIdParamIn() instanceof ReferencedComplexInput);
             MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), new MotuInvalidRequestIdException(requestId), true);
             return;
         }
-        
+
         MotuWPSProcess.setStatus(motuWPSProcessData.getProcessletOutputs(), statusModeResponse.getStatus());
-        MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(), statusModeResponse, motuWPSProcessData.getRequestIdParamIn() instanceof ReferencedComplexInput);
+        MotuWPSProcess.setReturnCode(motuWPSProcessData.getProcessletOutputs(),
+                                     statusModeResponse,
+                                     motuWPSProcessData.getRequestIdParamIn() instanceof ReferencedComplexInput);
 
     }
 

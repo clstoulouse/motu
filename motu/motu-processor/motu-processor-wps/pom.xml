@@ -1,288 +1,246 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<artifactId>motu</artifactId>
-		<groupId>cls.atoll.motu</groupId>
-		<version>2.0.7-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>cls.atoll.motu</groupId>
-	<artifactId>motu-processor</artifactId>
-	<packaging>jar</packaging>
-	<version>2.0.7-SNAPSHOT</version>
-	<name>Motu Processors</name>
-	<scm>
-		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/motu/motu-processor</connection>
-  </scm>
-	<description>This package holds the processors in conformance with WPS sepecification.</description>
-	<dependencies>
-		<dependency>
-			<groupId>cls.atoll.motu</groupId>
-			<artifactId>motu-library</artifactId>
-			<version>2.0.7-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.ant</groupId>
-			<artifactId>ant</artifactId>
-			<version>1.7.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>cls.atoll.motu</groupId>
-			<artifactId>motu-msg</artifactId>
-			<version>2.0.7-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.deegree</groupId>
-			<artifactId>deegree-services</artifactId>
-			<version>3.0-alpha2-dev1</version>
-			<exclusions>
-				<exclusion>
-					<groupId>opensymphony</groupId>
-					<artifactId>quartz</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.geotoolkit</groupId>
-			<artifactId>geotk-referencing</artifactId>
-			<version>3.03</version>
-		</dependency>
-		<dependency>
-			<groupId>org.opengis</groupId>
-			<artifactId>geoapi</artifactId>
-			<version>2.3-M4</version>
-		</dependency>
-
-		<dependency>
-			<groupId>jgrapht</groupId>
-			<artifactId>jgrapht</artifactId>
-			<version>0.7.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jvnet.ogc</groupId>
-			<artifactId>iso-19139-d_2006_05_04-schema</artifactId>
-			<!-- <artifactId>iso-19139-d_2007_04_17-schema</artifactId>  -->
-			<version>1.0.0-PATCH-CLS</version>
-		</dependency>
-		<!--
-			<dependency> <groupId>org.geotoolkit</groupId>
-			<artifactId>geotk-metadata</artifactId> <version>SNAPSHOT</version>
-			</dependency> <dependency> <groupId>fr.geomatys</groupId>
-			<artifactId>service</artifactId> <version>0.4-SNAPSHOT</version>
-			</dependency>
-		-->
-
-		<dependency>
-			<groupId>opensymphony</groupId>
-			<artifactId>osworkflow</artifactId>
-			<version>2.7.0</version>
-		</dependency>
-		<dependency>
-			<groupId>opensymphony</groupId>
-			<artifactId>propertyset</artifactId>
-			<version>1.3</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.collections</groupId>
-			<artifactId>google-collections</artifactId>
-			<version>0.8</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-			<version>${dependencies.version.spring}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>${dependencies.version.spring}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>2.1.10</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jvnet.jaxb2_commons</groupId>
-			<artifactId>jaxb-xjc</artifactId>
-			<version>2.1.10</version>
-		</dependency>
-		<dependency>
-			<groupId>dom4j</groupId>
-			<artifactId>dom4j</artifactId>
-			<version>1.6.1</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jvnet.ogc</groupId>
-			<artifactId>schemas</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-	</dependencies>
-
-	<properties>
-		<atoll.root.path>${project.parent.basedir}</atoll.root.path>
-		<atoll.motu.web.path>${atoll.root.path}/atoll-motu-web</atoll.motu.web.path>
-		<atoll.motu.web.config.path>${atoll.motu.web.path}/src/main/config/</atoll.motu.web.config.path>
-		
-	</properties>
-
-
-	<build>
-		<plugins>
-<!--			<plugin>-->
-<!--				<groupId>org.apache.maven.plugins</groupId>-->
-<!--				<artifactId>maven-resources-plugin</artifactId>-->
-<!--				<version>2.4</version>-->
-<!--				<executions>-->
-<!--					<execution>-->
-<!--						<id>copy-resources</id>-->
-<!--						<phase>validate</phase>-->
-<!--						<goals>-->
-<!--							<goal>copy-resources</goal>-->
-<!--						</goals>-->
-<!--						<configuration>-->
-<!--							<outputDirectory>${atoll.motu.web.config.path}/${motu.web.config.dir}/WEB-INF</outputDirectory>-->
-<!--							<resources>-->
-<!--								<resource>-->
-<!--									<directory>src/main/resources</directory>-->
-<!--									<includes>-->
-<!--										<include>conf/**</include>-->
-<!--									</includes>-->
-<!--								</resource>-->
-<!--							</resources>-->
-<!--						</configuration>-->
-<!--					</execution>-->
-<!--				</executions>-->
-<!--			</plugin>-->
-
-						<!--
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.3</version>
-				<configuration>
-					<tasks>
-						<!-
-
-							<property name="compile_classpath" refid="maven.compile.classpath" /> <property name="runtime_classpath" refid="maven.runtime.classpath" />
-							<property name="test_classpath" refid="maven.test.classpath" />
-							<property name="plugin_classpath" refid="maven.plugin.classpath" /> <echo message="compile classpath: ${compile_classpath}" />
-							<echo message="runtime classpath: ${runtime_classpath}" /> <echo message="test classpath: ${test_classpath}" /> <echo message="plugin classpath: ${plugin_classpath}" />
-						->
-						<!-
-							<taskdef name="fmpp" classname="fmpp.tools.AntTask" /> <fmpp configuration="src/main/resources/fmpp/configServiceTemplate.fmpp" excludes="**/*"> </fmpp>
-						->
-						<!-
-
-							<property name="base.dir" value="J:/dev/atoll-v2/atoll-motu/atoll-motu-processor" />
-						->
-						<property name="base.dir" value="${basedir}" />
-						<echo message="base.dir: ${base.dir}" />
-
-						<taskdef name="buildServiceMetadata" classname="fr.cls.atoll.motu.processor.ant.ServiceMetadataBuilder" classpathref="maven.runtime.classpath" />
-
-						<property name="fmppOpendap.config" value="src/main/resources/fmpp/configServiceOpendap.fmpp" />
-
-						<property name="tempPath" value="file:///c:/tempVFS/" />
-						<property name="iso19139Schema.path" value="schema/iso19139" />
-						<property name="localIso19139RootSchemaRel.path" value="/srv/srv.xsd" />
-
-						<echo message="tempPath: ${tempPath}" />
-						<echo message="fmppOpdendap.config: ${fmppOpendap.config}" />
-						<echo message="iso19139Schema.path: ${iso19139Schema.path}" />
-						<echo message="localIso19139RootSchemaRel.path: ${localIso19139RootSchemaRel.path}" />
-
-						<property name="outputXmlOpendap" value="file:///${base.dir}/src/main/resources/fmpp/src/ServiceMetadataOpendap.xml" />
-						<echo message="outputXmlOpendap: ${outputXmlOpendap}" />
-
-						<buildServiceMetadata xmlTemplate="file:///${base.dir}/src/main/resources/fmpp/src/base/serviceMetadataTemplateOpendapBase.xml" tempPath="${tempPath}" iso19139Schema="${iso19139Schema.path}" localIso19139RootSchemaRelPath="${localIso19139RootSchemaRel.path}" outputXml="${outputXmlOpendap}" configuration="${fmppOpendap.config}" excludes="**/*" expand="true" validate="false" fmpp="true" validateOutput="src/main/resources/fmpp/out" />
-
-						<property name="fmppFtp.config" value="src/main/resources/fmpp/configServiceFtp.fmpp" />
-						<echo message="fmppFtp.config: ${fmppFtp.config}" />
-
-						<property name="outputXmlFtp" value="file:///${base.dir}/src/main/resources/fmpp/src/ServiceMetadataFtp.xml" />
-						<echo message="outputXmlFtp outputXmlFtp" />
-
-						<buildServiceMetadata xmlTemplate="file:///${base.dir}/src/main/resources/fmpp/src/base/serviceMetadataTemplateFtpBase.xml" tempPath="${tempPath}" iso19139Schema="${iso19139Schema.path}" localIso19139RootSchemaRelPath="${localIso19139RootSchemaRel.path}" outputXml="${outputXmlFtp}" configuration="${fmppFtp.config}" excludes="**/*" expand="true" validate="false" fmpp="true" validateOutput="src/main/resources/fmpp/out" />
-						<!-
-							<taskdef name="freemarker" classname="freemarker.ext.ant.FreemarkerXmlTask"> <classpath>
-							<pathelement location="freemarker.jar" /> </classpath> </taskdef>
-							<taskdef name="fmpp" classname="fmpp.tools.AntTask" /> <fmpp sourceroot="c:/tempVFS/" outputroot="out" logfile="log.fmpp" includesFile="c:/tempVFS/ServiceMetadataExpanded2s.xml"> <data>
-							validate: true servicesXml: xml(c:/tempVFS/data/services.xml)
-							</data> </fmpp>
-						->
-						<!-
-							<fmpp configuration="src/main/resources/fmpp/configServiceOpendap.fmpp" excludes="**/*"> </fmpp>
-						->
-
-					</tasks>
-				</configuration>
-				<!-
-
-					<executions> <execution> <id>servicemetadata</id>
-					<phase>package</phase> <goals> <goal>run</goal> </goals>
-					</execution> </executions>
-				->
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.ant</groupId>
-						<artifactId>ant-commons-net</artifactId>
-						<version>1.7.1</version>
-					</dependency>
-					<dependency>
-						<groupId>org.apache.ant</groupId>
-						<artifactId>ant-nodeps</artifactId>
-						<version>1.7.1</version>
-					</dependency>
-					<dependency>
-						<groupId>org.freemarker</groupId>
-						<artifactId>freemarker</artifactId>
-						<version>2.3.15</version>
-					</dependency>
-					<dependency>
-						<groupId>net.sourceforge.fmpp</groupId>
-						<artifactId>fmpp</artifactId>
-						<version>0.9.14</version>
-					</dependency>
-				</dependencies>
-			</plugin>
--->
-		</plugins>
-	</build>
-	<profiles>
-		<profile>
-			<id>localhost</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<motu.web.config.dir>localhost</motu.web.config.dir>
-			</properties>
-		</profile>
-		<profile>
-			<id>atoll-dev</id>
-			<properties>
-				<motu.web.config.dir>atoll-dev</motu.web.config.dir>
-			</properties>
-		</profile>
-	</profiles>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>cls.atoll.motu.processor</groupId>
+    <artifactId>motu-processor-wps</artifactId>
+    <packaging>jar</packaging>
+    <version>2.1.0-SNAPSHOT</version>
+    <name>Motu Processors</name>
+    <description>This package holds the WPS processor of Motu in conformance with OGC specification.</description>
+    <scm>
+        <connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/motu/motu-processor/motu-processor-wps</connection>
+    </scm>
+    <issueManagement>
+        <system>JIRA</system>
+        <url>http://jira.cls.fr:8080/browse/ATOLL</url>
+    </issueManagement>
+    <distributionManagement>
+        <repository>
+            <id>repo</id>
+            <name>CLS Entreprise Release Repository</name>
+            <url>http://mvnrepo.cls.fr:8081/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>repo</id>
+            <name>CLS Entreprise Snapshot Repository</name>
+            <url>http://mvnrepo.cls.fr:8081/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+    <properties>
+        <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+        <jdk.source.version>1.6</jdk.source.version>
+        <jdk.source.encoding>ISO-8859-1</jdk.source.encoding>
+        <dependencies.version.slf4j>1.5.8</dependencies.version.slf4j>
+        <dependencies.version.spring>2.5.6</dependencies.version.spring>
+        <atoll.root.path>${project.parent.basedir}</atoll.root.path>
+        <atoll.motu.web.path>${atoll.root.path}/atoll-motu-web</atoll.motu.web.path>
+        <atoll.motu.web.config.path>${atoll.motu.web.path}/src/main/config/</atoll.motu.web.config.path>
+    </properties>
+    <licenses>
+        <license>
+            <name>GNU General Public License (GPL)</name>
+            <url>http://www.gnu.org/licenses/gpl.txt</url>
+            <distribution>manual</distribution>
+            <comments>Copyright 2008-2009 CLS.</comments>
+        </license>
+    </licenses>
+    <organization>
+        <name>CLS (Collecte Localisation Satelite)</name>
+        <url>http://www.cls.fr</url>
+    </organization>
+    <developers>
+        <developer>
+            <id>dearith</id>
+            <name>Didier Earith</name>
+            <email>dearith@cls.fr</email>
+            <organization>Akka Technologies</organization>
+            <organizationUrl>http://www.akka.eu/uk/index-uk.php</organizationUrl>
+            <roles>
+                <role>Main Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+            <properties />
+        </developer>
+        <developer>
+            <id>ccamel</id>
+            <name>Christophe Camel</name>
+            <email>ccamel@cls.fr</email>
+            <organization>CLS</organization>
+            <organizationUrl>http://www.cls.fr</organizationUrl>
+            <roles>
+                <role>Architect</role>
+            </roles>
+            <timezone>+1</timezone>
+            <properties />
+        </developer>
+    </developers>
+    <contributors>
+        <contributor>
+            <name>Tony Jolibois</name>
+            <email>tjolibois@cls.fr</email>
+            <organization>CLS</organization>
+            <organizationUrl>http://www.cls.fr</organizationUrl>
+            <roles>
+                <role>Project Manager</role>
+            </roles>
+            <timezone>+1</timezone>
+            <properties />
+        </contributor>
+    </contributors>
+    <dependencies>
+        <dependency>
+            <groupId>cls.atoll.motu.library</groupId>
+            <artifactId>motu-library-misc</artifactId>
+            <version>2.1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>cls.atoll.motu.api</groupId>
+            <artifactId>motu-api-message</artifactId>
+            <version>2.1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.deegree</groupId>
+            <artifactId>deegree-services</artifactId>
+            <version>3.0-alpha2-dev1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>opensymphony</groupId>
+                    <artifactId>quartz</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.geotoolkit</groupId>
+            <artifactId>geotk-referencing</artifactId>
+            <version>3.03</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opengis</groupId>
+            <artifactId>geoapi</artifactId>
+            <version>2.3-M4</version>
+        </dependency>
+        <dependency>
+            <groupId>jgrapht</groupId>
+            <artifactId>jgrapht</artifactId>
+            <version>0.7.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jvnet.ogc</groupId>
+            <artifactId>iso-19139-d_2006_05_04-schema</artifactId>
+            <!-- <artifactId>iso-19139-d_2007_04_17-schema</artifactId>  -->
+            <version>1.0.0-PATCH-CLS</version>
+        </dependency>
+        <!--
+            <dependency> <groupId>org.geotoolkit</groupId> <artifactId>geotk-metadata</artifactId> <version>SNAPSHOT</version> </dependency>
+            <dependency> <groupId>fr.geomatys</groupId> <artifactId>service</artifactId> <version>0.4-SNAPSHOT</version> </dependency>
+        -->
+        <dependency>
+            <groupId>opensymphony</groupId>
+            <artifactId>osworkflow</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>opensymphony</groupId>
+            <artifactId>propertyset</artifactId>
+            <version>1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.collections</groupId>
+            <artifactId>google-collections</artifactId>
+            <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${dependencies.version.spring}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${dependencies.version.spring}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.1.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jvnet.jaxb2_commons</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+            <version>2.1.10</version>
+        </dependency>
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jvnet.ogc</groupId>
+            <artifactId>schemas</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${jdk.source.version}</source>
+                    <target>${jdk.source.version}</target>
+                    <encoding>${jdk.source.encoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>bind-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

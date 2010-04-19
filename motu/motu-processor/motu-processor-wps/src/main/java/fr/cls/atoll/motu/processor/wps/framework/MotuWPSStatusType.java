@@ -1,22 +1,27 @@
 package fr.cls.atoll.motu.processor.wps.framework;
 
+import fr.cls.atoll.motu.library.misc.utils.DynamicEnumerable;
+import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse.WPSStatusResponse;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import fr.cls.atoll.motu.library.utils.DynamicEnumerable;
-import fr.cls.atoll.motu.processor.wps.framework.MotuExecuteResponse.WPSStatusResponse;
-
 /**
- * <br><br>Copyright : Copyright (c) 2009.
- * <br><br>Société : CLS (Collecte Localisation Satellites)
+ * <br>
+ * <br>
+ * Copyright : Copyright (c) 2009. <br>
+ * <br>
+ * Société : CLS (Collecte Localisation Satellites)
+ * 
  * @author $Author: dearith $
  * @version $Revision: 1.1 $ - $Date: 2009-10-15 14:38:09 $
  */
 public class MotuWPSStatusType implements DynamicEnumerable<WPSStatusResponse> {
-    private WPSStatusResponse status;
+    private final WPSStatusResponse status;
 
-    private String value;
+    private final String value;
+
     public MotuWPSStatusType(WPSStatusResponse statusResponse, String value) {
 
         if (value == null) {
@@ -38,9 +43,10 @@ public class MotuWPSStatusType implements DynamicEnumerable<WPSStatusResponse> {
     public String name() {
         return value;
     }
+
+    @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(status).append(value)
-               .toHashCode();
+        return new HashCodeBuilder().append(status).append(value).toHashCode();
     }
 
     @Override
@@ -53,8 +59,7 @@ public class MotuWPSStatusType implements DynamicEnumerable<WPSStatusResponse> {
         }
 
         MotuWPSStatusType other = (MotuWPSStatusType) obj;
-        return new EqualsBuilder().append(status, other.status)
-               .append(value, other.value).isEquals();
+        return new EqualsBuilder().append(status, other.status).append(value, other.value).isEquals();
     }
 
     /*

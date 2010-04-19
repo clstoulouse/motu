@@ -1,6 +1,13 @@
 package fr.cls.atoll.motu.processor.wps;
 
-import java.io.IOException;
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
+
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -11,19 +18,7 @@ import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
-import org.deegree.services.wps.output.ComplexOutput;
-import org.deegree.services.wps.output.LiteralOutput;
 import org.jasig.cas.client.util.AssertionHolder;
-
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.exception.MotuMarshallException;
-import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.msg.xml.ErrorType;
-import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
-import fr.cls.atoll.motu.msg.xml.StatusModeType;
-import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
 
 /**
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
@@ -115,24 +110,24 @@ public class ProductExtraction extends MotuWPSProcess {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("ProductExtraction.process() - exiting");
             }
-            
+
         } catch (ProcessletException e) {
 
             String msg = e.getMessage();
             if (!WPSUtils.isProcessletExceptionErrorMessageEncode(e.getMessage())) {
                 msg = WPSUtils.encodeProcessletExceptionErrorMessage(ErrorType.SYSTEM, msg);
             }
-            
+
             if (!isRequestIdSet) {
                 try {
-                    //MotuWPSProcess.setRequestId(out, msg);
+                    // MotuWPSProcess.setRequestId(out, msg);
                     MotuWPSProcess.setComplexOutputParameters(out, msg);
                 } catch (MotuException e1) {
                     // Do nothing
                 }
-               
+
             }
-            
+
             throw e;
         }
 

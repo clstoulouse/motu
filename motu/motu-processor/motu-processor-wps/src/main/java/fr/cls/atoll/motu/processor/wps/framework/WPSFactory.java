@@ -1,5 +1,42 @@
 package fr.cls.atoll.motu.processor.wps.framework;
 
+import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaLatLon;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.xml.XMLErrorHandler;
+import fr.cls.atoll.motu.library.misc.xml.XMLUtils;
+import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
+import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
+import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
+import fr.cls.atoll.motu.processor.opengis.ows110.BoundingBoxType;
+import fr.cls.atoll.motu.processor.opengis.ows110.CodeType;
+import fr.cls.atoll.motu.processor.opengis.ows110.LanguageStringType;
+import fr.cls.atoll.motu.processor.opengis.wps100.ComplexDataCombinationsType;
+import fr.cls.atoll.motu.processor.opengis.wps100.ComplexDataDescriptionType;
+import fr.cls.atoll.motu.processor.opengis.wps100.ComplexDataType;
+import fr.cls.atoll.motu.processor.opengis.wps100.DataInputsType;
+import fr.cls.atoll.motu.processor.opengis.wps100.DataType;
+import fr.cls.atoll.motu.processor.opengis.wps100.DocumentOutputDefinitionType;
+import fr.cls.atoll.motu.processor.opengis.wps100.Execute;
+import fr.cls.atoll.motu.processor.opengis.wps100.ExecuteResponse;
+import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
+import fr.cls.atoll.motu.processor.opengis.wps100.InputReferenceType;
+import fr.cls.atoll.motu.processor.opengis.wps100.InputType;
+import fr.cls.atoll.motu.processor.opengis.wps100.LiteralDataType;
+import fr.cls.atoll.motu.processor.opengis.wps100.LiteralInputType;
+import fr.cls.atoll.motu.processor.opengis.wps100.ObjectFactory;
+import fr.cls.atoll.motu.processor.opengis.wps100.OutputDefinitionType;
+import fr.cls.atoll.motu.processor.opengis.wps100.OutputDescriptionType;
+import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType;
+import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
+import fr.cls.atoll.motu.processor.opengis.wps100.ResponseDocumentType;
+import fr.cls.atoll.motu.processor.opengis.wps100.ResponseFormType;
+import fr.cls.atoll.motu.processor.opengis.wps100.SupportedCRSsType;
+import fr.cls.atoll.motu.processor.opengis.wps100.SupportedComplexDataInputType;
+import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -34,7 +71,6 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.vfs.FileObject;
 import org.apache.log4j.Logger;
 import org.apache.xerces.dom.DocumentImpl;
-import org.deegree.commons.utils.HttpUtils.Worker;
 import org.geotoolkit.parameter.DefaultParameterDescriptor;
 import org.geotoolkit.parameter.Parameter;
 import org.jgrapht.DirectedGraph;
@@ -42,7 +78,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.ISOPeriodFormat;
 import org.joda.time.format.PeriodFormatter;
 import org.opengis.parameter.InvalidParameterTypeException;
@@ -50,44 +85,6 @@ import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import fr.cls.atoll.motu.library.data.ExtractCriteriaLatLon;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.exception.MotuMarshallException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.xml.XMLErrorHandler;
-import fr.cls.atoll.motu.library.xml.XMLUtils;
-import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
-import fr.cls.atoll.motu.processor.iso19139.ServiceMetadata;
-import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
-import fr.cls.atoll.motu.processor.opengis.ows110.BoundingBoxType;
-import fr.cls.atoll.motu.processor.opengis.ows110.CodeType;
-import fr.cls.atoll.motu.processor.opengis.ows110.LanguageStringType;
-import fr.cls.atoll.motu.processor.opengis.wps100.ComplexDataCombinationsType;
-import fr.cls.atoll.motu.processor.opengis.wps100.ComplexDataDescriptionType;
-import fr.cls.atoll.motu.processor.opengis.wps100.ComplexDataType;
-import fr.cls.atoll.motu.processor.opengis.wps100.DataInputsType;
-import fr.cls.atoll.motu.processor.opengis.wps100.DataType;
-import fr.cls.atoll.motu.processor.opengis.wps100.DocumentOutputDefinitionType;
-import fr.cls.atoll.motu.processor.opengis.wps100.Execute;
-import fr.cls.atoll.motu.processor.opengis.wps100.ExecuteResponse;
-import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
-import fr.cls.atoll.motu.processor.opengis.wps100.InputReferenceType;
-import fr.cls.atoll.motu.processor.opengis.wps100.InputType;
-import fr.cls.atoll.motu.processor.opengis.wps100.LiteralDataType;
-import fr.cls.atoll.motu.processor.opengis.wps100.LiteralInputType;
-import fr.cls.atoll.motu.processor.opengis.wps100.ObjectFactory;
-import fr.cls.atoll.motu.processor.opengis.wps100.OutputDefinitionType;
-import fr.cls.atoll.motu.processor.opengis.wps100.OutputDescriptionType;
-import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType;
-import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
-import fr.cls.atoll.motu.processor.opengis.wps100.ResponseDocumentType;
-import fr.cls.atoll.motu.processor.opengis.wps100.ResponseFormType;
-import fr.cls.atoll.motu.processor.opengis.wps100.StatusType;
-import fr.cls.atoll.motu.processor.opengis.wps100.SupportedCRSsType;
-import fr.cls.atoll.motu.processor.opengis.wps100.SupportedComplexDataInputType;
-import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
 
 /**
  * <br>
@@ -1041,7 +1038,7 @@ public class WPSFactory {
         ComplexDataDescriptionType complexDataDescriptionType = null;
 
         if (complexDataCombinationsType != null) {
-            complexDataDescriptionType = (ComplexDataDescriptionType) complexDataCombinationsType.getFormat().get(0);
+            complexDataDescriptionType = complexDataCombinationsType.getFormat().get(0);
         }
 
         if (complexDataDescriptionType != null) {
@@ -1524,7 +1521,7 @@ public class WPSFactory {
         return execute;
 
     }
-    
+
     /**
      * Unmarshall execute response.
      * 
@@ -1682,7 +1679,7 @@ public class WPSFactory {
         return WPSFactory.getMotuExecuteResponse(executeResponse);
 
     }
-    
+
     /**
      * Gets the motu execute response.
      * 
@@ -1730,7 +1727,7 @@ public class WPSFactory {
 
         return WPSFactory.getMotuExecuteResponse(executeResponse);
     }
-    
+
     /**
      * Gets the execute response.
      * 

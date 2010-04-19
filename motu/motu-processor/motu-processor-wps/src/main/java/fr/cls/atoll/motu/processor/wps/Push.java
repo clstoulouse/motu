@@ -1,9 +1,15 @@
 package fr.cls.atoll.motu.processor.wps;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidRequestIdException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
+
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.deegree.services.controller.OGCFrontController;
@@ -12,19 +18,7 @@ import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
-import org.deegree.services.wps.input.ComplexInput;
-import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.input.ReferencedComplexInput;
-
-import fr.cls.atoll.motu.library.data.Product;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.exception.MotuInvalidRequestIdException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.utils.Zip;
-import fr.cls.atoll.motu.msg.xml.ErrorType;
-import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
-import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
 
 /**
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
@@ -198,7 +192,7 @@ public class Push extends MotuWPSProcess {
                         }
                         if (userInfo.length >= 2) {
                             pwdFrom = userInfo[1];
-                        }                        
+                        }
                     }
                 }
             }
@@ -212,7 +206,7 @@ public class Push extends MotuWPSProcess {
                     }
                     if (userInfo.length >= 2) {
                         pwdTo = userInfo[1];
-                    }                    
+                    }
                 }
             }
 
@@ -222,16 +216,10 @@ public class Push extends MotuWPSProcess {
                 Organizer.copyFile(from, to, userFrom, pwdFrom, userTo, pwdTo);
             }
             String userToSetInDestUrl = (WPSUtils.isNullOrEmpty(userTo) ? null : userTo);
-            
+
             URI accessUriTemp = new URI(to);
-            outputUriToShow = new URI(
-                    accessUriTemp.getScheme(),
-                    userToSetInDestUrl,
-                    accessUriTemp.getHost(),
-                    accessUriTemp.getPort(),
-                    accessUriTemp.getPath(),
-                    accessUriTemp.getQuery(),
-                    accessUriTemp.getFragment());
+            outputUriToShow = new URI(accessUriTemp.getScheme(), userToSetInDestUrl, accessUriTemp.getHost(), accessUriTemp.getPort(), accessUriTemp
+                    .getPath(), accessUriTemp.getQuery(), accessUriTemp.getFragment());
 
             MotuWPSProcess.setUrl(motuWPSProcessData.getProcessletOutputs(), outputUriToShow);
             MotuWPSProcess.setLocalUrl(motuWPSProcessData.getProcessletOutputs(), "");

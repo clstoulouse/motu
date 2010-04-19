@@ -8,10 +8,6 @@ import org.geotoolkit.io.wkt.Formatter;
 import org.geotoolkit.parameter.DefaultParameterDescriptor;
 import org.geotoolkit.parameter.Parameter;
 import org.opengis.parameter.ParameterDescriptor;
-import org.opengis.util.CodeList;
-
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
 
 /**
  * <br>
@@ -40,8 +36,8 @@ public class TestParameter {
     }
 
     public static void testList() {
-        //TestParameter testParameter = new TestParameter();
-        //TestParameter.Liste list = testParameter.new Liste();
+        // TestParameter testParameter = new TestParameter();
+        // TestParameter.Liste list = testParameter.new Liste();
         List<String> list = new ArrayList<String>();
         list.add("a");
         list.add("b");
@@ -54,7 +50,8 @@ public class TestParameter {
         System.out.println(parameter.stringValue());
 
         ParameterDescriptor<Liste> descriptor1a = new DefaultParameterDescriptor<Liste>("TTTTTTTT", (Class<Liste>) list.getClass(), null, null);
-        ParameterDescriptor<List<String>> descriptor2 = new DefaultParameterDescriptor<List<String>>("TTTTTTTT", (Class<List<String>>) list.getClass(), null, null);
+        ParameterDescriptor<List<String>> descriptor2 = new DefaultParameterDescriptor<List<String>>("TTTTTTTT", (Class<List<String>>) list
+                .getClass(), null, null);
 
         Parameter<List<String>> parameter2 = new Parameter<List<String>>(descriptor2);
         System.out.println(descriptor2.getValueClass().toString());
@@ -68,8 +65,8 @@ public class TestParameter {
 
         parameter2.setValue(list);
 
-        System.out.println (parameter2.getValue().getClass());
-        System.out.println (parameter2.getValue() instanceof Collection);
+        System.out.println(parameter2.getValue().getClass());
+        System.out.println(parameter2.getValue() instanceof Collection);
         Object object = null;
         if (parameter2.getValue() instanceof Collection) {
             object = parameter2.getValue().get(0);
@@ -78,17 +75,15 @@ public class TestParameter {
 
         System.out.println(parameter2.formatWKT(new Formatter()));
         System.out.println(parameter2.getValue().toString());
-        
+
         ParameterDescriptor descriptor3 = new DefaultParameterDescriptor("ddd", null, object.getClass(), null, true);
         Parameter parameter3 = new Parameter(descriptor);
         parameter3.setValue(object);
         System.out.println(parameter3.getValue().getClass());
         System.out.println(parameter3.getValue().toString());
 
-        //Class valueClass = object.getClass();
-        //Parameter parameter4 =  Parameter.create("Dynamic", valueClass, object);
+        // Class valueClass = object.getClass();
+        // Parameter parameter4 = Parameter.create("Dynamic", valueClass, object);
     }
-    
-
 
 }

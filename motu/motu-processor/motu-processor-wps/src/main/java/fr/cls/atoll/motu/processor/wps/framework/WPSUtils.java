@@ -1,5 +1,9 @@
 package fr.cls.atoll.motu.processor.wps.framework;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -11,14 +15,6 @@ import java.util.regex.Pattern;
 
 import org.deegree.commons.utils.HttpUtils;
 import org.deegree.services.wps.input.LiteralInput;
-import org.jgrapht.DirectedGraph;
-
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.msg.xml.ErrorType;
-import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
-import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
-import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
 
 /**
  * <br>
@@ -31,10 +27,10 @@ import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
  * @version $Revision: 1.7 $ - $Date: 2009-10-29 10:52:04 $
  */
 public class WPSUtils {
-    
+
     /** The Constant PROCESSLET_EXCEPTION_FORMAT_CODE. */
     public static final String PROCESSLET_EXCEPTION_FORMAT_CODE = "ERROR - Code: ";
-    
+
     /** The Constant PROCESSLET_EXCEPTION_FORMAT_MSG. */
     public static final String PROCESSLET_EXCEPTION_FORMAT_MSG = ", Message: ";
 
@@ -43,22 +39,22 @@ public class WPSUtils {
 
     /** The Constant PROCESSLET_EXCEPTION_FORMAT_CODE_INDEX. */
     public final static int PROCESSLET_EXCEPTION_FORMAT_CODE_INDEX = 1;
-    
+
     /** The Constant PROCESSLET_EXCEPTION_MSG_VALUE_INDEX. */
     public final static int PROCESSLET_EXCEPTION_FORMAT_MSG_INDEX = 3;
-    
+
     /** The Constant PROCESSLET_EXCEPTION_CODE_VALUE_INDEX. */
     public final static int PROCESSLET_EXCEPTION_CODE_VALUE_INDEX = 2;
-    
+
     /** The Constant PROCESSLET_EXCEPTION_MSG_VALUE_INDEX. */
     public final static int PROCESSLET_EXCEPTION_MSG_VALUE_INDEX = WPSUtils.PROCESSLET_EXCEPTION_INDEX_MAX;
-    
+
     /**
      * Instantiates a new wPS utils.
      */
     public WPSUtils() {
     }
-    
+
     /**
      * Post.
      * 
@@ -71,8 +67,8 @@ public class WPSUtils {
      */
     public static InputStream post(String url, URL urlFile) throws MotuException {
         return WPSUtils.post(url, urlFile.toString());
-    }    
-    
+    }
+
     /**
      * Post.
      * 
@@ -103,7 +99,6 @@ public class WPSUtils {
 
         return WPSUtils.post(url, in);
     }
-    
 
     /**
      * Post.
@@ -136,7 +131,7 @@ public class WPSUtils {
 
         return is;
     }
-    
+
     /**
      * Gets the.
      * 
@@ -167,7 +162,7 @@ public class WPSUtils {
 
         return in;
     }
-    
+
     /**
      * Encode processlet exception error message.
      * 
@@ -177,9 +172,9 @@ public class WPSUtils {
      * @return the string
      */
     public static String encodeProcessletExceptionErrorMessage(ErrorType code, String msg) {
-        return encodeProcessletExceptionErrorMessage(code.toString(), msg);        
+        return encodeProcessletExceptionErrorMessage(code.toString(), msg);
     }
-    
+
     /**
      * Encode processlet exception error message.
      * 
@@ -189,9 +184,9 @@ public class WPSUtils {
      * @return the string
      */
     public static String encodeProcessletExceptionErrorMessage(String code, String msg) {
-        return String.format(WPSUtils.PROCESSLET_EXCEPTION_FORMAT_CODE + "%s" + WPSUtils.PROCESSLET_EXCEPTION_FORMAT_MSG + "%s", code, msg);        
+        return String.format(WPSUtils.PROCESSLET_EXCEPTION_FORMAT_CODE + "%s" + WPSUtils.PROCESSLET_EXCEPTION_FORMAT_MSG + "%s", code, msg);
     }
-    
+
     /**
      * Decode processlet exception error message.
      * 
@@ -204,24 +199,24 @@ public class WPSUtils {
         List<String> result = new ArrayList<String>();
 
         String regExpr = "(" + WPSUtils.PROCESSLET_EXCEPTION_FORMAT_CODE + ")(.*)(" + WPSUtils.PROCESSLET_EXCEPTION_FORMAT_MSG + ")(.*)";
-        
+
         Pattern p = Pattern.compile(regExpr);
-        
+
         Matcher matcher = p.matcher(msg);
         boolean matchFound = matcher.find();
 
-     // Find all matches
+        // Find all matches
         if (matchFound) {
             // Get all groups for this match
-            for (int i=0; i<=matcher.groupCount(); i++) {
+            for (int i = 0; i <= matcher.groupCount(); i++) {
                 String groupStr = matcher.group(i);
                 result.add(groupStr);
             }
         }
-                
+
         return result;
     }
-    
+
     /**
      * Gets the code from processlet exception error message.
      * 
@@ -230,9 +225,9 @@ public class WPSUtils {
      * @return the code from processlet exception error message
      */
     public static String getCodeFromProcessletExceptionErrorMessage(String msg) {
-                
+
         return getCodeFromProcessletExceptionErrorMessage(WPSUtils.decodeProcessletExceptionErrorMessage(msg));
-        
+
     }
 
     /**
@@ -247,10 +242,10 @@ public class WPSUtils {
         if (decodedMsg.size() != (WPSUtils.PROCESSLET_EXCEPTION_INDEX_MAX + 1)) {
             return "";
         }
-        
+
         return decodedMsg.get(WPSUtils.PROCESSLET_EXCEPTION_CODE_VALUE_INDEX);
     }
-    
+
     /**
      * Gets the msg from processlet exception error message.
      * 
@@ -259,9 +254,9 @@ public class WPSUtils {
      * @return the msg from processlet exception error message
      */
     public static String getMsgFromProcessletExceptionErrorMessage(String msg) {
-        
+
         return getMsgFromProcessletExceptionErrorMessage(WPSUtils.decodeProcessletExceptionErrorMessage(msg));
-        
+
     }
 
     /**
@@ -276,10 +271,10 @@ public class WPSUtils {
         if (decodedMsg.size() != (WPSUtils.PROCESSLET_EXCEPTION_INDEX_MAX + 1)) {
             return "";
         }
-        
+
         return decodedMsg.get(WPSUtils.PROCESSLET_EXCEPTION_MSG_VALUE_INDEX);
     }
-    
+
     /**
      * Checks if is processlet exception error message encode.
      * 
@@ -290,15 +285,16 @@ public class WPSUtils {
     public static boolean isProcessletExceptionErrorMessageEncode(String msg) {
 
         List<String> result = decodeProcessletExceptionErrorMessage(msg);
-        
+
         if (result.size() != (WPSUtils.PROCESSLET_EXCEPTION_INDEX_MAX + 1)) {
             return false;
         }
-        
-        return (result.get(WPSUtils.PROCESSLET_EXCEPTION_FORMAT_CODE_INDEX).equals(WPSUtils.PROCESSLET_EXCEPTION_FORMAT_CODE) && result.get(WPSUtils.PROCESSLET_EXCEPTION_FORMAT_MSG_INDEX).equals(WPSUtils.PROCESSLET_EXCEPTION_FORMAT_MSG)); 
-        
+
+        return (result.get(WPSUtils.PROCESSLET_EXCEPTION_FORMAT_CODE_INDEX).equals(WPSUtils.PROCESSLET_EXCEPTION_FORMAT_CODE) && result
+                .get(WPSUtils.PROCESSLET_EXCEPTION_FORMAT_MSG_INDEX).equals(WPSUtils.PROCESSLET_EXCEPTION_FORMAT_MSG));
+
     }
-    
+
     /**
      * Test if a string is null or empty.
      * 
@@ -330,6 +326,5 @@ public class WPSUtils {
 
         return WPSUtils.isNullOrEmpty(value.getValue());
     }
-
 
 }

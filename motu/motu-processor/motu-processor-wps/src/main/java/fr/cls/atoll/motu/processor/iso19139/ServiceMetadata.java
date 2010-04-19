@@ -1,5 +1,14 @@
 package fr.cls.atoll.motu.processor.iso19139;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.xml.XMLErrorHandler;
+import fr.cls.atoll.motu.library.misc.xml.XMLUtils;
+import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
+import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,15 +50,6 @@ import org.jgrapht.alg.KShortestPaths;
 import org.jgrapht.graph.ClassBasedEdgeFactory;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DirectedSubgraph;
-
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.exception.MotuMarshallException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.xml.XMLErrorHandler;
-import fr.cls.atoll.motu.library.xml.XMLUtils;
-import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
-import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
 
 /**
  * <br>
@@ -837,7 +837,7 @@ public class ServiceMetadata {
             OperationMetadata operationMetadataTmp = new OperationMetadata(operationMetadataType);
             OperationMetadata operationMetadata = null;
             if (directedGraph != null) {
-                operationMetadata = (OperationMetadata) findVertex(directedGraph, operationMetadataTmp);
+                operationMetadata = findVertex(directedGraph, operationMetadataTmp);
                 if (operationMetadata == null) {
                     operationMetadata = operationMetadataTmp;
                     directedGraph.addVertex(operationMetadata);
@@ -1628,9 +1628,9 @@ public class ServiceMetadata {
         if (LOG.isDebugEnabled()) {
             LOG.debug("createDirectedGraph() - entering");
         }
-        
+
         OperationRelationshipEdge<String> edge = new OperationRelationshipEdge<String>();
-        
+
         ClassBasedEdgeFactory<OperationMetadata, OperationRelationshipEdge<String>> classBasedEdgeFactory = new ClassBasedEdgeFactory<OperationMetadata, OperationRelationshipEdge<String>>(
                 (Class<? extends OperationRelationshipEdge<String>>) edge.getClass());
         DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> graph = new DefaultDirectedGraph<OperationMetadata, OperationRelationshipEdge<String>>(
@@ -1670,5 +1670,4 @@ public class ServiceMetadata {
         return returnDirectedGraph;
     }
 
- 
 }

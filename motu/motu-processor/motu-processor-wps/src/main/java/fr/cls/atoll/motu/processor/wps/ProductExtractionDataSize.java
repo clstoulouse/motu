@@ -1,11 +1,10 @@
 package fr.cls.atoll.motu.processor.wps;
 
-import java.io.IOException;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
+import fr.cls.atoll.motu.api.message.xml.RequestSize;
+import fr.cls.atoll.motu.library.misc.data.Product;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 
 import org.apache.log4j.Logger;
 import org.deegree.services.controller.OGCFrontController;
@@ -14,19 +13,8 @@ import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
-import org.deegree.services.wps.output.ComplexOutput;
 import org.deegree.services.wps.output.LiteralOutput;
 import org.jasig.cas.client.util.AssertionHolder;
-
-import fr.cls.atoll.motu.library.data.Product;
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.exception.MotuMarshallException;
-import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.msg.xml.RequestSize;
-import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
-import fr.cls.atoll.motu.msg.xml.StatusModeType;
 
 /**
  * The purpose of this {@link Processlet} is to provide the time coverage of a product.
@@ -68,7 +56,6 @@ public class ProductExtractionDataSize extends MotuWPSProcess {
         // Set assertion to manage CAS.
         extractionParameters.setAssertion(AssertionHolder.getAssertion());
 
-
         try {
             getAmountDataSize(in, extractionParameters);
         } catch (MotuExceptionBase e) {
@@ -76,8 +63,6 @@ public class ProductExtractionDataSize extends MotuWPSProcess {
         } finally {
             super.afterProcess(in, out, info);
         }
-
- 
 
     }
 
@@ -156,6 +141,5 @@ public class ProductExtractionDataSize extends MotuWPSProcess {
         MotuWPSProcess.setReturnCode(response, requestSize.getCode(), requestSize.getMsg(), throwProcessletException);
 
     }
-
 
 }

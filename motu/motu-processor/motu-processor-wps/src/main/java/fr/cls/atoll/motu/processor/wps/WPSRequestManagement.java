@@ -1,19 +1,21 @@
 package fr.cls.atoll.motu.processor.wps;
 
-import org.apache.log4j.Logger;
-import org.deegree.services.wps.ProcessletInputs;
-import org.deegree.services.wps.input.ProcessletInput;
-
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.queueserver.RequestManagement;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.log4j.Logger;
+import org.deegree.services.wps.ProcessletInputs;
+
 /**
- * <br><br>Copyright : Copyright (c) 2009.
- * <br><br>Société : CLS (Collecte Localisation Satellites)
+ * <br>
+ * <br>
+ * Copyright : Copyright (c) 2009. <br>
+ * <br>
+ * Société : CLS (Collecte Localisation Satellites)
+ * 
  * @author $Author: dearith $
  * @version $Revision: 1.2 $ - $Date: 2009-08-06 14:28:57 $
  */
@@ -25,11 +27,12 @@ public class WPSRequestManagement {
 
     private static WPSRequestManagement instance;
 
-    private ConcurrentMap<ProcessletInputs, MotuWPSProcessData> motuWPSProcessDataMap = new ConcurrentHashMap<ProcessletInputs, MotuWPSProcessData>();
+    private final ConcurrentMap<ProcessletInputs, MotuWPSProcessData> motuWPSProcessDataMap = new ConcurrentHashMap<ProcessletInputs, MotuWPSProcessData>();
 
     public void clearMotuWPSProcessDataMap() {
         motuWPSProcessDataMap.clear();
     }
+
     public MotuWPSProcessData getMotuWPSProcessData(ProcessletInputs key) {
         return motuWPSProcessDataMap.get(key);
     }
@@ -37,31 +40,32 @@ public class WPSRequestManagement {
     public boolean isRequestStatusMapEmpty() {
         return motuWPSProcessDataMap.isEmpty();
     }
-    
+
     public MotuWPSProcessData putIfAbsentMotuWPSProcessData(ProcessletInputs key, MotuWPSProcessData value) {
         return motuWPSProcessDataMap.putIfAbsent(key, value);
     }
-     public MotuWPSProcessData putMotuWPSProcessData(ProcessletInputs key, MotuWPSProcessData value) {
+
+    public MotuWPSProcessData putMotuWPSProcessData(ProcessletInputs key, MotuWPSProcessData value) {
         return motuWPSProcessDataMap.put(key, value);
     }
 
-     public MotuWPSProcessData removeMotuWPSProcessData(ProcessletInputs key) {
+    public MotuWPSProcessData removeMotuWPSProcessData(ProcessletInputs key) {
         return motuWPSProcessDataMap.remove(key);
     }
 
-     public MotuWPSProcessData replaceMotuWPSProcessData(ProcessletInputs key, MotuWPSProcessData value) {
+    public MotuWPSProcessData replaceMotuWPSProcessData(ProcessletInputs key, MotuWPSProcessData value) {
         return motuWPSProcessDataMap.replace(key, value);
     }
 
-     public boolean motuWPSProcessDataMapContainsKey(ProcessletInputs key) {
+    public boolean motuWPSProcessDataMapContainsKey(ProcessletInputs key) {
         return motuWPSProcessDataMap.containsKey(key);
     }
 
-     public Set<ProcessletInputs> motuWPSProcessDataKeySet() {
+    public Set<ProcessletInputs> motuWPSProcessDataKeySet() {
         return motuWPSProcessDataMap.keySet();
     }
 
-     public int motuWPSProcessDataMapSize() {
+    public int motuWPSProcessDataMapSize() {
         return motuWPSProcessDataMap.size();
     }
 

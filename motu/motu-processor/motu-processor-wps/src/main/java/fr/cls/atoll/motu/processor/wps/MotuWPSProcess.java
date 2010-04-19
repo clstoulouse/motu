@@ -1,5 +1,16 @@
 package fr.cls.atoll.motu.processor.wps;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.api.message.xml.StatusModeType;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidRequestIdException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
+import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
+import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -24,17 +35,6 @@ import org.deegree.services.wps.output.ComplexOutput;
 import org.deegree.services.wps.output.ComplexOutputImpl;
 import org.deegree.services.wps.output.LiteralOutput;
 import org.deegree.services.wps.output.ProcessletOutput;
-
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.exception.MotuInvalidRequestIdException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.queueserver.QueueServerManagement;
-import fr.cls.atoll.motu.library.queueserver.RequestManagement;
-import fr.cls.atoll.motu.msg.xml.ErrorType;
-import fr.cls.atoll.motu.msg.xml.StatusModeResponse;
-import fr.cls.atoll.motu.msg.xml.StatusModeType;
-import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
 
 /**
  * <br>
@@ -736,9 +736,9 @@ public abstract class MotuWPSProcess implements Processlet {
         String locationData = null;
         String productId = null;
 
-        LiteralInput serviceNameParam = (LiteralInput) motuWPSProcessData.getServiceNameParamIn();
-        LiteralInput locationDataParam = (LiteralInput) motuWPSProcessData.getLocationDataParamIn();
-        LiteralInput productIdParam = (LiteralInput) motuWPSProcessData.getProductIdParamIn();
+        LiteralInput serviceNameParam = motuWPSProcessData.getServiceNameParamIn();
+        LiteralInput locationDataParam = motuWPSProcessData.getLocationDataParamIn();
+        LiteralInput productIdParam = motuWPSProcessData.getProductIdParamIn();
 
         if (WPSUtils.isNullOrEmpty(locationDataParam) && WPSUtils.isNullOrEmpty(productIdParam)) {
             if (LOG.isDebugEnabled()) {
@@ -792,12 +792,12 @@ public abstract class MotuWPSProcess implements Processlet {
         }
 
         motuWPSProcessData.setServiceName(serviceName);
-        
-        if (! (WPSUtils.isNullOrEmpty(serviceName)) && ! (WPSUtils.isNullOrEmpty(productId)) ){
+
+        if (!(WPSUtils.isNullOrEmpty(serviceName)) && !(WPSUtils.isNullOrEmpty(productId))) {
             Organizer organizer = getOrganizer(in);
-            productId  = organizer.getDatasetIdFromURI(productId, serviceName);
+            productId = organizer.getDatasetIdFromURI(productId, serviceName);
         }
-        
+
         motuWPSProcessData.setProductId(productId);
         motuWPSProcessData.setLocationData(locationData);
 
@@ -1050,7 +1050,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
 
-        BoundingBoxInput geobboxParam = (BoundingBoxInput) motuWPSProcessData.getGeobboxParamIn();
+        BoundingBoxInput geobboxParam = motuWPSProcessData.getGeobboxParamIn();
         List<String> listLatLonCoverage = new ArrayList<String>();
 
         if (geobboxParam == null) {
@@ -1218,7 +1218,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
 
-        LiteralInput anonymousUserAsStringParam = (LiteralInput) motuWPSProcessData.getAnonymousUserAsStringParamIn();
+        LiteralInput anonymousUserAsStringParam = motuWPSProcessData.getAnonymousUserAsStringParamIn();
         if (anonymousUserAsStringParam == null) {
             return false;
         }
@@ -1239,7 +1239,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
 
-        LiteralInput batchAsStringParam = (LiteralInput) motuWPSProcessData.getIsBatchParamIn();
+        LiteralInput batchAsStringParam = motuWPSProcessData.getIsBatchParamIn();
         if (WPSUtils.isNullOrEmpty(batchAsStringParam)) {
             return false;
         }
@@ -1261,7 +1261,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
 
-        LiteralInput loginParam = (LiteralInput) motuWPSProcessData.getLoginParamIn();
+        LiteralInput loginParam = motuWPSProcessData.getLoginParamIn();
         if (loginParam != null) {
             login = loginParam.getValue();
         }
@@ -1299,7 +1299,7 @@ public abstract class MotuWPSProcess implements Processlet {
 
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
 
-        LiteralInput priorityParam = (LiteralInput) motuWPSProcessData.getPriorityParamIn();
+        LiteralInput priorityParam = motuWPSProcessData.getPriorityParamIn();
         if (WPSUtils.isNullOrEmpty(priorityParam)) {
             return priority;
         }

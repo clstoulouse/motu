@@ -1,35 +1,25 @@
 package fr.cls.atoll.motu.processor.wps.framework;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-
-import org.apache.log4j.Logger;
-import org.jgrapht.DirectedGraph;
-
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.utils.ReflectionUtils;
-import fr.cls.atoll.motu.processor.iso19139.OperationMetadata;
-import fr.cls.atoll.motu.processor.jgraht.OperationRelationshipEdge;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.processor.opengis.ows110.CodeType;
 import fr.cls.atoll.motu.processor.opengis.wps100.DataType;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
-import fr.cls.atoll.motu.processor.opengis.wps100.ObjectFactory;
 import fr.cls.atoll.motu.processor.opengis.wps100.OutputDataType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType.DataInputs;
 import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
+
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+
+import org.apache.log4j.Logger;
 
 /**
  * <br>
@@ -112,7 +102,7 @@ public class WPSInfo {
         if (urlFile == null) {
             throw new MotuException(String.format("WPSInfo - Unable to find file '%s'", MotuWPSProcess.WPS_DESCRIBE_ALL_XML));
         }
-   
+
         InputStream in = WPSUtils.post(serverUrl, urlFile);
         try {
             JAXBContext jc = JAXBContext.newInstance(MotuWPSProcess.WPS100_SHEMA_PACK_NAME);

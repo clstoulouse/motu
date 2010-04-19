@@ -1,16 +1,16 @@
 package fr.cls.atoll.motu.processor.wps;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
+
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletOutputs;
-
-import fr.cls.atoll.motu.library.exception.MotuException;
-import fr.cls.atoll.motu.library.intfce.ExtractionParameters;
-import fr.cls.atoll.motu.library.intfce.Organizer;
-import fr.cls.atoll.motu.library.queueserver.RunnableExtraction;
 
 /**
  * <br>
@@ -223,24 +223,27 @@ public class RunnableWPSExtraction extends RunnableExtraction {
         this.mode = modeP;
         this.requestEndedCondition = requestEndedConditionP;
         this.lock = lockP;
-        
+
         setStatusPending();
         // this.notEnded = true;
 
     }
-    
+
     protected void setUrl() throws MotuException {
         MotuWPSProcess.setUrl(response, statusModeResponse.getRemoteUri());
 
     }
+
     protected void setLocalUri() throws MotuException {
         MotuWPSProcess.setUrl(response, statusModeResponse.getLocalUri());
 
     }
+
     protected void setStatus() {
         MotuWPSProcess.setStatus(response, statusModeResponse.getStatus());
 
     }
+
     protected void setReturnCode() {
         try {
             MotuWPSProcess.setReturnCode(response, statusModeResponse, false);
@@ -249,36 +252,36 @@ public class RunnableWPSExtraction extends RunnableExtraction {
         }
 
     }
-//
-//    /** {@inheritDoc} */
-//    @Override
-//    protected void setStatusDone() throws MotuException {
-//        super.setStatusDone();
-//        setStatus();
-//        setUrl();
-//        setReturnCode();
-//        
-//    }
-//
-//    /** {@inheritDoc} */
-//    @Override
-//    protected void setStatusInProgress() {
-//        super.setStatusInProgress();
-//        setStatus();
-//        setReturnCode();
-//    }
-//
-//    /** {@inheritDoc} 
-//     * @throws MotuException */
-//    @Override
-//    protected void setStatusPending() {
-//        super.setStatusPending();
-//        setStatus();
-//        setReturnCode();
-//
-//    }
-    
- 
+
+    //
+    // /** {@inheritDoc} */
+    // @Override
+    // protected void setStatusDone() throws MotuException {
+    // super.setStatusDone();
+    // setStatus();
+    // setUrl();
+    // setReturnCode();
+    //        
+    // }
+    //
+    // /** {@inheritDoc} */
+    // @Override
+    // protected void setStatusInProgress() {
+    // super.setStatusInProgress();
+    // setStatus();
+    // setReturnCode();
+    // }
+    //
+    // /** {@inheritDoc}
+    // * @throws MotuException */
+    // @Override
+    // protected void setStatusPending() {
+    // super.setStatusPending();
+    // setStatus();
+    // setReturnCode();
+    //
+    // }
+
     /**
      * Checks if is mode console.
      * 
@@ -320,7 +323,7 @@ public class RunnableWPSExtraction extends RunnableExtraction {
                 LOG.debug("sendResponseError500(String) - exiting");
             }
             return;
-        }    
+        }
         setStatus();
         setReturnCode();
 
@@ -337,22 +340,22 @@ public class RunnableWPSExtraction extends RunnableExtraction {
             LOG.debug("setAbortedModeConsole() - entering");
         }
 
-//        if (response == null) {
-//            if (LOG.isDebugEnabled()) {
-//                LOG.debug("setAbortedModeConsole() - exiting");
-//            }
-//            return;
-//        }
-//
-//        try {
-//            setStatus();
-//            setReturnCode();
-//        } catch (Exception e) {
-//            LOG.error("setAbortedModeConsole()", e);
-//
-//            sendResponseError500(e.getMessage());
-//        }
-//
+        // if (response == null) {
+        // if (LOG.isDebugEnabled()) {
+        // LOG.debug("setAbortedModeConsole() - exiting");
+        // }
+        // return;
+        // }
+        //
+        // try {
+        // setStatus();
+        // setReturnCode();
+        // } catch (Exception e) {
+        // LOG.error("setAbortedModeConsole()", e);
+        //
+        // sendResponseError500(e.getMessage());
+        // }
+        //
         if (LOG.isDebugEnabled()) {
             LOG.debug("setAbortedModeConsole() - exiting");
         }
@@ -365,15 +368,15 @@ public class RunnableWPSExtraction extends RunnableExtraction {
         if (LOG.isDebugEnabled()) {
             LOG.debug("setAbortedModeStatus() - entering");
         }
-//        if (response == null) {
-//            if (LOG.isDebugEnabled()) {
-//                LOG.debug("setAbortedModeStatus() - response == null - exiting");
-//            }
-//            return;
-//        }
-//
-//        setStatus();
-//        setReturnCode();
+        // if (response == null) {
+        // if (LOG.isDebugEnabled()) {
+        // LOG.debug("setAbortedModeStatus() - response == null - exiting");
+        // }
+        // return;
+        // }
+        //
+        // setStatus();
+        // setReturnCode();
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("setAbortedModeStatus() - exiting");
@@ -388,7 +391,7 @@ public class RunnableWPSExtraction extends RunnableExtraction {
             LOG.debug("setAbortedModeUrl() - entering");
         }
 
-//        setAbortedModeConsole();
+        // setAbortedModeConsole();
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("setAbortedModeUrl() - exiting");
@@ -403,9 +406,10 @@ public class RunnableWPSExtraction extends RunnableExtraction {
             LOG.debug("setAbortedNoMode() - entering");
         }
 
-//        if (queueLogInfo.getQueueLogError() != null) {
-//            MotuWPSProcess.setReturnCode(response, queueLogInfo.getQueueLogError().getErrorCode(), queueLogInfo.getQueueLogError().getMessage());
-//        }
+        // if (queueLogInfo.getQueueLogError() != null) {
+        // MotuWPSProcess.setReturnCode(response, queueLogInfo.getQueueLogError().getErrorCode(),
+        // queueLogInfo.getQueueLogError().getMessage());
+        // }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("setAbortedNoMode() - exiting");
@@ -483,5 +487,4 @@ public class RunnableWPSExtraction extends RunnableExtraction {
         }
     }
 
- 
 }
