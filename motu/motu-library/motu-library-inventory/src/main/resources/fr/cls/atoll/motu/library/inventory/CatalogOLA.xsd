@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://purl.org/cls/atoll"
+           xmlns="http://purl.org/cls/atoll"
+           elementFormDefault="qualified">
+           <!-- 
+           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+           jaxb:version="2.1">
+           xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+           jaxb:extensionBindingPrefixes="xjc"
+ -->
+
+  
+  <xs:element name="resourceOLA">
+    <xs:complexType>
+      <xs:attribute name="urn" type="xs:anyURI" use="required" />
+      <xs:attribute name="inventoryUrl" type="xs:anyURI" use="required" />            
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="resourcesOLA">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="resourceOLA" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="catalogOLA">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="resourcesOLA" />
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" use="optional" />            
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
