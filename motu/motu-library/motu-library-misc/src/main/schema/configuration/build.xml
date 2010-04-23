@@ -9,8 +9,8 @@
 	<property name="src.dir" value="${project.dir}/src/main/java" />
 	<property name="resource.dir" value="${project.dir}/src/main/resources" />
 
-	<property name="schema.path" value="fr/cls/atoll/motu/library/configuration" />
-	<property name="schema.package" value="fr.cls.atoll.motu.library.configuration" />
+	<property name="schema.path" value="fr/cls/atoll/motu/library/misc/configuration" />
+	<property name="schema.package" value="fr.cls.atoll.motu.library.misc.configuration" />
 	<property name="schema.xsdpath" value="${resource.dir}/schema" />
 	<property name="schema.xjbfile" value="${schema.xsdpath}/globalbinding.xjb" />
 	<property name="schema.xsdfile" value="MotuConfig.xsd" />
