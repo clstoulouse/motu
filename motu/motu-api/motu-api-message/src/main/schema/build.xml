@@ -9,8 +9,8 @@
 	<property name="m2repository.dir" value="${user.home}/.m2/repository" />
 	<property name="src.dir" value="${project.dir}/src/main/java" />
 
-	<property name="schema.path" value="fr/cls/atoll/motumsg/xml" />
-	<property name="schema.package" value="fr.cls.atoll.motu.msg.xml" />
+	<property name="schema.path" value="fr/cls/atoll/motu/api/message/xml" />
+	<property name="schema.package" value="fr.cls.atoll.motu.api.message.xml" />
 	<property name="schema.xsdfile" value="atoll-motu-msg.xsd" />
 	<property name="schema.xsdpath" value="${basedir}" />
 	<property name="schema.xjbfile" value="atoll-motu-msg.xjb" />
