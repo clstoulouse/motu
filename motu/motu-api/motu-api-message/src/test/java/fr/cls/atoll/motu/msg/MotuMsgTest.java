@@ -11,7 +11,7 @@ import javax.xml.bind.Marshaller;
 
 public class MotuMsgTest {
 
-    private static final String MOTU_MSG_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.msg.xml";
+    private static final String MOTU_MSG_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.api.message.xml";
 
     private static JAXBContext jcontext = null;
 
