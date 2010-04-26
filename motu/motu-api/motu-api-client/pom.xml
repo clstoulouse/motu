@@ -148,6 +148,29 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+		        <configuration>
+		          <archive>
+			      	<!--   <index>true</index> -->
+					<addMavenDescriptor>true</addMavenDescriptor>		        
+			        <manifest>
+			            <mainClass>fr.cls.atoll.motu.api.client.Main</mainClass>
+			            <packageName>fr.cls.atoll.motu.api.client</packageName>
+			            <addClasspath>true</addClasspath>
+			            <classpathPrefix>lib/</classpathPrefix>
+			            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+			            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+			            
+		          	</manifest>
+		            <pomPropertiesFile>true</pomPropertiesFile>
+		          
+		            <manifestEntries>
+		              <mode>development</mode>
+		              <url>${pom.url}</url>
+		            </manifestEntries>
+		            <!-- <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>  -->		            
+		          </archive>
+		        </configuration>
+		        <!-- 
                 <executions>
                     <execution>
                         <goals>
@@ -155,11 +178,56 @@
                         </goals>
                     </execution>
                 </executions>
+                 -->
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
             </plugin>
+             <plugin>
+              <artifactId>maven-assembly-plugin</artifactId>
+              <version>2.2-beta-4</version>
+              <configuration>
+		          <descriptorRefs>
+		            <descriptorRef>jar-with-dependencies</descriptorRef>
+		          </descriptorRefs>
+		          
+              
+		          <!--
+                <descriptors>
+                  <descriptor>src/main/assembly/src.xml</descriptor>
+                </descriptors>
+              -->
+		          <archive>
+					<addMavenDescriptor>true</addMavenDescriptor>		        
+			        <manifest>
+			            <mainClass>fr.cls.atoll.motu.api.client.Main</mainClass>
+			            <packageName>fr.cls.atoll.motu.api.client</packageName>
+			            <!--<addClasspath>true</addClasspath>
+			            <classpathPrefix>\</classpathPrefix>
+			            --><addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+			            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+			            
+		          	</manifest>
+		            <pomPropertiesFile>true</pomPropertiesFile><!--
+		          
+		            <manifestEntries>
+		              <mode>development</mode>
+		              <url>${pom.url}</url>
+		            </manifestEntries>
+		          --></archive>
+              </configuration>
+				<executions>
+				  <execution>
+				    <phase>package</phase>
+				    <goals>
+				      <goal>single</goal>
+				    </goals>
+				  </execution>
+				</executions>
+              
+             </plugin>
+             
         </plugins>
     </build>
     
@@ -182,53 +250,6 @@
 			<id>maven-central</id>
 			<name>Maven Central Repository</name>
 			<url>http://repo2.maven.org/maven2</url>
-		</repository>
-		<repository>
-			<id>java.net</id>
-			<name>Java Dev Repository</name>
-			<url>http://download.java.net/maven/2</url>			
-		</repository>
-		<repository>
-			<id>cls-3rdparty</id>
-			<name>CLS 3rd Party repository</name>
-			<url>http://mvnrepo.cls.fr:8081/nexus/content/repositories/thirdparty/</url>
-		</repository>
-		<repository>
-			<id>geomatys</id>
-			<name>Constellation artifacts from Geomatys</name>
-			<url>http://maven.geomatys.com/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-        <repository>
-            <id>geotoolkit</id>
-            <name>Geotoolkit artifacts</name>
-            <url>http://maven.geotoolkit.org</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>		
-		<repository>
-            <id>geotools</id>
-            <name>Geotools release repository</name>
-            <url>http://download.osgeo.org/webdav/geotools/</url>
-        </repository>
-        <repository>
-            <id>jena dev repo</id>
-            <name>Jena developpmenent repository</name>
-            <url>http://openjena.org/repo-dev/</url>
-        </repository>
-		<repository>
-			<id>jboss</id>
-			<name>JBoss Repository</name>
-			<url>http://repository.jboss.com/maven2</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
 		</repository>
 	</repositories>      
 </project>
