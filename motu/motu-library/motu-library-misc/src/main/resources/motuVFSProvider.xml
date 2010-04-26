@@ -23,7 +23,7 @@
         <scheme name="sftp"/>
     </provider>
 
-    <provider class-name="fr.cls.atoll.motu.library.vfs.provider.gsiftp.GsiFtpFileProvider">
+    <provider class-name="fr.cls.atoll.motu.library.misc.vfs.provider.gsiftp.GsiFtpFileProvider">
         <scheme name="gsiftp"/>
     </provider>
     

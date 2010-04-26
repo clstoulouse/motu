@@ -126,7 +126,7 @@
 		group="AvisoFTP" httpBaseRef="http://www.aviso.oceanobs.com"
 		name="&atoll;motu-ftp-aviso" veloTemplatePrefix="aviso">
 		<catalog name="catalogAvisoFTP.xml" type="FTP"
-			urlSite="sftp://atoll:atoll@atoll-qt1.cls.fr/opt/atoll/HOA/Interface_ATOLL" />
+			urlSite="sftp://atoll:atoll@atoll-qt1.cls.fr/opt/atoll/sav_HOA/Interface_ATOLL" />
 	</configService>
 	
 		<!--===========================================-->
@@ -151,7 +151,7 @@
 		group="CatsatFTP" httpBaseRef="http://www.cls.fr"
 		name="catsatftp" veloTemplatePrefix="generic">
 		<catalog name="catalogCatsatFTP.xml" type="FTP"
-			urlSite="sftp://atoll:atoll@atoll-qt1.cls.fr/opt/atoll/HOA/Interface_ATOLL" />
+			urlSite="sftp://atoll:atoll@atoll-qt1.cls.fr/opt/atoll/sav_HOA/Interface_ATOLL" />
 	</configService>
 	
 	<!--=====================   AVISO FTP ===================-->
@@ -159,7 +159,7 @@
 		group="AvisoFTP" httpBaseRef="http://www.cls.fr"
 		name="avisoftp" veloTemplatePrefix="generic">
 		<catalog name="catalogAvisoFTP.xml" type="FTP"
-			urlSite="sftp://atoll:atoll@atoll-qt1.cls.fr/opt/atoll/HOA/Interface_ATOLL" />
+			urlSite="sftp://atoll:atoll@atoll-qt1.cls.fr/opt/atoll/sav_HOA/Interface_ATOLL" />
 	</configService>
 	<!--===========================================-->
 	<!--                     AVISO_NRT             -->

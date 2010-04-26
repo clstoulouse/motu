@@ -1094,7 +1094,11 @@ public class ProductMetaData {
      * @uml.property name="coordinateAxes"
      */
     public CoordinateAxis getCoordinateAxes(AxisType key) {
-        return (CoordinateAxis) this.coordinateAxesMap.get(key);
+        if (this.coordinateAxesMap != null)
+        {
+            return (CoordinateAxis) this.coordinateAxesMap.get(key);
+        }
+        return null;
     }
 
     /**

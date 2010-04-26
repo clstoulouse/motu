@@ -1072,7 +1072,10 @@ public class Product {
 
         Variable variable = productMetaData.getTimeAxis();
         if (variable == null) {
-            throw new MotuException(String.format("Error in getTimeAxisData - No time axis found in this product '%s'", this.getProductId()));
+            // throw new
+            // MotuException(String.format("Error in getTimeAxisData - No time axis found in this product '%s'",
+            // this.getProductId()));
+            return null;
         }
 
         Array returnArray = readVariable(variable);
@@ -1133,6 +1136,9 @@ public class Product {
         List<String> list = new ArrayList<String>();
 
         Array array = getTimeAxisData();
+        if (array == null) {
+            return list;
+        }
 
         double datetime = 0.0;
 

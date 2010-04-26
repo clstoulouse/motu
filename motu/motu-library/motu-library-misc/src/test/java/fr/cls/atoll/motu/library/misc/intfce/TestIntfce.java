@@ -2361,7 +2361,17 @@ public class TestIntfce {
                                 .getDepthCoverage().max));
                     }
                     
-                    System.out.println(product.getTimeAxisDataAsString());
+                    if (product.getProductId().equalsIgnoreCase("mercatorPsy3v2_arc_mean_best_estimate")) {
+                        System.out.println(product.getProductId());
+                    }
+                    Product productWithDetail = serviceData.getProductInformation(product);
+                    
+                    try {
+                        System.out.println(productWithDetail.getTimeAxisDataAsString());
+                    } catch (Exception e) {
+                        // TODO Auto-generated catch block
+                        System.out.println( e.getMessage());
+                    }
                     
 
                 }

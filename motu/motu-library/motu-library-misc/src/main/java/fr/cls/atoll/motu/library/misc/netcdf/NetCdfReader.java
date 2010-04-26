@@ -2075,6 +2075,7 @@ public class NetCdfReader {
             if ((coordY != null) && (coordX != null)) {
                 break;
             }
+            //TODO : A REVOIR
             List<Variable> listVar = (List<Variable>) getCoordinateVariable(dim);
 
             for (Variable var : listVar) {
