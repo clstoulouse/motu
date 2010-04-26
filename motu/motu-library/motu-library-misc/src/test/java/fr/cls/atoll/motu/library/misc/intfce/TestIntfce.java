@@ -353,7 +353,7 @@ public class TestIntfce {
         // productInformationFromInventory();
         // productExtractDataFromInventory();
         // productListMercator();
-        // productList();
+         productList();
 
     }
 
@@ -2360,6 +2360,9 @@ public class TestIntfce {
                         System.out.println(String.format("Depth coverage: %f to %f", productMetaData.getDepthCoverage().min, productMetaData
                                 .getDepthCoverage().max));
                     }
+                    
+                    System.out.println(product.getTimeAxisDataAsString());
+                    
 
                 }
             }

@@ -32,7 +32,7 @@
         <jdk.source.encoding>ISO-8859-1</jdk.source.encoding>
         <dependencies.version.slf4j>1.5.8</dependencies.version.slf4j>
         <dependencies.version.spring>2.5.6</dependencies.version.spring>
-        <dependencies.version.slf4j>1.5.8</dependencies.version.slf4j>
+<!--         <dependencies.version.slf4j>1.5.8</dependencies.version.slf4j>  -->
     </properties>
     <licenses>
         <license>
@@ -309,4 +309,75 @@
             </plugin>
         </plugins>
     </build>
+    
+	<pluginRepositories>
+		<pluginRepository>
+			<id>Codehaus repository</id>
+			<url>http://repository.codehaus.org/</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>codehaus snapshot repository</id>
+			<url>http://snapshots.repository.codehaus.org/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
+	
+	<repositories>
+		<repository>
+			<id>maven-central</id>
+			<name>Maven Central Repository</name>
+			<url>http://repo2.maven.org/maven2</url>
+		</repository>
+		<repository>
+			<id>java.net</id>
+			<name>Java Dev Repository</name>
+			<url>http://download.java.net/maven/2</url>			
+		</repository>
+		<repository>
+			<id>cls-3rdparty</id>
+			<name>CLS 3rd Party repository</name>
+			<url>http://mvnrepo.cls.fr:8081/nexus/content/repositories/thirdparty/</url>
+		</repository>
+		<repository>
+			<id>geomatys</id>
+			<name>Constellation artifacts from Geomatys</name>
+			<url>http://maven.geomatys.com/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+        <repository>
+            <id>geotoolkit</id>
+            <name>Geotoolkit artifacts</name>
+            <url>http://maven.geotoolkit.org</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <!-- 		
+		<repository>
+            <id>geotools</id>
+            <name>Geotools release repository</name>
+            <url>http://download.osgeo.org/webdav/geotools/</url>
+        </repository>
+         -->
+        <repository>
+            <id>jena dev repo</id>
+            <name>Jena developpmenent repository</name>
+            <url>http://openjena.org/repo-dev/</url>
+        </repository>
+		<repository>
+			<id>jboss</id>
+			<name>JBoss Repository</name>
+			<url>http://repository.jboss.com/maven2</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>    
 </project>

@@ -193,7 +193,7 @@ public class Organizer {
     protected static final long MILLISECS_PER_DAY = 24 * MILLISECS_PER_HOUR;
 
     /** The Constant CONFIG_SCHEMA_PACK_NAME. */
-    private static final String CONFIG_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.configuration";
+    private static final String CONFIG_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.misc.configuration";
 
     /** The Constant INVENTORY_OLA_SCHEMA_PACK_NAME. */
     private static final String INVENTORY_OLA_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.inventory";
@@ -232,7 +232,7 @@ public class Organizer {
     private static MotuConfig motuConfig = null;
 
     /** The Constant OPENDAP_SCHEMA_PACK_NAME. */
-    private static final String OPENDAP_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.opendap.server";
+    private static final String OPENDAP_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.misc.opendap.server";
 
     /** The props. */
     private static Properties props = null;
@@ -262,13 +262,13 @@ public class Organizer {
     private static Map<String, ServicePersistent> servicesPersistent = new HashMap<String, ServicePersistent>();
 
     /** The Constant STDNAME_EQUIV_PACK_NAME. */
-    private static final String STDNAME_EQUIV_PACK_NAME = "fr.cls.atoll.motu.library.sdtnameequiv";
+    private static final String STDNAME_EQUIV_PACK_NAME = "fr.cls.atoll.motu.library.misc.sdtnameequiv";
 
     /** Standard name equivalence (1 standard name --> n netcdf variable names). */
     private static StandardNames stdNameEquiv = null;
 
     /** The Constant TDS_SCHEMA_PACK_NAME. */
-    private static final String TDS_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.tds.server";
+    private static final String TDS_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.misc.tds.server";
 
     /** The unmarshaller opendap config. */
     private static Unmarshaller unmarshallerOpendapConfig = null;
