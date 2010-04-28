@@ -350,6 +350,7 @@
 			</xsd:annotation>
 	    <xsd:attribute name="name" type="xsd:string"/>
 	    <xsd:attribute name="value" type="xsd:string"/>
+		<xsd:attributeGroup ref="codeMsg"/>			  		  	  		    	        					
 	  </xsd:complexType>
 	</xsd:element>
 	
@@ -363,6 +364,7 @@
 			<xsd:sequence>
 		        <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
 		    </xsd:sequence>
+			<xsd:attributeGroup ref="codeMsg"/>			  		  	  		    	        					
  		</xsd:complexType>
  	</xsd:element>
 
