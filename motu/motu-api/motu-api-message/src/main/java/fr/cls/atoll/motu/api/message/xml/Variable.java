@@ -12,15 +12,12 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
  * 
- * 					Réponse à une requete d'extraction en mode
- * 					'status'
+ * 					Response on variable query of a product.
  * 				
  * 
  * <p>Java class for anonymous complex type.
@@ -32,12 +29,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;attGroup ref="{}codeMsg"/>
- *       &lt;attribute name="status" type="{}statusModeType" />
- *       &lt;attribute name="requestId" type="{http://www.w3.org/2001/XMLSchema}long" />
- *       &lt;attribute name="dateProc" type="{http://www.w3.org/2001/XMLSchema}dateTime" />
- *       &lt;attribute name="size" type="{http://www.w3.org/2001/XMLSchema}double" />
- *       &lt;attribute name="remoteUri" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="localUri" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="standardName" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="longName" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="units" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="description" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -47,169 +43,142 @@ import javax.xml.datatype.XMLGregorianCalendar;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "statusModeResponse")
-public class StatusModeResponse {
+@XmlRootElement(name = "variable")
+public class Variable {
 
     @XmlAttribute
-    protected StatusModeType status;
+    protected String name;
     @XmlAttribute
-    protected Long requestId;
+    protected String standardName;
     @XmlAttribute
-    @XmlSchemaType(name = "dateTime")
-    protected XMLGregorianCalendar dateProc;
+    protected String longName;
     @XmlAttribute
-    protected Double size;
+    protected String units;
     @XmlAttribute
-    protected String remoteUri;
-    @XmlAttribute
-    protected String localUri;
+    protected String description;
     @XmlAttribute
     protected String msg;
     @XmlAttribute
     protected ErrorType code;
 
     /**
-     * Gets the value of the status property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link StatusModeType }
-     *     
-     */
-    public StatusModeType getStatus() {
-        return status;
-    }
-
-    /**
-     * Sets the value of the status property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link StatusModeType }
-     *     
-     */
-    public void setStatus(StatusModeType value) {
-        this.status = value;
-    }
-
-    /**
-     * Gets the value of the requestId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Long }
-     *     
-     */
-    public Long getRequestId() {
-        return requestId;
-    }
-
-    /**
-     * Sets the value of the requestId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Long }
-     *     
-     */
-    public void setRequestId(Long value) {
-        this.requestId = value;
-    }
-
-    /**
-     * Gets the value of the dateProc property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public XMLGregorianCalendar getDateProc() {
-        return dateProc;
-    }
-
-    /**
-     * Sets the value of the dateProc property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public void setDateProc(XMLGregorianCalendar value) {
-        this.dateProc = value;
-    }
-
-    /**
-     * Gets the value of the size property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
-     */
-    public Double getSize() {
-        return size;
-    }
-
-    /**
-     * Sets the value of the size property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
-     */
-    public void setSize(Double value) {
-        this.size = value;
-    }
-
-    /**
-     * Gets the value of the remoteUri property.
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getRemoteUri() {
-        return remoteUri;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Sets the value of the remoteUri property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setRemoteUri(String value) {
-        this.remoteUri = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
     /**
-     * Gets the value of the localUri property.
+     * Gets the value of the standardName property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getLocalUri() {
-        return localUri;
+    public String getStandardName() {
+        return standardName;
     }
 
     /**
-     * Sets the value of the localUri property.
+     * Sets the value of the standardName property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setLocalUri(String value) {
-        this.localUri = value;
+    public void setStandardName(String value) {
+        this.standardName = value;
+    }
+
+    /**
+     * Gets the value of the longName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getLongName() {
+        return longName;
+    }
+
+    /**
+     * Sets the value of the longName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setLongName(String value) {
+        this.longName = value;
+    }
+
+    /**
+     * Gets the value of the units property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getUnits() {
+        return units;
+    }
+
+    /**
+     * Sets the value of the units property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setUnits(String value) {
+        this.units = value;
+    }
+
+    /**
+     * Gets the value of the description property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Sets the value of the description property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDescription(String value) {
+        this.description = value;
     }
 
     /**

@@ -13,13 +13,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 
 
 /**
  * 
- * 					Réponse informations volume de donneés (en
- * 					octets)
- * 					d'une requête d'extraction.
+ * 					Response on available times of a product (semicolon separated values).
  * 				
  * 
  * <p>Java class for anonymous complex type.
@@ -28,78 +27,52 @@ import javax.xml.bind.annotation.XmlType;
  * 
  * <pre>
  * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *   &lt;simpleContent>
+ *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>string">
  *       &lt;attGroup ref="{}codeMsg"/>
- *       &lt;attribute name="maxAllowedSize" type="{http://www.w3.org/2001/XMLSchema}double" />
- *       &lt;attribute name="size" type="{http://www.w3.org/2001/XMLSchema}double" />
- *     &lt;/restriction>
- *   &lt;/complexContent>
+ *     &lt;/extension>
+ *   &lt;/simpleContent>
  * &lt;/complexType>
  * </pre>
  * 
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
-@XmlRootElement(name = "requestSize")
-public class RequestSize {
+@XmlType(name = "", propOrder = {
+    "value"
+})
+@XmlRootElement(name = "availableTimes")
+public class AvailableTimes {
 
-    @XmlAttribute
-    protected Double maxAllowedSize;
-    @XmlAttribute
-    protected Double size;
+    @XmlValue
+    protected String value;
     @XmlAttribute
     protected String msg;
     @XmlAttribute
     protected ErrorType code;
 
     /**
-     * Gets the value of the maxAllowedSize property.
+     * Gets the value of the value property.
      * 
      * @return
      *     possible object is
-     *     {@link Double }
+     *     {@link String }
      *     
      */
-    public Double getMaxAllowedSize() {
-        return maxAllowedSize;
+    public String getValue() {
+        return value;
     }
 
     /**
-     * Sets the value of the maxAllowedSize property.
+     * Sets the value of the value property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Double }
+     *     {@link String }
      *     
      */
-    public void setMaxAllowedSize(Double value) {
-        this.maxAllowedSize = value;
-    }
-
-    /**
-     * Gets the value of the size property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
-     */
-    public Double getSize() {
-        return size;
-    }
-
-    /**
-     * Sets the value of the size property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
-     */
-    public void setSize(Double value) {
-        this.size = value;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     /**

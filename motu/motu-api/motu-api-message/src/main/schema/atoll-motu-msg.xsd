@@ -6,8 +6,7 @@
 	<xsd:annotation>
 		<xsd:appinfo>
 			<jaxb:globalBindings>
-				<xjc:generateElementProperty>false
-				</xjc:generateElementProperty>
+				<xjc:generateElementProperty>false</xjc:generateElementProperty>
 			</jaxb:globalBindings>
 		</xsd:appinfo>
 	</xsd:annotation>
@@ -281,6 +280,12 @@
 			</xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
+	
+  <!-- Xlink attribute group -->
+    <xsd:attributeGroup name="codeMsg">
+		<xsd:attribute name="msg" type="xsd:string" />
+		<xsd:attribute name="code" type="errorType" />
+    </xsd:attributeGroup>
 
 	<xsd:element name="statusModeResponse">
 
@@ -294,8 +299,7 @@
 
 			<xsd:attribute name="status" type="statusModeType" />
 			<xsd:attribute name="requestId" type="xsd:long" />
-			<xsd:attribute name="msg" type="xsd:string" />
-			<xsd:attribute name="code" type="errorType" />
+			<xsd:attributeGroup ref="codeMsg"/>
 			<xsd:attribute name="dateProc" type="xsd:dateTime" />
 			<xsd:attribute name="size" type="xsd:double" />
 			<xsd:attribute name="remoteUri" type="xsd:string" />
@@ -325,17 +329,211 @@
 		<xsd:complexType>
 			<xsd:annotation>
 				<xsd:documentation>
-					Réponse informations couverture temporelle d'un
-					produit.
+					Response on temporal coverage of a product.
 				</xsd:documentation>
 			</xsd:annotation>
 
 			<xsd:attribute name="start" type="xsd:dateTime" />
 			<xsd:attribute name="end" type="xsd:dateTime" />
-			<xsd:attribute name="msg" type="xsd:string" />
-			<xsd:attribute name="code" type="errorType" />
+			<xsd:attribute name="timeResolution" type="xsd:string" use="optional"/>			
+			<xsd:attributeGroup ref="codeMsg"/>
 		</xsd:complexType>
 
+	</xsd:element>
+	
+	<xsd:element name="property">
+	  <xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Property element name/value pair
+				</xsd:documentation>
+			</xsd:annotation>
+	    <xsd:attribute name="name" type="xsd:string"/>
+	    <xsd:attribute name="value" type="xsd:string"/>
+	  </xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="properties">
+		<xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Property elements name/value pair
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:sequence>
+		        <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+		    </xsd:sequence>
+ 		</xsd:complexType>
+ 	</xsd:element>
+
+	
+	<xsd:element name="availableTimes">
+		<xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Response on available times of a product (semicolon separated values).
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleContent>
+			  <xsd:extension base="xsd:string">
+		        <xsd:attributeGroup ref="codeMsg"/>			  		  	  		    	        														  
+			  </xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="geospatialCoverage">
+		<xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Response on geospatial coverage of a product.
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:attribute name="north" type="xsd:double" default="90"/>
+			<xsd:attribute name="south" type="xsd:double" default="-90"/>
+			<xsd:attribute name="east" type="xsd:double" default="180"/>
+			<xsd:attribute name="west" type="xsd:double" default="-180"/>
+			<xsd:attribute name="northSouthResolution" type="xsd:double" use="optional"/>
+			<xsd:attribute name="northSouthUnits" type="xsd:string" use="optional"/>
+			<xsd:attribute name="eastWestResolution" type="xsd:double" use="optional"/>
+			<xsd:attribute name="eastWestUnits" type="xsd:string" use="optional"/>
+			<xsd:attribute name="depthMin" type="xsd:double" use="optional"/>
+			<xsd:attribute name="depthMax" type="xsd:double" use="optional"/>
+			<xsd:attribute name="depthResolution" type="xsd:double" use="optional"/>
+			<xsd:attribute name="depthUnits" type="xsd:string" use="optional"/>
+			<xsd:attributeGroup ref="codeMsg"/>			  		  	  		    
+			
+		</xsd:complexType>
+	</xsd:element>	
+	
+	<xsd:element name="variableVocabulary">
+		<xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Response on variable vocabulary query of a product.
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleContent>
+      			<xsd:extension base="xsd:string">			
+					<xsd:attribute name="name" type="xsd:string"/>
+					<xsd:attribute name="vocabularyName" type="xsd:string"/>
+					<xsd:attribute name="units" type="xsd:string"/>
+					<xsd:attributeGroup ref="codeMsg"/>			  		  	  		    	        					
+				</xsd:extension>
+			</xsd:simpleContent>
+ 		</xsd:complexType>
+	</xsd:element>	
+	
+	<xsd:simpleType name="variableNameVocabulary">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<jaxb:typesafeEnumClass name="VariableNameVocabulary" />
+			</xsd:appinfo>
+		</xsd:annotation>
+	    <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="CF-1.0"/>
+          <xsd:enumeration value="DIF"/>
+          <xsd:enumeration value="GRIB"/>
+        </xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:element name="variablesVocabulary">
+		<xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Response on variables vocabulary query of a product.
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:sequence>
+		        <xsd:element ref="variableVocabulary" minOccurs="0" maxOccurs="unbounded"/>
+		    </xsd:sequence>
+	        <xsd:attribute name="vocabulary" type="variableNameVocabulary" use="optional"/>
+			<xsd:attributeGroup ref="codeMsg"/>			  		  	  		    	        
+ 		</xsd:complexType>
+ 	</xsd:element>
+ 	
+ 	
+	<xsd:element name="attr">
+		<xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Response on attribute query of a product variable
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:attribute name="name" type="xsd:string"/>
+			<xsd:attribute name="value" type="xsd:anySimpleType"/>
+			<xsd:attributeGroup ref="codeMsg"/>			  		  	  		    	        								
+ 		</xsd:complexType>
+	</xsd:element>	
+	
+	<xsd:element name="attrs">
+		<xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Response on attribute query of a product variable.
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:sequence>
+		        <xsd:element ref="attr" minOccurs="0" maxOccurs="unbounded"/>
+		    </xsd:sequence>
+			<xsd:attributeGroup ref="codeMsg"/>			  		  	  		    	        					    
+ 		</xsd:complexType>
+ 	</xsd:element>
+
+	<xsd:element name="variable">
+		<xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Response on variable query of a product.
+				</xsd:documentation>
+			</xsd:annotation>
+<!-- 
+			<xsd:sequence>
+			  <xsd:element ref="attrs" minOccurs="0"/>
+			</xsd:sequence>		
+ -->				
+			<xsd:attribute name="name" type="xsd:string"/>
+			<xsd:attribute name="standardName" type="xsd:string"/>
+			<xsd:attribute name="longName" type="xsd:string"/>
+			<xsd:attribute name="units" type="xsd:string"/>
+			<xsd:attribute name="description" type="xsd:string"/>
+			<xsd:attributeGroup ref="codeMsg"/>			  		  	  		    	        								
+ 		</xsd:complexType>
+	</xsd:element>	
+	
+	<xsd:element name="variables">
+		<xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Response on variables query of a product.
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:sequence>
+		        <xsd:element ref="variable" minOccurs="0" maxOccurs="unbounded"/>
+		    </xsd:sequence>
+			<xsd:attributeGroup ref="codeMsg"/>			  		  	  		    	        					
+ 		</xsd:complexType>
+ 	</xsd:element>
+	
+	<xsd:element name="productMetadataInfo">
+		<xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Response on a metadata query of a product.
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:sequence>
+			  <xsd:element ref="timeCoverage" minOccurs="0"/>
+			  <xsd:element ref="availableTimes" minOccurs="0"/>
+			  <xsd:element ref="geospatialCoverage" minOccurs="0"/>
+			  <xsd:element ref="variablesVocabulary" minOccurs="0"/>		
+			  <xsd:element ref="variables" minOccurs="0"/>		
+			  <xsd:element ref="properties" minOccurs="0"/>	
+			</xsd:sequence>
+			
+			<xsd:attributeGroup ref="codeMsg"/>			  		  	  
+		
+		</xsd:complexType>
 	</xsd:element>
 
 	<xsd:element name="requestSize">
@@ -350,8 +548,7 @@
 
 			<xsd:attribute name="maxAllowedSize" type="xsd:double" />
 			<xsd:attribute name="size" type="xsd:double" />
-			<xsd:attribute name="msg" type="xsd:string" />
-			<xsd:attribute name="code" type="errorType" />
+			<xsd:attributeGroup ref="codeMsg"/>
 
 		</xsd:complexType>
 

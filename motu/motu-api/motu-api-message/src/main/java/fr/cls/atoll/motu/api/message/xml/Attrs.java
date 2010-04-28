@@ -8,6 +8,8 @@
 
 package fr.cls.atoll.motu.api.message.xml;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -17,9 +19,7 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * 
- * 					Réponse informations volume de donneés (en
- * 					octets)
- * 					d'une requête d'extraction.
+ * 					Response on attribute query of a product variable.
  * 				
  * 
  * <p>Java class for anonymous complex type.
@@ -30,9 +30,10 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;sequence>
+ *         &lt;element ref="{}attr" maxOccurs="unbounded" minOccurs="0"/>
+ *       &lt;/sequence>
  *       &lt;attGroup ref="{}codeMsg"/>
- *       &lt;attribute name="maxAllowedSize" type="{http://www.w3.org/2001/XMLSchema}double" />
- *       &lt;attribute name="size" type="{http://www.w3.org/2001/XMLSchema}double" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -41,65 +42,45 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
-@XmlRootElement(name = "requestSize")
-public class RequestSize {
+@XmlType(name = "", propOrder = {
+    "attr"
+})
+@XmlRootElement(name = "attrs")
+public class Attrs {
 
-    @XmlAttribute
-    protected Double maxAllowedSize;
-    @XmlAttribute
-    protected Double size;
+    protected List<Attr> attr;
     @XmlAttribute
     protected String msg;
     @XmlAttribute
     protected ErrorType code;
 
     /**
-     * Gets the value of the maxAllowedSize property.
+     * Gets the value of the attr property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
-     */
-    public Double getMaxAllowedSize() {
-        return maxAllowedSize;
-    }
-
-    /**
-     * Sets the value of the maxAllowedSize property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the attr property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
-     */
-    public void setMaxAllowedSize(Double value) {
-        this.maxAllowedSize = value;
-    }
-
-    /**
-     * Gets the value of the size property.
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getAttr().add(newItem);
+     * </pre>
      * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
-     */
-    public Double getSize() {
-        return size;
-    }
-
-    /**
-     * Sets the value of the size property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Attr }
+     * 
+     * 
      */
-    public void setSize(Double value) {
-        this.size = value;
+    public List<Attr> getAttr() {
+        if (attr == null) {
+            attr = new ArrayList<Attr>();
+        }
+        return this.attr;
     }
 
     /**

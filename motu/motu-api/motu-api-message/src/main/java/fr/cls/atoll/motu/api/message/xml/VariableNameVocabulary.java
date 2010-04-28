@@ -14,51 +14,46 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for statusModeType.
+ * <p>Java class for variableNameVocabulary.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="statusModeType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}unsignedShort">
- *     &lt;enumeration value="0"/>
- *     &lt;enumeration value="1"/>
- *     &lt;enumeration value="2"/>
- *     &lt;enumeration value="3"/>
+ * &lt;simpleType name="variableNameVocabulary">
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token">
+ *     &lt;enumeration value="CF-1.0"/>
+ *     &lt;enumeration value="DIF"/>
+ *     &lt;enumeration value="GRIB"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
  * 
  */
-@XmlType(name = "statusModeType")
-@XmlEnum(Integer.class)
-public enum StatusModeType {
+@XmlType(name = "variableNameVocabulary")
+@XmlEnum
+public enum VariableNameVocabulary {
 
-    @XmlEnumValue("0")
-    INPROGRESS(0),
-    @XmlEnumValue("1")
-    DONE(1),
-    @XmlEnumValue("2")
-    ERROR(2),
-    @XmlEnumValue("3")
-    PENDING(3);
-    private final int value;
+    @XmlEnumValue("CF-1.0")
+    CF_1_0("CF-1.0"),
+    DIF("DIF"),
+    GRIB("GRIB");
+    private final String value;
 
-    StatusModeType(int v) {
+    VariableNameVocabulary(String v) {
         value = v;
     }
 
-    public int value() {
+    public String value() {
         return value;
     }
 
-    public static StatusModeType fromValue(int v) {
-        for (StatusModeType c: StatusModeType.values()) {
-            if (c.value == v) {
+    public static VariableNameVocabulary fromValue(String v) {
+        for (VariableNameVocabulary c: VariableNameVocabulary.values()) {
+            if (c.value.equals(v)) {
                 return c;
             }
         }
-        throw new IllegalArgumentException(String.valueOf(v));
+        throw new IllegalArgumentException(v);
     }
 
 }
