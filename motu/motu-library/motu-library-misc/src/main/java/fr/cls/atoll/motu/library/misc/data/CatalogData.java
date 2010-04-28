@@ -23,6 +23,7 @@ import fr.cls.atoll.motu.library.misc.tds.server.DatasetType;
 import fr.cls.atoll.motu.library.misc.tds.server.DateTypeFormatted;
 import fr.cls.atoll.motu.library.misc.tds.server.DocumentationType;
 import fr.cls.atoll.motu.library.misc.tds.server.Metadata;
+import fr.cls.atoll.motu.library.misc.tds.server.Property;
 import fr.cls.atoll.motu.library.misc.tds.server.SpatialRange;
 import fr.cls.atoll.motu.library.misc.tds.server.TimeCoverageType;
 import fr.cls.atoll.motu.library.misc.tds.server.Variables;
@@ -954,7 +955,10 @@ public class CatalogData {
 
         // Loads Variables vocabulary
         loadTdsVariablesVocabulary(datasetType, productMetaData);
-
+        
+        // Loads Property meatadata
+        loadTdsMetadataProperty(datasetType, productMetaData);
+        
         product.setProductMetaData(productMetaData);
 
         // // Get Opendap (Dods) url of the dataset.
@@ -1297,8 +1301,8 @@ public class CatalogData {
             LOG.debug("loadTdsVariableVocabulary(DatasetType, ProductMetaData) - entering");
         }
 
-        if (!isLoadTDSVariableVocabulary()) {
-            LOG.debug("loadTdsVariablesVocabulary is not processed because 'loadTDSVariableVocabulary' flag is set to false - exiting");
+        if (!isLoadTDSExtraMetadata()) {
+            LOG.debug("loadTdsVariablesVocabulary is not processed because 'loadTDSExtraMetadata' flag is set to false - exiting");
             return;
         }
          
@@ -1317,6 +1321,42 @@ public class CatalogData {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadTdsVariableVocabulary(DatasetType, ProductMetaData) - exiting");
+        }
+    }
+    
+    /**
+     * Load tds metadata property.
+     * 
+     * @param datasetType the dataset type
+     * @param productMetaData the product meta data
+     * 
+     * @throws MotuException the motu exception
+     */
+    private void loadTdsMetadataProperty(DatasetType datasetType, ProductMetaData productMetaData) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadTdsMetadataProperty(DatasetType, ProductMetaData) - entering");
+        }
+
+        if (!isLoadTDSExtraMetadata()) {
+            LOG.debug("loadTdsMetadataProperty is not processed because 'loadTDSExtraMetadata' flag is set to false - exiting");
+            return;
+        }
+         
+        List<Object> listProperty = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), Property.class);
+
+        productMetaData.setListTDSMetaDataProperty(null);
+
+        for (Object objectElt : listProperty) {
+
+            if (!(objectElt instanceof Property)) {
+                continue;
+            }
+            productMetaData.addListTDSMetaDataProperty((Property) objectElt);
+                        
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadTdsMetadataProperty(DatasetType, ProductMetaData) - exiting");
         }
     }
     
@@ -2032,14 +2072,14 @@ public class CatalogData {
         this.productsLoaded = productsLoaded;
     }
 
-    private boolean loadTDSVariableVocabulary = false;
+    private boolean loadTDSExtraMetadata = false;
 
-    public boolean isLoadTDSVariableVocabulary() {
-        return loadTDSVariableVocabulary;
+    public boolean isLoadTDSExtraMetadata() {
+        return loadTDSExtraMetadata;
     }
 
-    public void setLoadTDSVariableVocabulary(boolean loadTDSVariableVocabulary) {
-        this.loadTDSVariableVocabulary = loadTDSVariableVocabulary;
+    public void setLoadTDSExtraMetadata(boolean loadTDSExtraMetadata) {
+        this.loadTDSExtraMetadata = loadTDSExtraMetadata;
     }
     
 }

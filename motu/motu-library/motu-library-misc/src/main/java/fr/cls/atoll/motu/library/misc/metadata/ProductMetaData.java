@@ -29,6 +29,7 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.library.misc.tds.server.Property;
 import fr.cls.atoll.motu.library.misc.tds.server.Variables;
 import fr.cls.commons.util5.DatePeriod;
 
@@ -2727,15 +2728,64 @@ public class ProductMetaData {
         this.depthUnits = depthUnits;
     }
 
+    /** The variables vocabulary. */
     private Variables variablesVocabulary = null;
 
+    /**
+     * Gets the variables vocabulary.
+     * 
+     * @return the variables vocabulary
+     */
     public Variables getVariablesVocabulary() {
         return variablesVocabulary;
     }
 
+    /**
+     * Sets the variables vocabulary.
+     * 
+     * @param variablesVocabulary the new variables vocabulary
+     */
     public void setVariablesVocabulary(Variables variablesVocabulary) {
         this.variablesVocabulary = variablesVocabulary;
     }
+    
+    /** The list tds meta data property. */
+    private List<Property> listTDSMetaDataProperty = null;
+
+    /**
+     * Gets the list tds meta data property.
+     * 
+     * @return the list tds meta data property
+     */
+    public List<Property> getListTDSMetaDataProperty() {
+        return listTDSMetaDataProperty;
+    }
+
+    /**
+     * Sets the list tds meta data property.
+     * 
+     * @param listTDSMetaDataProperty the new list tds meta data property
+     */
+    public void setListTDSMetaDataProperty(List<Property> listTDSMetaDataProperty) {
+        this.listTDSMetaDataProperty = listTDSMetaDataProperty;
+    }
+    
+    /**
+     * Adds the list tds meta data property.
+     * 
+     * @param property the property
+     */
+    public void addListTDSMetaDataProperty(Property property) {
+        if (property == null) {
+            return;
+        }
+        if (listTDSMetaDataProperty == null) {
+            listTDSMetaDataProperty = new ArrayList<Property>();
+        }
+        
+        listTDSMetaDataProperty.add(property);
+    }
+
     
 }
 // CSON: MultipleStringLiterals

@@ -751,7 +751,7 @@ public class ServiceData {
         catalogData.setUrlSite(urlSite);
         catalogData.setCasAuthentification(casAuthentification);
         if (loadTDSVariableVocabulary != null) {
-            catalogData.setLoadTDSVariableVocabulary(loadTDSVariableVocabulary);            
+            catalogData.setLoadTDSExtraMetadata(loadTDSVariableVocabulary);            
         }
         return catalogData;
     }
