@@ -3,13 +3,58 @@
  */
 package fr.cls.atoll.motu.library.misc.intfce;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+import java.net.Authenticator;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.apache.commons.vfs.FileObject;
+import org.apache.log4j.Logger;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+
+import ucar.ma2.MAMath.MinMax;
+import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.api.message.MotuMsgConstant;
+import fr.cls.atoll.motu.api.message.xml.AvailableTimes;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.message.xml.GeospatialCoverage;
 import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
+import fr.cls.atoll.motu.api.message.xml.ProductMetadataInfo;
 import fr.cls.atoll.motu.api.message.xml.RequestSize;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.api.message.xml.TimeCoverage;
+import fr.cls.atoll.motu.api.message.xml.Variable;
+import fr.cls.atoll.motu.api.message.xml.VariableVocabulary;
+import fr.cls.atoll.motu.api.message.xml.Variables;
+import fr.cls.atoll.motu.api.message.xml.VariablesVocabulary;
+import fr.cls.atoll.motu.library.inventory.CatalogOLA;
+import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.misc.data.CatalogData;
@@ -44,11 +89,11 @@ import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.inventory.CatalogOLA;
-import fr.cls.atoll.motu.library.inventory.Inventory;
+import fr.cls.atoll.motu.library.misc.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
+import fr.cls.atoll.motu.library.misc.tds.server.VariableDesc;
 import fr.cls.atoll.motu.library.misc.utils.Zip;
 import fr.cls.atoll.motu.library.misc.vfs.VFSManager;
 import fr.cls.atoll.motu.library.misc.xml.XMLErrorHandler;
@@ -56,39 +101,6 @@ import fr.cls.atoll.motu.library.misc.xml.XMLUtils;
 import fr.cls.commons.util.PropertiesUtilities;
 import fr.cls.commons.util.io.ConfigLoader;
 import fr.cls.commons.util5.DatePeriod;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
-import java.net.Authenticator;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.apache.commons.vfs.FileObject;
-import org.apache.log4j.Logger;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and
 // trace log.
@@ -610,6 +622,162 @@ public class Organizer {
         TimeCoverage timeCoverage = Organizer.createTimeCoverage();
         Organizer.setError(timeCoverage, e);
         return timeCoverage;
+
+    }
+
+    /**
+     * Creates the geospatial coverage.
+     * 
+     * @return the geospatial coverage
+     */
+    public static GeospatialCoverage createGeospatialCoverage() {
+        ObjectFactory objectFactory = new ObjectFactory();
+
+        GeospatialCoverage geospatialCoverage = objectFactory.createGeospatialCoverage();
+        geospatialCoverage.setDepthMax(null);
+        geospatialCoverage.setDepthMin(null);
+        geospatialCoverage.setDepthResolution(null);
+        geospatialCoverage.setDepthUnits(null);
+        geospatialCoverage.setEast(null);
+        geospatialCoverage.setEastWestResolution(null);
+        geospatialCoverage.setEastWestUnits(null);
+        geospatialCoverage.setNorth(null);
+        geospatialCoverage.setNorthSouthResolution(null);
+        geospatialCoverage.setNorthSouthUnits(null);
+        geospatialCoverage.setSouth(null);
+        geospatialCoverage.setWest(null);
+
+        Organizer
+                .setError(geospatialCoverage, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        return geospatialCoverage;
+
+    }
+
+    /**
+     * Creates the variables vocabulary.
+     * 
+     * @return the variables vocabulary
+     */
+    public static VariablesVocabulary createVariablesVocabulary() {
+        ObjectFactory objectFactory = new ObjectFactory();
+
+        VariablesVocabulary variablesVocabulary = objectFactory.createVariablesVocabulary();
+
+        variablesVocabulary.setVocabulary(null);
+
+        Organizer.setError(variablesVocabulary,
+                           new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        return variablesVocabulary;
+
+    }
+
+    /**
+     * Creates the variable vocabulary.
+     * 
+     * @return the variable vocabulary
+     */
+    public static VariableVocabulary createVariableVocabulary() {
+        ObjectFactory objectFactory = new ObjectFactory();
+
+        VariableVocabulary variableVocabulary = objectFactory.createVariableVocabulary();
+
+        variableVocabulary.setName(null);
+        variableVocabulary.setUnits(null);
+        variableVocabulary.setValue(null);
+        variableVocabulary.setVocabularyName(null);
+
+        Organizer
+                .setError(variableVocabulary, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        return variableVocabulary;
+
+    }
+
+    /**
+     * Creates the variables.
+     * 
+     * @return the fr.cls.atoll.motu.api.message.xml. variables
+     */
+    public static Variables createVariables() {
+        ObjectFactory objectFactory = new ObjectFactory();
+
+        Variables variables = objectFactory.createVariables();
+
+        Organizer.setError(variables, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        return variables;
+
+    }
+
+    /**
+     * Creates the variable.
+     * 
+     * @return the variable
+     */
+    public static Variable createVariable() {
+        ObjectFactory objectFactory = new ObjectFactory();
+
+        Variable variable = objectFactory.createVariable();
+
+        variable.setDescription(null);
+        variable.setLongName(null);
+        variable.setName(null);
+        variable.setStandardName(null);
+        variable.setUnits(null);
+
+        Organizer.setError(variable, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        return variable;
+
+    }
+
+    /**
+     * Creates the available times.
+     * 
+     * @return the available times
+     */
+    public static AvailableTimes createAvailableTimes() {
+        ObjectFactory objectFactory = new ObjectFactory();
+
+        AvailableTimes availableTimes = objectFactory.createAvailableTimes();
+
+        availableTimes.setValue(null);
+
+        Organizer.setError(availableTimes, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        return availableTimes;
+
+    }
+
+    /**
+     * Creates the product metadata info.
+     * 
+     * @return the time coverage
+     */
+    public static ProductMetadataInfo createProductMetadataInfo() {
+        ObjectFactory objectFactory = new ObjectFactory();
+
+        ProductMetadataInfo productMetadataInfo = objectFactory.createProductMetadataInfo();
+        productMetadataInfo.setAvailableTimes(null);
+        productMetadataInfo.setGeospatialCoverage(null);
+        productMetadataInfo.setProperties(null);
+        productMetadataInfo.setTimeCoverage(null);
+        productMetadataInfo.setVariables(null);
+        productMetadataInfo.setVariablesVocabulary(null);
+        Organizer.setError(productMetadataInfo,
+                           new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        return productMetadataInfo;
+
+    }
+
+    /**
+     * Creates the product metadata info.
+     * 
+     * @param e the e
+     * 
+     * @return the time coverage
+     */
+    public static ProductMetadataInfo createProductMetadataInfo(MotuExceptionBase e) {
+
+        ProductMetadataInfo productMetadataInfo = Organizer.createProductMetadataInfo();
+        Organizer.setError(productMetadataInfo, e);
+        return productMetadataInfo;
 
     }
 
@@ -1591,10 +1759,9 @@ public class Organizer {
         }
 
         TimeCoverage timeCoverage = Organizer.createTimeCoverage();
-
         if (datePeriod == null) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("initTimeCoverage(DatePeriod) - datePeriod is null and exiting");
+                LOG.debug("initTimeCoverage(DatePeriod, TimeCoverage) - datePeriod is null - exiting");
             }
             return timeCoverage;
         }
@@ -1607,9 +1774,6 @@ public class Organizer {
         timeCoverage.setCode(ErrorType.OK);
         timeCoverage.setMsg(ErrorType.OK.toString());
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initTimeCoverage(DatePeriod) - exiting");
-        }
         return timeCoverage;
 
     }
@@ -1629,6 +1793,292 @@ public class Organizer {
         }
         DatePeriod datePeriod = productMetaData.getTimeCoverage();
         return Organizer.initTimeCoverage(datePeriod);
+    }
+
+    /**
+     * Inits the geospatial coverage.
+     * 
+     * @param productMetaData the product meta data
+     * 
+     * @return the geospatial coverage
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static GeospatialCoverage initGeospatialCoverage(ProductMetaData productMetaData) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initGeospatialCoverage(ProductMetaData) - entering");
+        }
+
+        GeospatialCoverage geospatialCoverage = Organizer.createGeospatialCoverage();
+
+        if (productMetaData == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("initGeospatialCoverage(ProductMetaData) - exiting");
+            }
+            return geospatialCoverage;
+        }
+
+        geospatialCoverage.setDepthMax(productMetaData.getDepthCoverage().max);
+        geospatialCoverage.setDepthMin(productMetaData.getDepthCoverage().min);
+        geospatialCoverage.setDepthResolution(productMetaData.getDepthResolution());
+        geospatialCoverage.setDepthUnits(productMetaData.getDepthUnits());
+        geospatialCoverage.setEast(productMetaData.getGeoBBox().getLonMin());
+        geospatialCoverage.setEastWestResolution(productMetaData.getEastWestResolution());
+        geospatialCoverage.setEastWestUnits(productMetaData.getEastWestUnits());
+        geospatialCoverage.setNorth(productMetaData.getGeoBBox().getLatMax());
+        geospatialCoverage.setNorthSouthResolution(productMetaData.getNorthSouthResolution());
+        geospatialCoverage.setNorthSouthUnits(productMetaData.getNorthSouthUnits());
+        geospatialCoverage.setSouth(productMetaData.getGeoBBox().getLatMin());
+        geospatialCoverage.setWest(productMetaData.getGeoBBox().getLonMax());
+
+        geospatialCoverage.setCode(ErrorType.OK);
+        geospatialCoverage.setMsg(ErrorType.OK.toString());
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initGeospatialCoverage(ProductMetaData) - exiting");
+        }
+        return geospatialCoverage;
+    }
+
+    /**
+     * Inits the variable vocabulary.
+     * 
+     * @param variableDesc the variable desc
+     * 
+     * @return the variable vocabulary
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static VariableVocabulary initVariableVocabulary(VariableDesc variableDesc) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initVariableVocabulary(VariableDesc) - entering");
+        }
+
+        VariableVocabulary variableVocabulary = Organizer.createVariableVocabulary();
+
+        if (variableDesc == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("initVariableVocabulary(VariableDesc) - exiting");
+            }
+            return variableVocabulary;
+        }
+
+        variableVocabulary.setName(variableDesc.getName());
+        variableVocabulary.setUnits(variableDesc.getUnits());
+        variableVocabulary.setValue(variableDesc.getContent());
+        variableVocabulary.setVocabularyName(variableDesc.getVocabularyName());
+
+        variableVocabulary.setCode(ErrorType.OK);
+        variableVocabulary.setMsg(ErrorType.OK.toString());
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initVariableVocabulary(VariableDesc) - exiting");
+        }
+        return variableVocabulary;
+    }
+
+    /**
+     * Inits the variables vocabulary.
+     * 
+     * @param productMetaData the product meta data
+     * 
+     * @return the variables vocabulary
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static VariablesVocabulary initVariablesVocabulary(ProductMetaData productMetaData) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initVariablesVocabulary(ProductMetaData) - entering");
+        }
+
+        VariablesVocabulary variablesVocabulary = Organizer.createVariablesVocabulary();
+
+        if (productMetaData == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("initVariablesVocabulary(ProductMetaData) - exiting");
+            }
+            return variablesVocabulary;
+        }
+
+        List<VariableDesc> variablesDescList = productMetaData.getVariablesVocabulary().getVariableDesc();
+
+        if (variablesDescList == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("initVariablesVocabulary(ProductMetaData) - exiting");
+            }
+            return variablesVocabulary;
+        }
+
+        List<VariableVocabulary> variableVocabularyList = variablesVocabulary.getVariableVocabulary();
+
+        for (VariableDesc variableDesc : variablesDescList) {
+            variableVocabularyList.add(Organizer.initVariableVocabulary(variableDesc));
+        }
+        variablesVocabulary.setCode(ErrorType.OK);
+        variablesVocabulary.setMsg(ErrorType.OK.toString());
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initVariablesVocabulary(ProductMetaData) - exiting");
+        }
+        return variablesVocabulary;
+    }
+
+    /**
+     * Inits the variable.
+     * 
+     * @param parameterMetaData the parameter meta data
+     * 
+     * @return the fr.cls.atoll.motu.api.message.xml. variable
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static Variable initVariable(ParameterMetaData parameterMetaData) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initVariable(ParameterMetaData) - entering");
+        }
+
+        Variable variable = Organizer.createVariable();
+
+        if (parameterMetaData == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("initVariable(ParameterMetaData) - exiting");
+            }
+            return variable;
+        }
+
+        variable.setDescription(parameterMetaData.getLabel());
+        variable.setLongName(parameterMetaData.getLongName());
+        variable.setName(parameterMetaData.getName());
+        variable.setStandardName(parameterMetaData.getStandardName());
+        variable.setUnits(parameterMetaData.getUnit());
+
+        variable.setCode(ErrorType.OK);
+        variable.setMsg(ErrorType.OK.toString());
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initVariable(ParameterMetaData) - exiting");
+        }
+        return variable;
+    }
+
+    /**
+     * Inits the variables.
+     * 
+     * @param productMetaData the product meta data
+     * 
+     * @return the fr.cls.atoll.motu.api.message.xml. variables
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static Variables initVariables(ProductMetaData productMetaData) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initVariables(ProductMetaData) - entering");
+        }
+
+        Variables variables = Organizer.createVariables();
+
+        if (productMetaData == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("initVariables(ProductMetaData) - exiting");
+            }
+            return variables;
+        }
+
+        Collection<ParameterMetaData> parameterMetaDataList = productMetaData.parameterMetaDatasValues();
+
+        if (parameterMetaDataList == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("initVariables(ProductMetaData) - exiting");
+            }
+            return variables;
+        }
+
+        List<Variable> variableList = variables.getVariable();
+
+        for (ParameterMetaData parameterMetaData : parameterMetaDataList) {
+            variableList.add(Organizer.initVariable(parameterMetaData));
+        }
+
+        variables.setCode(ErrorType.OK);
+        variables.setMsg(ErrorType.OK.toString());
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initVariables(ProductMetaData) - exiting");
+        }
+        return variables;
+    }
+
+    public static AvailableTimes initAvailableTimes(Product product) throws MotuException, NetCdfVariableException {
+
+        AvailableTimes availableTimes = Organizer.createAvailableTimes();
+
+        if (product == null) {
+            return availableTimes;
+        }
+        
+        StringBuffer stringBuffer = new StringBuffer();
+        List<String> list = product.getTimeAxisDataAsString();
+
+        Iterator<String> i = list.iterator();
+        if (i.hasNext()) {
+            for (;;) {
+                String value = i.next();
+                stringBuffer.append(value);
+                if (i.hasNext()) {
+                    stringBuffer.append(";");
+                }
+            }
+        }
+        
+        availableTimes.setValue(stringBuffer.toString());
+
+        availableTimes.setCode(ErrorType.OK);
+        availableTimes.setMsg(ErrorType.OK.toString());
+
+        return availableTimes;
+    }
+
+    /**
+     * Inits the product metadata info.
+     * 
+     * @param product the product
+     * 
+     * @return the product metadata info
+     * 
+     * @throws MotuExceptionBase the motu exception base
+     */
+    public static ProductMetadataInfo initProductMetadataInfo(Product product) throws MotuExceptionBase {
+
+        ProductMetadataInfo productMetadataInfo = Organizer.createProductMetadataInfo();
+
+        if (product == null) {
+            return productMetadataInfo;
+        }
+
+        ProductMetaData productMetaData = product.getProductMetaData();
+
+        if (productMetaData == null) {
+            return productMetadataInfo;
+        }
+
+        productMetadataInfo.setGeospatialCoverage(Organizer.initGeospatialCoverage(productMetaData));
+        productMetadataInfo.setProperties(null);
+        productMetadataInfo.setTimeCoverage(Organizer.initTimeCoverage(productMetaData));
+        productMetadataInfo.setVariablesVocabulary(Organizer.initVariablesVocabulary(productMetaData));
+
+        ServiceData serviceData = new ServiceData();
+
+        // -----------------------------------------------------
+        // to get some metadata, we have to load them from data files
+        // -----------------------------------------------------
+
+        Product productWithDetail = serviceData.getProductInformation(product);
+
+        productMetadataInfo.setVariables(Organizer.initVariables(productWithDetail.getProductMetaData()));
+
+        productMetadataInfo.setAvailableTimes(Organizer.initAvailableTimes(productWithDetail));
+
+        return productMetadataInfo;
     }
 
     /**
@@ -1855,6 +2305,73 @@ public class Organizer {
     }
 
     /**
+     * Marshall product metadata info.
+     * 
+     * @param productMetadataInfo the product metadata info
+     * @param writer the writer
+     * 
+     * @throws MotuMarshallException the motu marshall exception
+     */
+    public static void marshallProductMetadataInfo(ProductMetadataInfo productMetadataInfo, Writer writer) throws MotuMarshallException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("marshallProductMetadataInfo(ProductMetadataInfo, Writer) - entering");
+        }
+
+        if (writer == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("marshallProductMetadataInfo(ProductMetadataInfo, Writer) - exiting");
+            }
+            return;
+        }
+
+        try {
+            synchronized (Organizer.marshallerMotuMsg) {
+                Organizer.marshallerMotuMsg.marshal(productMetadataInfo, writer);
+                writer.flush();
+                writer.close();
+            }
+        } catch (JAXBException e) {
+            LOG.error("marshallProductMetadataInfo(ProductMetadataInfo, Writer)", e);
+            throw new MotuMarshallException("Error in Organizer - marshallTimeCoverage", e);
+        } catch (IOException e) {
+            LOG.error("marshallProductMetadataInfo(ProductMetadataInfo, Writer)", e);
+            throw new MotuMarshallException("Error in Organizer - marshallTimeCoverage", e);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("marshallProductMetadataInfo(ProductMetadataInfo, Writer) - exiting");
+        }
+    }
+
+    /**
+     * Marshall product metadata info.
+     * 
+     * @param ex the ex
+     * @param writer the writer
+     * 
+     * @throws MotuMarshallException the motu marshall exception
+     */
+    public static void marshallProductMetadataInfo(MotuExceptionBase ex, Writer writer) throws MotuMarshallException {
+        if (writer == null) {
+            return;
+        }
+
+        ProductMetadataInfo productMetadataInfo = Organizer.createProductMetadataInfo(ex);
+        try {
+            synchronized (Organizer.marshallerMotuMsg) {
+                Organizer.marshallerMotuMsg.marshal(productMetadataInfo, writer);
+                writer.flush();
+                writer.close();
+            }
+        } catch (JAXBException e) {
+            throw new MotuMarshallException("Error in Organizer - marshallProductMetadataInfo", e);
+        } catch (IOException e) {
+            throw new MotuMarshallException("Error in Organizer - marshallProductMetadataInfo", e);
+        }
+
+    }
+
+    /**
      * Associates the specified value with the specified key in this map (optional operation).
      * 
      * @param value value to be associated with the specified key.
@@ -1994,6 +2511,132 @@ public class Organizer {
             timeCoverage.setMsg(e.getMessage());
         }
         timeCoverage.setCode(errorType);
+
+    }
+
+    /**
+     * Sets the error.
+     * 
+     * @param productMetadataInfo the product metadata info
+     * @param e the e
+     */
+    public static void setError(ProductMetadataInfo productMetadataInfo, Exception e) {
+        ErrorType errorType = Organizer.getErrorType(e);
+        if (e instanceof MotuExceptionBase) {
+            MotuExceptionBase e2 = (MotuExceptionBase) e;
+            productMetadataInfo.setMsg(e2.notifyException());
+        } else {
+            productMetadataInfo.setMsg(e.getMessage());
+        }
+        productMetadataInfo.setCode(errorType);
+
+    }
+
+    /**
+     * Sets the error.
+     * 
+     * @param geospatialCoverage the geospatial coverage
+     * @param e the e
+     */
+    public static void setError(GeospatialCoverage geospatialCoverage, Exception e) {
+        ErrorType errorType = Organizer.getErrorType(e);
+        if (e instanceof MotuExceptionBase) {
+            MotuExceptionBase e2 = (MotuExceptionBase) e;
+            geospatialCoverage.setMsg(e2.notifyException());
+        } else {
+            geospatialCoverage.setMsg(e.getMessage());
+        }
+        geospatialCoverage.setCode(errorType);
+
+    }
+
+    /**
+     * Sets the error.
+     * 
+     * @param variablesVocabulary the variables vocabulary
+     * @param e the e
+     */
+    public static void setError(VariablesVocabulary variablesVocabulary, Exception e) {
+        ErrorType errorType = Organizer.getErrorType(e);
+        if (e instanceof MotuExceptionBase) {
+            MotuExceptionBase e2 = (MotuExceptionBase) e;
+            variablesVocabulary.setMsg(e2.notifyException());
+        } else {
+            variablesVocabulary.setMsg(e.getMessage());
+        }
+        variablesVocabulary.setCode(errorType);
+
+    }
+
+    /**
+     * Sets the error.
+     * 
+     * @param variableVocabulary the variable vocabulary
+     * @param e the e
+     */
+    public static void setError(VariableVocabulary variableVocabulary, Exception e) {
+        ErrorType errorType = Organizer.getErrorType(e);
+        if (e instanceof MotuExceptionBase) {
+            MotuExceptionBase e2 = (MotuExceptionBase) e;
+            variableVocabulary.setMsg(e2.notifyException());
+        } else {
+            variableVocabulary.setMsg(e.getMessage());
+        }
+        variableVocabulary.setCode(errorType);
+
+    }
+
+    /**
+     * Sets the error.
+     * 
+     * @param variables the variables
+     * @param e the e
+     */
+    public static void setError(Variables variables, Exception e) {
+        ErrorType errorType = Organizer.getErrorType(e);
+        if (e instanceof MotuExceptionBase) {
+            MotuExceptionBase e2 = (MotuExceptionBase) e;
+            variables.setMsg(e2.notifyException());
+        } else {
+            variables.setMsg(e.getMessage());
+        }
+        variables.setCode(errorType);
+
+    }
+
+    /**
+     * Sets the error.
+     * 
+     * @param variable the variable
+     * @param e the e
+     */
+    public static void setError(Variable variable, Exception e) {
+        ErrorType errorType = Organizer.getErrorType(e);
+        if (e instanceof MotuExceptionBase) {
+            MotuExceptionBase e2 = (MotuExceptionBase) e;
+            variable.setMsg(e2.notifyException());
+        } else {
+            variable.setMsg(e.getMessage());
+        }
+        variable.setCode(errorType);
+
+    }
+
+    /**
+     * Sets the error.
+     * 
+     * @param availableTimes the available times
+     * @param e the e
+     */
+    public static void setError(AvailableTimes availableTimes, Exception e) {
+        ErrorType errorType = Organizer.getErrorType(e);
+        if (e instanceof MotuExceptionBase) {
+            MotuExceptionBase e2 = (MotuExceptionBase) e;
+            availableTimes.setMsg(e2.notifyException());
+        } else {
+            availableTimes.setMsg(e.getMessage());
+        }
+        availableTimes.setCode(errorType);
 
     }
 
@@ -3948,6 +4591,68 @@ public class Organizer {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getTimeCoverage(String, String, Writer) - exiting");
         }
+    }
+
+    /**
+     * Gets the product metadata info.
+     * 
+     * @param locationData the location data
+     * 
+     * @return the product metadata info
+     * 
+     * @throws MotuExceptionBase the motu exception base
+     */
+    public ProductMetadataInfo getProductMetadataInfo(String locationData) throws MotuExceptionBase {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductMetadataInfo(String) - entering");
+        }
+
+        Product product = null;
+        try {
+            product = getProductInformation(locationData);
+        } catch (MotuNotImplementedException e) {
+            LOG.error("getProductMetadataInfo(String)", e);
+
+            throw new MotuException(String.format("ERROR in getProductMetadataInfo - location data is '%s' ", locationData), e);
+        } catch (NetCdfAttributeException e) {
+            LOG.error("getProductMetadataInfo(String)", e);
+
+            // Do Nothing
+        }
+        if (product == null) {
+            throw new MotuException(String.format("Unknown product from location data '%s' (getProductMetadataInfo)", locationData));
+        }
+
+        ProductMetadataInfo productMetadataInfo = initProductMetadataInfo(product);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductMetadataInfo(String) - exiting");
+        }
+        return productMetadataInfo;
+    }
+
+    /**
+     * Gets the product metadata info.
+     * 
+     * @param locationData the location data
+     * @param writer the writer
+     * 
+     * @return the product metadata info
+     * 
+     * @throws MotuExceptionBase the motu exception base
+     * @throws MotuMarshallException the motu marshall exception
+     */
+    public void getProductMetadataInfo(String locationData, Writer writer) throws MotuExceptionBase, MotuMarshallException {
+
+        ProductMetadataInfo productMetadataInfo = null;
+        try {
+            productMetadataInfo = getProductMetadataInfo(locationData);
+        } catch (MotuExceptionBase e) {
+            Organizer.marshallProductMetadataInfo(e, writer);
+            throw e;
+        }
+        Organizer.marshallProductMetadataInfo(productMetadataInfo, writer);
+
     }
 
     /**

@@ -745,14 +745,17 @@ public class ServiceData {
      * 
      * @return the catalog data
      */
-    public CatalogData createCatalogData() {
+    public CatalogData createCatalogData(Boolean loadTDSVariableVocabulary) {
         CatalogData catalogData = new CatalogData();
         catalogData = new CatalogData();
         catalogData.setUrlSite(urlSite);
         catalogData.setCasAuthentification(casAuthentification);
+        if (loadTDSVariableVocabulary != null) {
+            catalogData.setLoadTDSVariableVocabulary(loadTDSVariableVocabulary);            
+        }
         return catalogData;
     }
-
+    
     /**
      * Load catalog info.
      * 
@@ -763,12 +766,26 @@ public class ServiceData {
      * @throws MotuException the motu exception
      */
     public CatalogData loadCatalogInfo(CatalogData catalogData) throws MotuException {
+        return loadCatalogInfo(catalogData, null);
+    }
+    
+    /**
+     * Load catalog info.
+     * 
+     * @param catalogData the catalog data
+     * @param loadTDSVariableVocabulary the load tds variable vocabulary
+     * 
+     * @return the catalog data
+     * 
+     * @throws MotuException the motu exception
+     */
+    public CatalogData loadCatalogInfo(CatalogData catalogData, Boolean loadTDSVariableVocabulary) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadCatalogInfo(CatalogData) - entering");
         }
 
         if (catalogData == null) {
-            catalogData = createCatalogData();
+            catalogData = createCatalogData(loadTDSVariableVocabulary);
         }
 
         switch (getCatalogType()) {

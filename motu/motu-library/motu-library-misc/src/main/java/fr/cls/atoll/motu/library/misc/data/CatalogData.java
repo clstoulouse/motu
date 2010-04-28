@@ -25,6 +25,7 @@ import fr.cls.atoll.motu.library.misc.tds.server.DocumentationType;
 import fr.cls.atoll.motu.library.misc.tds.server.Metadata;
 import fr.cls.atoll.motu.library.misc.tds.server.SpatialRange;
 import fr.cls.atoll.motu.library.misc.tds.server.TimeCoverageType;
+import fr.cls.atoll.motu.library.misc.tds.server.Variables;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -951,6 +952,9 @@ public class CatalogData {
         // Loads geo and depth coverage
         loadTdsGeoAndDepthCoverage(datasetType, productMetaData);
 
+        // Loads Variables vocabulary
+        loadTdsVariablesVocabulary(datasetType, productMetaData);
+
         product.setProductMetaData(productMetaData);
 
         // // Get Opendap (Dods) url of the dataset.
@@ -1270,13 +1274,60 @@ public class CatalogData {
             Date start = getPartOfTimeCoverage(XML_TAG_START, startOrEndOrDuration);
             Date end = getPartOfTimeCoverage(XML_TAG_END, startOrEndOrDuration);
             productMetaData.setTimeCoverage(start, end);
+            
+            productMetaData.setTimeCoverageResolution(timeCoverage.getResolution());
+            
         }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadTdsTimeCoverage(DatasetType, ProductMetaData) - exiting");
         }
     }
+    
+    /**
+     * Load tds variables vocabulary.
+     * 
+     * @param datasetType the dataset type
+     * @param productMetaData the product meta data
+     * 
+     * @throws MotuException the motu exception
+     */
+    private void loadTdsVariablesVocabulary(DatasetType datasetType, ProductMetaData productMetaData) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadTdsVariableVocabulary(DatasetType, ProductMetaData) - entering");
+        }
 
+        if (!isLoadTDSVariableVocabulary()) {
+            LOG.debug("loadTdsVariablesVocabulary is not processed because 'loadTDSVariableVocabulary' flag is set to false - exiting");
+            return;
+        }
+         
+        List<Object> listVariablesVocabularyObject = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), Variables.class);
+
+        productMetaData.setVariablesVocabulary(null);
+
+        for (Object objectElt : listVariablesVocabularyObject) {
+
+            if (!(objectElt instanceof Variables)) {
+                continue;
+            }
+            productMetaData.setVariablesVocabulary((Variables) objectElt);
+                        
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadTdsVariableVocabulary(DatasetType, ProductMetaData) - exiting");
+        }
+    }
+    
+    /**
+     * Load tds geo and depth coverage.
+     * 
+     * @param datasetType the dataset type
+     * @param productMetaData the product meta data
+     * 
+     * @throws MotuException the motu exception
+     */
     private void loadTdsGeoAndDepthCoverage(DatasetType datasetType, ProductMetaData productMetaData) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadTdsGeoCoverage(DatasetType, ProductMetaData) - entering");
@@ -1286,6 +1337,14 @@ public class CatalogData {
                                                                          fr.cls.atoll.motu.library.misc.tds.server.GeospatialCoverage.class);
 
         productMetaData.setGeoBBox(null);
+//        productMetaData.setNorthSouthResolution(null);
+//        productMetaData.setNorthSouthUnits(null);
+//        productMetaData.setEastWestResolution(null);
+//        productMetaData.setEastWestUnits(null);
+//        productMetaData.setDepthCoverage(null);
+//        productMetaData.setDepthResolution(null);
+//        productMetaData.setDepthUnits(null);
+        
         boolean foundGeospatialCoverage = false;
 
         for (Object objectElt : listGeoCoverageObject) {
@@ -1329,6 +1388,13 @@ public class CatalogData {
         ExtractCriteriaLatLon extractCriteriaLatLon = new ExtractCriteriaLatLon(geospatialCoverage);
         productMetaData.setGeoBBox(new LatLonRect(extractCriteriaLatLon.getLatLonRect()));
 
+
+        productMetaData.setNorthSouthResolution(CatalogData.getResolution(geospatialCoverage.getNorthsouth()));
+        productMetaData.setNorthSouthUnits(CatalogData.getUnits(geospatialCoverage.getNorthsouth()));
+
+        productMetaData.setEastWestResolution(CatalogData.getResolution(geospatialCoverage.getEastwest()));
+        productMetaData.setEastWestUnits(CatalogData.getUnits(geospatialCoverage.getEastwest()));
+
         // Set depth coverage
         SpatialRange spatialRangeUpDown = geospatialCoverage.getUpdown();
         if (spatialRangeUpDown != null) {
@@ -1337,9 +1403,42 @@ public class CatalogData {
 
             productMetaData.setDepthCoverage(new MinMax(min, max));
         }
+        
+        productMetaData.setDepthResolution(CatalogData.getResolution(geospatialCoverage.getUpdown()));
+        productMetaData.setDepthUnits(CatalogData.getUnits(geospatialCoverage.getUpdown()));
+        
         return true;
     }
 
+    /**
+     * Gets the resolution.
+     * 
+     * @param spatialRange the spatial range
+     * 
+     * @return the resolution
+     */
+    public static Double getResolution(SpatialRange spatialRange) {
+        if (spatialRange == null) {
+            return null;
+        }
+        return spatialRange.getResolution();
+        
+    }
+    
+    /**
+     * Gets the units.
+     * 
+     * @param spatialRange the spatial range
+     * 
+     * @return the units
+     */
+    public static String getUnits(SpatialRange spatialRange) {
+        if (spatialRange == null) {
+            return null;
+        }
+        return spatialRange.getUnits();
+        
+    }
     /**
      * Find tds geo and depth coverage.
      * 
@@ -1933,5 +2032,15 @@ public class CatalogData {
         this.productsLoaded = productsLoaded;
     }
 
+    private boolean loadTDSVariableVocabulary = false;
+
+    public boolean isLoadTDSVariableVocabulary() {
+        return loadTDSVariableVocabulary;
+    }
+
+    public void setLoadTDSVariableVocabulary(boolean loadTDSVariableVocabulary) {
+        this.loadTDSVariableVocabulary = loadTDSVariableVocabulary;
+    }
+    
 }
 // CSON: MultipleStringLiterals

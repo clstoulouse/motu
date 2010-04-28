@@ -16,17 +16,14 @@ import ucar.nc2.Dimension;
 public class ParameterMetaData {
     // CSOFF: StrictDuplicateCode : normal duplication code.
 
-    /**
-     * Name of the parameter.
-     * 
-     * @uml.property name="name"
-     */
+    /** Name of the parameter. */
     private String name = "";
 
     /**
      * Getter of the property <tt>name</tt>.
      * 
      * @return Returns the name.
+     * 
      * @uml.property name="name"
      */
     public String getName() {
@@ -39,6 +36,7 @@ public class ParameterMetaData {
      * Setter of the property <tt>name</tt>.
      * 
      * @param name The name to set.
+     * 
      * @uml.property name="name"
      */
     public void setName(String name) {
@@ -48,17 +46,14 @@ public class ParameterMetaData {
         this.name = name;
     }
 
-    /**
-     * Description.
-     * 
-     * @uml.property name="label"
-     */
+    /** Description. */
     private String label = "";
 
     /**
      * Getter of the property <tt>label</tt>.
      * 
      * @return Returns the label.
+     * 
      * @uml.property name="label"
      */
     public String getLabel() {
@@ -69,6 +64,7 @@ public class ParameterMetaData {
      * Setter of the property <tt>label</tt>.
      * 
      * @param label The label to set.
+     * 
      * @uml.property name="label"
      */
     public void setLabel(String label) {
@@ -78,17 +74,14 @@ public class ParameterMetaData {
         this.label = label;
     }
 
-    /**
-     * Unit.
-     * 
-     * @uml.property name="unit"
-     */
+    /** Unit. */
     private String unit = "";
 
     /**
      * Getter of the property <tt>unit</tt>.
      * 
      * @return Returns the unit.
+     * 
      * @uml.property name="unit"
      */
     public String getUnit() {
@@ -99,6 +92,7 @@ public class ParameterMetaData {
      * Setter of the property <tt>unit</tt>.
      * 
      * @param unit The unit to set.
+     * 
      * @uml.property name="unit"
      */
     public void setUnit(String unit) {
@@ -115,17 +109,14 @@ public class ParameterMetaData {
 
     }
 
-    /**
-     * type of the data contains in the parameter: longitude, latitude, date/time, data.
-     * 
-     * @uml.property name="dataType"
-     */
+    /** type of the data contains in the parameter: longitude, latitude, date/time, data. */
     private String dataType = "";
 
     /**
      * Getter of the property <tt>dataType</tt>.
      * 
      * @return Returns the dataType.
+     * 
      * @uml.property name="dataType"
      */
     public String getDataType() {
@@ -136,6 +127,7 @@ public class ParameterMetaData {
      * Setter of the property <tt>dataType</tt>.
      * 
      * @param dataType The dataType to set.
+     * 
      * @uml.property name="dataType"
      */
     public void setDataType(String dataType) {
@@ -145,17 +137,14 @@ public class ParameterMetaData {
         this.dataType = dataType;
     }
 
-    /**
-     * long unit name.
-     * 
-     * @uml.property name="unitLong"
-     */
+    /** long unit name. */
     private String unitLong = "";
 
     /**
      * Getter of the property <tt>unitLong</tt>.
      * 
      * @return Returns the unitLong.
+     * 
      * @uml.property name="unitLong"
      */
     public String getUnitLong() {
@@ -166,6 +155,7 @@ public class ParameterMetaData {
      * Setter of the property <tt>unitLong</tt>.
      * 
      * @param unitLong The unitLong to set.
+     * 
      * @uml.property name="unitLong"
      */
     public void setUnitLong(String unitLong) {
@@ -175,17 +165,14 @@ public class ParameterMetaData {
         this.unitLong = unitLong;
     }
 
-    /**
-     * Internatioanl standard name.
-     * 
-     * @uml.property name="standardName"
-     */
+    /** Internatioanl standard name. */
     private String standardName = "";
 
     /**
      * Getter of the property <tt>standardName</tt>.
      * 
      * @return Returns the standardName.
+     * 
      * @uml.property name="standardName"
      */
     public String getStandardName() {
@@ -196,6 +183,7 @@ public class ParameterMetaData {
      * Setter of the property <tt>standardName</tt>.
      * 
      * @param standardName The standardName to set.
+     * 
      * @uml.property name="standardName"
      */
     public void setStandardName(String standardName) {
@@ -205,17 +193,35 @@ public class ParameterMetaData {
         this.standardName = standardName;
     }
 
+    /** The long name. */
+    private String longName = "";
+
     /**
-     * @uml.property name="dimensions"
-     * @uml.associationEnd multiplicity="(0 -1)" ordering="true"
-     *                     inverse="parameterMetaData:ucar.nc2.Dimension"
+     * Gets the long name.
+     * 
+     * @return the long name
      */
+    public String getLongName() {
+        return longName;
+    }
+
+    /**
+     * Sets the long name.
+     * 
+     * @param longName the new long name
+     */
+    public void setLongName(String longName) {
+        this.longName = longName;
+    }
+
+    /** The dimensions. */
     private List<Dimension> dimensions;
 
     /**
      * Getter of the property <tt>dimensions</tt>.
      * 
      * @return Returns the dimensions.
+     * 
      * @uml.property name="dimensions"
      */
     public List<Dimension> getDimensions() {
@@ -226,7 +232,9 @@ public class ParameterMetaData {
      * Returns the element at the specified position in this list.
      * 
      * @param i index of element to return.
+     * 
      * @return the element at the specified position in this list.
+     * 
      * @see java.util.List#get(int)
      * @uml.property name="dimensions"
      */
@@ -238,6 +246,7 @@ public class ParameterMetaData {
      * Returns an iterator over the elements in this list in proper sequence.
      * 
      * @return an iterator over the elements in this list in proper sequence.
+     * 
      * @see java.util.List#iterator()
      * @uml.property name="dimensions"
      */
@@ -249,6 +258,7 @@ public class ParameterMetaData {
      * Returns <tt>true</tt> if this list contains no elements.
      * 
      * @return <tt>true</tt> if this list contains no elements.
+     * 
      * @see java.util.List#isEmpty()
      * @uml.property name="dimensions"
      */
@@ -260,7 +270,9 @@ public class ParameterMetaData {
      * Returns <tt>true</tt> if this list contains the specified element.
      * 
      * @param dimension element whose presence in this list is to be tested.
+     * 
      * @return <tt>true</tt> if this list contains the specified element.
+     * 
      * @see java.util.List#contains(Object)
      * @uml.property name="dimensions"
      */
@@ -272,7 +284,9 @@ public class ParameterMetaData {
      * Returns <tt>true</tt> if this list contains all of the elements of the specified collection.
      * 
      * @param elements collection to be checked for containment in this list.
+     * 
      * @return <tt>true</tt> if this list contains all of the elements of the specified collection.
+     * 
      * @see java.util.List#containsAll(Collection)
      * @uml.property name="dimensions"
      */
@@ -284,6 +298,7 @@ public class ParameterMetaData {
      * Returns the number of elements in this list.
      * 
      * @return the number of elements in this list.
+     * 
      * @see java.util.List#size()
      * @uml.property name="dimensions"
      */
@@ -295,6 +310,7 @@ public class ParameterMetaData {
      * Returns an array containing all of the elements in this list in proper sequence.
      * 
      * @return an array containing all of the elements in this list in proper sequence.
+     * 
      * @see java.util.List#toArray()
      * @uml.property name="dimensions"
      */
@@ -307,8 +323,9 @@ public class ParameterMetaData {
      * the returned array is that of the specified array.
      * 
      * @param a the array into which the elements of this list are to be stored.
-     * @param <T> generic type
+     * 
      * @return an array containing all of the elements in this list in proper sequence.
+     * 
      * @see java.util.List#toArray(Object[])
      * @uml.property name="dimensions"
      */
@@ -321,6 +338,7 @@ public class ParameterMetaData {
      * 
      * @param index index at which the specified element is to be inserted.
      * @param dimension element to be inserted.
+     * 
      * @see java.util.List#add(int,Object)
      * @uml.property name="dimensions"
      */
@@ -332,7 +350,9 @@ public class ParameterMetaData {
      * Appends the specified element to the end of this list (optional operation).
      * 
      * @param dimension element to be appended to this list.
+     * 
      * @return <tt>true</tt> (as per the general contract of the <tt>Collection.add</tt> method).
+     * 
      * @see java.util.List#add(Object)
      * @uml.property name="dimensions"
      */
@@ -344,7 +364,9 @@ public class ParameterMetaData {
      * Removes the element at the specified position in this list (optional operation).
      * 
      * @param index the index of the element to removed.
+     * 
      * @return the element previously at the specified position.
+     * 
      * @see java.util.List#remove(int)
      * @uml.property name="dimensions"
      */
@@ -356,7 +378,9 @@ public class ParameterMetaData {
      * Removes the first occurrence in this list of the specified element (optional operation).
      * 
      * @param dimension element to be removed from this list, if present.
+     * 
      * @return <tt>true</tt> if this list contained the specified element.
+     * 
      * @see java.util.List#remove(Object)
      * @uml.property name="dimensions"
      */
@@ -378,6 +402,7 @@ public class ParameterMetaData {
      * Setter of the property <tt>dimensions</tt>.
      * 
      * @param dimensions the dimensions to set.
+     * 
      * @uml.property name="dimensions"
      */
     public void setDimensions(List<Dimension> dimensions) {
@@ -385,6 +410,8 @@ public class ParameterMetaData {
     }
 
     /**
+     * Checks for dimensions.
+     * 
      * @return true if at least one dimension.
      */
     public boolean hasDimensions() {
@@ -392,6 +419,8 @@ public class ParameterMetaData {
     }
 
     /**
+     * Gets the dimensions as string.
+     * 
      * @return the dimensions as a string.
      */
     public String getDimensionsAsString() {

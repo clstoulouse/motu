@@ -602,6 +602,7 @@ public class Product {
         // Gets variables metadata.
         String unitLong;
         String standardName;
+        String longName;
 
         openNetCdfReader();
 
@@ -660,17 +661,24 @@ public class Product {
 
             unitLong = "";
             try {
-                unitLong = netCdfReader.getStringValue(variable, "unit_long");
+                unitLong = netCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_UNIT_LONG);
                 parameterMetaData.setUnitLong(unitLong);
             } catch (MotuExceptionBase e) {
                 parameterMetaData.setUnitLong(unitLong);
             }
             standardName = "";
             try {
-                standardName = netCdfReader.getStringValue(variable, "standard_name");
+                standardName = netCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_STANDARD_NAME);
                 parameterMetaData.setStandardName(standardName);
             } catch (MotuExceptionBase e) {
                 parameterMetaData.setStandardName(standardName);
+            }
+            longName = "";
+            try {
+                longName = netCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_LONG_NAME);
+                parameterMetaData.setLongName(longName);
+            } catch (MotuExceptionBase e) {
+                parameterMetaData.setLongName(longName);
             }
 
             if (productMetaData.getParameterMetaDatas() == null) {

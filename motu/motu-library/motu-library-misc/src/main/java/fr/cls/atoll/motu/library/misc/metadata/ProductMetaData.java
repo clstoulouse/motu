@@ -29,6 +29,7 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.library.misc.tds.server.Variables;
 import fr.cls.commons.util5.DatePeriod;
 
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
@@ -436,7 +437,6 @@ public class ProductMetaData {
      * Returns an array containing all of the elements in this collection; the runtime type of the returned
      * array is that of the specified array.
      * 
-     * @param <T> generic type
      * @param a the array into which the elements of this collection are to be stored.
      * 
      * @return an array containing all of the elements in this collection
@@ -692,7 +692,6 @@ public class ProductMetaData {
      * Returns an array containing all of the elements in this collection; the runtime type of the returned
      * array is that of the specified array.
      * 
-     * @param <T> generic type
      * @param a the array into which the elements of this collection are to be stored.
      * 
      * @return an array containing all of the elements in this collection
@@ -848,7 +847,6 @@ public class ProductMetaData {
      * Returns an array containing all of the elements in this collection; the runtime type of the returned
      * array is that of the specified array.
      * 
-     * @param <T> generic type
      * @param a the array into which the elements of this collection are to be stored.
      * 
      * @return an array containing all of the elements in this collection
@@ -1088,7 +1086,7 @@ public class ProductMetaData {
      * @param key key whose associated value is to be returned.
      * 
      * @return the value to which this map maps the specified key, or <tt>null</tt> if the map contains no
-     *         mapping for this key.
+     * mapping for this key.
      * 
      * @see java.util.Map#get(Object)
      * @uml.property name="coordinateAxes"
@@ -1157,7 +1155,7 @@ public class ProductMetaData {
      * @param key key whose mapping is to be removed from the map.
      * 
      * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for
-     *         key.
+     * key.
      * 
      * @see java.util.Map#remove(Object)
      * @uml.property name="coordinateAxes"
@@ -1248,7 +1246,7 @@ public class ProductMetaData {
      * @param key key whose associated value is to be returned.
      * 
      * @return the value to which this map maps the specified key, or <tt>null</tt> if the map contains no
-     *         mapping for this key.
+     * mapping for this key.
      * 
      * @see java.util.Map#get(Object)
      * @uml.property name="parameterMetaDatas"
@@ -1313,7 +1311,7 @@ public class ProductMetaData {
      * @param key key whose mapping is to be removed from the map.
      * 
      * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for
-     *         key.
+     * key.
      * 
      * @see java.util.Map#remove(Object)
      * @uml.property name="parameterMetaDatas"
@@ -1520,7 +1518,6 @@ public class ProductMetaData {
      * Gets the minimum value of the Z axis.
      * 
      * @return the minimum value, or Double.MIN_VALUE if no Z axis
-     * 
      */
 
     public double getZAxisMinValue() {
@@ -1536,7 +1533,6 @@ public class ProductMetaData {
      * Gets the minimum value of the Z axis.
      * 
      * @return the string representation of the minimum value, or null if no Z axis
-     * 
      */
     public String getZAxisMinValueAsString() {
         CoordinateAxis axis = getZAxis();
@@ -1567,7 +1563,6 @@ public class ProductMetaData {
      * Gets the maximum value of the Z axis.
      * 
      * @return the string representation of the maximum value, or null if no Z axis
-     * 
      */
     public String getZAxisMaxValueAsString() {
         CoordinateAxis axis = getZAxis();
@@ -1601,7 +1596,6 @@ public class ProductMetaData {
      * Gets the minimum value of the latitude axis.
      * 
      * @return the minimum value, or Double.MIN_VALUE if no latitude axis
-     * 
      */
     public double getLatAxisMinValue() {
         CoordinateAxis axis = getLatAxis();
@@ -1618,7 +1612,6 @@ public class ProductMetaData {
      * Gets the minimum value of the latitude axis.
      * 
      * @return the minimum value normalized between +/-90, or Double.MIN_VALUE if no latitude axis
-     * 
      */
     public double getLatNormalAxisMinValue() {
         return NetCdfReader.getLatNormal(getLatAxisMinValue());
@@ -1628,7 +1621,6 @@ public class ProductMetaData {
      * Gets the minimum value of the latitude axis.
      * 
      * @return the string representation of the minimum value, or null if no latitude axis
-     * 
      */
     public String getLatAxisMinValueAsString() {
         CoordinateAxis axis = getLatAxis();
@@ -1702,7 +1694,6 @@ public class ProductMetaData {
      * Gets the minimum value of the longitude axis.
      * 
      * @return the minimum value, or Double.MIN_VALUE if no longitude axis
-     * 
      */
     public double getLonAxisMinValue() {
         CoordinateAxis axis = getLonAxis();
@@ -1718,7 +1709,6 @@ public class ProductMetaData {
      * Gets the minimum value of the longitude axis.
      * 
      * @return the minimum value normalized between +/-180, or Double.MIN_VALUE if no longitude axis
-     * 
      */
     public double getLonNormalAxisMinValue() {
         return NetCdfReader.getLonNormal(getLonAxisMinValue());
@@ -1728,7 +1718,6 @@ public class ProductMetaData {
      * Gets the minimum value of the longitude axis.
      * 
      * @return the string representation of the minimum value, or null if no longitude axis
-     * 
      */
     public String getLonAxisMinValueAsString() {
         CoordinateAxis axis = getLonAxis();
@@ -1917,7 +1906,6 @@ public class ProductMetaData {
      * Gets the minimum value of the GeoX axis.
      * 
      * @return the minimum value, or Double.MIN_VALUE if no GeoX axis
-     * 
      */
     public double getGeoXAxisMinValue() {
         CoordinateAxis axis = getGeoXAxis();
@@ -1965,7 +1953,6 @@ public class ProductMetaData {
      * Gets the minimum value of the GeoX axis.
      * 
      * @return the string representation of the minimum value, or null if no GeoX axis
-     * 
      */
     public String getGeoXAxisMinValueAsString() {
         CoordinateAxis axis = getGeoXAxis();
@@ -2001,7 +1988,6 @@ public class ProductMetaData {
      * Gets the maximum value of the GeoX axis.
      * 
      * @return the maximum value, or Double.MAX_VALUE if no GeoX axis
-     * 
      */
     public double getGeoXAxisMaxValue() {
         CoordinateAxis axis = getGeoXAxis();
@@ -2048,7 +2034,6 @@ public class ProductMetaData {
      * Gets the maximum value of the GeoX axis.
      * 
      * @return the string representation of the maximum value, or null if no GeoX axis
-     * 
      */
     public String getGeoXAxisMaxValueAsString() {
         CoordinateAxis axis = getGeoXAxis();
@@ -2176,7 +2161,6 @@ public class ProductMetaData {
      * Gets the minimum value of the GeoY axis.
      * 
      * @return the string representation of the minimum value, or null if no GeoY axis
-     * 
      */
     public String getGeoYAxisMinValueAsString() {
         CoordinateAxis axis = getGeoYAxis();
@@ -2212,7 +2196,6 @@ public class ProductMetaData {
      * Gets the maximum value of the GeoY axis.
      * 
      * @return the string representation of the maximum value, or Double.MAX_VALUE if no GeoY axis
-     * 
      */
     public double getGeoYAxisMaxValue() {
         CoordinateAxis axis = getGeoYAxis();
@@ -2259,7 +2242,6 @@ public class ProductMetaData {
      * Gets the maximum value of the GeoY axis.
      * 
      * @return the string representation of the maximum value, or null if no GeoY axis
-     * 
      */
     public String getGeoYAxisMaxValueAsString() {
         CoordinateAxis axis = getGeoYAxis();
@@ -2329,7 +2311,7 @@ public class ProductMetaData {
      * @param name title of the documentation.
      * 
      * @return an instance of DocMetaData, or null if not found. If more than one documentations have If
-     *         several documentations have the same title, the first found is returned
+     * several documentations have the same title, the first found is returned
      */
     public DocMetaData getDocumentation(String name) {
         DocMetaData docMetaData = null;
@@ -2536,6 +2518,7 @@ public class ProductMetaData {
     public void setTimeCoverage(DateTime timeStart, DateTime timeEnd) {
         this.timeCoverage = new DatePeriod(timeStart.toDate(), timeEnd.toDate());
     }
+    
     /**
      * Sets the time coverage.
      * 
@@ -2554,26 +2537,205 @@ public class ProductMetaData {
     public void setTimeCoverage(DatePeriod timeCoverage) {
         this.timeCoverage = timeCoverage;
     }
+    
+    /** The time coverage resolution. */
+    private String timeCoverageResolution = null;
 
+    /**
+     * Gets the time coverage resolution.
+     * 
+     * @return the time coverage resolution
+     */
+    public String getTimeCoverageResolution() {
+        return timeCoverageResolution;
+    }
+
+    /**
+     * Sets the time coverage resolution.
+     * 
+     * @param timeCoverageResolution the new time coverage resolution
+     */
+    public void setTimeCoverageResolution(String timeCoverageResolution) {
+        this.timeCoverageResolution = timeCoverageResolution;
+    }
+
+    /** The geo b box. */
     private LatLonRect geoBBox = null;
 
+    /**
+     * Gets the geo b box.
+     * 
+     * @return the geo b box
+     */
     public LatLonRect getGeoBBox() {
         return geoBBox;
     }
 
+    /**
+     * Sets the geo b box.
+     * 
+     * @param geoBBox the new geo b box
+     */
     public void setGeoBBox(LatLonRect geoBBox) {
         this.geoBBox = geoBBox;
     }
 
+    /** The depth coverage. */
     private MinMax depthCoverage = null;
 
+    /**
+     * Gets the depth coverage.
+     * 
+     * @return the depth coverage
+     */
     public MinMax getDepthCoverage() {
         return depthCoverage;
     }
 
+    /**
+     * Sets the depth coverage.
+     * 
+     * @param depthCoverage the new depth coverage
+     */
     public void setDepthCoverage(MinMax depthCoverage) {
         this.depthCoverage = depthCoverage;
     }
+    
+    /** The north south resolution. */
+    private Double northSouthResolution = null; 
+    
+    /** The north south units. */
+    private String northSouthUnits = null; 
+    
+    /** The east west resolution. */
+    private Double eastWestResolution = null;
+    
+    /** The east west units. */
+    private String eastWestUnits = null;
+    
+    /** The depth resolution. */
+    private Double depthResolution = null;
+    
+    /** The depth units. */
+    private String depthUnits = null;
 
+    /**
+     * Gets the north south resolution.
+     * 
+     * @return the north south resolution
+     */
+    public Double getNorthSouthResolution() {
+        return northSouthResolution;
+    }
+
+    /**
+     * Sets the north south resolution.
+     * 
+     * @param northSouthResolution the new north south resolution
+     */
+    public void setNorthSouthResolution(Double northSouthResolution) {
+        this.northSouthResolution = northSouthResolution;
+    }
+
+    /**
+     * Gets the north south units.
+     * 
+     * @return the north south units
+     */
+    public String getNorthSouthUnits() {
+        return northSouthUnits;
+    }
+
+    /**
+     * Sets the north south units.
+     * 
+     * @param northSouthUnits the new north south units
+     */
+    public void setNorthSouthUnits(String northSouthUnits) {
+        this.northSouthUnits = northSouthUnits;
+    }
+
+    /**
+     * Gets the east west resolution.
+     * 
+     * @return the east west resolution
+     */
+    public Double getEastWestResolution() {
+        return eastWestResolution;
+    }
+
+    /**
+     * Sets the east west resolution.
+     * 
+     * @param eastWestResolution the new east west resolution
+     */
+    public void setEastWestResolution(Double eastWestResolution) {
+        this.eastWestResolution = eastWestResolution;
+    }
+
+    /**
+     * Gets the east west units.
+     * 
+     * @return the east west units
+     */
+    public String getEastWestUnits() {
+        return eastWestUnits;
+    }
+
+    /**
+     * Sets the east west units.
+     * 
+     * @param eastWestUnits the new east west units
+     */
+    public void setEastWestUnits(String eastWestUnits) {
+        this.eastWestUnits = eastWestUnits;
+    }
+
+    /**
+     * Gets the depth resolution.
+     * 
+     * @return the depth resolution
+     */
+    public Double getDepthResolution() {
+        return depthResolution;
+    }
+
+    /**
+     * Sets the depth resolution.
+     * 
+     * @param depthResolution the new depth resolution
+     */
+    public void setDepthResolution(Double depthResolution) {
+        this.depthResolution = depthResolution;
+    }
+
+    /**
+     * Gets the depth units.
+     * 
+     * @return the depth units
+     */
+    public String getDepthUnits() {
+        return depthUnits;
+    }
+
+    /**
+     * Sets the depth units.
+     * 
+     * @param depthUnits the new depth units
+     */
+    public void setDepthUnits(String depthUnits) {
+        this.depthUnits = depthUnits;
+    }
+
+    private Variables variablesVocabulary = null;
+
+    public Variables getVariablesVocabulary() {
+        return variablesVocabulary;
+    }
+
+    public void setVariablesVocabulary(Variables variablesVocabulary) {
+        this.variablesVocabulary = variablesVocabulary;
+    }
+    
 }
 // CSON: MultipleStringLiterals

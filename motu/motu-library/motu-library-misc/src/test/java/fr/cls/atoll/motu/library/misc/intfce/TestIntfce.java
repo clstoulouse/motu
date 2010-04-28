@@ -353,7 +353,7 @@ public class TestIntfce {
         // productInformationFromInventory();
         // productExtractDataFromInventory();
         // productListMercator();
-         productList();
+        productList();
 
     }
 
@@ -2325,7 +2325,7 @@ public class TestIntfce {
                 if (serviceData == null) {
                     continue;
                 }
-                catalogData = serviceData.loadCatalogInfo(null);
+                catalogData = serviceData.loadCatalogInfo(null, true);
                 if (catalogData == null) {
                     continue;
                 }
@@ -2348,31 +2348,54 @@ public class TestIntfce {
                     }
                     DatePeriod timeCoverage = productMetaData.getTimeCoverage();
                     LatLonRect geoBBox = productMetaData.getGeoBBox();
+
+                    Double northSouthResolution = productMetaData.getNorthSouthResolution();
+                    Double eastWestResolution = productMetaData.getEastWestResolution();
+                    String northSouthUnits = productMetaData.getNorthSouthUnits();
+                    String eastWestUnits = productMetaData.getEastWestUnits();
+                    
                     MinMax depthCoverage = productMetaData.getDepthCoverage();
+                    Double depthResolution = productMetaData.getDepthResolution();
+                    String depthUnits = productMetaData.getDepthUnits();
 
                     if (timeCoverage != null) {
                         System.out.println("Time coverage: " + productMetaData.getTimeCoverage().toString());
+                        System.out.println("Time coverage resolution: " + productMetaData.getTimeCoverageResolution());
                     }
                     if (geoBBox != null) {
                         System.out.println("Geo coverage: " + productMetaData.getGeoBBox().toString());
+                    }
+                    if (northSouthResolution != null) {
+                        System.out.println("Geo northSouthResolution: " + northSouthResolution.toString());
+                    }
+                    if (eastWestResolution != null) {
+                        System.out.println("Geo eastWestResolution: " + eastWestResolution.toString());
+                    }
+                    if (northSouthUnits != null) {
+                        System.out.println("Geo northSouthUnits: " + northSouthUnits);
+                    }
+                    if (eastWestUnits != null) {
+                        System.out.println("Geo eastWestUnits: " + eastWestUnits);
                     }
                     if (depthCoverage != null) {
                         System.out.println(String.format("Depth coverage: %f to %f", productMetaData.getDepthCoverage().min, productMetaData
                                 .getDepthCoverage().max));
                     }
-                    
-                    if (product.getProductId().equalsIgnoreCase("mercatorPsy3v2_arc_mean_best_estimate")) {
-                        System.out.println(product.getProductId());
+                    if (depthUnits != null) {
+                        System.out.println("Geo depthUnits: " + depthUnits.toString());
                     }
+                    if (depthResolution != null) {
+                        System.out.println("Geo depthResolution: " + depthResolution);
+                    }
+
+                    if (productMetaData.getVariablesVocabulary() != null)
+                    {
+                        System.out.println("Variable vocabulary:" + productMetaData.getVariablesVocabulary().toString());
+                    }
+
                     Product productWithDetail = serviceData.getProductInformation(product);
-                    
-                    try {
-                        System.out.println(productWithDetail.getTimeAxisDataAsString());
-                    } catch (Exception e) {
-                        // TODO Auto-generated catch block
-                        System.out.println( e.getMessage());
-                    }
-                    
+
+                    System.out.println("Available datetimes:" + productWithDetail.getTimeAxisDataAsString().toString());
 
                 }
             }

@@ -161,6 +161,9 @@ public class NetCdfReader {
     /** NetCdf variable attribute "axis". */
     public final static String VARIABLEATTRIBUTE_AXIS = "axis";
 
+    /** The Constant VARIABLEATTRIBUTE_UNIT_LONG. */
+    public final static String VARIABLEATTRIBUTE_UNIT_LONG = "unit_long";
+    
     /** NetCdf variable attribute "long_name". */
     public final static String VARIABLEATTRIBUTE_LONG_NAME = "long_name";
 
@@ -869,7 +872,7 @@ public class NetCdfReader {
                     httpClientCAS.setParams(httpClientParams);
 
                     DConnect2.setHttpClient(httpClientCAS);
-                    
+
                     connectionManager = new MultiThreadedHttpConnectionManager();
                     httpClientCAS = new HttpClientCAS(connectionManager);
 
@@ -925,10 +928,9 @@ public class NetCdfReader {
      */
     public NetcdfDataset acquireDataset(String location, boolean enhanceVar, ucar.nc2.util.CancelTask cancelTask) throws IOException, MotuException {
 
-
         initNetcdfHttpClient();
 
-        //httpClientCAS.getIsCas().set(this.casAuthentification);
+        // httpClientCAS.getIsCas().set(this.casAuthentification);
         CasAuthentificationHolder.setCasAuthentification(this.casAuthentification);
 
         // if enhanceVar ==> call NetcdfDataset.acquireDataset method
@@ -2075,25 +2077,39 @@ public class NetCdfReader {
             if ((coordY != null) && (coordX != null)) {
                 break;
             }
-            //TODO : A REVOIR
-            List<Variable> listVar = (List<Variable>) getCoordinateVariable(dim);
+            // TODO : A REVOIR
+            // List<Variable> listVar = (List<Variable>) getCoordinateVariable(dim);
+            //
+            // for (Variable var : listVar) {
+            // if (!(var instanceof CoordinateAxis)) {
+            // continue;
+            // }
+            // CoordinateAxis axis = (CoordinateAxis) var;
+            // AxisType axisType = axis.getAxisType();
+            //
+            // if (AxisType.GeoY == axisType) {
+            // coordY = axis;
+            // break;
+            // }
+            // if (AxisType.GeoX == axisType) {
+            // coordX = axis;
+            // break;
+            // }
+            // }
+            CoordinateAxis axis = getCoordinateVariable(dim);
 
-            for (Variable var : listVar) {
-                if (!(var instanceof CoordinateAxis)) {
-                    continue;
-                }
-                CoordinateAxis axis = (CoordinateAxis) var;
-                AxisType axisType = axis.getAxisType();
-
-                if (AxisType.GeoY == axisType) {
-                    coordY = axis;
-                    break;
-                }
-                if (AxisType.GeoX == axisType) {
-                    coordX = axis;
-                    break;
-                }
+            if (axis == null) {
+                continue;
             }
+            AxisType axisType = axis.getAxisType();
+
+            if (AxisType.GeoY == axisType) {
+                coordY = axis;
+            }
+            if (AxisType.GeoX == axisType) {
+                coordX = axis;
+            }
+
         }
 
         if ((coordY == null) || (coordX == null)) {
