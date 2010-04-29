@@ -1574,6 +1574,22 @@ public class ProductMetaData {
 
         return NetCdfReader.getStandardZAsString(minMax.max, axis.getUnitsString());
     }
+    
+    /**
+     * Gets the axis min max value.
+     * 
+     * @param axisType the axis type
+     * 
+     * @return the axis min max value
+     */
+    public MAMath.MinMax getAxisMinMaxValue(AxisType axisType) {
+        CoordinateAxis axis = getCoordinateAxes(axisType);
+        if (axis == null) {
+            return null;
+        }
+
+        return NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+    }
 
     /**
      * Checks for lat axis.

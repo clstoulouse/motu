@@ -3,29 +3,6 @@
  */
 package fr.cls.atoll.motu.library.misc.intfce;
 
-import fr.cls.atoll.motu.library.inventory.CatalogOLA;
-import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
-import fr.cls.atoll.motu.library.inventory.Inventory;
-import fr.cls.atoll.motu.library.inventory.Resource;
-import fr.cls.atoll.motu.library.inventory.ResourceOLA;
-import fr.cls.atoll.motu.library.inventory.TimePeriod;
-import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
-import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
-import fr.cls.atoll.motu.library.misc.configuration.QueueServerType;
-import fr.cls.atoll.motu.library.misc.configuration.QueueType;
-import fr.cls.atoll.motu.library.misc.data.CatalogData;
-import fr.cls.atoll.motu.library.misc.data.DataFile;
-import fr.cls.atoll.motu.library.misc.data.Product;
-import fr.cls.atoll.motu.library.misc.data.ServiceData;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
-import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
-import fr.cls.atoll.motu.library.misc.threadpools.TestTheadPools;
-import fr.cls.commons.util.DatePeriod;
-
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -55,6 +32,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBElement;
 
@@ -81,6 +60,28 @@ import ucar.nc2.ft.point.writer.CFPointObWriter;
 import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
+import fr.cls.atoll.motu.library.inventory.CatalogOLA;
+import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
+import fr.cls.atoll.motu.library.inventory.Inventory;
+import fr.cls.atoll.motu.library.inventory.Resource;
+import fr.cls.atoll.motu.library.inventory.ResourceOLA;
+import fr.cls.atoll.motu.library.inventory.TimePeriod;
+import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
+import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
+import fr.cls.atoll.motu.library.misc.configuration.QueueServerType;
+import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+import fr.cls.atoll.motu.library.misc.data.CatalogData;
+import fr.cls.atoll.motu.library.misc.data.DataFile;
+import fr.cls.atoll.motu.library.misc.data.Product;
+import fr.cls.atoll.motu.library.misc.data.ServiceData;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
+import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
+import fr.cls.atoll.motu.library.misc.threadpools.TestTheadPools;
+import fr.cls.commons.util.DatePeriod;
 
 /**
  * @author $Author: dearith $
@@ -353,7 +354,8 @@ public class TestIntfce {
         // productInformationFromInventory();
         // productExtractDataFromInventory();
         // productListMercator();
-        productList();
+        //productList();
+        testGetProductMetadataInfo();
 
     }
 
@@ -2353,7 +2355,7 @@ public class TestIntfce {
                     Double eastWestResolution = productMetaData.getEastWestResolution();
                     String northSouthUnits = productMetaData.getNorthSouthUnits();
                     String eastWestUnits = productMetaData.getEastWestUnits();
-                    
+
                     MinMax depthCoverage = productMetaData.getDepthCoverage();
                     Double depthResolution = productMetaData.getDepthResolution();
                     String depthUnits = productMetaData.getDepthUnits();
@@ -2388,8 +2390,7 @@ public class TestIntfce {
                         System.out.println("Geo depthResolution: " + depthResolution);
                     }
 
-                    if (productMetaData.getVariablesVocabulary() != null)
-                    {
+                    if (productMetaData.getVariablesVocabulary() != null) {
                         System.out.println("Variable vocabulary:" + productMetaData.getVariablesVocabulary().toString());
                     }
 
@@ -2406,6 +2407,40 @@ public class TestIntfce {
             System.out.println(e.getMessage());
         }
 
+    }
+
+    public static void testGetProductMetadataInfo() {
+
+        try {
+//            String patternExpression = "(http://.*thredds/)(dodsC/)(.*)";
+            String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_med_mean_best_estimate";
+//
+//            Pattern pattern = Pattern.compile(patternExpression);
+//            Matcher matcher = pattern.matcher(locationData);
+//            // System.out.println(matcher.groupCount());
+//            if (matcher.groupCount() != 3) {
+//                System.out.println("Invalid locationdata");
+//            }
+//            Map<String, String> map = new HashMap<String, String>();
+//            if (!(matcher.find())) {
+//                System.out.println("Invalid locationdata");
+//            }
+//            for (int i = 1 ; i <= matcher.groupCount() ; i++) {
+//                System.out.println(matcher.group(i));
+//            }
+//            
+            Organizer organizer = new Organizer();
+            FileWriter writer = new FileWriter("resultProductMetadataInfo.xml");
+            organizer.getProductMetadataInfo(locationData, writer);
+
+
+        } catch (MotuExceptionBase e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
 }

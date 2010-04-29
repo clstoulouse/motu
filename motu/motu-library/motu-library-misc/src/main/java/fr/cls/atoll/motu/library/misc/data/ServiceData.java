@@ -562,7 +562,7 @@ public class ServiceData {
     }
 
     /** Type of catalog. */
-    private CatalogData.CatalogType catalogType = CatalogData.CatalogType.OPENDAP;
+    private CatalogData.CatalogType catalogType = CatalogData.CatalogType.TDS;
 
     /**
      * Getter of the property <tt>catalogType</tt>.
@@ -808,19 +808,37 @@ public class ServiceData {
         }
         return catalogData;
     }
+    
+    /**
+     * Load catalog info.
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void loadCatalogInfo() throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadCatalogInfo() - entering");
+        }
 
+        loadCatalogInfo(false);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadCatalogInfo() - exiting");
+        }
+    }
     /**
      * Loads the catalog.
      * 
      * @throws MotuException the motu exception
      */
 
-    public void loadCatalogInfo() throws MotuException {
+    
+    
+    public void loadCatalogInfo(boolean loadTDSVariableVocabulary) throws MotuException {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("loadCatalogInfo() - entering");
+            LOG.debug("loadCatalogInfo(boolean) - entering");
         }
 
-        catalog = loadCatalogInfo(catalog);
+        catalog = loadCatalogInfo(catalog, loadTDSVariableVocabulary);
 
         // if (catalog == null) {
         // catalog = createCatalogData();
@@ -871,7 +889,7 @@ public class ServiceData {
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("loadCatalogInfo() - exiting");
+            LOG.debug("loadCatalogInfo(boolean) - exiting");
         }
     }
 

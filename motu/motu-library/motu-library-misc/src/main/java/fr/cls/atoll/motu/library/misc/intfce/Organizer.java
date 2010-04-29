@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -38,9 +41,12 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 import ucar.ma2.MAMath.MinMax;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.api.message.MotuMsgConstant;
 import fr.cls.atoll.motu.api.message.xml.AvailableTimes;
+import fr.cls.atoll.motu.api.message.xml.DataGeospatialCoverage;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.GeospatialCoverage;
 import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
@@ -93,6 +99,7 @@ import fr.cls.atoll.motu.library.misc.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
+import fr.cls.atoll.motu.library.misc.tds.server.Property;
 import fr.cls.atoll.motu.library.misc.tds.server.VariableDesc;
 import fr.cls.atoll.motu.library.misc.utils.Zip;
 import fr.cls.atoll.motu.library.misc.vfs.VFSManager;
@@ -181,6 +188,8 @@ public class Organizer {
         }
 
     }
+
+    public static final String TDS_CATALOG_FILENAME = "catalog.xml";
 
     /** The Constant SHARP_DATASET_REGEXP. */
     public static final String SHARP_DATASET_REGEXP = ".*#dataset-";
@@ -650,6 +659,66 @@ public class Organizer {
         Organizer
                 .setError(geospatialCoverage, new MotuException("If you see that message, the request has failed and the error has not been filled"));
         return geospatialCoverage;
+
+    }
+    
+    /**
+     * Creates the data geospatial coverage.
+     * 
+     * @return the data geospatial coverage
+     */
+    public static DataGeospatialCoverage createDataGeospatialCoverage() {
+        ObjectFactory objectFactory = new ObjectFactory();
+
+        DataGeospatialCoverage dataGeospatialCoverage = objectFactory.createDataGeospatialCoverage();
+//        dataGeospatialCoverage.setDepthMax(null);
+//        dataGeospatialCoverage.setDepthMin(null);
+//        dataGeospatialCoverage.setDepthAxisType(null);
+//        dataGeospatialCoverage.setDepthUnits(null);
+//        dataGeospatialCoverage.setEast(null);
+//        dataGeospatialCoverage.setEastWestAxisType(null);
+//        dataGeospatialCoverage.setEastWestUnits(null);
+//        dataGeospatialCoverage.setNorth(null);
+//        dataGeospatialCoverage.setNorthSouthAxisType(null);
+//        dataGeospatialCoverage.setNorthSouthUnits(null);
+//        dataGeospatialCoverage.setSouth(null);
+//        dataGeospatialCoverage.setWest(null);
+//
+//        Organizer
+//                .setError(dataGeospatialCoverage, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        return dataGeospatialCoverage;
+
+    }
+
+    /**
+     * Creates the properties.
+     * 
+     * @return the fr.cls.atoll.motu.api.message.xml. properties
+     */
+    public static fr.cls.atoll.motu.api.message.xml.Properties createProperties() {
+        ObjectFactory objectFactory = new ObjectFactory();
+
+        fr.cls.atoll.motu.api.message.xml.Properties properties = objectFactory.createProperties();
+
+        Organizer.setError(properties, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        return properties;
+
+    }
+
+    /**
+     * Creates the property.
+     * 
+     * @return the fr.cls.atoll.motu.api.message.xml. property
+     */
+    public static fr.cls.atoll.motu.api.message.xml.Property createProperty() {
+        ObjectFactory objectFactory = new ObjectFactory();
+
+        fr.cls.atoll.motu.api.message.xml.Property property = objectFactory.createProperty();
+
+        property.setName(null);
+        property.setValue(null);
+        Organizer.setError(property, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        return property;
 
     }
 
@@ -1818,18 +1887,25 @@ public class Organizer {
             return geospatialCoverage;
         }
 
-        geospatialCoverage.setDepthMax(productMetaData.getDepthCoverage().max);
-        geospatialCoverage.setDepthMin(productMetaData.getDepthCoverage().min);
+        MinMax depthCoverage = productMetaData.getDepthCoverage();
+        if (depthCoverage != null) {
+            geospatialCoverage.setDepthMax(productMetaData.getDepthCoverage().max);
+            geospatialCoverage.setDepthMin(productMetaData.getDepthCoverage().min);
+        }
         geospatialCoverage.setDepthResolution(productMetaData.getDepthResolution());
         geospatialCoverage.setDepthUnits(productMetaData.getDepthUnits());
-        geospatialCoverage.setEast(productMetaData.getGeoBBox().getLonMin());
+
+        LatLonRect geoBBox = productMetaData.getGeoBBox();
+        if (geoBBox != null) {
+            geospatialCoverage.setEast(productMetaData.getGeoBBox().getLonMin());
+            geospatialCoverage.setNorth(productMetaData.getGeoBBox().getLatMax());
+            geospatialCoverage.setSouth(productMetaData.getGeoBBox().getLatMin());
+            geospatialCoverage.setWest(productMetaData.getGeoBBox().getLonMax());
+        }
         geospatialCoverage.setEastWestResolution(productMetaData.getEastWestResolution());
         geospatialCoverage.setEastWestUnits(productMetaData.getEastWestUnits());
-        geospatialCoverage.setNorth(productMetaData.getGeoBBox().getLatMax());
         geospatialCoverage.setNorthSouthResolution(productMetaData.getNorthSouthResolution());
         geospatialCoverage.setNorthSouthUnits(productMetaData.getNorthSouthUnits());
-        geospatialCoverage.setSouth(productMetaData.getGeoBBox().getLatMin());
-        geospatialCoverage.setWest(productMetaData.getGeoBBox().getLonMax());
 
         geospatialCoverage.setCode(ErrorType.OK);
         geospatialCoverage.setMsg(ErrorType.OK.toString());
@@ -1838,6 +1914,140 @@ public class Organizer {
             LOG.debug("initGeospatialCoverage(ProductMetaData) - exiting");
         }
         return geospatialCoverage;
+    }
+    
+    public static DataGeospatialCoverage initDataGeospatialCoverage(Product product) throws MotuException {
+
+        DataGeospatialCoverage dataGeospatialCoverage = Organizer.createDataGeospatialCoverage();
+
+        if (product == null) {
+            return dataGeospatialCoverage;
+        }
+
+        ProductMetaData productMetaData = product.getProductMetaData();
+        Collection<CoordinateAxis> coordinateAxes =  productMetaData.coordinateAxesValues();
+        
+        for (CoordinateAxis axis : coordinateAxes) {
+            axis.getName();
+            axis.getAxisType().toString();
+            axis.getDescription();
+            productMetaData.getAxisMinMaxValue(axis.getAxisType());
+            axis.getUnitsString();
+        }
+//        MinMax depthCoverage = productMetaData.getDepthCoverage();
+//        if (depthCoverage != null) {
+//            geospatialCoverage.setDepthMax(productMetaData.getDepthCoverage().max);
+//            geospatialCoverage.setDepthMin(productMetaData.getDepthCoverage().min);
+//        }
+//        geospatialCoverage.setDepthResolution(productMetaData.getDepthResolution());
+//        geospatialCoverage.setDepthUnits(productMetaData.getDepthUnits());
+//
+//        LatLonRect geoBBox = productMetaData.getGeoBBox();
+//        if (geoBBox != null) {
+//            geospatialCoverage.setEast(productMetaData.getGeoBBox().getLonMin());
+//            geospatialCoverage.setNorth(productMetaData.getGeoBBox().getLatMax());
+//            geospatialCoverage.setSouth(productMetaData.getGeoBBox().getLatMin());
+//            geospatialCoverage.setWest(productMetaData.getGeoBBox().getLonMax());
+//        }
+//        geospatialCoverage.setEastWestResolution(productMetaData.getEastWestResolution());
+//        geospatialCoverage.setEastWestUnits(productMetaData.getEastWestUnits());
+//        geospatialCoverage.setNorthSouthResolution(productMetaData.getNorthSouthResolution());
+//        geospatialCoverage.setNorthSouthUnits(productMetaData.getNorthSouthUnits());
+//
+//        geospatialCoverage.setCode(ErrorType.OK);
+//        geospatialCoverage.setMsg(ErrorType.OK.toString());
+//
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug("initGeospatialCoverage(ProductMetaData) - exiting");
+//        }
+        return dataGeospatialCoverage;
+    }
+    /**
+     * Inits the property.
+     * 
+     * @param tdsProperty the tds property
+     * 
+     * @return the variable vocabulary
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static fr.cls.atoll.motu.api.message.xml.Property initProperty(Property tdsProperty) throws MotuException {
+
+        fr.cls.atoll.motu.api.message.xml.Property property = Organizer.createProperty();
+
+        if (tdsProperty == null) {
+            return property;
+        }
+
+        property.setName(tdsProperty.getName());
+        property.setValue(tdsProperty.getValue());
+
+        property.setCode(ErrorType.OK);
+        property.setMsg(ErrorType.OK.toString());
+
+        return property;
+    }
+
+    /**
+     * Inits the properties.
+     * 
+     * @param productMetaData the product meta data
+     * 
+     * @return the fr.cls.atoll.motu.api.message.xml. properties
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static fr.cls.atoll.motu.api.message.xml.Properties initProperties(ProductMetaData productMetaData) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initProperties(ProductMetaData) - entering");
+        }
+
+        fr.cls.atoll.motu.api.message.xml.Properties properties = Organizer.createProperties();
+
+        if (productMetaData == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("initProperties(ProductMetaData) - exiting");
+            }
+            return properties;
+        }
+
+        // TODO Remove these lines - just for testing
+        List<fr.cls.atoll.motu.api.message.xml.Property> propertyListTest = properties.getProperty();
+        fr.cls.atoll.motu.api.message.xml.Property property = Organizer.createProperty();
+        property.setName("projection");
+        property.setValue("http://purl.org/myocean/ontology/vocabulary/grid-projection#mercator");
+        property.setCode(ErrorType.OK);
+        property.setMsg(ErrorType.OK.toString());
+        propertyListTest.add(property);
+        // TODO Remove these lines - just for testing
+        
+        
+        
+        List<Property> listTDSMetaDataProperty = productMetaData.getListTDSMetaDataProperty();
+
+        if (listTDSMetaDataProperty == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("initProperties(ProductMetaData) - exiting");
+            }
+            properties.setCode(ErrorType.OK);
+            properties.setMsg(ErrorType.OK.toString());
+            return properties;
+        }
+
+        List<fr.cls.atoll.motu.api.message.xml.Property> propertyList = properties.getProperty();
+
+        for (Property tdsMetaDataProperty : listTDSMetaDataProperty) {
+            propertyList.add(Organizer.initProperty(tdsMetaDataProperty));
+        }
+
+        
+        properties.setCode(ErrorType.OK);
+        properties.setMsg(ErrorType.OK.toString());
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initProperties(ProductMetaData) - exiting");
+        }
+        return properties;
     }
 
     /**
@@ -1900,12 +2110,23 @@ public class Organizer {
             return variablesVocabulary;
         }
 
+        fr.cls.atoll.motu.library.misc.tds.server.Variables variables = productMetaData.getVariablesVocabulary();
+        if (variables == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("initVariablesVocabulary(ProductMetaData) - exiting");
+            }
+            variablesVocabulary.setCode(ErrorType.OK);
+            variablesVocabulary.setMsg(ErrorType.OK.toString());
+            return variablesVocabulary;
+        }
         List<VariableDesc> variablesDescList = productMetaData.getVariablesVocabulary().getVariableDesc();
 
         if (variablesDescList == null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("initVariablesVocabulary(ProductMetaData) - exiting");
             }
+            variablesVocabulary.setCode(ErrorType.OK);
+            variablesVocabulary.setMsg(ErrorType.OK.toString());
             return variablesVocabulary;
         }
 
@@ -1990,6 +2211,8 @@ public class Organizer {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("initVariables(ProductMetaData) - exiting");
             }
+            variables.setCode(ErrorType.OK);
+            variables.setMsg(ErrorType.OK.toString());
             return variables;
         }
 
@@ -2015,21 +2238,23 @@ public class Organizer {
         if (product == null) {
             return availableTimes;
         }
-        
+
         StringBuffer stringBuffer = new StringBuffer();
         List<String> list = product.getTimeAxisDataAsString();
 
         Iterator<String> i = list.iterator();
+
         if (i.hasNext()) {
             for (;;) {
                 String value = i.next();
                 stringBuffer.append(value);
-                if (i.hasNext()) {
-                    stringBuffer.append(";");
+                if (!i.hasNext()) {
+                    break;
                 }
+                stringBuffer.append(";");
             }
         }
-        
+
         availableTimes.setValue(stringBuffer.toString());
 
         availableTimes.setCode(ErrorType.OK);
@@ -2061,22 +2286,22 @@ public class Organizer {
             return productMetadataInfo;
         }
 
+        productMetadataInfo.setId(product.getProductId());
+        productMetadataInfo.setTitle(productMetaData.getTitle());
+        
         productMetadataInfo.setGeospatialCoverage(Organizer.initGeospatialCoverage(productMetaData));
-        productMetadataInfo.setProperties(null);
+        productMetadataInfo.setProperties(Organizer.initProperties(productMetaData));
         productMetadataInfo.setTimeCoverage(Organizer.initTimeCoverage(productMetaData));
         productMetadataInfo.setVariablesVocabulary(Organizer.initVariablesVocabulary(productMetaData));
 
-        ServiceData serviceData = new ServiceData();
+        productMetadataInfo.setVariables(Organizer.initVariables(product.getProductMetaData()));
 
-        // -----------------------------------------------------
-        // to get some metadata, we have to load them from data files
-        // -----------------------------------------------------
+        productMetadataInfo.setAvailableTimes(Organizer.initAvailableTimes(product));
 
-        Product productWithDetail = serviceData.getProductInformation(product);
+        productMetadataInfo.setDataGeospatialCoverage(Organizer.initDataGeospatialCoverage(product));
 
-        productMetadataInfo.setVariables(Organizer.initVariables(productWithDetail.getProductMetaData()));
-
-        productMetadataInfo.setAvailableTimes(Organizer.initAvailableTimes(productWithDetail));
+        productMetadataInfo.setCode(ErrorType.OK);
+        productMetadataInfo.setMsg(ErrorType.OK.toString());
 
         return productMetadataInfo;
     }
@@ -2547,6 +2772,60 @@ public class Organizer {
             geospatialCoverage.setMsg(e.getMessage());
         }
         geospatialCoverage.setCode(errorType);
+
+    }
+    
+    /**
+     * Sets the error.
+     * 
+     * @param dataGeospatialCoverage the data geospatial coverage
+     * @param e the e
+     */
+    public static void setError(DataGeospatialCoverage dataGeospatialCoverage, Exception e) {
+        ErrorType errorType = Organizer.getErrorType(e);
+        if (e instanceof MotuExceptionBase) {
+            MotuExceptionBase e2 = (MotuExceptionBase) e;
+            dataGeospatialCoverage.setMsg(e2.notifyException());
+        } else {
+            dataGeospatialCoverage.setMsg(e.getMessage());
+        }
+        dataGeospatialCoverage.setCode(errorType);
+
+    }
+
+    /**
+     * Sets the error.
+     * 
+     * @param properties the properties
+     * @param e the e
+     */
+    public static void setError(fr.cls.atoll.motu.api.message.xml.Properties properties, Exception e) {
+        ErrorType errorType = Organizer.getErrorType(e);
+        if (e instanceof MotuExceptionBase) {
+            MotuExceptionBase e2 = (MotuExceptionBase) e;
+            properties.setMsg(e2.notifyException());
+        } else {
+            properties.setMsg(e.getMessage());
+        }
+        properties.setCode(errorType);
+
+    }
+
+    /**
+     * Sets the error.
+     * 
+     * @param property the property
+     * @param e the e
+     */
+    public static void setError(fr.cls.atoll.motu.api.message.xml.Property property, Exception e) {
+        ErrorType errorType = Organizer.getErrorType(e);
+        if (e instanceof MotuExceptionBase) {
+            MotuExceptionBase e2 = (MotuExceptionBase) e;
+            property.setMsg(e2.notifyException());
+        } else {
+            property.setMsg(e.getMessage());
+        }
+        property.setCode(errorType);
 
     }
 
@@ -4594,6 +4873,72 @@ public class Organizer {
     }
 
     /**
+     * Match tds catalog url.
+     * 
+     * @param locationData the location data
+     * @param catalogFileName the catalog file name
+     * 
+     * @return the matcher
+     */
+    public Matcher matchTDSCatalogUrl(String locationData) {
+
+        String patternExpression = "(http://.*thredds/)(dodsC/)(.*)";
+
+        Pattern pattern = Pattern.compile(patternExpression);
+        Matcher matcher = pattern.matcher(locationData);
+        // System.out.println(matcher.groupCount());
+        if (matcher.groupCount() != 3) {
+            return null;
+        }
+        if (!(matcher.find())) {
+            return null;
+        }
+        return matcher;
+
+    }
+
+    /**
+     * Gets the tDS catalog base url.
+     * 
+     * @param locationData the location data
+     * @param catalogFileName the catalog file name
+     * 
+     * @return the tDS catalog base url
+     */
+    public String getTDSCatalogBaseUrl(String locationData) {
+
+        Matcher matcher = matchTDSCatalogUrl(locationData);
+        if (matcher == null) {
+            return null;
+        }
+
+        return matcher.group(1);
+
+    }
+
+    /**
+     * Gets the tDS dataset id.
+     * 
+     * @param locationData the location data
+     * 
+     * @return the tDS dataset id
+     */
+    public String getTDSDatasetId(String locationData) {
+
+        Matcher matcher = matchTDSCatalogUrl(locationData);
+        if (matcher == null) {
+            return null;
+        }
+
+        return matcher.group(3);
+
+    }
+
+    public ProductMetadataInfo getProductMetadataInfo(String locationData) throws MotuExceptionBase {
+        return getProductMetadataInfo(locationData, Organizer.TDS_CATALOG_FILENAME, false, true);
+    }
+
+    /**
      * Gets the product metadata info.
      * 
      * @param locationData the location data
@@ -4602,14 +4947,47 @@ public class Organizer {
      * 
      * @throws MotuExceptionBase the motu exception base
      */
-    public ProductMetadataInfo getProductMetadataInfo(String locationData) throws MotuExceptionBase {
+    public ProductMetadataInfo getProductMetadataInfo(String locationData, boolean casAuthentification, boolean loadTDSVariableVocabulary) throws MotuExceptionBase {
+        return getProductMetadataInfo(locationData, Organizer.TDS_CATALOG_FILENAME, casAuthentification, loadTDSVariableVocabulary);
+    }
+
+    /**
+     * Gets the product metadata info.
+     * 
+     * @param locationData the location data
+     * 
+     * @return the product metadata info
+     * 
+     * @throws MotuExceptionBase the motu exception base
+     */
+    public ProductMetadataInfo getProductMetadataInfo(String locationData,
+                                                      String catalogFileName,
+                                                      boolean casAuthentification,
+                                                      boolean loadTDSVariableVocabulary) throws MotuExceptionBase {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductMetadataInfo(String) - entering");
         }
 
+        String catalogBaseUrl = getTDSCatalogBaseUrl(locationData);
+        String productId = getTDSDatasetId(locationData);
+
+        ServiceData service = new ServiceData();
+        service.setVelocityEngine(this.velocityEngine);
+        UUID uuid = UUID.randomUUID();
+        service.setName(String.valueOf(uuid));
+        service.setDescription("Temporary service");
+        service.setUrlSite(catalogBaseUrl);
+        service.setCatalogFileName(catalogFileName);
+        // Only TDS are accepted
+        service.setCatalogType(CatalogData.CatalogType.TDS);
+        service.setCasAuthentification(casAuthentification);
+
+        service.loadCatalogInfo(loadTDSVariableVocabulary);
+        this.currentService = service;
+
         Product product = null;
         try {
-            product = getProductInformation(locationData);
+            product = getProductInformation(productId, null, null);
         } catch (MotuNotImplementedException e) {
             LOG.error("getProductMetadataInfo(String)", e);
 
@@ -4623,7 +5001,9 @@ public class Organizer {
             throw new MotuException(String.format("Unknown product from location data '%s' (getProductMetadataInfo)", locationData));
         }
 
-        ProductMetadataInfo productMetadataInfo = initProductMetadataInfo(product);
+        ProductMetadataInfo productMetadataInfo = Organizer.initProductMetadataInfo(product);
+        productMetadataInfo.setUrl(locationData);
+
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductMetadataInfo(String) - exiting");
