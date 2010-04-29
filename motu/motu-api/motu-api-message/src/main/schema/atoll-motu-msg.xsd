@@ -408,6 +408,39 @@
 		</xsd:complexType>
 	</xsd:element>	
 	
+	<xsd:element name="axis">
+		<xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Response on axis geospatial coverage of a product.
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:attribute name="name" type="xsd:string" use="optional"/>
+			<xsd:attribute name="axisType" type="xsd:string" use="optional"/>
+			<xsd:attribute name="description" type="xsd:string" use="optional"/>
+			<xsd:attribute name="lower" type="xsd:double" use="optional"/>
+			<xsd:attribute name="upper" type="xsd:double" use="optional"/>
+			<xsd:attribute name="units" type="xsd:string" use="optional"/>
+			<xsd:attributeGroup ref="codeMsg"/>			  		  	  		    
+			
+		</xsd:complexType>
+	</xsd:element>	
+	
+	<xsd:element name="dataGeospatialCoverage">
+		<xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Response on data geospatial coverage of a product.
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:sequence>
+		        <xsd:element ref="axis" minOccurs="0" maxOccurs="unbounded"/>
+		    </xsd:sequence>
+			<xsd:attributeGroup ref="codeMsg"/>			  		  	  		    
+			
+		</xsd:complexType>
+	</xsd:element>	
+	
 	<xsd:element name="variableVocabulary">
 		<xsd:complexType>
 			<xsd:annotation>
@@ -530,9 +563,13 @@
 			  <xsd:element ref="geospatialCoverage" minOccurs="0"/>
 			  <xsd:element ref="variablesVocabulary" minOccurs="0"/>		
 			  <xsd:element ref="variables" minOccurs="0"/>		
-			  <xsd:element ref="properties" minOccurs="0"/>	
+			  <xsd:element ref="properties" minOccurs="0"/>
+			  <xsd:element ref="dataGeospatialCoverage" minOccurs="0"/>
 			</xsd:sequence>
 			
+			<xsd:attribute name="id" type="xsd:string"/>
+			<xsd:attribute name="title" type="xsd:string"/>
+			<xsd:attribute name="url" type="xsd:string"/>
 			<xsd:attributeGroup ref="codeMsg"/>			  		  	  
 		
 		</xsd:complexType>

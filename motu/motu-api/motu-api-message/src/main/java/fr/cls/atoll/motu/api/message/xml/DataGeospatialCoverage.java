@@ -8,6 +8,8 @@
 
 package fr.cls.atoll.motu.api.message.xml;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -17,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * 
- * 					Property element name/value pair
+ * 					Response on data geospatial coverage of a product.
  * 				
  * 
  * <p>Java class for anonymous complex type.
@@ -28,9 +30,10 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;sequence>
+ *         &lt;element ref="{}axis" maxOccurs="unbounded" minOccurs="0"/>
+ *       &lt;/sequence>
  *       &lt;attGroup ref="{}codeMsg"/>
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -39,65 +42,45 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
-@XmlRootElement(name = "property")
-public class Property {
+@XmlType(name = "", propOrder = {
+    "axis"
+})
+@XmlRootElement(name = "dataGeospatialCoverage")
+public class DataGeospatialCoverage {
 
-    @XmlAttribute
-    protected String name;
-    @XmlAttribute
-    protected String value;
+    protected List<Axis> axis;
     @XmlAttribute
     protected String msg;
     @XmlAttribute
     protected ErrorType code;
 
     /**
-     * Gets the value of the name property.
+     * Gets the value of the axis property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the value of the name property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the axis property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
-    }
-
-    /**
-     * Gets the value of the value property.
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getAxis().add(newItem);
+     * </pre>
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getValue() {
-        return value;
-    }
-
-    /**
-     * Sets the value of the value property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Axis }
+     * 
+     * 
      */
-    public void setValue(String value) {
-        this.value = value;
+    public List<Axis> getAxis() {
+        if (axis == null) {
+            axis = new ArrayList<Axis>();
+        }
+        return this.axis;
     }
 
     /**

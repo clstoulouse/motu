@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * 
- * 					Property element name/value pair
+ * 					Response on axis geospatial coverage of a product.
  * 				
  * 
  * <p>Java class for anonymous complex type.
@@ -30,7 +30,11 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;attGroup ref="{}codeMsg"/>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="axisType" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="description" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="lower" type="{http://www.w3.org/2001/XMLSchema}double" />
+ *       &lt;attribute name="upper" type="{http://www.w3.org/2001/XMLSchema}double" />
+ *       &lt;attribute name="units" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -40,13 +44,21 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "property")
-public class Property {
+@XmlRootElement(name = "axis")
+public class Axis {
 
     @XmlAttribute
     protected String name;
     @XmlAttribute
-    protected String value;
+    protected String axisType;
+    @XmlAttribute
+    protected String description;
+    @XmlAttribute
+    protected Double lower;
+    @XmlAttribute
+    protected Double upper;
+    @XmlAttribute
+    protected String units;
     @XmlAttribute
     protected String msg;
     @XmlAttribute
@@ -77,27 +89,123 @@ public class Property {
     }
 
     /**
-     * Gets the value of the value property.
+     * Gets the value of the axisType property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getValue() {
-        return value;
+    public String getAxisType() {
+        return axisType;
     }
 
     /**
-     * Sets the value of the value property.
+     * Sets the value of the axisType property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setValue(String value) {
-        this.value = value;
+    public void setAxisType(String value) {
+        this.axisType = value;
+    }
+
+    /**
+     * Gets the value of the description property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Sets the value of the description property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDescription(String value) {
+        this.description = value;
+    }
+
+    /**
+     * Gets the value of the lower property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Double }
+     *     
+     */
+    public Double getLower() {
+        return lower;
+    }
+
+    /**
+     * Sets the value of the lower property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Double }
+     *     
+     */
+    public void setLower(Double value) {
+        this.lower = value;
+    }
+
+    /**
+     * Gets the value of the upper property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Double }
+     *     
+     */
+    public Double getUpper() {
+        return upper;
+    }
+
+    /**
+     * Sets the value of the upper property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Double }
+     *     
+     */
+    public void setUpper(Double value) {
+        this.upper = value;
+    }
+
+    /**
+     * Gets the value of the units property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getUnits() {
+        return units;
+    }
+
+    /**
+     * Sets the value of the units property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setUnits(String value) {
+        this.units = value;
     }
 
     /**
