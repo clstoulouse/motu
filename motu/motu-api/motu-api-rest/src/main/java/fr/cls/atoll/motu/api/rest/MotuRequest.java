@@ -1,6 +1,7 @@
 package fr.cls.atoll.motu.api.rest;
 
 import fr.cls.atoll.motu.api.message.MotuMsgConstant;
+import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 

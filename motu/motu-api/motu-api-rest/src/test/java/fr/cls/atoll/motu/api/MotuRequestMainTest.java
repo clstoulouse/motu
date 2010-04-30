@@ -1,5 +1,6 @@
 package fr.cls.atoll.motu.api;
 
+import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.RequestSize;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
@@ -7,7 +8,6 @@ import fr.cls.atoll.motu.api.message.xml.TimeCoverage;
 import fr.cls.atoll.motu.api.rest.MotuRequest;
 import fr.cls.atoll.motu.api.rest.MotuRequestException;
 import fr.cls.atoll.motu.api.rest.MotuRequestParameters;
-import fr.cls.atoll.motu.api.rest.MotuRequestParametersConstant;
 
 import java.io.FileOutputStream;
 import java.io.InputStream;

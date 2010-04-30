@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+
 /**
  * Classe permettant de stocker tous les paramètres d'une requête. <br>
  * <br>
