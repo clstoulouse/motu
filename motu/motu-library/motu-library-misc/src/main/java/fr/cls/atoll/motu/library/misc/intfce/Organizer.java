@@ -39,13 +39,16 @@ import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.jasig.cas.client.validation.Assertion;
 
 import ucar.ma2.MAMath.MinMax;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.api.message.MotuMsgConstant;
+import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.AuthentificationMode;
+import fr.cls.atoll.motu.api.message.xml.AvailableDepths;
 import fr.cls.atoll.motu.api.message.xml.AvailableTimes;
+import fr.cls.atoll.motu.api.message.xml.Axis;
 import fr.cls.atoll.motu.api.message.xml.DataGeospatialCoverage;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.GeospatialCoverage;
@@ -61,6 +64,7 @@ import fr.cls.atoll.motu.api.message.xml.Variables;
 import fr.cls.atoll.motu.api.message.xml.VariablesVocabulary;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.Inventory;
+import fr.cls.atoll.motu.library.misc.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.misc.data.CatalogData;
@@ -470,6 +474,50 @@ public class Organizer {
     }
 
     /**
+     * Instantiates a new organizer.
+     * 
+     * @param userLogin the user login
+     * @param userPwd the user pwd
+     * 
+     * @throws MotuException the motu exception
+     */
+    public Organizer(String userLogin, String userPwd, AuthentificationMode authentificationMode) throws MotuException {
+
+        this();
+
+        if (!Organizer.isNullOrEmpty(userLogin)) {
+            user.setLogin(userLogin);
+            user.setPwd(userPwd);
+            user.setAuthentificationMode(authentificationMode);
+        }
+
+    }
+
+    /**
+     * Instantiates a new organizer.
+     * 
+     * @param userLogin the user login
+     * @param userPwd the user pwd
+     * 
+     * @throws MotuException the motu exception
+     */
+    public Organizer(String userLogin, String userPwd) throws MotuException {
+        this(userLogin, userPwd, AuthentificationMode.CAS);
+    }
+
+    /**
+     * Instantiates a new organizer.
+     * 
+     * @param user the user
+     * 
+     * @throws MotuException the motu exception
+     */
+    public Organizer(User user) throws MotuException {
+        this();
+        setUser(user);
+    }
+
+    /**
      * Removes all mappings from this map (optional operation).
      * 
      * @see java.util.Map#clear()
@@ -661,7 +709,7 @@ public class Organizer {
         return geospatialCoverage;
 
     }
-    
+
     /**
      * Creates the data geospatial coverage.
      * 
@@ -671,22 +719,33 @@ public class Organizer {
         ObjectFactory objectFactory = new ObjectFactory();
 
         DataGeospatialCoverage dataGeospatialCoverage = objectFactory.createDataGeospatialCoverage();
-//        dataGeospatialCoverage.setDepthMax(null);
-//        dataGeospatialCoverage.setDepthMin(null);
-//        dataGeospatialCoverage.setDepthAxisType(null);
-//        dataGeospatialCoverage.setDepthUnits(null);
-//        dataGeospatialCoverage.setEast(null);
-//        dataGeospatialCoverage.setEastWestAxisType(null);
-//        dataGeospatialCoverage.setEastWestUnits(null);
-//        dataGeospatialCoverage.setNorth(null);
-//        dataGeospatialCoverage.setNorthSouthAxisType(null);
-//        dataGeospatialCoverage.setNorthSouthUnits(null);
-//        dataGeospatialCoverage.setSouth(null);
-//        dataGeospatialCoverage.setWest(null);
-//
-//        Organizer
-//                .setError(dataGeospatialCoverage, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+
+        Organizer.setError(dataGeospatialCoverage, new MotuException(
+                "If you see that message, the request has failed and the error has not been filled"));
         return dataGeospatialCoverage;
+
+    }
+
+    /**
+     * Creates the axis.
+     * 
+     * @return the axis
+     */
+    public static Axis createAxis() {
+        ObjectFactory objectFactory = new ObjectFactory();
+
+        Axis axis = objectFactory.createAxis();
+        axis.setAxisType(null);
+        axis.setName(null);
+        axis.setDescription(null);
+        axis.setLower(null);
+        axis.setUpper(null);
+        axis.setUnits(null);
+        axis.setStandardName(null);
+        axis.setLongName(null);
+
+        Organizer.setError(axis, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        return axis;
 
     }
 
@@ -811,6 +870,23 @@ public class Organizer {
 
         Organizer.setError(availableTimes, new MotuException("If you see that message, the request has failed and the error has not been filled"));
         return availableTimes;
+
+    }
+
+    /**
+     * Creates the available depth.
+     * 
+     * @return the available depths
+     */
+    public static AvailableDepths createAvailableDepth() {
+        ObjectFactory objectFactory = new ObjectFactory();
+
+        AvailableDepths availableDepths = objectFactory.createAvailableDepths();
+
+        availableDepths.setValue(null);
+
+        Organizer.setError(availableDepths, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        return availableDepths;
 
     }
 
@@ -1915,53 +1991,69 @@ public class Organizer {
         }
         return geospatialCoverage;
     }
-    
+
+    /**
+     * Inits the data geospatial coverage.
+     * 
+     * @param product the product
+     * 
+     * @return the data geospatial coverage
+     * 
+     * @throws MotuException the motu exception
+     */
     public static DataGeospatialCoverage initDataGeospatialCoverage(Product product) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initDataGeospatialCoverage(Product) - entering");
+        }
 
         DataGeospatialCoverage dataGeospatialCoverage = Organizer.createDataGeospatialCoverage();
 
         if (product == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("initDataGeospatialCoverage(Product) - exiting");
+            }
             return dataGeospatialCoverage;
         }
 
         ProductMetaData productMetaData = product.getProductMetaData();
-        Collection<CoordinateAxis> coordinateAxes =  productMetaData.coordinateAxesValues();
-        
-        for (CoordinateAxis axis : coordinateAxes) {
-            axis.getName();
-            axis.getAxisType().toString();
-            axis.getDescription();
-            productMetaData.getAxisMinMaxValue(axis.getAxisType());
-            axis.getUnitsString();
+        Collection<CoordinateAxis> coordinateAxes = productMetaData.coordinateAxesValues();
+
+        if (coordinateAxes == null) {
+            dataGeospatialCoverage.setCode(ErrorType.OK);
+            dataGeospatialCoverage.setMsg(ErrorType.OK.toString());
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("initDataGeospatialCoverage(Product) - exiting");
+            }
+            return dataGeospatialCoverage;
         }
-//        MinMax depthCoverage = productMetaData.getDepthCoverage();
-//        if (depthCoverage != null) {
-//            geospatialCoverage.setDepthMax(productMetaData.getDepthCoverage().max);
-//            geospatialCoverage.setDepthMin(productMetaData.getDepthCoverage().min);
-//        }
-//        geospatialCoverage.setDepthResolution(productMetaData.getDepthResolution());
-//        geospatialCoverage.setDepthUnits(productMetaData.getDepthUnits());
-//
-//        LatLonRect geoBBox = productMetaData.getGeoBBox();
-//        if (geoBBox != null) {
-//            geospatialCoverage.setEast(productMetaData.getGeoBBox().getLonMin());
-//            geospatialCoverage.setNorth(productMetaData.getGeoBBox().getLatMax());
-//            geospatialCoverage.setSouth(productMetaData.getGeoBBox().getLatMin());
-//            geospatialCoverage.setWest(productMetaData.getGeoBBox().getLonMax());
-//        }
-//        geospatialCoverage.setEastWestResolution(productMetaData.getEastWestResolution());
-//        geospatialCoverage.setEastWestUnits(productMetaData.getEastWestUnits());
-//        geospatialCoverage.setNorthSouthResolution(productMetaData.getNorthSouthResolution());
-//        geospatialCoverage.setNorthSouthUnits(productMetaData.getNorthSouthUnits());
-//
-//        geospatialCoverage.setCode(ErrorType.OK);
-//        geospatialCoverage.setMsg(ErrorType.OK.toString());
-//
-//        if (LOG.isDebugEnabled()) {
-//            LOG.debug("initGeospatialCoverage(ProductMetaData) - exiting");
-//        }
+
+        List<Axis> axisList = dataGeospatialCoverage.getAxis();
+
+        if (coordinateAxes == null) {
+            dataGeospatialCoverage.setCode(ErrorType.OK);
+            dataGeospatialCoverage.setMsg(ErrorType.OK.toString());
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("initDataGeospatialCoverage(Product) - exiting");
+            }
+            return dataGeospatialCoverage;
+        }
+
+        for (CoordinateAxis coordinateAxis : coordinateAxes) {
+            axisList.add(Organizer.initAxis(coordinateAxis, productMetaData));
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initDataGeospatialCoverage(Product) - exiting");
+        }
+
+        dataGeospatialCoverage.setCode(ErrorType.OK);
+        dataGeospatialCoverage.setMsg(ErrorType.OK.toString());
+
         return dataGeospatialCoverage;
     }
+
     /**
      * Inits the property.
      * 
@@ -1986,6 +2078,49 @@ public class Organizer {
         property.setMsg(ErrorType.OK.toString());
 
         return property;
+    }
+
+    /**
+     * Inits the axis.
+     * 
+     * @param coordinateAxis the coordinate axis
+     * @param productMetaData the product meta data
+     * 
+     * @return the axis
+     * 
+     * @throws MotuException the motu exception
+     */
+    public static Axis initAxis(CoordinateAxis coordinateAxis, ProductMetaData productMetaData) throws MotuException {
+
+        Axis axis = Organizer.createAxis();
+
+        if (coordinateAxis == null) {
+            return axis;
+        }
+        axis.setAxisType(coordinateAxis.getAxisType().toString());
+        axis.setName(coordinateAxis.getName());
+        axis.setDescription(coordinateAxis.getDescription());
+        axis.setUnits(coordinateAxis.getUnitsString());
+
+        ParameterMetaData parameterMetaData = productMetaData.getParameterMetaDatas(coordinateAxis.getName());
+
+        if (parameterMetaData != null) {
+            axis.setStandardName(parameterMetaData.getStandardName());
+            axis.setLongName(parameterMetaData.getLongName());
+        }
+
+        if (productMetaData != null) {
+            MinMax minMax = productMetaData.getAxisMinMaxValue(coordinateAxis.getAxisType());
+            if (minMax != null) {
+                axis.setLower(minMax.min);
+                axis.setUpper(minMax.max);
+            }
+        }
+
+        axis.setCode(ErrorType.OK);
+        axis.setMsg(ErrorType.OK.toString());
+
+        return axis;
     }
 
     /**
@@ -2020,9 +2155,7 @@ public class Organizer {
         property.setMsg(ErrorType.OK.toString());
         propertyListTest.add(property);
         // TODO Remove these lines - just for testing
-        
-        
-        
+
         List<Property> listTDSMetaDataProperty = productMetaData.getListTDSMetaDataProperty();
 
         if (listTDSMetaDataProperty == null) {
@@ -2040,7 +2173,6 @@ public class Organizer {
             propertyList.add(Organizer.initProperty(tdsMetaDataProperty));
         }
 
-        
         properties.setCode(ErrorType.OK);
         properties.setMsg(ErrorType.OK.toString());
 
@@ -2231,6 +2363,16 @@ public class Organizer {
         return variables;
     }
 
+    /**
+     * Inits the available times.
+     * 
+     * @param product the product
+     * 
+     * @return the available times
+     * 
+     * @throws MotuException the motu exception
+     * @throws NetCdfVariableException the net cdf variable exception
+     */
     public static AvailableTimes initAvailableTimes(Product product) throws MotuException, NetCdfVariableException {
 
         AvailableTimes availableTimes = Organizer.createAvailableTimes();
@@ -2264,6 +2406,48 @@ public class Organizer {
     }
 
     /**
+     * Inits the available depths.
+     * 
+     * @param product the product
+     * 
+     * @return the available depths
+     * 
+     * @throws MotuException the motu exception
+     * @throws NetCdfVariableException the net cdf variable exception
+     */
+    public static AvailableDepths initAvailableDepths(Product product) throws MotuException, NetCdfVariableException {
+
+        AvailableDepths availableDepths = Organizer.createAvailableDepth();
+
+        if (product == null) {
+            return availableDepths;
+        }
+
+        StringBuffer stringBuffer = new StringBuffer();
+        List<String> list = product.getZAxisDataAsString();
+
+        Iterator<String> i = list.iterator();
+
+        if (i.hasNext()) {
+            for (;;) {
+                String value = i.next();
+                stringBuffer.append(value);
+                if (!i.hasNext()) {
+                    break;
+                }
+                stringBuffer.append(";");
+            }
+        }
+
+        availableDepths.setValue(stringBuffer.toString());
+
+        availableDepths.setCode(ErrorType.OK);
+        availableDepths.setMsg(ErrorType.OK.toString());
+
+        return availableDepths;
+    }
+
+    /**
      * Inits the product metadata info.
      * 
      * @param product the product
@@ -2288,7 +2472,7 @@ public class Organizer {
 
         productMetadataInfo.setId(product.getProductId());
         productMetadataInfo.setTitle(productMetaData.getTitle());
-        
+
         productMetadataInfo.setGeospatialCoverage(Organizer.initGeospatialCoverage(productMetaData));
         productMetadataInfo.setProperties(Organizer.initProperties(productMetaData));
         productMetadataInfo.setTimeCoverage(Organizer.initTimeCoverage(productMetaData));
@@ -2297,6 +2481,8 @@ public class Organizer {
         productMetadataInfo.setVariables(Organizer.initVariables(product.getProductMetaData()));
 
         productMetadataInfo.setAvailableTimes(Organizer.initAvailableTimes(product));
+
+        productMetadataInfo.setAvailableDepths(Organizer.initAvailableDepths(product));
 
         productMetadataInfo.setDataGeospatialCoverage(Organizer.initDataGeospatialCoverage(product));
 
@@ -2774,7 +2960,7 @@ public class Organizer {
         geospatialCoverage.setCode(errorType);
 
     }
-    
+
     /**
      * Sets the error.
      * 
@@ -2790,6 +2976,42 @@ public class Organizer {
             dataGeospatialCoverage.setMsg(e.getMessage());
         }
         dataGeospatialCoverage.setCode(errorType);
+
+    }
+
+    /**
+     * Sets the error.
+     * 
+     * @param axis the axis
+     * @param e the e
+     */
+    public static void setError(Axis axis, Exception e) {
+        ErrorType errorType = Organizer.getErrorType(e);
+        if (e instanceof MotuExceptionBase) {
+            MotuExceptionBase e2 = (MotuExceptionBase) e;
+            axis.setMsg(e2.notifyException());
+        } else {
+            axis.setMsg(e.getMessage());
+        }
+        axis.setCode(errorType);
+
+    }
+
+    /**
+     * Sets the error.
+     * 
+     * @param availableDepths the available depths
+     * @param e the e
+     */
+    public static void setError(AvailableDepths availableDepths, Exception e) {
+        ErrorType errorType = Organizer.getErrorType(e);
+        if (e instanceof MotuExceptionBase) {
+            MotuExceptionBase e2 = (MotuExceptionBase) e;
+            availableDepths.setMsg(e2.notifyException());
+        } else {
+            availableDepths.setMsg(e.getMessage());
+        }
+        availableDepths.setCode(errorType);
 
     }
 
@@ -4934,8 +5156,106 @@ public class Organizer {
 
     }
 
+    /**
+     * Checks if is user authentification.
+     * 
+     * @return true, if is user authentification
+     */
+    public boolean isUserAuthentification() {
+
+        if (user == null) {
+            return false;
+        }
+
+        return user.isAuthentification();
+    }
+
+    /**
+     * Checks if is user cas authentification.
+     * 
+     * @return true, if is user cas authentification
+     */
+    public boolean isUserCASAuthentification() {
+
+        if (user == null) {
+            return false;
+        }
+
+        return user.isCASAuthentification();
+    }
+
+    private String casRestSuffURL = null;
+
+    /**
+     * Gets the cas rest suff url.
+     * 
+     * @return the cas rest suff url
+     */
+    public String getCasRestSuffURL() {
+        return casRestSuffURL;
+    }
+
+    /**
+     * Sets the cas rest suff url.
+     * 
+     * @param casRestSuffURL the new cas rest suff url
+     */
+    public void setCasRestSuffURL(String casRestSuffURL) {
+        this.casRestSuffURL = casRestSuffURL;
+    }
+
+    /**
+     * Gets the user authentification.
+     * 
+     * @return the user authentification
+     */
+    public String getUserAuthentification() {
+
+        if (user == null) {
+            return AuthentificationMode.NONE.toString();
+        }
+
+        return user.getAuthentificationMode().toString();
+    }
+
+    /**
+     * Gets the ticket granting ticket.
+     * 
+     * @param serviceURL the service url
+     * 
+     * @return the ticket granting ticket
+     * 
+     * @throws MotuExceptionBase the motu exception base
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public String getTicketGrantingTicket(String serviceURL) throws MotuExceptionBase, IOException {
+        
+        if (!isUserCASAuthentification()) {
+            return null;
+        }
+        
+        String casRestUrlSuffix = "";
+        
+        if (Organizer.isNullOrEmpty(casRestSuffURL)){
+            casRestUrlSuffix = Organizer.getMotuConfigInstance().getCasRestUrlSuffix();
+        }
+        
+        String casRestUrl = RestUtil.getCasRestletUrl(serviceURL, casRestUrlSuffix);
+            
+        return RestUtil.getTicketGrantingTicket(casRestUrl, user.getLogin(), user.getPwd());        
+    }
+    
+    /**
+     * Gets the product metadata info.
+     * 
+     * @param locationData the location data
+     * 
+     * @return the product metadata info
+     * 
+     * @throws MotuExceptionBase the motu exception base
+     */
     public ProductMetadataInfo getProductMetadataInfo(String locationData) throws MotuExceptionBase {
-        return getProductMetadataInfo(locationData, Organizer.TDS_CATALOG_FILENAME, false, true);
+        return getProductMetadataInfo(locationData, Organizer.TDS_CATALOG_FILENAME, true);
     }
 
     /**
@@ -4947,23 +5267,8 @@ public class Organizer {
      * 
      * @throws MotuExceptionBase the motu exception base
      */
-    public ProductMetadataInfo getProductMetadataInfo(String locationData, boolean casAuthentification, boolean loadTDSVariableVocabulary) throws MotuExceptionBase {
-        return getProductMetadataInfo(locationData, Organizer.TDS_CATALOG_FILENAME, casAuthentification, loadTDSVariableVocabulary);
-    }
-
-    /**
-     * Gets the product metadata info.
-     * 
-     * @param locationData the location data
-     * 
-     * @return the product metadata info
-     * 
-     * @throws MotuExceptionBase the motu exception base
-     */
-    public ProductMetadataInfo getProductMetadataInfo(String locationData,
-                                                      String catalogFileName,
-                                                      boolean casAuthentification,
-                                                      boolean loadTDSVariableVocabulary) throws MotuExceptionBase {
+    public ProductMetadataInfo getProductMetadataInfo(String locationData, String catalogFileName, boolean loadTDSVariableVocabulary)
+            throws MotuExceptionBase {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductMetadataInfo(String) - entering");
         }
@@ -4980,8 +5285,14 @@ public class Organizer {
         service.setCatalogFileName(catalogFileName);
         // Only TDS are accepted
         service.setCatalogType(CatalogData.CatalogType.TDS);
-        service.setCasAuthentification(casAuthentification);
+        service.setCasAuthentification(isUserCASAuthentification());
 
+        if (isUserAuthentification() && (!isUserCASAuthentification())) {
+            throw new MotuNotImplementedException(String.format("Authentification mode '%s' is not yet implemented", getUserAuthentification()));
+        }
+
+        // TODO : Cas process (TGT .....)
+        
         service.loadCatalogInfo(loadTDSVariableVocabulary);
         this.currentService = service;
 
@@ -5003,7 +5314,6 @@ public class Organizer {
 
         ProductMetadataInfo productMetadataInfo = Organizer.initProductMetadataInfo(product);
         productMetadataInfo.setUrl(locationData);
-
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductMetadataInfo(String) - exiting");
