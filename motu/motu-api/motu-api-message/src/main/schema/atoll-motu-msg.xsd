@@ -286,6 +286,14 @@
 		<xsd:attribute name="msg" type="xsd:string" />
 		<xsd:attribute name="code" type="errorType" />
     </xsd:attributeGroup>
+    
+    <xsd:attributeGroup name="variableAttributes">
+		<xsd:attribute name="name" type="xsd:string"/>
+		<xsd:attribute name="standardName" type="xsd:string"/>
+		<xsd:attribute name="longName" type="xsd:string"/>
+		<xsd:attribute name="units" type="xsd:string"/>
+		<xsd:attribute name="description" type="xsd:string"/>
+	</xsd:attributeGroup>
 
 	<xsd:element name="statusModeResponse">
 
@@ -383,6 +391,21 @@
 			</xsd:simpleContent>
 		</xsd:complexType>
 	</xsd:element>
+
+	<xsd:element name="availableDepths">
+		<xsd:complexType>
+			<xsd:annotation>
+				<xsd:documentation>
+					Response on available depths of a product (semicolon separated values).
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleContent>
+			  <xsd:extension base="xsd:string">
+		        <xsd:attributeGroup ref="codeMsg"/>			  		  	  		    	        														  
+			  </xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
 	
 	<xsd:element name="geospatialCoverage">
 		<xsd:complexType>
@@ -415,12 +438,10 @@
 					Response on axis geospatial coverage of a product.
 				</xsd:documentation>
 			</xsd:annotation>
-			<xsd:attribute name="name" type="xsd:string" use="optional"/>
+			<xsd:attributeGroup ref="variableAttributes"/>			  		  	  		    	        								
 			<xsd:attribute name="axisType" type="xsd:string" use="optional"/>
-			<xsd:attribute name="description" type="xsd:string" use="optional"/>
 			<xsd:attribute name="lower" type="xsd:double" use="optional"/>
 			<xsd:attribute name="upper" type="xsd:double" use="optional"/>
-			<xsd:attribute name="units" type="xsd:string" use="optional"/>
 			<xsd:attributeGroup ref="codeMsg"/>			  		  	  		    
 			
 		</xsd:complexType>
@@ -526,12 +547,8 @@
 			<xsd:sequence>
 			  <xsd:element ref="attrs" minOccurs="0"/>
 			</xsd:sequence>		
- -->				
-			<xsd:attribute name="name" type="xsd:string"/>
-			<xsd:attribute name="standardName" type="xsd:string"/>
-			<xsd:attribute name="longName" type="xsd:string"/>
-			<xsd:attribute name="units" type="xsd:string"/>
-			<xsd:attribute name="description" type="xsd:string"/>
+ -->				 
+			<xsd:attributeGroup ref="variableAttributes"/>			  		  	  		    	        								
 			<xsd:attributeGroup ref="codeMsg"/>			  		  	  		    	        								
  		</xsd:complexType>
 	</xsd:element>	
@@ -560,6 +577,7 @@
 			<xsd:sequence>
 			  <xsd:element ref="timeCoverage" minOccurs="0"/>
 			  <xsd:element ref="availableTimes" minOccurs="0"/>
+			  <xsd:element ref="availableDepths" minOccurs="0"/>
 			  <xsd:element ref="geospatialCoverage" minOccurs="0"/>
 			  <xsd:element ref="variablesVocabulary" minOccurs="0"/>		
 			  <xsd:element ref="variables" minOccurs="0"/>		
