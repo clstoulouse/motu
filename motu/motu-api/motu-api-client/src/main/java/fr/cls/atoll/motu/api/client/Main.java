@@ -146,6 +146,9 @@ public class Main {
         user.setPwd(mapParams.get(MotuRequestParametersConstant.PARAM_PWD));
         user.setAuthentificationMode(mapParams.get(MotuRequestParametersConstant.PARAM_AUTHENTIFICATION_MODE));
 
+        if ((user.getLogin() != null) && (user.getAuthentificationMode().equals(AuthentificationMode.NONE) )) {
+            user.setAuthentificationMode(AuthentificationMode.CAS);
+        }
         return user;
 
     }
