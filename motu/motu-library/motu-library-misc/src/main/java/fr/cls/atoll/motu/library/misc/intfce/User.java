@@ -218,6 +218,40 @@ public class User {
     public boolean isAuthentification() {
         return !isNoneAuthentification();
     }
+    
+    
+    public void setCASAuthentification(boolean casAuthentification) {
+        if (casAuthentification) {
+            this.authentificationMode = (casAuthentification) ? AuthentificationMode.CAS : AuthentificationMode.NONE;
+        }
+    } 
+
+    /** The cas rest suff url. */
+    private String casRestSuffURL = null;
+
+    /**
+     * Gets the cas rest suff url.
+     * 
+     * @return the cas rest suff url
+     * @throws MotuException 
+     */
+    public String getCasRestSuffURL() throws MotuException {
+        
+        if (Organizer.isNullOrEmpty(casRestSuffURL)){
+            return Organizer.getMotuConfigInstance().getCasRestUrlSuffix();
+        }
+
+        return casRestSuffURL;
+    }
+
+    /**
+     * Sets the cas rest suff url.
+     * 
+     * @param casRestSuffURL the new cas rest suff url
+     */
+    public void setCasRestSuffURL(String casRestSuffURL) {
+        this.casRestSuffURL = casRestSuffURL;
+    }
 
     
 

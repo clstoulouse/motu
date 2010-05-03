@@ -1973,10 +1973,10 @@ public class Organizer {
 
         LatLonRect geoBBox = productMetaData.getGeoBBox();
         if (geoBBox != null) {
-            geospatialCoverage.setEast(productMetaData.getGeoBBox().getLonMin());
+            geospatialCoverage.setEast(productMetaData.getGeoBBox().getLonMax());
+            geospatialCoverage.setWest(productMetaData.getGeoBBox().getLonMin());
             geospatialCoverage.setNorth(productMetaData.getGeoBBox().getLatMax());
             geospatialCoverage.setSouth(productMetaData.getGeoBBox().getLatMin());
-            geospatialCoverage.setWest(productMetaData.getGeoBBox().getLonMax());
         }
         geospatialCoverage.setEastWestResolution(productMetaData.getEastWestResolution());
         geospatialCoverage.setEastWestUnits(productMetaData.getEastWestUnits());
@@ -5184,25 +5184,6 @@ public class Organizer {
         return user.isCASAuthentification();
     }
 
-    private String casRestSuffURL = null;
-
-    /**
-     * Gets the cas rest suff url.
-     * 
-     * @return the cas rest suff url
-     */
-    public String getCasRestSuffURL() {
-        return casRestSuffURL;
-    }
-
-    /**
-     * Sets the cas rest suff url.
-     * 
-     * @param casRestSuffURL the new cas rest suff url
-     */
-    public void setCasRestSuffURL(String casRestSuffURL) {
-        this.casRestSuffURL = casRestSuffURL;
-    }
 
     /**
      * Gets the user authentification.
@@ -5218,33 +5199,7 @@ public class Organizer {
         return user.getAuthentificationMode().toString();
     }
 
-    /**
-     * Gets the ticket granting ticket.
-     * 
-     * @param serviceURL the service url
-     * 
-     * @return the ticket granting ticket
-     * 
-     * @throws MotuExceptionBase the motu exception base
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    public String getTicketGrantingTicket(String serviceURL) throws MotuExceptionBase, IOException {
-        
-        if (!isUserCASAuthentification()) {
-            return null;
-        }
-        
-        String casRestUrlSuffix = "";
-        
-        if (Organizer.isNullOrEmpty(casRestSuffURL)){
-            casRestUrlSuffix = Organizer.getMotuConfigInstance().getCasRestUrlSuffix();
-        }
-        
-        String casRestUrl = RestUtil.getCasRestletUrl(serviceURL, casRestUrlSuffix);
-            
-        return RestUtil.getTicketGrantingTicket(casRestUrl, user.getLogin(), user.getPwd());        
-    }
-    
+
     /**
      * Gets the product metadata info.
      * 
@@ -5286,6 +5241,7 @@ public class Organizer {
         // Only TDS are accepted
         service.setCatalogType(CatalogData.CatalogType.TDS);
         service.setCasAuthentification(isUserCASAuthentification());
+        service.setUser(this.user);
 
         if (isUserAuthentification() && (!isUserCASAuthentification())) {
             throw new MotuNotImplementedException(String.format("Authentification mode '%s' is not yet implemented", getUserAuthentification()));

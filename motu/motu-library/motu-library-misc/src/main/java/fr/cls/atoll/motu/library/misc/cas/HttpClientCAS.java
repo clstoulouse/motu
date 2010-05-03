@@ -1,8 +1,5 @@
 package fr.cls.atoll.motu.library.misc.cas;
 
-import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.misc.cas.util.CasAuthentificationHolder;
-
 import java.io.IOException;
 
 import org.apache.commons.httpclient.HostConfiguration;
@@ -16,6 +13,11 @@ import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.log4j.Logger;
+
+import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
+import fr.cls.atoll.motu.library.misc.cas.util.CasAuthentificationHolder;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 
 public class HttpClientCAS extends HttpClient {
 
@@ -77,7 +79,11 @@ public class HttpClientCAS extends HttpClient {
             LOG.debug("executeMethod(HostConfiguration, HttpMethod, HttpState) - entering");
         }
 
-        addCASTicket(method);
+        try {
+            addCASTicket(method);
+        } catch (MotuException e) {
+            throw new HttpException(e.notifyException(), e);
+        }
 
         // TODO Auto-generated method stub
         int returnint = super.executeMethod(hostconfig, method, state);
@@ -93,7 +99,11 @@ public class HttpClientCAS extends HttpClient {
             LOG.debug("executeMethod(HostConfiguration, HttpMethod) - entering");
         }
 
-        addCASTicket(method);
+        try {
+            addCASTicket(method);
+        } catch (MotuException e) {
+            throw new HttpException(e.notifyException(), e);
+        }
 
         // TODO Auto-generated method stub
         int returnint = super.executeMethod(hostConfiguration, method);
@@ -109,7 +119,11 @@ public class HttpClientCAS extends HttpClient {
             LOG.debug("executeMethod(HttpMethod) - entering");
         }
 
-        addCASTicket(method);
+        try {
+            addCASTicket(method);
+        } catch (MotuException e) {
+            throw new HttpException(e.notifyException(), e);
+        }
 
         // TODO Auto-generated method stub
         int returnint = super.executeMethod(method);
@@ -119,12 +133,12 @@ public class HttpClientCAS extends HttpClient {
         return returnint;
     }
 
-    public static void addCASTicket(HttpMethod method) throws IOException {
+    public static void addCASTicket(HttpMethod method) throws IOException, MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(HttpMethod) - entering : debugHttpMethod BEFORE  " + HttpClientCAS.debugHttpMethod(method));
         }
 
-        if (!CasAuthentificationHolder.isCasAuthentification()) {
+        if (!CasAuthentificationHolder.isCASAuthentification()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("addCASTicket(HttpMethod) - exiting - NO CAS AUTHENTIFICATION : debugHttpMethod AFTER  "
                         + HttpClientCAS.debugHttpMethod(method));
@@ -134,8 +148,17 @@ public class HttpClientCAS extends HttpClient {
 
         String newURIAsString = AssertionUtils.addCASTicket(method.getURI().getEscapedURI());
         if (!AssertionUtils.hasCASTicket(newURIAsString)) {
-            throw new IOException(
-                    "Unable to access resource '%s'. This resource has been declared as CASified, but the Motu application is not. \nTo access this TDS, the Motu Application must be CASified.");
+            newURIAsString = AssertionUtils.addCASTicket(method.getURI().getEscapedURI(), CasAuthentificationHolder.getUser());
+            if (!AssertionUtils.hasCASTicket(newURIAsString)) {
+                String login = CasAuthentificationHolder.getUserLogin();
+                
+
+                throw new MotuException(
+                        String
+                                .format("Unable to access resource '%s'. This resource has been declared as CASified, but the Motu application/API can't retrieve any ticket from CAS via REST. \nFor information, current user login is:'%s'",
+                                        method.getURI().getEscapedURI(), login));
+                
+            }
         }
 
         URI newURI = new URI(newURIAsString, true);

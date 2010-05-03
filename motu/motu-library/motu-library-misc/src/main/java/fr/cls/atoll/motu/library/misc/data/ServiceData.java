@@ -20,6 +20,7 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.intfce.User;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.commons.util.io.ConfigLoader;
 
@@ -719,6 +720,27 @@ public class ServiceData {
         this.casAuthentification = casAuthentification;
     }
 
+    /** The user. */
+    private User user = null;
+    
+    /**
+     * Gets the user.
+     * 
+     * @return the user
+     */
+    public User getUser() {
+        return this.user;
+    }
+    
+    /**
+     * Sets the user.
+     * 
+     * @param user the new user
+     */
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     /**
      * Returns the catalog location (urlSite + catalogFileName).
      * 
@@ -745,14 +767,14 @@ public class ServiceData {
      * 
      * @return the catalog data
      */
-    public CatalogData createCatalogData(Boolean loadTDSVariableVocabulary) {
+    public CatalogData createCatalogData(Boolean loadTDSVariableVocabulary, User user) {
         CatalogData catalogData = new CatalogData();
-        catalogData = new CatalogData();
         catalogData.setUrlSite(urlSite);
         catalogData.setCasAuthentification(casAuthentification);
         if (loadTDSVariableVocabulary != null) {
             catalogData.setLoadTDSExtraMetadata(loadTDSVariableVocabulary);            
         }
+        catalogData.setUser(user);
         return catalogData;
     }
     
@@ -785,7 +807,7 @@ public class ServiceData {
         }
 
         if (catalogData == null) {
-            catalogData = createCatalogData(loadTDSVariableVocabulary);
+            catalogData = createCatalogData(loadTDSVariableVocabulary, user);
         }
 
         switch (getCatalogType()) {

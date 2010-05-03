@@ -3,24 +3,6 @@
  */
 package fr.cls.atoll.motu.library.misc.netcdf;
 
-import fr.cls.atoll.motu.library.misc.cas.HttpClientCAS;
-import fr.cls.atoll.motu.library.misc.cas.util.CasAuthentificationHolder;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
-import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
-import fr.cls.commons.util.GMTCalendar;
-import fr.cls.commons.util.GMTDateFormat;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -64,6 +46,24 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.io.http.HTTPRandomAccessFile;
+import fr.cls.atoll.motu.library.misc.cas.HttpClientCAS;
+import fr.cls.atoll.motu.library.misc.cas.util.CasAuthentificationHolder;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.intfce.User;
+import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
+import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
+import fr.cls.commons.util.GMTCalendar;
+import fr.cls.commons.util.GMTDateFormat;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -285,10 +285,16 @@ public class NetCdfReader {
      */
     public NetCdfReader(boolean casAuthentification) {
         init();
-        this.casAuthentification = casAuthentification;
+        CasAuthentificationHolder.setCASAuthentification(casAuthentification);
+
+    }
+    public NetCdfReader(User user) {
+        init();
+        this.user = user;
 
     }
 
+    
     /**
      * Constructor.
      * 
@@ -297,7 +303,7 @@ public class NetCdfReader {
     public NetCdfReader(String locationData, boolean casAuthentification) {
         init();
         this.locationData = locationData;
-        this.casAuthentification = casAuthentification;
+        setCASAuthentification(casAuthentification);
     }
 
     /**
@@ -308,7 +314,7 @@ public class NetCdfReader {
     }
 
     /** Does Service needs CAS authentification to access catalog resources and data. */
-    protected boolean casAuthentification = false;
+   // protected boolean casAuthentification = false;
 
     /**
      * Checks if is cas authentification.
@@ -316,7 +322,31 @@ public class NetCdfReader {
      * @return true, if is cas authentification
      */
     public boolean isCasAuthentification() {
-        return casAuthentification;
+        if (this.user == null) {
+            return false;
+        }
+        return user.isCASAuthentification();
+    }
+
+    /** The user. */
+    private User user = null;
+    
+    /**
+     * Gets the user.
+     * 
+     * @return the user
+     */
+    public User getUser() {
+        return this.user;
+    }
+    
+    /**
+     * Sets the user.
+     * 
+     * @param user the new user
+     */
+    public void setUser(User user) {
+        this.user = user;
     }
 
     /**
@@ -324,8 +354,11 @@ public class NetCdfReader {
      * 
      * @param casAuthentification the new cas authentification
      */
-    public void setCasAuthentification(boolean casAuthentification) {
-        this.casAuthentification = casAuthentification;
+    public void setCASAuthentification(boolean casAuthentification) {
+        if (user == null) {
+            user = new User();
+        }
+        user.setCASAuthentification(casAuthentification);
     }
 
     /**
@@ -931,7 +964,7 @@ public class NetCdfReader {
         initNetcdfHttpClient();
 
         // httpClientCAS.getIsCas().set(this.casAuthentification);
-        CasAuthentificationHolder.setCasAuthentification(this.casAuthentification);
+        CasAuthentificationHolder.setUser(this.user);
 
         // if enhanceVar ==> call NetcdfDataset.acquireDataset method
         // else enhance() is not called but Coordinate Systems are added

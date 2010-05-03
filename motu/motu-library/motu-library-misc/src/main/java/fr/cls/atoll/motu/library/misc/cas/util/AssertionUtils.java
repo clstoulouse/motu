@@ -1,5 +1,6 @@
 package fr.cls.atoll.motu.library.misc.cas.util;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -9,6 +10,10 @@ import org.apache.log4j.Logger;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.jasig.cas.client.util.AssertionHolder;
 import org.jasig.cas.client.validation.Assertion;
+
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.intfce.User;
 
 /**
  * <br>
@@ -21,16 +26,27 @@ import org.jasig.cas.client.validation.Assertion;
  * @version $Revision: 1.3 $ - $Date: 2010-03-04 16:05:15 $
  */
 public class AssertionUtils {
-    /**
-     * Logger for this class
-     */
+    
+    /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(AssertionUtils.class);
 
+    /**
+     * Gets the attribute principal name.
+     * 
+     * @return the attribute principal name
+     */
     public static String getAttributePrincipalName() {
         Assertion assertion = AssertionHolder.getAssertion();
         return getAttributePrincipalName(assertion);
     }
 
+    /**
+     * Gets the attribute principal name.
+     * 
+     * @param assertion the assertion
+     * 
+     * @return the attribute principal name
+     */
     public static String getAttributePrincipalName(Assertion assertion) {
 
         AttributePrincipal attributePrincipal = AssertionUtils.getAttributePrincipal(assertion);
@@ -43,24 +59,166 @@ public class AssertionUtils {
         return name;
     }
 
+    /**
+     * Checks for cas ticket.
+     * 
+     * @param targetService the target service
+     * 
+     * @return true, if successful
+     * 
+     * @throws URIException the URI exception
+     */
     public static boolean hasCASTicket(String targetService) throws URIException {
         return (targetService.indexOf("?ticket=") != -1) || (targetService.indexOf("&ticket=") != -1);
     }
+    
+    /**
+     * Adds the cas ticket.
+     * 
+     * @param targetService the target service
+     * @param user the user
+     * 
+     * @return the string
+     * 
+     * @throws MotuException the motu exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public static String addCASTicket(String targetService, User user) throws MotuException, IOException {
 
-    public static String addCASTicket(String targetService) throws URIException {
+        if (user == null) {
+            return addCASTicket(targetService, null, null, null);
+        }
+        return addCASTicket(targetService, user.getLogin(), user.getPwd(), user.getCasRestSuffURL());
+
+    }
+    /**
+     * Adds the cas ticket.
+     * 
+     * @param targetService the target service
+     * 
+     * @return the string
+     * @throws IOException 
+     * @throws MotuException 
+     * 
+     * @throws URIException the URI exception
+     */
+    public static String addCASTicket(String targetService) throws MotuException, IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(String) - entering");
         }
 
-        Assertion assertion = AssertionHolder.getAssertion();
-        String returnString = addCASTicket(assertion, targetService);
+        String returnString = AssertionUtils.addCASTicket(targetService, null, null, null);
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(String) - exiting");
+        }
+        return returnString;
+    }
+    
+    /**
+     * Adds the cas ticket.
+     * 
+     * @param targetService the target service
+     * @param username the username
+     * @param password the password
+     * @param casRestUrlSuffix the cas rest url suffix
+     * 
+     * @return the string
+     * 
+     * @throws MotuException the motu exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public static String addCASTicket(String targetService, String username, String password, String casRestUrlSuffix) throws MotuException, IOException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("addCASTicket(String, String, String, String) - entering");
+        }
+       
+        String returnString = targetService;
+        String casRestUrlSuffixToUse = casRestUrlSuffix;
+        
+        Assertion assertion = AssertionHolder.getAssertion();
+        if (assertion != null) {
+            returnString = AssertionUtils.addCASTicket(assertion, targetService);            
+        } else if (! AssertionUtils.isNullOrEmpty(username)) {
+            if( AssertionUtils.isNullOrEmpty(casRestUrlSuffixToUse)) {
+                casRestUrlSuffixToUse = Organizer.getMotuConfigInstance().getCasRestUrlSuffix();               
+            } 
+            returnString = AssertionUtils.addCASTicketFromTGT(casRestUrlSuffix, username, password, targetService);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("addCASTicket(String, String, String, String) - exiting");
         }
         return returnString;
 
     }
 
+
+    /**
+     * Adds the cas ticket from tgt.
+     * 
+     * @param casRestUrlSuffix the cas rest url suffix
+     * @param username the username
+     * @param password the password
+     * @param targetService the target service
+     * 
+     * @return the string
+     * 
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuException the motu exception
+     */
+    public static String addCASTicketFromTGT(String casRestUrlSuffix, String username, String password, String targetService) throws IOException, MotuException  {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("addCASTicketFromTGT(String, String, String, String) - entering");
+        }
+
+        if (AssertionUtils.isNullOrEmpty(username)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("addCASTicketFromTGT(String, String, String, String) - exiting");
+            }
+            return targetService;
+        } 
+        if (AssertionUtils.isNullOrEmpty(targetService)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("addCASTicketFromTGT(String, String, String, String) - exiting");
+            }
+            return targetService;
+        }
+        if (AssertionUtils.hasCASTicket(targetService)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("addCASTicketFromTGT(String, String, String, String) - exiting - URL has already a cas ticket");
+            }
+            return targetService;
+        }
+        
+        String casRestUrl = RestUtil.getCasRestletUrl(targetService, casRestUrlSuffix);
+
+        String ticket = RestUtil.loginToCAS(casRestUrl, username, password, targetService);
+        
+        if (AssertionUtils.isNullOrEmpty(ticket)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("addCASTicketFromTGT(String, String, String, String) - exiting");
+            }
+            return targetService;
+        }
+
+        String returnString = AssertionUtils.addCASTicket(ticket, targetService);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("addCASTicketFromTGT(String, String, String, String) - exiting");
+        }
+        return returnString;
+        
+    }
+    
+    /**
+     * Adds the cas ticket.
+     * 
+     * @param assertion the assertion
+     * @param targetService the target service
+     * 
+     * @return the string
+     * 
+     * @throws URIException the URI exception
+     */
     public static String addCASTicket(Assertion assertion, String targetService) throws URIException {
 
         if (LOG.isDebugEnabled()) {
@@ -81,7 +239,7 @@ public class AssertionUtils {
             return targetService;
         }
 
-        if (hasCASTicket(targetService)) {
+        if (AssertionUtils.hasCASTicket(targetService)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("addCASTicket(Assertion, String) - exiting - URL has already a cas ticket ");
             }
@@ -108,10 +266,22 @@ public class AssertionUtils {
         // if (LOG.isDebugEnabled()) {
         // LOG.debug("addCASTicket(String) - exiting - new URL = " + stringBuffer.toString());
         // }
-        return addCASTicket(ticket, targetService);
+        String returnString = AssertionUtils.addCASTicket(ticket, targetService);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("addCASTicket(Assertion, String) - exiting");
+        }
+        return returnString;
 
     }
 
+    /**
+     * Adds the cas ticket.
+     * 
+     * @param ticket the ticket
+     * @param targetService the target service
+     * 
+     * @return the string
+     */
     public static String addCASTicket(String ticket, String targetService) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(String, String) - entering");
@@ -137,6 +307,13 @@ public class AssertionUtils {
 
     }
 
+    /**
+     * Gets the proxy ticket for.
+     * 
+     * @param targetService the target service
+     * 
+     * @return the proxy ticket for
+     */
     public static String getProxyTicketFor(String targetService) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProxyTicketFor(String) - entering");
@@ -151,6 +328,14 @@ public class AssertionUtils {
 
     }
 
+    /**
+     * Gets the proxy ticket for.
+     * 
+     * @param assertion the assertion
+     * @param targetService the target service
+     * 
+     * @return the proxy ticket for
+     */
     public static String getProxyTicketFor(Assertion assertion, String targetService) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProxyTicketFor(Assertion, String) - entering");
@@ -178,6 +363,13 @@ public class AssertionUtils {
 
     }
 
+    /**
+     * Gets the attribute principal.
+     * 
+     * @param assertion the assertion
+     * 
+     * @return the attribute principal
+     */
     public static AttributePrincipal getAttributePrincipal(Assertion assertion) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getAttributePrincipal(Assertion) - entering");
@@ -197,6 +389,11 @@ public class AssertionUtils {
         return returnAttributePrincipal;
     }
 
+    /**
+     * Gets the attribute principal.
+     * 
+     * @return the attribute principal
+     */
     public static AttributePrincipal getAttributePrincipal() {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getAttributePrincipal() - entering");
@@ -226,12 +423,24 @@ public class AssertionUtils {
         return false;
     }
 
+    /**
+     * Debug pgt.
+     * 
+     * @return the string
+     */
     public static String debugPGT() {
         Assertion assertion = AssertionHolder.getAssertion();
         return debugPGT(assertion);
 
     }
 
+    /**
+     * Debug pgt.
+     * 
+     * @param assertion the assertion
+     * 
+     * @return the string
+     */
     public static String debugPGT(Assertion assertion) {
         StringBuffer stringBuffer = new StringBuffer();
         if (assertion == null) {

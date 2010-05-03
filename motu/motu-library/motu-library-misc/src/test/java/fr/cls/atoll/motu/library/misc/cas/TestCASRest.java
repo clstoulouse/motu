@@ -806,6 +806,7 @@ public class TestCASRest {
             LOG.debug("testDownloadCASifiedResource() - entering");
         }
 
+        // http://atoll-dev.cls.fr:43080/thredds/dodsC/mercator_modified
         String serviceURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/OpendapAuth?action=productdownload&data=http://atoll-dev.cls.fr:43080/thredds/dodsC/nrt_glo_hr_infrared_sst&x_lo=2&x_hi=3&y_lo=1&y_hi=4&t_lo=2009-12-01&t_hi=2009-12-01&variable=Grid_0001&mode=console";
         String username = "dearith";
         String password = "bienvenue";

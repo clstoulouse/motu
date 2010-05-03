@@ -10,9 +10,11 @@ import fr.cls.atoll.motu.library.inventory.Resource;
 import fr.cls.atoll.motu.library.inventory.ResourceOLA;
 import fr.cls.atoll.motu.library.inventory.ResourcesOLA;
 import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
+import fr.cls.atoll.motu.library.misc.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.intfce.User;
 import fr.cls.atoll.motu.library.misc.metadata.DocMetaData;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
@@ -955,10 +957,10 @@ public class CatalogData {
 
         // Loads Variables vocabulary
         loadTdsVariablesVocabulary(datasetType, productMetaData);
-        
+
         // Loads Property meatadata
         loadTdsMetadataProperty(datasetType, productMetaData);
-        
+
         product.setProductMetaData(productMetaData);
 
         // // Get Opendap (Dods) url of the dataset.
@@ -1278,16 +1280,16 @@ public class CatalogData {
             Date start = getPartOfTimeCoverage(XML_TAG_START, startOrEndOrDuration);
             Date end = getPartOfTimeCoverage(XML_TAG_END, startOrEndOrDuration);
             productMetaData.setTimeCoverage(start, end);
-            
+
             productMetaData.setTimeCoverageResolution(timeCoverage.getResolution());
-            
+
         }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadTdsTimeCoverage(DatasetType, ProductMetaData) - exiting");
         }
     }
-    
+
     /**
      * Load tds variables vocabulary.
      * 
@@ -1305,7 +1307,7 @@ public class CatalogData {
             LOG.debug("loadTdsVariablesVocabulary is not processed because 'loadTDSExtraMetadata' flag is set to false - exiting");
             return;
         }
-         
+
         List<Object> listVariablesVocabularyObject = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), Variables.class);
 
         productMetaData.setVariablesVocabulary(null);
@@ -1316,14 +1318,14 @@ public class CatalogData {
                 continue;
             }
             productMetaData.setVariablesVocabulary((Variables) objectElt);
-                        
+
         }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadTdsVariableVocabulary(DatasetType, ProductMetaData) - exiting");
         }
     }
-    
+
     /**
      * Load tds metadata property.
      * 
@@ -1341,7 +1343,7 @@ public class CatalogData {
             LOG.debug("loadTdsMetadataProperty is not processed because 'loadTDSExtraMetadata' flag is set to false - exiting");
             return;
         }
-         
+
         List<Object> listProperty = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), Property.class);
 
         productMetaData.setListTDSMetaDataProperty(null);
@@ -1352,14 +1354,14 @@ public class CatalogData {
                 continue;
             }
             productMetaData.addListTDSMetaDataProperty((Property) objectElt);
-                        
+
         }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadTdsMetadataProperty(DatasetType, ProductMetaData) - exiting");
         }
     }
-    
+
     /**
      * Load tds geo and depth coverage.
      * 
@@ -1377,14 +1379,14 @@ public class CatalogData {
                                                                          fr.cls.atoll.motu.library.misc.tds.server.GeospatialCoverage.class);
 
         productMetaData.setGeoBBox(null);
-//        productMetaData.setNorthSouthResolution(null);
-//        productMetaData.setNorthSouthUnits(null);
-//        productMetaData.setEastWestResolution(null);
-//        productMetaData.setEastWestUnits(null);
-//        productMetaData.setDepthCoverage(null);
-//        productMetaData.setDepthResolution(null);
-//        productMetaData.setDepthUnits(null);
-        
+        // productMetaData.setNorthSouthResolution(null);
+        // productMetaData.setNorthSouthUnits(null);
+        // productMetaData.setEastWestResolution(null);
+        // productMetaData.setEastWestUnits(null);
+        // productMetaData.setDepthCoverage(null);
+        // productMetaData.setDepthResolution(null);
+        // productMetaData.setDepthUnits(null);
+
         boolean foundGeospatialCoverage = false;
 
         for (Object objectElt : listGeoCoverageObject) {
@@ -1428,7 +1430,6 @@ public class CatalogData {
         ExtractCriteriaLatLon extractCriteriaLatLon = new ExtractCriteriaLatLon(geospatialCoverage);
         productMetaData.setGeoBBox(new LatLonRect(extractCriteriaLatLon.getLatLonRect()));
 
-
         productMetaData.setNorthSouthResolution(CatalogData.getResolution(geospatialCoverage.getNorthsouth()));
         productMetaData.setNorthSouthUnits(CatalogData.getUnits(geospatialCoverage.getNorthsouth()));
 
@@ -1443,10 +1444,10 @@ public class CatalogData {
 
             productMetaData.setDepthCoverage(new MinMax(min, max));
         }
-        
+
         productMetaData.setDepthResolution(CatalogData.getResolution(geospatialCoverage.getUpdown()));
         productMetaData.setDepthUnits(CatalogData.getUnits(geospatialCoverage.getUpdown()));
-        
+
         return true;
     }
 
@@ -1462,9 +1463,9 @@ public class CatalogData {
             return null;
         }
         return spatialRange.getResolution();
-        
+
     }
-    
+
     /**
      * Gets the units.
      * 
@@ -1477,8 +1478,9 @@ public class CatalogData {
             return null;
         }
         return spatialRange.getUnits();
-        
+
     }
+
     /**
      * Find tds geo and depth coverage.
      * 
@@ -1625,8 +1627,9 @@ public class CatalogData {
             if (casAuthentification) {
                 newPath = AssertionUtils.addCASTicket(path);
                 if (!AssertionUtils.hasCASTicket(newPath)) {
-                    throw new MotuException(
-                            "Unable to load TDS configuration. TDS has been declared as CASified, but the Motu application is not. \nTo access this TDS, the Motu Application must be CASified.");
+                    newPath = AssertionUtils.addCASTicket(path, this.user);
+//                    throw new MotuException(
+//                            "Unable to load TDS configuration. TDS has been declared as CASified, but the Motu application is not. \nTo access this TDS, the Motu Application must be CASified.");
                 }
             } else {
                 newPath = path;
@@ -2058,6 +2061,27 @@ public class CatalogData {
         this.casAuthentification = casAuthentification;
     }
 
+    /** The user. */
+    private User user = null;
+
+    /**
+     * Gets the user.
+     * 
+     * @return the user
+     */
+    public User getUser() {
+        return this.user;
+    }
+
+    /**
+     * Sets the user.
+     * 
+     * @param user the new user
+     */
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     /**
      * Temporary variable use to set product id loaded in the catalog. When catalog is loaded only product
      * that are in this set are retained in the products map.
@@ -2081,6 +2105,6 @@ public class CatalogData {
     public void setLoadTDSExtraMetadata(boolean loadTDSExtraMetadata) {
         this.loadTDSExtraMetadata = loadTDSExtraMetadata;
     }
-    
+
 }
 // CSON: MultipleStringLiterals

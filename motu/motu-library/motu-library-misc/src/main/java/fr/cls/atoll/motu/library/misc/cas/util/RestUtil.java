@@ -1,6 +1,7 @@
 package fr.cls.atoll.motu.library.misc.cas.util;
 
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.intfce.User;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -27,9 +28,8 @@ import org.apache.log4j.Logger;
  * @version $Revision: 1.3 $ - $Date: 2010-03-05 10:41:46 $
  */
 public class RestUtil {
-    /**
-     * Logger for this class
-     */
+    
+    /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(RestUtil.class);
 
     //
@@ -64,6 +64,16 @@ public class RestUtil {
     // return stringBuffer.toString();
     // }
 
+    /**
+     * Gets the cas restlet url.
+     * 
+     * @param serviceURL the service url
+     * @param casRestUrlSuffix the cas rest url suffix
+     * 
+     * @return the cas restlet url
+     * 
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public static String getCasRestletUrl(String serviceURL, String casRestUrlSuffix) throws IOException {
 
         String casServerPrefix = RestUtil.getRedirectUrl(serviceURL);
@@ -84,6 +94,15 @@ public class RestUtil {
 
     }
 
+    /**
+     * Gets the redirect url.
+     * 
+     * @param path the path
+     * 
+     * @return the redirect url
+     * 
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public static String getRedirectUrl(String path) throws IOException {
 
         String redirectUrl = "";
@@ -127,7 +146,20 @@ public class RestUtil {
     // password) throws IOException {
     //    
     // }
-
+    public static String getTicketGrantingTicket(String casRestUrl, User user) throws IOException {
+        return getTicketGrantingTicket(casRestUrl, user.getLogin(), user.getPwd());
+    }
+    /**
+     * Gets the ticket granting ticket.
+     * 
+     * @param casRestUrl the cas rest url
+     * @param username the username
+     * @param password the password
+     * 
+     * @return the ticket granting ticket
+     * 
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public static String getTicketGrantingTicket(String casRestUrl, String username, String password) throws IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getTicketGrantingTicket(String, String, String) - entering");
@@ -135,7 +167,14 @@ public class RestUtil {
 
         if (AssertionUtils.isNullOrEmpty(casRestUrl)) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getTicketGrantingTicket(String, String, String) - exiting");
+                LOG.debug("getTicketGrantingTicket(String, String, String) - casRestUrl is null - exiting");
+            }
+            return null;
+        }
+        
+        if (AssertionUtils.isNullOrEmpty(username)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getTicketGrantingTicket(String, String, String) - username is null - exiting");
             }
             return null;
         }
@@ -151,7 +190,8 @@ public class RestUtil {
 
         stringBuffer.append(URLEncoder.encode("password", "UTF-8"));
         stringBuffer.append("=");
-        stringBuffer.append(URLEncoder.encode(password, "UTF-8"));
+        String passwordToEncode = ((password == null) ? "" : password);
+        stringBuffer.append(URLEncoder.encode(passwordToEncode, "UTF-8"));
         if (LOG.isDebugEnabled()) {
             LOG.debug("getTicketGrantingTicket(String, String, String) : " + stringBuffer.toString());
         }
@@ -199,11 +239,52 @@ public class RestUtil {
 
     }
 
+    /**
+     * Login to cas.
+     * 
+     * @param casRestUrl the cas rest url
+     * @param user the user
+     * @param serviceURL the service url
+     * 
+     * @return the string
+     * 
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuException the motu exception
+     */
+    public static String loginToCAS(String casRestUrl, User user, String serviceURL) throws IOException, MotuException {
+        return loginToCAS(casRestUrl, user.getLogin(), user.getPwd(), serviceURL);
+    }
+    
+    /**
+     * Login to cas.
+     * 
+     * @param casRestUrl the cas rest url
+     * @param username the username
+     * @param password the password
+     * @param serviceURL the service url
+     * 
+     * @return the string
+     * 
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuException the motu exception
+     */
     public static String loginToCAS(String casRestUrl, String username, String password, String serviceURL) throws IOException, MotuException {
         String ticketGrantingTicket = RestUtil.getTicketGrantingTicket(casRestUrl, username, password);
         return loginToCASWithTGT(casRestUrl, ticketGrantingTicket, serviceURL);
     }
 
+    /**
+     * Login to cas with tgt.
+     * 
+     * @param casRestUrl the cas rest url
+     * @param ticketGrantingTicket the ticket granting ticket
+     * @param serviceURL the service url
+     * 
+     * @return the string
+     * 
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuException the motu exception
+     */
     public static String loginToCASWithTGT(String casRestUrl, String ticketGrantingTicket, String serviceURL) throws IOException, MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loginToCAS(String, String, String) - entering");
@@ -250,6 +331,15 @@ public class RestUtil {
 
     }
 
+    /**
+     * Open conn.
+     * 
+     * @param urlk the urlk
+     * 
+     * @return the uRL connection
+     * 
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     static URLConnection openConn(String urlk) throws IOException {
 
         URL url = new URL(urlk);
@@ -261,6 +351,11 @@ public class RestUtil {
 
     }
 
+    /**
+     * Close conn.
+     * 
+     * @param c the c
+     */
     static void closeConn(HttpsURLConnection c) {
         c.disconnect();
     }
