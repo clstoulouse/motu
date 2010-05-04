@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.AuthentificationMode;
+import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
@@ -162,7 +163,7 @@ public class Main {
     private static void execRequest() throws MotuMarshallException, MotuExceptionBase, IOException {
 
         String action = Main.getAction();
-        if (Main.isActionDescribeCoverage(action)) {
+        if (Main.isActionDescribeProduct(action)) {
             // Nothing to do
         } else {
             throw new MotuException(String.format("request '%s' is not implemented", action));
@@ -175,11 +176,12 @@ public class Main {
      * @param action the action
      * 
      * @return true, if is action describe coverage
-     * @throws MotuExceptionBase
-     * @throws MotuMarshallException
-     * @throws IOException
+     * 
+     * @throws MotuExceptionBase the motu exception base
+     * @throws MotuMarshallException the motu marshall exception
+     * @throws IOException Signals that an I/O exception has occurred.
      */
-    private static boolean isActionDescribeCoverage(String action) throws MotuMarshallException, MotuExceptionBase, IOException {
+    private static boolean isActionDescribeProduct(String action) throws MotuMarshallException, MotuExceptionBase, IOException {
 
         if (!action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_DESCRIBE_PRODUCT)) {
             return false;
@@ -200,9 +202,11 @@ public class Main {
             writer = new FileWriter(output);
         }
 
-        User user = getUser();
+        User user = Main.getUser();
+        AuthentificationHolder.setUser(user);
+        AuthentificationHolder.clear();
         
-        Organizer organizer = new Organizer(user);
+        Organizer organizer = new Organizer();
         organizer.getProductMetadataInfo(data, writer);
 
         return true;
