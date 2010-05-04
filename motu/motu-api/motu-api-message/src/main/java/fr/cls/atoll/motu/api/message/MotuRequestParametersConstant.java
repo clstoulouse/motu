@@ -167,6 +167,9 @@ public interface MotuRequestParametersConstant {
     /** The PARAM authentification mode. */
     final String PARAM_AUTHENTIFICATION_MODE = "authmode";
 
+    /** The PARAM authentification mode. */
+    final String PARAM_XML_FILE = "xmlfile";
+
     /**
      * Dataset servlet parameter id. This is an alias of {@link #PARAM_PRODUCT} for the
      * {@link #ACTION_DESCRIBE_COVERAGE} action.
