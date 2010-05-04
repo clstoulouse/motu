@@ -39,13 +39,11 @@ import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.jasig.cas.client.validation.Assertion;
 
 import ucar.ma2.MAMath.MinMax;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.api.message.MotuMsgConstant;
-import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.AuthentificationMode;
 import fr.cls.atoll.motu.api.message.xml.AvailableDepths;
 import fr.cls.atoll.motu.api.message.xml.AvailableTimes;
 import fr.cls.atoll.motu.api.message.xml.Axis;
@@ -65,7 +63,6 @@ import fr.cls.atoll.motu.api.message.xml.VariablesVocabulary;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
-import fr.cls.atoll.motu.library.misc.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.misc.data.CatalogData;
@@ -5235,7 +5232,12 @@ public class Organizer {
         service.setName(String.valueOf(uuid));
         service.setDescription("Temporary service");
         service.setUrlSite(catalogBaseUrl);
-        service.setCatalogFileName(catalogFileName);
+
+        if (Organizer.isNullOrEmpty(catalogFileName)) {
+            service.setCatalogFileName(Organizer.TDS_CATALOG_FILENAME);
+        } else {
+            service.setCatalogFileName(catalogFileName);
+        }
         // Only TDS are accepted
         service.setCatalogType(CatalogData.CatalogType.TDS);
         service.setCasAuthentification(AuthentificationHolder.isCASAuthentification());
@@ -5288,9 +5290,43 @@ public class Organizer {
      */
     public void getProductMetadataInfo(String locationData, Writer writer) throws MotuExceptionBase, MotuMarshallException {
 
+        getProductMetadataInfo(locationData, null, true, writer);
+    }
+    
+    /**
+     * Gets the product metadata info.
+     * 
+     * @param locationData the location data
+     * @param catalogFileName the catalog file name
+     * @param writer the writer
+     * 
+     * @return the product metadata info
+     * 
+     * @throws MotuExceptionBase the motu exception base
+     * @throws MotuMarshallException the motu marshall exception
+     */
+    public void getProductMetadataInfo(String locationData, String catalogFileName, Writer writer) throws MotuExceptionBase, MotuMarshallException {
+
+        getProductMetadataInfo(locationData, catalogFileName, true, writer);
+    }
+
+    /**
+     * Gets the product metadata info.
+     * 
+     * @param locationData the location data
+     * @param writer the writer
+     * 
+     * @return the product metadata info
+     * 
+     * @throws MotuExceptionBase the motu exception base
+     * @throws MotuMarshallException the motu marshall exception
+     */
+    public void getProductMetadataInfo(String locationData, String catalogFileName, boolean loadTDSVariableVocabulary, Writer writer)
+            throws MotuExceptionBase, MotuMarshallException {
+
         ProductMetadataInfo productMetadataInfo = null;
         try {
-            productMetadataInfo = getProductMetadataInfo(locationData);
+            productMetadataInfo = getProductMetadataInfo(locationData, catalogFileName, loadTDSVariableVocabulary);
         } catch (MotuExceptionBase e) {
             Organizer.marshallProductMetadataInfo(e, writer);
             throw e;
