@@ -1,242 +1,242 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-  	<groupId>cls.atoll.motu.api</groupId>
-  	<artifactId>motu-api-client</artifactId>
-  	<name>Motu Api Client</name>
-  	<version>1.0.0-SNAPSHOT</version>
-  	<description>This package holds api services</description>
-    <scm>
-        <connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/motu/motu-api/motu-api-client</connection>
-    </scm>
-    <issueManagement>
-        <system>JIRA</system>
-        <url>http://jira.cls.fr:8080/browse/ATOLL</url>
-    </issueManagement>
-    <distributionManagement>
-        <repository>
-            <id>repo</id>
-            <name>CLS Entreprise Release Repository</name>
-            <url>http://mvnrepo.cls.fr:8081/nexus/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>repo</id>
-            <name>CLS Entreprise Snapshot Repository</name>
-            <url>http://mvnrepo.cls.fr:8081/nexus/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-    <properties>
-        <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-        <jdk.source.version>1.6</jdk.source.version>
-        <jdk.source.encoding>ISO-8859-1</jdk.source.encoding>
-        <dependencies.version.slf4j>1.5.8</dependencies.version.slf4j>
-        <dependencies.version.spring>2.5.6</dependencies.version.spring>
-    </properties>
-    <licenses>
-        <license>
-            <name>GNU General Public License (GPL)</name>
-            <url>http://www.gnu.org/licenses/gpl.txt</url>
-            <distribution>manual</distribution>
-            <comments>Copyright 2008-2009 CLS.</comments>
-        </license>
-    </licenses>
-    <organization>
-        <name>CLS (Collecte Localisation Satelite)</name>
-        <url>http://www.cls.fr</url>
-    </organization>
-    <developers>
-        <developer>
-            <id>dearith</id>
-            <name>Didier Earith</name>
-            <email>dearith@cls.fr</email>
-            <organization>Akka Technologies</organization>
-            <organizationUrl>http://www.akka.eu/uk/index-uk.php</organizationUrl>
-            <roles>
-                <role>Main Developer</role>
-            </roles>
-            <timezone>+1</timezone>
-            <properties />
-        </developer>
-        <developer>
-            <id>ccamel</id>
-            <name>Christophe Camel</name>
-            <email>ccamel@cls.fr</email>
-            <organization>CLS</organization>
-            <organizationUrl>http://www.cls.fr</organizationUrl>
-            <roles>
-                <role>Architect</role>
-            </roles>
-            <timezone>+1</timezone>
-            <properties />
-        </developer>
-    </developers>
-    <contributors>
-        <contributor>
-            <name>Tony Jolibois</name>
-            <email>tjolibois@cls.fr</email>
-            <organization>CLS</organization>
-            <organizationUrl>http://www.cls.fr</organizationUrl>
-            <roles>
-                <role>Project Manager</role>
-            </roles>
-            <timezone>+1</timezone>
-            <properties />
-        </contributor>
-    </contributors>
-    <dependencies>
-        <dependency>
-            <groupId>cls.atoll.motu.library</groupId>
-            <artifactId>motu-library-misc</artifactId>
-            <version>2.1.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>cls.atoll.motu.api</groupId>
-            <artifactId>motu-api-message</artifactId>
-            <version>2.1.1-SNAPSHOT</version>
-        </dependency>
-        
-       <!-- 
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <version>2.1.10</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jvnet.jaxb2_commons</groupId>
-            <artifactId>jaxb-xjc</artifactId>
-            <version>2.1.10</version>
-        </dependency>
- -->        
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${dependencies.version.slf4j}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${dependencies.version.slf4j}</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.15</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.1</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${jdk.source.version}</source>
-                    <target>${jdk.source.version}</target>
-                    <encoding>${jdk.source.encoding}</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>bind-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-		        <configuration>
-		          <archive>
-			      	<!--   <index>true</index> -->
-					<addMavenDescriptor>true</addMavenDescriptor>		        
-			        <manifest>
-			            <mainClass>fr.cls.atoll.motu.api.client.Main</mainClass>
-			            <packageName>fr.cls.atoll.motu.api.client</packageName>
-			            <addClasspath>true</addClasspath>
-			            <classpathPrefix>lib/</classpathPrefix>
-			            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-			            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-			            
-		          	</manifest>
-		            <pomPropertiesFile>true</pomPropertiesFile>
-		          
-		            <manifestEntries>
-		              <mode>development</mode>
-		              <url>${pom.url}</url>
-		            </manifestEntries>
-		            <!-- <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>  -->		            
-		          </archive>
-		        </configuration>
-		        <!-- 
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                 -->
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-            </plugin>
-             <plugin>
-              <artifactId>maven-assembly-plugin</artifactId>
-              <version>2.2-beta-4</version>
-              <configuration>
-		          <descriptorRefs>
-		            <descriptorRef>jar-with-dependencies</descriptorRef>
-		          </descriptorRefs>
-		          
-              
-		          <!--
-                <descriptors>
-                  <descriptor>src/main/assembly/src.xml</descriptor>
-                </descriptors>
-              -->
-		          <archive>
-					<addMavenDescriptor>true</addMavenDescriptor>		        
-			        <manifest>
-			            <mainClass>fr.cls.atoll.motu.api.client.Main</mainClass>
-			            <packageName>fr.cls.atoll.motu.api.client</packageName>
-			            <!--<addClasspath>true</addClasspath>
-			            <classpathPrefix>\</classpathPrefix>
-			            --><addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-			            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-			            
-		          	</manifest>
-		            <pomPropertiesFile>true</pomPropertiesFile><!--
-		          
-		            <manifestEntries>
-		              <mode>development</mode>
-		              <url>${pom.url}</url>
-		            </manifestEntries>
-		          --></archive>
-              </configuration>
+	<groupId>cls.atoll.motu.api</groupId>
+	<artifactId>motu-api-client</artifactId>
+	<name>Motu Api Client</name>
+	<version>1.0.0-SNAPSHOT</version>
+	<description>This package holds api services</description>
+	<scm>
+		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/motu/motu-api/motu-api-client</connection>
+	</scm>
+	<issueManagement>
+		<system>JIRA</system>
+		<url>http://jira.cls.fr:8080/browse/ATOLL</url>
+	</issueManagement>
+	<distributionManagement>
+		<repository>
+			<id>repo</id>
+			<name>CLS Entreprise Release Repository</name>
+			<url>http://mvnrepo.cls.fr:8081/nexus/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>repo</id>
+			<name>CLS Entreprise Snapshot Repository</name>
+			<url>http://mvnrepo.cls.fr:8081/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+	<properties>
+		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+		<jdk.source.version>1.6</jdk.source.version>
+		<jdk.source.encoding>ISO-8859-1</jdk.source.encoding>
+		<dependencies.version.slf4j>1.5.8</dependencies.version.slf4j>
+		<dependencies.version.spring>2.5.6</dependencies.version.spring>
+	</properties>
+	<licenses>
+		<license>
+			<name>GNU General Public License (GPL)</name>
+			<url>http://www.gnu.org/licenses/gpl.txt</url>
+			<distribution>manual</distribution>
+			<comments>Copyright 2008-2009 CLS.</comments>
+		</license>
+	</licenses>
+	<organization>
+		<name>CLS (Collecte Localisation Satelite)</name>
+		<url>http://www.cls.fr</url>
+	</organization>
+	<developers>
+		<developer>
+			<id>dearith</id>
+			<name>Didier Earith</name>
+			<email>dearith@cls.fr</email>
+			<organization>Akka Technologies</organization>
+			<organizationUrl>http://www.akka.eu/uk/index-uk.php</organizationUrl>
+			<roles>
+				<role>Main Developer</role>
+			</roles>
+			<timezone>+1</timezone>
+			<properties />
+		</developer>
+		<developer>
+			<id>ccamel</id>
+			<name>Christophe Camel</name>
+			<email>ccamel@cls.fr</email>
+			<organization>CLS</organization>
+			<organizationUrl>http://www.cls.fr</organizationUrl>
+			<roles>
+				<role>Architect</role>
+			</roles>
+			<timezone>+1</timezone>
+			<properties />
+		</developer>
+	</developers>
+	<contributors>
+		<contributor>
+			<name>Tony Jolibois</name>
+			<email>tjolibois@cls.fr</email>
+			<organization>CLS</organization>
+			<organizationUrl>http://www.cls.fr</organizationUrl>
+			<roles>
+				<role>Project Manager</role>
+			</roles>
+			<timezone>+1</timezone>
+			<properties />
+		</contributor>
+	</contributors>
+	<dependencies>
+		<dependency>
+			<groupId>cls.atoll.motu.library</groupId>
+			<artifactId>motu-library-misc</artifactId>
+			<version>2.1.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>cls.atoll.motu.api</groupId>
+			<artifactId>motu-api-message</artifactId>
+			<version>2.1.1-SNAPSHOT</version>
+		</dependency>
+
+		<!--
+			<dependency> <groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId> <version>2.1.10</version>
+			</dependency> <dependency> <groupId>org.jvnet.jaxb2_commons</groupId>
+			<artifactId>jaxb-xjc</artifactId> <version>2.1.10</version>
+			</dependency>
+		-->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${dependencies.version.slf4j}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${dependencies.version.slf4j}</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.15</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${jdk.source.version}</source>
+					<target>${jdk.source.version}</target>
+					<encoding>${jdk.source.encoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
 				<executions>
-				  <execution>
-				    <phase>package</phase>
-				    <goals>
-				      <goal>single</goal>
-				    </goals>
-				  </execution>
+					<execution>
+						<id>bind-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
 				</executions>
-              
-             </plugin>
-             
-        </plugins>
-    </build>
-    
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<!--   <index>true</index> -->
+						<addMavenDescriptor>true</addMavenDescriptor>
+						<manifest>
+							<mainClass>fr.cls.atoll.motu.api.client.Main</mainClass>
+							<packageName>fr.cls.atoll.motu.api.client</packageName>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+
+						</manifest>
+						<pomPropertiesFile>true</pomPropertiesFile>
+
+						<manifestEntries>
+							<mode>development</mode>
+							<url>${pom.url}</url>
+						</manifestEntries>
+						<!--
+							<manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+						-->
+					</archive>
+				</configuration>
+				<!--
+					<executions> <execution> <goals> <goal>test-jar</goal> </goals>
+					</execution> </executions>
+				-->
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2-beta-4</version>
+				<configuration>
+					<!--
+						<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+						</descriptorRefs>
+					-->
+
+					<descriptors>
+						<descriptor>src/main/assembly/src.xml</descriptor>
+					</descriptors>
+					<archive>
+						<addMavenDescriptor>true</addMavenDescriptor>
+						<manifest>
+							<mainClass>fr.cls.atoll.motu.api.client.Main</mainClass>
+							<packageName>fr.cls.atoll.motu.api.client</packageName>
+							<!--
+								<addClasspath>true</addClasspath>
+								<classpathPrefix>\</classpathPrefix>
+							-->
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+
+						</manifest>
+						<pomPropertiesFile>true</pomPropertiesFile>
+						<!--
+
+							<manifestEntries> <mode>development</mode> <url>${pom.url}</url>
+							</manifestEntries>
+						-->
+					</archive>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<version>1.1</version>
+				<configuration>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 	<pluginRepositories>
 		<pluginRepository>
 			<id>Codehaus repository</id>
@@ -250,12 +250,12 @@
 			</releases>
 		</pluginRepository>
 	</pluginRepositories>
-	
+
 	<repositories>
 		<repository>
 			<id>maven-central</id>
 			<name>Maven Central Repository</name>
 			<url>http://repo2.maven.org/maven2</url>
 		</repository>
-	</repositories>      
+	</repositories>
 </project>
