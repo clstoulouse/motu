@@ -47,7 +47,7 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.io.http.HTTPRandomAccessFile;
 import fr.cls.atoll.motu.library.misc.cas.HttpClientCAS;
-import fr.cls.atoll.motu.library.misc.cas.util.CasAuthentificationHolder;
+import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;
@@ -285,16 +285,11 @@ public class NetCdfReader {
      */
     public NetCdfReader(boolean casAuthentification) {
         init();
-        CasAuthentificationHolder.setCASAuthentification(casAuthentification);
+        this.casAuthentification = casAuthentification;
 
     }
-    public NetCdfReader(User user) {
-        init();
-        this.user = user;
-
-    }
-
     
+    /**
     /**
      * Constructor.
      * 
@@ -303,7 +298,7 @@ public class NetCdfReader {
     public NetCdfReader(String locationData, boolean casAuthentification) {
         init();
         this.locationData = locationData;
-        setCASAuthentification(casAuthentification);
+        this.casAuthentification = casAuthentification;
     }
 
     /**
@@ -314,7 +309,7 @@ public class NetCdfReader {
     }
 
     /** Does Service needs CAS authentification to access catalog resources and data. */
-   // protected boolean casAuthentification = false;
+    protected boolean casAuthentification = false;
 
     /**
      * Checks if is cas authentification.
@@ -322,31 +317,7 @@ public class NetCdfReader {
      * @return true, if is cas authentification
      */
     public boolean isCasAuthentification() {
-        if (this.user == null) {
-            return false;
-        }
-        return user.isCASAuthentification();
-    }
-
-    /** The user. */
-    private User user = null;
-    
-    /**
-     * Gets the user.
-     * 
-     * @return the user
-     */
-    public User getUser() {
-        return this.user;
-    }
-    
-    /**
-     * Sets the user.
-     * 
-     * @param user the new user
-     */
-    public void setUser(User user) {
-        this.user = user;
+        return casAuthentification;
     }
 
     /**
@@ -354,11 +325,8 @@ public class NetCdfReader {
      * 
      * @param casAuthentification the new cas authentification
      */
-    public void setCASAuthentification(boolean casAuthentification) {
-        if (user == null) {
-            user = new User();
-        }
-        user.setCASAuthentification(casAuthentification);
+    public void setCasAuthentification(boolean casAuthentification) {
+        this.casAuthentification = casAuthentification;
     }
 
     /**
@@ -963,8 +931,8 @@ public class NetCdfReader {
 
         initNetcdfHttpClient();
 
-        // httpClientCAS.getIsCas().set(this.casAuthentification);
-        CasAuthentificationHolder.setUser(this.user);
+        //httpClientCAS.getIsCas().set(this.casAuthentification);
+        AuthentificationHolder.setCASAuthentification(this.casAuthentification);
 
         // if enhanceVar ==> call NetcdfDataset.acquireDataset method
         // else enhance() is not called but Coordinate Systems are added

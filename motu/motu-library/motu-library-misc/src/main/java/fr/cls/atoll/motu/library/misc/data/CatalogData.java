@@ -10,6 +10,7 @@ import fr.cls.atoll.motu.library.inventory.Resource;
 import fr.cls.atoll.motu.library.inventory.ResourceOLA;
 import fr.cls.atoll.motu.library.inventory.ResourcesOLA;
 import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
+import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
 import fr.cls.atoll.motu.library.misc.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
@@ -1627,7 +1628,7 @@ public class CatalogData {
             if (casAuthentification) {
                 newPath = AssertionUtils.addCASTicket(path);
                 if (!AssertionUtils.hasCASTicket(newPath)) {
-                    newPath = AssertionUtils.addCASTicket(path, this.user);
+                    newPath = AssertionUtils.addCASTicket(path, AuthentificationHolder.getUser());
 //                    throw new MotuException(
 //                            "Unable to load TDS configuration. TDS has been declared as CASified, but the Motu application is not. \nTo access this TDS, the Motu Application must be CASified.");
                 }
@@ -2059,27 +2060,6 @@ public class CatalogData {
      */
     public void setCasAuthentification(boolean casAuthentification) {
         this.casAuthentification = casAuthentification;
-    }
-
-    /** The user. */
-    private User user = null;
-
-    /**
-     * Gets the user.
-     * 
-     * @return the user
-     */
-    public User getUser() {
-        return this.user;
-    }
-
-    /**
-     * Sets the user.
-     * 
-     * @param user the new user
-     */
-    public void setUser(User user) {
-        this.user = user;
     }
 
     /**

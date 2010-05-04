@@ -64,6 +64,7 @@ import fr.cls.atoll.motu.api.message.xml.Variables;
 import fr.cls.atoll.motu.api.message.xml.VariablesVocabulary;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.Inventory;
+import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
 import fr.cls.atoll.motu.library.misc.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
@@ -457,9 +458,6 @@ public class Organizer {
     /** The services map. */
     private Map<String, ServiceData> servicesMap = null;
 
-    /** The user. */
-    private User user = null;
-
     /** Velocity template engine. */
     private VelocityEngine velocityEngine = null;
 
@@ -473,49 +471,50 @@ public class Organizer {
         init();
     }
 
-    /**
-     * Instantiates a new organizer.
-     * 
-     * @param userLogin the user login
-     * @param userPwd the user pwd
-     * 
-     * @throws MotuException the motu exception
-     */
-    public Organizer(String userLogin, String userPwd, AuthentificationMode authentificationMode) throws MotuException {
-
-        this();
-
-        if (!Organizer.isNullOrEmpty(userLogin)) {
-            user.setLogin(userLogin);
-            user.setPwd(userPwd);
-            user.setAuthentificationMode(authentificationMode);
-        }
-
-    }
-
-    /**
-     * Instantiates a new organizer.
-     * 
-     * @param userLogin the user login
-     * @param userPwd the user pwd
-     * 
-     * @throws MotuException the motu exception
-     */
-    public Organizer(String userLogin, String userPwd) throws MotuException {
-        this(userLogin, userPwd, AuthentificationMode.CAS);
-    }
-
-    /**
-     * Instantiates a new organizer.
-     * 
-     * @param user the user
-     * 
-     * @throws MotuException the motu exception
-     */
-    public Organizer(User user) throws MotuException {
-        this();
-        setUser(user);
-    }
+    // /**
+    // * Instantiates a new organizer.
+    // *
+    // * @param userLogin the user login
+    // * @param userPwd the user pwd
+    // *
+    // * @throws MotuException the motu exception
+    // */
+    // public Organizer(String userLogin, String userPwd, AuthentificationMode authentificationMode) throws
+    // MotuException {
+    //
+    // this();
+    //
+    // if (!Organizer.isNullOrEmpty(userLogin)) {
+    // user.setLogin(userLogin);
+    // user.setPwd(userPwd);
+    // user.setAuthentificationMode(authentificationMode);
+    // }
+    //
+    // }
+    //
+    // /**
+    // * Instantiates a new organizer.
+    // *
+    // * @param userLogin the user login
+    // * @param userPwd the user pwd
+    // *
+    // * @throws MotuException the motu exception
+    // */
+    // public Organizer(String userLogin, String userPwd) throws MotuException {
+    // this(userLogin, userPwd, AuthentificationMode.CAS);
+    // }
+    //
+    // /**
+    // * Instantiates a new organizer.
+    // *
+    // * @param user the user
+    // *
+    // * @throws MotuException the motu exception
+    // */
+    // public Organizer(User user) throws MotuException {
+    // this();
+    // setUser(user);
+    // }
 
     /**
      * Removes all mappings from this map (optional operation).
@@ -5156,49 +5155,48 @@ public class Organizer {
 
     }
 
-    /**
-     * Checks if is user authentification.
-     * 
-     * @return true, if is user authentification
-     */
-    public boolean isUserAuthentification() {
-
-        if (user == null) {
-            return false;
-        }
-
-        return user.isAuthentification();
-    }
-
-    /**
-     * Checks if is user cas authentification.
-     * 
-     * @return true, if is user cas authentification
-     */
-    public boolean isUserCASAuthentification() {
-
-        if (user == null) {
-            return false;
-        }
-
-        return user.isCASAuthentification();
-    }
-
-
-    /**
-     * Gets the user authentification.
-     * 
-     * @return the user authentification
-     */
-    public String getUserAuthentification() {
-
-        if (user == null) {
-            return AuthentificationMode.NONE.toString();
-        }
-
-        return user.getAuthentificationMode().toString();
-    }
-
+    // /**
+    // * Checks if is user authentification.
+    // *
+    // * @return true, if is user authentification
+    // */
+    // public boolean isUserAuthentification() {
+    //
+    // if (user == null) {
+    // return false;
+    // }
+    //
+    // return user.isAuthentification();
+    // }
+    //
+    // /**
+    // * Checks if is user cas authentification.
+    // *
+    // * @return true, if is user cas authentification
+    // */
+    // public boolean isUserCASAuthentification() {
+    //
+    // if (user == null) {
+    // return false;
+    // }
+    //
+    // return user.isCASAuthentification();
+    // }
+    //
+    //
+    // /**
+    // * Gets the user authentification.
+    // *
+    // * @return the user authentification
+    // */
+    // public String getUserAuthentification() {
+    //
+    // if (user == null) {
+    // return AuthentificationMode.NONE.toString();
+    // }
+    //
+    // return user.getAuthentificationMode().toString();
+    // }
 
     /**
      * Gets the product metadata info.
@@ -5240,15 +5238,15 @@ public class Organizer {
         service.setCatalogFileName(catalogFileName);
         // Only TDS are accepted
         service.setCatalogType(CatalogData.CatalogType.TDS);
-        service.setCasAuthentification(isUserCASAuthentification());
-        service.setUser(this.user);
+        service.setCasAuthentification(AuthentificationHolder.isCASAuthentification());
 
-        if (isUserAuthentification() && (!isUserCASAuthentification())) {
-            throw new MotuNotImplementedException(String.format("Authentification mode '%s' is not yet implemented", getUserAuthentification()));
+        if (AuthentificationHolder.isAuthentification() && (!AuthentificationHolder.isCASAuthentification())) {
+            throw new MotuNotImplementedException(String.format("Authentification mode '%s' is not yet implemented", AuthentificationHolder
+                    .getAuthentificationMode().toString()));
         }
 
         // TODO : Cas process (TGT .....)
-        
+
         service.loadCatalogInfo(loadTDSVariableVocabulary);
         this.currentService = service;
 
@@ -5301,6 +5299,8 @@ public class Organizer {
 
     }
 
+    /** The user. */
+    // private User user = null;
     /**
      * Getter of the property <tt>user</tt>.
      * 
@@ -5309,7 +5309,18 @@ public class Organizer {
      * @uml.property name="user"
      */
     public User getUser() {
-        return this.user;
+        return AuthentificationHolder.getUser();
+    }
+
+    /**
+     * Setter of the property <tt>user</tt>.
+     * 
+     * @param user The user to set.
+     * 
+     * @uml.property name="user"
+     */
+    public void setUser(User user) {
+        AuthentificationHolder.setUser(user);
     }
 
     /**
@@ -5603,17 +5614,6 @@ public class Organizer {
      */
     public void setServices(Map<String, ServiceData> services) {
         this.servicesMap = services;
-    }
-
-    /**
-     * Setter of the property <tt>user</tt>.
-     * 
-     * @param user The user to set.
-     * 
-     * @uml.property name="user"
-     */
-    public void setUser(User user) {
-        this.user = user;
     }
 
     /**

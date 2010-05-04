@@ -720,26 +720,6 @@ public class ServiceData {
         this.casAuthentification = casAuthentification;
     }
 
-    /** The user. */
-    private User user = null;
-    
-    /**
-     * Gets the user.
-     * 
-     * @return the user
-     */
-    public User getUser() {
-        return this.user;
-    }
-    
-    /**
-     * Sets the user.
-     * 
-     * @param user the new user
-     */
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     /**
      * Returns the catalog location (urlSite + catalogFileName).
@@ -767,14 +747,13 @@ public class ServiceData {
      * 
      * @return the catalog data
      */
-    public CatalogData createCatalogData(Boolean loadTDSVariableVocabulary, User user) {
+    public CatalogData createCatalogData(Boolean loadTDSVariableVocabulary) {
         CatalogData catalogData = new CatalogData();
         catalogData.setUrlSite(urlSite);
         catalogData.setCasAuthentification(casAuthentification);
         if (loadTDSVariableVocabulary != null) {
             catalogData.setLoadTDSExtraMetadata(loadTDSVariableVocabulary);            
         }
-        catalogData.setUser(user);
         return catalogData;
     }
     
@@ -807,7 +786,7 @@ public class ServiceData {
         }
 
         if (catalogData == null) {
-            catalogData = createCatalogData(loadTDSVariableVocabulary, user);
+            catalogData = createCatalogData(loadTDSVariableVocabulary);
         }
 
         switch (getCatalogType()) {

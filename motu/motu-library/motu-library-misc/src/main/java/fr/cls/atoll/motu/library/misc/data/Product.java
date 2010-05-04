@@ -21,6 +21,7 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.intfce.User;
 import fr.cls.atoll.motu.library.misc.metadata.DocMetaData;
 import fr.cls.atoll.motu.library.misc.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
@@ -82,7 +83,7 @@ public class Product {
     public Product(boolean casAuthentification) {
         this.casAuthentification = casAuthentification;
     }
-
+ 
     /**
      * Finalize.
      * 
@@ -100,6 +101,7 @@ public class Product {
             throw new MotuException("Error in Product.finalize", e);
         }
     }
+    
 
     /** The product meta data. */
     private ProductMetaData productMetaData;
@@ -125,6 +127,52 @@ public class Product {
     public void setProductMetaData(ProductMetaData productMetaData) {
         this.productMetaData = productMetaData;
     }
+    
+
+//    /**
+//     * Checks if is cas authentification.
+//     * 
+//     * @return true, if is cas authentification
+//     */
+//    public boolean isCASAuthentification() {
+//        if (this.user == null) {
+//            return false;
+//        }
+//        return user.isCASAuthentification();
+//    }
+//
+//    /**
+//     * Sets the cas authentification.
+//     * 
+//     * @param casAuthentification the new cas authentification
+//     */
+//    public void setCASAuthentification(boolean casAuthentification) {
+//        if (user == null) {
+//            user = new User();
+//        }
+//        user.setCASAuthentification(casAuthentification);
+//    }
+//      
+//    /** The user. */
+//    private User user = null;
+//
+//    /**
+//     * Gets the user.
+//     * 
+//     * @return the user
+//     */
+//    public User getUser() {
+//        return this.user;
+//    }
+//
+//    /**
+//     * Sets the user.
+//     * 
+//     * @param user the new user
+//     */
+//    public void setUser(User user) {
+//        this.user = user;
+//    }
 
     /** The dataset. */
     private DatasetBase dataset;

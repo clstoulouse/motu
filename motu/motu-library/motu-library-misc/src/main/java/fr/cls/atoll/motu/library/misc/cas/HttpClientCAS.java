@@ -15,7 +15,7 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.log4j.Logger;
 
 import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.misc.cas.util.CasAuthentificationHolder;
+import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 
@@ -138,7 +138,7 @@ public class HttpClientCAS extends HttpClient {
             LOG.debug("addCASTicket(HttpMethod) - entering : debugHttpMethod BEFORE  " + HttpClientCAS.debugHttpMethod(method));
         }
 
-        if (!CasAuthentificationHolder.isCASAuthentification()) {
+        if (!AuthentificationHolder.isCASAuthentification()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("addCASTicket(HttpMethod) - exiting - NO CAS AUTHENTIFICATION : debugHttpMethod AFTER  "
                         + HttpClientCAS.debugHttpMethod(method));
@@ -148,11 +148,11 @@ public class HttpClientCAS extends HttpClient {
 
         String newURIAsString = AssertionUtils.addCASTicket(method.getURI().getEscapedURI());
         if (!AssertionUtils.hasCASTicket(newURIAsString)) {
-            newURIAsString = AssertionUtils.addCASTicket(method.getURI().getEscapedURI(), CasAuthentificationHolder.getUser());
+            newURIAsString = AssertionUtils.addCASTicket(method.getURI().getEscapedURI(), AuthentificationHolder.getUser());
+            
             if (!AssertionUtils.hasCASTicket(newURIAsString)) {
-                String login = CasAuthentificationHolder.getUserLogin();
                 
-
+                String login = AuthentificationHolder.getUserLogin();    
                 throw new MotuException(
                         String
                                 .format("Unable to access resource '%s'. This resource has been declared as CASified, but the Motu application/API can't retrieve any ticket from CAS via REST. \nFor information, current user login is:'%s'",

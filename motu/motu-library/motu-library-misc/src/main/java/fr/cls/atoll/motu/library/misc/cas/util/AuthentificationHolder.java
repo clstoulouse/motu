@@ -13,7 +13,7 @@ import fr.cls.atoll.motu.library.misc.intfce.User;
  * @author $Author: dearith $
  * @version $Revision: 1.1 $ - $Date: 2010-03-04 16:05:15 $
  */
-public class CasAuthentificationHolder {
+public class AuthentificationHolder {
     /**
      * ThreadLocal to hold the Assertion for Threads to access.
      */
@@ -32,6 +32,36 @@ public class CasAuthentificationHolder {
         
     }
     
+    /**
+     * Checks if is authentification.
+     * 
+     * @return the boolean
+     */
+    public static Boolean isAuthentification() {
+        User user = threadLocal.get();
+        if (user == null) {
+            return false;
+        }
+        
+        return user.isAuthentification();
+        
+    }
+    
+    /**
+     * Gets the authentification mode.
+     * 
+     * @return the authentification mode
+     */
+    public static AuthentificationMode getAuthentificationMode() {
+        User user = threadLocal.get();
+        if (user == null) {
+            return AuthentificationMode.NONE;
+        }
+        
+        return user.getAuthentificationMode();
+        
+    }
+
     /**
      * Sets the user.
      * 
@@ -58,11 +88,18 @@ public class CasAuthentificationHolder {
      * @return the user login
      */
     public static String getUserLogin() {
-        User user = CasAuthentificationHolder.getUser();
+        User user = AuthentificationHolder.getUser();
         if (user == null) {
             return "(null)";
         }
-        return user.getLogin();
+        String login =  user.getLogin();
+        if (login == null) {
+            return "(null)";
+        }
+        if (login == "") {
+            return "(empty)";
+        }
+        return login;
     }
 
     /**
@@ -71,7 +108,7 @@ public class CasAuthentificationHolder {
      * @param casAuthentification the cas authentification
      */
     public static void setCASAuthentification(final Boolean casAuthentification) {
-        User user = CasAuthentificationHolder.getUser();
+        User user = AuthentificationHolder.getUser();
         if (user == null) {
             user = new User();
         }
@@ -86,7 +123,7 @@ public class CasAuthentificationHolder {
      * @param user the new cas authentification
      */
     public static void setCASAuthentification(final User user) {
-        CasAuthentificationHolder.setUser(user);
+        AuthentificationHolder.setUser(user);
     }
 
     /**
