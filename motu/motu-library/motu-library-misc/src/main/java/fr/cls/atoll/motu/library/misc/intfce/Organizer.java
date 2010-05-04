@@ -2143,13 +2143,13 @@ public class Organizer {
         }
 
         // TODO Remove these lines - just for testing
-        List<fr.cls.atoll.motu.api.message.xml.Property> propertyListTest = properties.getProperty();
-        fr.cls.atoll.motu.api.message.xml.Property property = Organizer.createProperty();
-        property.setName("projection");
-        property.setValue("http://purl.org/myocean/ontology/vocabulary/grid-projection#mercator");
-        property.setCode(ErrorType.OK);
-        property.setMsg(ErrorType.OK.toString());
-        propertyListTest.add(property);
+//        List<fr.cls.atoll.motu.api.message.xml.Property> propertyListTest = properties.getProperty();
+//        fr.cls.atoll.motu.api.message.xml.Property property = Organizer.createProperty();
+//        property.setName("projection");
+//        property.setValue("http://purl.org/myocean/ontology/vocabulary/grid-projection#mercator");
+//        property.setCode(ErrorType.OK);
+//        property.setMsg(ErrorType.OK.toString());
+//        propertyListTest.add(property);
         // TODO Remove these lines - just for testing
 
         List<Property> listTDSMetaDataProperty = productMetaData.getListTDSMetaDataProperty();
@@ -2158,9 +2158,9 @@ public class Organizer {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("initProperties(ProductMetaData) - exiting");
             }
-            properties.setCode(ErrorType.OK);
-            properties.setMsg(ErrorType.OK.toString());
-            return properties;
+//            properties.setCode(ErrorType.OK);
+//            properties.setMsg(ErrorType.OK.toString());
+            return null;
         }
 
         List<fr.cls.atoll.motu.api.message.xml.Property> propertyList = properties.getProperty();
@@ -2419,7 +2419,15 @@ public class Organizer {
             return availableDepths;
         }
 
+        ProductMetaData productMetaData = product.getProductMetaData();
+        if (productMetaData == null) {
+            return availableDepths;
+        }
+        if (!productMetaData.hasZAxis()) {
+            return null;            
+        }
         StringBuffer stringBuffer = new StringBuffer();
+       
         List<String> list = product.getZAxisDataAsString();
 
         Iterator<String> i = list.iterator();
