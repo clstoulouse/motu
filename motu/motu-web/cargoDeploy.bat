@@ -4,7 +4,13 @@ echo off
 
 set CURRENT_DIR=%cd%
 REM echo %CURRENT_DIR%
-goto deploy
+
+set WHAT=%2
+
+echo %WHAT%
+
+goto end
+if %WHAT% == "deploy" goto deploy
 
 :install-motu-api-message
 cd %CURRENT_DIR%\..\motu-api\motu-api-message
@@ -30,10 +36,17 @@ call mvn -Dmaven.test.skip=true -P %1 clean install
 cd %CURRENT_DIR%\..\motu-processor\motu-processor-wps
 call mvn -Dmaven.test.skip=true -P %1 clean install 
 
+:install-motu-api-client
+cd %CURRENT_DIR%\..\motu-api\motu-api-client
+REM call mvn -Dmaven.test.skip=true -P %1 clean install 
+call mvn -Dmaven.test.skip=true -P %1 assembly:assembly
+
 cd /D %CURRENT_DIR%
 :install-motu-web
 REM echo install atoll-motu-web
 call mvn -Dmaven.test.skip=true -P %1 clean install 
+
+if %WHAT% == "install" goto end
 
 :deploy
 
