@@ -8,6 +8,11 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import org.apache.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
@@ -41,6 +46,19 @@ public class Main {
     /** The map params containing parameters arguments. */
     private static Map<String, String> mapParams = new HashMap<String, String>();
 
+//    // Create a trust manager that does not validate certificate chains
+//    // See : http://www.exampledepot.com/egs/javax.net.ssl/trustall.html
+//    static TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+//        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+//            return null;
+//        }
+//
+//        public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+//        }
+//
+//        public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+//        }
+//    } };
 
     /**
      * .
@@ -52,6 +70,15 @@ public class Main {
         if (LOG.isDebugEnabled()) {
             LOG.debug("main(String[]) - entering");
         }
+        
+//        try {
+//            SSLContext sc = SSLContext.getInstance("SSL");
+//            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+//            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        
 
         // System.out.println("fr.cls.atoll.motu.api.client OK");
         // System.out.println(System.getProperties());
@@ -65,7 +92,7 @@ public class Main {
         try {
             // Loads parameters
             Main.loadArgs(args);
-            
+
             if (mapParams.isEmpty()) {
                 printUsage();
                 System.exit(-1);
@@ -123,6 +150,7 @@ public class Main {
         Main.logUsage();
 
     }
+
     public static void logUsage() {
 
         if (LOG.isInfoEnabled()) {
@@ -130,7 +158,7 @@ public class Main {
         }
 
     }
-    
+
     /**
      * Gets the usage.
      * 
@@ -139,31 +167,32 @@ public class Main {
     public static String getUsage() {
 
         StringBuffer stringBuffer = new StringBuffer();
-        
+
         stringBuffer.append("Java Motu APIs Client Application :");
         stringBuffer.append("\nCommand line:\n");
         stringBuffer.append("\n\tjava -jar motu-api-client-xxx.jar action=nnnn [PARAMETERS]\n");
 
-        stringBuffer.append("\nwith action=resquest to execute (optional - default is '"+MotuRequestParametersConstant.ACTION_DESCRIBE_PRODUCT+"')\n");
+        stringBuffer.append("\nwith action=resquest to execute (optional - default is '" + MotuRequestParametersConstant.ACTION_DESCRIBE_PRODUCT
+                + "')\n");
         stringBuffer.append("\n");
         stringBuffer.append("\n==========\n");
-        stringBuffer.append("action="+MotuRequestParametersConstant.ACTION_DESCRIBE_PRODUCT) ;
+        stringBuffer.append("action=" + MotuRequestParametersConstant.ACTION_DESCRIBE_PRODUCT);
         stringBuffer.append("\n\nThis request allows to get the metadata of a product (currently only for TDS/Opendap media)");
         stringBuffer.append("\n");
         stringBuffer.append("PARAMETERS:\n");
-        stringBuffer.append("\t"+MotuRequestParametersConstant.PARAM_DATA+"=dataset/product url (required)\n");
-        stringBuffer.append("\t"+MotuRequestParametersConstant.PARAM_OUTPUT+"=output file path (optional - default is stdout)\n");
-        stringBuffer.append("\t"+MotuRequestParametersConstant.PARAM_LOGIN+"=login authentification if needed (optional)\n");
-        stringBuffer.append("\t"+MotuRequestParametersConstant.PARAM_PWD+"=password authentification if needed (optional)\n");
-        stringBuffer.append("\t"+MotuRequestParametersConstant.PARAM_AUTHENTIFICATION_MODE+"=authentification mode (optional - default is '" + AuthentificationMode.CAS.toString() + "' - valid values: ");
+        stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_DATA + "=dataset/product url (required)\n");
+        stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_OUTPUT + "=output file path (optional - default is stdout)\n");
+        stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_LOGIN + "=login authentification if needed (optional)\n");
+        stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_PWD + "=password authentification if needed (optional)\n");
+        stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_AUTHENTIFICATION_MODE + "=authentification mode (optional - default is '"
+                + AuthentificationMode.CAS.toString() + "' - valid values: ");
         stringBuffer.append(AuthentificationMode.getAvailableValues().toString());
         stringBuffer.append(")\n");
-        stringBuffer.append("\t"+MotuRequestParametersConstant.PARAM_XML_FILE+"=TDS Catalog file name (optional - default is '" + Organizer.TDS_CATALOG_FILENAME + "')\n");
+        stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_XML_FILE + "=TDS Catalog file name (optional - default is '"
+                + Organizer.TDS_CATALOG_FILENAME + "')\n");
         stringBuffer.append("\n==========\n");
-        
 
         return stringBuffer.toString();
-                               
 
     }
 
@@ -215,7 +244,7 @@ public class Main {
         return action;
 
     }
-    
+
     /**
      * Gets the xml file.
      * 
@@ -225,30 +254,30 @@ public class Main {
         return mapParams.get(MotuRequestParametersConstant.PARAM_XML_FILE);
 
     }
-    
+
     /**
      * Gets the action.
      * 
      * @return the action
-     * @throws MotuException 
+     * @throws MotuException
      */
     private static User getUser() throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getUser() - entering");
         }
         String login = mapParams.get(MotuRequestParametersConstant.PARAM_LOGIN);
-        
+
         if (Main.isNullOrEmpty(login)) {
             return null;
         }
-        
-        User user = new User();   
-        
+
+        User user = new User();
+
         user.setLogin(login);
         user.setPwd(mapParams.get(MotuRequestParametersConstant.PARAM_PWD));
         user.setAuthentificationMode(mapParams.get(MotuRequestParametersConstant.PARAM_AUTHENTIFICATION_MODE));
 
-        if ((user.getLogin() != null) && (user.getAuthentificationMode().equals(AuthentificationMode.NONE) )) {
+        if ((user.getLogin() != null) && (user.getAuthentificationMode().equals(AuthentificationMode.NONE))) {
             user.setAuthentificationMode(AuthentificationMode.CAS);
         }
 
@@ -261,9 +290,10 @@ public class Main {
 
     /**
      * Exec request.
-     * @throws IOException 
-     * @throws MotuExceptionBase 
-     * @throws MotuMarshallException 
+     * 
+     * @throws IOException
+     * @throws MotuExceptionBase
+     * @throws MotuMarshallException
      */
     private static void execRequest() throws MotuMarshallException, MotuExceptionBase, IOException {
         if (LOG.isDebugEnabled()) {
@@ -322,13 +352,13 @@ public class Main {
         }
 
         // Gets and sets user parameters or null
-        AuthentificationHolder.setUser(Main.getUser());   
-        
+        AuthentificationHolder.setUser(Main.getUser());
+
         // Get the TDS Catalog file name
         String xmlFile = Main.getXmlFile();
-        
+
         Organizer organizer = new Organizer();
-        
+
         // Executes request
         organizer.getProductMetadataInfo(data, xmlFile, writer);
 
