@@ -104,10 +104,9 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
-    
+
     /** The login. */
     private String login = "";
-
 
     public String getLogin() {
         return login;
@@ -115,7 +114,7 @@ public class User {
 
     public void setLogin(String login) {
         if (login != null) {
-            this.login = login;            
+            this.login = login;
         } else {
             this.login = "";
         }
@@ -179,7 +178,7 @@ public class User {
      * @throws MotuException the motu exception
      */
     public void setAuthentificationMode(String authentificationMode) throws MotuException {
-        
+
         if (Organizer.isNullOrEmpty(authentificationMode)) {
             this.authentificationMode = AuthentificationMode.NONE;
             return;
@@ -189,9 +188,12 @@ public class User {
             this.authentificationMode = AuthentificationMode.fromValue(authentificationMode);
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            throw new MotuException(String.format("Invalid authentification mode '%s'. Valid values are: %s", authentificationMode, AuthentificationMode.getAvailableValues()));
+            throw new MotuException(String.format("Invalid authentification mode '%s'. Valid values are: %s",
+                                                  authentificationMode,
+                                                  AuthentificationMode.getAvailableValues()));
         }
     }
+
     /**
      * Checks if is cas authentification.
      * 
@@ -200,7 +202,7 @@ public class User {
     public boolean isCASAuthentification() {
         return this.authentificationMode.equals(AuthentificationMode.CAS);
     }
-    
+
     /**
      * Checks if is none authentification.
      * 
@@ -209,7 +211,7 @@ public class User {
     public boolean isNoneAuthentification() {
         return this.authentificationMode.equals(AuthentificationMode.NONE);
     }
-    
+
     /**
      * Checks if is authentification.
      * 
@@ -218,13 +220,10 @@ public class User {
     public boolean isAuthentification() {
         return !isNoneAuthentification();
     }
-    
-    
+
     public void setCASAuthentification(boolean casAuthentification) {
-        if (casAuthentification) {
-            this.authentificationMode = (casAuthentification) ? AuthentificationMode.CAS : AuthentificationMode.NONE;
-        }
-    } 
+        this.authentificationMode = (casAuthentification) ? AuthentificationMode.CAS : AuthentificationMode.NONE;
+    }
 
     /** The cas rest suff url. */
     private String casRestSuffURL = null;
@@ -233,11 +232,11 @@ public class User {
      * Gets the cas rest suff url.
      * 
      * @return the cas rest suff url
-     * @throws MotuException 
+     * @throws MotuException
      */
     public String getCasRestSuffURL() throws MotuException {
-        
-        if (Organizer.isNullOrEmpty(casRestSuffURL)){
+
+        if (Organizer.isNullOrEmpty(casRestSuffURL)) {
             return Organizer.getMotuConfigInstance().getCasRestUrlSuffix();
         }
 
@@ -252,7 +251,5 @@ public class User {
     public void setCasRestSuffURL(String casRestSuffURL) {
         this.casRestSuffURL = casRestSuffURL;
     }
-
-    
 
 }

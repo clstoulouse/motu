@@ -2143,13 +2143,13 @@ public class Organizer {
         }
 
         // TODO Remove these lines - just for testing
-//        List<fr.cls.atoll.motu.api.message.xml.Property> propertyListTest = properties.getProperty();
-//        fr.cls.atoll.motu.api.message.xml.Property property = Organizer.createProperty();
-//        property.setName("projection");
-//        property.setValue("http://purl.org/myocean/ontology/vocabulary/grid-projection#mercator");
-//        property.setCode(ErrorType.OK);
-//        property.setMsg(ErrorType.OK.toString());
-//        propertyListTest.add(property);
+        // List<fr.cls.atoll.motu.api.message.xml.Property> propertyListTest = properties.getProperty();
+        // fr.cls.atoll.motu.api.message.xml.Property property = Organizer.createProperty();
+        // property.setName("projection");
+        // property.setValue("http://purl.org/myocean/ontology/vocabulary/grid-projection#mercator");
+        // property.setCode(ErrorType.OK);
+        // property.setMsg(ErrorType.OK.toString());
+        // propertyListTest.add(property);
         // TODO Remove these lines - just for testing
 
         List<Property> listTDSMetaDataProperty = productMetaData.getListTDSMetaDataProperty();
@@ -2158,8 +2158,8 @@ public class Organizer {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("initProperties(ProductMetaData) - exiting");
             }
-//            properties.setCode(ErrorType.OK);
-//            properties.setMsg(ErrorType.OK.toString());
+            // properties.setCode(ErrorType.OK);
+            // properties.setMsg(ErrorType.OK.toString());
             return null;
         }
 
@@ -2424,10 +2424,10 @@ public class Organizer {
             return availableDepths;
         }
         if (!productMetaData.hasZAxis()) {
-            return null;            
+            return null;
         }
         StringBuffer stringBuffer = new StringBuffer();
-       
+
         List<String> list = product.getZAxisDataAsString();
 
         Iterator<String> i = list.iterator();
@@ -5202,29 +5202,6 @@ public class Organizer {
     //
     // return user.getAuthentificationMode().toString();
     // }
-
-    /**
-     * Gets the product metadata info.
-     * 
-     * @param locationData the location data
-     * 
-     * @return the product metadata info
-     * 
-     * @throws MotuExceptionBase the motu exception base
-     */
-    public ProductMetadataInfo getProductMetadataInfo(String locationData) throws MotuExceptionBase {
-        return getProductMetadataInfo(locationData, Organizer.TDS_CATALOG_FILENAME, true);
-    }
-
-    /**
-     * Gets the product metadata info.
-     * 
-     * @param locationData the location data
-     * 
-     * @return the product metadata info
-     * 
-     * @throws MotuExceptionBase the motu exception base
-     */
     public ProductMetadataInfo getProductMetadataInfo(String locationData, String catalogFileName, boolean loadTDSVariableVocabulary)
             throws MotuExceptionBase {
         if (LOG.isDebugEnabled()) {
@@ -5254,8 +5231,6 @@ public class Organizer {
             throw new MotuNotImplementedException(String.format("Authentification mode '%s' is not yet implemented", AuthentificationHolder
                     .getAuthentificationMode().toString()));
         }
-
-        // TODO : Cas process (TGT .....)
 
         service.loadCatalogInfo(loadTDSVariableVocabulary);
         this.currentService = service;
@@ -5288,6 +5263,155 @@ public class Organizer {
     /**
      * Gets the product metadata info.
      * 
+     * @param loadTDSVariableVocabulary the load tds variable vocabulary
+     * @param serviceName the service name
+     * @param productId the product id
+     * 
+     * @return the product metadata info
+     * 
+     * @throws MotuExceptionBase the motu exception base
+     */
+    public ProductMetadataInfo getProductMetadataInfo(boolean loadTDSVariableVocabulary, String serviceName, String productId)
+            throws MotuExceptionBase {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductMetadataInfo(String) - entering");
+        }
+
+        if (!Organizer.servicesPersistentContainsKey(serviceName)) {
+            loadCatalogInfo(serviceName, loadTDSVariableVocabulary);
+        }
+        
+        setCurrentService(serviceName);
+
+        CatalogData.CatalogType catalogType = currentService.getCatalogType();
+        
+        if (!catalogType.equals(CatalogData.CatalogType.TDS)) {
+            String msg = String.format("Getting product description is only available for '%s' media and the service '%s' is a '%s' media",
+                                       CatalogData.CatalogType.TDS.toString(),
+                                       currentService.getName(),
+                                       catalogType.toString());
+            throw new MotuNotImplementedException(msg);
+        }
+
+        
+        CatalogData catalogData = currentService.getCatalog();
+        
+        boolean haveToLoadExtraMetadata = (! catalogData.isLoadTDSExtraMetadata()) && loadTDSVariableVocabulary;
+        if  (haveToLoadExtraMetadata) {        
+            
+            ServiceData service = new ServiceData();
+            service.setVelocityEngine(currentService.getVelocityEngine());
+            service.setName(currentService.getName());
+            service.setDescription(currentService.getDescription());
+            service.setUrlSite(currentService.getUrlSite());
+            service.setCatalogFileName(currentService.getCatalogFileName());
+            service.setCatalogType(currentService.getCatalogType());
+            service.setCasAuthentification(currentService.isCasAuthentification());
+
+            if (AuthentificationHolder.isAuthentification() && (!AuthentificationHolder.isCASAuthentification())) {
+                throw new MotuNotImplementedException(String.format("Authentification mode '%s' is not yet implemented", AuthentificationHolder
+                        .getAuthentificationMode().toString()));
+            }
+            service.loadCatalogInfo(loadTDSVariableVocabulary);
+            this.currentService = service; 
+        }
+        
+        ServiceData serviceData = getServices(serviceName);
+        if (serviceData == null) {
+            throw new MotuException(String.format("Unknown service name '%s')", serviceName));
+        }
+
+        setCurrentService(serviceName);
+
+        if (AuthentificationHolder.isAuthentification() && (!AuthentificationHolder.isCASAuthentification())) {
+            throw new MotuNotImplementedException(String.format("Authentification mode '%s' is not yet implemented", AuthentificationHolder
+                    .getAuthentificationMode().toString()));
+        }
+
+        Product product = null;
+        try {
+            product = getProductInformation(productId, null, null);
+        } catch (MotuNotImplementedException e) {
+
+            throw new MotuException(String.format("ERROR in getProductMetadataInfo - service is '%s' - product id is '%s'", serviceName, productId), e);
+        } catch (NetCdfAttributeException e) {
+
+            // Do Nothing
+        }
+        if (product == null) {
+            throw new MotuException(String.format("Unknown product id '%s' in service data '%s' (getProductMetadataInfo)", productId, serviceName));
+        }
+
+        ProductMetadataInfo productMetadataInfo = Organizer.initProductMetadataInfo(product);
+        productMetadataInfo.setUrl(product.getLocationData());
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductMetadataInfo(String) - exiting");
+        }
+        return productMetadataInfo;
+    }
+
+    /**
+     * Gets the product metadata info.
+     * 
+     * @param writer the writer
+     * @param serviceName the service name
+     * @param productId the product id
+     * @param catalogFileName the catalog file name
+     * @param loadTDSVariableVocabulary the load tds variable vocabulary
+     * 
+     * @return the product metadata info
+     * 
+     * @throws MotuExceptionBase the motu exception base
+     * @throws MotuMarshallException the motu marshall exception
+     */
+    public void getProductMetadataInfo(Writer writer, String serviceName, String productId, boolean loadTDSVariableVocabulary)
+            throws MotuExceptionBase, MotuMarshallException {
+
+        ProductMetadataInfo productMetadataInfo = null;
+        try {
+            productMetadataInfo = getProductMetadataInfo(loadTDSVariableVocabulary, serviceName, productId);
+        } catch (MotuExceptionBase e) {
+            Organizer.marshallProductMetadataInfo(e, writer);
+            throw e;
+        }
+        Organizer.marshallProductMetadataInfo(productMetadataInfo, writer);
+
+    }
+
+    /**
+     * Gets the product metadata info.
+     * 
+     * @param writer the writer
+     * @param serviceName the service name
+     * @param productId the product id
+     * 
+     * @return the product metadata info
+     * 
+     * @throws MotuExceptionBase the motu exception base
+     * @throws MotuMarshallException the motu marshall exception
+     */
+    public void getProductMetadataInfo(Writer writer, String serviceName, String productId) throws MotuExceptionBase, MotuMarshallException {
+
+        getProductMetadataInfo(writer, serviceName, productId, true);
+    }
+
+    /**
+     * Gets the product metadata info.
+     * 
+     * @param locationData the location data
+     * 
+     * @return the product metadata info
+     * 
+     * @throws MotuExceptionBase the motu exception base
+     */
+    public ProductMetadataInfo getProductMetadataInfo(String locationData) throws MotuExceptionBase {
+        return getProductMetadataInfo(locationData, Organizer.TDS_CATALOG_FILENAME, true);
+    }
+
+    /**
+     * Gets the product metadata info.
+     * 
      * @param locationData the location data
      * @param writer the writer
      * 
@@ -5300,7 +5424,7 @@ public class Organizer {
 
         getProductMetadataInfo(locationData, null, true, writer);
     }
-    
+
     /**
      * Gets the product metadata info.
      * 
@@ -5416,7 +5540,24 @@ public class Organizer {
         currentService.loadCatalogInfo();
 
     }
+    
+    /**
+     * Load catalog info.
+     * 
+     * @param serviceName the service name
+     * @param loadTDSVariableVocabulary the load tds variable vocabulary
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void loadCatalogInfo(String serviceName, boolean loadTDSVariableVocabulary) throws MotuException {
 
+        setCurrentService(serviceName);
+
+        currentService.loadCatalogInfo(loadTDSVariableVocabulary);
+
+    }
+
+    
     /**
      * Send an email to the user to tell him where to download result output. file
      */

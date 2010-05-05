@@ -112,9 +112,8 @@ public class AuthentificationHolder {
         if (user == null) {
             user = new User();
         }
-        AuthentificationMode authentificationMode = ((casAuthentification) ? AuthentificationMode.CAS : AuthentificationMode.NONE);
-        user.setAuthentificationMode(authentificationMode);
-        threadLocal.set(user);
+        user.setCASAuthentification(casAuthentification);
+        AuthentificationHolder.setUser(user);
     }
     
     /**

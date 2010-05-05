@@ -993,9 +993,7 @@ public class ServiceData {
             try {
                 URI uri = new URI(locationData);
                 if ((uri.getScheme().equalsIgnoreCase("http")) || (uri.getScheme().equalsIgnoreCase("https"))) {
-                    String casUrl = RestUtil.getRedirectUrl(locationData);
-
-                    this.casAuthentification = (casUrl != null);
+                    this.casAuthentification = RestUtil.isCasifiedUrl(locationData);
                 }
 
             } catch (URISyntaxException e) {

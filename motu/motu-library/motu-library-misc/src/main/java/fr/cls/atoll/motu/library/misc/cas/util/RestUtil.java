@@ -1,8 +1,5 @@
 package fr.cls.atoll.motu.library.misc.cas.util;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.intfce.User;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -16,6 +13,9 @@ import java.net.URLEncoder;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.log4j.Logger;
+
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.intfce.User;
 
 /**
  * <br>
@@ -63,6 +63,20 @@ public class RestUtil {
     //
     // return stringBuffer.toString();
     // }
+    /**
+     * Checks if is casified url.
+     * 
+     * @param serviceURL the service url
+     * 
+     * @return true, if is casified url
+     * @throws IOException 
+     */
+    public static boolean isCasifiedUrl(String serviceURL) throws IOException  {
+
+        String casUrl =  RestUtil.getRedirectUrl(serviceURL);
+        return (!AssertionUtils.isNullOrEmpty(casUrl));
+
+    }
 
     /**
      * Gets the cas restlet url.
@@ -77,6 +91,10 @@ public class RestUtil {
     public static String getCasRestletUrl(String serviceURL, String casRestUrlSuffix) throws IOException {
 
         String casServerPrefix = RestUtil.getRedirectUrl(serviceURL);
+        if (AssertionUtils.isNullOrEmpty(casServerPrefix)) {
+            
+            return null;
+        }
 
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(casServerPrefix);
@@ -106,6 +124,11 @@ public class RestUtil {
     public static String getRedirectUrl(String path) throws IOException {
 
         String redirectUrl = "";
+        
+        if (AssertionUtils.isNullOrEmpty(path)) {
+            return null;
+        }
+        
         URL url = new URL(path);
         String protocol = url.getProtocol();
         HttpURLConnection conn = null;
@@ -288,6 +311,21 @@ public class RestUtil {
     public static String loginToCASWithTGT(String casRestUrl, String ticketGrantingTicket, String serviceURL) throws IOException, MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loginToCAS(String, String, String) - entering");
+        }
+        
+        if (AssertionUtils.isNullOrEmpty(casRestUrl)) {
+            return null;
+            
+        }
+        
+        if (AssertionUtils.isNullOrEmpty(ticketGrantingTicket)) {
+            return null;
+            
+        }
+        
+        if (AssertionUtils.isNullOrEmpty(serviceURL)) {
+            return null;
+            
         }
 
         String encodedServiceURL = URLEncoder.encode("service", "utf-8") + "=" + URLEncoder.encode(serviceURL, "utf-8");
