@@ -3,28 +3,6 @@
  */
 package fr.cls.atoll.motu.web.servlet;
 
-import fr.cls.atoll.motu.api.message.MotuMsgConstant;
-import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
-import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
-import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
-import fr.cls.atoll.motu.api.message.xml.StatusModeType;
-import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
-import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
-import fr.cls.atoll.motu.library.misc.configuration.QueueType;
-import fr.cls.atoll.motu.library.misc.data.Product;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidRequestIdException;
-import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
-import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.queueserver.QueueManagement;
-import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
-import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
-import fr.cls.commons.log.LogManager;
-import fr.cls.commons.util.PropertiesUtilities;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -55,6 +33,28 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.log4j.Logger;
 import org.jasig.cas.client.util.AssertionHolder;
+
+import fr.cls.atoll.motu.api.message.MotuMsgConstant;
+import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.api.message.xml.StatusModeType;
+import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
+import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
+import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+import fr.cls.atoll.motu.library.misc.data.Product;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidRequestIdException;
+import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
+import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.queueserver.QueueManagement;
+import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
+import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
+import fr.cls.commons.log.LogManager;
+import fr.cls.commons.util.PropertiesUtilities;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -857,6 +857,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             // Nothing to do
         } else if (isActionGetRequestStatus(action, request, response)) {
             // Nothing to do
+        } else if (isActionDescribeProduct(action, request, response)) {
+            // Nothing to do
         } else if (isActionGetTimeCoverage(action, request, response)) {
             // Nothing to do
         } else if (isActionGetSize(action, request, response)) {
@@ -926,7 +928,84 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         return session;
 
     }
+    
+    /**
+     * Checks if is action describe product.
+     * 
+     * @param action the action
+     * @param request the request
+     * @param response the response
+     * 
+     * @return true, if is action describe product
+     * @throws ServletException 
+     * @throws IOException 
+     */
+    private boolean isActionDescribeProduct(String action, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
+        if (!action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_DESCRIBE_PRODUCT)) {
+            return false;
+        }
+
+        String serviceName = request.getParameter(MotuRequestParametersConstant.PARAM_SERVICE);
+        if (MotuServlet.isNullOrEmpty(serviceName)) {
+            serviceName = "";
+        }
+
+        String locationData = request.getParameter(MotuRequestParametersConstant.PARAM_DATA);
+
+        String productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
+
+        if (MotuServlet.isNullOrEmpty(locationData) && MotuServlet.isNullOrEmpty(productId)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.info(" empty locationData and empty productId");
+                LOG.debug("isActionDescribeProduct() - exiting");
+            }
+            response.sendError(400, String.format("ERROR: neither '%s' nor '%s' parameters are filled - Choose one of them",
+                                                  PARAM_DATA,
+                                                  PARAM_PRODUCT));
+            return true;
+        }
+
+        if (!MotuServlet.isNullOrEmpty(locationData) && !MotuServlet.isNullOrEmpty(productId)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.info(" non empty locationData and non empty productId");
+                LOG.debug("isActionDescribeProduct() - exiting");
+            }
+            response.sendError(400, String.format("ERROR: '%s' and '%s' parameters are not compatible - Choose only one of them",
+                                                  PARAM_DATA,
+                                                  PARAM_PRODUCT));
+            return true;
+        }
+
+        if (MotuServlet.isNullOrEmpty(serviceName) && !MotuServlet.isNullOrEmpty(productId)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.info("empty serviceName  and non empty productId");
+                LOG.debug("isActionDescribeProduct() - exiting");
+            }
+            response.sendError(400, String.format("ERROR: '%s' parameter is filled but '%s' is empty. You have to fill it.",
+                                                  PARAM_PRODUCT,
+                                                  PARAM_SERVICE));
+            return true;
+        }
+
+        String tdsCatalogFileName = request.getParameter(MotuRequestParametersConstant.PARAM_XML_FILE);
+
+        boolean loadExtraMetadata = isExtraMetadata(request);
+        // -------------------------------------------------
+        // get Time coverage
+        // -------------------------------------------------
+        if (!MotuServlet.isNullOrEmpty(locationData)) {
+            productDescribeProduct(locationData, tdsCatalogFileName, loadExtraMetadata, response);
+        } else if (!MotuServlet.isNullOrEmpty(serviceName) && !MotuServlet.isNullOrEmpty(productId)) {
+            productDescribeProduct(loadExtraMetadata, serviceName, productId, response);
+        }
+
+        response.setContentType(null);
+
+        return true;   
+ 
+    }
+    
     /**
      * Checks if is action delete.
      * 
@@ -2933,6 +3012,22 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         batchAsString = batchAsString.trim();
         return batchAsString.equalsIgnoreCase("true") || batchAsString.equalsIgnoreCase("1");
     }
+    
+    /**
+     * Checks if is extra metadata.
+     * 
+     * @param request the request
+     * 
+     * @return true, if is extra metadata
+     */
+    private boolean isExtraMetadata(HttpServletRequest request) {
+        String extraMetadataAsString = request.getParameter(PARAM_EXTRA_METADATA);
+        if (MotuServlet.isNullOrEmpty(extraMetadataAsString)) {
+            return true;
+        }
+        extraMetadataAsString = extraMetadataAsString.trim();
+        return extraMetadataAsString.equalsIgnoreCase("true") || extraMetadataAsString.equalsIgnoreCase("1");
+    }
 
     /**
      * Tests if HttpSession object is valid.
@@ -3461,6 +3556,54 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             LOG.debug("productDownload() - exiting");
         }
     }
+    /**
+     * Product describe product.
+     * 
+     * @param locationData the location data
+     * @param tsdCatalogFileName the tsd catalog file name
+     * @param response the response
+     * 
+     * @throws ServletException the servlet exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    private void productDescribeProduct(String locationData, String tdsCatalogFileName, boolean loadExtraMetadata, HttpServletResponse response) throws ServletException, IOException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("productDescribeProduct(String, String, HttpServletResponse) - entering");
+        }
+
+        Organizer organizer = getOrganizer(null, response);
+        try {
+        
+            organizer.getProductMetadataInfo(locationData, tdsCatalogFileName, loadExtraMetadata, response.getWriter());
+        
+        } catch (MotuMarshallException e) {
+            LOG.error("productDescribeProduct(String, String, HttpServletResponse)", e);
+
+            response.sendError(500, String.format("ERROR: %s", e.getMessage()));
+        } catch (MotuExceptionBase e) {
+            LOG.error("productDescribeProduct(String, String, HttpServletResponse)", e);
+
+            // Do nothing error is in response code
+            // response.sendError(400, String.format("ERROR: %s", e.notifyException()));
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("productDescribeProduct(String, String, HttpServletResponse) - exiting");
+        }
+    }
+    private void productDescribeProduct(boolean loadExtraMetadata, String serviceName, String productId, HttpServletResponse response) throws ServletException, IOException {
+
+        Organizer organizer = getOrganizer(null, response);
+        try {
+            organizer.getProductMetadataInfo(response.getWriter(), serviceName, productId, loadExtraMetadata);
+        } catch (MotuMarshallException e) {
+            response.sendError(500, String.format("ERROR: %s", e.getMessage()));
+        } catch (MotuExceptionBase e) {
+            // Do nothing error is in response code
+            // response.sendError(400, String.format("ERROR: %s", e.notifyException()));
+        }
+
+    }
 
     /**
      * Product get time coverage.
@@ -3492,6 +3635,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             LOG.debug("productGetTimeCoverage(String, HttpSession, HttpServletResponse) - exiting");
         }
     }
+    
 
     /**
      * Product get time coverage.

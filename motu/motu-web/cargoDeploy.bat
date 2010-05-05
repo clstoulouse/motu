@@ -9,7 +9,6 @@ set WHAT=%2
 
 echo %WHAT%
 
-goto end
 if %WHAT% == "deploy" goto deploy
 
 :install-motu-api-message
