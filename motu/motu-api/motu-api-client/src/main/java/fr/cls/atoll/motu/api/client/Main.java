@@ -8,16 +8,12 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
 import org.apache.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.AuthentificationMode;
 import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
+import fr.cls.atoll.motu.library.misc.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
@@ -190,6 +186,9 @@ public class Main {
         stringBuffer.append(")\n");
         stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_XML_FILE + "=TDS Catalog file name (optional - default is '"
                 + Organizer.TDS_CATALOG_FILENAME + "')\n");
+        stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_EXTRA_METADATA + "=true/false : true to get all metadata (metadata from TDS data and TDS xml configuration), false to get simplified metadata (matadata from TDS data only) TDS Catalog file name (optional - default is 'true')\n");
+
+
         stringBuffer.append("\n==========\n");
 
         return stringBuffer.toString();
@@ -253,6 +252,21 @@ public class Main {
     private static String getXmlFile() {
         return mapParams.get(MotuRequestParametersConstant.PARAM_XML_FILE);
 
+    }
+    
+
+    /**
+     * Checks if is extra metadata.
+     * 
+     * @return true, if is extra metadata
+     */
+    private static boolean isExtraMetadata() {
+        String extraMetadataAsString = mapParams.get(MotuRequestParametersConstant.PARAM_EXTRA_METADATA);
+        if (Main.isNullOrEmpty(extraMetadataAsString)) {
+            return true;
+        }
+        extraMetadataAsString = extraMetadataAsString.trim();
+        return extraMetadataAsString.equalsIgnoreCase("true") || extraMetadataAsString.equalsIgnoreCase("1");
     }
 
     /**
@@ -341,6 +355,8 @@ public class Main {
                                                   action));
         }
 
+        boolean casAuthentification = RestUtil.isCasifiedUrl(data);
+
         Writer writer = null;
 
         // Gets output file parameter (default stdout)
@@ -352,15 +368,23 @@ public class Main {
         }
 
         // Gets and sets user parameters or null
+        User user = Main.getUser();
         AuthentificationHolder.setUser(Main.getUser());
+        if (user != null) {
+            user.setCASAuthentification(casAuthentification);
+            AuthentificationHolder.setUser(user);
+        }
+        
 
         // Get the TDS Catalog file name
         String xmlFile = Main.getXmlFile();
+        
+        boolean loadExtraMetadata = Main.isExtraMetadata();
 
         Organizer organizer = new Organizer();
 
         // Executes request
-        organizer.getProductMetadataInfo(data, xmlFile, writer);
+        organizer.getProductMetadataInfo(data, xmlFile, loadExtraMetadata, writer);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionDescribeProduct(String) - exiting");
