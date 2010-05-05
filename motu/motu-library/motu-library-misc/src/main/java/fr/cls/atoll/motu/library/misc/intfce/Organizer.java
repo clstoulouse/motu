@@ -63,6 +63,7 @@ import fr.cls.atoll.motu.api.message.xml.VariablesVocabulary;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
+import fr.cls.atoll.motu.library.misc.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.misc.data.CatalogData;
@@ -5225,6 +5226,32 @@ public class Organizer {
         }
         // Only TDS are accepted
         service.setCatalogType(CatalogData.CatalogType.TDS);
+
+        User user = AuthentificationHolder.getUser();
+
+        if (user == null) {
+
+            // Service could be a virtual service at this point (call directly without service loading),
+            // So check if the url (locationData) is CASified or not
+            try {
+                URI uri = new URI(locationData);
+                if ((uri.getScheme().equalsIgnoreCase("http")) || (uri.getScheme().equalsIgnoreCase("https"))) {
+
+                    boolean casAuthentification = RestUtil.isCasifiedUrl(locationData);
+                    AuthentificationHolder.setCASAuthentification(casAuthentification);
+                }
+
+            } catch (URISyntaxException e) {
+                throw new MotuException(String
+                        .format("Organizer getProductMetadataInfo(String locationData) : location data seems not to be a valid URI : '%s'",
+                                locationData), e);
+            } catch (IOException e) {
+                throw new MotuException(String
+                        .format("Organizer getProductMetadataInfo(String locationData) : location data seems not to be a valid URI : '%s'",
+                                locationData), e);
+            }
+        }
+
         service.setCasAuthentification(AuthentificationHolder.isCASAuthentification());
 
         if (AuthentificationHolder.isAuthentification() && (!AuthentificationHolder.isCASAuthentification())) {
@@ -5280,11 +5307,11 @@ public class Organizer {
         if (!Organizer.servicesPersistentContainsKey(serviceName)) {
             loadCatalogInfo(serviceName, loadTDSVariableVocabulary);
         }
-        
+
         setCurrentService(serviceName);
 
         CatalogData.CatalogType catalogType = currentService.getCatalogType();
-        
+
         if (!catalogType.equals(CatalogData.CatalogType.TDS)) {
             String msg = String.format("Getting product description is only available for '%s' media and the service '%s' is a '%s' media",
                                        CatalogData.CatalogType.TDS.toString(),
@@ -5293,12 +5320,11 @@ public class Organizer {
             throw new MotuNotImplementedException(msg);
         }
 
-        
         CatalogData catalogData = currentService.getCatalog();
-        
-        boolean haveToLoadExtraMetadata = (! catalogData.isLoadTDSExtraMetadata()) && loadTDSVariableVocabulary;
-        if  (haveToLoadExtraMetadata) {        
-            
+
+        boolean haveToLoadExtraMetadata = (!catalogData.isLoadTDSExtraMetadata()) && loadTDSVariableVocabulary;
+        if (haveToLoadExtraMetadata) {
+
             ServiceData service = new ServiceData();
             service.setVelocityEngine(currentService.getVelocityEngine());
             service.setName(currentService.getName());
@@ -5313,9 +5339,9 @@ public class Organizer {
                         .getAuthentificationMode().toString()));
             }
             service.loadCatalogInfo(loadTDSVariableVocabulary);
-            this.currentService = service; 
+            this.currentService = service;
         }
-        
+
         ServiceData serviceData = getServices(serviceName);
         if (serviceData == null) {
             throw new MotuException(String.format("Unknown service name '%s')", serviceName));
@@ -5333,7 +5359,9 @@ public class Organizer {
             product = getProductInformation(productId, null, null);
         } catch (MotuNotImplementedException e) {
 
-            throw new MotuException(String.format("ERROR in getProductMetadataInfo - service is '%s' - product id is '%s'", serviceName, productId), e);
+            throw new MotuException(
+                    String.format("ERROR in getProductMetadataInfo - service is '%s' - product id is '%s'", serviceName, productId),
+                    e);
         } catch (NetCdfAttributeException e) {
 
             // Do Nothing
@@ -5540,7 +5568,7 @@ public class Organizer {
         currentService.loadCatalogInfo();
 
     }
-    
+
     /**
      * Load catalog info.
      * 
@@ -5557,7 +5585,6 @@ public class Organizer {
 
     }
 
-    
     /**
      * Send an email to the user to tell him where to download result output. file
      */
