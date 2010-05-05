@@ -257,4 +257,8 @@ public interface MotuRequestParametersConstant {
     /** Variable servlet paremeter name. */
     final String PARAM_VARIABLE = "variable";
 
+    /** The PARA m_ extr a_ metadata. */
+    final String PARAM_EXTRA_METADATA = "extraMetadata";
+
+
 }
