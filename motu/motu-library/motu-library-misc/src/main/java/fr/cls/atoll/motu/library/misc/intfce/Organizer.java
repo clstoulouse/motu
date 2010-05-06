@@ -57,6 +57,7 @@ import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.api.message.xml.TimeCoverage;
 import fr.cls.atoll.motu.api.message.xml.Variable;
+import fr.cls.atoll.motu.api.message.xml.VariableNameVocabulary;
 import fr.cls.atoll.motu.api.message.xml.VariableVocabulary;
 import fr.cls.atoll.motu.api.message.xml.Variables;
 import fr.cls.atoll.motu.api.message.xml.VariablesVocabulary;
@@ -2264,6 +2265,8 @@ public class Organizer {
         for (VariableDesc variableDesc : variablesDescList) {
             variableVocabularyList.add(Organizer.initVariableVocabulary(variableDesc));
         }
+
+        variablesVocabulary.setVocabulary(VariableNameVocabulary.fromValue(variables.getVocabulary()));
         variablesVocabulary.setCode(ErrorType.OK);
         variablesVocabulary.setMsg(ErrorType.OK.toString());
 
