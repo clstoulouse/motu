@@ -73,8 +73,8 @@
 			<xs:attribute name="west" type="xs:decimal" use="required" />
 			<xs:attribute name="eastResolution" type="resolutiontype"
 				use="optional" />
-			<xs:attribute name="units" type="xs:string" use="required" />
-			<xs:attribute name="type" type="xs:anyURI" use="required" />
+			<xs:attribute name="units" type="xs:string" use="optional" />
+			<xs:attribute name="type" type="xs:anyURI" use="optional" />
 			<xs:attribute name="south" type="xs:decimal" use="required" />
 			<xs:attribute name="east" type="xs:decimal" use="required" />
 			<xs:attribute name="northResolution" type="resolutiontype"
@@ -109,7 +109,7 @@
 				<xs:element ref="variables" />
 			</xs:sequence>
 			<xs:attribute name="urn" type="xs:anyURI" use="required" />
-			<xs:attribute name="internalId" type="xs:string"/>			
+ 			<xs:attribute name="internalId" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="service">
