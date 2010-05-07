@@ -26,11 +26,11 @@ REM --------------------------------
 set your_login=%1
 set your_pwd=%2
  
-REM java -Djavax.net.ssl.trustStore=%JAVA_HOME%\jre\lib\security\cacerts -jar %MOTU-API-CLIENT-JAR% data="http://atoll-dev.cls.fr:43080/thredds/dodsC/mercator_modified" login=%your_login% pwd=%your_pwd% 
+java -Djavax.net.ssl.trustStore=%JAVA_HOME%\jre\lib\security\cacerts -jar %MOTU-API-CLIENT-JAR% data="http://atoll-dev.cls.fr:43080/thredds/dodsC/mercator_modified" login=%your_login% pwd=%your_pwd% 
 
 pause
 
 REM --------------------------------
 REM example with all explicit parameters (except login and pwd).
 REM --------------------------------
-REM java -jar %MOTU-API-CLIENT-JAR% data=http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy2v3_med_mean_best_estimate xmlFile=catalog.xml authmode=CAS output=./test.xml
+java -jar %MOTU-API-CLIENT-JAR% data=http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy2v3_med_mean_best_estimate xmlFile=catalog.xml authmode=CAS output=./test.xml login=%your_login% pwd=%your_pwd% extraMetadata=false
