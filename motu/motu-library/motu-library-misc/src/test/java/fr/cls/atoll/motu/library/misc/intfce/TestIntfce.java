@@ -344,7 +344,7 @@ public class TestIntfce {
         // e.printStackTrace();
         // }
         // testLoadStdNameEquiv();
-        // testGetAmountDataSize();
+        testGetAmountDataSize();
         // testSynchronized();
         // productExtractDataCatsat();
         // productExtractDataAvisofromExtractionParameters();
@@ -355,7 +355,7 @@ public class TestIntfce {
         // productExtractDataFromInventory();
         // productListMercator();
         //productList();
-        testGetProductMetadataInfo();
+        //testGetProductMetadataInfo();
 
     }
 
@@ -2005,13 +2005,13 @@ public class TestIntfce {
 
         List<String> listTemporalCoverage = new ArrayList<String>();
         listTemporalCoverage.add("2009-10-25");
-        listTemporalCoverage.add("2009-10-26");
+        listTemporalCoverage.add("2009-10-25");
 
         List<String> listLatLonCoverage = new ArrayList<String>();
-        // listLatLonCoverage.add("46");
-        // listLatLonCoverage.add("-20");
-        // listLatLonCoverage.add("30");
-        // listLatLonCoverage.add("-10");
+         listLatLonCoverage.add("46");
+         listLatLonCoverage.add("-20");
+         listLatLonCoverage.add("30");
+         listLatLonCoverage.add("-10");
 
         List<String> listDepthCoverage = null;
         // listDepthCoverage = new ArrayList<String>();

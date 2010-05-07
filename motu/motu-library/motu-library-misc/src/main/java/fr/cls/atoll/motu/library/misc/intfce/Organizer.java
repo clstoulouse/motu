@@ -1840,7 +1840,7 @@ public class Organizer {
         MotuExceptionBase exceptionBase = null;
 
         if (size > maxAllowedSize) {
-            exceptionBase = new MotuExceedingCapacityException(Organizer.convertFromBytesToMegabytes(size), maxAllowedSize);
+            exceptionBase = new MotuExceedingCapacityException(Organizer.convertFromBytesToMegabytes(size), Organizer.convertFromBytesToMegabytes(maxAllowedSize));
         }
 
         maxAllowedSizeToSet = maxAllowedSize;
