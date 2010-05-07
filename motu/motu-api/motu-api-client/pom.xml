@@ -3,10 +3,10 @@
 	<groupId>cls.atoll.motu.api</groupId>
 	<artifactId>motu-api-client</artifactId>
 	<name>Motu Api Client</name>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<description>This package holds api services</description>
 	<scm>
-		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/tags/motu-api-client-1.0.0</connection>
+		<connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/motu/motu-api/motu-api-client</connection>
 	</scm>
 	<issueManagement>
 		<system>JIRA</system>
