@@ -4,11 +4,11 @@
     <groupId>cls.atoll.motu</groupId>
     <artifactId>motu-web</artifactId>
     <packaging>war</packaging>
-    <version>2.1.1-SNAPSHOT</version>
+    <version>2.1.1</version>
     <name>Motu Web</name>
     <description>This package holds the motu web server.</description>
     <scm>
-        <connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/motu/motu-web</connection>
+        <connection>scm:svn:http://gforge.cls.fr/svn/atoll/tags/motu-web-2.1.1</connection>
     </scm>
     <issueManagement>
         <system>JIRA</system>
