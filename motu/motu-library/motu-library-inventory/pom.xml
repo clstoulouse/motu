@@ -8,7 +8,7 @@
     <name>Motu Library Misc</name>
     <description>This package holds the inventory library of the Motu server.</description>
     <scm>
-        <connection>scm:svn:http://gforge.cls.fr/svn/atoll/tags/motu-library-inventory-2.1.1</connection>
+        <connection>scm:svn:http://gforge.cls.fr/svn/atoll/trunk/motu/motu-library/motu-library-inventory</connection>
     </scm>
     <issueManagement>
         <system>JIRA</system>
