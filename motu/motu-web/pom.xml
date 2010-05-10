@@ -108,6 +108,11 @@
             <version>2.1.1</version>
         </dependency>
         <dependency>
+            <groupId>cls.atoll.motu.api</groupId>
+            <artifactId>motu-api-message</artifactId>
+            <version>2.1.2</version>
+        </dependency>
+        <dependency>
             <groupId>cls.atoll.motu.processor</groupId>
             <artifactId>motu-processor-wps</artifactId>
             <version>2.1.1</version>
