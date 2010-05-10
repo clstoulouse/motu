@@ -1,109 +1,12 @@
 package fr.cls.atoll.motu.api.message;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Constantes des noms et valeurs des paramètres pour une requête. <br>
- * <br>
- * Copyright : Copyright (c) 2007 <br>
- * <br>
- * SociÃ©tÃ© : CLS (Collecte Localisation Satellites)
+ * Constants that declares the parameter names available for the motu download interface.
  * 
- * @author Jean-Michel FARENC
+ * @author CLS (Collecte Localisation Satellites)
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  */
 public interface MotuRequestParametersConstant {
-
-    /**
-     * Emumeration for available formats.
-     */
-    public enum AuthentificationMode {
-
-        /** No Authentification. */
-        NONE(0),
-
-        /** CAS Authentification. */
-        CAS(0);
-
-        /** The value. */
-        private final int value;
-
-        /**
-         * Instantiates a new format.
-         * 
-         * @param v the v
-         */
-        AuthentificationMode(int v) {
-            value = v;
-        }
-
-        /**
-         * Value.
-         * 
-         * @return the int
-         */
-        public int value() {
-            return value;
-        }
-
-        /**
-         * From value.
-         * 
-         * @param v the v
-         * 
-         * @return the format
-         */
-        public static AuthentificationMode fromValue(int v) {
-            for (AuthentificationMode c : AuthentificationMode.values()) {
-                if (c.value == v) {
-                    return c;
-                }
-            }
-            throw new IllegalArgumentException(String.valueOf(v));
-        }
-
-        /**
-         * From value.
-         * 
-         * @param v the v
-         * 
-         * @return the authentification mode
-         */
-        public static AuthentificationMode fromValue(String v) {
-            for (AuthentificationMode c : AuthentificationMode.values()) {
-                if (c.toString().equalsIgnoreCase(v)) {
-                    return c;
-                }
-            }
-            throw new IllegalArgumentException(String.valueOf(v));
-        }
-
-        /**
-         * Gets the default.
-         * 
-         * @return the default
-         */
-        public static AuthentificationMode getDefault() {
-            return CAS;
-        }
-
-        /**
-         * Gets the available values.
-         * 
-         * @return the available values
-         */
-        public static List<String> getAvailableValues() {
-            List<String> list = new ArrayList<String>();
-
-            for (AuthentificationMode c : AuthentificationMode.values()) {
-                list.add(c.toString());
-            }
-
-            return list;
-        }
-    }
-
     /** The Constant ACTION_DELETE. */
     final String ACTION_DELETE = "delete";
 
@@ -160,9 +63,9 @@ public interface MotuRequestParametersConstant {
 
     /** The PARAM output. */
     final String PARAM_OUTPUT = "output";
-    
+
     /** The PARA m_ ca s_ res t_ suffi x_ url. */
-    final String PARAM_CAS_REST_SUFFIX_URL="cas_rest_suff_url";
+    final String PARAM_CAS_REST_SUFFIX_URL = "cas_rest_suff_url";
 
     /** The PARAM authentification mode. */
     final String PARAM_AUTHENTIFICATION_MODE = "authmode";
@@ -259,6 +162,5 @@ public interface MotuRequestParametersConstant {
 
     /** The PARA m_ extr a_ metadata. */
     final String PARAM_EXTRA_METADATA = "extraMetadata";
-
 
 }

@@ -13,6 +13,5 @@ package fr.cls.atoll.motu.api.message;
 public interface MotuMsgConstant {
     /** The Constant MOTU_MSG_SCHEMA_PACK_NAME. */
 
-    String MOTU_MSG_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.api.message.xml";
-
+    final String MOTU_MSG_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.api.message.xml";
 }
