@@ -3,6 +3,29 @@
  */
 package fr.cls.atoll.motu.web.servlet;
 
+import fr.cls.atoll.motu.api.message.MotuMonitoringParametersConstant;
+import fr.cls.atoll.motu.api.message.MotuMsgConstant;
+import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.api.message.xml.StatusModeType;
+import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
+import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
+import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+import fr.cls.atoll.motu.library.misc.data.Product;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidRequestIdException;
+import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
+import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.queueserver.QueueManagement;
+import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
+import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
+import fr.cls.commons.log.LogManager;
+import fr.cls.commons.util.PropertiesUtilities;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -34,28 +57,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.log4j.Logger;
 import org.jasig.cas.client.util.AssertionHolder;
 
-import fr.cls.atoll.motu.api.message.MotuMsgConstant;
-import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
-import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
-import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
-import fr.cls.atoll.motu.api.message.xml.StatusModeType;
-import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
-import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
-import fr.cls.atoll.motu.library.misc.configuration.QueueType;
-import fr.cls.atoll.motu.library.misc.data.Product;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidRequestIdException;
-import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
-import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.queueserver.QueueManagement;
-import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
-import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
-import fr.cls.commons.log.LogManager;
-import fr.cls.commons.util.PropertiesUtilities;
-
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
 /**
@@ -64,7 +65,7 @@ import fr.cls.commons.util.PropertiesUtilities;
  * @author $Author: dearith $
  * @version $Revision: 1.4 $ - $Date: 2010-02-26 14:15:03 $
  */
-public class MotuServlet extends HttpServlet implements MotuRequestParametersConstant {
+public class MotuServlet extends HttpServlet implements MotuRequestParametersConstant, MotuMonitoringParametersConstant {
 
     /*
      * Thread d'extraction différé de produit
@@ -928,7 +929,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         return session;
 
     }
-    
+
     /**
      * Checks if is action describe product.
      * 
@@ -937,10 +938,11 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @param response the response
      * 
      * @return true, if is action describe product
-     * @throws ServletException 
-     * @throws IOException 
+     * @throws ServletException
+     * @throws IOException
      */
-    private boolean isActionDescribeProduct(String action, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    private boolean isActionDescribeProduct(String action, HttpServletRequest request, HttpServletResponse response) throws IOException,
+            ServletException {
 
         if (!action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_DESCRIBE_PRODUCT)) {
             return false;
@@ -1002,10 +1004,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
         response.setContentType(null);
 
-        return true;   
- 
+        return true;
+
     }
-    
+
     /**
      * Checks if is action delete.
      * 
@@ -2922,7 +2924,11 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      */
     private boolean isActionDebug(String action, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        if (!action.equalsIgnoreCase("debug")) {
+        if (!action.equalsIgnoreCase(this.ACTION_DEBUG)) {
+            return false;
+        }
+
+        if (!action.equalsIgnoreCase(this.ACTION_QUEUE_SERVER)) {
             return false;
         }
 
@@ -3012,7 +3018,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         batchAsString = batchAsString.trim();
         return batchAsString.equalsIgnoreCase("true") || batchAsString.equalsIgnoreCase("1");
     }
-    
+
     /**
      * Checks if is extra metadata.
      * 
@@ -3556,6 +3562,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             LOG.debug("productDownload() - exiting");
         }
     }
+
     /**
      * Product describe product.
      * 
@@ -3566,16 +3573,17 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws ServletException the servlet exception
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    private void productDescribeProduct(String locationData, String tdsCatalogFileName, boolean loadExtraMetadata, HttpServletResponse response) throws ServletException, IOException {
+    private void productDescribeProduct(String locationData, String tdsCatalogFileName, boolean loadExtraMetadata, HttpServletResponse response)
+            throws ServletException, IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("productDescribeProduct(String, String, HttpServletResponse) - entering");
         }
 
         Organizer organizer = getOrganizer(null, response);
         try {
-        
+
             organizer.getProductMetadataInfo(locationData, tdsCatalogFileName, loadExtraMetadata, response.getWriter());
-        
+
         } catch (MotuMarshallException e) {
             LOG.error("productDescribeProduct(String, String, HttpServletResponse)", e);
 
@@ -3591,7 +3599,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             LOG.debug("productDescribeProduct(String, String, HttpServletResponse) - exiting");
         }
     }
-    private void productDescribeProduct(boolean loadExtraMetadata, String serviceName, String productId, HttpServletResponse response) throws ServletException, IOException {
+
+    private void productDescribeProduct(boolean loadExtraMetadata, String serviceName, String productId, HttpServletResponse response)
+            throws ServletException, IOException {
 
         Organizer organizer = getOrganizer(null, response);
         try {
@@ -3635,7 +3645,6 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             LOG.debug("productGetTimeCoverage(String, HttpSession, HttpServletResponse) - exiting");
         }
     }
-    
 
     /**
      * Product get time coverage.
