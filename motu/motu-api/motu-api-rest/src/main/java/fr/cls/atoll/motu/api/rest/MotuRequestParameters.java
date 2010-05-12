@@ -1,35 +1,33 @@
 package fr.cls.atoll.motu.api.rest;
 
+import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
-
 /**
  * Classe permettant de stocker tous les paramètres d'une requête. <br>
- * <br>
- * Copyright : Copyright (c) 2007 <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author Jean-Michel FARENC
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class MotuRequestParameters implements MotuRequestParametersConstant {
 
-    
     /**
      * The Constructor.
      */
     public MotuRequestParameters() {
-        
+
     }
+
     /** The mono valued param map. */
     Map<String, Object> monoValuedParamMap = new HashMap<String, Object>();
-    
+
     /** The multi valued param map. */
     Map<String, List<?>> multiValuedParamMap = new HashMap<String, List<?>>();
 
@@ -96,7 +94,7 @@ public class MotuRequestParameters implements MotuRequestParametersConstant {
         monoValuedParamMap.clear();
         multiValuedParamMap.clear();
     }
-    
+
     /**
      * To string.
      * 

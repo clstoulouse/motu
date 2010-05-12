@@ -2,18 +2,14 @@ package fr.cls.atoll.motu.api.rest;
 
 import javax.xml.bind.JAXBException;
 
-// TODO: Auto-generated Javadoc
 /**
  * Classe d'execption pour l'API motu.
  * 
- * <br>
- * <br>
- * Copyright : Copyright (c) 2007 <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author Jean-Michel FARENC
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class MotuRequestException extends Exception {
 

@@ -30,16 +30,12 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.log4j.Logger;
 
 /**
- * Classe permettant de faire une requête à la servlet Motu et de récupérer les résultats.
+ * Helper class that allows to send a Motu request and retrieve the results.
  * 
- * <br>
- * <br>
- * Copyright : Copyright (c) 2007 <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
- * @author Jean-Michel FARENC
- * @version $Revision: 1.3 $ - $Date: 2010-02-26 14:06:56 $
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class MotuRequest {
 
