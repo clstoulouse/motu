@@ -3,8 +3,10 @@ package fr.cls.atoll.motu.api.message;
 /**
  * Constants that declares the parameter names available for the motu download interface.
  * 
- * @author CLS (Collecte Localisation Satellites)
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public interface MotuRequestParametersConstant {
     /** The Constant ACTION_DELETE. */

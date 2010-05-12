@@ -1,14 +1,11 @@
 package fr.cls.atoll.motu.api.message;
 
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2008. <br>
- * <br>
- * Societe : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public interface MotuMsgConstant {
     /** The Constant MOTU_MSG_SCHEMA_PACK_NAME. */
