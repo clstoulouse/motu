@@ -1,6 +1,3 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.converter.jaxb;
 
 import javax.measure.DecimalMeasure;
@@ -14,8 +11,10 @@ import org.slf4j.LoggerFactory;
  * JAXB adapter that converts a xs:string into a {@link DecimalMeasure} and vice-versa, with preservation of
  * the unit (and quantity).
  * 
- * @author ccamel
- * @version $Revision: 1.1 $ - $Date: 2009-05-19 13:28:44 $ - $Author: dearith $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:ccamel@cls.fr">Christophe Camel</a>
  */
 public class DecimalMeasureAdapter extends XmlAdapter<String, DecimalMeasure<?>> {
     /**

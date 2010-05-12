@@ -1,6 +1,3 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.converter.jaxb;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -14,8 +11,10 @@ import org.slf4j.LoggerFactory;
 /**
  * JAXB adapter that converts a xs:dateTime or xs:date into a {@link DateTime} and vice-versa.
  * 
- * @author ccamel
- * @version $Revision: 1.1 $ - $Date: 2009-05-19 13:28:44 $ - $Author: dearith $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:ccamel@cls.fr">Christophe Camel</a>
  */
 public class JodaTimeAdapter extends XmlAdapter<String, DateTime> {
 
@@ -24,16 +23,17 @@ public class JodaTimeAdapter extends XmlAdapter<String, DateTime> {
      */
     public JodaTimeAdapter() {
     }
-    
+
     /** The Constant DATE_PATTERN. */
     public static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ssZZ";
 
     /**
      * Format used to print and parse dates.
      */
-//    public static DateTimeFormatter DATE_FORMATER = new DateTimeFormatterBuilder().appendYear(4, 4).appendLiteral('-').appendMonthOfYear(2)
-//            .appendLiteral('-').appendDayOfMonth(2).appendLiteral('T').appendHourOfDay(2).appendLiteral(':').appendMinuteOfHour(2).appendLiteral(':')
-//            .appendSecondOfMinute(2).appendLiteral(' ').appendTimeZoneOffset(null, false, 2, 2).toFormatter();
+    // public static DateTimeFormatter DATE_FORMATER = new DateTimeFormatterBuilder().appendYear(4,
+    // 4).appendLiteral('-').appendMonthOfYear(2)
+    // .appendLiteral('-').appendDayOfMonth(2).appendLiteral('T').appendHourOfDay(2).appendLiteral(':').appendMinuteOfHour(2).appendLiteral(':')
+    // .appendSecondOfMinute(2).appendLiteral(' ').appendTimeZoneOffset(null, false, 2, 2).toFormatter();
     public static final DateTimeFormatter DATE_FORMATER = DateTimeFormat.forPattern(JodaTimeAdapter.DATE_PATTERN);
 
     /**

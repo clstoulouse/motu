@@ -1,15 +1,9 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.converter.jaxb;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.joda.time.DateTime;
 import org.joda.time.Period;
-import org.joda.time.ReadablePeriod;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISOPeriodFormat;
 import org.joda.time.format.PeriodFormatter;
 import org.slf4j.Logger;
@@ -18,8 +12,10 @@ import org.slf4j.LoggerFactory;
 /**
  * JAXB adapter that converts a xs:dateTime or xs:date into a {@link DateTime} and vice-versa.
  * 
- * @author ccamel
- * @version $Revision: 1.3 $ - $Date: 2009-10-16 12:57:24 $ - $Author: dearith $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:ccamel@cls.fr">Christophe Camel</a>
  */
 public class JodaPeriodAdapter extends XmlAdapter<String, Period> {
 
@@ -28,14 +24,14 @@ public class JodaPeriodAdapter extends XmlAdapter<String, Period> {
      */
     public JodaPeriodAdapter() {
     }
-    
 
     /**
      * Format used to print and parse period.
      */
-//    public static DateTimeFormatter DATE_FORMATER = new DateTimeFormatterBuilder().appendYear(4, 4).appendLiteral('-').appendMonthOfYear(2)
-//            .appendLiteral('-').appendDayOfMonth(2).appendLiteral('T').appendHourOfDay(2).appendLiteral(':').appendMinuteOfHour(2).appendLiteral(':')
-//            .appendSecondOfMinute(2).appendLiteral(' ').appendTimeZoneOffset(null, false, 2, 2).toFormatter();
+    // public static DateTimeFormatter DATE_FORMATER = new DateTimeFormatterBuilder().appendYear(4,
+    // 4).appendLiteral('-').appendMonthOfYear(2)
+    // .appendLiteral('-').appendDayOfMonth(2).appendLiteral('T').appendHourOfDay(2).appendLiteral(':').appendMinuteOfHour(2).appendLiteral(':')
+    // .appendSecondOfMinute(2).appendLiteral(' ').appendTimeZoneOffset(null, false, 2, 2).toFormatter();
     public static final PeriodFormatter PERIOD_FORMATER = ISOPeriodFormat.standard();
 
     /**

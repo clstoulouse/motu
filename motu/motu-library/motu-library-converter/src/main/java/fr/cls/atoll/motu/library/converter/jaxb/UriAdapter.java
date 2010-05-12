@@ -1,6 +1,3 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.converter.jaxb;
 
 import java.net.URI;
@@ -10,8 +7,10 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 /**
  * URI adapter that converts a xs:anyURI into a {@link URI} and vice-versa.
  * 
- * @author ccamel
- * @version $Revision: 1.1 $ - $Date: 2009-05-19 13:28:44 $ - $Author: dearith $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:ccamel@cls.fr">Christophe Camel</a>
  */
 public class UriAdapter extends XmlAdapter<String, URI> {
     /**
