@@ -19,10 +19,11 @@ import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.ProcessletException;
 
 /**
- * <br><br>Copyright : Copyright (c) 2009.
- * <br><br>Société : CLS (Collecte Localisation Satellites)
- * @author $Author: dearith $
- * @version $Revision: 1.5 $ - $Date: 2009-10-08 14:36:52 $
+ * 
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class MotuOGCFrontController extends OGCFrontController {
     /**
@@ -39,8 +40,6 @@ public class MotuOGCFrontController extends OGCFrontController {
             // Do nothing
         }
     }
-
-
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -62,24 +61,22 @@ public class MotuOGCFrontController extends OGCFrontController {
      */
     public MotuOGCFrontController() {
     }
-    
 
-    
     /** {@inheritDoc} */
     @Override
     public void init(ServletConfig config) throws ServletException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("init(ServletConfig) - entering");
         }
- 
+
         super.init(config);
-        
+
         try {
             initProxyLogin();
 
             // Initialisation Queue Server
             initRequestManagement();
-            
+
             initWPSRequestManagement();
 
         } catch (MotuExceptionBase e) {
@@ -88,7 +85,6 @@ public class MotuOGCFrontController extends OGCFrontController {
             }
             throw new ServletException(String.format("Error in MotuOGCFrontController#init : %s", e.notifyException()), e);
         }
-        
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("init(ServletConfig) - exiting");
@@ -107,15 +103,12 @@ public class MotuOGCFrontController extends OGCFrontController {
         return requestManagement.getQueueServerManagement();
 
     };
-    
-    protected WPSRequestManagement wpsRequestManagement = null;
-    
 
-     public WPSRequestManagement getWPSRequestManagement() {
+    protected WPSRequestManagement wpsRequestManagement = null;
+
+    public WPSRequestManagement getWPSRequestManagement() {
         return wpsRequestManagement;
     }
-
-
 
     /**
      * Sets parameters for proxy connection if a proxy is used.
@@ -138,22 +131,22 @@ public class MotuOGCFrontController extends OGCFrontController {
             LOG.debug(System.getProperties().toString());
         }
 
-//            MotuConfig motuConfig = Organizer.getMotuConfigInstance();
-//            if (motuConfig.isUseProxy()) {
-//                String user = Organizer.getMotuConfigInstance().getProxyLogin();
-//                String pwd = Organizer.getMotuConfigInstance().getProxyPwd();
-//                System.setProperty("proxyHost", Organizer.getMotuConfigInstance().getProxyHost());
-//                System.setProperty("proxyPort", Organizer.getMotuConfigInstance().getProxyPort());
-//                if (user != null && pwd != null) {
-//                    if (!user.equals("") && !pwd.equals("")) {
-//                        Authenticator.setDefault(new SimpleAuthenticator(user, pwd));
-//                    }
-//                }
-//            }
-        
+        // MotuConfig motuConfig = Organizer.getMotuConfigInstance();
+        // if (motuConfig.isUseProxy()) {
+        // String user = Organizer.getMotuConfigInstance().getProxyLogin();
+        // String pwd = Organizer.getMotuConfigInstance().getProxyPwd();
+        // System.setProperty("proxyHost", Organizer.getMotuConfigInstance().getProxyHost());
+        // System.setProperty("proxyPort", Organizer.getMotuConfigInstance().getProxyPort());
+        // if (user != null && pwd != null) {
+        // if (!user.equals("") && !pwd.equals("")) {
+        // Authenticator.setDefault(new SimpleAuthenticator(user, pwd));
+        // }
+        // }
+        // }
+
         Organizer.initProxyLogin();
-        
-         if (LOG.isDebugEnabled()) {
+
+        if (LOG.isDebugEnabled()) {
             LOG.debug("END MotuOGCFrontController.initProxyLogin()");
         }
     }
@@ -177,10 +170,10 @@ public class MotuOGCFrontController extends OGCFrontController {
         }
 
     }
-    protected void initWPSRequestManagement() throws  MotuException {
-            wpsRequestManagement = WPSRequestManagement.getInstance();
+
+    protected void initWPSRequestManagement() throws MotuException {
+        wpsRequestManagement = WPSRequestManagement.getInstance();
 
     }
-
 
 }
