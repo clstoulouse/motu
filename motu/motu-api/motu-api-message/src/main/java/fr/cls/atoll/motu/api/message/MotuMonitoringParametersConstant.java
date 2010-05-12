@@ -18,4 +18,9 @@ public interface MotuMonitoringParametersConstant {
      * queue-server (pending orders, in processed orders, and so on).
      */
     final String ACTION_QUEUE_SERVER = "queue-server";
+
+    /**
+     * Action servlet parameter value that allows to access monitors (statistical values gathered).
+     */
+    final String ACTION_MONITORS = "monitors";
 }
