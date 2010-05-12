@@ -3,11 +3,10 @@ package fr.cls.atoll.motu.library.misc.data;
 import java.util.Comparator;
 
 /**
- * <br><br>Copyright : Copyright (c) 2009.
- * <br><br>Société : CLS (Collecte Localisation Satellites)
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.1 $ - $Date: 2009-05-27 16:02:50 $
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class DataFileComparator implements Comparator<DataFile> {
 

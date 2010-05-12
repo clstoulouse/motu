@@ -1,48 +1,5 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.intfce;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
-import java.net.Authenticator;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.apache.commons.vfs.FileObject;
-import org.apache.log4j.Logger;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-
-import ucar.ma2.MAMath.MinMax;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.api.message.MotuMsgConstant;
 import fr.cls.atoll.motu.api.message.xml.AvailableDepths;
 import fr.cls.atoll.motu.api.message.xml.AvailableTimes;
@@ -113,6 +70,47 @@ import fr.cls.commons.util.PropertiesUtilities;
 import fr.cls.commons.util.io.ConfigLoader;
 import fr.cls.commons.util5.DatePeriod;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+import java.net.Authenticator;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.apache.commons.vfs.FileObject;
+import org.apache.log4j.Logger;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+
+import ucar.ma2.MAMath.MinMax;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.unidata.geoloc.LatLonRect;
+
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and
 // trace log.
 
@@ -120,8 +118,10 @@ import fr.cls.commons.util5.DatePeriod;
  * This class allows to organize and control the sequences of the functions. It is the entry-point of the
  * application.
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.33 $ - $Date: 2010-03-05 10:41:46 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class Organizer {
 
@@ -1840,7 +1840,8 @@ public class Organizer {
         MotuExceptionBase exceptionBase = null;
 
         if (size > maxAllowedSize) {
-            exceptionBase = new MotuExceedingCapacityException(Organizer.convertFromBytesToMegabytes(size), Organizer.convertFromBytesToMegabytes(maxAllowedSize));
+            exceptionBase = new MotuExceedingCapacityException(Organizer.convertFromBytesToMegabytes(size), Organizer
+                    .convertFromBytesToMegabytes(maxAllowedSize));
         }
 
         maxAllowedSizeToSet = maxAllowedSize;

@@ -1,15 +1,3 @@
-/**
- * 
- */
-
-// NetCDF 2.2.16
-//import ucar.nc2.dataset.grid.GeoGrid;
-//import ucar.nc2.dataset.grid.GridDataset;
-//import ucar.nc2.dataset.grid.GridCoordSys;
-// NetCDF 2.2.18
-//import ucar.nc2.dt.grid.GeoGrid;
-//import ucar.nc2.dt.grid.GridDataset;
-//import ucar.nc2.dt.grid.GridCoordSys;
 package fr.cls.atoll.motu.library.misc.data;
 
 import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
@@ -50,9 +38,10 @@ import ucar.unidata.geoloc.ProjectionPointImpl;
  * This class introduces geographical coverage criterias as latitude an longitude coordinates to be apply on
  * data (for extraction/selection and research).
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.7 $ - $Date: 2010-03-02 13:09:12 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
 

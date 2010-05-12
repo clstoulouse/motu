@@ -1,76 +1,58 @@
-/*
- * Copyright 2002-2005 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package fr.cls.atoll.motu.library.misc.vfs.provider.gsiftp;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.FileName;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileType; //import org.apache.commons.vfs.RandomAccessContent;
-import org.apache.commons.vfs.provider.AbstractFileObject;
-import org.apache.commons.vfs.provider.UriParser;
-import org.apache.commons.vfs.util.Messages; //import org.apache.commons.vfs.util.MonitorInputStream;
-//import org.apache.commons.vfs.util.MonitorOutputStream;
-//import org.apache.commons.vfs.util.RandomAccessMode;
-import org.globus.ftp.FileInfo;
-import org.globus.ftp.GridFTPClient; //import org.globus.ftp.MlsxEntry;
-import org.globus.ftp.exception.ClientException; //import org.globus.ftp.exception.FTPException;
-import org.globus.ftp.exception.ServerException; //import org.globus.io.streams.FTPInputStream;
-//import org.globus.io.streams.FTPOutputStream;
-import org.globus.io.streams.GridFTPInputStream;
-import org.globus.io.streams.GridFTPOutputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat; //import java.util.Calendar;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
 
-//import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.vfs.FileName;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.FileType;
+import org.apache.commons.vfs.provider.AbstractFileObject;
+import org.apache.commons.vfs.provider.UriParser;
+import org.apache.commons.vfs.util.Messages;
+import org.globus.ftp.FileInfo;
+import org.globus.ftp.GridFTPClient;
+import org.globus.ftp.exception.ClientException;
+import org.globus.ftp.exception.ServerException;
+import org.globus.io.streams.GridFTPInputStream;
+import org.globus.io.streams.GridFTPOutputStream;
 
 /**
  * An FTP file.
  * 
- * @author <a href="mailto:adammurdoch@apache.org">Adam Murdoch</a>
- * @version $Revision: 1.1 $ $Date: 2009-05-14 14:58:33 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 @SuppressWarnings("unchecked")
 public class GsiFtpFileObject extends AbstractFileObject {
-    
+
     /** The log. */
-    private Log log = LogFactory.getLog(GsiFtpFileObject.class);
+    private final Log log = LogFactory.getLog(GsiFtpFileObject.class);
 
     /** The Constant EMPTY_FTP_FILE_MAP. */
     private static final Map EMPTY_FTP_FILE_MAP = Collections.unmodifiableMap(new TreeMap());
 
     /** The ftp fs. */
     private final GsiFtpFileSystem ftpFs;
-    
+
     /** The rel path. */
     private final String relPath;
 
     // Cached info
     /** The file info. */
     private FileInfo fileInfo;
-    
+
     /** The children. */
     private Map children;
 
@@ -195,6 +177,7 @@ public class GsiFtpFileObject extends AbstractFileObject {
      * 
      * @throws IOException Signals that an I/O exception has occurred.
      */
+    @Override
     protected void doAttach() throws IOException {
         // Get the parent folder to find the info for this file
         getInfo(false);
@@ -228,6 +211,7 @@ public class GsiFtpFileObject extends AbstractFileObject {
     /**
      * Detaches this file object from its file resource.
      */
+    @Override
     protected void doDetach() {
         this.fileInfo = null;
         children = null;
@@ -239,6 +223,7 @@ public class GsiFtpFileObject extends AbstractFileObject {
      * @param child the child
      * @param newType the new type
      */
+    @Override
     protected void onChildrenChanged(FileName child, FileType newType) {
         if (children != null && newType.equals(FileType.IMAGINARY)) {
             try {
@@ -258,6 +243,7 @@ public class GsiFtpFileObject extends AbstractFileObject {
      * 
      * @throws IOException Signals that an I/O exception has occurred.
      */
+    @Override
     protected void onChange() throws IOException {
         children = null;
 
@@ -277,6 +263,7 @@ public class GsiFtpFileObject extends AbstractFileObject {
      * 
      * @throws Exception the exception
      */
+    @Override
     protected FileType doGetType() throws Exception {
         // log.debug("relative path:" + relPath);
 
@@ -327,6 +314,7 @@ public class GsiFtpFileObject extends AbstractFileObject {
      * 
      * @throws Exception the exception
      */
+    @Override
     protected String[] doListChildren() throws Exception {
         // List the children of this file
         doGetChildren();
@@ -350,6 +338,7 @@ public class GsiFtpFileObject extends AbstractFileObject {
      * 
      * @throws Exception the exception
      */
+    @Override
     protected void doDelete() throws Exception {
         boolean ok = true;
         final GridFTPClient ftpClient = ftpFs.getClient();
@@ -388,6 +377,7 @@ public class GsiFtpFileObject extends AbstractFileObject {
      * 
      * @throws Exception the exception
      */
+    @Override
     protected void doRename(FileObject newfile) throws Exception {
         boolean ok = true;
         final GridFTPClient ftpClient = ftpFs.getClient();
@@ -415,6 +405,7 @@ public class GsiFtpFileObject extends AbstractFileObject {
      * 
      * @throws Exception the exception
      */
+    @Override
     protected void doCreateFolder() throws Exception {
         boolean ok = true;
         final GridFTPClient client = ftpFs.getClient();
@@ -440,6 +431,7 @@ public class GsiFtpFileObject extends AbstractFileObject {
      * 
      * @throws Exception the exception
      */
+    @Override
     protected long doGetContentSize() throws Exception {
         // if (this.fileInfo.isSymbolicLink())
         // {
@@ -460,6 +452,7 @@ public class GsiFtpFileObject extends AbstractFileObject {
      * 
      * @see org.apache.commons.vfs.provider.AbstractFileObject#doGetLastModifiedTime()
      */
+    @Override
     protected long doGetLastModifiedTime() throws Exception {
         // if (this.fileInfo.isSymbolicLink())
         // {
@@ -489,6 +482,7 @@ public class GsiFtpFileObject extends AbstractFileObject {
      * 
      * @throws Exception the exception
      */
+    @Override
     protected InputStream doGetInputStream() throws Exception {
         // String Path = relPath;
 
@@ -519,6 +513,7 @@ public class GsiFtpFileObject extends AbstractFileObject {
      * 
      * @throws Exception the exception
      */
+    @Override
     protected OutputStream doGetOutputStream(boolean bAppend) throws Exception {
         // String Path = relPath;
 

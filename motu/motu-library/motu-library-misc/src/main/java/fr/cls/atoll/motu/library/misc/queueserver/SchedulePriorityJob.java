@@ -1,5 +1,7 @@
 package fr.cls.atoll.motu.library.misc.queueserver;
 
+import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -10,17 +12,12 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.StatefulJob;
 
-import fr.cls.atoll.motu.library.misc.configuration.QueueType;
-
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2008. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class SchedulePriorityJob implements StatefulJob {
 
@@ -49,11 +46,11 @@ public class SchedulePriorityJob implements StatefulJob {
         }
 
         boolean loop = true;
-        
+
         while (loop) {
             loop = checkPriorityTimeOut(context);
         }
-        
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("SchedulePriorityJob.execute(JobExecutionContext) - exiting");
         }
@@ -86,7 +83,7 @@ public class SchedulePriorityJob implements StatefulJob {
         return QueueType.class.cast(jobDataMap.get(QueueType.class.getSimpleName()));
 
     }
-    
+
     /**
      * Check priority time out.
      * 
@@ -119,57 +116,56 @@ public class SchedulePriorityJob implements StatefulJob {
         }
         PriorityBlockingQueue<Runnable> priorityBlockingQueue = (PriorityBlockingQueue<Runnable>) threadPoolExecutor.getQueue();
 
-
         Map<RunnableExtraction, Exception> listRunnableError = new HashMap<RunnableExtraction, Exception>();
         boolean removed = false;
-        
+
         for (Runnable runnable : priorityBlockingQueue) {
             if (!(runnable instanceof RunnableExtraction)) {
-                //-------------
+                // -------------
                 continue;
-                //-------------
+                // -------------
             }
 
-            
             RunnableExtraction runnableExtraction = (RunnableExtraction) runnable;
 
             // Not out of time or runnable has higher priority
             if (!(runnableExtraction.isOutOfTime(queueConfig.getLowPriorityWaiting()))) {
-                //-------------
+                // -------------
                 continue;
-                //-------------
+                // -------------
             }
 
             removed = threadPoolExecutor.remove(runnableExtraction);
             if (!removed) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug(String.format("checkPriorityTimeOut(JobExecutionContext) - unable to remove runnable : priority: %d,  range %d'", runnableExtraction
-                            .getPriority(), runnableExtraction.getRange()));
+                    LOG.debug(String.format("checkPriorityTimeOut(JobExecutionContext) - unable to remove runnable : priority: %d,  range %d'",
+                                            runnableExtraction.getPriority(),
+                                            runnableExtraction.getRange()));
                 }
-                //-------------
+                // -------------
                 continue;
-                //-------------
+                // -------------
             }
- 
+
             try {
                 // MotuInvalidQueuePriorityException ee = new MotuInvalidQueuePriorityException(1, 2, 3);
                 // listRunnableError.put(runnableExtraction, ee);
                 runnableExtraction.increasePriority();
-                
+
                 threadPoolExecutor.incrementPriorityMap(runnableExtraction);
-                
+
                 threadPoolExecutor.execute(runnableExtraction);
-                
+
             } catch (Exception e) {
                 LOG.error("checkPriorityTimeOut(JobExecutionContext)", e);
 
                 listRunnableError.put(runnableExtraction, e);
             }
-            
-            // one is removed --> break to keep consitent queue list 'for loop' 
-            //-------------
+
+            // one is removed --> break to keep consitent queue list 'for loop'
+            // -------------
             break;
-            //-------------
+            // -------------
 
         }
 
@@ -181,8 +177,7 @@ public class SchedulePriorityJob implements StatefulJob {
                                     listRunnableError.size(),
                                     SchedulePriorityJob.ERRORS_KEY_MAP));
         }
-        
-        
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("checkPriorityTimeOut(JobExecutionContext) - exiting");
         }
@@ -190,50 +185,51 @@ public class SchedulePriorityJob implements StatefulJob {
         return removed;
     }
 
-//    /**
-//     * Adjust max range by priority.
-//     * 
-//     * @param context the context
-//     */
-//    public void adjustMaxRangeByPriority(JobExecutionContext context) {
-//        
-//        ExtractionThreadPoolExecutor threadPoolExecutor = getThreadPoolExecutor(context);
-//
-//        if (threadPoolExecutor == null) {
-//            if (LOG.isDebugEnabled()) {
-//                LOG.debug("checkPriorityTimeOut(JobExecutionContext) - threadPoolExecutor is null - exiting");
-//            }
-//            return;
-//        }
-//
-//        @SuppressWarnings("unused")
-//        PriorityBlockingQueue<Runnable> priorityBlockingQueue = (PriorityBlockingQueue<Runnable>) threadPoolExecutor.getQueue();
-//
-//        Map<Integer, Integer> priorityMapWork = new HashMap<Integer, Integer>();
-//        
-//        for (Runnable runnable : priorityBlockingQueue) {
-//            if (!(runnable instanceof RunnableExtraction)) {
-//                //-------------
-//                continue;
-//                //-------------
-//            }
-//            
-//            RunnableExtraction runnableExtraction = (RunnableExtraction) runnable;
-//            Integer priority = runnableExtraction.getPriority();
-//            Integer range = runnableExtraction.getRange();
-//            Integer maxRange = null;
-//            
-//            if (priorityMapWork.containsKey(priority)) {
-//                maxRange = ((priorityMapWork.get(priority) > range) ? priorityMapWork.get(priority) : range);
-//            } else {
-//                maxRange = range;
-//            }
-//            
-//            priorityMapWork.put(priority, maxRange);                
-//            
-//        }
-//        
-//        threadPoolExecutor.adjustPriorityMap(priorityMapWork);
-//                
-//    }
+    // /**
+    // * Adjust max range by priority.
+    // *
+    // * @param context the context
+    // */
+    // public void adjustMaxRangeByPriority(JobExecutionContext context) {
+    //        
+    // ExtractionThreadPoolExecutor threadPoolExecutor = getThreadPoolExecutor(context);
+    //
+    // if (threadPoolExecutor == null) {
+    // if (LOG.isDebugEnabled()) {
+    // LOG.debug("checkPriorityTimeOut(JobExecutionContext) - threadPoolExecutor is null - exiting");
+    // }
+    // return;
+    // }
+    //
+    // @SuppressWarnings("unused")
+    // PriorityBlockingQueue<Runnable> priorityBlockingQueue = (PriorityBlockingQueue<Runnable>)
+    // threadPoolExecutor.getQueue();
+    //
+    // Map<Integer, Integer> priorityMapWork = new HashMap<Integer, Integer>();
+    //        
+    // for (Runnable runnable : priorityBlockingQueue) {
+    // if (!(runnable instanceof RunnableExtraction)) {
+    // //-------------
+    // continue;
+    // //-------------
+    // }
+    //            
+    // RunnableExtraction runnableExtraction = (RunnableExtraction) runnable;
+    // Integer priority = runnableExtraction.getPriority();
+    // Integer range = runnableExtraction.getRange();
+    // Integer maxRange = null;
+    //            
+    // if (priorityMapWork.containsKey(priority)) {
+    // maxRange = ((priorityMapWork.get(priority) > range) ? priorityMapWork.get(priority) : range);
+    // } else {
+    // maxRange = range;
+    // }
+    //            
+    // priorityMapWork.put(priority, maxRange);
+    //            
+    // }
+    //        
+    // threadPoolExecutor.adjustPriorityMap(priorityMapWork);
+    //                
+    // }
 }

@@ -1,5 +1,17 @@
 package fr.cls.atoll.motu.library.misc.metadata;
 
+import fr.cls.atoll.motu.library.misc.data.CatalogData;
+import fr.cls.atoll.motu.library.misc.data.DatasetBase;
+import fr.cls.atoll.motu.library.misc.data.Product;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.library.misc.tds.server.Property;
+import fr.cls.atoll.motu.library.misc.tds.server.Variables;
+import fr.cls.commons.util5.DatePeriod;
+
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -21,18 +33,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.unidata.geoloc.LatLonRect;
 
-import fr.cls.atoll.motu.library.misc.data.CatalogData;
-import fr.cls.atoll.motu.library.misc.data.DatasetBase;
-import fr.cls.atoll.motu.library.misc.data.Product;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
-import fr.cls.atoll.motu.library.misc.tds.server.Property;
-import fr.cls.atoll.motu.library.misc.tds.server.Variables;
-import fr.cls.commons.util5.DatePeriod;
-
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
 /**
@@ -45,8 +45,10 @@ import fr.cls.commons.util5.DatePeriod;
 /**
  * The Class ProductMetaData.
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2010-03-01 16:01:17 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class ProductMetaData {
 
@@ -76,7 +78,7 @@ public class ProductMetaData {
 
     /** The Constant MEDIA_KEY. */
     public static final String MEDIA_KEY = "media";
-    
+
     /** The Constant TYPE_VALUE_ATP. */
     public static final String TYPE_VALUE_ATP = "along track product";
 
@@ -153,7 +155,7 @@ public class ProductMetaData {
     public boolean isProductAlongTrack() {
         return productCategory.equalsIgnoreCase(PRODUCT_TYPE_ALONG_TRACK) || getProductTypeServiceValue().equalsIgnoreCase(TYPE_VALUE_ATP);
     }
-    
+
     /**
      * Checks if is ftp media.
      * 
@@ -446,7 +448,7 @@ public class ProductMetaData {
      * @uml.property name="parameterCategories"
      */
     public <T extends ParameterCategory> T[] parameterCategoriesToArray(T[] a) {
-        return (T[]) this.parameterCategories.toArray(a);
+        return this.parameterCategories.toArray(a);
     }
 
     /**
@@ -701,7 +703,7 @@ public class ProductMetaData {
      * @uml.property name="deliveries"
      */
     public <T extends Delivery> T[] deliveriesToArray(T[] a) {
-        return (T[]) this.deliveries.toArray(a);
+        return this.deliveries.toArray(a);
     }
 
     /**
@@ -856,7 +858,7 @@ public class ProductMetaData {
      * @uml.property name="documentations"
      */
     public <T extends DocMetaData> T[] documentationsToArray(T[] a) {
-        return (T[]) this.documentations.toArray(a);
+        return this.documentations.toArray(a);
     }
 
     /**
@@ -1087,15 +1089,14 @@ public class ProductMetaData {
      * @param key key whose associated value is to be returned.
      * 
      * @return the value to which this map maps the specified key, or <tt>null</tt> if the map contains no
-     * mapping for this key.
+     *         mapping for this key.
      * 
      * @see java.util.Map#get(Object)
      * @uml.property name="coordinateAxes"
      */
     public CoordinateAxis getCoordinateAxes(AxisType key) {
-        if (this.coordinateAxesMap != null)
-        {
-            return (CoordinateAxis) this.coordinateAxesMap.get(key);
+        if (this.coordinateAxesMap != null) {
+            return this.coordinateAxesMap.get(key);
         }
         return null;
     }
@@ -1147,7 +1148,7 @@ public class ProductMetaData {
      * @uml.property name="coordinateAxes"
      */
     public CoordinateAxis putCoordinateAxes(AxisType key, CoordinateAxis coordinateAxes) {
-        return (CoordinateAxis) this.coordinateAxesMap.put(key, coordinateAxes);
+        return this.coordinateAxesMap.put(key, coordinateAxes);
     }
 
     /**
@@ -1155,14 +1156,13 @@ public class ProductMetaData {
      * 
      * @param key key whose mapping is to be removed from the map.
      * 
-     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for
-     * key.
+     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for key.
      * 
      * @see java.util.Map#remove(Object)
      * @uml.property name="coordinateAxes"
      */
     public CoordinateAxis removeCoordinateAxes(AxisType key) {
-        return (CoordinateAxis) this.coordinateAxesMap.remove(key);
+        return this.coordinateAxesMap.remove(key);
     }
 
     /**
@@ -1247,13 +1247,13 @@ public class ProductMetaData {
      * @param key key whose associated value is to be returned.
      * 
      * @return the value to which this map maps the specified key, or <tt>null</tt> if the map contains no
-     * mapping for this key.
+     *         mapping for this key.
      * 
      * @see java.util.Map#get(Object)
      * @uml.property name="parameterMetaDatas"
      */
     public ParameterMetaData getParameterMetaDatas(String key) {
-        return (ParameterMetaData) this.parameterMetaDatasMap.get(key);
+        return this.parameterMetaDatasMap.get(key);
     }
 
     /**
@@ -1303,7 +1303,7 @@ public class ProductMetaData {
      * @uml.property name="parameterMetaDatas"
      */
     public ParameterMetaData putParameterMetaDatas(String key, ParameterMetaData parameterMetaDatas) {
-        return (ParameterMetaData) this.parameterMetaDatasMap.put(key, parameterMetaDatas);
+        return this.parameterMetaDatasMap.put(key, parameterMetaDatas);
     }
 
     /**
@@ -1311,14 +1311,13 @@ public class ProductMetaData {
      * 
      * @param key key whose mapping is to be removed from the map.
      * 
-     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for
-     * key.
+     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for key.
      * 
      * @see java.util.Map#remove(Object)
      * @uml.property name="parameterMetaDatas"
      */
     public ParameterMetaData removeParameterMetaDatas(String key) {
-        return (ParameterMetaData) this.parameterMetaDatasMap.remove(key);
+        return this.parameterMetaDatasMap.remove(key);
     }
 
     /**
@@ -1355,7 +1354,7 @@ public class ProductMetaData {
      * @param netCdfReader the net cdf reader
      * 
      * @return true if axes collection contains GeoX with Longitude equivalence and GeoY with Latitude
-     * equivalenceaxes.
+     *         equivalenceaxes.
      * 
      * @throws MotuException the motu exception
      */
@@ -1412,7 +1411,7 @@ public class ProductMetaData {
         if (axis == null) {
             return null;
         }
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return NetCdfReader.getDate(minMax.min, axis.getUnitsString());
     }
 
@@ -1426,7 +1425,7 @@ public class ProductMetaData {
         if (axis == null) {
             return Double.NaN;
         }
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return minMax.min;
     }
 
@@ -1442,8 +1441,8 @@ public class ProductMetaData {
         if (axis == null) {
             return null;
         }
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-        
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+
         return NetCdfReader.getDate(minMax.max, axis.getUnitsString());
     }
 
@@ -1457,7 +1456,7 @@ public class ProductMetaData {
         if (axis == null) {
             return Double.NaN;
         }
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return minMax.max;
     }
 
@@ -1473,7 +1472,7 @@ public class ProductMetaData {
         if (axis == null) {
             return null;
         }
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return NetCdfReader.getDateAsGMTString(minMax.min, axis.getUnitsString());
     }
 
@@ -1489,7 +1488,7 @@ public class ProductMetaData {
         if (axis == null) {
             return null;
         }
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return NetCdfReader.getDateAsGMTString(minMax.max, axis.getUnitsString());
     }
 
@@ -1526,7 +1525,7 @@ public class ProductMetaData {
         if (axis == null) {
             return Double.MIN_VALUE;
         }
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return minMax.min;
     }
 
@@ -1541,7 +1540,7 @@ public class ProductMetaData {
             return null;
         }
 
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return NetCdfReader.getStandardZAsString(minMax.min);
     }
 
@@ -1556,7 +1555,7 @@ public class ProductMetaData {
             return Double.MAX_VALUE;
         }
 
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return minMax.max;
     }
 
@@ -1570,11 +1569,11 @@ public class ProductMetaData {
         if (axis == null) {
             return null;
         }
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
 
         return NetCdfReader.getStandardZAsString(minMax.max, axis.getUnitsString());
     }
-    
+
     /**
      * Gets the axis min max value.
      * 
@@ -1620,7 +1619,7 @@ public class ProductMetaData {
             return Double.MIN_VALUE;
         }
 
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
 
         return minMax.min;
     }
@@ -1645,7 +1644,7 @@ public class ProductMetaData {
             return null;
         }
 
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
 
         return NetCdfReader.getStandardLatAsString(minMax.min);
     }
@@ -1661,7 +1660,7 @@ public class ProductMetaData {
             return null;
         }
 
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return NetCdfReader.getStandardLatAsString(minMax.max);
     }
 
@@ -1676,7 +1675,7 @@ public class ProductMetaData {
             return Double.MAX_VALUE;
         }
 
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return NetCdfReader.getLatNormal(minMax.max);
     }
 
@@ -1717,7 +1716,7 @@ public class ProductMetaData {
         if (axis == null) {
             return Double.MIN_VALUE;
         }
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
 
         return minMax.min;
     }
@@ -1742,7 +1741,7 @@ public class ProductMetaData {
             return null;
         }
 
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
 
         return NetCdfReader.getStandardLonAsString(minMax.min);
     }
@@ -1758,7 +1757,7 @@ public class ProductMetaData {
             return null;
         }
 
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return NetCdfReader.getStandardLonAsString(minMax.max);
     }
 
@@ -1773,7 +1772,7 @@ public class ProductMetaData {
             return Double.MAX_VALUE;
         }
 
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return minMax.max;
     }
 
@@ -1801,7 +1800,7 @@ public class ProductMetaData {
      * @param netCdfReader the net cdf reader
      * 
      * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable equivalence
-     * (Variable whose name is 'longitude' and with at least two dimensions X/Y).
+     *         (Variable whose name is 'longitude' and with at least two dimensions X/Y).
      * 
      * @throws MotuException the motu exception
      */
@@ -1828,7 +1827,7 @@ public class ProductMetaData {
      * @param netCdfReader the net cdf reader
      * 
      * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable equivalence
-     * (Variable whose name is 'longitude' and with at least two dimensions X/Y).
+     *         (Variable whose name is 'longitude' and with at least two dimensions X/Y).
      * 
      * @throws MotuException the motu exception
      */
@@ -1929,8 +1928,8 @@ public class ProductMetaData {
         if (axis == null) {
             return Double.MIN_VALUE;
         }
-        
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
 
         return minMax.min;
     }
@@ -1977,7 +1976,7 @@ public class ProductMetaData {
             return null;
         }
 
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
 
         return NetCdfReader.getStandardGeoXYAsString(minMax.min, axis.getUnitsString());
     }
@@ -2012,7 +2011,7 @@ public class ProductMetaData {
             return Double.MAX_VALUE;
         }
 
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return minMax.max;
     }
 
@@ -2058,7 +2057,7 @@ public class ProductMetaData {
             return null;
         }
 
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return NetCdfReader.getStandardGeoXYAsString(minMax.max, axis.getUnitsString());
     }
 
@@ -2137,8 +2136,8 @@ public class ProductMetaData {
         if (axis == null) {
             return Double.MIN_VALUE;
         }
-        
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
 
         return minMax.min;
     }
@@ -2185,7 +2184,7 @@ public class ProductMetaData {
             return null;
         }
 
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
 
         return NetCdfReader.getStandardGeoXYAsString(minMax.min, axis.getUnitsString());
     }
@@ -2220,7 +2219,7 @@ public class ProductMetaData {
             return Double.MAX_VALUE;
         }
 
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return minMax.max;
     }
 
@@ -2266,7 +2265,7 @@ public class ProductMetaData {
             return null;
         }
 
-        MAMath.MinMax minMax =  NetCdfWriter.getMinMaxSkipMissingData(axis, null);
+        MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return NetCdfReader.getStandardGeoXYAsString(minMax.max, axis.getUnitsString());
     }
 
@@ -2328,7 +2327,7 @@ public class ProductMetaData {
      * @param name title of the documentation.
      * 
      * @return an instance of DocMetaData, or null if not found. If more than one documentations have If
-     * several documentations have the same title, the first found is returned
+     *         several documentations have the same title, the first found is returned
      */
     public DocMetaData getDocumentation(String name) {
         DocMetaData docMetaData = null;
@@ -2353,10 +2352,10 @@ public class ProductMetaData {
 
     // CSOFF: MultipleStringLiterals : avoid message
     /**
-     * Gets the URL path to the 'quicklook' image of a variable. The URL path is : 'quicklook' href base + "/" +
-     * datasetName (productId) + "/" + variable name (in lowercase) + ".gif" The 'quicklook' href is searched
-     * among the Documentation collection of the product's metadata. If the quicklook url doesn't exist, an
-     * empty string is returned
+     * Gets the URL path to the 'quicklook' image of a variable. The URL path is : 'quicklook' href base + "/"
+     * + datasetName (productId) + "/" + variable name (in lowercase) + ".gif" The 'quicklook' href is
+     * searched among the Documentation collection of the product's metadata. If the quicklook url doesn't
+     * exist, an empty string is returned
      * 
      * @param parameterMetaData instance of a ParameterMetaData (variable) from which to get the quicklook.
      * 
@@ -2452,7 +2451,7 @@ public class ProductMetaData {
 
         return docMetaData.getResource();
     }
-    
+
     /**
      * Gets the product media value.
      * 
@@ -2516,7 +2515,6 @@ public class ProductMetaData {
     /** The time coverage. */
     private DatePeriod timeCoverage = null;
 
-    
     /**
      * Gets the time coverage.
      * 
@@ -2535,7 +2533,7 @@ public class ProductMetaData {
     public void setTimeCoverage(DateTime timeStart, DateTime timeEnd) {
         this.timeCoverage = new DatePeriod(timeStart.toDate(), timeEnd.toDate());
     }
-    
+
     /**
      * Sets the time coverage.
      * 
@@ -2554,7 +2552,7 @@ public class ProductMetaData {
     public void setTimeCoverage(DatePeriod timeCoverage) {
         this.timeCoverage = timeCoverage;
     }
-    
+
     /** The time coverage resolution. */
     private String timeCoverageResolution = null;
 
@@ -2617,22 +2615,22 @@ public class ProductMetaData {
     public void setDepthCoverage(MinMax depthCoverage) {
         this.depthCoverage = depthCoverage;
     }
-    
+
     /** The north south resolution. */
-    private Double northSouthResolution = null; 
-    
+    private Double northSouthResolution = null;
+
     /** The north south units. */
-    private String northSouthUnits = null; 
-    
+    private String northSouthUnits = null;
+
     /** The east west resolution. */
     private Double eastWestResolution = null;
-    
+
     /** The east west units. */
     private String eastWestUnits = null;
-    
+
     /** The depth resolution. */
     private Double depthResolution = null;
-    
+
     /** The depth units. */
     private String depthUnits = null;
 
@@ -2764,7 +2762,7 @@ public class ProductMetaData {
     public void setVariablesVocabulary(Variables variablesVocabulary) {
         this.variablesVocabulary = variablesVocabulary;
     }
-    
+
     /** The list tds meta data property. */
     private List<Property> listTDSMetaDataProperty = null;
 
@@ -2785,7 +2783,7 @@ public class ProductMetaData {
     public void setListTDSMetaDataProperty(List<Property> listTDSMetaDataProperty) {
         this.listTDSMetaDataProperty = listTDSMetaDataProperty;
     }
-    
+
     /**
      * Adds the list tds meta data property.
      * 
@@ -2798,10 +2796,9 @@ public class ProductMetaData {
         if (listTDSMetaDataProperty == null) {
             listTDSMetaDataProperty = new ArrayList<Property>();
         }
-        
+
         listTDSMetaDataProperty.add(property);
     }
 
-    
 }
 // CSON: MultipleStringLiterals

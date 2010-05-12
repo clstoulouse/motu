@@ -20,51 +20,50 @@
  * 
  */
 
-
 package fr.cls.atoll.motu.library.misc.utils;
 
 /**
- * Indicates that an implementing class belongs to a fixed set that may be treated
- * as an enumeration. Each instance of the class gives rise to an &quot;enum-like&quot; 
- * constant that can be used as a convenient representative for the underlying object.
+ * Indicates that an implementing class belongs to a fixed set that may be treated as an enumeration. Each
+ * instance of the class gives rise to an &quot;enum-like&quot; constant that can be used as a convenient
+ * representative for the underlying object.
  * <p>
- * Useful in situations when a Java <code>Enum</code> cannot be used, e.g. if the set of 
- * enumerated values is not known in advance and/or may change at runtime.
+ * Useful in situations when a Java <code>Enum</code> cannot be used, e.g. if the set of enumerated values is
+ * not known in advance and/or may change at runtime.
  * <p>
- * If the enum constants are of a non-primitive type, instances of this class should 
- * preferably only be obtainable from a {@link DynamicEnum} factory, to reduce the risk 
- * of invalid enum values.
+ * If the enum constants are of a non-primitive type, instances of this class should preferably only be
+ * obtainable from a {@link DynamicEnum} factory, to reduce the risk of invalid enum values.
  * <p>
- * As enum constants, instances of the class are implicitly comparable. To compare two instances
- * <i><u>as enum constants</u></i>, use {@link DynamicEnum#compare(Object, Object)}. For a
- * <code>Comparable</code> enum constant type, the results of <code>compare(e1, e2)</code> should
- * ideally match <code>e1.compareTo(e2)</code>, but this is not guaranteed.
+ * As enum constants, instances of the class are implicitly comparable. To compare two instances <i><u>as enum
+ * constants</u></i>, use {@link DynamicEnum#compare(Object, Object)}. For a <code>Comparable</code> enum
+ * constant type, the results of <code>compare(e1, e2)</code> should ideally match
+ * <code>e1.compareTo(e2)</code>, but this is not guaranteed.
+ * 
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
  * @param <E> the type of the enum constants
- * @author anphilli
- * @since 5 Feb 2009
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public interface DynamicEnumerable<E> {
 
     /**
-     * Returns the name of this enumerated value, in analogy to {@link Enum#name()}. The
-     * returned name must be non-<code>null</code>.
+     * Returns the name of this enumerated value, in analogy to {@link Enum#name()}. The returned name must be
+     * non-<code>null</code>.
      * <p>
-     * Implementing classes must ensure that, for two instances <code>v1</code> and
-     * <code>v2</code>, <code>v1.name().equals(v2.name())</code> iff
-     * <code>v1.equals(v2)</code>.
+     * Implementing classes must ensure that, for two instances <code>v1</code> and <code>v2</code>,
+     * <code>v1.name().equals(v2.name())</code> iff <code>v1.equals(v2)</code>.
      * 
      * @return the name of this enumerated value
      */
     String name();
-    
+
     /**
-     * Returns the &quot;convenience&quot; object representing this enumerated value. The
-     * returned enum value must be non-<code>null</code>.
+     * Returns the &quot;convenience&quot; object representing this enumerated value. The returned enum value
+     * must be non-<code>null</code>.
      * <p>
-     * Implementing classes must ensure that, for two instances <code>v1</code> and
-     * <code>v2</code>, <code>v1.enumValue().equals(v2.enumValue())</code> iff
-     * <code>v1.equals(v2)</code>.
+     * Implementing classes must ensure that, for two instances <code>v1</code> and <code>v2</code>,
+     * <code>v1.enumValue().equals(v2.enumValue())</code> iff <code>v1.equals(v2)</code>.
      * 
      * @return the object representing the underlying enumerated value
      */

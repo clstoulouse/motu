@@ -1,5 +1,9 @@
 package fr.cls.atoll.motu.library.misc.queueserver;
 
+import fr.cls.atoll.motu.library.misc.data.Product;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidQueuePriorityException;
+
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,19 +15,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-import fr.cls.atoll.motu.library.misc.data.Product;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidQueuePriorityException;
-
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2008. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2010-02-08 10:15:19 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
@@ -160,7 +157,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
     }
 
     /** The users. */
-    private ConcurrentMap<String, Integer> users = new ConcurrentHashMap<String, Integer>();
+    private final ConcurrentMap<String, Integer> users = new ConcurrentHashMap<String, Integer>();
 
     /**
      * Gets the users.
@@ -384,7 +381,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
     }
 
     /** The count priority map. */
-    private ConcurrentMap<Integer, Integer> priorityMap = new ConcurrentHashMap<Integer, Integer>();
+    private final ConcurrentMap<Integer, Integer> priorityMap = new ConcurrentHashMap<Integer, Integer>();
 
     /**
      * Gets the priority map.
@@ -563,7 +560,10 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
         if (lastRange != null) {
             if (lastRange == runningRange) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug(String.format("adjustPriorityMap priority %d range %d max rage %d - remove priority.", priority.intValue(),  runningRange, lastRange));
+                    LOG.debug(String.format("adjustPriorityMap priority %d range %d max rage %d - remove priority.",
+                                            priority.intValue(),
+                                            runningRange,
+                                            lastRange));
                 }
                 removePriorityMap(priority);
             }
@@ -584,10 +584,10 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
         Integer priority = runnableExtraction.getPriority();
 
-//        if (ExtractionThreadPoolExecutor.isHigherPriority(priority)) {
-//            return;
-//        }
-        
+        // if (ExtractionThreadPoolExecutor.isHigherPriority(priority)) {
+        // return;
+        // }
+
         incrementPriorityMap(priority);
 
         runnableExtraction.setPriority(priority, getPriorityMap(priority));
@@ -646,8 +646,10 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
         if (t != null) {
             try {
-                MotuException e = new MotuException(String.format("An error occurs during extraction (detected from afterExecute): user id: '%s' - request parameters '%s'", runnableExtraction
-                        .getUserId(), runnableExtraction.getExtractionParameters().toString()), t);
+                MotuException e = new MotuException(String
+                        .format("An error occurs during extraction (detected from afterExecute): user id: '%s' - request parameters '%s'",
+                                runnableExtraction.getUserId(),
+                                runnableExtraction.getExtractionParameters().toString()), t);
                 runnableExtraction.setError(e);
             } catch (MotuException e) {
                 // Do nothing
@@ -697,7 +699,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
                 // Do nothing
             }
         }
-//        incrementUser(runnableExtraction);
+        // incrementUser(runnableExtraction);
 
         runnableExtraction.setStarted();
 

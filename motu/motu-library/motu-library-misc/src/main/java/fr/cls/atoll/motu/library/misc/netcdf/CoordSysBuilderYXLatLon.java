@@ -1,7 +1,8 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.netcdf;
+
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,6 +16,7 @@ import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateTransform;
@@ -22,23 +24,19 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.conv.CF1Convention;
-import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
-
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
 
 // CSOFF: MultipleStringLiterals : avoid message in '@SuppressWarnings("unchecked")'.
 
 /**
  * Class to create a Lat/Lon coordinate system from X/Y coordinate.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class CoordSysBuilderYXLatLon extends CF1Convention {
 
@@ -63,7 +61,7 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
 
         clearCoordinateTransform();
 
-        List<Variable> listVars = (List<Variable>) ds.getVariables();
+        List<Variable> listVars = ds.getVariables();
         Variable varLat = NetCdfReader.findLatitudeIgnoreCase(listVars);
         Variable varLon = NetCdfReader.findLongitudeIgnoreCase(listVars);
 
@@ -166,7 +164,7 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
      * @param varLat latitude variable of the dataset
      * @param varLon longitude variable of the dataset
      * @throws MotuNotImplementedException
-     * @throws MotuException 
+     * @throws MotuException
      */
     public void addCoordinateSystems(NetcdfDataset ds, VariableDS varLat, VariableDS varLon) throws MotuNotImplementedException, MotuException {
 
@@ -179,7 +177,7 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
         CoordinateAxis coordLon = CoordinateAxis.factory(null, varLon);
         coordLon.setAxisType(AxisType.Lon);
 
-        List<CoordinateSystem> listCoordinateSystems = (List<CoordinateSystem>) ds.getCoordinateSystems();
+        List<CoordinateSystem> listCoordinateSystems = ds.getCoordinateSystems();
 
         List<CoordinateAxis> listNewAxes = new ArrayList<CoordinateAxis>();
 
@@ -195,7 +193,7 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
                 continue;
             }
 
-            List<CoordinateAxis> listOriginAxes = (List<CoordinateAxis>) cs.getCoordinateAxes();
+            List<CoordinateAxis> listOriginAxes = cs.getCoordinateAxes();
             for (CoordinateAxis axis : listOriginAxes) {
                 if ((axis.getAxisType() == AxisType.GeoX) || (axis.getAxisType() == AxisType.GeoY)) {
                     continue;
@@ -232,11 +230,12 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
      * @param coordTransName coordinate systèem variable name
      * @param listAxes Axes (Variables) of the new coordinate system.
      * @throws MotuNotImplementedException
-     * @throws MotuException 
+     * @throws MotuException
      */
-    private void addCoordinateSystemsAttr(NetcdfDataset ds, String coordTransName, List<CoordinateAxis> listAxes) throws MotuNotImplementedException, MotuException {
+    private void addCoordinateSystemsAttr(NetcdfDataset ds, String coordTransName, List<CoordinateAxis> listAxes) throws MotuNotImplementedException,
+            MotuException {
 
-        List<Variable> listVars = (List<Variable>) ds.getVariables();
+        List<Variable> listVars = ds.getVariables();
         List<Variable> listCoordVars = null;
 
         for (Variable var : listVars) {
@@ -294,7 +293,7 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
      * @param listNewAxes Axes (Variables) of the new coordinate system.
      * @param listOriginAxes Axes (Variables) of the original coordinate system.
      * @throws MotuNotImplementedException
-     * @throws MotuException 
+     * @throws MotuException
      */
     private void addCoordinateTransformVariable(NetcdfDataset ds,
                                                 String coordTransName,
@@ -505,7 +504,7 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
      * @uml.property name="coordinateTransform"
      */
     public VariableDS getCoordinateTransform(String key) {
-        return (VariableDS) this.coordinateTransformMap.get(key);
+        return this.coordinateTransformMap.get(key);
     }
 
     /**
@@ -550,20 +549,19 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
      * @uml.property name="coordinateTransform"
      */
     public Variable putCoordinateTransform(String key, VariableDS value) {
-        return (Variable) this.coordinateTransformMap.put(key, value);
+        return this.coordinateTransformMap.put(key, value);
     }
 
     /**
      * Removes the mapping for this key from this map if it is present (optional operation).
      * 
      * @param key key whose mapping is to be removed from the map.
-     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for
-     *         key.
+     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for key.
      * @see java.util.Map#remove(Object)
      * @uml.property name="coordinateTransform"
      */
     public Variable removeCoordinateTransform(String key) {
-        return (Variable) this.coordinateTransformMap.remove(key);
+        return this.coordinateTransformMap.remove(key);
     }
 
     /**

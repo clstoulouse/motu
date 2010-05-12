@@ -6,14 +6,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2008. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class ServicePersistent {
 
@@ -121,7 +118,7 @@ public class ServicePersistent {
      * @see java.util.Map#get(Object)
      */
     public ProductPersistent getProductsPersistent(Object key) {
-        return (ProductPersistent) this.productsPersistent.get(key);
+        return this.productsPersistent.get(key);
     }
 
     /**
@@ -165,19 +162,18 @@ public class ServicePersistent {
      * @see java.util.Map#put(Object,Object)
      */
     public ProductPersistent putProductsPersistent(String key, ProductPersistent value) {
-        return (ProductPersistent) this.productsPersistent.put(key, value);
+        return this.productsPersistent.put(key, value);
     }
 
     /**
      * Removes the mapping for this key from this map if it is present (optional operation).
      * 
      * @param key key whose mapping is to be removed from the map.
-     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for
-     *         key.
+     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for key.
      * @see java.util.Map#remove(Object)
      */
     public ProductPersistent removeProductsPersistent(String key) {
-        return (ProductPersistent) this.productsPersistent.remove(key);
+        return this.productsPersistent.remove(key);
     }
 
     /**

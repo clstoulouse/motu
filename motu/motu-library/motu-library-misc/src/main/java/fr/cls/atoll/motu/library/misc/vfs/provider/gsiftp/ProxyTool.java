@@ -1,9 +1,8 @@
 package fr.cls.atoll.motu.library.misc.vfs.provider.gsiftp;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.FileOutputStream;
-
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -26,13 +25,13 @@ import org.globus.util.Util;
 /**
  * Utility class to create a grid proxy.
  * 
- * @author Vladimir Silva
- * @version $Revision: 1.1 $ $Date: 2009-05-14 14:58:33 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class ProxyTool {
-    
-    
-    
+
     /**
      * Constructor.
      */
@@ -40,48 +39,47 @@ public class ProxyTool {
     }
 
     /** The log. */
-    private Log log = LogFactory.getLog(ProxyTool.class);
+    private final Log log = LogFactory.getLog(ProxyTool.class);
 
     /** The certificates. */
     private X509Certificate[] certificates;
 
-	/** The user key. */
-	private PrivateKey userKey = null;
+    /** The user key. */
+    private PrivateKey userKey = null;
 
-	/** The bits. */
-	private int bits = 1024;
-	
-	// Valid for 12 hrs
-	/** The lifetime. */
-	private int lifetime = 3600 * 12;
+    /** The bits. */
+    private final int bits = 1024;
 
-	/** The proxy type. */
-	private int proxyType = GSIConstants.GSI_2_PROXY;
+    // Valid for 12 hrs
+    /** The lifetime. */
+    private final int lifetime = 3600 * 12;
 
-	/** The quiet. */
-	private boolean quiet = false;
+    /** The proxy type. */
+    private final int proxyType = GSIConstants.GSI_2_PROXY;
 
-	/** The proxy. */
-	private GlobusCredential proxy = null;
+    /** The quiet. */
+    private final boolean quiet = false;
 
-	/*
-	 * Verify proxy
-	 */
-	/**
-	 * Verify.
-	 * 
-	 * @throws GeneralSecurityException the general security exception
-	 */
-	private void verify() throws GeneralSecurityException 	{
-		 RSAPublicKey pkey = (RSAPublicKey) this.certificates[0].getPublicKey();
-		 RSAPrivateKey prkey = (RSAPrivateKey) userKey;
-		
-		 if (!pkey.getModulus().equals(prkey.getModulus())) {
-			 throw new GeneralSecurityException(
-			 	"Certificate and private key specified do not match");
-		 }
-	
-	}
+    /** The proxy. */
+    private GlobusCredential proxy = null;
+
+    /*
+     * Verify proxy
+     */
+    /**
+     * Verify.
+     * 
+     * @throws GeneralSecurityException the general security exception
+     */
+    private void verify() throws GeneralSecurityException {
+        RSAPublicKey pkey = (RSAPublicKey) this.certificates[0].getPublicKey();
+        RSAPrivateKey prkey = (RSAPrivateKey) userKey;
+
+        if (!pkey.getModulus().equals(prkey.getModulus())) {
+            throw new GeneralSecurityException("Certificate and private key specified do not match");
+        }
+
+    }
 
     /**
      * Gets the certificate.
@@ -92,209 +90,196 @@ public class ProxyTool {
         return this.certificates[0];
     }
 
-	/*
-	 * Load a cert from a given path
-	 */
-	/**
-	 * Load certificates.
-	 * 
-	 * @param path the path
-	 * 
-	 * @throws GeneralSecurityException the general security exception
-	 * @throws IOException Signals that an I/O exception has occurred.
-	 */
-	private void loadCertificates(String path)		throws GeneralSecurityException, IOException	{
-//			certificates = 	CertUtil.loadCertificates(arg);
-			certificates = new X509Certificate[] { CertUtil
-					.loadCertificate(path) };
-	}
+    /*
+     * Load a cert from a given path
+     */
+    /**
+     * Load certificates.
+     * 
+     * @param path the path
+     * 
+     * @throws GeneralSecurityException the general security exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    private void loadCertificates(String path) throws GeneralSecurityException, IOException {
+        // certificates = CertUtil.loadCertificates(arg);
+        certificates = new X509Certificate[] { CertUtil.loadCertificate(path) };
+    }
 
-	/**
-	 * Load user key & decrypt it.
-	 * 
-	 * @param keyPath pth to the key
-	 * @param pwd decryption passphrase
-	 * 
-	 * @throws GeneralSecurityException the general security exception
-	 */
-	private void loadKey(String keyPath, String pwd)
-		throws GeneralSecurityException	{
-		try {
-			OpenSSLKey key = new BouncyCastleOpenSSLKey(keyPath);
+    /**
+     * Load user key & decrypt it.
+     * 
+     * @param keyPath pth to the key
+     * @param pwd decryption passphrase
+     * 
+     * @throws GeneralSecurityException the general security exception
+     */
+    private void loadKey(String keyPath, String pwd) throws GeneralSecurityException {
+        try {
+            OpenSSLKey key = new BouncyCastleOpenSSLKey(keyPath);
 
-			if (key.isEncrypted()) {
-				key.decrypt(pwd);
-			}
+            if (key.isEncrypted()) {
+                key.decrypt(pwd);
+            }
 
-			userKey = key.getPrivateKey();
+            userKey = key.getPrivateKey();
 
-		} catch (IOException e) {
-			throw new GeneralSecurityException("Error: Failed to load key: " + keyPath);
-		} catch (GeneralSecurityException e) {
-			throw new GeneralSecurityException("Error: Wrong pass phrase");
-		}
-	}
+        } catch (IOException e) {
+            throw new GeneralSecurityException("Error: Failed to load key: " + keyPath);
+        } catch (GeneralSecurityException e) {
+            throw new GeneralSecurityException("Error: Wrong pass phrase");
+        }
+    }
 
-	/*
-	 * Create the actual proxy
-	 */
-	/**
-	 * Sign.
-	 */
-	private void sign() {
-		try {
-			BouncyCastleCertProcessingFactory factory = BouncyCastleCertProcessingFactory
-					.getDefault();
+    /*
+     * Create the actual proxy
+     */
+    /**
+     * Sign.
+     */
+    private void sign() {
+        try {
+            BouncyCastleCertProcessingFactory factory = BouncyCastleCertProcessingFactory.getDefault();
 
-			X509ExtensionSet extSet = null;
+            X509ExtensionSet extSet = null;
 
-			// if (proxyCertInfo != null) {
-			// extSet = new X509ExtensionSet();
-			// if (CertUtil.isGsi4Proxy(proxyType)) {
-			// // RFC compliant OID
-			// extSet.add(new ProxyCertInfoExtension(proxyCertInfo));
-			// } else {
-			// // old OID
-			// extSet.add(new GlobusProxyCertInfoExtension(proxyCertInfo));
-			// }
-			// }
+            // if (proxyCertInfo != null) {
+            // extSet = new X509ExtensionSet();
+            // if (CertUtil.isGsi4Proxy(proxyType)) {
+            // // RFC compliant OID
+            // extSet.add(new ProxyCertInfoExtension(proxyCertInfo));
+            // } else {
+            // // old OID
+            // extSet.add(new GlobusProxyCertInfoExtension(proxyCertInfo));
+            // }
+            // }
 
-			proxy = factory.createCredential(certificates, userKey, bits,
-					lifetime, proxyType, extSet);
-		} catch (GeneralSecurityException e) {
-			System.err.println("Failed to create a proxy: " + e.getMessage());
-		}
-	}
-	
-	/**
-	 * Create a grid proxy.
-	 * 
-	 * @param cert Certificate path
-	 * @param key Key path
-	 * @param pwd Cert passphrase
-	 * @param verify proxy verification?
-	 * @param globusStyle the globus style
-	 * @param proxyFile Path to the output proxy certificate
-	 * 
-	 * @throws GeneralSecurityException the general security exception
-	 * @throws IOException Signals that an I/O exception has occurred.
-	 */
-	public void createProxy(String cert, String key, String pwd, boolean verify,
-			boolean globusStyle, String proxyFile) 
-	throws GeneralSecurityException, IOException 	{
-		log.debug("Certificate:" + cert);
-		log.debug("Private Key:" + key);
-		
-		loadCertificates(cert);
+            proxy = factory.createCredential(certificates, userKey, bits, lifetime, proxyType, extSet);
+        } catch (GeneralSecurityException e) {
+            System.err.println("Failed to create a proxy: " + e.getMessage());
+        }
+    }
 
-//		if (!quiet) {
-			String dn = null;
-			if (globusStyle) {
-				dn = CertUtil.toGlobusID(getCertificate().getSubjectDN());
-			} else {
-				dn = getCertificate().getSubjectDN().getName();
-			}
-			log.debug("Your identity: " + dn);
-			log.debug("Issuer: " + getCertificate().getIssuerDN());
-//		}
+    /**
+     * Create a grid proxy.
+     * 
+     * @param cert Certificate path
+     * @param key Key path
+     * @param pwd Cert passphrase
+     * @param verify proxy verification?
+     * @param globusStyle the globus style
+     * @param proxyFile Path to the output proxy certificate
+     * 
+     * @throws GeneralSecurityException the general security exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public void createProxy(String cert, String key, String pwd, boolean verify, boolean globusStyle, String proxyFile)
+            throws GeneralSecurityException, IOException {
+        log.debug("Certificate:" + cert);
+        log.debug("Private Key:" + key);
 
-		loadKey(key, pwd);
+        loadCertificates(cert);
 
-//		if (debug) {
-			log.debug("Using " + bits + " bits for private key");
-//		}
+        // if (!quiet) {
+        String dn = null;
+        if (globusStyle) {
+            dn = CertUtil.toGlobusID(getCertificate().getSubjectDN());
+        } else {
+            dn = getCertificate().getSubjectDN().getName();
+        }
+        log.debug("Your identity: " + dn);
+        log.debug("Issuer: " + getCertificate().getIssuerDN());
+        // }
 
-		sign();
+        loadKey(key, pwd);
 
-		if (verify) {
-			verify();
-		}
+        // if (debug) {
+        log.debug("Using " + bits + " bits for private key");
+        // }
 
-//		if (debug) {
-			log.debug("Saving proxy to: " + proxyFile);
-//		}
+        sign();
 
-		if (!quiet) {
-			log.debug("Your proxy is valid until "
-					+ proxy.getCertificateChain()[0].getNotAfter());
-		}
+        if (verify) {
+            verify();
+        }
 
-		OutputStream out = null;
-		try {
-			out = new FileOutputStream(proxyFile);
+        // if (debug) {
+        log.debug("Saving proxy to: " + proxyFile);
+        // }
 
-			// set read only permissions
-			if (!Util.setFilePermissions(proxyFile, 600)) {
-				System.err
-						.println("Warning: Please check file permissions for your proxy file.");
-			}
+        if (!quiet) {
+            log.debug("Your proxy is valid until " + proxy.getCertificateChain()[0].getNotAfter());
+        }
 
-			// write the contents
-			proxy.save(out);
-		} catch (IOException e) {
-			throw new IOException("Failed to save proxy to a file: "
-					+ e.getMessage());
-		} finally {
-			if (out != null) {
-				try {
-					out.close();
-				} catch (Exception e) {
-				    // Do Nothing
-				}
-			}
-		}
+        OutputStream out = null;
+        try {
+            out = new FileOutputStream(proxyFile);
 
-	}
+            // set read only permissions
+            if (!Util.setFilePermissions(proxyFile, 600)) {
+                System.err.println("Warning: Please check file permissions for your proxy file.");
+            }
 
-	/**
-	 * Create a grid proxy w/ default credentials.
-	 * 
-	 * @param passPhrase the pass phrase
-	 * 
-	 * @throws GeneralSecurityException the general security exception
-	 * @throws IOException Signals that an I/O exception has occurred.
-	 */
-	public void createProxy (String passPhrase)
-		throws GeneralSecurityException, IOException 	{
-		if ( ! proxyExpired() ) {
+            // write the contents
+            proxy.save(out);
+        } catch (IOException e) {
+            throw new IOException("Failed to save proxy to a file: " + e.getMessage());
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (Exception e) {
+                    // Do Nothing
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Create a grid proxy w/ default credentials.
+     * 
+     * @param passPhrase the pass phrase
+     * 
+     * @throws GeneralSecurityException the general security exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public void createProxy(String passPhrase) throws GeneralSecurityException, IOException {
+        if (!proxyExpired()) {
             return;
         }
-		
-		CoGProperties properties = CoGProperties.getDefault();
-		createProxy(
-				properties.getUserCertFile(),
-				properties.getUserKeyFile(),
-				passPhrase,
-				true, true, properties.getProxyFile());
 
-	}
-	
-	/**
-	 * Check for expired proxy.
-	 * 
-	 * @return true if expired proxy
-	 * 
-	 */
-	public boolean proxyExpired() 	{
-		try {
-			long t = new GlobusCredential(CoGProperties.getDefault().getProxyFile()).getTimeLeft();
-			return (t == 0) ? true : false;	
-		} catch (GlobusCredentialException e) {
-			return true;
-		}
-	}
-	
-	/**
-	 * @param args
-	 */
-//	public static void main(String[] args) {
-//		try {
-//			ProxyTool tool = new ProxyTool();
-//			tool.createProxy("2p2dkdt");
-//			
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
+        CoGProperties properties = CoGProperties.getDefault();
+        createProxy(properties.getUserCertFile(), properties.getUserKeyFile(), passPhrase, true, true, properties.getProxyFile());
+
+    }
+
+    /**
+     * Check for expired proxy.
+     * 
+     * @return true if expired proxy
+     * 
+     */
+    public boolean proxyExpired() {
+        try {
+            long t = new GlobusCredential(CoGProperties.getDefault().getProxyFile()).getTimeLeft();
+            return (t == 0) ? true : false;
+        } catch (GlobusCredentialException e) {
+            return true;
+        }
+    }
+
+    /**
+     * @param args
+     */
+    // public static void main(String[] args) {
+    // try {
+    // ProxyTool tool = new ProxyTool();
+    // tool.createProxy("2p2dkdt");
+    //			
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // }
 
 }

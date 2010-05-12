@@ -24,14 +24,11 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2008. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.7 $ - $Date: 2010-02-26 13:51:59 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class XMLUtils {
 

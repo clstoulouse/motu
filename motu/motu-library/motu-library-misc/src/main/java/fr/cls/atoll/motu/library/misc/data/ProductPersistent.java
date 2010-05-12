@@ -1,21 +1,14 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.data;
 
 import java.util.List;
 
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2008. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-05-27 16:02:50 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-
 public class ProductPersistent {
 
     /**
@@ -35,7 +28,7 @@ public class ProductPersistent {
 
     /** The url meta data. */
     protected String urlMetaData;
-    
+
     /**
      * Gets the url meta data.
      * 
@@ -107,10 +100,9 @@ public class ProductPersistent {
     public void setUrl(String url) {
         this.url = url;
     }
-    
+
     /** The data files. */
     List<DataFile> dataFiles = null;
-    
 
     /**
      * Gets the data files.
@@ -129,6 +121,5 @@ public class ProductPersistent {
     public void setDataFiles(List<DataFile> dataFiles) {
         this.dataFiles = dataFiles;
     }
-
 
 }

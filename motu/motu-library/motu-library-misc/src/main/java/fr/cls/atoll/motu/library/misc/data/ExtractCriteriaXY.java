@@ -1,6 +1,3 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.data;
 
 import java.util.List;
@@ -11,9 +8,10 @@ import ucar.unidata.geoloc.ProjectionRect;
  * This class introduces geographical coverage criterias as X and Y coordinates to be apply on data (for
  * extraction/selection and research).
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class ExtractCriteriaXY extends ExtractCriteriaGeo {
 

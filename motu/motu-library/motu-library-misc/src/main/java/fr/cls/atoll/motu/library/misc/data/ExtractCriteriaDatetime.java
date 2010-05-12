@@ -1,7 +1,9 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.data;
+
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 
 import java.util.Date;
 import java.util.List;
@@ -9,17 +11,14 @@ import java.util.List;
 import ucar.ma2.Array;
 import ucar.ma2.Range;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
-
 /**
  * This class introduces temporal coverage criterias to be apply on data (for extraction/selection and
  * research).
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class ExtractCriteriaDatetime extends fr.cls.atoll.motu.library.misc.data.ExtractCriteria {
 
@@ -318,7 +317,7 @@ public class ExtractCriteriaDatetime extends fr.cls.atoll.motu.library.misc.data
         try {
             range = new Range(first, last);
         } catch (Exception e) {
-            throw new MotuException("Error in ExtractCriteriaDatatime toRange", (Throwable) e);
+            throw new MotuException("Error in ExtractCriteriaDatatime toRange", e);
         }
         return range;
     }

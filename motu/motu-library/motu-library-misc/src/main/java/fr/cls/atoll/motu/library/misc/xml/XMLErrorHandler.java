@@ -8,14 +8,11 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2008. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class XMLErrorHandler extends DefaultHandler {
 
@@ -54,7 +51,7 @@ public class XMLErrorHandler extends DefaultHandler {
     }
 
     /** The errors. */
-    private List<String> errors = new ArrayList<String>();
+    private final List<String> errors = new ArrayList<String>();
 
     /**
      * Gets the errors.
@@ -72,6 +69,7 @@ public class XMLErrorHandler extends DefaultHandler {
      * 
      * @throws SAXException the SAX exception
      */
+    @Override
     public void warning(SAXParseException ex) throws SAXException {
         processException(ex, XMLErrorType.WARNING);
     }
@@ -83,6 +81,7 @@ public class XMLErrorHandler extends DefaultHandler {
      * 
      * @throws SAXException the SAX exception
      */
+    @Override
     public void error(SAXParseException ex) throws SAXException {
         processException(ex, XMLErrorType.ERROR);
     }
@@ -94,6 +93,7 @@ public class XMLErrorHandler extends DefaultHandler {
      * 
      * @throws SAXException the SAX exception
      */
+    @Override
     public void fatalError(SAXParseException ex) throws SAXException {
         processException(ex, XMLErrorType.FATAL);
     }

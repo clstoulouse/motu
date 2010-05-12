@@ -1,15 +1,5 @@
 package fr.cls.atoll.motu.library.misc.data;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
@@ -22,18 +12,24 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer.Format;
 import fr.cls.atoll.motu.library.misc.utils.Zip;
-import fr.cls.atoll.motu.library.misc.vfs.VFSManager;
 import fr.cls.commons.util.DatePeriod;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2009. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.6 $ - $Date: 2009-07-08 13:38:37 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class DatasetFtp extends DatasetBase {
 
@@ -63,7 +59,7 @@ public class DatasetFtp extends DatasetBase {
     public void computeAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
             MotuNoVarException, NetCdfVariableNotFoundException {
-        
+
         List<DataFile> dataFiles = selectDataFile();
 
         amountDataSize = DatasetFtp.getAmountDataSize(dataFiles);
@@ -255,7 +251,7 @@ public class DatasetFtp extends DatasetBase {
                 stringBuffer.append("/");
                 if (!Organizer.isNullOrEmpty(dataFile.getPath())) {
                     stringBuffer.append("dataFile.getPath()");
-                    stringBuffer.append("/");                    
+                    stringBuffer.append("/");
                 }
                 stringBuffer.append(dataFile.getName());
 
@@ -303,7 +299,7 @@ public class DatasetFtp extends DatasetBase {
         }
 
     }
-    
+
     /**
      * Gets the amount data size in megabytes.
      * 
@@ -313,23 +309,21 @@ public class DatasetFtp extends DatasetBase {
      */
     public static double getAmountDataSize(List<DataFile> dataFiles) {
         return (DatasetFtp.computeSize(dataFiles)) / (1024 * 1024);
-        
+
     }
 
     /** {@inheritDoc} */
     @Override
     public List<String> addVariables(List<String> listVar) throws MotuException {
-        // There is no variable criteria on FTP dataset  
+        // There is no variable criteria on FTP dataset
         return listVar;
     }
-
 
     /** {@inheritDoc} */
     @Override
     public void updateVariables(List<String> listVar) throws MotuException {
-        // There is no variable criteria on FTP dataset  
+        // There is no variable criteria on FTP dataset
         // Do nothing
     }
 
-    
 }

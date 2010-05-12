@@ -37,11 +37,13 @@ import java.util.Set;
  * Implementation of {@link DynamicEnum#compare(Object, Object)} should be aligned with the
  * &quot;natural&quot; ordering of the enum (as reflected by {@link #ordinal(Object)}).
  * 
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
  * @param <E> the type of the enum values
  * @param <D> the type of the objects giving rise to the enum values
- * @author anphilli
- * @since 5 Feb 2009
  * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public interface DynamicEnum<E, D extends DynamicEnumerable<E>> extends Comparator<E> {
 

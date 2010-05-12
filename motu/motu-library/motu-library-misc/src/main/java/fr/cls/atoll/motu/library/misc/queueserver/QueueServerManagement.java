@@ -1,15 +1,5 @@
 package fr.cls.atoll.motu.library.misc.queueserver;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
-import org.quartz.Scheduler;
-
 import fr.cls.atoll.motu.library.misc.configuration.QueueServerType;
 import fr.cls.atoll.motu.library.misc.configuration.QueueType;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
@@ -32,15 +22,22 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+import org.quartz.Scheduler;
+
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2008. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-06-03 11:43:51 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class QueueServerManagement {
 
@@ -277,9 +274,9 @@ public class QueueServerManagement {
 
             QueueManagement queueManagement = new QueueManagement(queueConfig);
 
-//            if (scheduler != null) {
-//                queueManagement.createAndScheduleJob(scheduler);
-//            }
+            // if (scheduler != null) {
+            // queueManagement.createAndScheduleJob(scheduler);
+            // }
 
             putQueueManagement(queueConfig, queueManagement);
         }
@@ -361,7 +358,7 @@ public class QueueServerManagement {
      * @param key key whose associated value is to be returned.
      * 
      * @return the value to which this map maps the specified key, or <tt>null</tt> if the map contains no
-     * mapping for this key.
+     *         mapping for this key.
      * 
      * @see java.util.Map#get(Object)
      * @uml.property name="queueManagement"
@@ -425,8 +422,7 @@ public class QueueServerManagement {
      * 
      * @param key key whose mapping is to be removed from the map.
      * 
-     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for
-     * key.
+     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for key.
      * 
      * @see java.util.Map#remove(Object)
      * @uml.property name="queueManagement"
@@ -444,7 +440,7 @@ public class QueueServerManagement {
     public void clearQueueManagement() {
         queueManagementMap.clear();
     }
-    
+
     /**
      * Execute.
      * 
@@ -643,7 +639,8 @@ public class QueueServerManagement {
         }
 
         if (queueManagement == null) {
-            throw new MotuExceedingQueueDataCapacityException(size, getMaxDataThreshold(runnableExtraction.isBatchQueue()), runnableExtraction.isBatchQueue());
+            throw new MotuExceedingQueueDataCapacityException(size, getMaxDataThreshold(runnableExtraction.isBatchQueue()), runnableExtraction
+                    .isBatchQueue());
 
         }
 
@@ -665,10 +662,10 @@ public class QueueServerManagement {
             return -1d;
         }
 
-//        // queues are sorted by data threshold (ascending)
-//        QueueType queueConfig = getQueuesConfig().get(getQueuesConfig().size() - 1);
-//        return queueConfig.getDataThreshold();
-//
+        // // queues are sorted by data threshold (ascending)
+        // QueueType queueConfig = getQueuesConfig().get(getQueuesConfig().size() - 1);
+        // return queueConfig.getDataThreshold();
+        //
         List<QueueType> queuesConfig = getQueuesConfig();
         double size = Double.MIN_VALUE;
 
@@ -677,13 +674,13 @@ public class QueueServerManagement {
             if (batchQueue != queueConfig.isBatch()) {
                 continue;
             }
-            double dataThreshold = queueConfig.getDataThreshold();            
+            double dataThreshold = queueConfig.getDataThreshold();
             if (size <= queueConfig.getDataThreshold()) {
                 size = dataThreshold;
             }
         }
         return size;
-        
+
     }
 
     /**

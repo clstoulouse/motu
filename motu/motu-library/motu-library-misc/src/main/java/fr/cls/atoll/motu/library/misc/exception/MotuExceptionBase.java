@@ -1,6 +1,3 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.exception;
 
 import org.apache.log4j.Logger;
@@ -10,9 +7,10 @@ import org.apache.log4j.Logger;
 /**
  * Base exception class of Motu.
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-06-10 14:16:47 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class MotuExceptionBase extends Exception {
     /**

@@ -9,10 +9,11 @@ import ucar.nc2.Dimension;
 /**
  * This class represents the metadata of a parameter (variable).
  * 
- * @author $Author: ccamel $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-
 public class ParameterMetaData {
     // CSOFF: StrictDuplicateCode : normal duplication code.
 
@@ -239,7 +240,7 @@ public class ParameterMetaData {
      * @uml.property name="dimensions"
      */
     public Dimension getDimensions(int i) {
-        return (Dimension) this.dimensions.get(i);
+        return this.dimensions.get(i);
     }
 
     /**
@@ -330,7 +331,7 @@ public class ParameterMetaData {
      * @uml.property name="dimensions"
      */
     public <T extends Dimension> T[] dimensionsToArray(T[] a) {
-        return (T[]) this.dimensions.toArray(a);
+        return this.dimensions.toArray(a);
     }
 
     /**

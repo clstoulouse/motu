@@ -1,6 +1,3 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.exception;
 
 import org.apache.log4j.Logger;
@@ -12,9 +9,10 @@ import ucar.nc2.Variable;
 /**
  * Exception class for NetCDF attribute 'not found' exception.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class NetCdfAttributeNotFoundException extends MotuExceptionBase {
     /**
@@ -48,6 +46,7 @@ public class NetCdfAttributeNotFoundException extends MotuExceptionBase {
     /**
      * writes exception information into the log.
      */
+    @Override
     public void notifyLogException() {
 
         super.notifyLogException();
@@ -57,6 +56,7 @@ public class NetCdfAttributeNotFoundException extends MotuExceptionBase {
     /**
      * @return exception information.
      */
+    @Override
     public String notifyException() {
         StringBuffer stringBuffer = new StringBuffer();
 

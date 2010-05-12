@@ -3,11 +3,11 @@ package fr.cls.atoll.motu.library.misc.exception;
 import org.apache.log4j.Logger;
 
 /**
- * <br><br>Copyright : Copyright (c) 2008.
- * <br><br>Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-05-05 14:46:57 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class MotuInvalidRequestIdException extends MotuExceptionBase {
 
@@ -16,7 +16,7 @@ public class MotuInvalidRequestIdException extends MotuExceptionBase {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
-    
+
     /**
      * The Constructor.
      */
@@ -61,6 +61,7 @@ public class MotuInvalidRequestIdException extends MotuExceptionBase {
     /**
      * writes exception information into the log.
      */
+    @Override
     public void notifyLogException() {
 
         super.notifyLogException();
@@ -72,6 +73,7 @@ public class MotuInvalidRequestIdException extends MotuExceptionBase {
      * 
      * @return exception information.
      */
+    @Override
     public String notifyException() {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(super.notifyException());

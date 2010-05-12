@@ -1,19 +1,8 @@
-/*
- * Copyright 2002-2005 The Apache Software Foundation.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package fr.cls.atoll.motu.library.misc.vfs.provider.gsiftp;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,36 +15,19 @@ import org.apache.commons.vfs.FileSystemOptions;
 import org.apache.commons.vfs.UserAuthenticationData;
 import org.apache.commons.vfs.provider.AbstractOriginatingFileProvider;
 import org.apache.commons.vfs.provider.GenericFileName;
-import org.globus.ftp.GridFTPClient;
-import org.globus.ftp.exception.ServerException;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
- * A provider for accessing files over GsiFTP. This file was modified by CLS
+ * A provider for accessing files over GsiFTP. This file was modified by CLS.
  * 
- * @author <a href="mailto:vladimir_silva@yahoo.com">Vladimir Silva</a>
- * @version $Id: GsiFtpFileProvider.java,v 1.2 2009-05-18 12:29:54 dearith Exp $
- */
-/**
- * <br><br>Copyright : Copyright (c) 2009.
- * <br><br>Société : CLS (Collecte Localisation Satellites)
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-05-18 12:29:54 $
- */
-/**
- * <br><br>Copyright : Copyright (c) 2009.
- * <br><br>Société : CLS (Collecte Localisation Satellites)
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-05-18 12:29:54 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class GsiFtpFileProvider extends AbstractOriginatingFileProvider {
 
     /** The log. */
-    private Log log = LogFactory.getLog(GsiFtpFileProvider.class);
+    private final Log log = LogFactory.getLog(GsiFtpFileProvider.class);
 
     /** The Constant CAPABILITIES. */
     @SuppressWarnings("unchecked")
@@ -90,6 +62,7 @@ public class GsiFtpFileProvider extends AbstractOriginatingFileProvider {
      * 
      * @throws FileSystemException the file system exception
      */
+    @Override
     protected FileSystem doCreateFileSystem(final FileName name, final FileSystemOptions fileSystemOptions) throws FileSystemException {
         // Create the file system
         final GenericFileName rootName = (GenericFileName) name;
@@ -98,33 +71,33 @@ public class GsiFtpFileProvider extends AbstractOriginatingFileProvider {
         GridFTPClientWrapper gridFtpClient = null;
         try {
             gridFtpClient = new GridFTPClientWrapper(rootName, fileSystemOptions);
-            log.debug("Creating connection to GsiFTP Host:" + gridFtpClient.getRoot().getHostName() + " Port:" + gridFtpClient.getRoot().getPort() + " User:"
-                      + gridFtpClient.getRoot().getUserName() + " Path:" + gridFtpClient.getRoot().getPath());
+            log.debug("Creating connection to GsiFTP Host:" + gridFtpClient.getRoot().getHostName() + " Port:" + gridFtpClient.getRoot().getPort()
+                    + " User:" + gridFtpClient.getRoot().getUserName() + " Path:" + gridFtpClient.getRoot().getPath());
             attrHome = gridFtpClient.getCurrentDir();
             log.debug("Current directory: " + attrHome);
         } catch (Exception e) {
             throw new FileSystemException("vfs.provider.gsiftp/connect.error", name, e);
         }
 
-        
-//        // Session session;
-//        GridFTPClient client;
-//        String attrHome;
-//        try {
-//            log.debug("Creating connection to GsiFTP Host:" + rootName.getHostName() + " Port:" + rootName.getPort() + " User:"
-//                    + rootName.getUserName() + " Path:" + rootName.getPath());
-//
-//            client = GsiFtpClientFactory.createConnection(rootName.getHostName(),
-//                                                          rootName.getPort(),
-//                                                          rootName.getUserName(),
-//                                                          rootName.getPassword(),
-//                                                          fileSystemOptions);
-//
-//            attrHome = client.getCurrentDir();
-//            log.debug("Current directory: " + attrHome);
-//        } catch (final Exception e) {
-//            throw new FileSystemException("vfs.provider.gsiftp/connect.error", name, e);
-//        }
+        // // Session session;
+        // GridFTPClient client;
+        // String attrHome;
+        // try {
+        // log.debug("Creating connection to GsiFTP Host:" + rootName.getHostName() + " Port:" +
+        // rootName.getPort() + " User:"
+        // + rootName.getUserName() + " Path:" + rootName.getPath());
+        //
+        // client = GsiFtpClientFactory.createConnection(rootName.getHostName(),
+        // rootName.getPort(),
+        // rootName.getUserName(),
+        // rootName.getPassword(),
+        // fileSystemOptions);
+        //
+        // attrHome = client.getCurrentDir();
+        // log.debug("Current directory: " + attrHome);
+        // } catch (final Exception e) {
+        // throw new FileSystemException("vfs.provider.gsiftp/connect.error", name, e);
+        // }
 
         // set HOME dir attribute
         final GsiFtpFileSystem fs = new GsiFtpFileSystem(rootName, gridFtpClient, fileSystemOptions);
@@ -138,10 +111,12 @@ public class GsiFtpFileProvider extends AbstractOriginatingFileProvider {
      * 
      * @throws FileSystemException the file system exception
      */
+    @Override
     public void init() throws FileSystemException {
     }
 
     /** {@inheritDoc} */
+    @Override
     public FileSystemConfigBuilder getConfigBuilder() {
         return GsiFtpFileSystemConfigBuilder.getInstance();
     }

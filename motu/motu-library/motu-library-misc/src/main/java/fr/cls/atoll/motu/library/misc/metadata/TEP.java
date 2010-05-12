@@ -3,9 +3,10 @@ package fr.cls.atoll.motu.library.misc.metadata;
 /**
  * ThEmatical Portal responsible for the coordination of the current service with other services.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class TEP {
 

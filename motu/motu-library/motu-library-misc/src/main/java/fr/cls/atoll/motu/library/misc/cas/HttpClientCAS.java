@@ -1,5 +1,9 @@
 package fr.cls.atoll.motu.library.misc.cas;
 
+import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
+import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+
 import java.io.IOException;
 
 import org.apache.commons.httpclient.HostConfiguration;
@@ -14,11 +18,13 @@ import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.log4j.Logger;
 
-import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-
+/**
+ * 
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
+ */
 public class HttpClientCAS extends HttpClient {
 
     static {
@@ -149,15 +155,16 @@ public class HttpClientCAS extends HttpClient {
         String newURIAsString = AssertionUtils.addCASTicket(method.getURI().getEscapedURI());
         if (!AssertionUtils.hasCASTicket(newURIAsString)) {
             newURIAsString = AssertionUtils.addCASTicket(method.getURI().getEscapedURI(), AuthentificationHolder.getUser());
-            
+
             if (!AssertionUtils.hasCASTicket(newURIAsString)) {
-                
-                String login = AuthentificationHolder.getUserLogin();    
+
+                String login = AuthentificationHolder.getUserLogin();
                 throw new MotuException(
                         String
                                 .format("Unable to access resource '%s'. This resource has been declared as CASified, but the Motu application/API can't retrieve any ticket from CAS via REST. \nFor information, current user login is:'%s'",
-                                        method.getURI().getEscapedURI(), login));
-                
+                                        method.getURI().getEscapedURI(),
+                                        login));
+
             }
         }
 

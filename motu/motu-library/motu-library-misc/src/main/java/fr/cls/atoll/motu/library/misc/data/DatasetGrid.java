@@ -1,31 +1,4 @@
-// NetCDF 2.2.16
-//import ucar.nc2.dataset.grid.GeoGrid;
-//import ucar.nc2.dataset.grid.GridDataset;
-//import ucar.nc2.dataset.grid.GridCoordSys;
-// NetCDF 2.2.18
-//import ucar.nc2.dt.grid.GeoGrid;
-//import ucar.nc2.dt.grid.GridDataset;
-//import ucar.nc2.dt.grid.GridCoordSys;
-
 package fr.cls.atoll.motu.library.misc.data;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.MAMath;
-import ucar.ma2.Range;
-import ucar.nc2.Attribute;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateSystem;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.grid.GeoGrid;
-import ucar.nc2.dt.grid.GridDataset;
 
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
@@ -40,13 +13,31 @@ import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
+import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.MAMath;
+import ucar.ma2.Range;
+import ucar.nc2.Attribute;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateSystem;
+import ucar.nc2.dt.grid.GeoGrid;
+import ucar.nc2.dt.grid.GridDataset;
+
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
 /**
  * Gridded dataset class.
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2010-03-04 16:05:15 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase {
     /**
@@ -82,6 +73,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
      */
+    @Override
     public void computeAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
             MotuNoVarException, NetCdfVariableNotFoundException {
@@ -153,7 +145,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
                     // geoGridSubset = geoGrid.makeSubset(null, null, tRange, zRange, yxRange[0], yxRange[1]);
                 } catch (InvalidRangeException e) {
 
-                    throw new MotuException("Error in subsetting geo grid", (Throwable) e);
+                    throw new MotuException("Error in subsetting geo grid", e);
                 }
             }
             // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get somme information
@@ -178,8 +170,9 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
      * @throws MotuInvalidLatLonRangeException
      * @throws MotuNoVarException
      * @throws NetCdfVariableNotFoundException
-     * @throws IOException 
+     * @throws IOException
      */
+    @Override
     public void extractData(Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
             MotuNoVarException, NetCdfVariableNotFoundException, IOException {
@@ -218,7 +211,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
      * @throws MotuInvalidLatLonRangeException
      * @throws MotuNoVarException
      * @throws NetCdfVariableNotFoundException
-     * @throws IOException 
+     * @throws IOException
      */
     public void extractDataIntoNetCdf() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
@@ -235,19 +228,15 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
         getAdjacentYXRange();
         // getYXRange();
         getZRange();
-/*
-        try {
-            NetCdfReader.toNcML(product.getNetCdfReaderDataset(), "c:\\temp\\test.xml");
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-*/       
+        /*
+         * try { NetCdfReader.toNcML(product.getNetCdfReaderDataset(), "c:\\temp\\test.xml"); } catch
+         * (IOException e1) { // TODO Auto-generated catch block e1.printStackTrace(); }
+         */
         String locationData = product.getNetCdfReaderDataset().getLocation();
         NetCdfReader netCdfReader = new NetCdfReader(locationData, product.isCasAuthentification());
         netCdfReader.open(false);
-        
-        //GridDataset gds = new GridDataset(product.getNetCdfReaderDataset());
+
+        // GridDataset gds = new GridDataset(product.getNetCdfReaderDataset());
         GridDataset gds = new GridDataset(netCdfReader.getNetcdfDataset());
 
         List<Attribute> globalFixedAttributes = initializeNetCdfFixedGlobalAttributes();
@@ -260,7 +249,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
         // System.out.println(v.isCaching());
         // }
 
-        //NetCdfWriter netCdfWriter = new NetCdfWriter(product.getExtractLocationData(), true);
+        // NetCdfWriter netCdfWriter = new NetCdfWriter(product.getExtractLocationData(), true);
         NetCdfWriter netCdfWriter = new NetCdfWriter(product.getExtractLocationDataTemp(), true);
 
         netCdfWriter.writeGlobalAttributes(globalFixedAttributes);
@@ -315,20 +304,20 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
                 } catch (InvalidRangeException e) {
                     LOG.error("extractDataIntoNetCdf()", e);
 
-                    throw new MotuException("Error in subsetting geo grid", (Throwable) e);
+                    throw new MotuException("Error in subsetting geo grid", e);
                 }
             }
             // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get somme information
             // (lost
             // in subsetting - See bug below) about the variable of the GeoGrid
-             
+
             netCdfWriter.writeVariables(listGeoGridSubset, geoGrid, gds, product.getNetCdfReader().getOrignalVariables());
         }
 
         netCdfWriter.finish(VAR_ATTR_TO_REMOVE);
-        
+
         product.moveTempExtractFileToFinalExtractFile();
-        
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("extractDataIntoNetCdf() - exiting");
         }
@@ -444,7 +433,8 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
             LOG.debug("getZRange() - exiting");
         }
     }
-     /**
+
+    /**
      * Gets a list of Index Ranges for the given lat, lon bounding box. For projection, only an approximation
      * based on lat/lon corners. Must have 2D/LatLon for x and y axis.
      * 
@@ -479,7 +469,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
             }
             CoordinateSystem cs = new CoordinateSystem(product.getNetCdfReaderDataset(), productMetadata.getLatLonAxis(), null);
             listYXRanges = extractCriteriaLatLon.toListRanges(cs, rangesLatValue, rangesLonValue);
-            
+
             if (listYXRanges.size() != rangesLonValue.size()) {
                 throw new MotuException(String
                         .format("Inconsistency between Longitude ranges list (%d items) and Longitude values list (%d items) - (%s)", listYXRanges

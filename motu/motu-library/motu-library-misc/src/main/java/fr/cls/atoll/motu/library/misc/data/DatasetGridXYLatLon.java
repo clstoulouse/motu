@@ -1,7 +1,17 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.data;
+
+import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,24 +35,11 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
-import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
-
-import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 
 // CSOFF: MultipleStringLiterals : avoid message in '@SuppressWarnings("unchecked")'.
 
@@ -51,9 +48,10 @@ import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
  * 
  * DON'T USE IT : developpment of this functionality not finished and it is deffered.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class DatasetGridXYLatLon extends DatasetGrid {
     /**
@@ -178,8 +176,9 @@ public class DatasetGridXYLatLon extends DatasetGrid {
      * @throws MotuInvalidLatLonRangeException
      * @throws MotuNoVarException
      * @throws NetCdfVariableNotFoundException
-     * @throws IOException 
+     * @throws IOException
      */
+    @Override
     public void extractDataIntoNetCdf() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
             MotuNoVarException, NetCdfVariableNotFoundException, IOException {
@@ -206,10 +205,8 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         getAdjacentYXRange();
 
         /*
-        int countPair = 0;
-        int countPairLat = 0;
-        int countPairLon = 0;
-        */
+         * int countPair = 0; int countPairLat = 0; int countPairLon = 0;
+         */
         /*
          * for (List<Range> ranges : listYXRanges) { Range rangeLat = ranges.get(0); Range rangeLon =
          * ranges.get(1); System.out.print("Lat range: "); System.out.print(rangeLat.first());
@@ -218,8 +215,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
          * System.out.print(rangeLon.first()); System.out.print("\t"); System.out.print(rangeLon.last());
          * System.out.print("\tLength\t"); System.out.println(rangeLon.length()); countPair +=
          * rangeLat.length() * rangeLon.length(); countPairLat += rangeLat.length(); countPairLon +=
-         * rangeLon.length();
-         *  } System.out.print("countPair\t"); System.out.println(countPair);
+         * rangeLon.length(); } System.out.print("countPair\t"); System.out.println(countPair);
          * System.out.print("countPairLat\t"); System.out.println(countPairLat);
          * System.out.print("countPairLon\t"); System.out.println(countPairLon);
          */
@@ -308,7 +304,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
                                 .format("Variable %s in not geo-referenced - Non-georeferenced data is not implemented (method DatasetGridYXLatLon.extractDataNetcdf)",
                                         varData.getVarName()));
             }
-            Variable inputVar = (Variable) geoGrid.getVariable();
+            Variable inputVar = geoGrid.getVariable();
             Variable outputVar = new Variable(ncFile, null, null, inputVar.getName());
             List<Dimension> dims = new ArrayList<Dimension>();
             List<CoordinateAxis> inputDims = geoGrid.getCoordinateSystem().getCoordinateAxes();
@@ -327,7 +323,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
             outputVar.setDimensions(dims);
             outputVar.setDataType(inputVar.getDataType());
             NetCdfWriter.copyAttributes(inputVar, outputVar);
-            //outputVar.setIOVar(inputVar);
+            // outputVar.setIOVar(inputVar);
             outputVars.put(outputVar.getName(), outputVar);
 
             netCdfWriter.putVariables(outputVar.getName(), outputVar);
@@ -399,6 +395,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
      * @throws MotuNotImplementedException
      * @throws MotuException
      */
+    @Override
     public void getAdjacentYXRange() throws MotuException, MotuInvalidLatLonRangeException, MotuNotImplementedException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getAdjacentYXRange() - entering");
@@ -445,8 +442,8 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         outputVarTime.setDataType(inputVarTime.getDataType());
         NetCdfWriter.copyAttributes(inputVarTime, outputVarTime);
         // Netcdf 4.0 method Removed
-        //outputVarTime.setIsCoordinateAxis(timeDim);
-        //outputVarTime.setIOVar(inputVarTime);
+        // outputVarTime.setIsCoordinateAxis(timeDim);
+        // outputVarTime.setIOVar(inputVarTime);
 
         // netCdfWriter.writeDimension(timeDim);
         // netCdfWriter.writeVariable(outputVarTime, null);
@@ -480,8 +477,8 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         outputVarZ.setDataType(inputVarZ.getDataType());
         NetCdfWriter.copyAttributes(inputVarZ, outputVarZ);
         // Netcdf 4.0 method Removed
-        //outputVarZ.setIsCoordinateAxis(zDim);
-        //outputVarZ.setIOVar(inputVarZ);
+        // outputVarZ.setIsCoordinateAxis(zDim);
+        // outputVarZ.setIOVar(inputVarZ);
 
         // netCdfWriter.writeDimension(zDim);
         // netCdfWriter.writeVariable(outputVarZ, null);
@@ -514,8 +511,8 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         outputVarLat.setDataType(inputVarLat.getDataType());
         NetCdfWriter.copyAttributes(inputVarLat, outputVarLat);
         // Netcdf 4.0 method Removed
-        //outputVarLat.setIsCoordinateAxis(latDim);
-        //outputVarLat.setIOVar(inputVarLat);
+        // outputVarLat.setIsCoordinateAxis(latDim);
+        // outputVarLat.setIOVar(inputVarLat);
 
         // netCdfWriter.writeDimension(latDim);
         // netCdfWriter.writeVariable(outputVarLat, null);
@@ -549,8 +546,8 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         outputVarLon.setDataType(inputVarLon.getDataType());
         NetCdfWriter.copyAttributes(inputVarLon, outputVarLon);
         // Netcdf 4.0 method Removed
-        //outputVarLon.setIsCoordinateAxis(lonDim);
-        //outputVarLon.setIOVar(inputVarLon);
+        // outputVarLon.setIsCoordinateAxis(lonDim);
+        // outputVarLon.setIOVar(inputVarLon);
 
         // netCdfWriter.writeDimension(lonDim);
         // netCdfWriter.writeVariable(outputVarLon, null);
@@ -1006,7 +1003,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
      */
     public void writeVariable(Variable outputVar, GridDataset gds) throws MotuException, MotuNotImplementedException {
 
-        //Variable inputVar = outputVar.getIOVar();
+        // Variable inputVar = outputVar.getIOVar();
         Variable inputVar = outputVar;
         GeoGrid geoGrid = gds.findGridByName(inputVar.getName());
         if (geoGrid == null) {
@@ -1035,9 +1032,9 @@ public class DatasetGridXYLatLon extends DatasetGrid {
             try {
                 geoGridSubset = geoGrid.subset(tRange, zRange, listYXRange.get(0), listYXRange.get(1));
             } catch (InvalidRangeException e) {
-                throw new MotuException("Error in subsetting geo grid", (Throwable) e);
+                throw new MotuException("Error in subsetting geo grid", e);
             }
-            inputVarSubset = (Variable) geoGridSubset.getVariable();
+            inputVarSubset = geoGridSubset.getVariable();
             MAMath.MinMax minMaxSubset = NetCdfWriter.getMinMaxSkipMissingData(geoGrid, inputVarSubset);
             if (minMax == null) {
                 minMax = minMaxSubset;
@@ -1109,9 +1106,9 @@ public class DatasetGridXYLatLon extends DatasetGrid {
                 try {
                     geoGridSubset = geoGrid.subset(tRange, zRange, listYXRange.get(0), listYXRange.get(1));
                 } catch (InvalidRangeException e) {
-                    throw new MotuException("Error in subsetting geo grid", (Throwable) e);
+                    throw new MotuException("Error in subsetting geo grid", e);
                 }
-                inputVarSubset = (Variable) geoGridSubset.getVariable();
+                inputVarSubset = geoGridSubset.getVariable();
                 if (NetCdfWriter.isReadByBlock(inputVarSubset)) {
                     fillDataByBlock(inputVarSubset, dataToFill);
                 } else {
@@ -1190,11 +1187,11 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         } catch (IOException e) {
             LOG.error("fillDataByBlock()", e);
 
-            throw new MotuException("Error IOException in DatasetGridXYLatLon fillDataByBlock", (Throwable) e);
+            throw new MotuException("Error IOException in DatasetGridXYLatLon fillDataByBlock", e);
         } catch (InvalidRangeException e) {
             LOG.error("fillDataByBlock()", e);
 
-            throw new MotuException("Error InvalidRangeException in DatasetGridXYLatLon fillDataByBlock", (Throwable) e);
+            throw new MotuException("Error InvalidRangeException in DatasetGridXYLatLon fillDataByBlock", e);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -1222,7 +1219,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         } catch (IOException e) {
             LOG.error("fillDataInOneGulp()", e);
 
-            throw new MotuException("Error in DatasetGridXYLatLon fillDataInOneGulp", (Throwable) e);
+            throw new MotuException("Error in DatasetGridXYLatLon fillDataInOneGulp", e);
         }
 
         switch (dataRead.getRank()) {
@@ -1268,7 +1265,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
 
         // Assumes that arrays are 2D first first dimension = y and second dimension = x
         // Assumes that data type is double.
-        //List<Range> listRange = varSrc.getSectionRanges();
+        // List<Range> listRange = varSrc.getSectionRanges();
         List<Range> listRange = varSrc.getRanges();
         Range yRange = listRange.get(0);
         Range xRange = listRange.get(1);

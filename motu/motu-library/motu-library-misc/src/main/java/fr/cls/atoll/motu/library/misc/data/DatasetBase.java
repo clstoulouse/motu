@@ -1,5 +1,21 @@
 package fr.cls.atoll.motu.library.misc.data;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,29 +37,15 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
-
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
 /**
  * Dataset class. A dataset refers to one product.
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-05-27 16:02:50 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public abstract class DatasetBase {
 
@@ -231,9 +233,9 @@ public abstract class DatasetBase {
             }
 
             String trimmedStandardName = standardName.trim();
-            
+
             List<String> listVarName;
-            try { 
+            try {
                 listVarName = product.getNetCdfReader().getNetcdfVarNameByStandardName(trimmedStandardName);
             } catch (NetCdfAttributeException e) {
                 throw new MotuException("Error in addVariables - Unable to get netcdf variable name", e);
@@ -463,7 +465,7 @@ public abstract class DatasetBase {
             LOG.debug("updateCriteria() - exiting");
         }
     }
-    
+
     /**
      * Update files.
      * 
@@ -715,8 +717,8 @@ public abstract class DatasetBase {
                 max = productMetadata.getLonNormalAxisMaxValue();
             }
             if (min > max) {
-                double longitudeCenter =  min + 180.0;
-                max = LatLonPointImpl.lonNormal(max, longitudeCenter);                        
+                double longitudeCenter = min + 180.0;
+                max = LatLonPointImpl.lonNormal(max, longitudeCenter);
             }
 
             attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_LONGITUDE_MIN, min);
@@ -802,7 +804,7 @@ public abstract class DatasetBase {
             }
         }
     }
-    
+
     /**
      * Gets the coordinate variable.
      * 
@@ -815,9 +817,9 @@ public abstract class DatasetBase {
     public CoordinateAxis getCoordinateVariable(Dimension dim) throws MotuException {
 
         return product.getNetCdfReader().getCoordinateVariable(dim);
-        
+
     }
-    
+
     /**
      * Inits the get amount data.
      * 
@@ -956,7 +958,7 @@ public abstract class DatasetBase {
         if (r1.first() > r2.first()) {
             min = r1Values[0];
             max = r2Values[1];
-            //double center = ((r1Values[0] != 0.) ? r1Values[0] : r1Values[1]);
+            // double center = ((r1Values[0] != 0.) ? r1Values[0] : r1Values[1]);
             double center = r1Values[0] + 180;
             max = LatLonPointImpl.lonNormal(r2Values[1], center);
 
@@ -1097,13 +1099,13 @@ public abstract class DatasetBase {
      * @param key key whose associated value is to be returned.
      * 
      * @return the value to which this map maps the specified key, or <tt>null</tt> if the map contains no
-     * mapping for this key.
+     *         mapping for this key.
      * 
      * @see java.util.Map#get(Object)
      * @uml.property name="variables"
      */
     public VarData getVariables(String key) {
-        return (VarData) this.variablesMap.get(key);
+        return this.variablesMap.get(key);
     }
 
     /**
@@ -1153,7 +1155,7 @@ public abstract class DatasetBase {
      * @uml.property name="variables"
      */
     public VarData putVariables(String key, VarData value) {
-        return (VarData) this.variablesMap.put(key, value);
+        return this.variablesMap.put(key, value);
     }
 
     /**
@@ -1161,14 +1163,13 @@ public abstract class DatasetBase {
      * 
      * @param key key whose mapping is to be removed from the map.
      * 
-     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for
-     * key.
+     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for key.
      * 
      * @see java.util.Map#remove(Object)
      * @uml.property name="variables"
      */
     public VarData removeVariables(String key) {
-        return (VarData) this.variablesMap.remove(key);
+        return this.variablesMap.remove(key);
     }
 
     /**
@@ -1180,7 +1181,7 @@ public abstract class DatasetBase {
     public void clearVariables() {
         this.variablesMap.clear();
     }
-    
+
     /** The list criteria. */
     private List<DataFile> listFiles;
 
@@ -1242,7 +1243,7 @@ public abstract class DatasetBase {
      * @param elements collection to be checked for containment in this collection.
      * 
      * @return Returns <tt>true</tt> if this collection contains all of the elements in the specified
-     * collection.
+     *         collection.
      * 
      * @see java.util.Collection#containsAll(Collection)
      * @uml.property name="listCriteria"
@@ -1287,7 +1288,7 @@ public abstract class DatasetBase {
      * @uml.property name="listCriteria"
      */
     public <T extends ExtractCriteria> T[] criteriaToArray(T[] criteria) {
-        return (T[]) this.listCriteria.toArray(criteria);
+        return this.listCriteria.toArray(criteria);
     }
 
     /**

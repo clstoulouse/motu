@@ -4,17 +4,14 @@ import org.apache.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.StatefulJob;
-/**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2008. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
- * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
- */
 
+/**
+ * 
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
+ */
 public class ScheduleRunGCJob implements StatefulJob {
     /**
      * Logger for this class.
@@ -40,7 +37,7 @@ public class ScheduleRunGCJob implements StatefulJob {
         }
 
         Runtime r = Runtime.getRuntime();
-        r.gc();  
+        r.gc();
         r.runFinalization();
 
         if (LOG.isDebugEnabled()) {

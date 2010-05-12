@@ -1,23 +1,20 @@
 package fr.cls.atoll.motu.library.misc.queueserver;
 
+import com.thoughtworks.xstream.XStream;
+
+import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.thoughtworks.xstream.XStream;
-
-import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
-
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2008. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2010-02-26 13:51:59 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class QueueLogInfo {
 
@@ -29,7 +26,7 @@ public class QueueLogInfo {
 
     /** The request id. */
     private long requestId = -1;
-    
+
     /** The elapse wait queue time. */
     private long elapsedWaitQueueTime = 0L;
 
@@ -58,7 +55,7 @@ public class QueueLogInfo {
     private ExtractionParameters extractionParameters = null;
 
     /** The priority info. */
-    private List<QueueLogPriority> priorities = new ArrayList<QueueLogPriority>();
+    private final List<QueueLogPriority> priorities = new ArrayList<QueueLogPriority>();
 
     /** The download url path. */
     private String downloadUrlPath = null;
@@ -67,17 +64,17 @@ public class QueueLogInfo {
     private String extractLocationData = null;
 
     /** The x stream. */
-    private XStream xStream = new XStream();
+    private final XStream xStream = new XStream();
 
     /**
      * Constructor.
      */
     public QueueLogInfo() {
-        //Field[] fields = this.getClass().getDeclaredFields();
+        // Field[] fields = this.getClass().getDeclaredFields();
         // for (int i = 0 ; i < fields.length ; i++) {
         // xStream.useAttributeFor(this.getClass(), fields[i].getName());
         // }
-        
+
         initXStreamOptions();
 
     }
@@ -86,7 +83,7 @@ public class QueueLogInfo {
      * Inits the X stream options.
      */
     public void initXStreamOptions() {
-        
+
         xStream.alias("priority", QueueLogPriority.class);
 
         xStream.useAttributeFor(Date.class);
@@ -98,12 +95,12 @@ public class QueueLogInfo {
         xStream.useAttributeFor(this.getClass(), "extractLocationData");
         xStream.useAttributeFor(this.getClass(), "downloadUrlPath");
 
-//        xStream.useAttributeFor("priority", int.class);
-//        xStream.useAttributeFor("range", int.class);
-        
+        // xStream.useAttributeFor("priority", int.class);
+        // xStream.useAttributeFor("range", int.class);
+
         xStream.useAttributeFor(QueueLogPriority.class, "priority");
         xStream.useAttributeFor(QueueLogPriority.class, "range");
-        
+
         xStream.useAttributeFor(ExtractionParameters.class, "userId");
         xStream.useAttributeFor(ExtractionParameters.class, "userHost");
         xStream.useAttributeFor(ExtractionParameters.class, "locationData");
@@ -114,12 +111,11 @@ public class QueueLogInfo {
         xStream.omitField(ExtractionParameters.class, "dataOutputFormat");
         xStream.omitField(ExtractionParameters.class, "out");
         xStream.omitField(ExtractionParameters.class, "assertion");
-        
+
         xStream.omitField(this.getClass(), "xStream");
 
-
     }
-    
+
     /**
      * To XML.
      * 
@@ -146,7 +142,7 @@ public class QueueLogInfo {
      */
     public QueueLogError getQueueLogError() {
         return queueLogError;
-        
+
     }
 
     /**
@@ -316,7 +312,6 @@ public class QueueLogInfo {
         setElapsedRunTime();
     }
 
-
     /**
      * Gets the extraction parameters.
      * 
@@ -384,16 +379,17 @@ public class QueueLogInfo {
      * 
      * @return the most recent priority
      */
-    public QueueLogPriority getMostRecentPriority () {
+    public QueueLogPriority getMostRecentPriority() {
         if (priorities == null) {
             return null;
         }
         if (priorities.isEmpty()) {
             return null;
         }
-        
+
         return priorities.get(priorities.size() - 1);
     }
+
     // /**
     // * Gets the priorities time.
     // *

@@ -1,16 +1,15 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.intfce;
 
-import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.AuthentificationMode;
+import fr.cls.atoll.motu.api.message.AuthenticationMode;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 
 /**
  * User class.
  * 
- * @author $Author: ccamel $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class User {
 
@@ -146,14 +145,14 @@ public class User {
     }
 
     /** The cas authentification. */
-    private AuthentificationMode authentificationMode = AuthentificationMode.NONE;
+    private AuthenticationMode authentificationMode = AuthenticationMode.NONE;
 
     /**
      * Gets the authentification mode.
      * 
      * @return the authentification mode
      */
-    public AuthentificationMode getAuthentificationMode() {
+    public AuthenticationMode getAuthentificationMode() {
         return authentificationMode;
     }
 
@@ -162,11 +161,11 @@ public class User {
      * 
      * @param authentificationMode the new authentification mode
      */
-    public void setAuthentificationMode(AuthentificationMode authentificationMode) {
+    public void setAuthentificationMode(AuthenticationMode authentificationMode) {
         if (authentificationMode != null) {
             this.authentificationMode = authentificationMode;
         } else {
-            this.authentificationMode = AuthentificationMode.NONE;
+            this.authentificationMode = AuthenticationMode.NONE;
         }
     }
 
@@ -180,17 +179,17 @@ public class User {
     public void setAuthentificationMode(String authentificationMode) throws MotuException {
 
         if (Organizer.isNullOrEmpty(authentificationMode)) {
-            this.authentificationMode = AuthentificationMode.NONE;
+            this.authentificationMode = AuthenticationMode.NONE;
             return;
         }
 
         try {
-            this.authentificationMode = AuthentificationMode.fromValue(authentificationMode);
+            this.authentificationMode = AuthenticationMode.fromValue(authentificationMode);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             throw new MotuException(String.format("Invalid authentification mode '%s'. Valid values are: %s",
                                                   authentificationMode,
-                                                  AuthentificationMode.getAvailableValues()));
+                                                  AuthenticationMode.getAvailableValues()));
         }
     }
 
@@ -200,7 +199,7 @@ public class User {
      * @return true, if is cas authentification
      */
     public boolean isCASAuthentification() {
-        return this.authentificationMode.equals(AuthentificationMode.CAS);
+        return this.authentificationMode.equals(AuthenticationMode.CAS);
     }
 
     /**
@@ -209,7 +208,7 @@ public class User {
      * @return true, if is none authentification
      */
     public boolean isNoneAuthentification() {
-        return this.authentificationMode.equals(AuthentificationMode.NONE);
+        return this.authentificationMode.equals(AuthenticationMode.NONE);
     }
 
     /**
@@ -222,7 +221,7 @@ public class User {
     }
 
     public void setCASAuthentification(boolean casAuthentification) {
-        this.authentificationMode = (casAuthentification) ? AuthentificationMode.CAS : AuthentificationMode.NONE;
+        this.authentificationMode = (casAuthentification) ? AuthenticationMode.CAS : AuthenticationMode.NONE;
     }
 
     /** The cas rest suff url. */

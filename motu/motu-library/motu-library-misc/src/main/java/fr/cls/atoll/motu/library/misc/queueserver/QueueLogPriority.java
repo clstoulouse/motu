@@ -3,14 +3,11 @@ package fr.cls.atoll.motu.library.misc.queueserver;
 import java.util.Date;
 
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2008. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class QueueLogPriority {
 
@@ -28,13 +25,13 @@ public class QueueLogPriority {
     }
 
     /** The priority. */
-    private int priority;
+    private final int priority;
 
     /** The range. */
-    private int range;
+    private final int range;
 
     /** The date. */
-    private Date date;
+    private final Date date;
 
     /**
      * Gets the date.

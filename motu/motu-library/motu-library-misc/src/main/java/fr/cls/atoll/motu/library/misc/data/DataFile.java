@@ -3,11 +3,10 @@ package fr.cls.atoll.motu.library.misc.data;
 import org.joda.time.DateTime;
 
 /**
- * <br><br>Copyright : Copyright (c) 2009.
- * <br><br>Société : CLS (Collecte Localisation Satellites)
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-10-29 10:51:20 $
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class DataFile {
 
@@ -16,25 +15,22 @@ public class DataFile {
      */
     public DataFile() {
     }
-    
-    
+
     /** The name. */
     String name;
-    
+
     /** The path. */
     String path;
-    
- 
 
     /** The start coverage date. */
     DateTime startCoverageDate;
-    
+
     /** The end coverage date. */
-    DateTime endCoverageDate;    
+    DateTime endCoverageDate;
 
     /** The weight. */
     double weight;
-    
+
     /**
      * Gets the weight.
      * 
@@ -61,7 +57,7 @@ public class DataFile {
     public String getName() {
         return name;
     }
-    
+
     /**
      * Sets the name.
      * 
@@ -70,7 +66,7 @@ public class DataFile {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     /**
      * Gets the start coverage date.
      * 
@@ -79,7 +75,7 @@ public class DataFile {
     public DateTime getStartCoverageDate() {
         return startCoverageDate;
     }
-    
+
     /**
      * Sets the start coverage date.
      * 
@@ -88,7 +84,7 @@ public class DataFile {
     public void setStartCoverageDate(DateTime startCoverageDate) {
         this.startCoverageDate = startCoverageDate;
     }
-    
+
     /**
      * Gets the end coverage date.
      * 
@@ -97,7 +93,7 @@ public class DataFile {
     public DateTime getEndCoverageDate() {
         return endCoverageDate;
     }
-    
+
     /**
      * Sets the end coverage date.
      * 
@@ -124,6 +120,5 @@ public class DataFile {
     public void setPath(String path) {
         this.path = path;
     }
-
 
 }

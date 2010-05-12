@@ -1,10 +1,12 @@
 package fr.cls.atoll.motu.library.misc.metadata;
 
 /**
- * Paremeter's catagory. Parameters are groupped by category and discipline.
+ * Paremeter's category. Parameters are grouped by category and discipline.
  * 
- * @author $Author: ccamel $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class ParameterCategory {
 

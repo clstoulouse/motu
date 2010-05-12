@@ -1,5 +1,10 @@
 package fr.cls.atoll.motu.library.misc.queueserver;
 
+import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueCapacityException;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidQueuePriorityException;
+
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -18,38 +23,11 @@ import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerUtils;
 
-import fr.cls.atoll.motu.library.misc.configuration.QueueType;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidQueuePriorityException;
-
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2008. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-06-03 11:43:51 $
- */
-/**
- * <br><br>Copyright : Copyright (c) 2009.
- * <br><br>Société : CLS (Collecte Localisation Satellites)
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-06-03 11:43:51 $
- */
-/**
- * <br><br>Copyright : Copyright (c) 2009.
- * <br><br>Société : CLS (Collecte Localisation Satellites)
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-06-03 11:43:51 $
- */
-/**
- * <br><br>Copyright : Copyright (c) 2009.
- * <br><br>Société : CLS (Collecte Localisation Satellites)
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-06-03 11:43:51 $
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class QueueManagement implements JobListener {
 
@@ -256,7 +234,7 @@ public class QueueManagement implements JobListener {
             setInQueue(runnableExtraction);
         } catch (RejectedExecutionException e) {
             throw new MotuException("ERROR Execute request", e);
-            
+
         }
 
         if (LOG.isDebugEnabled()) {
@@ -366,7 +344,7 @@ public class QueueManagement implements JobListener {
             return queueConfig.getMaxPoolSize();
         }
     }
-    
+
     /**
      * Gets the max threads.
      * 
@@ -379,7 +357,7 @@ public class QueueManagement implements JobListener {
             return queueConfig.getMaxThreads();
         }
     }
-    
+
     /**
      * Count request user.
      * 
@@ -520,7 +498,7 @@ public class QueueManagement implements JobListener {
             }
             threadPoolExecutor.decrementUser(runnableExtraction);
             threadPoolExecutor.adjustPriorityMap(runnableExtraction);
-            
+
             runnableExtraction.setError(e);
             runnableExtraction.setEnded();
 
@@ -528,12 +506,12 @@ public class QueueManagement implements JobListener {
 
     }
 
-     /**
-      * Gets the priority blocking queue.
-      * 
-      * @return the priority blocking queue
-      */
-     public PriorityBlockingQueue<Runnable> getPriorityBlockingQueue() {
+    /**
+     * Gets the priority blocking queue.
+     * 
+     * @return the priority blocking queue
+     */
+    public PriorityBlockingQueue<Runnable> getPriorityBlockingQueue() {
         return priorityBlockingQueue;
     }
 

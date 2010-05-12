@@ -1,9 +1,4 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.data;
-
-import org.apache.log4j.Logger;
 
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
@@ -15,13 +10,17 @@ import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 
+import org.apache.log4j.Logger;
+
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
 /**
  * "Along track" dataset class.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class DatasetAlongTrack extends fr.cls.atoll.motu.library.misc.data.DatasetBase {
     /**
@@ -58,6 +57,7 @@ public class DatasetAlongTrack extends fr.cls.atoll.motu.library.misc.data.Datas
      * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
      */
+    @Override
     public void computeAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException {
 
@@ -77,6 +77,7 @@ public class DatasetAlongTrack extends fr.cls.atoll.motu.library.misc.data.Datas
      * @throws MotuInvalidLatLonRangeException
      * @throws MotuNoVarException
      */
+    @Override
     public void extractData(Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException {
         if (LOG.isDebugEnabled()) {

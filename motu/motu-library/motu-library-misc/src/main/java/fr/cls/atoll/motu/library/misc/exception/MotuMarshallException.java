@@ -3,14 +3,11 @@ package fr.cls.atoll.motu.library.misc.exception;
 import javax.xml.bind.JAXBException;
 
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2008. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-10-29 10:51:20 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class MotuMarshallException extends MotuExceptionBase {
 
@@ -26,7 +23,7 @@ public class MotuMarshallException extends MotuExceptionBase {
     public MotuMarshallException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
     /**
      * The Constructor.
      * 
@@ -55,6 +52,7 @@ public class MotuMarshallException extends MotuExceptionBase {
     public MotuMarshallException(Throwable cause) {
         super(cause);
     }
+
     /**
      * The Constructor.
      * 

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.netcdf;
 
 import ucar.nc2.util.CancelTask;
@@ -8,9 +5,10 @@ import ucar.nc2.util.CancelTask;
 /**
  * A class used to set/get errors.
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class NetCdfCancelTask implements CancelTask {
 

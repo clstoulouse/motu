@@ -3,10 +3,11 @@ package fr.cls.atoll.motu.library.misc.exception;
 import org.apache.log4j.Logger;
 
 /**
- * <br><br>Copyright : Copyright (c) 2008.
- * <br><br>Société : CLS (Collecte Localisation Satellites)
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * 
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class MotuExceedingQueueDataCapacityException extends MotuExceptionBase {
     /**
@@ -49,6 +50,7 @@ public class MotuExceedingQueueDataCapacityException extends MotuExceptionBase {
     /**
      * writes exception information into the log.
      */
+    @Override
     public void notifyLogException() {
 
         super.notifyLogException();
@@ -58,6 +60,7 @@ public class MotuExceedingQueueDataCapacityException extends MotuExceptionBase {
     /**
      * @return exception information.
      */
+    @Override
     public String notifyException() {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(super.notifyException());
@@ -92,7 +95,6 @@ public class MotuExceedingQueueDataCapacityException extends MotuExceptionBase {
     public double getActual() {
         return this.actual;
     }
-    
 
     /**
      * @return the actual as a string representation
@@ -100,9 +102,9 @@ public class MotuExceedingQueueDataCapacityException extends MotuExceptionBase {
     public String getActualAsString() {
         StringBuffer stringBuffer = new StringBuffer();
         if (actual != Double.MAX_VALUE) {
-            stringBuffer.append(String.format("%8.2f",actual));
+            stringBuffer.append(String.format("%8.2f", actual));
         } else {
-            stringBuffer.append("???");            
+            stringBuffer.append("???");
         }
         stringBuffer.append(" Megabyte(s)");
         return stringBuffer.toString();
@@ -131,13 +133,14 @@ public class MotuExceedingQueueDataCapacityException extends MotuExceptionBase {
     public String getMaxAsString() {
         StringBuffer stringBuffer = new StringBuffer();
         if (max != Double.MAX_VALUE) {
-            stringBuffer.append(String.format("%8.2f",max));
+            stringBuffer.append(String.format("%8.2f", max));
         } else {
-            stringBuffer.append("???");            
+            stringBuffer.append("???");
         }
         stringBuffer.append(" Megabyte(s)");
         return stringBuffer.toString();
     }
+
     /** The batch queue. */
     final private boolean batchQueue;
 
@@ -149,6 +152,5 @@ public class MotuExceedingQueueDataCapacityException extends MotuExceptionBase {
     public boolean isBatchQueue() {
         return batchQueue;
     }
-
 
 }

@@ -1,5 +1,8 @@
 package fr.cls.atoll.motu.library.misc.cas.util;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.intfce.User;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -14,21 +17,14 @@ import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.log4j.Logger;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.intfce.User;
-
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2010. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2010-03-05 10:41:46 $
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class RestUtil {
-    
+
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(RestUtil.class);
 
@@ -69,11 +65,11 @@ public class RestUtil {
      * @param serviceURL the service url
      * 
      * @return true, if is casified url
-     * @throws IOException 
+     * @throws IOException
      */
-    public static boolean isCasifiedUrl(String serviceURL) throws IOException  {
+    public static boolean isCasifiedUrl(String serviceURL) throws IOException {
 
-        String casUrl =  RestUtil.getRedirectUrl(serviceURL);
+        String casUrl = RestUtil.getRedirectUrl(serviceURL);
         return (!AssertionUtils.isNullOrEmpty(casUrl));
 
     }
@@ -92,7 +88,7 @@ public class RestUtil {
 
         String casServerPrefix = RestUtil.getRedirectUrl(serviceURL);
         if (AssertionUtils.isNullOrEmpty(casServerPrefix)) {
-            
+
             return null;
         }
 
@@ -124,11 +120,11 @@ public class RestUtil {
     public static String getRedirectUrl(String path) throws IOException {
 
         String redirectUrl = "";
-        
+
         if (AssertionUtils.isNullOrEmpty(path)) {
             return null;
         }
-        
+
         URL url = new URL(path);
         String protocol = url.getProtocol();
         HttpURLConnection conn = null;
@@ -172,6 +168,7 @@ public class RestUtil {
     public static String getTicketGrantingTicket(String casRestUrl, User user) throws IOException {
         return getTicketGrantingTicket(casRestUrl, user.getLogin(), user.getPwd());
     }
+
     /**
      * Gets the ticket granting ticket.
      * 
@@ -194,7 +191,7 @@ public class RestUtil {
             }
             return null;
         }
-        
+
         if (AssertionUtils.isNullOrEmpty(username)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getTicketGrantingTicket(String, String, String) - username is null - exiting");
@@ -277,7 +274,7 @@ public class RestUtil {
     public static String loginToCAS(String casRestUrl, User user, String serviceURL) throws IOException, MotuException {
         return loginToCAS(casRestUrl, user.getLogin(), user.getPwd(), serviceURL);
     }
-    
+
     /**
      * Login to cas.
      * 
@@ -312,20 +309,20 @@ public class RestUtil {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loginToCAS(String, String, String) - entering");
         }
-        
+
         if (AssertionUtils.isNullOrEmpty(casRestUrl)) {
             return null;
-            
+
         }
-        
+
         if (AssertionUtils.isNullOrEmpty(ticketGrantingTicket)) {
             return null;
-            
+
         }
-        
+
         if (AssertionUtils.isNullOrEmpty(serviceURL)) {
             return null;
-            
+
         }
 
         String encodedServiceURL = URLEncoder.encode("service", "utf-8") + "=" + URLEncoder.encode(serviceURL, "utf-8");

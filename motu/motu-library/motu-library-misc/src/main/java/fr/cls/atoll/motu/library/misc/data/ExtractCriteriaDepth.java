@@ -1,12 +1,4 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.data;
-
-import java.util.List;
-
-import ucar.ma2.Array;
-import ucar.ma2.Range;
 
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;
@@ -15,10 +7,17 @@ import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 
+import java.util.List;
+
+import ucar.ma2.Array;
+import ucar.ma2.Range;
+
 /**
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
  * 
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class ExtractCriteriaDepth extends ExtractCriteriaGeo {
 
@@ -311,7 +310,7 @@ public class ExtractCriteriaDepth extends ExtractCriteriaGeo {
         try {
             range = new Range(first, last);
         } catch (Exception e) {
-            throw new MotuException("Error in ExtractCriteriaDepth toRange", (Throwable) e);
+            throw new MotuException("Error in ExtractCriteriaDepth toRange", e);
         }
         return range;
     }

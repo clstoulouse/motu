@@ -3,10 +3,10 @@
  */
 package fr.cls.atoll.motu.library.misc.data;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+
 import ucar.ma2.Array;
 import ucar.ma2.MAMath;
-
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
 
 /**
  * This class introduces criterias to be apply on data (for extraction/selection and research).
@@ -14,9 +14,10 @@ import fr.cls.atoll.motu.library.misc.exception.MotuException;
  * Criteria can have different kinds : geographical coverage, temporal coverage, resolution, data kind data
  * distribution, volumetry, ....
  * 
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public abstract class ExtractCriteria {
 

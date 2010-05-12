@@ -9,14 +9,11 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlSchema;
 
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2009. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2009-10-16 05:47:34 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class ReflectionUtils {
 

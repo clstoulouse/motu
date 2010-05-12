@@ -1,6 +1,3 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.data;
 
 import fr.cls.atoll.motu.library.inventory.Inventory;
@@ -20,7 +17,6 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.intfce.User;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.commons.util.io.ConfigLoader;
 
@@ -53,8 +49,10 @@ import org.apache.velocity.tools.generic.NumberTool;
 /**
  * This class implements a service (AVISO, MERCATOR, ...).
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.14 $ - $Date: 2010-03-04 16:05:15 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class ServiceData {
 
@@ -720,7 +718,6 @@ public class ServiceData {
         this.casAuthentification = casAuthentification;
     }
 
-
     /**
      * Returns the catalog location (urlSite + catalogFileName).
      * 
@@ -752,11 +749,11 @@ public class ServiceData {
         catalogData.setUrlSite(urlSite);
         catalogData.setCasAuthentification(casAuthentification);
         if (loadTDSVariableVocabulary != null) {
-            catalogData.setLoadTDSExtraMetadata(loadTDSVariableVocabulary);            
+            catalogData.setLoadTDSExtraMetadata(loadTDSVariableVocabulary);
         }
         return catalogData;
     }
-    
+
     /**
      * Load catalog info.
      * 
@@ -769,7 +766,7 @@ public class ServiceData {
     public CatalogData loadCatalogInfo(CatalogData catalogData) throws MotuException {
         return loadCatalogInfo(catalogData, null);
     }
-    
+
     /**
      * Load catalog info.
      * 
@@ -809,7 +806,7 @@ public class ServiceData {
         }
         return catalogData;
     }
-    
+
     /**
      * Load catalog info.
      * 
@@ -826,14 +823,13 @@ public class ServiceData {
             LOG.debug("loadCatalogInfo() - exiting");
         }
     }
+
     /**
      * Loads the catalog.
      * 
      * @throws MotuException the motu exception
      */
 
-    
-    
     public void loadCatalogInfo(boolean loadTDSVariableVocabulary) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadCatalogInfo(boolean) - entering");

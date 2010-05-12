@@ -1,6 +1,3 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.data;
 
 import fr.cls.atoll.motu.library.inventory.Access;
@@ -11,11 +8,9 @@ import fr.cls.atoll.motu.library.inventory.ResourceOLA;
 import fr.cls.atoll.motu.library.inventory.ResourcesOLA;
 import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
-import fr.cls.atoll.motu.library.misc.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.intfce.User;
 import fr.cls.atoll.motu.library.misc.metadata.DocMetaData;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
@@ -60,8 +55,10 @@ import ucar.unidata.geoloc.LatLonRect;
 /**
  * This class implements a product's catalog .
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.16 $ - $Date: 2010-03-05 10:41:46 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class CatalogData {
 
@@ -1629,8 +1626,8 @@ public class CatalogData {
                 newPath = AssertionUtils.addCASTicket(path);
                 if (!AssertionUtils.hasCASTicket(newPath)) {
                     newPath = AssertionUtils.addCASTicket(path, AuthentificationHolder.getUser());
-//                    throw new MotuException(
-//                            "Unable to load TDS configuration. TDS has been declared as CASified, but the Motu application is not. \nTo access this TDS, the Motu Application must be CASified.");
+                    // throw new MotuException(
+                    // "Unable to load TDS configuration. TDS has been declared as CASified, but the Motu application is not. \nTo access this TDS, the Motu Application must be CASified.");
                 }
             } else {
                 newPath = path;

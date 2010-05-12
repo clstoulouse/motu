@@ -1,6 +1,3 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.data;
 
 import fr.cls.atoll.motu.library.inventory.DepthCoverage;
@@ -21,7 +18,6 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.intfce.User;
 import fr.cls.atoll.motu.library.misc.metadata.DocMetaData;
 import fr.cls.atoll.motu.library.misc.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
@@ -59,8 +55,10 @@ import ucar.unidata.geoloc.LatLonRect;
 /**
  * This class represents a product.
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.12 $ - $Date: 2010-03-04 16:05:15 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class Product {
 
@@ -83,7 +81,7 @@ public class Product {
     public Product(boolean casAuthentification) {
         this.casAuthentification = casAuthentification;
     }
- 
+
     /**
      * Finalize.
      * 
@@ -101,7 +99,6 @@ public class Product {
             throw new MotuException("Error in Product.finalize", e);
         }
     }
-    
 
     /** The product meta data. */
     private ProductMetaData productMetaData;
@@ -127,52 +124,51 @@ public class Product {
     public void setProductMetaData(ProductMetaData productMetaData) {
         this.productMetaData = productMetaData;
     }
-    
 
-//    /**
-//     * Checks if is cas authentification.
-//     * 
-//     * @return true, if is cas authentification
-//     */
-//    public boolean isCASAuthentification() {
-//        if (this.user == null) {
-//            return false;
-//        }
-//        return user.isCASAuthentification();
-//    }
-//
-//    /**
-//     * Sets the cas authentification.
-//     * 
-//     * @param casAuthentification the new cas authentification
-//     */
-//    public void setCASAuthentification(boolean casAuthentification) {
-//        if (user == null) {
-//            user = new User();
-//        }
-//        user.setCASAuthentification(casAuthentification);
-//    }
-//      
-//    /** The user. */
-//    private User user = null;
-//
-//    /**
-//     * Gets the user.
-//     * 
-//     * @return the user
-//     */
-//    public User getUser() {
-//        return this.user;
-//    }
-//
-//    /**
-//     * Sets the user.
-//     * 
-//     * @param user the new user
-//     */
-//    public void setUser(User user) {
-//        this.user = user;
-//    }
+    // /**
+    // * Checks if is cas authentification.
+    // *
+    // * @return true, if is cas authentification
+    // */
+    // public boolean isCASAuthentification() {
+    // if (this.user == null) {
+    // return false;
+    // }
+    // return user.isCASAuthentification();
+    // }
+    //
+    // /**
+    // * Sets the cas authentification.
+    // *
+    // * @param casAuthentification the new cas authentification
+    // */
+    // public void setCASAuthentification(boolean casAuthentification) {
+    // if (user == null) {
+    // user = new User();
+    // }
+    // user.setCASAuthentification(casAuthentification);
+    // }
+    //      
+    // /** The user. */
+    // private User user = null;
+    //
+    // /**
+    // * Gets the user.
+    // *
+    // * @return the user
+    // */
+    // public User getUser() {
+    // return this.user;
+    // }
+    //
+    // /**
+    // * Sets the user.
+    // *
+    // * @param user the new user
+    // */
+    // public void setUser(User user) {
+    // this.user = user;
+    // }
 
     /** The dataset. */
     private DatasetBase dataset;
