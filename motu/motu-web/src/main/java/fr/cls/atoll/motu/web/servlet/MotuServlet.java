@@ -1,6 +1,3 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.web.servlet;
 
 import fr.cls.atoll.motu.api.message.MotuMonitoringParametersConstant;
@@ -62,8 +59,10 @@ import org.jasig.cas.client.util.AssertionHolder;
 /**
  * The Class MotuServlet.
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2010-02-26 14:15:03 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class MotuServlet extends HttpServlet implements MotuRequestParametersConstant, MotuMonitoringParametersConstant {
 
