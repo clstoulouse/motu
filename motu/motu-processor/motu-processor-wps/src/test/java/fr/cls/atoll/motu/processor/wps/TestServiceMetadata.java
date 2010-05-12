@@ -59,14 +59,11 @@ import org.jgrapht.graph.DirectedSubgraph;
 import org.xml.sax.SAXException;
 
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2009. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.19 $ - $Date: 2009-12-16 10:16:39 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class TestServiceMetadata {
 

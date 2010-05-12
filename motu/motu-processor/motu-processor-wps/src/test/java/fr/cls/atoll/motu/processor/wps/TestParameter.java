@@ -10,14 +10,11 @@ import org.geotoolkit.parameter.Parameter;
 import org.opengis.parameter.ParameterDescriptor;
 
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2009. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-08-13 15:39:11 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class TestParameter {
 

@@ -6,20 +6,23 @@ import java.io.InputStreamReader;
 import java.util.NoSuchElementException;
 
 /**
- * jBixbe debuggee: test insert and delete operation of a balanced tree data
- * structure. Using integer values read from keyboard as tree elements.
+ * jBixbe debuggee: test insert and delete operation of a balanced tree data structure. Using integer values
+ * read from keyboard as tree elements.
  * 
- * @author ds-emedia
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class BTree<T extends Comparable<T>> {
-    
+
     private static BTree<Integer> tree = new BTree<Integer>();
 
-    private static BufferedReader reader = new BufferedReader(
-            new InputStreamReader(System.in));
+    private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
     /**
      * .
+     * 
      * @param args
      * @throws IOException
      */
@@ -101,6 +104,7 @@ public class BTree<T extends Comparable<T>> {
     /**
      * Returns a text representation of the tree.
      */
+    @Override
     public String toString() {
         return inOrder();
     }

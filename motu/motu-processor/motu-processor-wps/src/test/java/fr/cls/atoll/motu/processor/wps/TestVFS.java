@@ -11,12 +11,19 @@ import org.apache.commons.vfs.FileSystemOptions;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.StandardFileSystemManager;
 
+/**
+ * 
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
+ */
 public class TestVFS {
 
     public static void main(String[] args) {
-        
+
         testBugDoReplicateFile();
-        
+
     }
 
     public static void testBugDoReplicateFile() {
@@ -42,5 +49,5 @@ public class TestVFS {
         }
 
     }
-    
+
 }

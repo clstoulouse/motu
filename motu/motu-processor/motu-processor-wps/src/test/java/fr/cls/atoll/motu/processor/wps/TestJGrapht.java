@@ -15,14 +15,11 @@ import org.jgrapht.graph.DirectedSubgraph;
 import org.jgrapht.graph.SimpleGraph;
 
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2009. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2009-09-15 14:28:53 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class TestJGrapht {
 
@@ -44,7 +41,7 @@ public class TestJGrapht {
         // note directed edges are printed as: (<v1>,<v2>)
         System.out.println(hrefGraph.toString());
 
-        //TestDirectedGraph();
+        // TestDirectedGraph();
         TestDirectedGraph2();
 
     }
@@ -151,10 +148,11 @@ public class TestJGrapht {
         System.out.println("Shortest path from c to i:");
         path = DijkstraShortestPath.findPathBetween(directedGraph, "c", "i");
         System.out.println(path);
-        
-        System.out.println (directedGraph.edgeSet());
+
+        System.out.println(directedGraph.edgeSet());
 
     }
+
     public static void TestDirectedGraph2() {
         // constructs a directed graph with the specified vertices and edges
         DirectedGraph<String, DefaultEdge> directedGraph = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
@@ -187,8 +185,8 @@ public class TestJGrapht {
         System.out.println("Shortest path from c to i:");
         path = DijkstraShortestPath.findPathBetween(directedGraph, "E", "P");
         System.out.println(path);
-        
-        System.out.println (directedGraph.edgeSet());
+
+        System.out.println(directedGraph.edgeSet());
 
     }
 }
