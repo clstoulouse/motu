@@ -9,19 +9,16 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2008. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class TestExtractionThreadPoolExecutor extends ThreadPoolExecutor {
     private boolean isPaused;
-    private ReentrantLock pauseLock = new ReentrantLock();
-    private Condition unpaused = pauseLock.newCondition();
+    private final ReentrantLock pauseLock = new ReentrantLock();
+    private final Condition unpaused = pauseLock.newCondition();
 
     /**
      * Constructeur.
@@ -134,6 +131,7 @@ public class TestExtractionThreadPoolExecutor extends ThreadPoolExecutor {
     // super.beforeExecute(t, r);
     // }
 
+    @Override
     protected void beforeExecute(Thread t, Runnable r) {
         if (r instanceof TestTheadPools.RunnableSomething) {
             TestTheadPools.RunnableSomething r2 = (TestTheadPools.RunnableSomething) r;
@@ -148,8 +146,9 @@ public class TestExtractionThreadPoolExecutor extends ThreadPoolExecutor {
         super.beforeExecute(t, r);
         pauseLock.lock();
         try {
-            while (isPaused)
+            while (isPaused) {
                 unpaused.await();
+            }
         } catch (InterruptedException ie) {
             t.interrupt();
         } finally {

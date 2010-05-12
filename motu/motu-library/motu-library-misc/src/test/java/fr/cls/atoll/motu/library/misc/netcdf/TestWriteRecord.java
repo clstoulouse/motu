@@ -1,6 +1,3 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.netcdf;
 
 import java.io.IOException;
@@ -62,8 +59,10 @@ import ucar.nc2.Variable;
  *   }
  * </pre>
  * 
- * @author : Russ Rew
- * @author : John Caron
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class TestWriteRecord extends TestCase {
 
@@ -135,8 +134,9 @@ public class TestWriteRecord extends TestCase {
             System.err.println("ERROR creating file");
             assert (false);
         }
-        if (dumpAfterCreate)
+        if (dumpAfterCreate) {
             System.out.println("ncfile = " + ncfile);
+        }
 
         Variable v = ncfile.findTopVariable("rh");
         assert v != null;
@@ -148,10 +148,13 @@ public class TestWriteRecord extends TestCase {
         ArrayInt rhA = new ArrayInt.D3(2, latDim.getLength(), lonDim.getLength());
         Index ima = rhA.getIndex();
         // write
-        for (int i = 0; i < 2; i++)
-            for (int j = 0; j < latDim.getLength(); j++)
-                for (int k = 0; k < lonDim.getLength(); k++)
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < latDim.getLength(); j++) {
+                for (int k = 0; k < lonDim.getLength(); k++) {
                     rhA.setInt(ima.set(i, j, k), rhData[i][j][k]);
+                }
+            }
+        }
 
         // write rhData out to disk
         try {
@@ -344,9 +347,11 @@ public class TestWriteRecord extends TestCase {
         for (int time = 0; time < 100; time++) {
             // fill the data array
             Index ima = data.getIndex();
-            for (int j = 0; j < latDim.getLength(); j++)
-                for (int k = 0; k < lonDim.getLength(); k++)
+            for (int j = 0; j < latDim.getLength(); j++) {
+                for (int k = 0; k < lonDim.getLength(); k++) {
                     data.setDouble(ima.set(0, j, k), (double) time * j * k);
+                }
+            }
             timeData.setInt(timeData.getIndex(), time);
 
             // write to file

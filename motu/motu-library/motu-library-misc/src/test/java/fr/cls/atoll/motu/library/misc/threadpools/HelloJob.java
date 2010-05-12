@@ -4,18 +4,23 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.StatefulJob;
 
+/**
+ * 
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
+ */
 public class HelloJob implements StatefulJob {
     /**
      * Logger for this class
      */
-    //private static Log _log = LogFactory.getLog(HelloJob.class);
+    // private static Log _log = LogFactory.getLog(HelloJob.class);
 
     /**
      * <p>
@@ -31,8 +36,8 @@ public class HelloJob implements StatefulJob {
 
     /**
      * <p>
-     * Called by the <code>{@link org.quartz.Scheduler}</code> when a
-     * <code>{@link org.quartz.Trigger}</code> fires that is associated with the <code>Job</code>.
+     * Called by the <code>{@link org.quartz.Scheduler}</code> when a <code>{@link org.quartz.Trigger}</code>
+     * fires that is associated with the <code>Job</code>.
      * </p>
      * 
      * @throws JobExecutionException if there is an exception while executing the job.

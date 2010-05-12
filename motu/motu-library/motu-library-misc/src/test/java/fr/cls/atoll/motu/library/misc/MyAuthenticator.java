@@ -1,6 +1,3 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc;
 
 import java.net.Authenticator;
@@ -8,9 +5,10 @@ import java.net.PasswordAuthentication;
 
 /**
  * 
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.2 $ - $Date: 2010-02-26 13:52:43 $
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class MyAuthenticator extends Authenticator {
     @Override

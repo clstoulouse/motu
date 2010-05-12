@@ -3,6 +3,16 @@
  */
 package fr.cls.atoll.motu.library.misc.data;
 
+import fr.cls.atoll.motu.library.misc.MyAuthenticator;
+import fr.cls.atoll.motu.library.misc.Test;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.opendap.server.Aggregation;
+import fr.cls.atoll.motu.library.misc.opendap.server.Catalog;
+import fr.cls.atoll.motu.library.misc.opendap.server.Dataset;
+import fr.cls.atoll.motu.library.misc.opendap.server.Metadata;
+import fr.cls.atoll.motu.library.misc.opendap.server.Service;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -19,21 +29,12 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import fr.cls.atoll.motu.library.misc.MyAuthenticator;
-import fr.cls.atoll.motu.library.misc.Test;
-import fr.cls.atoll.motu.library.misc.data.Product;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.misc.opendap.server.Aggregation;
-import fr.cls.atoll.motu.library.misc.opendap.server.Catalog;
-import fr.cls.atoll.motu.library.misc.opendap.server.Dataset;
-import fr.cls.atoll.motu.library.misc.opendap.server.Metadata;
-import fr.cls.atoll.motu.library.misc.opendap.server.Service;
-
 /**
- * @author $Author: dearith $
- * @version $Revision: 1.4 $ - $Date: 2010-03-04 16:05:15 $
  * 
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class TestData {
 
@@ -216,7 +217,9 @@ public class TestData {
                         System.out.print(fileAccess.getUrlPath());
                         System.out.print("\t");
                         System.out.println(fileAccess.getCoord());
-                        NetCdfReader netCdfReader = new NetCdfReader("http://opendap-nrt.aviso.oceanobs.com/thredds/dodsC/" + fileAccess.getUrlPath(), false);
+                        NetCdfReader netCdfReader = new NetCdfReader(
+                                "http://opendap-nrt.aviso.oceanobs.com/thredds/dodsC/" + fileAccess.getUrlPath(),
+                                false);
                         try {
                             netCdfReader.open();
                         } catch (MotuExceptionBase e) {

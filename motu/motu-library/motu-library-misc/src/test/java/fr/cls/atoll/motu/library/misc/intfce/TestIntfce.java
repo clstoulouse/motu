@@ -1,7 +1,27 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.intfce;
+
+import fr.cls.atoll.motu.library.inventory.CatalogOLA;
+import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
+import fr.cls.atoll.motu.library.inventory.Inventory;
+import fr.cls.atoll.motu.library.inventory.Resource;
+import fr.cls.atoll.motu.library.inventory.ResourceOLA;
+import fr.cls.atoll.motu.library.inventory.TimePeriod;
+import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
+import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
+import fr.cls.atoll.motu.library.misc.configuration.QueueServerType;
+import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+import fr.cls.atoll.motu.library.misc.data.CatalogData;
+import fr.cls.atoll.motu.library.misc.data.DataFile;
+import fr.cls.atoll.motu.library.misc.data.Product;
+import fr.cls.atoll.motu.library.misc.data.ServiceData;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
+import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
+import fr.cls.atoll.motu.library.misc.threadpools.TestTheadPools;
+import fr.cls.commons.util.DatePeriod;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -32,8 +52,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBElement;
 
@@ -60,33 +78,13 @@ import ucar.nc2.ft.point.writer.CFPointObWriter;
 import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
-import fr.cls.atoll.motu.library.inventory.CatalogOLA;
-import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
-import fr.cls.atoll.motu.library.inventory.Inventory;
-import fr.cls.atoll.motu.library.inventory.Resource;
-import fr.cls.atoll.motu.library.inventory.ResourceOLA;
-import fr.cls.atoll.motu.library.inventory.TimePeriod;
-import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
-import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
-import fr.cls.atoll.motu.library.misc.configuration.QueueServerType;
-import fr.cls.atoll.motu.library.misc.configuration.QueueType;
-import fr.cls.atoll.motu.library.misc.data.CatalogData;
-import fr.cls.atoll.motu.library.misc.data.DataFile;
-import fr.cls.atoll.motu.library.misc.data.Product;
-import fr.cls.atoll.motu.library.misc.data.ServiceData;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
-import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
-import fr.cls.atoll.motu.library.misc.threadpools.TestTheadPools;
-import fr.cls.commons.util.DatePeriod;
 
 /**
- * @author $Author: dearith $
- * @version $Revision: 1.26 $ - $Date: 2010-03-04 16:05:15 $
  * 
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class TestIntfce {
     /**
@@ -354,8 +352,8 @@ public class TestIntfce {
         // productInformationFromInventory();
         // productExtractDataFromInventory();
         // productListMercator();
-        //productList();
-        //testGetProductMetadataInfo();
+        // productList();
+        // testGetProductMetadataInfo();
 
     }
 
@@ -2008,10 +2006,10 @@ public class TestIntfce {
         listTemporalCoverage.add("2009-10-25");
 
         List<String> listLatLonCoverage = new ArrayList<String>();
-         listLatLonCoverage.add("46");
-         listLatLonCoverage.add("-20");
-         listLatLonCoverage.add("30");
-         listLatLonCoverage.add("-10");
+        listLatLonCoverage.add("46");
+        listLatLonCoverage.add("-20");
+        listLatLonCoverage.add("30");
+        listLatLonCoverage.add("-10");
 
         List<String> listDepthCoverage = null;
         // listDepthCoverage = new ArrayList<String>();
@@ -2412,27 +2410,26 @@ public class TestIntfce {
     public static void testGetProductMetadataInfo() {
 
         try {
-//            String patternExpression = "(http://.*thredds/)(dodsC/)(.*)";
+            // String patternExpression = "(http://.*thredds/)(dodsC/)(.*)";
             String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_med_mean_best_estimate";
-//
-//            Pattern pattern = Pattern.compile(patternExpression);
-//            Matcher matcher = pattern.matcher(locationData);
-//            // System.out.println(matcher.groupCount());
-//            if (matcher.groupCount() != 3) {
-//                System.out.println("Invalid locationdata");
-//            }
-//            Map<String, String> map = new HashMap<String, String>();
-//            if (!(matcher.find())) {
-//                System.out.println("Invalid locationdata");
-//            }
-//            for (int i = 1 ; i <= matcher.groupCount() ; i++) {
-//                System.out.println(matcher.group(i));
-//            }
-//            
+            //
+            // Pattern pattern = Pattern.compile(patternExpression);
+            // Matcher matcher = pattern.matcher(locationData);
+            // // System.out.println(matcher.groupCount());
+            // if (matcher.groupCount() != 3) {
+            // System.out.println("Invalid locationdata");
+            // }
+            // Map<String, String> map = new HashMap<String, String>();
+            // if (!(matcher.find())) {
+            // System.out.println("Invalid locationdata");
+            // }
+            // for (int i = 1 ; i <= matcher.groupCount() ; i++) {
+            // System.out.println(matcher.group(i));
+            // }
+            //            
             Organizer organizer = new Organizer();
             FileWriter writer = new FileWriter("resultProductMetadataInfo.xml");
             organizer.getProductMetadataInfo(locationData, writer);
-
 
         } catch (MotuExceptionBase e) {
             // TODO Auto-generated catch block

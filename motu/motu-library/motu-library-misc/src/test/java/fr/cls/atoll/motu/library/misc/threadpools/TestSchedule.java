@@ -1,5 +1,9 @@
 package fr.cls.atoll.motu.library.misc.threadpools;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.queueserver.ScheduleCleanJob;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -15,19 +19,12 @@ import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
 import org.quartz.SimpleTrigger;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.queueserver.ScheduleCleanJob;
-
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2008. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: ccamel $
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:21 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class TestSchedule {
     /**
@@ -43,9 +40,9 @@ public class TestSchedule {
     public static void main(String[] args) {
 
         TestSchedule testSchedule = new TestSchedule();
-        
+
         try {
-            //testSchedule.testQuartz();
+            // testSchedule.testQuartz();
             testFileToDelete();
         } catch (Exception e) {
             e.printStackTrace();
@@ -99,8 +96,6 @@ public class TestSchedule {
         sched.shutdown();
     }
 
-    
-    
     // public class CheckPriorityJob implements Job {
     // public class CheckPriorityJob implements StatefulJob {
     //            
@@ -132,18 +127,17 @@ public class TestSchedule {
     // }
     // }
     // }
-    
-    
-    public static void testFileToDelete() throws MotuException  {
+
+    public static void testFileToDelete() throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("testFileToDelete() - entering");
         }
-        
-        int interval = 240;        
-        if (interval > 0 ) {
+
+        int interval = 240;
+        if (interval > 0) {
             interval = -interval;
         }
-        
+
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.HOUR_OF_DAY, interval);
 
@@ -154,18 +148,16 @@ public class TestSchedule {
         File directoryToScan = new File(Organizer.getMotuConfigInstance().getExtractionPath());
         File[] files = null;
         files = directoryToScan.listFiles(fileFilter);
-        
+
         for (File fileToDelete : files) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug( String
-                           .format("cleanExtractedFile(JobExecutionContext) - Deleting file '%s' ", fileToDelete.getPath()));
+                LOG.debug(String.format("cleanExtractedFile(JobExecutionContext) - Deleting file '%s' ", fileToDelete.getPath()));
             }
-            
-            boolean isDeleted = true;            
-            //boolean isDeleted = fileToDelete.delete();            
+
+            boolean isDeleted = true;
+            // boolean isDeleted = fileToDelete.delete();
             if (LOG.isDebugEnabled()) {
-                LOG.debug( String
-                           .format("cleanExtractedFile(JobExecutionContext) - file '%s' deleted: '%b'", fileToDelete.getPath(), isDeleted));
+                LOG.debug(String.format("cleanExtractedFile(JobExecutionContext) - file '%s' deleted: '%b'", fileToDelete.getPath(), isDeleted));
             }
         }
 
@@ -173,6 +165,5 @@ public class TestSchedule {
             LOG.debug("cleanExtractedFile(JobExecutionContext) - exiting");
         }
     }
-    
-    
+
 }

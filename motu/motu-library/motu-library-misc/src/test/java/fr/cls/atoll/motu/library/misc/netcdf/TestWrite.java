@@ -1,6 +1,3 @@
-/**
- * 
- */
 package fr.cls.atoll.motu.library.misc.netcdf;
 
 import java.io.IOException;
@@ -17,10 +14,17 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Variable;
 
-/** Test nc2 write JUnit framework. */
+/**
+ * Test nc2 write JUnit framework.
+ * 
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
+ */
 
 public class TestWrite extends TestCase {
-    private boolean show = false;
+    private final boolean show = false;
 
     public TestWrite(String name) {
         super(name);
@@ -28,7 +32,7 @@ public class TestWrite extends TestCase {
 
     public void testNC3Write() throws IOException {
         String filename = "testWrite.nc";
-        NetcdfFileWriteable ncfile =  NetcdfFileWriteable.createNew(filename, false);
+        NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, false);
 
         // define dimensions
         Dimension latDim = ncfile.addDimension("lat", 64);
@@ -104,7 +108,7 @@ public class TestWrite extends TestCase {
         // write
         for (i = 0; i < latDim.getLength(); i++) {
             for (j = 0; j < lonDim.getLength(); j++) {
-                A.setDouble(ima.set(i, j), (double) (i * 1000000 + j * 1000));
+                A.setDouble(ima.set(i, j), (i * 1000000 + j * 1000));
             }
         }
 
@@ -124,8 +128,9 @@ public class TestWrite extends TestCase {
         ArrayChar ac = new ArrayChar.D1(svar_len.getLength());
         ima = ac.getIndex();
         String val = "Testing 1-2-3";
-        for (j = 0; j < val.length(); j++)
+        for (j = 0; j < val.length(); j++) {
             ac.setChar(ima.set(j), val.charAt(j));
+        }
 
         try {
             ncfile.write("svar", origin1, ac);
@@ -189,8 +194,9 @@ public class TestWrite extends TestCase {
             assert (false);
         }
 
-        if (show)
+        if (show) {
             System.out.println("ncfile = " + ncfile);
+        }
 
         // ////////////////////////////////////////////////////////////////////
         // test reading without closing the file
@@ -207,7 +213,7 @@ public class TestWrite extends TestCase {
 
         for (i = 0; i < shape[0]; i++) {
             for (j = 0; j < shape[1]; j++) {
-                assert (tA.getDouble(ima.set(i, j)) == (double) (i * 1000000 + j * 1000));
+                assert (tA.getDouble(ima.set(i, j)) == (i * 1000000 + j * 1000));
             }
         }
 
@@ -230,7 +236,7 @@ public class TestWrite extends TestCase {
         assert (tA.getRank() == 2);
 
         for (j = 0; j < shape2[1]; j++) {
-            assert (tA.getDouble(ima.set(0, j)) == (double) (j * 1000));
+            assert (tA.getDouble(ima.set(0, j)) == (j * 1000));
         }
 
         // rank reduction
@@ -239,7 +245,7 @@ public class TestWrite extends TestCase {
         assert (Areduce.getRank() == 1);
 
         for (j = 0; j < shape2[1]; j++) {
-            assert (Areduce.getDouble(ima2.set(j)) == (double) (j * 1000));
+            assert (Areduce.getDouble(ima2.set(j)) == (j * 1000));
         }
 
         // read char variable

@@ -1,127 +1,139 @@
 package fr.cls.atoll.motu.library.misc.cas;
 
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
+import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.URI;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 
-import fr.cls.atoll.motu.library.misc.MyAuthenticator;
-
-import java.io.*;
-import java.net.Authenticator;
-
+/**
+ * 
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
+ */
 public class HttpClientTutorial {
-  
-  private static String url = "http://www.apache.org/";
 
-  public static void main(String[] args) {
-      
-      //test();
-//    System.setProperty("proxyHost", "proxy.cls.fr"); // adresse IP
-//    System.setProperty("proxyPort", "8080");
-//    System.setProperty("socksProxyPort", "1080");
-//
-//    Authenticator.setDefault(new MyAuthenticator());
+    private static String url = "http://www.apache.org/";
 
-    // Create an instance of HttpClient.
-    //HttpClient client = new HttpClient();
-    HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager()); 
-    // Create a method instance.
-    GetMethod method = new GetMethod(url);
-    
-    HostConfiguration hostConfiguration = new HostConfiguration();
-    hostConfiguration.setProxy("proxy.cls.fr", 8080);
-    client.setHostConfiguration(hostConfiguration);
-    
+    public static void main(String[] args) {
 
-        
-    // Provide custom retry handler is necessary
-    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
-            new DefaultHttpMethodRetryHandler(3, false));
-//    String username = "dearith";
-//            String password = "bienvenue";
-//            Credentials credentials = new UsernamePasswordCredentials(username, password);
-//            AuthScope authScope = new AuthScope("proxy.cls.fr", 8080);
-//     
-//            client.getState().setProxyCredentials(authScope, credentials);
-    
-    try {
-      // Execute the method.
-      int statusCode = client.executeMethod(method);
+        // test();
+        // System.setProperty("proxyHost", "proxy.cls.fr"); // adresse IP
+        // System.setProperty("proxyPort", "8080");
+        // System.setProperty("socksProxyPort", "1080");
+        //
+        // Authenticator.setDefault(new MyAuthenticator());
 
-      if (statusCode != HttpStatus.SC_OK) {
-        System.err.println("Method failed: " + method.getStatusLine());
-      }
+        // Create an instance of HttpClient.
+        // HttpClient client = new HttpClient();
+        HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
+        // Create a method instance.
+        GetMethod method = new GetMethod(url);
 
-      // Read the response body.
-      byte[] responseBody = method.getResponseBody();
+        HostConfiguration hostConfiguration = new HostConfiguration();
+        hostConfiguration.setProxy("proxy.cls.fr", 8080);
+        client.setHostConfiguration(hostConfiguration);
 
-      // Deal with the response.
-      // Use caution: ensure correct character encoding and is not binary data
-      System.out.println(new String(responseBody));
+        // Provide custom retry handler is necessary
+        method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
+        // String username = "dearith";
+        // String password = "bienvenue";
+        // Credentials credentials = new UsernamePasswordCredentials(username, password);
+        // AuthScope authScope = new AuthScope("proxy.cls.fr", 8080);
+        //     
+        // client.getState().setProxyCredentials(authScope, credentials);
 
-    } catch (HttpException e) {
-      System.err.println("Fatal protocol violation: " + e.getMessage());
-      e.printStackTrace();
-    } catch (IOException e) {
-      System.err.println("Fatal transport error: " + e.getMessage());
-      e.printStackTrace();
-    } finally {
-      // Release the connection.
-      method.releaseConnection();
-    }  
-  }
-  public static void test() {
-      
-  HttpClient client = new HttpClient();
-  client.getParams().setParameter("http.useragent", "Test Client");
-  client.getParams().setParameter("http.connection.timeout",new Integer(5000));
+        try {
+            // Execute the method.
+            int statusCode = client.executeMethod(method);
 
-  GetMethod method  = new GetMethod();
-  FileOutputStream fos = null;
+            if (statusCode != HttpStatus.SC_OK) {
+                System.err.println("Method failed: " + method.getStatusLine());
+            }
 
-  try {
+            // Read the response body.
+            byte[] responseBody = method.getResponseBody();
 
-    method.setURI(new URI("http://www.google.com", true));
-    int returnCode = client.executeMethod(method);
+            // Deal with the response.
+            // Use caution: ensure correct character encoding and is not binary data
+            System.out.println(new String(responseBody));
 
-    if(returnCode != HttpStatus.SC_OK) {
-      System.err.println(
-        "Unable to fetch default page, status code: " + returnCode);
+        } catch (HttpException e) {
+            System.err.println("Fatal protocol violation: " + e.getMessage());
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("Fatal transport error: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            // Release the connection.
+            method.releaseConnection();
+        }
     }
 
-    System.err.println(method.getResponseBodyAsString());
+    public static void test() {
 
-    method.setURI(new URI("http://www.google.com/images/logo.gif", true));
-    returnCode = client.executeMethod(method);
+        HttpClient client = new HttpClient();
+        client.getParams().setParameter("http.useragent", "Test Client");
+        client.getParams().setParameter("http.connection.timeout", new Integer(5000));
 
-    if(returnCode != HttpStatus.SC_OK) {
-      System.err.println("Unable to fetch image, status code: " + returnCode);
+        GetMethod method = new GetMethod();
+        FileOutputStream fos = null;
+
+        try {
+
+            method.setURI(new URI("http://www.google.com", true));
+            int returnCode = client.executeMethod(method);
+
+            if (returnCode != HttpStatus.SC_OK) {
+                System.err.println("Unable to fetch default page, status code: " + returnCode);
+            }
+
+            System.err.println(method.getResponseBodyAsString());
+
+            method.setURI(new URI("http://www.google.com/images/logo.gif", true));
+            returnCode = client.executeMethod(method);
+
+            if (returnCode != HttpStatus.SC_OK) {
+                System.err.println("Unable to fetch image, status code: " + returnCode);
+            }
+
+            byte[] imageData = method.getResponseBody();
+            fos = new FileOutputStream(new File("google.gif"));
+            fos.write(imageData);
+
+            HostConfiguration hostConfig = new HostConfiguration();
+            hostConfig.setHost("www.yahoo.com", null, 80, Protocol.getProtocol("http"));
+
+            method.setURI(new URI("/", true));
+
+            client.executeMethod(hostConfig, method);
+
+            System.err.println(method.getResponseBodyAsString());
+
+        } catch (HttpException he) {
+            System.err.println(he);
+        } catch (IOException ie) {
+            System.err.println(ie);
+        } finally {
+            method.releaseConnection();
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (Exception fe) {
+                }
+            }
+        }
+
     }
-
-    byte[] imageData = method.getResponseBody();
-    fos = new FileOutputStream(new File("google.gif"));
-    fos.write(imageData);
-
-    HostConfiguration hostConfig = new HostConfiguration();
-    hostConfig.setHost("www.yahoo.com", null, 80, Protocol.getProtocol("http"));
-
-    method.setURI(new URI("/", true));
-
-    client.executeMethod(hostConfig, method);
-
-    System.err.println(method.getResponseBodyAsString());
-
-  } catch (HttpException he) {
-    System.err.println(he);
-  } catch (IOException ie) {
-    System.err.println(ie);
-  } finally {
-    method.releaseConnection();
-    if(fos != null) try { fos.close(); } catch (Exception fe) {}
-  }
-
-
-}  
 }

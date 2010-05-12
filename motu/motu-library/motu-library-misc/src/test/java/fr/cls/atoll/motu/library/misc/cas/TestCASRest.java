@@ -1,5 +1,10 @@
 package fr.cls.atoll.motu.library.misc.cas;
 
+import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
+import fr.cls.atoll.motu.library.misc.cas.util.RestUtil;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -40,13 +45,14 @@ import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.jasig.cas.client.validation.TicketValidationException;
 
 import ucar.nc2.util.net.EasySSLProtocolSocketFactory;
-import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.misc.cas.util.RestUtil;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 
-//import edu.yale.its.tp.cas.client.ProxyTicketValidator;
-
+/**
+ * 
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
+ */
 public class TestCASRest {
     /**
      * Logger for this class
@@ -64,7 +70,7 @@ public class TestCASRest {
 
         // validateFromCAS2(username, password);
 
-        //testgetCASifiedResource();
+        // testgetCASifiedResource();
         testDownloadCASifiedResource();
 
     }
@@ -379,7 +385,7 @@ public class TestCASRest {
                 System.out.println(" - " + cookies[i].toExternalForm());
             }
 
-            Assertion assertion = (Assertion) AssertionHolder.getAssertion();
+            Assertion assertion = AssertionHolder.getAssertion();
             if (assertion == null) {
                 System.out.println("<p>Assertion is null</p>");
             }
@@ -457,7 +463,7 @@ public class TestCASRest {
                 System.out.println(" - " + cookies[i].toExternalForm());
             }
 
-            Assertion assertion = (Assertion) AssertionHolder.getAssertion();
+            Assertion assertion = AssertionHolder.getAssertion();
             if (assertion == null) {
                 System.out.println("<p>Assertion is null</p>");
             }
@@ -547,7 +553,7 @@ public class TestCASRest {
                 System.out.println(" - " + cookies[i].toExternalForm());
             }
 
-            Assertion assertion = (Assertion) AssertionHolder.getAssertion();
+            Assertion assertion = AssertionHolder.getAssertion();
             if (assertion == null) {
                 System.out.println("<p>Assertion is null</p>");
             }
@@ -780,7 +786,7 @@ public class TestCASRest {
                 catalogXml = (fr.cls.atoll.motu.library.misc.tds.server.Catalog) Organizer.getUnmarshallerTdsConfig().unmarshal(in);
             }
         } catch (Exception e) {
-            throw new MotuException("Error in loadConfigTds", (Throwable) e);
+            throw new MotuException("Error in loadConfigTds", e);
         }
         if (catalogXml == null) {
             throw new MotuException(String
@@ -791,7 +797,7 @@ public class TestCASRest {
         } catch (IOException io) {
             io.getMessage();
         }
-        
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("testLoginToCAS() - catalogXml:" + catalogXml);
         }
@@ -800,7 +806,7 @@ public class TestCASRest {
         }
 
     }
-    
+
     public static void testDownloadCASifiedResource() throws MotuException, IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("testDownloadCASifiedResource() - entering");
@@ -832,8 +838,6 @@ public class TestCASRest {
 
         // //////////////String path = AssertionUtils.addCASTicket(serviceTicket, serviceURL);
 
-        
-        
         InputStream is;
 
         fr.cls.atoll.motu.library.misc.tds.server.Catalog catalogXml;
@@ -847,24 +851,24 @@ public class TestCASRest {
             InputStreamReader eisr = new InputStreamReader(is);
             BufferedReader in = new BufferedReader(eisr);
             String nextLine = "";
-            //StringBuffer stringBuffer = new StringBuffer();
+            // StringBuffer stringBuffer = new StringBuffer();
             while ((nextLine = in.readLine()) != null) {
-                //stringBuffer.append(nextLine);
+                // stringBuffer.append(nextLine);
                 System.out.println(nextLine);
             }
             in.close();
         } catch (Exception e) {
-            throw new MotuException("Error in loadConfigTds", (Throwable) e);
+            throw new MotuException("Error in loadConfigTds", e);
         }
         try {
             is.close();
         } catch (IOException io) {
             io.getMessage();
         }
-        
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("testLoginToCAS() - exiting");
         }
 
-    }    
+    }
 }
