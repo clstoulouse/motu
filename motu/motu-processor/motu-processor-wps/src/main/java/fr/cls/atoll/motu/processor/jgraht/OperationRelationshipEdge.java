@@ -1,20 +1,18 @@
 package fr.cls.atoll.motu.processor.jgraht;
 
-import org.apache.log4j.Logger;
-
 import java.util.Collection;
 
+import org.apache.log4j.Logger;
 import org.jgrapht.graph.DefaultEdge;
 
 /**
- * <br><br>Copyright : Copyright (c) 2009.
- * <br><br>Société : CLS (Collecte Localisation Satellites)
  * 
- * @param <T>  * 
- * @author $Author: dearith $
- * @version $Revision: 1.3 $ - $Date: 2009-09-29 14:09:19 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-public class OperationRelationshipEdge<T> extends  DefaultEdge {
+public class OperationRelationshipEdge<T> extends DefaultEdge {
     /**
      * Logger for this class
      */
@@ -22,13 +20,13 @@ public class OperationRelationshipEdge<T> extends  DefaultEdge {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -7185722770182907863L;
-    
+
     /** The param out start vertex. */
     protected Collection<T> paramOutStartVertex = null;
-    
+
     /** The param in start vertex. */
     protected Collection<T> paramInStartVertex = null;
-    
+
     /** The label. */
     protected String label;
 
@@ -148,7 +146,7 @@ public class OperationRelationshipEdge<T> extends  DefaultEdge {
         this.paramOutStartVertex = paramOutStartVertex;
         this.label = "";
     }
-    
+
     /**
      * Instantiates a new operation relationship edge.
      * 
@@ -162,5 +160,4 @@ public class OperationRelationshipEdge<T> extends  DefaultEdge {
         this.label = label;
     }
 
-    
 }

@@ -17,14 +17,11 @@ import javax.xml.bind.JAXBElement;
 import org.apache.tools.ant.BuildException;
 
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2009. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author $Author: dearith $
- * @version $Revision: 1.6 $ - $Date: 2009-09-17 08:31:43 $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class ServiceMetadataBuilder extends AntTask {
 
