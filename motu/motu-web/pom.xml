@@ -148,6 +148,15 @@
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
+        
+         <dependency>
+            <groupId>cls.atoll.motu.configuration</groupId>
+            <artifactId>motu-configuration-${motu.config}</artifactId>
+            <version>${motu.config.version}</version>
+            <type>war</type>
+            <scope>runtime</scope>
+        </dependency>
+        
     </dependencies>
     <!--
         <build> <plugins> <plugin> <artifactId>maven-war-plugin</artifactId> <configuration> <webXml>${config.dir}/WEB-INF/web.xml</webXml>
@@ -177,11 +186,24 @@
 <!-- 
 					<warName>${project.build.finalName}</warName>
  -->					
-					<webResources>
+<!--
+ 					<webResources>
 						<resource>
 							<directory>${basedir}/src/main/config/${config.dir}</directory>
 						</resource>
 					</webResources>
+-->
+					<!-- WARNING : The element 'packagingExcludes' described 
+					in Maven War plugoin documentation should be in fact 'warSourceExcludes'.
+					 -->
+					<!--  <packagingExcludes>WEB-INF/*</packagingExcludes> -->
+					<warSourceExcludes>WEB-INF/*</warSourceExcludes>
+					
+                    <overlay>
+                        <groupId>cls.atoll.motu.configuration</groupId>
+                        <artifactId>motu-configuration-${config.motu}</artifactId>
+                    </overlay>
+					
 				</configuration>
 			</plugin>
 
@@ -312,7 +334,8 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<config.dir>localhost</config.dir>
+				<motu.config>dev-localhost</motu.config>
+				<motu.config.version>2.1.1-SNAPSHOT</motu.config.version>
 				<tomcat.url>http://localhost:8080</tomcat.url>
 				<remote.username>admin</remote.username>
 				<remote.password />
@@ -322,7 +345,8 @@
 		<profile>
 			<id>atoll-dev</id>
 			<properties>
-				<config.dir>atoll-dev</config.dir>
+				<motu.config>dev-atoll-dev</motu.config>
+				<motu.config.version>2.1.1-SNAPSHOT</motu.config.version>
 				<tomcat.url>http://atoll-dev.cls.fr:30080</tomcat.url>
 				<remote.username>admin</remote.username>
 				<remote.password />
@@ -332,7 +356,8 @@
 		<profile>
 			<id>atoll-qt1</id>
 			<properties>
-				<config.dir>atoll-qt1</config.dir>
+				<motu.config>qt-atoll-qt1</motu.config>
+				<motu.config.version>2.1.1-SNAPSHOT</motu.config.version>
 				<tomcat.url>http://atoll-qt1.cls.fr:33080</tomcat.url>
 				<remote.username>admin</remote.username>
 				<remote.password />
@@ -342,7 +367,8 @@
 		<profile>
 			<id>atoll-qt4</id>
 			<properties>
-				<config.dir>atoll-qt4</config.dir>
+				<motu.config>qt-atoll-qt4</motu.config>
+				<motu.config.version>2.1.1-SNAPSHOT</motu.config.version>
 				<tomcat.url>http://atoll-qt4.cls.fr:33080</tomcat.url>
 				<remote.username>admin</remote.username>
 				<remote.password />
