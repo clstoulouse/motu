@@ -38,8 +38,8 @@
     </properties>
     <licenses>
         <license>
-            <name>GNU General Public License (GPL)</name>
-            <url>http://www.gnu.org/licenses/gpl.txt</url>
+            <name>GNU Lesser General Public License (LGPL)</name>
+            <url>http://www.gnu.org/licenses/lgpl-3.0.txt</url>
             <distribution>manual</distribution>
             <comments>Copyright 2008-2009 CLS.</comments>
         </license>
