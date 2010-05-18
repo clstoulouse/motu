@@ -119,7 +119,16 @@
 	runGCInterval="10"
 	sftpSessionTimeOut="PT10S"
 	strictHostKeyChecking="no">
-		<!--===========================================================-->
+	<!--===========================================-->
+	<!--                    TEST MyOcean Mercator TDS         -->
+	<!--===========================================-->
+	<configService defaultLanguage="UK" description="Test MyOcean data"
+		group="Myocean" httpBaseRef="http:///www.myocean.eu.org"
+		name="Myocean" veloTemplatePrefix="myocean">
+		<catalog name="catalog.xml" type="tds"
+			urlSite="http://opendap.mercator-ocean.fr/thredds" />
+	</configService>
+    <!--===========================================================-->
 	<!--                   motu-ftp-aviso Service                 -->
 	<!--===========================================================-->
 	<configService defaultLanguage="UK" description="Aviso Near Real Time and Delayed Time data FTP"

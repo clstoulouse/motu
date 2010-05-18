@@ -308,7 +308,7 @@ public class TestIntfce {
         // }
         // MAMath.MinMax minMax = NetCdfReader.getMinMaxLonNormal(r1, r2, r1Values, r2Values)
         // listServices();
-        // catalogInformation();
+        catalogInformation();
         // try {
         // ServiceData.Language test = ServiceData.Language.valueOf("ee");
         // } catch (RuntimeException e) {
@@ -320,7 +320,7 @@ public class TestIntfce {
         // productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
-        // productDownloadInfo();
+        productDownloadInfo();
         // productExtractDataHTMLAviso();
         // productExtractDataAviso();
         // productExtractDataAvisofromProductId();
@@ -342,7 +342,7 @@ public class TestIntfce {
         // e.printStackTrace();
         // }
         // testLoadStdNameEquiv();
-        testGetAmountDataSize();
+        //testGetAmountDataSize();
         // testSynchronized();
         // productExtractDataCatsat();
         // productExtractDataAvisofromExtractionParameters();
@@ -378,7 +378,8 @@ public class TestIntfce {
         try {
             // String serviceName = "aviso_dt";
             // String serviceName = "Mercator";
-            String serviceName = "MercatorIBI";
+            //String serviceName = "MercatorIBI";
+            String serviceName = "Myocean";
             // String serviceName = "Catsat";
             // String serviceName = "AvisoNRT";
             // String serviceName = "aviso_dt";
@@ -570,11 +571,12 @@ public class TestIntfce {
     public static void productDownloadInfo() {
 
         try {
-            String serviceName = "MercatorIBI";
+            String serviceName = "Myocean";
+            //String serviceName = "MercatorIBI";
             // String serviceName = "avisoNRT";
             // String productId = "duacs_global_nrt_madt_merged_h";
-            String productId = "mercatorPsy2v3_ibi_mean_best_estimate";
-            // String serviceName = "mercator";
+            //String productId = "mercatorPsy2v3_ibi_mean_best_estimate";
+            String productId = "mercatorPsy3v2_glo_mean_best_estimate";
             // String serviceName = "mercator";
             // String productId = "mercatorPsy3v1R1v_nat_mean_best_estimate";
             // String productId = "mercatorPsy3v1R1v_arc_mean_best_estimate";
