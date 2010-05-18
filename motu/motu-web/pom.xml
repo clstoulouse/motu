@@ -149,14 +149,6 @@
             <scope>provided</scope>
         </dependency>
         
-         <dependency>
-            <groupId>cls.atoll.motu.configuration</groupId>
-            <artifactId>motu-configuration-${motu.config}</artifactId>
-            <version>${motu.config.version}</version>
-            <type>war</type>
-            <scope>runtime</scope>
-        </dependency>
-        
     </dependencies>
     <!--
         <build> <plugins> <plugin> <artifactId>maven-war-plugin</artifactId> <configuration> <webXml>${config.dir}/WEB-INF/web.xml</webXml>
@@ -197,12 +189,7 @@
 					in Maven War plugoin documentation should be in fact 'warSourceExcludes'.
 					 -->
 					<!--  <packagingExcludes>WEB-INF/*</packagingExcludes> -->
-					<warSourceExcludes>WEB-INF/*</warSourceExcludes>
-					
-                    <overlay>
-                        <groupId>cls.atoll.motu.configuration</groupId>
-                        <artifactId>motu-configuration-${config.motu}</artifactId>
-                    </overlay>
+					<!-- <warSourceExcludes>WEB-INF/*,META-INF/**/*,META-INF/*</warSourceExcludes>  -->
 					
 				</configuration>
 			</plugin>
@@ -326,13 +313,61 @@
  -->        
     </repositories>
     
-    
 	<profiles>
 		<profile>
-			<id>localhost</id>
+			<id>motuconfactivate</id><!--
+			
  			<activation>
-				<activeByDefault>true</activeByDefault>
+ 				<property>
+ 					<name>motu.config.activate</name>
+ 					<value>true</value>
+ 				</property>
 			</activation>
+			
+		    --><build>
+		        <plugins>
+					<plugin>
+						<artifactId>maven-war-plugin</artifactId>
+						<configuration>				
+		                    <overlays>
+						      	<overlay>
+									<groupId>cls.atoll.motu.configuration</groupId>
+								    <artifactId>motu-configuration-${motu.config}</artifactId>
+								</overlay>
+								<overlay>
+		              			<!-- empty groupId/artifactId is detected as the current build -->
+		            			</overlay>						
+		                    </overlays>					
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+			
+        	<dependencies>			
+	        	<dependency>
+		            <groupId>cls.atoll.motu.configuration</groupId>
+		            <artifactId>motu-configuration-${motu.config}</artifactId>
+		            <version>${motu.config.version}</version>
+		            <type>war</type>
+		            <scope>runtime</scope>
+		        </dependency>
+    	    </dependencies>
+			
+		</profile>
+	
+		<profile>
+			<id>onlybinaries</id>
+ 			<activation>
+				<activeByDefault>true</activeByDefault>				
+			</activation>
+			<properties>
+				<motu.config.activate>false</motu.config.activate>
+			</properties>
+		</profile>
+	
+	
+		<profile>
+			<id>localhost</id>
 			<properties>
 				<motu.config>dev-localhost</motu.config>
 				<motu.config.version>2.1.1-SNAPSHOT</motu.config.version>
@@ -341,7 +376,11 @@
 				<remote.password />
 				<remote.application.tomcat.context>${application.tomcat.context}</remote.application.tomcat.context>				
 			</properties>
+			
+        	
+        			
 		</profile>
+		
 		<profile>
 			<id>atoll-dev</id>
 			<properties>
@@ -352,7 +391,9 @@
 				<remote.password />
 				<remote.application.tomcat.context>${application.tomcat.context}</remote.application.tomcat.context>				
 			</properties>
+			
 		</profile>
+		
 		<profile>
 			<id>atoll-qt1</id>
 			<properties>
@@ -363,7 +404,9 @@
 				<remote.password />
 				<remote.application.tomcat.context>atoll-motu-servlet</remote.application.tomcat.context>				
 			</properties>
+			
 		</profile>
+		
 		<profile>
 			<id>atoll-qt4</id>
 			<properties>
@@ -375,7 +418,8 @@
 				<remote.application.tomcat.context>atoll-motu-servlet</remote.application.tomcat.context>				
 			</properties>
 		</profile>
+		
 	</profiles>    
-    
+     
     
 </project>
