@@ -307,8 +307,8 @@ public class TestIntfce {
         //            
         // }
         // MAMath.MinMax minMax = NetCdfReader.getMinMaxLonNormal(r1, r2, r1Values, r2Values)
-        // listServices();
-        catalogInformation();
+        listServices();
+        //catalogInformation();
         // try {
         // ServiceData.Language test = ServiceData.Language.valueOf("ee");
         // } catch (RuntimeException e) {
@@ -320,7 +320,7 @@ public class TestIntfce {
         // productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
-        productDownloadInfo();
+        //productDownloadInfo();
         // productExtractDataHTMLAviso();
         // productExtractDataAviso();
         // productExtractDataAvisofromProductId();
@@ -361,7 +361,7 @@ public class TestIntfce {
 
         try {
             Organizer organizer = new Organizer();
-            FileWriter writer = new FileWriter("resultListCatalog.html");
+            FileWriter writer = new FileWriter("./target/resultListCatalog.html");
             organizer.getAvailableServices(writer, Organizer.Format.HTML);
             writer.flush();
             writer.close();

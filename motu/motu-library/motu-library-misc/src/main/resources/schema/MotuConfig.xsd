@@ -229,7 +229,26 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+			<!-- commonVeloTemplatePrefix :
+				Common velocity template prefix name 
+				(distinct from service velocity template)
+			-->
+			<xs:attribute name="commonVeloTemplatePrefix" type="xs:string" 
+				default="myocean" />
 			
+			<!-- defaultLanguage:
+				Common default language used (can be UK or FR) 
+				(distinct from service velocity template)
+			-->
+			<xs:attribute name="commonDefaultLanguage" type="xs:string"
+				default="UK" />
+				
+			<!-- httpBaseRef:
+				Http base reference of the service site.
+			-->
+			<xs:attribute name="httpBaseRef" type="xs:string" 
+				default="http:///www.myocean.eu.org"/>
+				
 		</xs:complexType>
 
 	</xs:element>

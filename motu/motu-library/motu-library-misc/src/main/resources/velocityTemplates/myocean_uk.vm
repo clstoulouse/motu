@@ -5,11 +5,25 @@
 ## the result can be amazing (among others, execution mixes up the same macro with the same name)
 ##----------------------------------------------------------------------------------
 ## ------------------------------ myocean_uk_printSubTitleCatalog --------------------------------
+#macro(myocean_uk_printSubTitleListInventories)
+<li class="mainlevel">
+	<span class="join"></span>
+	<span class="document"></span>
+    <a class="mainlevel">Inventories</a>	
+</li>
+
+#end
+## ------------------------------ myocean_uk_printSubTitleProductMetadata --------------------------------
 #macro(myocean_uk_printSubTitleCatalog)
 <li class="mainlevel">
 	<span class="join"></span>
 	<span class="document"></span>
-    <a class="mainlevel">Catalog</a>	
+	<a href="?action=listservices" class="mainlevel">Inventories</a>
+</li>
+<li class="mainlevel">
+	<span class="join"></span>
+	<span class="document"></span>
+    <a class="mainlevel">&gt;&nbsp;Catalog</a>	
 </li>
 
 #end
@@ -19,7 +33,12 @@
 <li class="mainlevel">
 	<span class="join"></span>
 	<span class="document"></span>
-	<a href="?action=listcatalog&service=${service.getName()}" class="mainlevel">Catalog</a>
+	<a href="?action=listservices" class="mainlevel">Inventories</a>
+</li>
+<li class="mainlevel">
+	<span class="join"></span>
+	<span class="document"></span>
+	<a href="?action=listcatalog&service=${service.getName()}" class="mainlevel">&gt;&nbsp;Catalog</a>
 </li>
 <li class="mainlevel">
 	<span class="join"></span>
@@ -44,7 +63,12 @@
 <li class="mainlevel">
 	<span class="join"></span>
 	<span class="document"></span>
-	<a href="?action=listcatalog&service=${service.getName()}" class="mainlevel">Catalog</a>
+	<a href="?action=listservices" class="mainlevel">Inventories</a>
+</li>
+<li class="mainlevel">
+	<span class="join"></span>
+	<span class="document"></span>
+	<a href="?action=listcatalog&service=${service.getName()}" class="mainlevel">&gt;&nbsp;Catalog</a>
 </li>
 <li class="mainlevel">
 	<span class="join"></span>
@@ -64,6 +88,9 @@
 	<table width="95%" border="0" cellspacing="0"><tr>
 	<td class="parents">		
 	*#
+	#if($body_template.equalsIgnoreCase($templateListInventories))
+		#myocean_uk_printSubTitleListInventories()	
+	#end
 	#if($body_template.equalsIgnoreCase($templateCatalog))
 		#myocean_uk_printSubTitleCatalog()	
 	#end
@@ -249,22 +276,6 @@
 					<div class="start"></div>
 					<ul>
 							#myocean_uk_printSubTitle()
-##						<li class="mainlevel nav_main_item1">
-##							<span class="join"></span>
-##							<span class="document"></span>
-##							<a href="/products-services/service.html" class="mainlevel" id="menulink_1">Service</a>
-##						</li>
-##						<li class="mainlevel nav_main_item2">
-##							<span class="join"></span>
-##							<span class="document"></span>
-##							<a href="/products-services/catalogue.html" class="mainlevel" id="menulink_2">Online Catalogue</a>
-##						</li>
-##						<li class="mainlevel nav_main_item3"><span class="join"></span>
-##							<span class="document"></span>
-##							<a href="/products-services/service-desk.html" class="mainlevel" id="menulink_3">Service Desk</a>
-##						</li>
-##						<li class="mainlevel nav_main_item4"><span class="join"></span><span class="document"></span><a href="/products-services/service-commitments-and-licence.html" class="mainlevel" id="menulink_4">Service Commitments and Licence</a></li><li class="mainlevel nav_main_item5"><span class="join_last"></span><span class="document"></span><a href="/products-services/news.html" class="mainlevel" id="menulink_5">News</a>
-##						</li>
 					</ul>
 				  </div>
 		        </div>
