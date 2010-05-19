@@ -1,27 +1,3 @@
-/* 
- * Motu, a high efficient, robust and Standard compliant Web Server for Geographic
- * Data Dissemination.
- *
- * http://cls-motu.sourceforge.net/
- *
- * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites) - 
- * http://www.cls.fr - and  Contributors
- *
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
- * License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- */
 package fr.cls.atoll.motu.library.misc.data;
 
 import fr.cls.atoll.motu.library.inventory.Inventory;
@@ -84,28 +60,28 @@ public class ServiceData {
     private static final Logger LOG = Logger.getLogger(ServiceData.class);
 
     /**
-     * Name of the file that contents inforamtion of how to get huge data file. With '%s' corresponding to the
+     * Name of the file that contents information of how to get huge data file. With '%s' corresponding to the
      * grup name of the service in lowercase (ie aviso, mercator).
      */
     private static final String HOW_TO_GET_EXCEED_DATA_INFO_FILENAME = "howToGetExceedData.%s.info";
 
     /** The Constant VELOCITY_TEMPLATE_SUFFIX_FILE. */
-    private static final String VELOCITY_TEMPLATE_SUFFIX_FILE = ".vm";
+    public static final String VELOCITY_TEMPLATE_SUFFIX_FILE = ".vm";
 
     /** The Constant VELOCITY_TEMPLATE_DIR. */
-    private static final String VELOCITY_TEMPLATE_DIR = "velocityTemplates/";
+    public static final String VELOCITY_TEMPLATE_DIR = "velocityTemplates/";
 
     /** Generic service name (virtual service with default options). */
-    private static final String GENERIC_SERVICE_NAME = "Generic";
+    public static final String GENERIC_SERVICE_NAME = "Generic";
 
     /** Generic service description (virtual service with default options). */
     private static final String GENERIC_SERVICE_DESC = "Generic service";
 
     /**
-     * Emumeration for various HTML pages available.
+     * Enumeration for various HTML pages available.
      */
 
-    private enum HTMLPage {
+    public enum HTMLPage {
 
         /** Inventory information. */
         CATALOG_INFO,
@@ -114,7 +90,11 @@ public class ServiceData {
         PRODUCT_INFO,
 
         /** Product download. */
-        PRODUCT_DOWNLOAD
+        PRODUCT_DOWNLOAD, 
+        
+        /** List Inventories. */
+        LIST_INVENTORIES
+
     };
 
     /** Current Html page in use. */
@@ -957,7 +937,7 @@ public class ServiceData {
         try {
             Template template = getGlobalVeloTemplate();
 
-            VelocityContext context = getPrepopulatedVelocityContext();
+            VelocityContext context = ServiceData.getPrepopulatedVelocityContext();
             // System.out.println(velocityEngine.getProperty("file.resource.loader.path"));
             context.put("body_template", getCatalogVeloTemplateName());
             context.put("service", this);
@@ -1150,7 +1130,7 @@ public class ServiceData {
 
         try {
             Template template = getGlobalVeloTemplate();
-            VelocityContext context = getPrepopulatedVelocityContext();
+            VelocityContext context = ServiceData.getPrepopulatedVelocityContext();
             context.put("body_template", getProductMetaDataInfoVeloTemplateName());
             context.put("service", this);
             context.put("product", product);
@@ -1358,7 +1338,7 @@ public class ServiceData {
         try {
             Template template = getGlobalVeloTemplate();
 
-            VelocityContext context = getPrepopulatedVelocityContext();
+            VelocityContext context = ServiceData.getPrepopulatedVelocityContext();
             context.put("body_template", getProductDownloadInfoVeloTemplateName());
             context.put("service", this);
             context.put("product", product);
@@ -1387,7 +1367,7 @@ public class ServiceData {
      * @see DateTool
      * @see MathTool
      */
-    private VelocityContext getPrepopulatedVelocityContext() {
+    public static VelocityContext getPrepopulatedVelocityContext() {
         final NumberTool numberTool = new NumberTool();
         final DateTool dateTool = new DateTool();
         final MathTool mathTool = new MathTool();
@@ -1443,7 +1423,7 @@ public class ServiceData {
         try {
             Template template = getDescribeCoverageXMLVeloTemplate();
 
-            VelocityContext context = getPrepopulatedVelocityContext();
+            VelocityContext context = ServiceData.getPrepopulatedVelocityContext();
             context.put("service", this);
             context.put("product", product);
 
