@@ -12,19 +12,19 @@
 ## ------------------------------ generic_uk_printSubTitleProductMetadata --------------------------------
 #macro(generic_uk_printSubTitleProductMetadata)
 	#if ($product.isProductDownloadable()) 
-		<a href="?action=listcatalog&service=${service.getName()}">Inventory</a>
+		<a href="?action=listcatalog&service=${service.getNameEncoded()}">Inventory</a>
 		| Metadata
-		| <a href="?action=productdownloadhome&service=${service.getName()}&product=${product.getProductMetaData().getProductId()}">Download</a>
+		| <a href="?action=productdownloadhome&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductId()}">Download</a>
 	#else
-		<a href="?action=listcatalog&service=${service.getName()}">Inventory</a>
+		<a href="?action=listcatalog&service=${service.getNameEncoded()}">Inventory</a>
 		| Metadata
 	#end
 #end
 
 ## ------------------------------ generic_uk_printSubTitleProductDownloadHome --------------------------------
 #macro(generic_uk_printSubTitleProductDownloadHome)
-	<a href="?action=listcatalog&service=${service.getName()}">Inventory</a>
-	| <a href="?action=listproductmetadata&service=${service.getName()}&product=${product.getProductMetaData().getProductId()}">Metadata</a>
+	<a href="?action=listcatalog&service=${service.getNameEncoded()}">Inventory</a>
+	| <a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductId()}">Metadata</a>
 	| Download
 #end
 

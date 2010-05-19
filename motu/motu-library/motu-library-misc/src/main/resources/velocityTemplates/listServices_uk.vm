@@ -25,17 +25,9 @@
 	<table>
 	#foreach( $service in $serviceList )
 	<tr>
-#*		
 		<td>	
 	    <h2>
-		<a href=?action=listcatalog&service=${service.getName()}>
-	 		 ${service.getName()} 
-	    </h2>
-		</td>
-*#		
-		<td>	
-	    <h2>
-		<a href=?action=listcatalog&service=${service.getName()}>
+		<a href=?action=listcatalog&service=${service.getNameEncoded()}>
 	 		 ${service.getGroup()}&nbsp;${service.getDescription()} 
 	    </h2>
 		</td>

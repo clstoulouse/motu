@@ -38,23 +38,13 @@
 <li class="mainlevel">
 	<span class="join"></span>
 	<span class="document"></span>
-	<a href="?action=listcatalog&service=${service.getName()}" class="mainlevel">&gt;&nbsp;Catalog</a>
+	<a href="?action=listcatalog&service=${service.getNameEncoded()}" class="mainlevel">&gt;&nbsp;Catalog</a>
 </li>
 <li class="mainlevel">
 	<span class="join"></span>
 	<span class="document"></span>
     <a class="mainlevel">&gt;&nbsp;Metadata</a>
 </li>
-#*
-	#if ($product.isProductDownloadable()) 
-		<a href="?action=listcatalog&service=${service.getName()}">Catalog</a>
-		| Metadata
-		| <a href="?action=productdownloadhome&service=${service.getName()}&product=${product.getProductMetaData().getProductId()}">Download</a>
-	#else
-		<a href="?action=listcatalog&service=${service.getName()}">Catalog</a>
-		| Metadata
-	#end
-*#
 
 #end
 
@@ -68,12 +58,12 @@
 <li class="mainlevel">
 	<span class="join"></span>
 	<span class="document"></span>
-	<a href="?action=listcatalog&service=${service.getName()}" class="mainlevel">&gt;&nbsp;Catalog</a>
+	<a href="?action=listcatalog&service=${service.getNameEncoded()}" class="mainlevel">&gt;&nbsp;Catalog</a>
 </li>
 <li class="mainlevel">
 	<span class="join"></span>
 	<span class="document"></span>
-	<a href="?action=listproductmetadata&service=${service.getName()}&product=${product.getProductMetaData().getProductId()}" class="mainlevel">&gt;&nbsp;Metadata</a>
+	<a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductId()}" class="mainlevel">&gt;&nbsp;Metadata</a>
 </li>
 <li class="mainlevel">
 	<span class="join"></span>

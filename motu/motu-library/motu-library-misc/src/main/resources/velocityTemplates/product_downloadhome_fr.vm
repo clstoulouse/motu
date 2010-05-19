@@ -419,7 +419,7 @@ td.advice_noimg { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fo
 
 <form  method="get" name="${formName}">		
 <input type="hidden" name="action" value="productdownload" />
-<input type="hidden" name="service" value="$service.getName()" />
+<input type="hidden" name="service" value="$service.getNameEncoded()" />
 <input type="hidden" name="data" value="$product.getLocationData()" />
 <input type="hidden" name="nexturl" value=" " >
 #if(($productMetaData.hasLatLonAxis()) || ($productMetaData.hasGeoXYAxis()))

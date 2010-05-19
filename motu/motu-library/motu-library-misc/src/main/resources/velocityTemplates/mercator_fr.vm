@@ -11,26 +11,16 @@
 
 ## ------------------------------ mercator_fr_printSubTitleProductMetadata --------------------------------
 #macro(mercator_fr_printSubTitleProductMetadata)
-	<li>&gt; <a href="?action=listcatalog&service=${service.getName()}">Catalogue</a></li>
+	<li>&gt; <a href="?action=listcatalog&service=${service.getNameEncoded()}">Catalogue</a></li>
 	<li>&gt; Métadonnées</li>
 
-#*
-	#if ($product.isProductDownloadable()) 
-		<a href="?action=listcatalog&service=${service.getName()}">Catalogue</a>
-		| Métadonnées
-		| <a href="?action=productdownloadhome&service=${service.getName()}&product=${product.getProductMetaData().getProductId()}">Téléchargement</a>
-	#else
-		<a href="?action=listcatalog&service=${service.getName()}">Catalogue</a>
-		| Métadonnées
-	#end
-*#
 
 #end
 
 ## ------------------------------ mercator_fr_printSubTitleProductDownloadHome --------------------------------
 #macro(mercator_fr_printSubTitleProductDownloadHome)
-	<li>&gt; <a href="?action=listcatalog&service=${service.getName()}">Catalogue</a></li>
-	<li>&gt; <a href="?action=listproductmetadata&service=${service.getName()}&product=${product.getProductMetaData().getProductId()}">Métadonnées</a></li>
+	<li>&gt; <a href="?action=listcatalog&service=${service.getNameEncoded()}">Catalogue</a></li>
+	<li>&gt; <a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductId()}">Métadonnées</a></li>
 	<li>&gt; Téléchargement</li>
 #end
 

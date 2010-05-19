@@ -18,7 +18,7 @@
 ##	<ul>
 		#if ($product.isProductDownloadable()) 
 			<p> $imgSuiv
-			<a href=?action=productdownloadhome&service=${service.getName()}&product=${productMetaData.getProductId()}>
+			<a href=?action=productdownloadhome&service=${service.getNameEncoded()}&product=${productMetaData.getProductId()}>
 			Service de téléchargement et d'extraction
 			</a>	
 			</p>			

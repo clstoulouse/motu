@@ -167,7 +167,7 @@
 	<tr>	
 	<td>
 		<li>
-		<a href=?action=listproductmetadata&service=${service.getName()}&product=${productMetaData.getProductId()}>
+		<a href=?action=listproductmetadata&service=${service.getNameEncoded()}&product=${productMetaData.getProductId()}>
 					 $productMetaData.getTitle()
 		</a>	
 		</li>	

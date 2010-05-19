@@ -49,11 +49,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -114,8 +116,8 @@ public class ServiceData {
         PRODUCT_INFO,
 
         /** Product download. */
-        PRODUCT_DOWNLOAD, 
-        
+        PRODUCT_DOWNLOAD,
+
         /** List Inventories. */
         LIST_INVENTORIES
 
@@ -534,6 +536,29 @@ public class ServiceData {
     }
 
     /**
+     * Gets the name encoded.
+     * 
+     * @return the name encoded
+     */
+    public String getNameEncoded() {
+        return getNameEncoded("UTF-8");
+    }
+
+    /**
+     * Gets the name encoded.
+     * 
+     * @param enc the enc
+     * @return the name encoded
+     */
+    public String getNameEncoded(String enc) {
+        try {
+            return URLEncoder.encode(this.name, enc);
+        } catch (UnsupportedEncodingException e) {
+            return this.name;
+        }
+    }
+
+    /**
      * Checks if is generic.
      * 
      * @return true, if is generic
@@ -725,7 +750,9 @@ public class ServiceData {
         this.catalogFileName = catalogFileName;
     }
 
-    /** Does Service needs CAS authentification to access catalog resources and data. */
+    /**
+     * Does Service needs CAS authentification to access catalog resources and data.
+     */
     protected boolean casAuthentification = false;
 
     /**
@@ -880,12 +907,15 @@ public class ServiceData {
         // catalog.loadFtpCatalog(this.getCatalogLocation());
         // break;
         // default:
-        // throw new MotuException(String.format("Unknown catalog type %d ", getCatalogType()));
+        // throw new MotuException(String.format("Unknown catalog type %d ",
+        // getCatalogType()));
         // // break;
         // }
 
-        // Chargement de la map des infos persistente pour le service et ses produits
-        // Synchronisation pour ne pas que plusieurs threads effectue ce chargement
+        // Chargement de la map des infos persistente pour le service et ses
+        // produits
+        // Synchronisation pour ne pas que plusieurs threads effectue ce
+        // chargement
         synchronized (Organizer.getServicesPersistentInstance()) {
             // On teste si le service n'est pas déjà chargé
             // car un autre thread a pu le faire juste avant dans cette méthode.
@@ -1012,7 +1042,8 @@ public class ServiceData {
 
         if (!this.casAuthentification && isGenericService()) {
 
-            // Service could be a virtual service at this point (call directly without service loading),
+            // Service could be a virtual service at this point (call directly
+            // without service loading),
             // So check if the url (locationData) is CASified or not
             try {
                 URI uri = new URI(locationData);
@@ -1356,7 +1387,8 @@ public class ServiceData {
             throw new MotuException("Error in writeProductDownloadHTML - velocityEngine is null");
         }
         // if (product == null) {
-        // throw new MotuException("Error in writeProductDownloadHTML - product has not been set (is null)");
+        // throw new
+        // MotuException("Error in writeProductDownloadHTML - product has not been set (is null)");
         // }
 
         try {
@@ -1441,7 +1473,8 @@ public class ServiceData {
             throw new MotuException("Error in writeProductDownloadXML - velocityEngine is null");
         }
         // if (product == null) {
-        // throw new MotuException("Error in writeProductDownloadHTML - product has not been set (is null)");
+        // throw new
+        // MotuException("Error in writeProductDownloadHTML - product has not been set (is null)");
         // }
 
         try {
@@ -1617,36 +1650,48 @@ public class ServiceData {
     // *
     // * @return the product
     // *
-    // * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-    // * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-    // * @throws MotuInvalidLongitudeException the motu invalid longitude exception
+    // * @throws NetCdfVariableNotFoundException the net cdf variable not found
+    // exception
+    // * @throws MotuInvalidDepthRangeException the motu invalid depth range
+    // exception
+    // * @throws MotuInvalidLongitudeException the motu invalid longitude
+    // exception
     // * @throws NetCdfVariableException the net cdf variable exception
     // * @throws MotuNoVarException the motu no var exception
     // * @throws MotuInvalidDepthException the motu invalid depth exception
     // * @throws NetCdfAttributeException the net cdf attribute exception
-    // * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-    // * @throws MotuInvalidLatitudeException the motu invalid latitude exception
+    // * @throws MotuExceedingCapacityException the motu exceeding capacity
+    // exception
+    // * @throws MotuInvalidLatitudeException the motu invalid latitude
+    // exception
     // * @throws MotuNotImplementedException the motu not implemented exception
     // * @throws MotuException the motu exception
     // * @throws MotuInvalidDateException the motu invalid date exception
-    // * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-    // * @throws MotuInvalidDateRangeException the motu invalid date range exception
+    // * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range
+    // exception
+    // * @throws MotuInvalidDateRangeException the motu invalid date range
+    // exception
     // */
     // public Product computeAmountDataSize(String locationData,
     // List<String> listVar,
     // List<String> listTemporalCoverage,
     // List<String> listLatLonCoverage,
-    // List<String> listDepthCoverage) throws MotuInvalidDateException, MotuInvalidDepthException,
-    // MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException,
+    // List<String> listDepthCoverage) throws MotuInvalidDateException,
+    // MotuInvalidDepthException,
+    // MotuInvalidLatitudeException, MotuInvalidLongitudeException,
+    // MotuException,
     // MotuInvalidDateRangeException,
-    // MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
+    // MotuExceedingCapacityException, MotuNotImplementedException,
+    // MotuInvalidLatLonRangeException,
     // MotuInvalidDepthRangeException,
-    // NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException
+    // NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
+    // NetCdfVariableNotFoundException
     // {
     //
     // Product product = getProductInformationFromLocation(locationData);
     //
-    // computeAmountDataSize(product, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
+    // computeAmountDataSize(product, listVar, listTemporalCoverage,
+    // listLatLonCoverage, listDepthCoverage);
     //
     // return product;
     // }
@@ -1777,17 +1822,22 @@ public class ServiceData {
     // List<String> listLatLonCoverage,
     // List<String> listDepthCoverage,
     // SelectData selectData,
-    // Organizer.Format dataOutputFormat) throws MotuInvalidDateException, MotuInvalidDepthException,
-    // MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException,
+    // Organizer.Format dataOutputFormat) throws MotuInvalidDateException,
+    // MotuInvalidDepthException,
+    // MotuInvalidLatitudeException, MotuInvalidLongitudeException,
+    // MotuException,
     // MotuInvalidDateRangeException,
-    // MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
+    // MotuExceedingCapacityException, MotuNotImplementedException,
+    // MotuInvalidLatLonRangeException,
     // MotuInvalidDepthRangeException,
-    // NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException
+    // NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
+    // NetCdfVariableNotFoundException
     // {
     //
     // Product product = getProductInformationFromLocation(locationData);
     //
-    // extractData(product, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage, selectData,
+    // extractData(product, listVar, listTemporalCoverage, listLatLonCoverage,
+    // listDepthCoverage, selectData,
     // dataOutputFormat);
     //
     // return product;
@@ -1853,10 +1903,12 @@ public class ServiceData {
      * @return product object corresponding to the extraction
      * 
      * @throws MotuException the motu exception
-     * @throws NetCdfAttributeException @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuExceedingCapacityException @throws MotuInvalidDateRangeException * @throws
-     *             MotuInvalidDepthRangeException * @throws NetCdfVariableException * @throws
-     *             MotuInvalidLatLonRangeException * @throws MotuNoVarException
+     * @throws NetCdfAttributeException
+     * @throws MotuNotImplementedException the motu not implemented exception
+     * @throws MotuExceedingCapacityException
+     * @throws MotuInvalidDateRangeException * @throws MotuInvalidDepthRangeException * @throws
+     *             NetCdfVariableException * @throws MotuInvalidLatLonRangeException * @throws
+     *             MotuNoVarException
      * @throws MotuNotImplementedException the motu not implemented exception
      */
 
@@ -1864,14 +1916,17 @@ public class ServiceData {
     // List<String> listVar,
     // List<ExtractCriteria> criteria,
     // SelectData selectData,
-    // Organizer.Format dataOutputFormat) throws MotuException, NetCdfAttributeException,
+    // Organizer.Format dataOutputFormat) throws MotuException,
+    // NetCdfAttributeException,
     // MotuNotImplementedException,
-    // NetCdfVariableException, MotuExceedingCapacityException, MotuInvalidLatLonRangeException,
+    // NetCdfVariableException, MotuExceedingCapacityException,
+    // MotuInvalidLatLonRangeException,
     // MotuInvalidDateRangeException,
     // MotuInvalidDepthRangeException, MotuNoVarException {
     // TLog.logger().entering(this.getClass().getName(),
     // "extractData",
-    // new Object[] { locationData, listVar, criteria, selectData, dataOutputFormat });
+    // new Object[] { locationData, listVar, criteria, selectData,
+    // dataOutputFormat });
     //
     // Product product = loadProductInfo(locationData);
     // product.clearExtractFilename();
@@ -2107,18 +2162,23 @@ public class ServiceData {
     // *
     // * @return the product
     // *
-    // * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-    // * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-    // * @throws MotuInvalidLongitudeException the motu invalid longitude exception
+    // * @throws MotuExceedingCapacityException the motu exceeding capacity
+    // exception
+    // * @throws MotuInvalidDepthRangeException the motu invalid depth range
+    // exception
+    // * @throws MotuInvalidLongitudeException the motu invalid longitude
+    // exception
     // * @throws NetCdfVariableException the net cdf variable exception
-    // * @throws MotuInvalidLatitudeException the motu invalid latitude exception
+    // * @throws MotuInvalidLatitudeException the motu invalid latitude
+    // exception
     // * @throws MotuNotImplementedException the motu not implemented exception
     // * @throws MotuNoVarException the motu no var exception
     // * @throws MotuException the motu exception
     // * @throws MotuInvalidDepthException the motu invalid depth exception
     // * @throws NetCdfAttributeException the net cdf attribute exception
     // * @throws MotuInvalidDateException the motu invalid date exception
-    // * @throws MotuInvalidDateRangeException the motu invalid date range exception
+    // * @throws MotuInvalidDateRangeException the motu invalid date range
+    // exception
     // */
     // public Product extractDataHTML(String locationData,
     // List<String> listVar,
@@ -2127,14 +2187,18 @@ public class ServiceData {
     // List<String> listDepthCoverage,
     // SelectData selectData,
     // Organizer.Format dataOutputFormat,
-    // Writer out) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-    // MotuNotImplementedException, MotuInvalidDepthRangeException, NetCdfVariableException,
+    // Writer out) throws MotuException, MotuInvalidDateRangeException,
+    // MotuExceedingCapacityException,
+    // MotuNotImplementedException, MotuInvalidDepthRangeException,
+    // NetCdfVariableException,
     // NetCdfAttributeException, MotuNoVarException,
-    // MotuInvalidDepthException, MotuInvalidDateException, MotuInvalidLatitudeException,
+    // MotuInvalidDepthException, MotuInvalidDateException,
+    // MotuInvalidLatitudeException,
     // MotuInvalidLongitudeException {
     //
     // Product product = getProductInformationFromLocation(locationData);
-    // extractDataHTML(product, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage,
+    // extractDataHTML(product, listVar, listTemporalCoverage,
+    // listLatLonCoverage, listDepthCoverage,
     // selectData, dataOutputFormat, out);
     //
     // return product;
@@ -2313,18 +2377,21 @@ public class ServiceData {
     public void getHowTogetExceededData(StringBuffer stringBuffer) throws MotuException {
         // Searchs file with service group name
         String resourceFileName = String.format(HOW_TO_GET_EXCEED_DATA_INFO_FILENAME, this.group.toLowerCase());
-        // URL url = Organizer.class.getClassLoader().getResource(resourceFileName);
+        // URL url =
+        // Organizer.class.getClassLoader().getResource(resourceFileName);
         URL url = null;
         try {
             url = ConfigLoader.getInstance().get(resourceFileName);
         } catch (IOException e) {
             // Do nothing
         }
-        // if ressource file not found - Searchs file with servicevelocity prefix
+        // if ressource file not found - Searchs file with servicevelocity
+        // prefix
         if (url == null) {
             // Searchs file with servicevelocity prefix
             resourceFileName = String.format(HOW_TO_GET_EXCEED_DATA_INFO_FILENAME, this.veloTemplatePrefix.toLowerCase());
-            // url = Organizer.class.getClassLoader().getResource(resourceFileName);
+            // url =
+            // Organizer.class.getClassLoader().getResource(resourceFileName);
             try {
                 url = ConfigLoader.getInstance().get(resourceFileName);
             } catch (IOException e) {
