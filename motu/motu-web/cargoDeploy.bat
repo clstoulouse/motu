@@ -49,7 +49,7 @@ call mvn -Dmaven.test.skip=true %PROFILE% assembly:assembly
 cd /D %CURRENT_DIR%
 :install-motu-web
 REM echo install atoll-motu-web
-call mvn -Dmaven.test.skip=true %PROFILE% clean install 
+call mvn -Dmaven.test.skip=true %PROFILE%  help:active-profiles clean install 
 
 if %WHAT% == install goto end
 

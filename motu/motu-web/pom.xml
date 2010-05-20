@@ -392,6 +392,19 @@
 			</properties>
 			
 		</profile>
+				
+		<profile>
+			<id>misgw-qt</id>
+			<properties>
+				<motu.config>qt-misgw</motu.config>
+				<motu.config.version>2.0.0-SNAPSHOT</motu.config.version>
+				<tomcat.url>http://misgw-qt.cls.fr:33080</tomcat.url>
+				<remote.username>admin</remote.username>
+				<remote.password />
+				<remote.application.tomcat.context>atoll-motu-servlet</remote.application.tomcat.context>				
+			</properties>
+			
+		</profile>
 		
 		<profile>
 			<id>atoll-qt1</id>
