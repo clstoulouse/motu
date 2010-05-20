@@ -71,8 +71,8 @@ public class HttpClientTutorial {
 
         // Provide custom retry handler is necessary
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
-        // String username = "dearith";
-        // String password = "bienvenue";
+        // String username = "xxx";
+        // String password = "xxx";
         // Credentials credentials = new UsernamePasswordCredentials(username, password);
         // AuthScope authScope = new AuthScope("proxy.cls.fr", 8080);
         //     

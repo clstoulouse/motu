@@ -86,8 +86,8 @@ public class TestCASRest {
     public static final String casServerUrlPrefix = "https://atoll-dev.cls.fr:8443/cas-server-webapp-3.3.5";
 
     public static void main(String... args) throws Exception {
-        String username = "dearith";
-        String password = "bienvenue";
+        String username = "xxx";
+        String password = "xxx";
         // validateFromCAS(username, password);
         // loginToCAS(username, password);
         // getRedirectUrl();
@@ -372,8 +372,8 @@ public class TestCASRest {
 
         // Provide custom retry handler is necessary
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
-        // String username = "dearith";
-        // String password = "bienvenue";
+        // String username = "xxx";
+        // String password = "xxx";
         // Credentials credentials = new UsernamePasswordCredentials(username, password);
         // AuthScope authScope = new AuthScope("proxy.cls.fr", 8080);
         //           
@@ -455,8 +455,8 @@ public class TestCASRest {
 
         // Provide custom retry handler is necessary
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
-        // String username = "dearith";
-        // String password = "bienvenue";
+        // String username = "xxx";
+        // String password = "xxx";
         // Credentials credentials = new UsernamePasswordCredentials(username, password);
         // AuthScope authScope = new AuthScope("proxy.cls.fr", 8080);
         //           
@@ -546,8 +546,8 @@ public class TestCASRest {
 
         // Provide custom retry handler is necessary
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
-        // String username = "dearith";
-        // String password = "bienvenue";
+        // String username = "xxx";
+        // String password = "xxx";
         // Credentials credentials = new UsernamePasswordCredentials(username, password);
         // AuthScope authScope = new AuthScope("proxy.cls.fr", 8080);
         //           
@@ -769,8 +769,8 @@ public class TestCASRest {
         }
 
         String serviceURL = "http://atoll-dev.cls.fr:43080/thredds/catalog.xml";
-        String username = "dearith";
-        String password = "bienvenue";
+        String username = "xxx";
+        String password = "xxx";
 
         String casRestUrlSuffix = Organizer.getMotuConfigInstance().getCasRestUrlSuffix();
         String casRestUrl = RestUtil.getCasRestletUrl(serviceURL, casRestUrlSuffix);
@@ -838,8 +838,8 @@ public class TestCASRest {
 
         // http://atoll-dev.cls.fr:43080/thredds/dodsC/mercator_modified
         String serviceURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/OpendapAuth?action=productdownload&data=http://atoll-dev.cls.fr:43080/thredds/dodsC/nrt_glo_hr_infrared_sst&x_lo=2&x_hi=3&y_lo=1&y_hi=4&t_lo=2009-12-01&t_hi=2009-12-01&variable=Grid_0001&mode=console";
-        String username = "dearith";
-        String password = "bienvenue";
+        String username = "xxx";
+        String password = "xxx";
 
         String casRestUrlSuffix = Organizer.getMotuConfigInstance().getCasRestUrlSuffix();
         String casRestUrl = RestUtil.getCasRestletUrl(serviceURL, casRestUrlSuffix);
