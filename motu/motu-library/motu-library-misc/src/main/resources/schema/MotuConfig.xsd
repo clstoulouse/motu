@@ -14,7 +14,7 @@
 				</xs:element>
 			</xs:sequence>
 			<!--
-				defaultService : The service name when no service are specified.
+				defaultService : The service name when no service is specified.
 			-->
 			<xs:attribute name="defaultService" type="xs:string" default="aviso_nrt" />
 			<!--
@@ -248,6 +248,15 @@
 			-->
 			<xs:attribute name="httpBaseRef" type="xs:string" 
 				default="http:///www.myocean.eu.org"/>
+
+			<!-- defaultActionIsListServices:
+				If true and when no 'action' parameter is specified : 
+				 the default request processes is 'list available services'.
+				 Otherwise the default request is 
+				 'list available products of the default service' (see defaultService)  
+			-->
+    		<xs:attribute name="defaultActionIsListServices" type="xs:boolean"
+			    default="false" />
 				
 		</xs:complexType>
 
