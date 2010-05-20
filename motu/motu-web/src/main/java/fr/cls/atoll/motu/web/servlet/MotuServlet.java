@@ -806,6 +806,20 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             LOG.debug("execDefaultRequest() - entering");
         }
 
+        setLanguageParameter(request, session, response);
+        
+         try {
+            if (Organizer.getMotuConfigInstance().isDefaultActionIsListServices()) {
+                 listServices(session, response);
+                 if (LOG.isDebugEnabled()) {
+                     LOG.debug("execDefaultRequest() - exiting");
+                 }
+                 return;
+             }
+        } catch (MotuExceptionBase e) {
+            throw new ServletException(e.notifyException(), e);
+        }
+        
         // System.out.println("deduceServiceNameFromPath(request) :");
         // System.out.println(deduceServiceNameFromPath(request));
 
@@ -817,7 +831,6 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             throw new ServletException(e.notifyException(), e);
         }
 
-        setLanguageParameter(request, session, response);
 
         if (MotuServlet.isNullOrEmpty(serviceName)) {
             Organizer organizer = getOrganizer(session, response);
@@ -2519,8 +2532,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         // organizer.getMotuConfig().getProxyHost());
         // System.setProperty("proxyPort",
         // organizer.getMotuConfig().getProxyPort());
-        // Authenticator.setDefault(new SimpleAuthenticator("dearith",
-        // "bienvenue"));
+        // Authenticator.setDefault(new SimpleAuthenticator("xxx",
+        // "xxx"));
         // }
         return organizer;
     }

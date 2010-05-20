@@ -41,8 +41,8 @@
 <!-- httpDocumentRoot :
 	Document root of the servlet server.
 -->
-<motuConfig defaultService="&atoll;motu-opendap-aviso" proxyLogin="dearith" useProxy="true"
-	proxyPwd="bienvenue" useAuthentication="false" dataBlockSize="102400"
+<motuConfig defaultService="&atoll;motu-opendap-aviso" proxyLogin="xxx" useProxy="true"
+	proxyPwd="xxx" useAuthentication="false" dataBlockSize="102400"
 	maxSizePerFile="1024"
 	extractionPath="C:\Java\apache-tomcat-6.0.9\webapps\ROOT\motu-file-extract"
 	downloadHttpUrl="http://localhost:8080/motu-file-extract"
