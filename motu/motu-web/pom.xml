@@ -333,6 +333,7 @@
 						      	<overlay>
 									<groupId>cls.atoll.motu.configuration</groupId>
 								    <artifactId>motu-configuration-${motu.config}</artifactId>
+								    <type>zip</type>
 								</overlay>
 								<overlay>
 		              			<!-- empty groupId/artifactId is detected as the current build -->
