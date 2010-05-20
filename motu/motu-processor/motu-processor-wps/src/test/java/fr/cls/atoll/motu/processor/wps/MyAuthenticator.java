@@ -38,6 +38,6 @@ import java.net.PasswordAuthentication;
 public class MyAuthenticator extends Authenticator {
     @Override
     protected PasswordAuthentication getPasswordAuthentication() {
-        return new PasswordAuthentication("dearith", "bienvenue".toCharArray());
+        return new PasswordAuthentication("xxx", "xxx".toCharArray());
     }
 }

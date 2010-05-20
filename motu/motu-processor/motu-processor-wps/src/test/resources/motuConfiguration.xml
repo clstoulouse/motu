@@ -106,7 +106,7 @@
 -->
 
 <motuConfig defaultService="avisoNRT" useProxy="true"
-	proxyLogin="dearith" proxyPwd="bienvenue" useAuthentication="false"
+	proxyLogin="xxx" proxyPwd="xxx" useAuthentication="false"
 	dataBlockSize="102400" maxSizePerFile="256"
 	extractionPath="C:\Java\apache-tomcat-6.0.9\webapps\motu-file-extract"
 	downloadHttpUrl="http://localhost:8080/motu-file-extract"

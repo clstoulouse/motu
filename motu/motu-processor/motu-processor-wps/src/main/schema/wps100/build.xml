@@ -58,8 +58,8 @@
 
 	  <target name="proxy" depends="probe-proxy" if="proxy.enabled">
 	    <property name="proxy.port" value="8080"/>
-	    <property name="proxy.user" value="dearith"/>
-	    <property name="proxy.pass" value="bienvenue"/>
+	    <property name="proxy.user" value="xxx"/>
+	    <property name="proxy.pass" value="xxx"/>
 	    <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}"
 	      proxyuser="${proxy.user}" proxypassword="${proxy.pass}"/>
 	  </target>
