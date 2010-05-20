@@ -318,7 +318,7 @@ public class TestIntfce {
         // }
         // testLoadMotuConfig();
         // testgetMotuConfigSchema();
-        // productInformation();
+        productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
         //productDownloadInfo();

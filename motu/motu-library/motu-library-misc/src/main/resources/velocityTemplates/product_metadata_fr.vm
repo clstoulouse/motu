@@ -17,39 +17,46 @@
 	<h2>Services associés</h2>
 ##	<ul>
 		#if ($product.isProductDownloadable()) 
-			<p> $imgSuiv
+			<li>
 			<a href=?action=productdownloadhome&service=${service.getNameEncoded()}&product=${productMetaData.getProductId()}>
 			Service de téléchargement et d'extraction
 			</a>	
-			</p>			
+			</li>			
 		#end
+
+		<li>
+		<a href=?action=describeProduct&data=${product.getLocationData()}>
+		Description des données
+		</a>	
+		</li>
+		
 		#if (!$product.isProductAlongTrack()) 
-			<p> $imgSuiv
+			<li>
 			Interface Opendap:&nbsp;&nbsp;&nbsp;
 			<a href=${product.getLocationData()}.dds>dds</a>&nbsp;&nbsp;&nbsp;
 			<a href=${product.getLocationData()}.das>das</a>&nbsp;&nbsp;&nbsp;
 			<a href=${product.getLocationData()}.html>Data resquest form</a>				
-			</p>
+			</li>
 		#end
 		#if($LAS != "")
-			<p> $imgSuiv
+			<li>
 			<a href=${LAS}>Service de visualisation LAS</a>
-			</p>
+			</li>
 		#end
 		#if($bulletinSite != "")
-			<p> $imgSuiv
+			<li>
 			<a href=${bulletinSite}>Service de visualisation Bulletin</a>
-			</p>
+			</li>
 		#end
 		#if($FTP != "")
-			<p> $imgSuiv
+			<li>
 			<a href=${FTP}>Téléchargement FTP</a>
-			</p>
+			</li>
 		#end
 		#if($pageSiteWeb != "")
-			<p> $imgSuiv
+			<li>
 			<a href=${pageSiteWeb}>Informations produit</a>
-			</p>			
+			</li>			
 		#end
 ##	</ul>
 #end

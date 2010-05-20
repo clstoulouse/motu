@@ -16,39 +16,46 @@
 	<h2>Associated services</h2>
 ##	<ul>
 		#if ($product.isProductDownloadable()) 
-			<p> $imgSuiv
+			<li>
 			<a href=?action=productdownloadhome&service=${service.getNameEncoded()}&product=${productMetaData.getProductId()}>
 			Downloading and extraction service
 			</a>	
-			</p>			
+			</li>			
 		#end
+
+		<li>
+		<a href=?action=describeProduct&data=${product.getLocationData()}>
+		Dataset description
+		</a>	
+		</li>
+		
 		#if (!$product.isProductAlongTrack()) 
-			<p> $imgSuiv
+			<li>
 			Opendap direct access:&nbsp;&nbsp;&nbsp;
 			<a href=${product.getLocationData()}.dds>dds</a>&nbsp;&nbsp;&nbsp;
 			<a href=${product.getLocationData()}.das>das</a>&nbsp;&nbsp;&nbsp;
 			<a href=${product.getLocationData()}.html>Data resquest form</a>				
-			</p>
+			</li>
 		#end
 		#if($LAS != "")
-			<p> $imgSuiv
+			<li>
 			<a href=${LAS}>LAS viewing service</a>
-			</p>
+			</li>
 		#end
 		#if($bulletinSite != "")
-			<p> $imgSuiv
+			<li>
 			<a href=${bulletinSite}>Bulletin site viewing service</a>
-			</p>
+			</li>
 		#end
 		#if($FTP != "")
-			<p> $imgSuiv
+			<li>
 			<a href=${FTP}>FTP download</a>
-			</p>
+			</li>
 		#end
 		#if($pageSiteWeb != "")
-			<p> $imgSuiv
+			<li>
 			<a href=${pageSiteWeb}>Product fact sheet</a>
-			</p>			
+			</li>			
 		#end
 ##	</ul>
 #end
