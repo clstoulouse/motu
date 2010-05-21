@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<wps:Execute service="WPS" version="1.0.0"
+	xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
+http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+
+	<ows:Identifier>Push</ows:Identifier>
+	<wps:DataInputs>
+		<wps:Input>
+			<ows:Identifier>from</ows:Identifier>
+			<wps:Data>
+		        <!--
+		        <wps:ComplexData>http://atoll-dev.cls.fr:30080/motu-extract/atoll-ressource-dataset-datafile-nrt-med-infrared-sst-timestamp_1244456058793.txt</wps:ComplexData>
+		        -->
+		        <wps:ComplexData>ftp://proxy.cls.fr/pub/README</wps:ComplexData>
+			</wps:Data>			
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>userFrom</ows:Identifier>
+			<wps:Data>
+		        <wps:LiteralData>anonymous@ftp.unidata.ucar.edu</wps:LiteralData>
+			</wps:Data>			
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>pwdFrom</ows:Identifier>
+			<wps:Data>
+		        <wps:LiteralData>dearith@cls.fr</wps:LiteralData>
+			</wps:Data>			
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>to</ows:Identifier>
+			<wps:Data>
+		        <wps:ComplexData>ftp://CLS-EARITH.pc.cls.fr/test</wps:ComplexData>
+		        <!-- 
+		        <wps:ComplexData>ftp://t:t@CLS-EARITH.pc.cls.fr/test.txt</wps:ComplexData>
+		        <wps:ComplexData>ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.txt</wps:ComplexData>
+		        <wps:ComplexData>sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll/atoll-distrib/HOA_Catsat/Interface_ATOLL/test.txt</wps:ComplexData>
+		         -->
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>userTo</ows:Identifier>
+			<wps:Data>
+		        <wps:LiteralData>t</wps:LiteralData>
+			</wps:Data>			
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>pwdTo</ows:Identifier>
+			<wps:Data>
+		        <wps:LiteralData>t</wps:LiteralData>
+			</wps:Data>			
+		</wps:Input>
+		
+		<wps:Input>
+			<ows:Identifier>remove</ows:Identifier>
+			<wps:Data>
+		        <wps:LiteralData>false</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>rename</ows:Identifier>
+			<wps:Data>
+		        <wps:LiteralData>false</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+	</wps:DataInputs>
+
+</wps:Execute>
