@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+		<ComplexOutput>
+			<Identifier>requestid</Identifier>
+			<Title>The unique id of the request</Title>			
+			<DefaultFormat mimeType="text/plain" encoding="UTF-8" />
+		</ComplexOutput>
