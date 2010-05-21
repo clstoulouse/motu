@@ -1,0 +1,5 @@
+${project.name} - v. ${project.version}
+
+${project.description}
+
+Copyright ${project.organization.name} (${project.organization.url})
