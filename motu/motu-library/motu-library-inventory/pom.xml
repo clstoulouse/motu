@@ -170,8 +170,9 @@
 					<schemaFiles>Inventory.xsd,CatalogOLA.xsd</schemaFiles>
 					<bindingDirectory>src/main/resources/fr/cls/atoll/motu/library/inventory</bindingDirectory>
 					<bindingFiles>globalbinding.xjb</bindingFiles>
+					<explicitAnnotation>true</explicitAnnotation>
 					<extension>true</extension>
-					<clearOutputDir>true</clearOutputDir>
+					<clearOutputDir>false</clearOutputDir>
 				</configuration>
 			</plugin>
 			<plugin>
