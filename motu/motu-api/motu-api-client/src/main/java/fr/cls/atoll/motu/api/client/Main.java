@@ -11,7 +11,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
-import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.AuthentificationMode;
+import fr.cls.atoll.motu.api.message.AuthenticationMode;
 import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
 import fr.cls.atoll.motu.library.misc.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
@@ -181,8 +181,8 @@ public class Main {
         stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_LOGIN + "=login authentification if needed (optional)\n");
         stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_PWD + "=password authentification if needed (optional)\n");
         stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_AUTHENTIFICATION_MODE + "=authentification mode (optional - default is '"
-                + AuthentificationMode.CAS.toString() + "' - valid values: ");
-        stringBuffer.append(AuthentificationMode.getAvailableValues().toString());
+                + AuthenticationMode.CAS.toString() + "' - valid values: ");
+        stringBuffer.append(AuthenticationMode.getAvailableValues().toString());
         stringBuffer.append(")\n");
         stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_XML_FILE + "=TDS Catalog file name (optional - default is '"
                 + Organizer.TDS_CATALOG_FILENAME + "')\n");
@@ -291,8 +291,8 @@ public class Main {
         user.setPwd(mapParams.get(MotuRequestParametersConstant.PARAM_PWD));
         user.setAuthentificationMode(mapParams.get(MotuRequestParametersConstant.PARAM_AUTHENTIFICATION_MODE));
 
-        if ((user.getLogin() != null) && (user.getAuthentificationMode().equals(AuthentificationMode.NONE))) {
-            user.setAuthentificationMode(AuthentificationMode.CAS);
+        if ((user.getLogin() != null) && (user.getAuthentificationMode().equals(AuthenticationMode.NONE))) {
+            user.setAuthentificationMode(AuthenticationMode.CAS);
         }
 
         if (LOG.isDebugEnabled()) {
