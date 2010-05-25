@@ -1,0 +1,26 @@
+                                ------------------------
+                                   Building the Project
+                                ------------------------
+                                
+Building the Project
+              
+* Install Maven
+
+	This project uses {{{http://maven.apache.org/}Maven}} as a build tool.
+	We recommend you to install Maven 2.2.1 or greater before trying
+	the following.
+
+* Check out the source code
+
+	To checkout Spring Security from SVN, see our {{{source-repository.html}SVN Usage}} page.
+
+* Building with Maven
+
+	Assuming you've already checked out the code from subversion, 
+	start up a command prompt and execute the following commands from the directory containing the project source:
+
++----------------------------------------------------------------------------------------------------------------------+
+	mvn clean install	
++----------------------------------------------------------------------------------------------------------------------+
+
+	This should build the framework library jars, install them to your local Maven repository.
