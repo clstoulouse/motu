@@ -340,11 +340,11 @@
 	<distributionManagement>
 		<site>
 			<id>localhost</id>
-			<url>${basedir}/target/distrib/site</url>
+			<url>file://${basedir}/target/distrib/site</url>
 		</site>
 		<repository>
 			<id>localhost</id>
-			<url>${basedir}/target/distrib/m2repo</url>
+			<url>file://${basedir}/target/distrib/m2repo</url>
 		</repository>
 	</distributionManagement>
 	
