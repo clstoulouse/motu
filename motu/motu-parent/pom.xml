@@ -291,7 +291,7 @@
 
 	<repositories>
 		<repository>
-			<id>cls-ext-repo</id>
+			<id>cls-to-ext-repo</id>
 			<name>CLS External Repository</name>
 			<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/</url>
 		</repository>

@@ -25,7 +25,7 @@
 		<module>motu-configuration/motu-configuration-common</module>
 		<module>motu-configuration/motu-configuration-sample</module>
 	</modules>
-	
+
 	<reporting>
 		<plugins>
 			<plugin>
@@ -33,6 +33,7 @@
 				<artifactId>maven-site-plugin</artifactId>
 				<version>2.1</version>
 				<configuration>
+					<siteDirectory>${basedir}/motu-parent/src/site</siteDirectory>
 					<locales>en</locales>
 					<outputEncoding>UTF-8</outputEncoding>
 				</configuration>
@@ -115,7 +116,7 @@
 
 	<repositories>
 		<repository>
-			<id>cls-ext-repo</id>
+			<id>cls-to-ext-repo</id>
 			<name>CLS External Repository</name>
 			<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/</url>
 		</repository>

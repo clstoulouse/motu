@@ -1,4 +1,4 @@
-<project name="ATOLL v2">
+<project name="Motu">
     <skin>
 		<groupId>cls.atoll</groupId>
 		<artifactId>atoll-build-tools</artifactId>
@@ -25,6 +25,7 @@
 			<item name="Introduction" href="/index.html" />
 			<item name="Building from Source" href="/building.html"/>
 			<item name="Download" href="https://sourceforge.net/projects/cls-motu/files" />
+			<item name="Wiki" href="http://sourceforge.net/apps/mediawiki/cls-motu/" />
 		</menu>
 
         <menu ref="reports" />
