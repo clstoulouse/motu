@@ -21,7 +21,6 @@ import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
 import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
 import fr.cls.atoll.motu.library.misc.threadpools.TestTheadPools;
-import fr.cls.commons.util.DatePeriod;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -42,7 +41,6 @@ import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -57,6 +55,7 @@ import java.util.Map.Entry;
 import javax.xml.bind.JAXBElement;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Interval;
 
 import ucar.ma2.StructureData;
 import ucar.ma2.MAMath.MinMax;
@@ -98,7 +97,7 @@ public class TestIntfce {
      * @param args
      */
     public static void main(String[] args) {
-        
+
         // System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#dataset-identifiant"));
         // System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#identifiant"));
         // System.out.println(Organizer.getDatasetIdFromURI("bidon"));
@@ -309,7 +308,7 @@ public class TestIntfce {
         // }
         // MAMath.MinMax minMax = NetCdfReader.getMinMaxLonNormal(r1, r2, r1Values, r2Values)
         listServices();
-        //catalogInformation();
+        // catalogInformation();
         // try {
         // ServiceData.Language test = ServiceData.Language.valueOf("ee");
         // } catch (RuntimeException e) {
@@ -321,7 +320,7 @@ public class TestIntfce {
         productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
-        //productDownloadInfo();
+        // productDownloadInfo();
         // productExtractDataHTMLAviso();
         // productExtractDataAviso();
         // productExtractDataAvisofromProductId();
@@ -343,7 +342,7 @@ public class TestIntfce {
         // e.printStackTrace();
         // }
         // testLoadStdNameEquiv();
-        //testGetAmountDataSize();
+        // testGetAmountDataSize();
         // testSynchronized();
         // productExtractDataCatsat();
         // productExtractDataAvisofromExtractionParameters();
@@ -379,7 +378,7 @@ public class TestIntfce {
         try {
             // String serviceName = "aviso_dt";
             // String serviceName = "Mercator";
-            //String serviceName = "MercatorIBI";
+            // String serviceName = "MercatorIBI";
             String serviceName = "Myocean";
             // String serviceName = "Catsat";
             // String serviceName = "AvisoNRT";
@@ -573,10 +572,10 @@ public class TestIntfce {
 
         try {
             String serviceName = "Myocean";
-            //String serviceName = "MercatorIBI";
+            // String serviceName = "MercatorIBI";
             // String serviceName = "avisoNRT";
             // String productId = "duacs_global_nrt_madt_merged_h";
-            //String productId = "mercatorPsy2v3_ibi_mean_best_estimate";
+            // String productId = "mercatorPsy2v3_ibi_mean_best_estimate";
             String productId = "mercatorPsy3v2_glo_mean_best_estimate";
             // String serviceName = "mercator";
             // String productId = "mercatorPsy3v1R1v_nat_mean_best_estimate";
@@ -2349,7 +2348,7 @@ public class TestIntfce {
                     if (productMetaData == null) {
                         continue;
                     }
-                    DatePeriod timeCoverage = productMetaData.getTimeCoverage();
+                    Interval timeCoverage = productMetaData.getTimeCoverage();
                     LatLonRect geoBBox = productMetaData.getGeoBBox();
 
                     Double northSouthResolution = productMetaData.getNorthSouthResolution();

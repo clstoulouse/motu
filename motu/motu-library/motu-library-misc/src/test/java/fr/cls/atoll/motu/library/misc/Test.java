@@ -24,11 +24,6 @@
  */
 package fr.cls.atoll.motu.library.misc;
 
-import com.graphbuilder.math.Expression;
-import com.graphbuilder.math.ExpressionTree;
-import com.graphbuilder.math.FuncMap;
-import com.graphbuilder.math.VarMap;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -131,34 +126,6 @@ public class Test {
         }
 
         return origVal;
-    }
-
-    public static void testExpression() {
-        String mathFormula = "(Var1 + 123.6) > 125";
-        Expression x = ExpressionTree.parse(mathFormula);
-
-        FuncMap fm = new FuncMap();
-        fm.loadDefaultFunctions();
-
-        // Récupération des variables de la formule mathématiques
-        String[] varNames = x.getVariableNames();
-
-        // Instanciation d'une Map des variables de la formule, avec une case
-        // insensitive
-        VarMap vm = new VarMap(false);
-        vm.getClass();
-
-        // Parcours de la liste des variables de la formule
-        for (int i = 0; i < varNames.length; i++) {
-            System.out.println(varNames[i]);
-
-            // Sinon, on met à jour la map des variables avec la valeur du
-            // facteur
-            // vm.setValue(varNames[i], value);
-        }
-
-        // return new Float(x.eval(vm, fm));
-
     }
 
     public static String dump(Object o) {

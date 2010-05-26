@@ -29,7 +29,7 @@ import com.jcraft.jsch.Session;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.commons.util.io.ConfigLoader;
+import fr.cls.atoll.motu.library.misc.utils.ConfigLoader;
 
 import java.io.File;
 import java.io.IOException;
