@@ -6,7 +6,7 @@
 	<version>2.1.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	
-	<name>Motu</name>	
+	<name>Motu Parent</name>	
 	<description>Motu is a high efficient and robust Web Server which fills the gap between heterogeneous Data Providers to End Users.
 	Motu handles, extracts and transforms oceanographic huge volumes of data without performance collapse.</description>
 	<url>http://cls-motu.sourceforge.net/</url>
@@ -325,12 +325,6 @@
 	</issueManagement>	
 	
 	<distributionManagement>
-		<!--
-		<site>
-			<id>localhost</id>
-			<url>file://${basedir}/target/distrib/site</url>
-		</site>
-		-->
 		<repository>
 			<id>cls-to-ext-repo</id>
 			<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/</url>

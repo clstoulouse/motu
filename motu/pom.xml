@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	
 	<groupId>cls.atoll.motu</groupId>
 	<artifactId>motu</artifactId>
 	<version>2.1.2-SNAPSHOT</version>
@@ -12,6 +13,7 @@
 	<url>http://cls-motu.sourceforge.net/</url>
 	
 	<modules>
+		<module>motu-parent</module>
 		<module>motu-library/motu-library-converter</module>
 		<module>motu-library/motu-library-misc</module>
 		<module>motu-library/motu-library-inventory</module>
@@ -24,9 +26,121 @@
 		<module>motu-configuration/motu-configuration-sample</module>
 	</modules>
 	
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<locales>en</locales>
+					<outputEncoding>UTF-8</outputEncoding>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<additionalJOption>-J-Xmx1024m -J-XX:MaxPermSize=512m</additionalJOption>
+					<aggregate>true</aggregate>				
+					<linksource>true</linksource>
+					<tags>
+                        <tag>
+                            <name>todo</name>
+                            <placement>a</placement>
+                            <head>To do:</head>
+                        </tag>
+						<tag>
+							<name>pre</name>
+							<placement>cm</placement>
+							<head>Precondition:</head>
+						</tag>
+						<tag>
+							<name>uc</name>
+							<placement>t</placement>
+							<head>Use case:</head>
+						</tag>
+                    </tags>		
+                    <header><![CDATA[
+                      <script type="text/javascript" src="http://www.websequencediagrams.com/service.js"></script>
+                      ]]>                      
+                    </header>			
+					<links>
+						<link>http://java.sun.com/javase/6/docs/api/</link>
+						<link>http://java.sun.com/products/servlet/2.5/docs/servlet-2_5-mr2/</link>
+						<link>http://static.springframework.org/spring/docs/2.5.x/api/</link>
+						<link>http://static.springframework.org/spring-security/site/apidocs/</link>
+						<link>http://logging.apache.org/log4j/docs/api/</link>
+			            <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
+			            <link>http://junit.sourceforge.net/javadoc/</link>
+			            <link>http://aopalliance.sourceforge.net/doc/</link>
+			            <link>http://tomcat.apache.org/tomcat-5.5-doc/servletapi/</link>
+			            <link>http://tomcat.apache.org/tomcat-5.5-doc/catalina/docs/api/</link>
+			            <link>http://jetty.codehaus.org/jetty/jetty-6/apidocs/</link>
+						<link>http://www.slf4j.org/apidocs/</link>
+					</links>
+				</configuration>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>javadoc</report>
+							<!--<report>test-javadoc</report>-->
+						</reports>
+					</reportSet>
+				</reportSets>						
+			</plugin>
+			<!--
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-changelog-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<type>range</type>
+					<range>90</range>
+				</configuration>
+			</plugin>
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.1.2</version>
+				<configuration>
+					<aggregate>true</aggregate>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
+
+	<repositories>
+		<repository>
+			<id>cls-ext-repo</id>
+			<name>CLS External Repository</name>
+			<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/</url>
+		</repository>
+		<repository>
+			<id>central</id>
+			<name>Maven Central Repository</name>
+			<url>http://repo1.maven.org/maven2</url>
+		</repository>
+		<repository>
+			<id>maven2-repository.dev.java.net</id>
+			<name>Java.net Repository for Maven</name>
+			<url>http://download.java.net/maven/2/</url>
+		</repository>	
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>Codehaus repository</id>
+			<url>http://repository.codehaus.org/</url>
+		</pluginRepository>
+	</pluginRepositories>
+	
 	<scm>
-		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu</connection>
-		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu</url>
+		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-parent</connection>
+		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-parent</url>
 	</scm>
 	
 	<issueManagement>
@@ -35,12 +149,10 @@
 	</issueManagement>	
 	
 	<distributionManagement>
-		<!--
 		<site>
 			<id>localhost</id>
 			<url>file://${basedir}/target/distrib/site</url>
 		</site>
-		-->
 		<repository>
 			<id>cls-to-ext-repo</id>
 			<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/</url>
