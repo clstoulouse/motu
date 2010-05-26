@@ -1,4 +1,38 @@
+/* 
+ * Motu, a high efficient, robust and Standard compliant Web Server for Geographic
+ * Data Dissemination.
+ *
+ * http://cls-motu.sourceforge.net/
+ *
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites) - 
+ * http://www.cls.fr - and  Contributors
+ *
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ */
 package fr.cls.atoll.motu.api.client;
+
+import fr.cls.atoll.motu.api.message.AuthenticationMode;
+import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
+import fr.cls.atoll.motu.library.misc.cas.util.RestUtil;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.intfce.User;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,25 +44,13 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
-import fr.cls.atoll.motu.api.message.AuthenticationMode;
-import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
-import fr.cls.atoll.motu.library.misc.cas.util.RestUtil;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.intfce.User;
-
 /**
- * <br>
- * <br>
- * Copyright : Copyright (c) 2010. <br>
- * <br>
- * Société : CLS (Collecte Localisation Satellites)
+ * Main entry for the console client api.
  * 
- * @author $Author: $
- * @version $Revision: $ - $Date: $
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
+ * 
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class Main {
     /**
@@ -42,19 +64,19 @@ public class Main {
     /** The map params containing parameters arguments. */
     private static Map<String, String> mapParams = new HashMap<String, String>();
 
-//    // Create a trust manager that does not validate certificate chains
-//    // See : http://www.exampledepot.com/egs/javax.net.ssl/trustall.html
-//    static TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-//        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-//            return null;
-//        }
-//
-//        public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-//        }
-//
-//        public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-//        }
-//    } };
+    // // Create a trust manager that does not validate certificate chains
+    // // See : http://www.exampledepot.com/egs/javax.net.ssl/trustall.html
+    // static TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+    // public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+    // return null;
+    // }
+    //
+    // public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+    // }
+    //
+    // public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+    // }
+    // } };
 
     /**
      * .
@@ -66,15 +88,14 @@ public class Main {
         if (LOG.isDebugEnabled()) {
             LOG.debug("main(String[]) - entering");
         }
-        
-//        try {
-//            SSLContext sc = SSLContext.getInstance("SSL");
-//            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-//            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-        
+
+        // try {
+        // SSLContext sc = SSLContext.getInstance("SSL");
+        // sc.init(null, trustAllCerts, new java.security.SecureRandom());
+        // HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // }
 
         // System.out.println("fr.cls.atoll.motu.api.client OK");
         // System.out.println(System.getProperties());
@@ -186,8 +207,10 @@ public class Main {
         stringBuffer.append(")\n");
         stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_XML_FILE + "=TDS Catalog file name (optional - default is '"
                 + Organizer.TDS_CATALOG_FILENAME + "')\n");
-        stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_EXTRA_METADATA + "=true/false : true to get all metadata (metadata from TDS data and TDS xml configuration), false to get simplified metadata (matadata from TDS data only) TDS Catalog file name (optional - default is 'true')\n");
-
+        stringBuffer
+                .append("\t"
+                        + MotuRequestParametersConstant.PARAM_EXTRA_METADATA
+                        + "=true/false : true to get all metadata (metadata from TDS data and TDS xml configuration), false to get simplified metadata (matadata from TDS data only) TDS Catalog file name (optional - default is 'true')\n");
 
         stringBuffer.append("\n==========\n");
 
@@ -253,7 +276,6 @@ public class Main {
         return mapParams.get(MotuRequestParametersConstant.PARAM_XML_FILE);
 
     }
-    
 
     /**
      * Checks if is extra metadata.
@@ -371,11 +393,10 @@ public class Main {
         User user = Main.getUser();
         user.setCASAuthentification(casAuthentification);
         AuthentificationHolder.setUser(user);
-        
 
         // Get the TDS Catalog file name
         String xmlFile = Main.getXmlFile();
-        
+
         boolean loadExtraMetadata = Main.isExtraMetadata();
 
         Organizer organizer = new Organizer();
