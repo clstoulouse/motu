@@ -247,7 +247,7 @@
 				Http base reference of the service site.
 			-->
 			<xs:attribute name="httpBaseRef" type="xs:string" 
-				default="http:///www.myocean.eu.org"/>
+				default="http://www.myocean.eu.org"/>
 
 			<!-- defaultActionIsListServices:
 				If true and when no 'action' parameter is specified : 
