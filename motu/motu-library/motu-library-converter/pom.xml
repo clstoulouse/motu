@@ -44,5 +44,10 @@
         	<version>2.5</version>
         </dependency>
     </dependencies>
+	
+	<scm>
+		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-converter</connection>
+		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-converter</url>
+	</scm>
     
 </project>

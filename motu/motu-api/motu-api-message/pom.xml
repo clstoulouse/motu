@@ -17,4 +17,9 @@
     <name>Motu Api Messages</name>
     <description>This package holds the messages exchanged by the published services.</description>
 	
+	<scm>
+		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-api/motu-api-message</connection>
+		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-api/motu-api-message</url>
+	</scm>
+    
 </project>

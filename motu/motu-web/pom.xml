@@ -162,6 +162,11 @@
         </plugins>
     </build>
 	
+	<scm>
+		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-web</connection>
+		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-web</url>
+	</scm>
+	
     <repositories>
         <repository>
             <id>openqa.org</id>

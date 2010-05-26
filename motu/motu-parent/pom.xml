@@ -152,10 +152,6 @@
 							<head>Use case:</head>
 						</tag>
                     </tags>		
-                    <header><![CDATA[
-                      <script type="text/javascript" src="http://www.websequencediagrams.com/service.js"></script>
-                      ]]>                      
-                    </header>			
 					<links>
 						<link>http://java.sun.com/javase/6/docs/api/</link>
 						<link>http://java.sun.com/products/servlet/2.5/docs/servlet-2_5-mr2/</link>
@@ -175,12 +171,10 @@
 					<reportSet>
 						<reports>
 							<report>javadoc</report>
-							<!--<report>test-javadoc</report>-->
 						</reports>
 					</reportSet>
 				</reportSets>						
 			</plugin>
-			<!--
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-changelog-plugin</artifactId>
@@ -190,7 +184,6 @@
 					<range>90</range>
 				</configuration>
 			</plugin>
-			-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
@@ -245,6 +238,7 @@
 				<version>2.1.2</version>
 				<configuration>
 					<aggregate>true</aggregate>
+					<dependencyLocationsEnabled>false</dependencyLocationsEnabled> 
 				</configuration>
 			</plugin>
 			<plugin>
@@ -325,6 +319,12 @@
 	</issueManagement>	
 	
 	<distributionManagement>
+		<!--
+		<site>
+			<id>cls-motu.sourceforge.net</id>
+			<url>scp://shell.sourceforge.net//home/groups/c/cl/cls-motu/htdocs</url>
+		</site>
+		-->
 		<repository>
 			<id>cls-to-ext-repo</id>
 			<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/</url>

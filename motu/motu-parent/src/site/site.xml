@@ -17,10 +17,6 @@
 			<item name="SourceForge" href="https://sourceforge.net/projects/cls-motu" />
 		</links>
 	
-        <!--
-		<menu ref="parent" />
-        <menu ref="modules" />
-		-->
 		<menu name="Overview">
 			<item name="Introduction" href="/index.html" />
 			<item name="Building from Source" href="/building.html"/>

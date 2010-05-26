@@ -139,5 +139,10 @@
             <version>1.0.0</version>
         </dependency>
     </dependencies>
+	
+	<scm>
+		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-processor/motu-processor-wps</connection>
+		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-processor/motu-processor-wps</url>
+	</scm>
 
 </project>
