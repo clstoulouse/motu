@@ -11,19 +11,6 @@
 	Motu handles, extracts and transforms oceanographic huge volumes of data without performance collapse.</description>
 	<url>http://cls-motu.sourceforge.net/</url>
 	
-	<modules>
-		<module>motu-library/motu-library-converter</module>
-		<module>motu-library/motu-library-misc</module>
-		<module>motu-library/motu-library-inventory</module>
-		<module>motu-processor/motu-processor-wps</module>
-		<module>motu-api/motu-api-client</module>		
-		<module>motu-api/motu-api-message</module>		
-		<module>motu-api/motu-api-rest</module>		
-		<module>motu-web</module>
-		<module>motu-configuration/motu-configuration-common</module>
-		<module>motu-configuration/motu-configuration-sample</module>
-	</modules>
-	
 	<properties>
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
 		<jdk.source.version>1.6</jdk.source.version>
@@ -328,8 +315,8 @@
 	</pluginRepositories>
 	
 	<scm>
-		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/</connection>
-		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/</url>
+		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-parent</connection>
+		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-parent</url>
 	</scm>
 	
 	<issueManagement>
@@ -338,13 +325,15 @@
 	</issueManagement>	
 	
 	<distributionManagement>
+		<!--
 		<site>
 			<id>localhost</id>
 			<url>file://${basedir}/target/distrib/site</url>
 		</site>
+		-->
 		<repository>
-			<id>localhost</id>
-			<url>file://${basedir}/target/distrib/m2repo</url>
+			<id>cls-to-ext-repo</id>
+			<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/</url>
 		</repository>
 	</distributionManagement>
 	

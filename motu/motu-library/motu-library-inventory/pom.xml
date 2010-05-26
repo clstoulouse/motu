@@ -7,7 +7,7 @@
 		<groupId>cls.atoll.motu</groupId>
 		<artifactId>motu-parent</artifactId>
 		<version>2.1.2-SNAPSHOT</version>
-		<relativePath>../../pom.xml</relativePath>
+		<relativePath>../../motu-parent</relativePath>
 	</parent>
 	
 	<groupId>cls.atoll.motu.library</groupId>
