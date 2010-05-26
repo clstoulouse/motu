@@ -86,6 +86,9 @@ public interface MotuRequestParametersConstant {
 
     /** Data parameter name. */
     final String PARAM_DATA = "data";
+    
+    /** The PARA m_ dat a_ format. */
+    final String PARAM_DATA_FORMAT = "dataformat";
 
     /** The PARAM output. */
     final String PARAM_OUTPUT = "output";
