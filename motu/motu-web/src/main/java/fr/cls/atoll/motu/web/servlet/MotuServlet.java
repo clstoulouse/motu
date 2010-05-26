@@ -530,7 +530,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         }
         if (serviceName.equals("")) {
             for (ConfigService confServ : listConfServ) {
-                if (confServ.getGroup().equalsIgnoreCase(groupName)) {
+                if (confServ.getName().equalsIgnoreCase(groupName)) {
                     serviceName = confServ.getName();
                     if (LOG.isInfoEnabled()) {
                         LOG.info("deduceServiceNameFromPath(HttpServletRequest) - B - String serviceName=" + serviceName);
@@ -538,10 +538,6 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                     break;
                 }
             }
-        }
-
-        if (serviceName.equals("")) {
-            serviceName = groupName;
         }
         
         if (LOG.isDebugEnabled()) {
