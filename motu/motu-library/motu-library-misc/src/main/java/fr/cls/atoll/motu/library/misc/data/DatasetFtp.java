@@ -36,7 +36,6 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer.Format;
 import fr.cls.atoll.motu.library.misc.utils.Zip;
-import fr.cls.commons.util.DatePeriod;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -47,6 +46,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.joda.time.Interval;
 
 /**
  * 
@@ -209,7 +210,7 @@ public class DatasetFtp extends DatasetBase {
         Date start = extractCriteriaDatetime.getFrom();
         Date end = extractCriteriaDatetime.getTo();
 
-        DatePeriod datePeriod = new DatePeriod(start, end);
+        Interval datePeriod = new Interval(start.getTime(), end.getTime());
 
         // files are sorted by date (ascending)
         List<DataFile> dataFiles = product.getDataFiles();
@@ -220,7 +221,7 @@ public class DatasetFtp extends DatasetBase {
             if (fileStart.compareTo(end) > 0) {
                 break;
             }
-            if (datePeriod.contains(fileStart)) {
+            if (datePeriod.contains(fileStart.getTime())) {
                 selected.add(dataFile);
             }
         }

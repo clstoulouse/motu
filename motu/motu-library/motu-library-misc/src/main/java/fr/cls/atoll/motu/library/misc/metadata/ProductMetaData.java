@@ -34,7 +34,6 @@ import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.library.misc.tds.server.Property;
 import fr.cls.atoll.motu.library.misc.tds.server.Variables;
-import fr.cls.commons.util5.DatePeriod;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -48,6 +47,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 
 import ucar.ma2.MAMath;
 import ucar.ma2.MAMath.MinMax;
@@ -2537,14 +2537,14 @@ public class ProductMetaData {
     }
 
     /** The time coverage. */
-    private DatePeriod timeCoverage = null;
+    private Interval timeCoverage = null;
 
     /**
      * Gets the time coverage.
      * 
      * @return the time coverage
      */
-    public DatePeriod getTimeCoverage() {
+    public Interval getTimeCoverage() {
         return timeCoverage;
     }
 
@@ -2555,7 +2555,7 @@ public class ProductMetaData {
      * @param timeStart the time start
      */
     public void setTimeCoverage(DateTime timeStart, DateTime timeEnd) {
-        this.timeCoverage = new DatePeriod(timeStart.toDate(), timeEnd.toDate());
+        this.timeCoverage = new Interval(timeStart, timeEnd);
     }
 
     /**
@@ -2565,7 +2565,7 @@ public class ProductMetaData {
      * @param timeStart the time start
      */
     public void setTimeCoverage(Date timeStart, Date timeEnd) {
-        this.timeCoverage = new DatePeriod(timeStart, timeEnd);
+        this.timeCoverage = new Interval(timeStart.getTime(), timeEnd.getTime());
     }
 
     /**
@@ -2573,7 +2573,7 @@ public class ProductMetaData {
      * 
      * @param timeCoverage the time coverage
      */
-    public void setTimeCoverage(DatePeriod timeCoverage) {
+    public void setTimeCoverage(Interval timeCoverage) {
         this.timeCoverage = timeCoverage;
     }
 

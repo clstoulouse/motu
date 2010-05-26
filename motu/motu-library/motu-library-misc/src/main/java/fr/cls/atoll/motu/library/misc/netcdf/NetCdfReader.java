@@ -39,8 +39,6 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
 import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
-import fr.cls.commons.util.GMTCalendar;
-import fr.cls.commons.util.GMTDateFormat;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -50,12 +48,16 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.xml.bind.JAXBElement;
 
@@ -267,11 +269,13 @@ public class NetCdfReader {
     /** Date format. */
     public final static String DATE_FORMAT = "yyyy-MM-dd";
 
+    public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
+
     /** Date format with time (DATETIME_FORMAT). */
-    public static final FastDateFormat DATETIME_TO_STRING_DEFAULT = FastDateFormat.getInstance(DATETIME_FORMAT, GMTCalendar.GMT_TIMEZONE);
+    public static final FastDateFormat DATETIME_TO_STRING_DEFAULT = FastDateFormat.getInstance(DATETIME_FORMAT, GMT_TIMEZONE);
 
     /** Date format without time (DATE_FORMAT). */
-    public static final FastDateFormat DATE_TO_STRING_DEFAULT = FastDateFormat.getInstance(DATE_FORMAT, GMTCalendar.GMT_TIMEZONE);
+    public static final FastDateFormat DATE_TO_STRING_DEFAULT = FastDateFormat.getInstance(DATE_FORMAT, GMT_TIMEZONE);
 
     /** Names of possible longitude. */
     public static final String[] LONGITUDE_NAMES = { "longitude", "Longitude", "LONGITUDE", "lon", "Lon", "LON", };
@@ -1259,7 +1263,7 @@ public class NetCdfReader {
 
         Date date = NetCdfReader.getDate(value, unitsString);
 
-        return FastDateFormat.getInstance(DATETIME_FORMAT, GMTCalendar.GMT_TIMEZONE).format(date);
+        return FastDateFormat.getInstance(DATETIME_FORMAT, GMT_TIMEZONE).format(date);
         // return GMTDateFormat.TO_STRING_DEFAULT.format(date);
         // return DateFormat.getInstance().format(date);
     }
@@ -1293,17 +1297,19 @@ public class NetCdfReader {
         if (date == null) {
             return "";
         }
-        GMTCalendar calendar = new GMTCalendar(date);
-        int h = calendar.getHourOfDay();
-        int m = calendar.getMinute();
-        int s = calendar.getSecondOfDay();
+        GregorianCalendar calendar = new GregorianCalendar(GMT_TIMEZONE);
+        calendar.setTime(date);
+
+        int h = calendar.get(Calendar.HOUR_OF_DAY);
+        int m = calendar.get(Calendar.MINUTE);
+        int s = calendar.get(Calendar.SECOND);
 
         String format = DATETIME_FORMAT;
         if ((h == 0) && (m == 0) && (s == 0)) {
             format = DATE_FORMAT;
         }
 
-        return FastDateFormat.getInstance(format, GMTCalendar.GMT_TIMEZONE).format(date);
+        return FastDateFormat.getInstance(format, GMT_TIMEZONE).format(date);
     }
 
     /**
@@ -1674,7 +1680,9 @@ public class NetCdfReader {
             return parseDate(source);
         }
 
-        GMTDateFormat fmt = new GMTDateFormat(format);
+        SimpleDateFormat fmt = new SimpleDateFormat(format);
+        // Force GMT time zone
+        fmt.setTimeZone(GMT_TIMEZONE);
         Date date = null;
         try {
             // fmt.setLenient(true);

@@ -42,7 +42,7 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
-import fr.cls.commons.util.io.ConfigLoader;
+import fr.cls.atoll.motu.library.misc.utils.ConfigLoader;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
