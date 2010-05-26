@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>Published access services</title>
+  <title>Motu available services</title>
 </head>
 
 <style>
@@ -21,7 +21,7 @@
 </style> 
 
 <body>
-	<h1>Published access services</h1>
+	<h1>Motu available services</h1>
 	<table>
 	#foreach( $service in $serviceList )
 	<tr>

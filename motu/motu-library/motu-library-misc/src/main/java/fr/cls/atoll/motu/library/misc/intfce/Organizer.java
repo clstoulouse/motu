@@ -24,6 +24,7 @@
  */
 package fr.cls.atoll.motu.library.misc.intfce;
 
+import fr.cls.atoll.motu.api.message.AuthenticationMode;
 import fr.cls.atoll.motu.api.message.MotuMsgConstant;
 import fr.cls.atoll.motu.api.message.xml.AvailableDepths;
 import fr.cls.atoll.motu.api.message.xml.AvailableTimes;
@@ -207,7 +208,25 @@ public class Organizer {
             }
             throw new IllegalArgumentException(String.valueOf(v));
         }
+        
+//        public static Format fromValue(String v) {
+//            for (Format c : Format.values()) {
+//                if (c.toString().equalsIgnoreCase(v)) {
+//                    return c;
+//                }
+//            }
+//            throw new IllegalArgumentException(String.valueOf(v));
+//        }
 
+        public static String valuesToString() {
+            StringBuffer stringBuffer = new StringBuffer();
+            for (Format c : Format.values()) {
+                stringBuffer.append(c.toString());
+                stringBuffer.append(" ");
+            }
+            return stringBuffer.toString();
+        }
+        
         /**
          * Gets the default.
          * 
