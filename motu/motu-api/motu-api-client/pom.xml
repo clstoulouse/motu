@@ -79,7 +79,7 @@
 					-->
 
 					<descriptors>
-						<descriptor>src/main/assembly/src.xml</descriptor>
+						<descriptor>src/main/assembly/package-full.xml</descriptor>
 					</descriptors>
 					<archive>
 						<addMavenDescriptor>true</addMavenDescriptor>
