@@ -44,8 +44,7 @@ import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueManagement;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
-import fr.cls.commons.log.LogManager;
-import fr.cls.commons.util.PropertiesUtilities;
+import fr.cls.atoll.motu.library.misc.utils.PropertiesUtilities;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -581,8 +580,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
 
-        // Initialisation des logs
-        LogManager.getInstance().loadConfiguration("log4j.xml");
+        // Log initialization is done by a listener configured in web.xml.
+        // LogManager.getInstance().loadConfiguration("log4j.xml");
 
         // Initialisation JAXB
         initJAXB();
@@ -834,19 +833,19 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         }
 
         setLanguageParameter(request, session, response);
-        
-         try {
+
+        try {
             if (Organizer.getMotuConfigInstance().isDefaultActionIsListServices()) {
-                 listServices(session, response);
-                 if (LOG.isDebugEnabled()) {
-                     LOG.debug("execDefaultRequest() - exiting");
-                 }
-                 return;
-             }
+                listServices(session, response);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("execDefaultRequest() - exiting");
+                }
+                return;
+            }
         } catch (MotuExceptionBase e) {
             throw new ServletException(e.notifyException(), e);
         }
-        
+
         // System.out.println("deduceServiceNameFromPath(request) :");
         // System.out.println(deduceServiceNameFromPath(request));
 
@@ -861,7 +860,6 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         } catch (MotuExceptionBase e) {
             throw new ServletException(e.notifyException(), e);
         }
-
 
         if (MotuServlet.isNullOrEmpty(serviceName)) {
             Organizer organizer = getOrganizer(session, response);
