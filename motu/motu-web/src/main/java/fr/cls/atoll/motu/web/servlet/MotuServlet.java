@@ -491,17 +491,29 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws MotuException the motu exception
      */
     public String deduceServiceNameFromPath(HttpServletRequest request) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("deduceServiceNameFromPath(HttpServletRequest) - start");
+        }
+
         String[] servletPathElts = request.getServletPath().split("/");
         String groupName = "";
         String serviceName = "";
         for (int i = 0; i < servletPathElts.length; i++) {
             if (!servletPathElts[i].equals("")) {
                 groupName = servletPathElts[i];
+
+                if (LOG.isInfoEnabled()) {
+                    LOG.info("deduceServiceNameFromPath(HttpServletRequest) - String groupName=" + groupName);
+                }
+
                 break;
             }
         }
 
         if (groupName.equals("")) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("deduceServiceNameFromPath(HttpServletRequest) - end");
+            }
             return "";
         }
 
@@ -509,6 +521,11 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         for (ConfigService confServ : listConfServ) {
             if (confServ.getGroup().equalsIgnoreCase(groupName) && confServ.isDefaultGroupService()) {
                 serviceName = confServ.getName();
+
+                if (LOG.isInfoEnabled()) {
+                    LOG.info("deduceServiceNameFromPath(HttpServletRequest) - A -  String serviceName=" + serviceName);
+                }
+
                 break;
             }
         }
@@ -516,11 +533,21 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             for (ConfigService confServ : listConfServ) {
                 if (confServ.getGroup().equalsIgnoreCase(groupName)) {
                     serviceName = confServ.getName();
+                    if (LOG.isInfoEnabled()) {
+                        LOG.info("deduceServiceNameFromPath(HttpServletRequest) - B - String serviceName=" + serviceName);
+                    }
                     break;
                 }
             }
         }
 
+        if (serviceName.equals("")) {
+            serviceName = groupName;
+        }
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("deduceServiceNameFromPath(HttpServletRequest) - end - String serviceName=" + serviceName);
+        }
         return serviceName;
     }
 
@@ -826,6 +853,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         // String serviceName = getServletConfig().getInitParameter(PARAM_SERVICE);
         String serviceName;
         try {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("execDefaultRequest(HttpServletRequest, HttpSession, HttpServletResponse) - Going to deduce Service Name");
+            }
+
             serviceName = deduceServiceNameFromPath(request);
         } catch (MotuExceptionBase e) {
             throw new ServletException(e.notifyException(), e);
