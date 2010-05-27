@@ -393,7 +393,7 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
 
         Attribute attribute = null;
         try {
-            attribute = NetCdfReader.getAttribute(var, _Coordinate.AxisType);
+            NetCdfReader.getAttribute(var, _Coordinate.AxisType);
         } catch (NetCdfAttributeNotFoundException e) {
             attribute = new Attribute(_Coordinate.AxisType, AxisType.Lat.toString());
             var.addAttribute(attribute);
@@ -412,7 +412,7 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
 
         Attribute attribute = null;
         try {
-            attribute = NetCdfReader.getAttribute(var, _Coordinate.AxisType);
+            NetCdfReader.getAttribute(var, _Coordinate.AxisType);
         } catch (NetCdfAttributeNotFoundException e) {
             attribute = new Attribute(_Coordinate.AxisType, AxisType.Lon.toString());
             var.addAttribute(attribute);
