@@ -626,17 +626,17 @@ public class NetCdfWriter {
     public static Number castValue(Class<?> classType, Number value) {
         Number valueReturned = null;
         if ((classType == double.class) || (classType == Double.class)) {
-            valueReturned = new Double(value.doubleValue());
+            valueReturned = Double.valueOf(value.doubleValue());
         } else if ((classType == float.class) || (classType == Float.class)) {
-            valueReturned = new Float(value.floatValue());
+            valueReturned = Float.valueOf(value.floatValue());
         } else if ((classType == long.class) || (classType == Long.class)) {
-            valueReturned = new Long(value.longValue());
+            valueReturned = Long.valueOf(value.longValue());
         } else if ((classType == int.class) || (classType == Integer.class)) {
-            valueReturned = new Integer(value.intValue());
+            valueReturned = Integer.valueOf(value.intValue());
         } else if ((classType == short.class) || (classType == Short.class)) {
-            valueReturned = new Short(value.shortValue());
+            valueReturned = Short.valueOf(value.shortValue());
         } else if ((classType == byte.class) || (classType == Byte.class)) {
-            valueReturned = new Byte(value.byteValue());
+            valueReturned = Byte.valueOf(value.byteValue());
         }
 
         return valueReturned;
