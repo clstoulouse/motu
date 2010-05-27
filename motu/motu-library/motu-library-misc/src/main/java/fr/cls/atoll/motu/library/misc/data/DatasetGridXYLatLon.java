@@ -1102,9 +1102,15 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         Map<int[], int[]> originAndShape = NetCdfWriter.parseOriginAndShape(outputVar);
 
         Set<int[]> keySet = originAndShape.keySet();
+        // TODO: replace the following loop (Inefficient use of keySet iterator instead of entrySet
+        // iterator) by the following:
+        // for( Map.Entry<int[], int[]> entry : originAndShape.entrySet() )
 
         for (Iterator<int[]> it = keySet.iterator(); it.hasNext();) {
             Runtime runtime = Runtime.getRuntime();
+            // TODO:
+            // See if the garbage collector invokation is necessary or not (FindBugs: Explicit garbage
+            // collection; extremely dubious except in benchmarking code)
             runtime.gc();
 
             int[] origin = null;
@@ -1189,6 +1195,10 @@ public class DatasetGridXYLatLon extends DatasetGrid {
             // CSOFF: StrictDuplicateCode : normal duplication code.
 
             Set<int[]> keySet = originAndShape.keySet();
+
+            // TODO: replace the following loop (Inefficient use of keySet iterator instead of entrySet
+            // iterator) by the following:
+            // for( Map.Entry<int[], int[]> entry : originAndShape.entrySet() )
 
             for (Iterator<int[]> it = keySet.iterator(); it.hasNext();) {
                 origin = it.next();
