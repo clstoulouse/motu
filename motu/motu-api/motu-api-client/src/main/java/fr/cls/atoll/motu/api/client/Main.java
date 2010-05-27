@@ -372,7 +372,7 @@ public class Main {
         }
         String data = mapParams.get(MotuRequestParametersConstant.PARAM_DATA);
         if (Main.isNullOrEmpty(data)) {
-            throw new MotuException(String.format("the required parameter '%' has not bee provided for request '%s'",
+            throw new MotuException(String.format("the required parameter '%s' has not been provided for request '%s'",
                                                   MotuRequestParametersConstant.PARAM_DATA,
                                                   action));
         }
