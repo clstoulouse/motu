@@ -152,18 +152,13 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
     public int compareTo(RunnableExtraction obj) {
         // int retval = Integer.valueOf(priority).compareTo(Integer.valueOf(obj.getPriority()));
         int objPriority = obj.getPriority();
-        int retval = 0;
         if (priority > objPriority) {
             return 1;
         }
         if (priority < objPriority) {
             return -1;
         }
-        if (retval == 0) {
-            retval = Integer.valueOf(range).compareTo(Integer.valueOf(obj.getRange()));
-        }
-        // System.out.println(priority + " compareTo " + obj.priority() + " retval: " + retval);
-        return retval;
+        return 0;
     }
 
     /**
@@ -411,7 +406,7 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
         Calendar cal = Calendar.getInstance();
 
         long elapsedTime = cal.getTime().getTime() - timeToCompare.getTime();
-        long timeOut = timeOutInMinutes * 60 * 1000;
+        long timeOut = timeOutInMinutes * 60 * 1000L;
 
         return elapsedTime >= timeOut;
 
