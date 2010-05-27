@@ -111,9 +111,19 @@
 
 	<repositories>
 		<repository>
+			<id>sf-cls-motu-repo</id>
+			<name>SourceForge Project Repository</name>
+			<url>http://cls-motu.sourceforge.net/m2repo</url>
+		</repository>
+		<repository>
 			<id>cls-to-ext-repo</id>
 			<name>CLS External Repository</name>
 			<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/</url>
+		</repository>
+		<repository>
+			<id>cls-ftp-repo</id>
+			<name>CLS FTP Repository</name>
+			<url>ftp://ftpsedr.cls.fr/pub/myocean/</url>
 		</repository>
 		<repository>
 			<id>central</id>
@@ -143,23 +153,6 @@
 		<system>Sourceforge</system>
 		<url>https://sourceforge.net/tracker/?group_id=322177</url>
 	</issueManagement>	
-	
-	<distributionManagement>
-		<site>
-			<id>localhost</id>
-			<url>file://${basedir}/target/distrib/site</url>
-		</site>
-		<!--
-		<site>
-			<id>cls-motu.sourceforge.net</id>
-			<url>scp://shell.sourceforge.net//home/groups/c/cl/cls-motu/htdocs</url>
-		</site>
-		-->
-		<repository>
-			<id>cls-to-ext-repo</id>
-			<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/</url>
-		</repository>
-	</distributionManagement>
 	
 	<organization>
 		<name>CLS (Collecte Localisation Satelite)</name>
@@ -215,5 +208,39 @@
 			<properties />
 		</contributor>
 	</contributors>
+	
+	<profiles>
+		<profile>
+			<id>sfnet</id>
+			<distributionManagement>
+				<site>
+					<id>sfnet</id>
+					<url>scp://shell.sourceforge.net//home/groups/c/cl/cls-motu/htdocs</url>
+				</site>
+				<repository>
+					<id>sfnet</id>
+					<url>scp://shell.sourceforge.net//home/groups/c/cl/cls-motu/htdocs/m2repo</url>
+				</repository>
+			</distributionManagement>
+		</profile>
+		<profile>
+			<id>cls-nexus-ext</id>
+			<distributionManagement>
+				<repository>
+					<id>cls-to-ext-repo</id>
+					<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/</url>
+				</repository>
+			</distributionManagement>
+		</profile>
+		<profile>
+			<id>cls-ftp-sedr</id>
+			<distributionManagement>
+				<repository>
+					<id>cls-ftp-sedr</id>
+					<url>ftp://majsedr.cls.fr/donnees/ftpsedr/ftpanonymous/pub/myocean/</url>
+				</repository>
+			</distributionManagement>
+		</profile>
+	</profiles>
 	
 </project>
