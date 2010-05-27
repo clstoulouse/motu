@@ -24,48 +24,6 @@
  */
 package fr.cls.atoll.motu.library.misc.intfce;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
-import java.net.Authenticator;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.apache.commons.vfs.FileObject;
-import org.apache.log4j.Logger;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.exception.ResourceNotFoundException;
-import org.joda.time.Interval;
-
-import ucar.ma2.MAMath.MinMax;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.api.message.MotuMsgConstant;
 import fr.cls.atoll.motu.api.message.xml.AvailableDepths;
 import fr.cls.atoll.motu.api.message.xml.AvailableTimes;
@@ -135,6 +93,49 @@ import fr.cls.atoll.motu.library.misc.utils.Zip;
 import fr.cls.atoll.motu.library.misc.vfs.VFSManager;
 import fr.cls.atoll.motu.library.misc.xml.XMLErrorHandler;
 import fr.cls.atoll.motu.library.misc.xml.XMLUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+import java.net.Authenticator;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.apache.commons.vfs.FileObject;
+import org.apache.log4j.Logger;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.exception.ResourceNotFoundException;
+import org.joda.time.Interval;
+
+import ucar.ma2.MAMath.MinMax;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.unidata.geoloc.LatLonRect;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and
 // trace log.
@@ -507,7 +508,7 @@ public class Organizer {
 
     /** The current list catalog type. */
     List<CatalogData.CatalogType> currentListCatalogType = null;
-    
+
     /** Http base reference of the service site. */
     private String httpBaseRef = "";
 
@@ -1108,8 +1109,6 @@ public class Organizer {
         } else if (e instanceof MotuException) {
             return ErrorType.SYSTEM;
         } else if (e instanceof MotuExceptionBase) {
-            return ErrorType.SYSTEM;
-        } else if (e instanceof Exception) {
             return ErrorType.SYSTEM;
         }
         return ErrorType.SYSTEM;
@@ -1779,9 +1778,6 @@ public class Organizer {
             } catch (IOException e) {
                 throw new MotuException("Error in getPropertiesInstance", e);
             }
-            if (props == null) {
-                throw new MotuException(String.format("Unable to load properties:'%s'", DEFAULT_MOTU_PROPS_NAME));
-            }
         }
         return props;
     }
@@ -2122,7 +2118,7 @@ public class Organizer {
 
         List<Axis> axisList = dataGeospatialCoverage.getAxis();
 
-        if (coordinateAxes == null) {
+        if (axisList == null) {
             dataGeospatialCoverage.setCode(ErrorType.OK);
             dataGeospatialCoverage.setMsg(ErrorType.OK.toString());
 
@@ -2201,12 +2197,10 @@ public class Organizer {
             axis.setLongName(parameterMetaData.getLongName());
         }
 
-        if (productMetaData != null) {
-            MinMax minMax = productMetaData.getAxisMinMaxValue(coordinateAxis.getAxisType());
-            if (minMax != null) {
-                axis.setLower(minMax.min);
-                axis.setUpper(minMax.max);
-            }
+        MinMax minMax = productMetaData.getAxisMinMaxValue(coordinateAxis.getAxisType());
+        if (minMax != null) {
+            axis.setLower(minMax.min);
+            axis.setUpper(minMax.max);
         }
 
         axis.setCode(ErrorType.OK);
@@ -6097,10 +6091,10 @@ public class Organizer {
         }
         return template;
     }
-    
+
     /**
      * Disable hreflink.
-     *
+     * 
      * @param services the services
      * @param catalogType the catalog type
      */
@@ -6108,13 +6102,11 @@ public class Organizer {
         if (LOG.isDebugEnabled()) {
             LOG.debug("disableHreflink(Map<String,ServiceData>, CatalogData.CatalogType) - start");
         }
-        
-        List <CatalogData.CatalogType> listCatalogType = new ArrayList<CatalogData.CatalogType>();
+
+        List<CatalogData.CatalogType> listCatalogType = new ArrayList<CatalogData.CatalogType>();
         listCatalogType.add(catalogType);
-        
+
         disableHreflink(services, listCatalogType);
-        
-        
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("disableHreflink(Map<String,ServiceData>, CatalogData.CatalogType) - end");
@@ -6123,11 +6115,11 @@ public class Organizer {
 
     /**
      * Disable hreflink.
-     *
+     * 
      * @param services the services
      * @param listCatalogType the list catalog type
      */
-        private void disableHreflink(Map<String, ServiceData> services, List<CatalogData.CatalogType> listCatalogType) {
+    private void disableHreflink(Map<String, ServiceData> services, List<CatalogData.CatalogType> listCatalogType) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("disableHreflink(Map<String,ServiceData>, List<CatalogData.CatalogType>) - start");
         }
@@ -6145,15 +6137,16 @@ public class Organizer {
             while (it.hasNext()) {
                 Map.Entry<String, ServiceData> entry = (Map.Entry<String, ServiceData>) it.next();
                 ServiceData serviceData = entry.getValue();
-                serviceData.setDisableHrefLink(serviceData.getCatalogType().equals(catalogType));                    
+                serviceData.setDisableHrefLink(serviceData.getCatalogType().equals(catalogType));
             }
         }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("enableHreflink(Map<String,ServiceData>, List<CatalogData.CatalogType>) - end");
         }
-        return;        
+        return;
     }
+
     /**
      * Filter service.
      * 
@@ -6222,8 +6215,8 @@ public class Organizer {
         }
 
         this.currentListCatalogType = listCatalogType;
-        
-        // Filter by service type requested by the user (no filter if list is empty or null) 
+
+        // Filter by service type requested by the user (no filter if list is empty or null)
         Map<String, ServiceData> customServicesMap = filterService(listCatalogType);
 
         // Disable href link for ftp services
