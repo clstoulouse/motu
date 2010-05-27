@@ -26,6 +26,7 @@ package fr.cls.atoll.motu.library.misc.queueserver;
 
 import fr.cls.atoll.motu.library.misc.configuration.QueueType;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -35,7 +36,7 @@ import java.util.Comparator;
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-public class QueueThresholdComparator implements Comparator<QueueType> {
+public class QueueThresholdComparator implements Comparator<QueueType>, Serializable {
 
     /**
      * Constructeur.
