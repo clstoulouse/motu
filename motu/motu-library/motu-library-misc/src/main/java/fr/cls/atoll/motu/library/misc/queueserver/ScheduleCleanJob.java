@@ -97,7 +97,7 @@ public class ScheduleCleanJob implements StatefulJob {
     /**
      * The Class FileLastModifiedComparator.
      */
-    public class FileLastModifiedComparator implements Comparator<File> {
+    private static class FileLastModifiedComparator implements Comparator<File> {
 
         /**
          * Constructeur.
