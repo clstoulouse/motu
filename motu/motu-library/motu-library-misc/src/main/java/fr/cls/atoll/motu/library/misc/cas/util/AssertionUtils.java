@@ -162,7 +162,7 @@ public class AssertionUtils {
             returnString = AssertionUtils.addCASTicket(assertion, targetService);
         } else if (!AssertionUtils.isNullOrEmpty(username)) {
             if (AssertionUtils.isNullOrEmpty(casRestUrlSuffixToUse)) {
-                casRestUrlSuffixToUse = Organizer.getMotuConfigInstance().getCasRestUrlSuffix();
+                Organizer.getMotuConfigInstance().getCasRestUrlSuffix();
             }
             returnString = AssertionUtils.addCASTicketFromTGT(casRestUrlSuffix, username, password, targetService);
         }
