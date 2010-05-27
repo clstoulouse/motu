@@ -10,9 +10,9 @@
 	<tr>
 		<td>
     		#if($service.isDisableHrefLink())
-                <a href=?action=listcatalog&service=${service.getNameEncoded()}>${label}</a>    				
-    		#else
     			${label}
+    		#else
+                <a href=?action=listcatalog&service=${service.getNameEncoded()}>${label}</a>    				
     		#end		
 		</td>
 		<td>
@@ -42,10 +42,9 @@
 		#set($label = "${service.getGroup()}&nbsp;${service.getDescription()}&nbsp;(${service.getCatalogType().toString()})") 			
 		
 		#if($service.isDisableHrefLink())
-            <a href=?action=listcatalog&service=${service.getNameEncoded()}>${label}</a>
-				
+			${label}				
 		#else
-			${label}
+            <a href=?action=listcatalog&service=${service.getNameEncoded()}>${label}</a>
 		#end		
 		</h2>
 		
