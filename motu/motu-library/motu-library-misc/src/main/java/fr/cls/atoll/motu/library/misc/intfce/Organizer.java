@@ -24,7 +24,48 @@
  */
 package fr.cls.atoll.motu.library.misc.intfce;
 
-import fr.cls.atoll.motu.api.message.AuthenticationMode;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+import java.net.Authenticator;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.apache.commons.vfs.FileObject;
+import org.apache.log4j.Logger;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.exception.ResourceNotFoundException;
+import org.joda.time.Interval;
+
+import ucar.ma2.MAMath.MinMax;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.api.message.MotuMsgConstant;
 import fr.cls.atoll.motu.api.message.xml.AvailableDepths;
 import fr.cls.atoll.motu.api.message.xml.AvailableTimes;
@@ -95,49 +136,6 @@ import fr.cls.atoll.motu.library.misc.vfs.VFSManager;
 import fr.cls.atoll.motu.library.misc.xml.XMLErrorHandler;
 import fr.cls.atoll.motu.library.misc.xml.XMLUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
-import java.net.Authenticator;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.apache.commons.vfs.FileObject;
-import org.apache.log4j.Logger;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.exception.ResourceNotFoundException;
-import org.joda.time.Interval;
-
-import ucar.ma2.MAMath.MinMax;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.unidata.geoloc.LatLonRect;
-
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and
 // trace log.
 
@@ -153,7 +151,7 @@ import ucar.unidata.geoloc.LatLonRect;
 public class Organizer {
 
     /**
-     * Emumeration for available formats.
+     * Enumeration for available formats.
      */
     public enum Format {
 
@@ -208,15 +206,15 @@ public class Organizer {
             }
             throw new IllegalArgumentException(String.valueOf(v));
         }
-        
-//        public static Format fromValue(String v) {
-//            for (Format c : Format.values()) {
-//                if (c.toString().equalsIgnoreCase(v)) {
-//                    return c;
-//                }
-//            }
-//            throw new IllegalArgumentException(String.valueOf(v));
-//        }
+
+        // public static Format fromValue(String v) {
+        // for (Format c : Format.values()) {
+        // if (c.toString().equalsIgnoreCase(v)) {
+        // return c;
+        // }
+        // }
+        // throw new IllegalArgumentException(String.valueOf(v));
+        // }
 
         public static String valuesToString() {
             StringBuffer stringBuffer = new StringBuffer();
@@ -226,7 +224,7 @@ public class Organizer {
             }
             return stringBuffer.toString();
         }
-        
+
         /**
          * Gets the default.
          * 
@@ -507,6 +505,9 @@ public class Organizer {
     /** Current Html page in use. */
     private HTMLPage currentHtmlPage = null;
 
+    /** The current list catalog type. */
+    List<CatalogData.CatalogType> currentListCatalogType = null;
+    
     /** Http base reference of the service site. */
     private String httpBaseRef = "";
 
@@ -4631,6 +4632,19 @@ public class Organizer {
     }
 
     /**
+     * Gets the available services.
+     * 
+     * @param out the out
+     * @param format the format
+     * @return the available services
+     * @throws MotuException the motu exception
+     * @throws MotuNotImplementedException the motu not implemented exception
+     */
+    public void getAvailableServices(Writer out, Organizer.Format format) throws MotuException, MotuNotImplementedException {
+        getAvailableServices(out, format, null);
+    }
+
+    /**
      * Gets the available services (AVISO, Mercator, ....) in a specified format.
      * 
      * @param format output format (HTML, XML, Ascii).
@@ -4639,11 +4653,12 @@ public class Organizer {
      * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuException the motu exception
      */
-    public void getAvailableServices(Writer out, Organizer.Format format) throws MotuException, MotuNotImplementedException {
+    public void getAvailableServices(Writer out, Organizer.Format format, List<CatalogData.CatalogType> listCatalogType) throws MotuException,
+            MotuNotImplementedException {
         switch (format) {
 
         case HTML:
-            getAvailableServicesHTML(out);
+            getAvailableServicesHTML(out, listCatalogType);
             break;
 
         case XML:
@@ -5742,7 +5757,7 @@ public class Organizer {
 
         if (currentHtmlPage != null) {
             if (currentHtmlPage.equals(HTMLPage.LIST_INVENTORIES)) {
-                getAvailableServicesHTML(out);
+                getAvailableServicesHTML(out, this.currentListCatalogType);
                 return;
             }
         }
@@ -6084,13 +6099,63 @@ public class Organizer {
     }
 
     /**
+     * Filter service.
+     * 
+     * @param catalogType the catalog type
+     * @return the map
+     */
+    private Map<String, ServiceData> filterService(List<CatalogData.CatalogType> listCatalogType) {
+        return filterService(this.servicesMap, listCatalogType);
+    }
+
+    /**
+     * Filter service.
+     * 
+     * @param services the services
+     * @param catalogType the catalog type
+     * @return the map
+     */
+    private Map<String, ServiceData> filterService(Map<String, ServiceData> services, List<CatalogData.CatalogType> listCatalogType) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("filterService(Map<String,ServiceData>, CatalogData.CatalogType) - start");
+        }
+
+        if (Organizer.isNullOrEmpty(listCatalogType)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("filterService(Map<String,ServiceData>, CatalogData.CatalogType) - end - listCatalogType is null or empty");
+            }
+            return services;
+        }
+
+        Map<String, ServiceData> customServicesMap = new HashMap<String, ServiceData>();
+
+        for (CatalogData.CatalogType catalogType : listCatalogType) {
+
+            Iterator<?> it = services.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, ServiceData> entry = (Map.Entry<String, ServiceData>) it.next();
+                ServiceData serviceData = entry.getValue();
+
+                if (serviceData.getCatalogType().equals(catalogType)) {
+                    customServicesMap.put(entry.getKey(), serviceData);
+                }
+            }
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("filterService(Map<String,ServiceData>, CatalogData.CatalogType) - end");
+        }
+        return customServicesMap;
+    }
+
+    /**
      * Gets the available services (AVISO, Mercator, ....) in HTML format.
      * 
      * @param out writer in which services will be list.
      * 
      * @throws MotuException the motu exception
      */
-    private void getAvailableServicesHTML(Writer out) throws MotuException {
+    private void getAvailableServicesHTML(Writer out, List<CatalogData.CatalogType> listCatalogType) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getAvailableServicesHTML() - entering");
         }
@@ -6100,6 +6165,10 @@ public class Organizer {
             currentService.resetHtmlCurrentPage();
         }
 
+        this.currentListCatalogType = listCatalogType;
+        
+        Map<String, ServiceData> customServicesMap = filterService(listCatalogType);
+
         // adds that list of services to a VelocityContext
         try {
 
@@ -6108,7 +6177,7 @@ public class Organizer {
             VelocityContext context = ServiceData.getPrepopulatedVelocityContext();
             // System.out.println(velocityEngine.getProperty("file.resource.loader.path"));
             context.put("body_template", ServiceData.getAvailableServicesTemplateName(commonDefaultLanguage));
-            context.put("serviceList", servicesMap);
+            context.put("serviceList", customServicesMap);
             context.put("service", this);
 
             template.merge(context, out);

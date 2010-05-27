@@ -35,6 +35,7 @@ import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer.Format;
 import fr.cls.atoll.motu.library.misc.metadata.DocMetaData;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
@@ -90,19 +91,74 @@ public class CatalogData {
     private static final Logger LOG = Logger.getLogger(CatalogData.class);
 
     /**
-     * Emumeration for available type of catalog.
+     * Enumeration for available type of catalog.
      */
     public enum CatalogType {
 
         /** Opendap catalog. */
-        OPENDAP,
+        OPENDAP(0),
 
         /** Tds catalog. */
-        TDS,
+        TDS(1),
 
         /** Ftp catalog (ftp, scft, griFtp). */
-        FTP
-    };
+        FTP(2);
+        
+        private final int value;
+
+        CatalogType(int v) {
+            value = v;
+        }
+
+        /**
+         * Value.
+         * 
+         * @return the int
+         */
+        public int value() {
+            return value;
+        }
+
+          /**
+           * From value.
+           *
+           * @param v the v
+           * @return the catalog type
+           */
+          public static CatalogType fromValue(int v) {
+            for (CatalogType c : CatalogType.values()) {
+                if (c.value == v) {
+                    return c;
+                }
+            }
+            throw new IllegalArgumentException(String.valueOf(v));
+        }
+
+        /**
+         * Values to string.
+         *
+         * @return the string
+         */
+        public static String valuesToString() {
+            StringBuffer stringBuffer = new StringBuffer();
+            for (Format c : Format.values()) {
+                stringBuffer.append(c.toString());
+                stringBuffer.append(" ");
+            }
+            return stringBuffer.toString();
+        }
+        
+        /**
+         * Gets the default.
+         *
+         * @return the default
+         */
+        public static CatalogType getDefault() {
+            return TDS;
+        }
+        
+        
+    }
 
     /** ServiceName XML tag element. */
     static private final String XML_TAG_START = "start";

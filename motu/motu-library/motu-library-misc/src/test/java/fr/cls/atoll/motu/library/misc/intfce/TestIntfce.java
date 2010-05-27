@@ -98,6 +98,8 @@ public class TestIntfce {
      */
     public static void main(String[] args) {
 
+        CatalogData.CatalogType catalogType = CatalogData.CatalogType.valueOf("ree");
+        
         // System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#dataset-identifiant"));
         // System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#identifiant"));
         // System.out.println(Organizer.getDatasetIdFromURI("bidon"));
@@ -317,7 +319,7 @@ public class TestIntfce {
         // }
         // testLoadMotuConfig();
         // testgetMotuConfigSchema();
-        productInformation();
+        // productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
         // productDownloadInfo();
