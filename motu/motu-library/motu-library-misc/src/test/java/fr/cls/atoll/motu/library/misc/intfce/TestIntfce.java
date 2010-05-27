@@ -97,8 +97,6 @@ public class TestIntfce {
      * @param args
      */
     public static void main(String[] args) {
-
-        CatalogData.CatalogType catalogType = CatalogData.CatalogType.valueOf("ree");
         
         // System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#dataset-identifiant"));
         // System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#identifiant"));
@@ -363,6 +361,7 @@ public class TestIntfce {
 
         try {
             Organizer organizer = new Organizer();
+            organizer.setCurrentLanguage("fr");
             FileWriter writer = new FileWriter("./target/resultListCatalog.html");
             organizer.getAvailableServices(writer, Organizer.Format.HTML);
             writer.flush();

@@ -270,6 +270,27 @@ public class ServiceData {
     // public String getId(){ return id;}
     // };
 
+    /** The disable href link. */
+    private boolean disableHrefLink = false;
+    
+    /**
+     * Checks if is disable href link.
+     *
+     * @return true, if is disable href link
+     */
+    public boolean isDisableHrefLink() {
+        return disableHrefLink;
+    }
+
+    /**
+     * Sets the disable href link.
+     *
+     * @param disableHrefLink the new disable href link
+     */
+    public void setDisableHrefLink(boolean disableHrefLink) {
+        this.disableHrefLink = disableHrefLink;
+    }
+
     /**
      * Default constructor.
      */

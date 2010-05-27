@@ -6097,7 +6097,63 @@ public class Organizer {
         }
         return template;
     }
+    
+    /**
+     * Disable hreflink.
+     *
+     * @param services the services
+     * @param catalogType the catalog type
+     */
+    private void disableHreflink(Map<String, ServiceData> services, CatalogData.CatalogType catalogType) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("disableHreflink(Map<String,ServiceData>, CatalogData.CatalogType) - start");
+        }
+        
+        List <CatalogData.CatalogType> listCatalogType = new ArrayList<CatalogData.CatalogType>();
+        listCatalogType.add(catalogType);
+        
+        disableHreflink(services, listCatalogType);
+        
+        
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("disableHreflink(Map<String,ServiceData>, CatalogData.CatalogType) - end");
+        }
+    }
+
+    /**
+     * Disable hreflink.
+     *
+     * @param services the services
+     * @param listCatalogType the list catalog type
+     */
+        private void disableHreflink(Map<String, ServiceData> services, List<CatalogData.CatalogType> listCatalogType) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("disableHreflink(Map<String,ServiceData>, List<CatalogData.CatalogType>) - start");
+        }
+
+        if (Organizer.isNullOrEmpty(listCatalogType)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("disableHreflink(Map<String,ServiceData>, List<CatalogData.CatalogType>) - end - listCatalogType is empty or null");
+            }
+            return;
+        }
+
+        for (CatalogData.CatalogType catalogType : listCatalogType) {
+
+            Iterator<?> it = services.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, ServiceData> entry = (Map.Entry<String, ServiceData>) it.next();
+                ServiceData serviceData = entry.getValue();
+                serviceData.setDisableHrefLink(serviceData.getCatalogType().equals(catalogType));                    
+            }
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("enableHreflink(Map<String,ServiceData>, List<CatalogData.CatalogType>) - end");
+        }
+        return;        
+    }
     /**
      * Filter service.
      * 
@@ -6167,7 +6223,11 @@ public class Organizer {
 
         this.currentListCatalogType = listCatalogType;
         
+        // Filter by service type requested by the user (no filter if list is empty or null) 
         Map<String, ServiceData> customServicesMap = filterService(listCatalogType);
+
+        // Disable href link for ftp services
+        disableHreflink(customServicesMap, CatalogData.CatalogType.FTP);
 
         // adds that list of services to a VelocityContext
         try {
