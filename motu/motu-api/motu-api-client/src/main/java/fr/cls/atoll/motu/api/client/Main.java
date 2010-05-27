@@ -337,9 +337,7 @@ public class Main {
         }
 
         String action = Main.getAction();
-        if (Main.isActionDescribeProduct(action)) {
-            // Nothing to do
-        } else {
+        if (!Main.isActionDescribeProduct(action)) {
             throw new MotuException(String.format("request '%s' is not implemented", action));
         }
 
