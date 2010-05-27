@@ -39,6 +39,11 @@ import java.util.Comparator;
 public class QueueThresholdComparator implements Comparator<QueueType>, Serializable {
 
     /**
+     * Serial version id.
+     */
+    private static final long serialVersionUID = -8583053363136513136L;
+
+    /**
      * Constructeur.
      */
     public QueueThresholdComparator() {
