@@ -57,7 +57,7 @@ public class ScheduleCleanJob implements StatefulJob {
     /**
      * The Class ExtractedFileFilter.
      */
-    private static class ExtractedFileToDeleteFilter implements FileFilter {
+    public static class ExtractedFileToDeleteFilter implements FileFilter {
 
         /** The file patterns. */
         private String filePatterns = null;
