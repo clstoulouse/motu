@@ -34,6 +34,7 @@ import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+import fr.cls.atoll.motu.library.misc.data.CatalogData;
 import fr.cls.atoll.motu.library.misc.data.Product;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
@@ -539,7 +540,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 }
             }
         }
-        
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("deduceServiceNameFromPath(HttpServletRequest) - end - String serviceName=" + serviceName);
         }
@@ -832,7 +833,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
         try {
             if (Organizer.getMotuConfigInstance().isDefaultActionIsListServices()) {
-                listServices(session, response);
+                listServices(request, session, response);
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("execDefaultRequest() - exiting");
                 }
@@ -1159,6 +1160,15 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             return false;
         }
 
+        Organizer.Format dataFormat = null;
+        try {
+            dataFormat = getDataFormat(request);
+        } catch (MotuExceptionBase e) {
+            response.sendError(400, String.format("ERROR: %s", e.notifyException()));
+        } catch (Exception e) {
+            response.sendError(400, String.format("ERROR: %s", e.getMessage()));
+        }
+
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 request.getParameter(MotuRequestParametersConstant.PARAM_SERVICE),
                 request.getParameter(MotuRequestParametersConstant.PARAM_DATA),
@@ -1167,7 +1177,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 getGeoCoverage(request),
                 getDepthCoverage(request),
                 getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response),
-                Organizer.Format.NETCDF,
+                dataFormat,
                 response.getWriter(),
                 null,
                 null,
@@ -1506,7 +1516,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         }
 
         setLanguageParameter(request, session, response);
-        listServices(session, response);
+        listServices(request, session, response);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionListServices() - exiting");
@@ -1622,6 +1632,15 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             responseFormat = Organizer.Format.HTML;
         }
 
+        Organizer.Format dataFormat = null;
+        try {
+            dataFormat = getDataFormat(request);
+        } catch (MotuExceptionBase e) {
+            response.sendError(400, String.format("ERROR: %s", e.notifyException()));
+        } catch (Exception e) {
+            response.sendError(400, String.format("ERROR: %s", e.getMessage()));
+        }
+
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 request.getParameter(MotuRequestParametersConstant.PARAM_SERVICE),
                 request.getParameter(MotuRequestParametersConstant.PARAM_DATA),
@@ -1630,7 +1649,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 getGeoCoverage(request),
                 getDepthCoverage(request),
                 getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response),
-                Organizer.Format.NETCDF,
+                dataFormat,
                 out,
                 responseFormat,
                 userId,
@@ -1696,6 +1715,15 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             responseFormat = Organizer.Format.HTML;
         }
 
+        Organizer.Format dataFormat = null;
+        try {
+            dataFormat = getDataFormat(request);
+        } catch (MotuExceptionBase e) {
+            response.sendError(400, String.format("ERROR: %s", e.notifyException()));
+        } catch (Exception e) {
+            response.sendError(400, String.format("ERROR: %s", e.getMessage()));
+        }
+
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 request.getParameter(MotuRequestParametersConstant.PARAM_SERVICE),
                 request.getParameter(MotuRequestParametersConstant.PARAM_DATA),
@@ -1704,7 +1732,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 getGeoCoverage(request),
                 getDepthCoverage(request),
                 getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response),
-                Organizer.Format.NETCDF,
+                dataFormat,
                 out,
                 responseFormat,
                 null,
@@ -2294,6 +2322,44 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     }
 
     /**
+     * Gets the catalog type params.
+     * 
+     * @param request the request
+     * @return the catalog type params
+     * @throws MotuException
+     */
+    private List<CatalogData.CatalogType> getCatalogTypeParams(HttpServletRequest request) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getCatalogTypeParams(HttpServletRequest) - start");
+        }
+
+        String[] catalogTypes = request.getParameterValues(MotuRequestParametersConstant.PARAM_CATALOG_TYPE);
+        List<CatalogData.CatalogType> listCatalogtype = new ArrayList<CatalogData.CatalogType>();
+        if (catalogTypes != null) {
+            if (catalogTypes.length > 0) {
+                for (String catalogType : catalogTypes) {
+                    try {
+                        listCatalogtype.add(CatalogData.CatalogType.valueOf(catalogType));
+                    } catch (IllegalArgumentException e) {
+                        throw new MotuException(String.format("Parameter '%s': invalid value '%s' - Valid values are : %s",
+                                                              MotuRequestParametersConstant.PARAM_CATALOG_TYPE,
+                                                              catalogType,
+                                                              CatalogData.CatalogType.valuesToString()), e);
+                    }
+                }
+            }
+        } else {
+            listCatalogtype.add(CatalogData.CatalogType.getDefault());
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getCatalogTypeParams(HttpServletRequest) - end");
+        }
+        return listCatalogtype;
+
+    }
+
+    /**
      * Gets the depth coverage from the request.
      * 
      * @param request servlet request
@@ -2845,6 +2911,33 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     }
 
     /**
+     * Gets the data format.
+     * 
+     * @param request the request
+     * @return the data format
+     * @throws MotuException
+     */
+    private Organizer.Format getDataFormat(HttpServletRequest request) throws MotuException {
+        String dataFormat = request.getParameter(MotuRequestParametersConstant.PARAM_DATA_FORMAT);
+        Organizer.Format format = Organizer.Format.NETCDF;
+
+        if (MotuServlet.isNullOrEmpty(dataFormat)) {
+            return format;
+        }
+
+        try {
+            format = Organizer.Format.valueOf(dataFormat.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new MotuException(String.format("Parameter '%s': invalid value '%s' - Valid values are : %s",
+                                                  MotuRequestParametersConstant.PARAM_DATA_FORMAT,
+                                                  dataFormat,
+                                                  Organizer.Format.valuesToString()), e);
+        }
+
+        return format;
+    }
+
+    /**
      * Inits the authentification.
      * 
      * @throws ServletException the servlet exception
@@ -3202,15 +3295,18 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws IOException the IO exception
      * @throws ServletException the servlet exception
      */
-    private void listServices(HttpSession session, HttpServletResponse response) throws ServletException, IOException {
+    private void listServices(HttpServletRequest request, HttpSession session, HttpServletResponse response) throws ServletException, IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("listServices() - entering");
         }
 
+
         Organizer organizer = getOrganizer(session, response);
 
         try {
-            organizer.getAvailableServices(response.getWriter(), Organizer.Format.HTML);
+            List<CatalogData.CatalogType> listCatalogType = getCatalogTypeParams(request);
+
+            organizer.getAvailableServices(response.getWriter(), Organizer.Format.HTML, listCatalogType);
         } catch (MotuExceptionBase e) {
             LOG.error("listServices()", e);
 
