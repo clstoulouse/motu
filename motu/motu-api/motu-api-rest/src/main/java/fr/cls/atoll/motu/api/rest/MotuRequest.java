@@ -51,6 +51,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -234,8 +235,12 @@ public class MotuRequest {
 
             urlConnection.setDoOutput(true);
             Writer writer = new OutputStreamWriter(urlConnection.getOutputStream());
-            writer.write(requestParams);
-            writer.flush();
+            try {
+                writer.write(requestParams);
+                writer.flush();
+            } finally {
+                IOUtils.closeQuietly(writer);
+            }
 
             InputStream returnInputStream = urlConnection.getInputStream();
             if (LOG.isDebugEnabled()) {
@@ -1017,7 +1022,7 @@ public class MotuRequest {
         return sb.toString();
     }
 
-    public class RequestAuthenticator extends Authenticator {
+    private static class RequestAuthenticator extends Authenticator {
 
         String username = "";
         String password = "";
