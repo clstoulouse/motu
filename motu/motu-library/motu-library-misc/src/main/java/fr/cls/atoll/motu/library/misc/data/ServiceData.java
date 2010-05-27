@@ -873,7 +873,7 @@ public class ServiceData {
             catalogData.loadFtpCatalog(this.getCatalogLocation());
             break;
         default:
-            throw new MotuException(String.format("Unknown catalog type %d ", getCatalogType()));
+            throw new MotuException(String.format("Unknown catalog type %d ", getCatalogType().value()));
             // break;
         }
 
@@ -1170,7 +1170,7 @@ public class ServiceData {
             // product = catalog.loadFtpInventory(xmlUri);
             break;
         default:
-            throw new MotuNotImplementedException(String.format("Unimplemented catalog type %d ", getCatalogType()));
+            throw new MotuNotImplementedException(String.format("Unimplemented catalog type %d ", getCatalogType().value()));
             // break;
         }
 
@@ -2375,12 +2375,10 @@ public class ServiceData {
         // stringBuffer.append(e.notifyException());
         // }
 
-        if (product != null) {
-            product.setLastError(stringBuffer.toString());
-            // Enable automatic download.
-            product.setDefaultAutoDownloadTimeOut();
-            writeProductDownloadHTML(product, out);
-        }
+        product.setLastError(stringBuffer.toString());
+        // Enable automatic download.
+        product.setDefaultAutoDownloadTimeOut();
+        writeProductDownloadHTML(product, out);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("extractDataHTML() - exiting");
