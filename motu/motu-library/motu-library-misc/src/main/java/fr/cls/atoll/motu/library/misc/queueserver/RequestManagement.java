@@ -282,8 +282,8 @@ public class RequestManagement implements JobListener {
             } else {
                 lastRequestId = num;
             }
+            return lastRequestId;
         }
-        return lastRequestId;
     }
 
     /**
