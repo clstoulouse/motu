@@ -406,7 +406,7 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
         Calendar cal = Calendar.getInstance();
 
         long elapsedTime = cal.getTime().getTime() - timeToCompare.getTime();
-        long timeOut = timeOutInMinutes * 60 * 1000L;
+        long timeOut = 1000L * 60 * timeOutInMinutes;
 
         return elapsedTime >= timeOut;
 
