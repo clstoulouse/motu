@@ -24,6 +24,7 @@
  */
 package fr.cls.atoll.motu.library.misc.data;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -32,7 +33,7 @@ import java.util.Comparator;
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-public class DataFileComparator implements Comparator<DataFile> {
+public class DataFileComparator implements Comparator<DataFile>, Serializable {
 
     /**
      * Instantiates a new data file comparator.
