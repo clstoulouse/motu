@@ -77,7 +77,7 @@ public abstract class DatasetBase {
     private static final Logger LOG = Logger.getLogger(DatasetBase.class);
 
     /** Contains variable attributes names to remove in output. */
-    protected static final String[] VAR_ATTR_TO_REMOVE = new String[] { "Date_CNES_JD", "date", "_unsigned", };
+    static final String[] VAR_ATTR_TO_REMOVE = new String[] { "Date_CNES_JD", "date", "_unsigned", };
 
     /**
      * Default constructor.
