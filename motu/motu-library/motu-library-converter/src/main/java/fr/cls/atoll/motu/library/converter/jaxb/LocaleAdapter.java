@@ -32,8 +32,6 @@ import java.util.StringTokenizer;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Locale adapter that converts a xs:string into a {@link Locale} and vice-versa.
@@ -50,9 +48,6 @@ public class LocaleAdapter extends XmlAdapter<String, Locale> {
      */
     public LocaleAdapter() {
     }
-
-    /** Logger instance. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocaleAdapter.class);
 
     /**
      * Convert a given uri into a string representation.
@@ -134,24 +129,6 @@ public class LocaleAdapter extends XmlAdapter<String, Locale> {
             }
         }
         return (String[]) tokens.toArray(new String[tokens.size()]);
-    }
-
-    /**
-     * Trim leading whitespace from the given String.
-     * 
-     * @param str the String to check
-     * @return the trimmed String
-     * @see java.lang.Character#isWhitespace
-     */
-    private static String trimLeadingWhitespace(String str) {
-        if (StringUtils.isEmpty(str)) {
-            return str;
-        }
-        StringBuffer buf = new StringBuffer(str);
-        while (buf.length() > 0 && Character.isWhitespace(buf.charAt(0))) {
-            buf.deleteCharAt(0);
-        }
-        return buf.toString();
     }
 
     /**
