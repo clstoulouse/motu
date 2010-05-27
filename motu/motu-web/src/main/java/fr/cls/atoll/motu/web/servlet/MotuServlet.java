@@ -2348,9 +2348,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                     }
                 }
             }
-        } else {
-            listCatalogtype.add(CatalogData.CatalogType.getDefault());
-        }
+        } 
+//        else {
+//            //listCatalogtype.add(CatalogData.CatalogType.getDefault());
+//        }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("getCatalogTypeParams(HttpServletRequest) - end");
