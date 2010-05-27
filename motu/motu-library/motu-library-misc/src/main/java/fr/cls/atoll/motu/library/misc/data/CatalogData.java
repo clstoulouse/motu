@@ -50,6 +50,7 @@ import fr.cls.atoll.motu.library.misc.tds.server.Property;
 import fr.cls.atoll.motu.library.misc.tds.server.SpatialRange;
 import fr.cls.atoll.motu.library.misc.tds.server.TimeCoverageType;
 import fr.cls.atoll.motu.library.misc.tds.server.Variables;
+import fr.cls.atoll.motu.library.misc.utils.ReflectionUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,6 +71,8 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBElement;
 
+import org.apache.commons.jxpath.JXPathContext;
+import org.apache.commons.jxpath.Pointer;
 import org.apache.log4j.Logger;
 
 import ucar.ma2.MAMath.MinMax;
@@ -167,7 +170,7 @@ public class CatalogData {
     static private final String XML_TAG_END = "end";
 
     /** ServiceName XML tag element. */
-    static public final String XML_TAG_SERVICENAME = "servicename";
+    static public final String XML_TAG_SERVICENAME = "serviceName";
 
     /** OpenDAP TDS Service Type. */
     static public final String TDS_OPENDAP_SERVICE = "opendap";
@@ -921,8 +924,17 @@ public class CatalogData {
         // String tdsServiceName = datasetType.getServiceName();
 
         String tdsServiceName = "";
-        List<Object> listServiceNameObject = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), XML_TAG_SERVICENAME);
-
+        //List<Object> listServiceNameObject = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), XML_TAG_SERVICENAME);
+        String xmlNamespace = ReflectionUtils.getXmlSchemaNamespace(datasetType.getClass());
+        StringBuffer xPath = new StringBuffer();
+        xPath.append("//threddsMetadataGroup[name='{");
+        xPath.append(xmlNamespace);
+        xPath.append("}serviceName']/value");
+        
+        //List<Object> listServiceNameObject = CatalogData.findJaxbElementUsingJXPath(datasetType, "//threddsMetadataGroup[name='{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}serviceName']/value");
+        List<Object> listServiceNameObject = CatalogData.findJaxbElementUsingJXPath(datasetType, xPath.toString());
+        
+        
         for (Object objectElt : listServiceNameObject) {
             if (!(objectElt instanceof String)) {
                 continue;
@@ -1193,7 +1205,21 @@ public class CatalogData {
         return listObjectFound;
 
     }
+    static public List<Object> findJaxbElementUsingJXPath(Object object, String xPath) {
 
+        List<Object> listObjectFound = new ArrayList<Object>();
+        
+        JXPathContext context = JXPathContext.newContext(object);
+        context.setLenient(true);
+        //Object oo = context.getValue("//threddsMetadataGroup[name='{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}serviceName']/value");
+        //Object oo = context.getValue("//threddsMetadataGroup[name='{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}serviceName']/value");
+        //Iterator it = context.iterate("//threddsMetadataGroup[name='{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}serviceName']/value");
+        Iterator<?> it = context.iterate(xPath);
+        while (it.hasNext()) {
+            listObjectFound.add(it.next());
+        }
+        return listObjectFound;
+    }
     /**
      * Search object from a jaxbElement object list according to a specific tag name.
      * 
@@ -1205,7 +1231,7 @@ public class CatalogData {
     static public List<Object> findJaxbElement(List<Object> listObject, String tagName) {
 
         List<Object> listObjectFound = new ArrayList<Object>();
-
+        
         for (Object elt : listObject) {
             if (elt == null) {
                 continue;

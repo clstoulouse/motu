@@ -307,8 +307,8 @@ public class TestIntfce {
         //            
         // }
         // MAMath.MinMax minMax = NetCdfReader.getMinMaxLonNormal(r1, r2, r1Values, r2Values)
-        listServices();
-        // catalogInformation();
+        // listServices();
+        catalogInformation();
         // try {
         // ServiceData.Language test = ServiceData.Language.valueOf("ee");
         // } catch (RuntimeException e) {
