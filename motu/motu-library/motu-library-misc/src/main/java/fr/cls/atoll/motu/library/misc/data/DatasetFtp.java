@@ -107,7 +107,7 @@ public class DatasetFtp extends DatasetBase {
             break;
 
         default:
-            throw new MotuException(String.format("Unknown data output format '%s' (%d) ", dataOutputFormat.name(), dataOutputFormat));
+            throw new MotuException(String.format("Unknown data output format '%s' (%d) ", dataOutputFormat.name(), dataOutputFormat.value()));
 
         }
 
