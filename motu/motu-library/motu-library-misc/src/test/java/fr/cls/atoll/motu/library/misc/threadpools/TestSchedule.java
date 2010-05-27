@@ -27,6 +27,7 @@ package fr.cls.atoll.motu.library.misc.threadpools;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.queueserver.ScheduleCleanJob;
+import fr.cls.atoll.motu.library.misc.queueserver.ScheduleCleanJob.ExtractedFileToDeleteFilter;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -168,7 +169,7 @@ public class TestSchedule {
         Long timeRef = cal.getTimeInMillis();
 
         ScheduleCleanJob scheduleCleanJob = new ScheduleCleanJob();
-        FileFilter fileFilter = scheduleCleanJob.new ExtractedFileToDeleteFilter(".*\\.nc$|.*\\.zip$|.*\\.tar$|.*\\.gz$", timeRef);
+        FileFilter fileFilter = new ExtractedFileToDeleteFilter(".*\\.nc$|.*\\.zip$|.*\\.tar$|.*\\.gz$", timeRef);
         File directoryToScan = new File(Organizer.getMotuConfigInstance().getExtractionPath());
         File[] files = null;
         files = directoryToScan.listFiles(fileFilter);
