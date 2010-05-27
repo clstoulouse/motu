@@ -389,7 +389,9 @@ public class Main {
 
         // Gets and sets user parameters or null
         User user = Main.getUser();
-        user.setCASAuthentification(casAuthentification);
+        if (user != null) {
+            user.setCASAuthentification(casAuthentification);            
+        }
         AuthentificationHolder.setUser(user);
 
         // Get the TDS Catalog file name
