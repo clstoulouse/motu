@@ -517,12 +517,14 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
      * @throws MotuInvalidQueuePriorityException the motu invalid queue priority exception
      */
     public synchronized Integer incrementPriorityMap(Integer priority) throws MotuInvalidQueuePriorityException {
-
-        ExtractionThreadPoolExecutor.checkPriority(priority);
-
+        // check first it is not null
         if (priority == null) {
             return null;
         }
+        // then check bounds
+        ExtractionThreadPoolExecutor.checkPriority(priority);
+
+        // ok, now we go on
         Integer value = getPriorityMap(priority);
         Integer returnedValue = null;
         if (value == null) {
