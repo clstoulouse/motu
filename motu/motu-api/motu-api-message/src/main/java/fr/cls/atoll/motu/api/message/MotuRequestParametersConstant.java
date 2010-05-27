@@ -107,6 +107,8 @@ public interface MotuRequestParametersConstant {
      * {@link #ACTION_DESCRIBE_COVERAGE} action.
      */
     final String PARAM_DATASET_ID = "datasetID";
+    
+    final String PARAM_CATALOG_TYPE = "catalogtype";
 
     /** End date servlet paremeter name. */
     final String PARAM_END_DATE = "t_hi";
