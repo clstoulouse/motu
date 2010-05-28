@@ -26,6 +26,16 @@
 		<module>motu-configuration/motu-configuration-sample</module>
 	</modules>
 
+	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>1.0-beta-6</version>
+			</extension>
+		</extensions>
+	</build>
+	
 	<reporting>
 		<plugins>
 			<plugin>
@@ -119,11 +129,6 @@
 			<id>cls-to-ext-repo</id>
 			<name>CLS External Repository</name>
 			<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/</url>
-		</repository>
-		<repository>
-			<id>cls-ftpsedr-repo</id>
-			<name>CLS FTP Repository</name>
-			<url>ftp://ftpsedr.cls.fr/pub/myocean/</url>
 		</repository>
 		<repository>
 			<id>central</id>

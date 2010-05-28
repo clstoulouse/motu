@@ -33,17 +33,7 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.sun.jdmk</groupId>
-					<artifactId>jmxtools</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.jmx</groupId>
-					<artifactId>jmxri</artifactId>
-				</exclusion>
-			</exclusions>
+			<version>1.2.16</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -59,6 +49,13 @@
        			<directory>src/main/resources</directory>
      		</resource>
    		</resources> 
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>1.0-beta-6</version>
+			</extension>
+		</extensions>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -305,11 +302,6 @@
 			<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/</url>
 		</repository>
 		<repository>
-			<id>cls-ftpsedr-repo</id>
-			<name>CLS FTP Repository</name>
-			<url>ftp://ftpsedr.cls.fr/pub/myocean/</url>
-		</repository>
-		<repository>
 			<id>central</id>
 			<name>Maven Central Repository</name>
 			<url>http://repo1.maven.org/maven2</url>
@@ -319,6 +311,22 @@
 			<name>Java.net Repository for Maven</name>
 			<url>http://download.java.net/maven/2/</url>
 		</repository>
+		<repository>
+			<id>geomatys</id>
+			<name>Constellation artifacts from Geomatys</name>
+			<url>http://maven.geomatys.com/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+        <repository>
+            <id>geotoolkit</id>
+            <name>Geotoolkit artifacts</name>
+            <url>http://maven.geotoolkit.org</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
 	</repositories>
 
 	<pluginRepositories>
@@ -423,7 +431,7 @@
 					<id>cls-ftpsedr-repo</id>
 					<url>ftp://majsedr.cls.fr/donnees/ftpsedr/ftpanonymous/pub/myocean/</url>
 				</repository>
-			</distributionManagement>
+			</distributionManagement>			
 		</profile>
 	</profiles>
 	
