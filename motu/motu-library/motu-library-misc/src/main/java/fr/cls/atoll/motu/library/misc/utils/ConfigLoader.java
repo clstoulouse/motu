@@ -35,6 +35,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+
 /**
  * Class that handles the configuration resources fetching. For each resource, the search is performed on
  * external directories, then inside the classpath.
@@ -154,8 +156,14 @@ public class ConfigLoader {
      * @param loader classLoader à utiliser
      * @return la resource trouvée
      * @throws IOException en cas d'erreur d'accès à la resource
+     * @throws MotuException 
      */
-    public InputStream getAsStream(String resourceName, ClassLoader loader) throws IOException {
+    public InputStream getAsStream(String resourceName, ClassLoader loader) throws IOException, MotuException {
+        InputStream inputStream = getAsStreamWithtoutReplacingSystemVariable(resourceName, loader);
+        if (inputStream == null) {
+            throw new MotuException(String.format("ERROR - ConfigLoader#getAsStream - Resource name '%s' doesn't exist or can't be loaded", resourceName));
+        }
+        
         return PropertiesUtilities.replaceSystemVariable(getAsStreamWithtoutReplacingSystemVariable(resourceName, loader));
     }
 
@@ -166,8 +174,9 @@ public class ConfigLoader {
      * @param resourceName nom de la ressource
      * @return la resource trouvée
      * @throws IOException en cas d'erreur d'accès à la resource
+     * @throws MotuException 
      */
-    public InputStream getAsStream(String resourceName) throws IOException {
+    public InputStream getAsStream(String resourceName) throws IOException, MotuException {
         return getAsStream(resourceName, getClass().getClassLoader());
     }
 

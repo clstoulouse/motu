@@ -37,6 +37,8 @@ import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+
 /**
  *Utilitary class that provides methods for managing system properties.
  * 
@@ -187,8 +189,9 @@ public class PropertiesUtilities {
      * @return <tt>java.util.Properties</tt> instance loaded
      * @see java.util.Properties#load(java.io.InputStream)
      * @throws IOException if file is not a <tt>.properties</tt> file or if it is not found in the classpath.
+     * @throws MotuException 
      */
-    public static Properties loadFromClasspath(String propertiesFileResource) throws IOException {
+    public static Properties loadFromClasspath(String propertiesFileResource) throws IOException, MotuException {
         Properties props = new Properties();
         InputStream in = ConfigLoader.getInstance().getAsStream(propertiesFileResource);
         if (in == null) {

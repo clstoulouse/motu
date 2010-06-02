@@ -33,6 +33,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.math.RoundingMode;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
@@ -41,6 +43,8 @@ import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -54,6 +58,7 @@ import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
 
+import org.apache.commons.httpclient.HttpClient;
 import org.apache.log4j.Logger;
 import org.joda.time.Interval;
 
@@ -203,11 +208,19 @@ public class TestIntfce {
         // System.setProperty("http.proxyHost", "proxy.cls.fr"); // adresse IP
         // System.setProperty("http.proxyPort", "8080");
 
-        /*
-         * System.setProperty("http.proxyHost", "proxy.cls.fr"); // adresse IP
-         * System.setProperty("http.proxyPort", "8080"); System.setProperty("socksProxyHost", "proxy.cls.fr");
-         * System.setProperty("socksProxyPort", "1080");
-         */
+        
+        System.setProperty("proxyHost", "proxy.cls.fr"); // adresse IP
+        System.setProperty("proxyPort", "8080"); 
+        System.setProperty("socksProxyHost", "proxy.cls.fr");
+        System.setProperty("socksProxyPort", "1080");
+        //System.setProperty("java.net.useSystemProxies", "false");
+        
+        try {
+            Organizer.initProxyLogin();
+        } catch (MotuException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         // Authenticator.setDefault(new MyAuthenticator());
         // try {
@@ -308,7 +321,7 @@ public class TestIntfce {
         // }
         // MAMath.MinMax minMax = NetCdfReader.getMinMaxLonNormal(r1, r2, r1Values, r2Values)
         // listServices();
-        catalogInformation();
+        //catalogInformation();
         // try {
         // ServiceData.Language test = ServiceData.Language.valueOf("ee");
         // } catch (RuntimeException e) {
@@ -318,7 +331,7 @@ public class TestIntfce {
         // testLoadMotuConfig();
         // testgetMotuConfigSchema();
         // productInformation();
-        // productInformationFromLocationData();
+         productInformationFromLocationData();
         // productExtractDataMersea();
         // productDownloadInfo();
         // productExtractDataHTMLAviso();
@@ -453,15 +466,31 @@ public class TestIntfce {
         // String locationData = "http://opendap-dt.aviso.oceanobs.com/thredds/dodsC/" + productId;
         // String productId = "dt_upd_med_tp_sla_vfec_19920925_19920930_20050914.nc";
         // String locationData = "C:/BratData/netCDF/" + productId;
-        String productId = "extlink_source.h5";
-        String locationData = "C:/Documents and Settings/user+ productId";
-
+        //String productId = "extlink_source.h5";
+        //String locationData = "C:/Documents and Settings/user+ productId";
+        //String locationData="http%3A%2F%2Fpurl.org%2Fmyocean%2Fontology%2Findividual%2Fmyocean%23anotherduname/GOS-L4HRfnd-MED_NRTv1-OBS";
+        String locationData="http://ce01.artov.rm.cnr.it:8080/thredds/dodsC/sst_nrt_v1_aggr/GOS-MED-L4-SST-NRTv1_aggr";        
         try {
-            NetcdfDataset.acquireDataset(locationData, null);
-        } catch (IOException e) {
+            locationData = URLDecoder.decode(locationData, "UTF-8");
+        } catch (UnsupportedEncodingException e1) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            e1.printStackTrace();
         }
+        
+//        try {
+//            NetcdfDataset.acquireDataset(locationData, null);
+//            NetcdfDataset.setHttpClient(null);
+//
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        } catch (SecurityException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        } catch (IllegalArgumentException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
         return productInformationFromLocationData(locationData);
     }
 
