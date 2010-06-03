@@ -24,6 +24,18 @@
  */
 package fr.cls.atoll.motu.library.misc.data;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.joda.time.Interval;
+
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
@@ -36,18 +48,6 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer.Format;
 import fr.cls.atoll.motu.library.misc.utils.Zip;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.joda.time.Interval;
 
 /**
  * 
@@ -125,7 +125,7 @@ public class DatasetFtp extends DatasetBase {
         // Create output file
         product.setExtractFilename(Organizer.getUniqueFileName(product.getProductId(), DatasetFtp.TXT_FILE_EXTENSION_FINAL));
 
-        List<String> uriFiles = extractPrepare(true, false);
+        List<String> uriFiles = extractPrepare(false, true, false);
 
         try {
             FileWriter outputFile = new FileWriter(product.getExtractLocationDataTemp());
@@ -162,7 +162,7 @@ public class DatasetFtp extends DatasetBase {
 
         String tempDownloadDir = stringBuffer.toString();
 
-        List<String> uriFiles = extractPrepare(false, true);
+        List<String> uriFiles = extractPrepare(false, false, true);
         List<String> localFiles = new ArrayList<String>();
 
         for (String uriFile : uriFiles) {
@@ -240,7 +240,7 @@ public class DatasetFtp extends DatasetBase {
      * @throws MotuException the motu exception
      * @throws MotuExceedingCapacityException the motu exceeding capacity exception
      */
-    protected List<String> extractPrepare(boolean removeUserInfo, boolean checkMaxSize) throws MotuException, MotuExceedingCapacityException {
+    protected List<String> extractPrepare(boolean removeUserLogin, boolean removeUserPwd, boolean checkMaxSize) throws MotuException, MotuExceedingCapacityException {
 
         List<String> listUrls = new ArrayList<String>();
 
@@ -263,11 +263,23 @@ public class DatasetFtp extends DatasetBase {
             URI uri = new URI(locationData);
 
             URI uriExtraction = null;
-
-            if (removeUserInfo) {
+            if ((! removeUserLogin ) && (! removeUserPwd )) {
+                // Don't remove login and pwd
+                uriExtraction = uri;                
+            } else if (removeUserLogin) {
+                // remove login also remove pwd
                 uriExtraction = new URI(uri.getScheme(), null, uri.getHost(), uri.getPort(), uri.getPath(), uri.getQuery(), uri.getFragment());
-            } else {
-                uriExtraction = uri;
+            } else if (removeUserPwd){
+                // Remove only pwd
+                String theUserInfo = uri.getUserInfo();
+                if (!Organizer.isNullOrEmpty(theUserInfo)) {
+                    String userInfo[] = theUserInfo.split(":");
+                    if (userInfo.length >= 1) {
+                        uriExtraction = new URI(uri.getScheme(), userInfo[0], uri.getHost(), uri.getPort(), uri.getPath(), uri.getQuery(), uri.getFragment());
+                    } else {
+                        uriExtraction = uri;                
+                    }
+                }
             }
 
             for (DataFile dataFile : dataFiles) {
