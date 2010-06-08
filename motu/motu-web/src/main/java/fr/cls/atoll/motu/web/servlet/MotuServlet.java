@@ -3078,14 +3078,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws IOException the IO exception
      */
     private boolean isActionDebug(String action, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-        if (!action.equalsIgnoreCase(this.ACTION_DEBUG)) {
+        
+        if ( (!action.equalsIgnoreCase(MotuMonitoringParametersConstant.ACTION_DEBUG)) && (!action.equalsIgnoreCase(MotuMonitoringParametersConstant.ACTION_QUEUE_SERVER ))) {
             return false;
-        }
-
-        if (!action.equalsIgnoreCase(this.ACTION_QUEUE_SERVER)) {
-            return false;
-        }
+        } 
 
         StringBuffer stringBuffer = new StringBuffer();
 
