@@ -110,6 +110,12 @@ public class Main {
             // Loads parameters
             Main.loadArgs(args);
 
+            // Initialize properties from Motu configuration file to manage proxy
+            // Note that if a proxy is used, it's better to set the proxy by using  
+            // -DproxyHost=proxy_url -DproxyPort=proxy_port rather than to set these 
+            // parameters in the Motu configuration file.
+            Organizer.initProxyLogin();
+
             if (mapParams.isEmpty()) {
                 printUsage();
                 System.exit(-1);
@@ -187,7 +193,7 @@ public class Main {
 
         stringBuffer.append("Java Motu APIs Client Application :");
         stringBuffer.append("\nCommand line:\n");
-        stringBuffer.append("\n\tjava -jar motu-api-client-xxx.jar action=nnnn [PARAMETERS]\n");
+        stringBuffer.append("\n\tjava [-Dhttp.proxyHost=proxy_host -Dhttp.proxyPort=proxy_port] [-Dhttp.proxyLogin=proxy_login -Dhttp.proxyPassword=proxy_password] [-Djavax.net.ssl.trustStore=path_to_cacerts_file] -jar motu-api-client-xxx.jar action=nnnn [PARAMETERS]\n");
 
         stringBuffer.append("\nwith action=resquest to execute (optional - default is '" + MotuRequestParametersConstant.ACTION_DESCRIBE_PRODUCT
                 + "')\n");
@@ -212,6 +218,18 @@ public class Main {
                         + MotuRequestParametersConstant.PARAM_EXTRA_METADATA
                         + "=true/false : true to get all metadata (metadata from TDS data and TDS xml configuration), false to get simplified metadata (matadata from TDS data only) TDS Catalog file name (optional - default is 'true')\n");
 
+        stringBuffer
+        .append("\n\nSetting proxy parameters (connection through a proxy):");
+
+        stringBuffer.append("\thttp.proxyHost (or proxyHost): the proxy server that the http protocol handler will use");
+        stringBuffer.append("\thttp.proxyPort (or proxyPort): the proxy port that the http protocol handler will use");
+        stringBuffer.append("\thttp.proxyLogin (or proxyLogin): the proxy login name that the http protocol handler will use");
+        stringBuffer.append("\thttp.proxyPassword (or proxyPassword): the proxy password that the http protocol handler will use");
+        
+        stringBuffer
+        .append("\n\nSetting SSL parameters (CAS authentication):");
+        stringBuffer.append("\tjavax.net.ssl.trustStore:  The cacerts Certificates File Path. A certificates file (dafault is 'cacerts') resides in the security properties directory, java.home/lib/security, where java.home is the runtime environment's directory."); 
+        
         stringBuffer.append("\n==========\n");
 
         return stringBuffer.toString();
