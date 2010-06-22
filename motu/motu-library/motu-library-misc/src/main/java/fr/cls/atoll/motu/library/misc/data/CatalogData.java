@@ -106,7 +106,7 @@ public class CatalogData {
 
         /** Ftp catalog (ftp, scft, griFtp). */
         FTP(2);
-        
+
         private final int value;
 
         CatalogType(int v) {
@@ -122,13 +122,13 @@ public class CatalogData {
             return value;
         }
 
-          /**
-           * From value.
-           *
-           * @param v the v
-           * @return the catalog type
-           */
-          public static CatalogType fromValue(int v) {
+        /**
+         * From value.
+         * 
+         * @param v the v
+         * @return the catalog type
+         */
+        public static CatalogType fromValue(int v) {
             for (CatalogType c : CatalogType.values()) {
                 if (c.value == v) {
                     return c;
@@ -139,7 +139,7 @@ public class CatalogData {
 
         /**
          * Values to string.
-         *
+         * 
          * @return the string
          */
         public static String valuesToString() {
@@ -150,17 +150,16 @@ public class CatalogData {
             }
             return stringBuffer.toString();
         }
-        
+
         /**
          * Gets the default.
-         *
+         * 
          * @return the default
          */
         public static CatalogType getDefault() {
             return TDS;
         }
-        
-        
+
     }
 
     /** ServiceName XML tag element. */
@@ -924,17 +923,18 @@ public class CatalogData {
         // String tdsServiceName = datasetType.getServiceName();
 
         String tdsServiceName = "";
-        //List<Object> listServiceNameObject = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), XML_TAG_SERVICENAME);
+        // List<Object> listServiceNameObject =
+        // CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), XML_TAG_SERVICENAME);
         String xmlNamespace = ReflectionUtils.getXmlSchemaNamespace(datasetType.getClass());
         StringBuffer xPath = new StringBuffer();
         xPath.append("//threddsMetadataGroup[name='{");
         xPath.append(xmlNamespace);
         xPath.append("}serviceName']/value");
-        
-        //List<Object> listServiceNameObject = CatalogData.findJaxbElementUsingJXPath(datasetType, "//threddsMetadataGroup[name='{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}serviceName']/value");
+
+        // List<Object> listServiceNameObject = CatalogData.findJaxbElementUsingJXPath(datasetType,
+        // "//threddsMetadataGroup[name='{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}serviceName']/value");
         List<Object> listServiceNameObject = CatalogData.findJaxbElementUsingJXPath(datasetType, xPath.toString());
-        
-        
+
         for (Object objectElt : listServiceNameObject) {
             if (!(objectElt instanceof String)) {
                 continue;
@@ -1205,21 +1205,26 @@ public class CatalogData {
         return listObjectFound;
 
     }
+
     static public List<Object> findJaxbElementUsingJXPath(Object object, String xPath) {
 
         List<Object> listObjectFound = new ArrayList<Object>();
-        
+
         JXPathContext context = JXPathContext.newContext(object);
         context.setLenient(true);
-        //Object oo = context.getValue("//threddsMetadataGroup[name='{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}serviceName']/value");
-        //Object oo = context.getValue("//threddsMetadataGroup[name='{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}serviceName']/value");
-        //Iterator it = context.iterate("//threddsMetadataGroup[name='{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}serviceName']/value");
+        // Object oo =
+        // context.getValue("//threddsMetadataGroup[name='{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}serviceName']/value");
+        // Object oo =
+        // context.getValue("//threddsMetadataGroup[name='{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}serviceName']/value");
+        // Iterator it =
+        // context.iterate("//threddsMetadataGroup[name='{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}serviceName']/value");
         Iterator<?> it = context.iterate(xPath);
         while (it.hasNext()) {
             listObjectFound.add(it.next());
         }
         return listObjectFound;
     }
+
     /**
      * Search object from a jaxbElement object list according to a specific tag name.
      * 
@@ -1231,7 +1236,7 @@ public class CatalogData {
     static public List<Object> findJaxbElement(List<Object> listObject, String tagName) {
 
         List<Object> listObjectFound = new ArrayList<Object>();
-        
+
         for (Object elt : listObject) {
             if (elt == null) {
                 continue;
@@ -1532,13 +1537,32 @@ public class CatalogData {
 
         // Set lat/lon coverage
         ExtractCriteriaLatLon extractCriteriaLatLon = new ExtractCriteriaLatLon(geospatialCoverage);
-        productMetaData.setGeoBBox(new LatLonRect(extractCriteriaLatLon.getLatLonRect()));
 
-        productMetaData.setNorthSouthResolution(CatalogData.getResolution(geospatialCoverage.getNorthsouth()));
-        productMetaData.setNorthSouthUnits(CatalogData.getUnits(geospatialCoverage.getNorthsouth()));
+        LatLonRect latLonRect = extractCriteriaLatLon.getLatLonRect();
+        if (latLonRect != null) {
+            productMetaData.setGeoBBox(new LatLonRect(latLonRect));
+        } else {
+            LOG
+                    .info("initializeGeoAndDepthCoverage - No Lat/Lon coordinates have been set in TDS configuration file.(extractCriteriaLatLon.getLatLonRect() returns null)");
+        }
 
-        productMetaData.setEastWestResolution(CatalogData.getResolution(geospatialCoverage.getEastwest()));
-        productMetaData.setEastWestUnits(CatalogData.getUnits(geospatialCoverage.getEastwest()));
+        SpatialRange spatialRangeNorthSouth = geospatialCoverage.getNorthsouth();
+        if (spatialRangeNorthSouth != null) {
+            productMetaData.setNorthSouthResolution(CatalogData.getResolution(spatialRangeNorthSouth));
+            productMetaData.setNorthSouthUnits(CatalogData.getUnits(spatialRangeNorthSouth));
+        } else {
+            LOG
+                    .info("initializeGeoAndDepthCoverage - No North/South resolution has been set in TDS configuration file.(geospatialCoverage.getNorthsouth() returns null)");
+        }
+
+        SpatialRange spatialRangeEastWest = geospatialCoverage.getEastwest();
+        if (spatialRangeEastWest != null) {
+            productMetaData.setEastWestResolution(CatalogData.getResolution(spatialRangeEastWest));
+            productMetaData.setEastWestUnits(CatalogData.getUnits(spatialRangeEastWest));
+        } else {
+            LOG
+                    .info("initializeGeoAndDepthCoverage - No East/West resolution has been set in TDS configuration file.(geospatialCoverage.getEastwest() returns null)");
+        }
 
         // Set depth coverage
         SpatialRange spatialRangeUpDown = geospatialCoverage.getUpdown();
@@ -1547,10 +1571,13 @@ public class CatalogData {
             double max = min + spatialRangeUpDown.getSize();
 
             productMetaData.setDepthCoverage(new MinMax(min, max));
-        }
+            productMetaData.setDepthResolution(CatalogData.getResolution(geospatialCoverage.getUpdown()));
+            productMetaData.setDepthUnits(CatalogData.getUnits(geospatialCoverage.getUpdown()));
 
-        productMetaData.setDepthResolution(CatalogData.getResolution(geospatialCoverage.getUpdown()));
-        productMetaData.setDepthUnits(CatalogData.getUnits(geospatialCoverage.getUpdown()));
+        } else {
+            LOG
+                    .info("initializeGeoAndDepthCoverage - No Up/Down  has been set in TDS configuration file.(geospatialCoverage.getUpdown() returns null)");
+        }
 
         return true;
     }
