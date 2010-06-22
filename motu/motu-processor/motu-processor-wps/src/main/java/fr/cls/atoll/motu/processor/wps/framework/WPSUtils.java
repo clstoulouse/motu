@@ -24,11 +24,17 @@
  */
 package fr.cls.atoll.motu.processor.wps.framework;
 
+import org.apache.log4j.Logger;
+
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.library.misc.cas.HttpClientCAS;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +43,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.deegree.commons.utils.HttpUtils;
+import org.deegree.commons.utils.HttpUtils.Worker;
 import org.deegree.services.wps.input.LiteralInput;
 
 /**
@@ -51,6 +62,10 @@ import org.deegree.services.wps.input.LiteralInput;
  * @version $Revision: 1.7 $ - $Date: 2009-10-29 10:52:04 $
  */
 public class WPSUtils {
+    /**
+     * Logger for this class
+     */
+    private static final Logger LOG = Logger.getLogger(WPSUtils.class);
 
     /** The Constant PROCESSLET_EXCEPTION_FORMAT_CODE. */
     public static final String PROCESSLET_EXCEPTION_FORMAT_CODE = "ERROR - Code: ";
@@ -143,7 +158,7 @@ public class WPSUtils {
         InputStream is = null;
         Map<String, String> headers = new HashMap<String, String>();
         try {
-            is = HttpUtils.post(HttpUtils.STREAM, url, in, headers);
+            is = WPSUtils.post(HttpUtils.STREAM, url, in, headers);
 
         } catch (Exception e) {
             throw new MotuException("WPSUtils#post - Unable to process.", e);
@@ -154,6 +169,82 @@ public class WPSUtils {
         }
 
         return is;
+    }
+
+    /**
+     * Performs an HTTP-Get request and provides typed access to the response.
+     * 
+     * @param <T>
+     * @param worker
+     * @param url
+     * @param postBody
+     * @param headers
+     * @return some object from the url
+     * @throws HttpException
+     * @throws IOException
+     * @throws MotuException 
+     */
+    public static <T> T post(Worker<T> worker, String url, InputStream postBody, Map<String, String> headers) throws HttpException, IOException, MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("post(Worker<T>, String, InputStream, Map<String,String>) - start");
+        }
+
+        HttpClientCAS client = new HttpClientCAS();
+        PostMethod post = new PostMethod(url);
+        post.setRequestEntity(new InputStreamRequestEntity(postBody));
+        for (String key : headers.keySet()) {
+            post.setRequestHeader(key, headers.get(key));
+        }
+
+        String query = post.getQueryString();
+        
+        int httpReturnCode = client.executeMethod(post);
+
+        T returnValue = worker.work(post.getResponseBodyAsStream());
+
+        if (httpReturnCode >= 400) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("post(Worker<T>, String, InputStream, Map<String,String>) - end");
+            }
+
+            String msg = String.format("Error while executing the query:\n==> http code: '%d':\n==> url: '%s'\n==> body:\n'%s'", httpReturnCode, url, query);
+            throw new MotuException(msg);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("post(Worker<T>, String, InputStream, Map<String,String>) - end");
+        }
+        return returnValue;
+    }
+
+    /**
+     * Stream to string.
+     *
+     * @param is the is
+     * @return the string
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public static String streamToString(InputStream is) throws IOException {
+        /*
+         * To convert the InputStream to String we use the BufferedReader.readLine() method. We iterate until
+         * the BufferedReader return null which means there's no more data to read. Each line will appended to
+         * a StringBuilder and returned as String.
+         */
+        if (is != null) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line).append("\n");
+                }
+            } finally {
+                is.close();
+            }
+            return sb.toString();
+        } else {
+            return "";
+        }
     }
 
     /**
