@@ -883,7 +883,7 @@ public class NetCdfReader {
 
                     MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
                     httpClientCAS = new HttpClientCAS(connectionManager);
-
+                                        
                     HttpClientParams httpClientParams = new HttpClientParams();
                     httpClientParams.setParameter("http.protocol.allow-circular-redirects", true);
                     httpClientCAS.setParams(httpClientParams);

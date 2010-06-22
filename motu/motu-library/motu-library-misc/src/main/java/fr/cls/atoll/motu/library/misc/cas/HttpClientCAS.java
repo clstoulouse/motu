@@ -27,8 +27,11 @@ package fr.cls.atoll.motu.library.misc.cas;
 import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.intfce.SimpleAuthenticator;
 
 import java.io.IOException;
+import java.net.Authenticator;
 
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
@@ -88,18 +91,72 @@ public class HttpClientCAS extends HttpClient {
     // protected Assertion assertion;
 
     public HttpClientCAS() {
+        setProxy();
     }
 
     public HttpClientCAS(HttpClientParams params, HttpConnectionManager httpConnectionManager) {
         super(params, httpConnectionManager);
+        setProxy();
+        
     }
 
     public HttpClientCAS(HttpClientParams params) {
         super(params);
+        setProxy();
     }
 
     public HttpClientCAS(HttpConnectionManager httpConnectionManager) {
         super(httpConnectionManager);
+        setProxy();
+
+    }
+    
+    /**
+     * Sets the proxy.
+     *
+     * @param httpClient the new proxy
+     */
+    public void setProxy() {
+
+        String proxyHost = System.getProperty("proxyHost");
+        String proxyPort = System.getProperty("proxyPort");
+
+        if ((!Organizer.isNullOrEmpty(proxyHost)) && (!Organizer.isNullOrEmpty(proxyPort))) {
+            this.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
+            this.setProxyUser();
+            return;
+        }
+        
+        proxyHost = System.getProperty("http.proxyHost");
+        proxyPort = System.getProperty("http.proxyPort");
+
+        if ((!Organizer.isNullOrEmpty(proxyHost)) && (!Organizer.isNullOrEmpty(proxyPort))) {
+            this.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
+            this.setProxyUser();            
+        }
+
+    }
+    
+    /**
+     * Sets the proxy user.
+     */
+    public void setProxyUser() {
+
+        String proxyUser = System.getProperty("proxyUser");
+        String proxyPassword = System.getProperty("proxyPassword");
+        
+        if ((!Organizer.isNullOrEmpty(proxyUser)) && (!Organizer.isNullOrEmpty(proxyPassword))) {
+            Authenticator.setDefault(new SimpleAuthenticator(proxyUser, proxyPassword));
+            return;
+        }
+
+        proxyUser = System.getProperty("http.proxyUser");
+        proxyPassword = System.getProperty("http.proxyPassword");
+        
+        if ((!Organizer.isNullOrEmpty(proxyUser)) && (!Organizer.isNullOrEmpty(proxyPassword))) {
+            Authenticator.setDefault(new SimpleAuthenticator(proxyUser, proxyPassword));
+        }
+        
 
     }
 

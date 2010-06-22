@@ -125,6 +125,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.vfs.FileObject;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
@@ -1315,10 +1316,11 @@ public class Organizer {
             String pwd = Organizer.getMotuConfigInstance().getProxyPwd();
             System.setProperty("proxyHost", Organizer.getMotuConfigInstance().getProxyHost());
             System.setProperty("proxyPort", Organizer.getMotuConfigInstance().getProxyPort());
-            if (user != null && pwd != null) {
-                if (!user.equals("") && !pwd.equals("")) {
-                    Authenticator.setDefault(new SimpleAuthenticator(user, pwd));
-                }
+            System.setProperty("http.proxyHost", Organizer.getMotuConfigInstance().getProxyHost());
+            System.setProperty("http.proxyPort", Organizer.getMotuConfigInstance().getProxyPort());
+
+            if ((!Organizer.isNullOrEmpty(user)) && (!Organizer.isNullOrEmpty(pwd))) {
+                Authenticator.setDefault(new SimpleAuthenticator(user, pwd));
             }
         }
         if (LOG.isDebugEnabled()) {
@@ -1326,6 +1328,7 @@ public class Organizer {
         }
     }
 
+ 
     /**
      * Gets the catalog ola.
      * 
