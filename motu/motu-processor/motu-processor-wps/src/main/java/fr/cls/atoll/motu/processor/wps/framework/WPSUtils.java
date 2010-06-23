@@ -45,6 +45,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.deegree.commons.utils.HttpUtils;
@@ -200,6 +201,11 @@ public class WPSUtils {
         
         int httpReturnCode = client.executeMethod(post);
 
+        if (LOG.isDebugEnabled()) {
+            String msg = String.format("Executing the query:\n==> http code: '%d':\n==> url: '%s'\n==> body:\n'%s'", httpReturnCode, url, query);
+            LOG.debug("post(Worker<T>, String, InputStream, Map<String,String>) - end - " + msg);
+        }
+
         T returnValue = worker.work(post.getResponseBodyAsStream());
 
         if (httpReturnCode >= 400) {
@@ -265,7 +271,7 @@ public class WPSUtils {
         InputStream in = null;
         Map<String, String> headers = new HashMap<String, String>();
         try {
-            in = HttpUtils.get(HttpUtils.STREAM, url, headers);
+            in = WPSUtils.get(HttpUtils.STREAM, url, headers);
 
         } catch (Exception e) {
             throw new MotuException("WPSUtils#get - Unable to process.", e);
@@ -277,7 +283,53 @@ public class WPSUtils {
 
         return in;
     }
+    /**
+     * Performs an HTTP-Get request and provides typed access to the response.
+     * 
+     * @param <T>
+     * @param worker
+     * @param url
+     * @param headers
+     * @return some object from the url
+     * @throws HttpException
+     * @throws IOException
+     * @throws MotuException 
+     */
+    public static <T> T get( Worker<T> worker, String url, Map<String,String> headers)
+                            throws HttpException, IOException, MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("get(Worker<T>, String, Map<String,String>) - start");
+        }
 
+        HttpClientCAS client = new HttpClientCAS();
+        GetMethod get = new GetMethod( url );
+        for ( String key : headers.keySet() ) {
+            get.setRequestHeader( key, headers.get( key ));    
+        }      
+        
+        String query = get.getQueryString();
+
+        int httpReturnCode = client.executeMethod( get );
+
+        if (LOG.isDebugEnabled()) {
+            String msg = String.format("Executing the query:\n==> http code: '%d':\n==> url: '%s'\n==> body:\n'%s'", httpReturnCode, url, query);
+            LOG.debug("get(Worker<T>, String, Map<String,String>) - end" + msg);
+        }
+
+        T returnValue = worker.work( get.getResponseBodyAsStream());
+        
+        if (httpReturnCode >= 400) {
+
+            String msg = String.format("Error while executing the query:\n==> http code: '%d':\n==> url: '%s'\n==> body:\n'%s'", httpReturnCode, url, query);
+            throw new MotuException(msg);
+
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("get(Worker<T>, String, Map<String,String>) - end");
+        }
+        return returnValue;
+    }    
     /**
      * Encode processlet exception error message.
      * 

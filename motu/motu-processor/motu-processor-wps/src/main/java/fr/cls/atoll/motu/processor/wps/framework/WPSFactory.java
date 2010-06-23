@@ -1918,13 +1918,23 @@ public class WPSFactory {
      * @throws MotuException the motu exception
      */
     public static ExecuteResponse getExecuteResponseFromUrl(String url) throws MotuMarshallException, MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getExecuteResponseFromUrl(String) - start  - url is:" + url);
+        }
 
         if (WPSUtils.isNullOrEmpty(url)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getExecuteResponseFromUrl(String) - end");
+            }
             return null;
         }
         InputStream inputStream = WPSUtils.get(url);
 
-        return WPSFactory.unmarshallExecuteResponse(inputStream);
+        ExecuteResponse returnExecuteResponse = WPSFactory.unmarshallExecuteResponse(inputStream);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getExecuteResponseFromUrl(String) - end");
+        }
+        return returnExecuteResponse;
 
     }
 
