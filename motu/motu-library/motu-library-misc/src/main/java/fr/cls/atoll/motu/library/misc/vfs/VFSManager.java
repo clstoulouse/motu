@@ -348,6 +348,13 @@ public class VFSManager {
                 if (sftpTimeOut > 0) {
                     sftpFscb.setTimeout(opts, (int) sftpTimeOut);
                 }
+                
+                if (Organizer.getMotuConfigInstance().isUseProxy()) {
+                    String proxyHost = Organizer.getMotuConfigInstance().getProxyHost();
+                    String proxyPort = Organizer.getMotuConfigInstance().getProxyPort();
+                    sftpFscb.setProxyHost(opts, proxyHost);
+                    sftpFscb.setProxyPort(opts, Integer.parseInt(proxyPort));
+                }
 
             }
 
