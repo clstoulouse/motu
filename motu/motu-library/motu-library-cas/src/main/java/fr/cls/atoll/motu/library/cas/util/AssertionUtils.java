@@ -22,11 +22,10 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.library.misc.cas.util;
+package fr.cls.atoll.motu.library.cas.util;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.intfce.User;
+import fr.cls.atoll.motu.library.cas.UserBase;
+import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
 
 import java.io.IOException;
 import java.util.Date;
@@ -50,6 +49,7 @@ public class AssertionUtils {
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(AssertionUtils.class);
 
+    public static final String CAS_REST_URL_SUFFIX = "/v1/tickets";
     /**
      * Gets the attribute principal name.
      * 
@@ -86,24 +86,22 @@ public class AssertionUtils {
      * 
      * @return true, if successful
      * 
-     * @throws URIException the URI exception
      */
-    public static boolean hasCASTicket(String targetService) throws URIException {
+    public static boolean hasCASTicket(String targetService)  {
         return (targetService.indexOf("?ticket=") != -1) || (targetService.indexOf("&ticket=") != -1);
     }
 
     /**
      * Adds the cas ticket.
-     * 
+     *
      * @param targetService the target service
      * @param user the user
-     * 
      * @return the string
-     * 
-     * @throws MotuException the motu exception
-     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasException the motu cas exception
+     * @throws IOException 
+     * @throws MotuCasException 
      */
-    public static String addCASTicket(String targetService, User user) throws MotuException, IOException {
+    public static String addCASTicket(String targetService, UserBase user) throws IOException, MotuCasException {
 
         if (user == null) {
             return addCASTicket(targetService, null, null, null);
@@ -119,11 +117,10 @@ public class AssertionUtils {
      * 
      * @return the string
      * @throws IOException
-     * @throws MotuException
      * 
      * @throws URIException the URI exception
      */
-    public static String addCASTicket(String targetService) throws MotuException, IOException {
+    public static String addCASTicket(String targetService) throws IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(String) - entering");
         }
@@ -144,12 +141,12 @@ public class AssertionUtils {
      * @param casRestUrlSuffix the cas rest url suffix
      * 
      * @return the string
+     * @throws IOException 
      * 
      * @throws MotuException the motu exception
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public static String addCASTicket(String targetService, String username, String password, String casRestUrlSuffix) throws MotuException,
-            IOException {
+    public static String addCASTicket(String targetService, String username, String password, String casRestUrlSuffix) throws IOException  {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(String, String, String, String) - entering");
         }
@@ -162,7 +159,7 @@ public class AssertionUtils {
             returnString = AssertionUtils.addCASTicket(assertion, targetService);
         } else if (!AssertionUtils.isNullOrEmpty(username)) {
             if (AssertionUtils.isNullOrEmpty(casRestUrlSuffixToUse)) {
-                Organizer.getMotuConfigInstance().getCasRestUrlSuffix();
+                casRestUrlSuffixToUse = CAS_REST_URL_SUFFIX;
             }
             returnString = AssertionUtils.addCASTicketFromTGT(casRestUrlSuffix, username, password, targetService);
         }
@@ -183,12 +180,12 @@ public class AssertionUtils {
      * @param targetService the target service
      * 
      * @return the string
+     * @throws IOException 
      * 
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws MotuException the motu exception
      */
-    public static String addCASTicketFromTGT(String casRestUrlSuffix, String username, String password, String targetService) throws IOException,
-            MotuException {
+    public static String addCASTicketFromTGT(String casRestUrlSuffix, String username, String password, String targetService) throws IOException            {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicketFromTGT(String, String, String, String) - entering");
         }
@@ -241,7 +238,7 @@ public class AssertionUtils {
      * 
      * @throws URIException the URI exception
      */
-    public static String addCASTicket(Assertion assertion, String targetService) throws URIException {
+    public static String addCASTicket(Assertion assertion, String targetService)  {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(Assertion, String) - entering : debugPGTFromSession " + AssertionUtils.debugPGT(assertion));

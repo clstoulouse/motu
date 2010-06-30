@@ -25,7 +25,7 @@
 package fr.cls.atoll.motu.library.misc.data;
 
 import fr.cls.atoll.motu.library.inventory.Inventory;
-import fr.cls.atoll.motu.library.misc.cas.util.RestUtil;
+import fr.cls.atoll.motu.library.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;

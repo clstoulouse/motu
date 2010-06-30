@@ -27,7 +27,7 @@ package fr.cls.atoll.motu.processor.wps.framework;
 import org.apache.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.library.misc.cas.HttpClientCAS;
+import fr.cls.atoll.motu.library.cas.HttpClientCAS;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 

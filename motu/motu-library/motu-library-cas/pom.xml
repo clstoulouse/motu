@@ -1,11 +1,46 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>motu</artifactId>
-    <groupId>cls.atoll.motu</groupId>
-    <version>2.1.3-SNAPSHOT</version>
-  </parent>
-  <groupId>cls.atoll.motu</groupId>
-  <artifactId>motu-library-cas</artifactId>
-  <version>2.1.3-SNAPSHOT</version>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+	    <artifactId>motu</artifactId>
+	    <groupId>cls.atoll.motu</groupId>
+	    <version>2.1.3-SNAPSHOT</version>
+		<relativePath>../../motu-parent</relativePath>
+	</parent>
+
+	<groupId>cls.atoll.motu.library</groupId>
+	<artifactId>motu-library-cas</artifactId>
+	<version>2.1.3-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	
+    <name>Motu Library CAS</name>
+    <description>This package holds the components of CAS utilities and tools.</description>
+
+	<dependencies>
+        <dependency>
+            <groupId>cls.atoll.motu.api</groupId>
+            <artifactId>motu-api-message</artifactId>
+            <version>2.1.3-SNAPSHOT</version>
+        </dependency>	
+		<dependency>
+		    <groupId>log4j</groupId>
+		    <artifactId>log4j</artifactId>
+		    <version>1.2.16</version>
+		</dependency>  
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jasig.cas</groupId>
+            <artifactId>cas-client-core</artifactId>
+            <version>3.1.10</version>
+        </dependency>
+		
+	</dependencies>
+	<scm>
+		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-misc</connection>
+		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-misc</url>
+	</scm>
+    
 </project>

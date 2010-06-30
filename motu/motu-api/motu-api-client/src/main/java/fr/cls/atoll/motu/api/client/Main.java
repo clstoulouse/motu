@@ -26,13 +26,14 @@ package fr.cls.atoll.motu.api.client;
 
 import fr.cls.atoll.motu.api.message.AuthenticationMode;
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
-import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
-import fr.cls.atoll.motu.library.misc.cas.util.RestUtil;
+import fr.cls.atoll.motu.library.misc.intfce.User;
+import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
+import fr.cls.atoll.motu.library.cas.util.AuthentificationHolder;
+import fr.cls.atoll.motu.library.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.intfce.User;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -329,7 +330,11 @@ public class Main {
 
         user.setLogin(login);
         user.setPwd(mapParams.get(MotuRequestParametersConstant.PARAM_PWD));
-        user.setAuthentificationMode(mapParams.get(MotuRequestParametersConstant.PARAM_AUTHENTIFICATION_MODE));
+        try {
+            user.setAuthentificationMode(mapParams.get(MotuRequestParametersConstant.PARAM_AUTHENTIFICATION_MODE));
+        } catch (MotuCasException e) {
+            throw new MotuException(e);
+        }
 
         if ((user.getLogin() != null) && (user.getAuthentificationMode().equals(AuthenticationMode.NONE))) {
             user.setAuthentificationMode(AuthenticationMode.CAS);

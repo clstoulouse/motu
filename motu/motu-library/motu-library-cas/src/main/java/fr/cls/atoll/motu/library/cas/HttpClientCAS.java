@@ -22,13 +22,13 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.library.misc.cas;
+package fr.cls.atoll.motu.library.cas;
 
-import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.intfce.SimpleAuthenticator;
+import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
+import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
+import fr.cls.atoll.motu.library.cas.util.AuthentificationHolder;
+import fr.cls.atoll.motu.library.cas.util.RestUtil;
+import fr.cls.atoll.motu.library.cas.util.SimpleAuthenticator;
 
 import java.io.IOException;
 import java.net.Authenticator;
@@ -124,7 +124,7 @@ public class HttpClientCAS extends HttpClient {
         String proxyHost = System.getProperty("proxyHost");
         String proxyPort = System.getProperty("proxyPort");
 
-        if ((!Organizer.isNullOrEmpty(proxyHost)) && (!Organizer.isNullOrEmpty(proxyPort))) {
+        if ((!RestUtil.isNullOrEmpty(proxyHost)) && (!RestUtil.isNullOrEmpty(proxyPort))) {
             this.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
             this.setProxyUser();
 
@@ -138,7 +138,7 @@ public class HttpClientCAS extends HttpClient {
         proxyHost = System.getProperty("http.proxyHost");
         proxyPort = System.getProperty("http.proxyPort");
 
-        if ((!Organizer.isNullOrEmpty(proxyHost)) && (!Organizer.isNullOrEmpty(proxyPort))) {
+        if ((!RestUtil.isNullOrEmpty(proxyHost)) && (!RestUtil.isNullOrEmpty(proxyPort))) {
             this.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
             this.setProxyUser();            
             LOG.debug("setProxy() - proxy parameters are set: proxyHost=" + proxyHost + " - proxyPort=" + proxyPort);
@@ -160,7 +160,7 @@ public class HttpClientCAS extends HttpClient {
         String proxyLogin = System.getProperty("proxyLogin");
         String proxyPassword = System.getProperty("proxyPassword");
         
-        if ((!Organizer.isNullOrEmpty(proxyLogin)) && (!Organizer.isNullOrEmpty(proxyPassword))) {
+        if ((!RestUtil.isNullOrEmpty(proxyLogin)) && (!RestUtil.isNullOrEmpty(proxyPassword))) {
             Authenticator.setDefault(new SimpleAuthenticator(proxyLogin, proxyPassword));
 
             if (LOG.isDebugEnabled()) {
@@ -173,7 +173,7 @@ public class HttpClientCAS extends HttpClient {
         proxyLogin = System.getProperty("http.proxyLogin");
         proxyPassword = System.getProperty("http.proxyPassword");
         
-        if ((!Organizer.isNullOrEmpty(proxyLogin)) && (!Organizer.isNullOrEmpty(proxyPassword))) {
+        if ((!RestUtil.isNullOrEmpty(proxyLogin)) && (!RestUtil.isNullOrEmpty(proxyPassword))) {
             Authenticator.setDefault(new SimpleAuthenticator(proxyLogin, proxyPassword));
             if (LOG.isDebugEnabled()) {
                 LOG.debug("setProxy() - proxy parameters are set: proxyLogin=" + proxyLogin + " - proxyPassword=" + proxyPassword);
@@ -196,11 +196,10 @@ public class HttpClientCAS extends HttpClient {
 
         try {
             addCASTicket(method);
-        } catch (MotuException e) {
+        } catch (MotuCasException e) {
             throw new HttpException(e.notifyException(), e);
         }
 
-        // TODO Auto-generated method stub
         int returnint = super.executeMethod(hostconfig, method, state);
         if (LOG.isDebugEnabled()) {
             LOG.debug("executeMethod(HostConfiguration, HttpMethod, HttpState) - exiting");
@@ -216,11 +215,10 @@ public class HttpClientCAS extends HttpClient {
 
         try {
             addCASTicket(method);
-        } catch (MotuException e) {
+        } catch (MotuCasException e) {
             throw new HttpException(e.notifyException(), e);
         }
 
-        // TODO Auto-generated method stub
         int returnint = super.executeMethod(hostConfiguration, method);
         if (LOG.isDebugEnabled()) {
             LOG.debug("executeMethod(HostConfiguration, HttpMethod) - exiting");
@@ -236,11 +234,10 @@ public class HttpClientCAS extends HttpClient {
 
         try {
             addCASTicket(method);
-        } catch (MotuException e) {
+        } catch (MotuCasException e) {
             throw new HttpException(e.notifyException(), e);
         }
 
-        // TODO Auto-generated method stub
         int returnint = super.executeMethod(method);
         if (LOG.isDebugEnabled()) {
             LOG.debug("executeMethod(HttpMethod) - exiting");
@@ -248,7 +245,14 @@ public class HttpClientCAS extends HttpClient {
         return returnint;
     }
 
-    public static void addCASTicket(HttpMethod method) throws IOException, MotuException {
+    /**
+     * Adds the cas ticket.
+     *
+     * @param method the method
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasException 
+     */
+    public static void addCASTicket(HttpMethod method) throws IOException, MotuCasException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(HttpMethod) - entering : debugHttpMethod BEFORE  " + HttpClientCAS.debugHttpMethod(method));
         }
@@ -268,7 +272,7 @@ public class HttpClientCAS extends HttpClient {
             if (!AssertionUtils.hasCASTicket(newURIAsString)) {
 
                 String login = AuthentificationHolder.getUserLogin();
-                throw new MotuException(
+                throw new MotuCasException(
                         String
                                 .format("Unable to access resource '%s'. This resource has been declared as CASified, but the Motu application/API can't retrieve any ticket from CAS via REST. \nFor information, current user login is:'%s'",
                                         method.getURI().getEscapedURI(),

@@ -24,7 +24,8 @@
  */
 package fr.cls.atoll.motu.library.misc.intfce;
 
-import fr.cls.atoll.motu.api.message.AuthenticationMode;
+import fr.cls.atoll.motu.library.cas.UserBase;
+import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 
 /**
@@ -35,244 +36,33 @@ import fr.cls.atoll.motu.library.misc.exception.MotuException;
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-public class User {
+public class User extends UserBase {
 
     /**
-     * Defalt constructor.
+     * Default constructor.
      */
     public User() {
     }
 
-    /**
-     * FirstName of the user.
-     * 
-     * @uml.property name="firstName"
-     */
-    private String firstName = "";
-
-    /**
-     * Getter of the property <tt>firstName</tt>.
-     * 
-     * @return Returns the firstName.
-     * @uml.property name="firstName"
-     */
-    public String getFirstName() {
-        return this.firstName;
-    }
-
-    /**
-     * Setter of the property <tt>firstName</tt>.
-     * 
-     * @param firstName The firstName to set.
-     * @uml.property name="firstName"
-     */
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    /**
-     * LastName of the user.
-     * 
-     * @uml.property name="lastName"
-     */
-    private String lastName = "";
-
-    /**
-     * Getter of the property <tt>lastName</tt>.
-     * 
-     * @return Returns the lastName.
-     * @uml.property name="lastName"
-     */
-    public String getLastName() {
-        return this.lastName;
-    }
-
-    /**
-     * Setter of the property <tt>lastName</tt>.
-     * 
-     * @param lastName The lastName to set.
-     * @uml.property name="lastName"
-     */
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    // CSOFF: StrictDuplicateCode : normal duplication code.
-
-    /**
-     * Email adress of the user.
-     * 
-     * @uml.property name="email"
-     */
-    private String email = "";
-
-    /**
-     * Getter of the property <tt>email</tt>.
-     * 
-     * @return Returns the email.
-     * @uml.property name="email"
-     */
-    public String getEmail() {
-        return this.email;
-    }
-
-    // CSON: StrictDuplicateCode
-
-    /**
-     * Setter of the property <tt>email</tt>.
-     * 
-     * @param email The email to set.
-     * @uml.property name="email"
-     */
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    /** The login. */
-    private String login = "";
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        if (login != null) {
-            this.login = login;
-        } else {
-            this.login = "";
-        }
-    }
-
-    /** The pwd. */
-    private String pwd = "";
-
-    /**
-     * Gets the pwd.
-     * 
-     * @return the pwd
-     */
-    public String getPwd() {
-        return pwd;
-    }
-
-    /**
-     * Sets the pwd.
-     * 
-     * @param pwd the new pwd
-     */
-    public void setPwd(String pwd) {
-        if (pwd != null) {
-            this.pwd = pwd;
-        } else {
-            this.pwd = "";
-        }
-    }
-
-    /** The cas authentification. */
-    private AuthenticationMode authentificationMode = AuthenticationMode.NONE;
-
-    /**
-     * Gets the authentification mode.
-     * 
-     * @return the authentification mode
-     */
-    public AuthenticationMode getAuthentificationMode() {
-        return authentificationMode;
-    }
-
-    /**
-     * Sets the authentification mode.
-     * 
-     * @param authentificationMode the new authentification mode
-     */
-    public void setAuthentificationMode(AuthenticationMode authentificationMode) {
-        if (authentificationMode != null) {
-            this.authentificationMode = authentificationMode;
-        } else {
-            this.authentificationMode = AuthenticationMode.NONE;
-        }
-    }
-
-    /**
-     * Sets the authentification mode.
-     * 
-     * @param authentificationMode the new authentification mode
-     * 
-     * @throws MotuException the motu exception
-     */
-    public void setAuthentificationMode(String authentificationMode) throws MotuException {
-
-        if (Organizer.isNullOrEmpty(authentificationMode)) {
-            this.authentificationMode = AuthenticationMode.NONE;
-            return;
-        }
-
-        try {
-            this.authentificationMode = AuthenticationMode.fromValue(authentificationMode);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            throw new MotuException(String.format("Invalid authentification mode '%s'. Valid values are: %s",
-                                                  authentificationMode,
-                                                  AuthenticationMode.getAvailableValues()));
-        }
-    }
-
-    /**
-     * Checks if is cas authentification.
-     * 
-     * @return true, if is cas authentification
-     */
-    public boolean isCASAuthentification() {
-        return this.authentificationMode.equals(AuthenticationMode.CAS);
-    }
-
-    /**
-     * Checks if is none authentification.
-     * 
-     * @return true, if is none authentification
-     */
-    public boolean isNoneAuthentification() {
-        return this.authentificationMode.equals(AuthenticationMode.NONE);
-    }
-
-    /**
-     * Checks if is authentification.
-     * 
-     * @return true, if is authentification
-     */
-    public boolean isAuthentification() {
-        return !isNoneAuthentification();
-    }
-
-    public void setCASAuthentification(boolean casAuthentification) {
-        this.authentificationMode = (casAuthentification) ? AuthenticationMode.CAS : AuthenticationMode.NONE;
-    }
-
-    /** The cas rest suff url. */
-    private String casRestSuffURL = null;
-
-    /**
+   /**
      * Gets the cas rest suff url.
      * 
      * @return the cas rest suff url
      * @throws MotuException
      */
-    public String getCasRestSuffURL() throws MotuException {
+    @Override
+    public String getCasRestSuffURL() throws MotuCasException {
 
         if (Organizer.isNullOrEmpty(casRestSuffURL)) {
-            return Organizer.getMotuConfigInstance().getCasRestUrlSuffix();
+            try {
+                return Organizer.getMotuConfigInstance().getCasRestUrlSuffix();
+            } catch (MotuException e) {
+                throw new MotuCasException(e);
+            }
         }
 
         return casRestSuffURL;
     }
 
-    /**
-     * Sets the cas rest suff url.
-     * 
-     * @param casRestSuffURL the new cas rest suff url
-     */
-    public void setCasRestSuffURL(String casRestSuffURL) {
-        this.casRestSuffURL = casRestSuffURL;
-    }
 
 }

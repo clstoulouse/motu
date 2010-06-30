@@ -44,8 +44,10 @@ import fr.cls.atoll.motu.api.message.xml.Variables;
 import fr.cls.atoll.motu.api.message.xml.VariablesVocabulary;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.Inventory;
-import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
-import fr.cls.atoll.motu.library.misc.cas.util.RestUtil;
+import fr.cls.atoll.motu.library.cas.UserBase;
+import fr.cls.atoll.motu.library.cas.util.AuthentificationHolder;
+import fr.cls.atoll.motu.library.cas.util.RestUtil;
+import fr.cls.atoll.motu.library.cas.util.SimpleAuthenticator;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.misc.data.CatalogData;
@@ -5350,7 +5352,7 @@ public class Organizer {
         // Only TDS are accepted
         service.setCatalogType(CatalogData.CatalogType.TDS);
 
-        User user = AuthentificationHolder.getUser();
+        UserBase user = AuthentificationHolder.getUser();
 
         if (user == null) {
 
@@ -5628,7 +5630,7 @@ public class Organizer {
      * 
      * @uml.property name="user"
      */
-    public User getUser() {
+    public UserBase getUser() {
         return AuthentificationHolder.getUser();
     }
 

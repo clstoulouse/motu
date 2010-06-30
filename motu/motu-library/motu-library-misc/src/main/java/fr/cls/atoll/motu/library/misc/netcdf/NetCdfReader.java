@@ -24,8 +24,8 @@
  */
 package fr.cls.atoll.motu.library.misc.netcdf;
 
-import fr.cls.atoll.motu.library.misc.cas.HttpClientCAS;
-import fr.cls.atoll.motu.library.misc.cas.util.AuthentificationHolder;
+import fr.cls.atoll.motu.library.cas.HttpClientCAS;
+import fr.cls.atoll.motu.library.cas.util.AuthentificationHolder;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;

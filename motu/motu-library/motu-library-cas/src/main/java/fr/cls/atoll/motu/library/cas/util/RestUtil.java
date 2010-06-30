@@ -22,10 +22,9 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.library.misc.cas.util;
+package fr.cls.atoll.motu.library.cas.util;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.intfce.User;
+import fr.cls.atoll.motu.library.cas.UserBase;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -36,6 +35,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -105,6 +105,7 @@ public class RestUtil {
      * @param casRestUrlSuffix the cas rest url suffix
      * 
      * @return the cas restlet url
+     * @throws IOException 
      * 
      * @throws IOException Signals that an I/O exception has occurred.
      */
@@ -138,10 +139,11 @@ public class RestUtil {
      * @param path the path
      * 
      * @return the redirect url
+     * @throws IOException 
      * 
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public static String getRedirectUrl(String path) throws IOException {
+    public static String getRedirectUrl(String path) throws IOException  {
 
         String redirectUrl = "";
 
@@ -189,7 +191,7 @@ public class RestUtil {
     // password) throws IOException {
     //    
     // }
-    public static String getTicketGrantingTicket(String casRestUrl, User user) throws IOException {
+    public static String getTicketGrantingTicket(String casRestUrl, UserBase user) throws IOException {
         return getTicketGrantingTicket(casRestUrl, user.getLogin(), user.getPwd());
     }
 
@@ -293,9 +295,8 @@ public class RestUtil {
      * @return the string
      * 
      * @throws IOException Signals that an I/O exception has occurred.
-     * @throws MotuException the motu exception
      */
-    public static String loginToCAS(String casRestUrl, User user, String serviceURL) throws IOException, MotuException {
+    public static String loginToCAS(String casRestUrl, UserBase user, String serviceURL) throws IOException {
         return loginToCAS(casRestUrl, user.getLogin(), user.getPwd(), serviceURL);
     }
 
@@ -310,9 +311,8 @@ public class RestUtil {
      * @return the string
      * 
      * @throws IOException Signals that an I/O exception has occurred.
-     * @throws MotuException the motu exception
      */
-    public static String loginToCAS(String casRestUrl, String username, String password, String serviceURL) throws IOException, MotuException {
+    public static String loginToCAS(String casRestUrl, String username, String password, String serviceURL) throws IOException {
         String ticketGrantingTicket = RestUtil.getTicketGrantingTicket(casRestUrl, username, password);
         return loginToCASWithTGT(casRestUrl, ticketGrantingTicket, serviceURL);
     }
@@ -327,9 +327,8 @@ public class RestUtil {
      * @return the string
      * 
      * @throws IOException Signals that an I/O exception has occurred.
-     * @throws MotuException the motu exception
      */
-    public static String loginToCASWithTGT(String casRestUrl, String ticketGrantingTicket, String serviceURL) throws IOException, MotuException {
+    public static String loginToCASWithTGT(String casRestUrl, String ticketGrantingTicket, String serviceURL) throws IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loginToCAS(String, String, String) - entering");
         }
@@ -417,6 +416,32 @@ public class RestUtil {
      */
     static void closeConn(HttpsURLConnection c) {
         c.disconnect();
+    }
+    static public boolean isNullOrEmpty(String value) {
+        if (value == null) {
+            return true;
+        }
+        if (value.equals("")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if is null or empty.
+     * 
+     * @param value the value
+     * 
+     * @return true, if is null or empty
+     */
+    static public boolean isNullOrEmpty(List<?> value) {
+        if (value == null) {
+            return true;
+        }
+        if (value.isEmpty()) {
+            return true;
+        }
+        return false;
     }
 
 }

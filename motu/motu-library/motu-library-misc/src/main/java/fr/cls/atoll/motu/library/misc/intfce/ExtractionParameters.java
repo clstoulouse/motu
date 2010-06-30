@@ -24,7 +24,7 @@
  */
 package fr.cls.atoll.motu.library.misc.intfce;
 
-import fr.cls.atoll.motu.library.misc.cas.util.AssertionUtils;
+import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInconsistencyException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;

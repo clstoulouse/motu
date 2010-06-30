@@ -24,6 +24,8 @@
 		<module>motu-web</module>
 		<module>motu-configuration/motu-configuration-common</module>
 		<module>motu-configuration/motu-configuration-sample</module>
+		<module>motu-library-cas</module>
+		<module>motu-library-cas</module>
 	</modules>
 
 	<build>

@@ -22,10 +22,10 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.library.misc.cas.util;
+package fr.cls.atoll.motu.library.cas.util;
 
 import fr.cls.atoll.motu.api.message.AuthenticationMode;
-import fr.cls.atoll.motu.library.misc.intfce.User;
+import fr.cls.atoll.motu.library.cas.UserBase;
 
 /**
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
@@ -37,13 +37,13 @@ public class AuthentificationHolder {
     /**
      * ThreadLocal to hold the Assertion for Threads to access.
      */
-    private static final ThreadLocal<User> threadLocal = new ThreadLocal<User>();
+    private static final ThreadLocal<UserBase> threadLocal = new ThreadLocal<UserBase>();
 
     /**
      * Retrieve the assertion from the ThreadLocal.
      */
     public static Boolean isCASAuthentification() {
-        User user = threadLocal.get();
+        UserBase user = threadLocal.get();
         if (user == null) {
             return false;
         }
@@ -58,7 +58,7 @@ public class AuthentificationHolder {
      * @return the boolean
      */
     public static Boolean isAuthentification() {
-        User user = threadLocal.get();
+        UserBase user = threadLocal.get();
         if (user == null) {
             return false;
         }
@@ -73,7 +73,7 @@ public class AuthentificationHolder {
      * @return the authentification mode
      */
     public static AuthenticationMode getAuthentificationMode() {
-        User user = threadLocal.get();
+        UserBase user = threadLocal.get();
         if (user == null) {
             return AuthenticationMode.NONE;
         }
@@ -89,7 +89,7 @@ public class AuthentificationHolder {
      * 
      * @return the user
      */
-    public static void setUser(User user) {
+    public static void setUser(UserBase user) {
         threadLocal.set(user);
     }
 
@@ -98,7 +98,7 @@ public class AuthentificationHolder {
      * 
      * @return the user
      */
-    public static User getUser() {
+    public static UserBase getUser() {
         return threadLocal.get();
     }
 
@@ -108,7 +108,7 @@ public class AuthentificationHolder {
      * @return the user login
      */
     public static String getUserLogin() {
-        User user = AuthentificationHolder.getUser();
+        UserBase user = AuthentificationHolder.getUser();
         if (user == null) {
             return "(null)";
         }
@@ -128,9 +128,9 @@ public class AuthentificationHolder {
      * @param casAuthentification the cas authentification
      */
     public static void setCASAuthentification(final Boolean casAuthentification) {
-        User user = AuthentificationHolder.getUser();
+        UserBase user = AuthentificationHolder.getUser();
         if (user == null) {
-            user = new User();
+            user = new UserBase();
         }
         user.setCASAuthentification(casAuthentification);
         AuthentificationHolder.setUser(user);
@@ -141,7 +141,7 @@ public class AuthentificationHolder {
      * 
      * @param user the new cas authentification
      */
-    public static void setCASAuthentification(final User user) {
+    public static void setCASAuthentification(final UserBase user) {
         AuthentificationHolder.setUser(user);
     }
 
