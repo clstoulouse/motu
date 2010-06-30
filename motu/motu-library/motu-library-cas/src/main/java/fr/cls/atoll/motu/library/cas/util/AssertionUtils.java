@@ -32,6 +32,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.apache.commons.httpclient.URIException;
 import org.apache.log4j.Logger;
 import org.jasig.cas.client.authentication.AttributePrincipal;
@@ -48,6 +50,12 @@ public class AssertionUtils {
 
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(AssertionUtils.class);
+
+    /** The Constant TICKET_PARAMETER. */
+    public static final String TICKET_PARAMETER = "ticket";
+    
+    public static final String TICKET_PARAMETER_AS_GET_FIRST_POS = "?"+ AssertionUtils.TICKET_PARAMETER + "=";
+    public static final String TICKET_PARAMETER_AS_GET = "&"+ AssertionUtils.TICKET_PARAMETER + "=";
 
      /**
      * Gets the attribute principal name.
@@ -87,7 +95,17 @@ public class AssertionUtils {
      * 
      */
     public static boolean hasCASTicket(String targetService)  {
-        return (targetService.indexOf("?ticket=") != -1) || (targetService.indexOf("&ticket=") != -1);
+        return (targetService.indexOf(AssertionUtils.TICKET_PARAMETER_AS_GET_FIRST_POS) != -1) || (targetService.indexOf(AssertionUtils.TICKET_PARAMETER_AS_GET) != -1);
+    }
+    
+    /**
+     * Checks for cas ticket.
+     *
+     * @param data the data
+     * @return true, if successful
+     */
+    public static boolean hasCASTicket(MultivaluedMap<String, Object> data)  {
+        return (data.containsKey(AssertionUtils.TICKET_PARAMETER));
     }
 
     /**
@@ -169,7 +187,49 @@ public class AssertionUtils {
         return returnString;
 
     }
+    
+    public static boolean addCASTicket(String targetService, MultivaluedMap<String, Object> data, String username, String password, String casRestUrlSuffix) throws IOException  {
 
+        boolean returnBoolean = false;
+        String casRestUrlSuffixToUse = casRestUrlSuffix;
+
+        Assertion assertion = AssertionHolder.getAssertion();
+        if (assertion != null) {
+            returnBoolean = AssertionUtils.addCASTicket(assertion, targetService, data);
+        } else if (!AssertionUtils.isNullOrEmpty(username)) {
+            if (AssertionUtils.isNullOrEmpty(casRestUrlSuffixToUse)) {
+                casRestUrlSuffixToUse = RestUtil.CAS_REST_URL_SUFFIX;
+            }
+            returnBoolean = AssertionUtils.addCASTicketFromTGT(casRestUrlSuffix, username, password, targetService, data);
+        }
+
+        return returnBoolean;
+
+    }
+    public static boolean addCASTicket(Assertion assertion, String targetService, MultivaluedMap<String, Object> data)  {
+
+
+        if (assertion == null) {
+            return false;
+        }
+        if (data == null) {
+            return false;
+        }
+
+        if (AssertionUtils.hasCASTicket(data)) {
+            return true;
+        }
+
+        String ticket = AssertionUtils.getProxyTicketFor(assertion, targetService);
+
+        if (AssertionUtils.isNullOrEmpty(ticket)) {
+            return false;
+        }
+
+        data.add(AssertionUtils.TICKET_PARAMETER, ticket);
+        return true;
+
+    }
     /**
      * Adds the cas ticket from tgt.
      * 
@@ -226,7 +286,31 @@ public class AssertionUtils {
         return returnString;
 
     }
+    public static boolean addCASTicketFromTGT(String casRestUrlSuffix, String username, String password, String targetService, MultivaluedMap<String, Object> data) throws IOException            {
 
+        if (AssertionUtils.isNullOrEmpty(username)) {
+            return false;
+        }
+        if (AssertionUtils.isNullOrEmpty(targetService)) {
+            return false;
+        }
+        if (AssertionUtils.hasCASTicket(data)) {
+            return true;
+        }
+
+        String casRestUrl = RestUtil.getCasRestletUrl(targetService, casRestUrlSuffix);
+
+        String ticket = RestUtil.loginToCAS(casRestUrl, username, password, targetService);
+
+        if (AssertionUtils.isNullOrEmpty(ticket)) {
+            return false;
+        }
+        
+        data.add(AssertionUtils.TICKET_PARAMETER, ticket);
+        
+        return true;
+
+    }
     /**
      * Adds the cas ticket.
      * 

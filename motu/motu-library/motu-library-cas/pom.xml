@@ -31,6 +31,11 @@
             <artifactId>commons-httpclient</artifactId>
             <version>3.1</version>
         </dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-core</artifactId>
+			<version>${dependencies.version.jersey}</version>
+		</dependency>        
         <dependency>
             <groupId>org.jasig.cas</groupId>
             <artifactId>cas-client-core</artifactId>
