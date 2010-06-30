@@ -117,6 +117,9 @@ public class HttpClientCAS extends HttpClient {
      * @param httpClient the new proxy
      */
     public void setProxy() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setProxy() - start");
+        }
 
         String proxyHost = System.getProperty("proxyHost");
         String proxyPort = System.getProperty("proxyPort");
@@ -124,6 +127,11 @@ public class HttpClientCAS extends HttpClient {
         if ((!Organizer.isNullOrEmpty(proxyHost)) && (!Organizer.isNullOrEmpty(proxyPort))) {
             this.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
             this.setProxyUser();
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("setProxy() - proxy parameters are set: proxyHost=" + proxyHost + " - proxyPort=" + proxyPort);
+                LOG.debug("setProxy() - end");
+            }
             return;
         }
         
@@ -133,31 +141,51 @@ public class HttpClientCAS extends HttpClient {
         if ((!Organizer.isNullOrEmpty(proxyHost)) && (!Organizer.isNullOrEmpty(proxyPort))) {
             this.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
             this.setProxyUser();            
+            LOG.debug("setProxy() - proxy parameters are set: proxyHost=" + proxyHost + " - proxyPort=" + proxyPort);
         }
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setProxy() - end");
+        }
     }
     
     /**
      * Sets the proxy user.
      */
     public void setProxyUser() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setProxyUser() - start");
+        }
 
-        String proxyUser = System.getProperty("proxyUser");
+        String proxyLogin = System.getProperty("proxyLogin");
         String proxyPassword = System.getProperty("proxyPassword");
         
-        if ((!Organizer.isNullOrEmpty(proxyUser)) && (!Organizer.isNullOrEmpty(proxyPassword))) {
-            Authenticator.setDefault(new SimpleAuthenticator(proxyUser, proxyPassword));
+        if ((!Organizer.isNullOrEmpty(proxyLogin)) && (!Organizer.isNullOrEmpty(proxyPassword))) {
+            Authenticator.setDefault(new SimpleAuthenticator(proxyLogin, proxyPassword));
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("setProxy() - proxy parameters are set: proxyLogin=" + proxyLogin + " - proxyPassword=" + proxyPassword);
+                LOG.debug("setProxyUser() - end");
+            }
             return;
         }
 
-        proxyUser = System.getProperty("http.proxyUser");
+        proxyLogin = System.getProperty("http.proxyLogin");
         proxyPassword = System.getProperty("http.proxyPassword");
         
-        if ((!Organizer.isNullOrEmpty(proxyUser)) && (!Organizer.isNullOrEmpty(proxyPassword))) {
-            Authenticator.setDefault(new SimpleAuthenticator(proxyUser, proxyPassword));
+        if ((!Organizer.isNullOrEmpty(proxyLogin)) && (!Organizer.isNullOrEmpty(proxyPassword))) {
+            Authenticator.setDefault(new SimpleAuthenticator(proxyLogin, proxyPassword));
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("setProxy() - proxy parameters are set: proxyLogin=" + proxyLogin + " - proxyPassword=" + proxyPassword);
+                LOG.debug("setProxyUser() - end");
+            }
         }
         
 
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setProxyUser() - end");
+        }
     }
 
     @Override
