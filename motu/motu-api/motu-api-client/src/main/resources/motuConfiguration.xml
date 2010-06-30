@@ -105,8 +105,8 @@
 	
 -->
 
-<motuConfig defaultService="" useProxy="true"
-	proxyLogin="login" proxyPwd="pwd" useAuthentication="false"
+<motuConfig defaultService="" useProxy="false"
+	useAuthentication="false"
 	dataBlockSize="102400" maxSizePerFile="256"
 	extractionPath="."
 	downloadHttpUrl="http://none"
