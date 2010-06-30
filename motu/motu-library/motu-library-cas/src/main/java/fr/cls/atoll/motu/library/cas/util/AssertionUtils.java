@@ -49,8 +49,7 @@ public class AssertionUtils {
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(AssertionUtils.class);
 
-    public static final String CAS_REST_URL_SUFFIX = "/v1/tickets";
-    /**
+     /**
      * Gets the attribute principal name.
      * 
      * @return the attribute principal name
@@ -159,7 +158,7 @@ public class AssertionUtils {
             returnString = AssertionUtils.addCASTicket(assertion, targetService);
         } else if (!AssertionUtils.isNullOrEmpty(username)) {
             if (AssertionUtils.isNullOrEmpty(casRestUrlSuffixToUse)) {
-                casRestUrlSuffixToUse = CAS_REST_URL_SUFFIX;
+                casRestUrlSuffixToUse = RestUtil.CAS_REST_URL_SUFFIX;
             }
             returnString = AssertionUtils.addCASTicketFromTGT(casRestUrlSuffix, username, password, targetService);
         }

@@ -52,6 +52,9 @@ public class RestUtil {
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(RestUtil.class);
 
+    /** The Constant CAS_REST_URL_SUFFIX. */
+    public static final String CAS_REST_URL_SUFFIX = "/v1/tickets";
+
     //
     // private static String CAS_SERVER_URL_PREFIX = null;
     //
