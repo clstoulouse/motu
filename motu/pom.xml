@@ -14,6 +14,7 @@
 	
 	<modules>
 		<module>motu-parent</module>
+		<module>motu-library/motu-library-cas</module>
 		<module>motu-library/motu-library-converter</module>
 		<module>motu-library/motu-library-misc</module>
 		<module>motu-library/motu-library-inventory</module>
@@ -24,8 +25,6 @@
 		<module>motu-web</module>
 		<module>motu-configuration/motu-configuration-common</module>
 		<module>motu-configuration/motu-configuration-sample</module>
-		<module>motu-library-cas</module>
-		<module>motu-library-cas</module>
 	</modules>
 
 	<build>
