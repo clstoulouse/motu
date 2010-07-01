@@ -17,6 +17,7 @@
 		<jdk.source.encoding>ISO-8859-1</jdk.source.encoding>
 		<dependencies.version.slf4j>1.5.8</dependencies.version.slf4j>
 		<dependencies.version.spring>2.5.6</dependencies.version.spring>
+		<dependencies.version.jersey>1.3</dependencies.version.jersey>       		
 	</properties>
 	
 	<dependencies>

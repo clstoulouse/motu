@@ -28,6 +28,7 @@ import fr.cls.atoll.motu.library.cas.UserBase;
 import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -53,11 +54,11 @@ public class AssertionUtils {
 
     /** The Constant TICKET_PARAMETER. */
     public static final String TICKET_PARAMETER = "ticket";
-    
-    public static final String TICKET_PARAMETER_AS_GET_FIRST_POS = "?"+ AssertionUtils.TICKET_PARAMETER + "=";
-    public static final String TICKET_PARAMETER_AS_GET = "&"+ AssertionUtils.TICKET_PARAMETER + "=";
 
-     /**
+    public static final String TICKET_PARAMETER_AS_GET_FIRST_POS = "?" + AssertionUtils.TICKET_PARAMETER + "=";
+    public static final String TICKET_PARAMETER_AS_GET = "&" + AssertionUtils.TICKET_PARAMETER + "=";
+
+    /**
      * Gets the attribute principal name.
      * 
      * @return the attribute principal name
@@ -94,29 +95,30 @@ public class AssertionUtils {
      * @return true, if successful
      * 
      */
-    public static boolean hasCASTicket(String targetService)  {
-        return (targetService.indexOf(AssertionUtils.TICKET_PARAMETER_AS_GET_FIRST_POS) != -1) || (targetService.indexOf(AssertionUtils.TICKET_PARAMETER_AS_GET) != -1);
+    public static boolean hasCASTicket(String targetService) {
+        return (targetService.indexOf(AssertionUtils.TICKET_PARAMETER_AS_GET_FIRST_POS) != -1)
+                || (targetService.indexOf(AssertionUtils.TICKET_PARAMETER_AS_GET) != -1);
     }
-    
+
     /**
      * Checks for cas ticket.
-     *
+     * 
      * @param data the data
      * @return true, if successful
      */
-    public static boolean hasCASTicket(MultivaluedMap<String, Object> data)  {
+    public static boolean hasCASTicket(MultivaluedMap<String, String> data) {
         return (data.containsKey(AssertionUtils.TICKET_PARAMETER));
     }
 
     /**
      * Adds the cas ticket.
-     *
+     * 
      * @param targetService the target service
      * @param user the user
      * @return the string
      * @throws MotuCasException the motu cas exception
-     * @throws IOException 
-     * @throws MotuCasException 
+     * @throws IOException
+     * @throws MotuCasException
      */
     public static String addCASTicket(String targetService, UserBase user) throws IOException, MotuCasException {
 
@@ -158,12 +160,12 @@ public class AssertionUtils {
      * @param casRestUrlSuffix the cas rest url suffix
      * 
      * @return the string
-     * @throws IOException 
+     * @throws IOException
      * 
      * @throws MotuException the motu exception
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public static String addCASTicket(String targetService, String username, String password, String casRestUrlSuffix) throws IOException  {
+    public static String addCASTicket(String targetService, String username, String password, String casRestUrlSuffix) throws IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(String, String, String, String) - entering");
         }
@@ -187,8 +189,20 @@ public class AssertionUtils {
         return returnString;
 
     }
-    
-    public static boolean addCASTicket(String targetService, MultivaluedMap<String, Object> data, String username, String password, String casRestUrlSuffix) throws IOException  {
+
+    public static boolean addCASTicket(URI targetService,
+                                       MultivaluedMap<String, String> data,
+                                       String username,
+                                       String password,
+                                       String casRestUrlSuffix) throws IOException {
+        return addCASTicket(targetService.toString(), data, username, password, casRestUrlSuffix);
+    }
+
+    public static boolean addCASTicket(String targetService,
+                                       MultivaluedMap<String, String> data,
+                                       String username,
+                                       String password,
+                                       String casRestUrlSuffix) throws IOException {
 
         boolean returnBoolean = false;
         String casRestUrlSuffixToUse = casRestUrlSuffix;
@@ -206,8 +220,8 @@ public class AssertionUtils {
         return returnBoolean;
 
     }
-    public static boolean addCASTicket(Assertion assertion, String targetService, MultivaluedMap<String, Object> data)  {
 
+    public static boolean addCASTicket(Assertion assertion, String targetService, MultivaluedMap<String, String> data) {
 
         if (assertion == null) {
             return false;
@@ -230,6 +244,7 @@ public class AssertionUtils {
         return true;
 
     }
+
     /**
      * Adds the cas ticket from tgt.
      * 
@@ -239,12 +254,12 @@ public class AssertionUtils {
      * @param targetService the target service
      * 
      * @return the string
-     * @throws IOException 
+     * @throws IOException
      * 
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws MotuException the motu exception
      */
-    public static String addCASTicketFromTGT(String casRestUrlSuffix, String username, String password, String targetService) throws IOException            {
+    public static String addCASTicketFromTGT(String casRestUrlSuffix, String username, String password, String targetService) throws IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicketFromTGT(String, String, String, String) - entering");
         }
@@ -286,7 +301,12 @@ public class AssertionUtils {
         return returnString;
 
     }
-    public static boolean addCASTicketFromTGT(String casRestUrlSuffix, String username, String password, String targetService, MultivaluedMap<String, Object> data) throws IOException            {
+
+    public static boolean addCASTicketFromTGT(String casRestUrlSuffix,
+                                              String username,
+                                              String password,
+                                              String targetService,
+                                              MultivaluedMap<String, String> data) throws IOException {
 
         if (AssertionUtils.isNullOrEmpty(username)) {
             return false;
@@ -305,12 +325,13 @@ public class AssertionUtils {
         if (AssertionUtils.isNullOrEmpty(ticket)) {
             return false;
         }
-        
+
         data.add(AssertionUtils.TICKET_PARAMETER, ticket);
-        
+
         return true;
 
     }
+
     /**
      * Adds the cas ticket.
      * 
@@ -321,7 +342,7 @@ public class AssertionUtils {
      * 
      * @throws URIException the URI exception
      */
-    public static String addCASTicket(Assertion assertion, String targetService)  {
+    public static String addCASTicket(Assertion assertion, String targetService) {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(Assertion, String) - entering : debugPGTFromSession " + AssertionUtils.debugPGT(assertion));
