@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -86,13 +87,26 @@ public class RestUtil {
     //
     // return stringBuffer.toString();
     // }
+    
     /**
      * Checks if is casified url.
-     * 
+     *
      * @param serviceURL the service url
-     * 
      * @return true, if is casified url
-     * @throws IOException
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public static boolean isCasifiedUrl(URI serviceURL) throws IOException {
+
+        return isCasifiedUrl(serviceURL.toString());
+
+    }
+    
+    /**
+     * Checks if is casified url.
+     *
+     * @param serviceURL the service url
+     * @return true, if is casified url
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     public static boolean isCasifiedUrl(String serviceURL) throws IOException {
 

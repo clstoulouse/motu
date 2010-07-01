@@ -217,6 +217,15 @@ public class UserBase {
                                                   AuthenticationMode.getAvailableValues()));
         }
     }
+    
+    /**
+     * Checks if is basic authentification.
+     *
+     * @return true, if is basic authentification
+     */
+    public boolean isBasicAuthentification() {
+        return this.authentificationMode.equals(AuthenticationMode.BASIC);
+    }
 
     /**
      * Checks if is cas authentification.
@@ -258,7 +267,7 @@ public class UserBase {
      * @return the cas rest suff url
      * @throws MotuCasException the motu cas exception
      */
-    public String getCasRestSuffURL() throws MotuCasException {
+    public String getCasRestSuffURL() {
 
         return casRestSuffURL;
     }

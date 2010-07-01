@@ -109,6 +109,16 @@ public class AssertionUtils {
     public static boolean hasCASTicket(MultivaluedMap<String, String> data) {
         return (data.containsKey(AssertionUtils.TICKET_PARAMETER));
     }
+    
+    /**
+     * Gets the cAS ticket.
+     *
+     * @param data the data
+     * @return the cAS ticket
+     */
+    public static String getCASTicket(MultivaluedMap<String, String> data) {
+        return data.getFirst(AssertionUtils.TICKET_PARAMETER);
+    }
 
     /**
      * Adds the cas ticket.
@@ -120,7 +130,7 @@ public class AssertionUtils {
      * @throws IOException
      * @throws MotuCasException
      */
-    public static String addCASTicket(String targetService, UserBase user) throws IOException, MotuCasException {
+    public static String addCASTicket(String targetService, UserBase user) throws IOException {
 
         if (user == null) {
             return addCASTicket(targetService, null, null, null);
@@ -190,7 +200,11 @@ public class AssertionUtils {
 
     }
 
-    public static boolean addCASTicket(URI targetService,
+    public static String addCASTicket(URI targetService, MultivaluedMap<String, String> data, UserBase user) throws IOException {
+        return addCASTicket(targetService.toString(), data, user.getLogin(), user.getPwd(), user.getCasRestSuffURL());
+    }
+
+    public static String addCASTicket(URI targetService,
                                        MultivaluedMap<String, String> data,
                                        String username,
                                        String password,
@@ -198,50 +212,52 @@ public class AssertionUtils {
         return addCASTicket(targetService.toString(), data, username, password, casRestUrlSuffix);
     }
 
-    public static boolean addCASTicket(String targetService,
+    public static String addCASTicket(String targetService,
                                        MultivaluedMap<String, String> data,
                                        String username,
                                        String password,
                                        String casRestUrlSuffix) throws IOException {
 
-        boolean returnBoolean = false;
+        String returnString = "";
         String casRestUrlSuffixToUse = casRestUrlSuffix;
 
         Assertion assertion = AssertionHolder.getAssertion();
         if (assertion != null) {
-            returnBoolean = AssertionUtils.addCASTicket(assertion, targetService, data);
+            returnString = AssertionUtils.addCASTicket(assertion, targetService, data);
         } else if (!AssertionUtils.isNullOrEmpty(username)) {
             if (AssertionUtils.isNullOrEmpty(casRestUrlSuffixToUse)) {
                 casRestUrlSuffixToUse = RestUtil.CAS_REST_URL_SUFFIX;
             }
-            returnBoolean = AssertionUtils.addCASTicketFromTGT(casRestUrlSuffix, username, password, targetService, data);
+            returnString = AssertionUtils.addCASTicketFromTGT(casRestUrlSuffix, username, password, targetService, data);
         }
 
-        return returnBoolean;
+        return returnString;
 
     }
 
-    public static boolean addCASTicket(Assertion assertion, String targetService, MultivaluedMap<String, String> data) {
-
+    public static String addCASTicket(Assertion assertion, String targetService, MultivaluedMap<String, String> data) {
+        
+        String ticket = "";
+        
         if (assertion == null) {
-            return false;
+            return ticket;
         }
         if (data == null) {
-            return false;
+            return ticket;
         }
 
         if (AssertionUtils.hasCASTicket(data)) {
-            return true;
+            return AssertionUtils.getCASTicket(data);
         }
 
-        String ticket = AssertionUtils.getProxyTicketFor(assertion, targetService);
+        ticket = AssertionUtils.getProxyTicketFor(assertion, targetService);
 
         if (AssertionUtils.isNullOrEmpty(ticket)) {
-            return false;
+            return ticket;
         }
 
         data.add(AssertionUtils.TICKET_PARAMETER, ticket);
-        return true;
+        return ticket;
 
     }
 
@@ -302,33 +318,34 @@ public class AssertionUtils {
 
     }
 
-    public static boolean addCASTicketFromTGT(String casRestUrlSuffix,
+    public static String addCASTicketFromTGT(String casRestUrlSuffix,
                                               String username,
                                               String password,
                                               String targetService,
                                               MultivaluedMap<String, String> data) throws IOException {
-
+        String ticket = "";
+        
         if (AssertionUtils.isNullOrEmpty(username)) {
-            return false;
+            return ticket;
         }
         if (AssertionUtils.isNullOrEmpty(targetService)) {
-            return false;
+            return ticket;
         }
         if (AssertionUtils.hasCASTicket(data)) {
-            return true;
+            return AssertionUtils.getCASTicket(data);
         }
 
         String casRestUrl = RestUtil.getCasRestletUrl(targetService, casRestUrlSuffix);
 
-        String ticket = RestUtil.loginToCAS(casRestUrl, username, password, targetService);
+        ticket = RestUtil.loginToCAS(casRestUrl, username, password, targetService);
 
         if (AssertionUtils.isNullOrEmpty(ticket)) {
-            return false;
+            return ticket;
         }
 
         data.add(AssertionUtils.TICKET_PARAMETER, ticket);
 
-        return true;
+        return ticket;
 
     }
 
