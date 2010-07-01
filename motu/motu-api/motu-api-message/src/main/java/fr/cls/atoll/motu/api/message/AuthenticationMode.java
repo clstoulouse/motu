@@ -41,7 +41,10 @@ public enum AuthenticationMode {
     NONE(0),
 
     /** CAS Authentification. */
-    CAS(0);
+    CAS(1),
+    
+    /** Basic Authentification. */
+    BASIC(2);
 
     /** The value. */
     private final int value;
