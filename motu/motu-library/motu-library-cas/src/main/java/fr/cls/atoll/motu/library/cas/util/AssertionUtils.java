@@ -128,9 +128,10 @@ public class AssertionUtils {
      * @return the string
      * @throws MotuCasException the motu cas exception
      * @throws IOException
+     * @throws MotuCasException 
      * @throws MotuCasException
      */
-    public static String addCASTicket(String targetService, UserBase user) throws IOException {
+    public static String addCASTicket(String targetService, UserBase user) throws IOException, MotuCasException {
 
         if (user == null) {
             return addCASTicket(targetService, null, null, null);
@@ -200,7 +201,7 @@ public class AssertionUtils {
 
     }
 
-    public static String addCASTicket(URI targetService, MultivaluedMap<String, String> data, UserBase user) throws IOException {
+    public static String addCASTicket(URI targetService, MultivaluedMap<String, String> data, UserBase user) throws IOException, MotuCasException {
         return addCASTicket(targetService.toString(), data, user.getLogin(), user.getPwd(), user.getCasRestSuffURL());
     }
 

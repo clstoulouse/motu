@@ -267,7 +267,7 @@ public class UserBase {
      * @return the cas rest suff url
      * @throws MotuCasException the motu cas exception
      */
-    public String getCasRestSuffURL() {
+    public String getCasRestSuffURL() throws MotuCasException {
 
         return casRestSuffURL;
     }
