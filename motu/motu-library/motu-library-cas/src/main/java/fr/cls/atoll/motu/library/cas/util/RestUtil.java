@@ -24,23 +24,30 @@
  */
 package fr.cls.atoll.motu.library.cas.util;
 
-import fr.cls.atoll.motu.library.cas.UserBase;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.List;
+import java.util.Collection;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.log4j.Logger;
+
+import fr.cls.atoll.motu.library.cas.UserBase;
 
 /**
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
@@ -55,7 +62,9 @@ public class RestUtil {
 
     /** The Constant CAS_REST_URL_SUFFIX. */
     public static final String CAS_REST_URL_SUFFIX = "/v1/tickets";
-
+    
+    /** The Constant DEFAULT_BUFFER_SIZE. */
+    private static final int DEFAULT_BUFFER_SIZE = 4096;
     //
     // private static String CAS_SERVER_URL_PREFIX = null;
     //
@@ -451,7 +460,8 @@ public class RestUtil {
      * 
      * @return true, if is null or empty
      */
-    static public boolean isNullOrEmpty(List<?> value) {
+
+    static public boolean isNullOrEmpty(Collection<?> value) {
         if (value == null) {
             return true;
         }
@@ -460,5 +470,161 @@ public class RestUtil {
         }
         return false;
     }
+
+    /**
+     * Url to input stream.
+     *
+     * @param url the url
+     * @return the input stream
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public static final InputStream urlToInputStream(String url) throws IOException {
+        url = url.trim();
+        if (url.indexOf(':') > 1) { 
+            URL urlObject = new URL(url);
+            return urlObject.openStream();
+        }
+        return new FileInputStream(url);
+    }
+    
+    /**
+     * Copy stream to file.
+     *
+     * @param input the input
+     * @param destination the destination
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public static void copyStreamToFile(InputStream input, File destination) throws IOException {
+        FileOutputStream output = null;
+        try {
+            if (destination.getParentFile() != null && !destination.getParentFile().exists()) {
+                if (!destination.getParentFile().mkdirs()) {
+                    throw new IOException("Cannot create the parent file of " + destination);
+                }
+            }
+            if (destination.exists() && !destination.canWrite()) {
+                throw new IOException("Unable to open file " + destination + " for writing.");
+            } else {
+                output = new FileOutputStream(destination);
+                RestUtil.copy(input, output);
+            }
+        } finally {
+            RestUtil.close(input);
+            RestUtil.close(output);
+        }
+    }
+    
+    /**
+     * Copy.
+     *
+     * @param in the in
+     * @param out the out
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public static void copy(InputStream in, OutputStream out) throws IOException {
+        RestUtil.copy(in, out, RestUtil.DEFAULT_BUFFER_SIZE);
+    }
+
+    /**
+     * Copy.
+     *
+     * @param in the in
+     * @param out the out
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public static void copy(Reader in, Writer out) throws IOException {
+        RestUtil.copy(in, out, RestUtil.DEFAULT_BUFFER_SIZE);
+    }
+
+    /**
+     * Copy.
+     *
+     * @param in the in
+     * @param out the out
+     * @param bufferSize the buffer size
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public static void copy(InputStream in, OutputStream out, int bufferSize) throws IOException {
+        byte buf[] = new byte[bufferSize];
+        for (int len = in.read(buf); len >= 0; len = in.read(buf)) {
+            out.write(buf, 0, len);
+        }
+    }
+    
+    /**
+     * Copy.
+     *
+     * @param in the in
+     * @param out the out
+     * @param bufferSize the buffer size
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public static void copy(Reader in, Writer out, int bufferSize) throws IOException {
+        char buf[] = new char[bufferSize];
+        for (int len = in.read(buf); len >= 0; len = in.read(buf)) {
+            out.write(buf, 0, len);
+        }
+    }
+    
+    /**
+     * Close.
+     *
+     * @param in the in
+     */
+    public static final void close(InputStream in) {
+        if (in == null) {
+            return;
+        }
+        try {
+            in.close();
+        } catch (Exception ex) {
+        }
+    }
+
+    /**
+     * Close.
+     *
+     * @param out the out
+     */
+    public static final void close(OutputStream out) {
+        if (out == null) {
+            return;
+        }
+        try {
+            out.close();
+        } catch (Exception ex) {
+        }
+    }
+
+    /**
+     * Close.
+     *
+     * @param in the in
+     */
+    public static final void close(Reader in) {
+        if (in == null) {
+            return;
+        }
+        try {
+            in.close();
+        } catch (Exception ex) {
+        }
+    }
+
+    /**
+     * Close.
+     *
+     * @param out the out
+     */
+    public static final void close(Writer out) {
+        if (out == null) {
+            return;
+        }
+        try {
+            out.close();
+        } catch (Exception ex) {
+        }
+    }
+
 
 }
