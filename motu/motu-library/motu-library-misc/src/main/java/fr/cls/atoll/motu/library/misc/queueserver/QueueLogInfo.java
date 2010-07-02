@@ -28,6 +28,10 @@ import com.thoughtworks.xstream.XStream;
 
 import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -89,6 +93,28 @@ public class QueueLogInfo {
 
     /** The x stream. */
     private final XStream xStream = new XStream();
+    private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    private Writer writer = null;
+    /** The encoding. */
+    private String encoding = "UTF-8";
+
+    /**
+     * Sets the encoding.
+     * 
+     * @param encoding the encoding
+     */
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    /**
+     * Gets the encoding.
+     * 
+     * @return the encoding
+     */
+    public String getEncoding() {
+        return encoding;
+    }
 
     /**
      * Constructor.
@@ -98,6 +124,11 @@ public class QueueLogInfo {
         // for (int i = 0 ; i < fields.length ; i++) {
         // xStream.useAttributeFor(this.getClass(), fields[i].getName());
         // }
+        try {
+            writer = new OutputStreamWriter(outputStream, encoding);
+        } catch (UnsupportedEncodingException e) {
+            //Do Nothing
+        }
 
         initXStreamOptions();
 
@@ -155,7 +186,9 @@ public class QueueLogInfo {
             xStream.useAttributeFor(QueueLogError.class, "message");
         }
 
-        return xStream.toXML(this);
+        //return xStream.toXML(this);
+        xStream.toXML(this, writer);
+        return outputStream.toString();
 
     }
 
