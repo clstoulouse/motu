@@ -41,6 +41,10 @@ import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
 import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -403,12 +407,12 @@ public class TestTheadPools {
         // testCallable()
         // testRunnable();
 
-        TestTheadPools t = new TestTheadPools();
+        // TestTheadPools t = new TestTheadPools();
         // t.testPriorityBlockingQueueProblem();
         // t.testPriorityBlockingQueueOK();
-        t.testPriorityBlockingQueue();
+        // t.testPriorityBlockingQueue();
 
-        // testXStream();
+        testXStream();
 
         // TestLog4J testLog4J = new TestLog4J(1, 10, null, null);
         // testLog4J.setEnded();
@@ -473,6 +477,38 @@ public class TestTheadPools {
         String decl = "\n";
 
         String xml = xstream.toXML(date);
+        System.out.println(decl + xml);
+        if (LOG.isInfoEnabled()) {
+            LOG.info(xml);
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Writer writer = null;
+        try {
+            writer = new OutputStreamWriter(outputStream, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        xstream.alias("myString", String.class);
+
+        // String str = "\nÚte_max%dfsdfÛ&dsf%";
+
+        String str = "éàù";
+
+        xml = xstream.toXML(str);
+        System.out.println(decl + xml);
+        if (LOG.isInfoEnabled()) {
+            LOG.info(xml);
+        }
+        xstream.toXML(str, writer);
+//        try {
+            xml = outputStream.toString();
+//        } catch (UnsupportedEncodingException e) {
+//            // Do nothing
+//        }
+
         System.out.println(decl + xml);
         if (LOG.isInfoEnabled()) {
             LOG.info(xml);
