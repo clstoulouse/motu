@@ -55,6 +55,10 @@
             <param-name>gateway</param-name>
             <param-value>false</param-value>
         </init-param>
+		<init-param>
+			<param-name>encodeServiceUrl</param-name>
+			<param-value>false</param-value>
+		</init-param>		
     </filter>
     <listener>
         <description>Log4j initialization</description>
@@ -87,6 +91,10 @@
             <param-name>redirectAfterValidation</param-name>
             <param-value>true</param-value>
         </init-param>
+		<init-param>
+			<param-name>encodeServiceUrl</param-name>
+			<param-value>false</param-value>
+		</init-param>				
     </filter>
     <filter>
         <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
