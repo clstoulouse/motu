@@ -28,11 +28,25 @@
             <version>1.0-beta-1</version>
             <scope>test</scope>
         </dependency>
+		<!--     
         <dependency>
             <groupId>org.jasig.cas</groupId>
             <artifactId>cas-client-core</artifactId>
             <version>3.1.10</version>
         </dependency>
+        -->
+        <!-- 
+		<dependency>
+		   <groupId>org.jasig.cas.client</groupId>
+		   <artifactId>cas-client-core</artifactId>
+		   <version>3.1.11</version>
+		</dependency>
+		 -->
+		<dependency>
+		   <groupId>org.jasig.cas.client</groupId>
+		   <artifactId>cas-client-core</artifactId>
+		   <version>3.1.11-PATCH-CLS</version>
+		</dependency>
         <dependency>
             <groupId>cls.atoll.motu.library</groupId>
             <artifactId>motu-library-misc</artifactId>
