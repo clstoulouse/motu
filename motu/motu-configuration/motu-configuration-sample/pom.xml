@@ -12,41 +12,35 @@
     <groupId>cls.atoll.motu.configuration</groupId>
     <artifactId>motu-configuration-sample</artifactId>
     <version>2.1.5-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>pom</packaging>
 	
     <name>Motu Configuration Cartridge Sample</name>
     <description>This package holds a sample configuration cartridge for motu.</description>
     
     <dependencies>
-        <dependency>
-            <groupId>cls.atoll.motu.configuration</groupId>
-			<artifactId>motu-configuration-common</artifactId>
-			<version>2.1.5-SNAPSHOT</version>
-			<classifier>delivery</classifier>
-			<type>zip</type>
-            <scope>runtime</scope>
-        </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2-beta-5</version>
                 <configuration>
-                    <overlays>
-                        <overlay>
-                            <groupId>cls.atoll.motu.configuration</groupId>
-                            <artifactId>motu-configuration-common</artifactId>
-							<classifier>delivery</classifier>
-							<type>zip</type>
-							<excludes>
-							  <exclude>WEB-INF/web.xml</exclude>
-							</excludes>                            
-                        </overlay>
-                    </overlays>
+                    <descriptors>
+                        <descriptor>src/main/assembly/package-delivery.xml</descriptor>
+                        <descriptor>src/main/assembly/package-sources.xml</descriptor>
+                    </descriptors>
                 </configuration>
-            </plugin>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>			
         </plugins>
     </build>
 	
