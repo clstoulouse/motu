@@ -5,15 +5,31 @@
         <format>tar.gz</format>
         <format>zip</format>
     </formats>
-    <includeBaseDirectory>false</includeBaseDirectory>
     <baseDirectory>${project.artifactId}-${version}</baseDirectory>
     <fileSets>
         <fileSet>
             <directory>src/main/webapp</directory>
             <outputDirectory></outputDirectory>
-            <includes>
-                <include>WEB-INF/**/*</include>
-            </includes>
+        </fileSet>
+		<fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory>/WEB-INF/classes/</outputDirectory>
         </fileSet>
     </fileSets>
+	<files>
+		<file>
+			<source>notice.txt</source>
+			<outputDirectory>/WEB-INF/</outputDirectory>
+			<destName>${project.artifactId}-${version}-notice.txt</destName>
+			<fileMode>0664</fileMode>
+			<filtered>true</filtered>
+		</file>
+		<file>
+			<source>license.txt</source>
+			<outputDirectory>/WEB-INF/</outputDirectory>
+			<destName>${project.artifactId}-${version}-license.txt</destName>
+			<fileMode>0664</fileMode>
+			<filtered>false</filtered>
+		</file>
+	</files>
 </assembly>
