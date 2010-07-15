@@ -119,7 +119,7 @@ public class MultipleDirectoriesContext extends FileDirContextAdapter {
     protected File file(String fileName) {
         // return the first resolved file found
         for (FileDirContextAdapter virtualContext : virtualContexts) {
-            final File file = virtualContext.file(fileName);
+            final File file = virtualContext == this ? super.file(fileName) : virtualContext.file(fileName);
             if (file != null) {
                 return file;
             }
@@ -130,7 +130,11 @@ public class MultipleDirectoriesContext extends FileDirContextAdapter {
     @Override
     public void release() {
         for (FileDirContextAdapter virtualContext : virtualContexts) {
-            virtualContext.release();
+            if (virtualContext != this) {
+                virtualContext.release();
+            } else {
+                super.release();
+            }
         }
     }
 
@@ -143,8 +147,10 @@ public class MultipleDirectoriesContext extends FileDirContextAdapter {
                 virtualContext.setCacheMaxSize(this.getCacheMaxSize());
                 virtualContext.setCaseSensitive(this.isCaseSensitive());
                 virtualContext.setAllowLinking(this.getAllowLinking());
+                virtualContext.allocate();
+            } else {
+                super.allocate();
             }
-            virtualContext.allocate();
 
         }
     }
