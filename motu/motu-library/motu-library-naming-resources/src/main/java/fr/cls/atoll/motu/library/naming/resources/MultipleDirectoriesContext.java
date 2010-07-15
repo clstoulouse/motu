@@ -54,7 +54,7 @@ import org.apache.naming.resources.FileDirContext;
  * </code>
  * 
  * @author ccamel
- * @version $Revision: 607568 $ $Date: 2007-12-30 18:56:50 +0100 (Sun, 30 Dec 2007) $
+ * @version $Revision: 1.12 $ - $Date: 2010/02/08 13:32:34 $ - $Author: ccamel $
  */
 public class MultipleDirectoriesContext extends FileDirContext {
     public static final Pattern VARIABLE_REPLACE_MATCH = Pattern

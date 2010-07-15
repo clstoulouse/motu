@@ -34,6 +34,7 @@ import org.apache.naming.resources.FileDirContext;
  * protected method {@link #file(String)}.
  * 
  * @author ccamel
+ * @version $Revision: 1.12 $ - $Date: 2010/02/08 13:32:34 $ - $Author: ccamel $
  */
 public class FileDirContextAdapter extends FileDirContext {
     public FileDirContextAdapter() {
