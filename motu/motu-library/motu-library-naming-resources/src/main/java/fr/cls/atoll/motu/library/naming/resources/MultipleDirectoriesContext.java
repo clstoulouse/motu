@@ -25,15 +25,13 @@
 package fr.cls.atoll.motu.library.naming.resources;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.naming.resources.FileDirContext;
 
 /**
  * Multiple Filesystem Directory Context.
@@ -41,7 +39,8 @@ import org.apache.naming.resources.FileDirContext;
  * Configured with the following attributes:
  * <ul>
  * <li>virtualDocBase: List the pathes containing the static resources. Multiple pathes must be separated with
- * a separator (';' by default). Attribute supports system variables expressed like ${variable}.</li>
+ * a separator (';' by default). Attribute supports system variables expressed like ${variable}. The special
+ * '.' path directory denotes the default docBase (containing the WEB-INF of the current servlet).</li>
  * <li>separator: Allows to specify a custom separator to use.</li>
  * </ul>
  * <p>
@@ -49,14 +48,16 @@ import org.apache.naming.resources.FileDirContext;
  * <code>
  * &lt;Context docBase="\webapps\mydocbase">
  *   &lt;Resources className="fr.cls.atoll.motu.library.naming.resources.MultipleDirectoriesContext"
- *              virtualDocBase="/path/to/another/docbase1;/path/to/another/docbase2"/>
+ *              virtualDocBase=".;/path/to/another/docbase1;/path/to/another/docbase2"/>
  * &lt;/Resources>
  * </code>
+ * <p>
+ * Order of declaration is important. A resource is search into each declared path while not found.
  * 
  * @author ccamel
  * @version $Revision: 1.12 $ - $Date: 2010/02/08 13:32:34 $ - $Author: ccamel $
  */
-public class MultipleDirectoriesContext extends FileDirContext {
+public class MultipleDirectoriesContext extends FileDirContextAdapter {
     public static final Pattern VARIABLE_REPLACE_MATCH = Pattern
             .compile("(^(?:\\\\\\\\)*|.*?[^\\\\](?:\\\\\\\\)*|(?<=})(?:\\\\\\\\)*)\\$\\{([a-zA-Z0-9.\\-_]+)\\}");
 
@@ -68,9 +69,9 @@ public class MultipleDirectoriesContext extends FileDirContext {
     private String separator = ";";
 
     /**
-     * Set of virtual contexts configured.
+     * Set of virtual contexts configured (keep the insertion order).
      */
-    private final Set<FileDirContextAdapter> virtualContexts = new LinkedHashSet<FileDirContextAdapter>();
+    private final List<FileDirContextAdapter> virtualContexts = new ArrayList<FileDirContextAdapter>();
 
     public MultipleDirectoriesContext() {
         super();
@@ -99,32 +100,35 @@ public class MultipleDirectoriesContext extends FileDirContext {
         final StringTokenizer st = new StringTokenizer(virtualDocBase, getSeparator());
         while (st.hasMoreTokens()) {
             final String docBase = st.nextToken();
+            if (docBase.equals(".")) {
+                virtualContexts.add(this);
+            }
             FileDirContextAdapter currentContext = new FileDirContextAdapter();
             LOGGER.info("Setting docBase to " + docBase);
             currentContext.setDocBase(docBase);
             virtualContexts.add(currentContext);
         }
+        if (virtualContexts.isEmpty()) {
+            String msg = "virtual context list is empty. Set at least the '.' path.";
+            LOGGER.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
     }
 
     @Override
     protected File file(String fileName) {
-        File file = super.file(fileName);
-
-        if (file == null) {
-            // return the first resolved file found
-            for (FileDirContextAdapter virtualContext : virtualContexts) {
-                file = virtualContext.file(fileName);
-                if (file != null) {
-                    return file;
-                }
+        // return the first resolved file found
+        for (FileDirContextAdapter virtualContext : virtualContexts) {
+            final File file = virtualContext.file(fileName);
+            if (file != null) {
+                return file;
             }
         }
-        return file;
+        return null;
     }
 
     @Override
     public void release() {
-        super.release();
         for (FileDirContextAdapter virtualContext : virtualContexts) {
             virtualContext.release();
         }
@@ -132,14 +136,16 @@ public class MultipleDirectoriesContext extends FileDirContext {
 
     @Override
     public void allocate() {
-        super.allocate();
         for (FileDirContextAdapter virtualContext : virtualContexts) {
-            virtualContext.setCached(this.isCached());
-            virtualContext.setCacheTTL(this.getCacheTTL());
-            virtualContext.setCacheMaxSize(this.getCacheMaxSize());
-            virtualContext.setCaseSensitive(this.isCaseSensitive());
-            virtualContext.setAllowLinking(this.getAllowLinking());
+            if (virtualContext != this) {
+                virtualContext.setCached(this.isCached());
+                virtualContext.setCacheTTL(this.getCacheTTL());
+                virtualContext.setCacheMaxSize(this.getCacheMaxSize());
+                virtualContext.setCaseSensitive(this.isCaseSensitive());
+                virtualContext.setAllowLinking(this.getAllowLinking());
+            }
             virtualContext.allocate();
+
         }
     }
 
@@ -163,7 +169,7 @@ public class MultipleDirectoriesContext extends FileDirContext {
     /**
      * @return the virtualContexts
      */
-    public Set<FileDirContextAdapter> getVirtualContexts() {
+    public List<FileDirContextAdapter> getVirtualContexts() {
         return virtualContexts;
     }
 
