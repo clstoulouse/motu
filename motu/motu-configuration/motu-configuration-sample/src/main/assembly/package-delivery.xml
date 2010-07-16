@@ -1,0 +1,35 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+    <id>delivery</id>
+    <formats>
+        <format>tar.gz</format>
+        <format>zip</format>
+    </formats>
+    <baseDirectory>${project.artifactId}-${version}</baseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>src/main/webapp</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+		<fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory>/WEB-INF/classes/</outputDirectory>
+        </fileSet>
+    </fileSets>
+	<files>
+		<file>
+			<source>notice.txt</source>
+			<outputDirectory>/WEB-INF/</outputDirectory>
+			<destName>${project.artifactId}-${version}-notice.txt</destName>
+			<fileMode>0664</fileMode>
+			<filtered>true</filtered>
+		</file>
+		<file>
+			<source>license.txt</source>
+			<outputDirectory>/WEB-INF/</outputDirectory>
+			<destName>${project.artifactId}-${version}-license.txt</destName>
+			<fileMode>0664</fileMode>
+			<filtered>false</filtered>
+		</file>
+	</files>
+</assembly>
