@@ -1,33 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-	
-	<parent>
-		<groupId>cls.atoll.motu</groupId>
-		<artifactId>motu-parent</artifactId>
-		<version>2.1.5-SNAPSHOT</version>
-		<relativePath>../../motu-parent</relativePath>
-	</parent>
-	
+    <parent>
+        <groupId>cls.atoll.motu</groupId>
+        <artifactId>motu-parent</artifactId>
+        <version>2.1.5-SNAPSHOT</version>
+        <relativePath>../../motu-parent</relativePath>
+    </parent>
     <groupId>cls.atoll.motu.library</groupId>
     <artifactId>motu-library-naming-resources</artifactId>
     <version>2.1.5-SNAPSHOT</version>
     <packaging>jar</packaging>
-	
     <name>Motu Library Naming Resources</name>
     <description>This package holds the some naming resources implementations intended to be used within application servers (like Tomcat).</description>
-
     <dependencies>
-		<dependency>
-		    <groupId>org.apache.tomcat</groupId>
-		    <artifactId>catalina</artifactId>
-		    <version>6.0.18</version>
-		</dependency>
+        <!-- It's important to keep as much as possible the dependencies set minimal since this project is intended to be deployed in tomcat libraries. -->
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>catalina</artifactId>
+            <version>6.0.18</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
-	
-	<scm>
-		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-naming-resources</connection>
-		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-naming-resources</url>
-	</scm>
-    
+    <scm>
+        <connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-naming-resources</connection>
+        <url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-naming-resources</url>
+    </scm>
 </project>
