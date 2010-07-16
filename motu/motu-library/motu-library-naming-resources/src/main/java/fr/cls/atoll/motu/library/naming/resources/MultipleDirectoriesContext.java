@@ -42,6 +42,8 @@ import java.util.regex.Pattern;
  * a separator (';' by default). Attribute supports system variables expressed like ${variable}. The special
  * '.' path directory denotes the default docBase (containing the WEB-INF of the current servlet).</li>
  * <li>separator: Allows to specify a custom separator to use.</li>
+ * <li>checkVariables: Allows to specify if the variables existence should be tested or not. <code>true</code>
+ * by default.</li>
  * </ul>
  * <p>
  * 
@@ -69,6 +71,11 @@ public class MultipleDirectoriesContext extends FileDirContextAdapter {
     private String separator = ";";
 
     /**
+     * Whether or not check the existence of variables.
+     */
+    private boolean checkVariables = true;
+
+    /**
      * Set of virtual contexts configured (keep the insertion order).
      */
     private final List<FileDirContextAdapter> virtualContexts = new ArrayList<FileDirContextAdapter>();
@@ -79,6 +86,20 @@ public class MultipleDirectoriesContext extends FileDirContextAdapter {
 
     public MultipleDirectoriesContext(Hashtable env) {
         super(env);
+    }
+
+    /**
+     * @return the checkVariables
+     */
+    public boolean getCheckVariables() {
+        return checkVariables;
+    }
+
+    /**
+     * @param checkVariables the checkVariables to set
+     */
+    public void setCheckVariables(boolean checkVariables) {
+        this.checkVariables = checkVariables;
     }
 
     /*
@@ -99,14 +120,16 @@ public class MultipleDirectoriesContext extends FileDirContextAdapter {
         // then parse it.
         final StringTokenizer st = new StringTokenizer(virtualDocBase, getSeparator());
         while (st.hasMoreTokens()) {
-            final String docBase = st.nextToken();
-            if (docBase.equals(".")) {
-                virtualContexts.add(this);
+            final String docBase = st.nextToken().trim();
+            if (docBase.length() > 0) {
+                if (docBase.equals(".")) {
+                    virtualContexts.add(this);
+                }
+                FileDirContextAdapter currentContext = new FileDirContextAdapter();
+                LOGGER.info("Setting docBase to " + docBase);
+                currentContext.setDocBase(docBase);
+                virtualContexts.add(currentContext);
             }
-            FileDirContextAdapter currentContext = new FileDirContextAdapter();
-            LOGGER.info("Setting docBase to " + docBase);
-            currentContext.setDocBase(docBase);
-            virtualContexts.add(currentContext);
         }
         if (virtualContexts.isEmpty()) {
             String msg = "virtual context list is empty. Set at least the '.' path.";
@@ -179,7 +202,7 @@ public class MultipleDirectoriesContext extends FileDirContextAdapter {
         return virtualContexts;
     }
 
-    private static String substituteString(String str) {
+    private String substituteString(String str) {
         Matcher substitutionMatcher = VARIABLE_REPLACE_MATCH.matcher(str);
         if (substitutionMatcher.find()) {
             StringBuilder buffer = new StringBuilder();
@@ -190,8 +213,11 @@ public class MultipleDirectoriesContext extends FileDirContextAdapter {
                 buffer.append(prefix);
                 // Retrieve value of variable
                 String key = substitutionMatcher.group(2);
-
-                buffer.append(getProperty(key));
+                String value = getProperty(key);
+                if (value == null) {
+                    value = "";
+                }
+                buffer.append(value);
 
                 // Update lastLocation
                 lastLocation = substitutionMatcher.end();
@@ -204,9 +230,10 @@ public class MultipleDirectoriesContext extends FileDirContextAdapter {
         }
     }
 
-    private static String getProperty(String key) {
+    private String getProperty(String key) {
         String value = System.getenv(key);
         if ((value == null) || (value.trim().length() == 0)) {
+
             final StringBuilder builder = new StringBuilder();
             final Map<String, String> envVariables = System.getenv();
 
@@ -226,8 +253,14 @@ public class MultipleDirectoriesContext extends FileDirContextAdapter {
                 builder.append('\n');
             }
             String msg = builder.toString();
-            LOGGER.error(msg);
-            throw new IllegalArgumentException(msg);
+            if (checkVariables) {
+                LOGGER.error(msg);
+                throw new IllegalArgumentException(msg);
+            } else {
+                LOGGER.warn(msg);
+                return null;
+            }
+
         }
         LOGGER.info("Substitution key " + key + " by " + value);
         return value;
