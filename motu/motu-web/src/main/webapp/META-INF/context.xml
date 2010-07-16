@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
-    <Resources className="fr.cls.atoll.motu.library.naming.resources.MultipleDirectoriesContext" virtualDocBase=";;;${TMP};${HOMEPATH};.;;" checkVariables="false"/>
+    <Resources className="fr.cls.atoll.motu.library.naming.resources.MultipleDirectoriesContext" virtualDocBase="{MOTU_CONFIGURATION};." checkVariables="false"/>
 </Context>
