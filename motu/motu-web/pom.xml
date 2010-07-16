@@ -117,27 +117,19 @@
                 </configuration>
             </plugin>
             -->
-			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-<!-- 
-					<warName>${project.build.finalName}</warName>
- -->					
-<!--
- 					<webResources>
-						<resource>
-							<directory>${basedir}/src/main/config/${config.dir}</directory>
-						</resource>
-					</webResources>
--->
-					<!-- WARNING : The element 'packagingExcludes' described 
-					in Maven War plugoin documentation should be in fact 'warSourceExcludes'.
-					 -->
-					<!--  <packagingExcludes>WEB-INF/*</packagingExcludes> -->
-					<warSourceExcludes>WEB-INF/*,META-INF/**/*,META-INF/*</warSourceExcludes>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>                    
+                    <archive>
+                        <manifestEntries>
+                            <!--  We keep track of the built version in the manifest. This allows to get it from the code (Product Versioning Specification) -->
+                            <Implementation-Version>${version}</Implementation-Version>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
 			<plugin>
 				<groupId>org.codehaus.cargo</groupId>
 				<artifactId>cargo-maven2-plugin</artifactId>
