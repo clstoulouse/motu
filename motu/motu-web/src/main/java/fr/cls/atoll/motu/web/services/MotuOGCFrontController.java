@@ -29,15 +29,28 @@ import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
+import fr.cls.atoll.motu.library.misc.utils.ConfigLoader;
 import fr.cls.atoll.motu.processor.wps.WPSRequestManagement;
+import fr.cls.atoll.motu.web.servlet.ServletConfigAdapter;
+import fr.cls.atoll.motu.web.servlet.ServletContextAdapter;
 
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.net.URL;
 
+import javax.naming.NamingEnumeration;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.DirContext;
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.catalina.core.ApplicationContext;
+import org.apache.catalina.core.ApplicationContextFacade;
 import org.apache.log4j.Logger;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.ProcessletException;
@@ -63,6 +76,17 @@ public class MotuOGCFrontController extends OGCFrontController {
         } catch (MotuException e) {
             // Do nothing
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.servlet.GenericServlet#getServletConfig()
+     */
+    @Override
+    public ServletConfig getServletConfig() {
+        // TODO Auto-generated method stub
+        return super.getServletConfig();
     }
 
     @Override
@@ -93,7 +117,9 @@ public class MotuOGCFrontController extends OGCFrontController {
             LOG.debug("init(ServletConfig) - entering");
         }
 
-        super.init(config);
+        // config is wrapped to allow custom resolution of deegree configuration files. This is a hack since
+        // some deegree methods are private and thus can't be overriden.
+        super.init(wrapServletConfig(config));
 
         try {
             initProxyLogin();
@@ -200,4 +226,73 @@ public class MotuOGCFrontController extends OGCFrontController {
 
     }
 
+    /**
+     * Method that returns an adapted version of the servlet config returned by the super method. Thus, the
+     * {@link ServletContext#getRealPath(String)} is overriden to allow a nice resolution of a file among
+     * external directories.
+     * 
+     * @return the servlet context instance of this servlet.
+     */
+    private ServletConfig wrapServletConfig(final ServletConfig sc) {
+        return new ServletConfigAdapter(sc) {
+            private ServletContextAdapter ctx = null;
+
+            @Override
+            public ServletContext getServletContext() {
+                if (ctx == null) {
+                    ctx = new ServletContextAdapter(super.getServletContext()) {
+
+                        /**
+                         * First try to resolve the given location as a resource (using classpath extensions
+                         * if necessary). If this try fails, then let the process go on.
+                         */
+                        @Override
+                        public String getRealPath(String name) {
+                            try {
+                                // try the classpath
+                                URL url = ConfigLoader.getInstance().get(name);
+
+                                if (url != null) {
+                                    return url.toString();
+                                }
+
+                                // try the current context naming
+                                // TODO: try to see if we can keep independence with the container
+                                ApplicationContext appCtx = null;
+                                if (ctx.getRootContext() instanceof ApplicationContextFacade) {
+
+                                    Field privateStringField = ApplicationContextFacade.class.getDeclaredField("context");
+                                    privateStringField.setAccessible(true);
+                                    Object context = privateStringField.get(ctx.getRootContext());
+
+                                    if ((context != null) && context instanceof ApplicationContext) {
+                                        DirContext dc = ((ApplicationContext) context).getResources();
+
+                                        Attributes atts = dc.getAttributes(name);
+                                        for (NamingEnumeration e = atts.getAll(); e.hasMore();) {
+                                            final Attribute a = (Attribute) e.next();
+
+                                            if ("canonicalPath".equals(a.getID())) {
+                                                String s = a.get().toString();
+                                                File f = new File(s);
+                                                if (f.exists()) {
+                                                    return f.getAbsolutePath();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                throw new IllegalStateException("name " + name + " not resolved on classpath. Try default (servlet) resolution.");
+
+                            } catch (Exception e) {
+                                return super.getRealPath(name);
+                            }
+                        }
+                    };
+                }
+                return ctx;
+            }
+        };
+    }
 }
