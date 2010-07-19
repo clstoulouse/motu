@@ -26,12 +26,18 @@ package fr.cls.atoll.motu.library.naming.resources;
 
 import java.io.File;
 import java.util.Hashtable;
+import java.util.Vector;
+
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.BasicAttribute;
 
 import org.apache.naming.resources.FileDirContext;
+import org.apache.naming.resources.RecyclableNamingEnumeration;
 
 /**
- * Adpater class that does nothing except allowing resources context declared in this package to access the
- * protected method {@link #file(String)}.
+ * Adpater class that add more properties for the file attributes (like path).
  * 
  * @author ccamel
  * @version $Revision: 1.12 $ - $Date: 2010/02/08 13:32:34 $ - $Author: ccamel $
@@ -45,12 +51,60 @@ public class FileDirContextAdapter extends FileDirContext {
     }
 
     /**
-     * Call the super method without doing more.
-     * <p>
-     * Allows any classes declared in this package to call it.
+     * Make the method visible.
+     * 
+     * @see org.apache.naming.resources.FileDirContext#file(java.lang.String)
      */
     @Override
-    protected File file(String fileName) {
-        return super.file(fileName);
+    protected File file(String name) {
+        return super.file(name);
+    }
+
+    /**
+     * Retrieves selected attributes associated with a named object. See the class description regarding
+     * attribute models, attribute type names, and operational attributes.
+     * 
+     * @return the requested attributes; never null
+     * @param name the name of the object from which to retrieve attributes
+     * @param attrIds the identifiers of the attributes to retrieve. null indicates that all attributes should
+     *            be retrieved; an empty array indicates that none should be retrieved
+     * @exception NamingException if a naming exception is encountered
+     */
+    @Override
+    public Attributes getAttributes(String name, String[] attrIds) throws NamingException {
+
+        // Building attribute list
+        File file = file(name);
+
+        if (file == null) {
+            throw new NamingException(sm.getString("resources.notFound", name));
+        }
+
+        return new FileResourceAttributes(file) {
+
+            /*
+             * (non-Javadoc)
+             * 
+             * @see org.apache.naming.resources.ResourceAttributes#getAll()
+             */
+            @Override
+            public NamingEnumeration getAll() {
+                Vector attributes = new Vector();
+
+                try {
+                    NamingEnumeration ne = super.getAll();
+
+                    while (ne.hasMore()) {
+                        attributes.add(ne.next());
+                    }
+                } catch (Exception e) {
+
+                }
+                attributes.addElement(new BasicAttribute("canonicalPath", this.getCanonicalPath()));
+
+                return new RecyclableNamingEnumeration(attributes);
+            }
+        };
+
     }
 }
