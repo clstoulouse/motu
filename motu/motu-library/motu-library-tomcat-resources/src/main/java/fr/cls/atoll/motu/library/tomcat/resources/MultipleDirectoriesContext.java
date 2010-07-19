@@ -24,14 +24,13 @@
  */
 package fr.cls.atoll.motu.library.tomcat.resources;
 
+import fr.cls.atoll.motu.library.tomcat.util.VariableSubstitutionUtils;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Multiple Filesystem Directory Context.
@@ -60,9 +59,6 @@ import java.util.regex.Pattern;
  * @version $Revision: 1.12 $ - $Date: 2010/02/08 13:32:34 $ - $Author: ccamel $
  */
 public class MultipleDirectoriesContext extends FileDirContextAdapter {
-    public static final Pattern VARIABLE_REPLACE_MATCH = Pattern
-            .compile("(^(?:\\\\\\\\)*|.*?[^\\\\](?:\\\\\\\\)*|(?<=})(?:\\\\\\\\)*)\\$\\{([a-zA-Z0-9.\\-_]+)\\}");
-
     private static org.apache.juli.logging.Log LOGGER = org.apache.juli.logging.LogFactory.getLog(MultipleDirectoriesContext.class);
 
     /**
@@ -115,7 +111,7 @@ public class MultipleDirectoriesContext extends FileDirContextAdapter {
 
     public void setVirtualDocBase(String virtualDocBase) {
         // first we replace the variables if necessary
-        virtualDocBase = substituteString(virtualDocBase);
+        virtualDocBase = VariableSubstitutionUtils.substituteString(virtualDocBase, getCheckVariables());
 
         // then parse it.
         final StringTokenizer st = new StringTokenizer(virtualDocBase, getSeparator());
@@ -202,67 +198,4 @@ public class MultipleDirectoriesContext extends FileDirContextAdapter {
         return virtualContexts;
     }
 
-    private String substituteString(String str) {
-        Matcher substitutionMatcher = VARIABLE_REPLACE_MATCH.matcher(str);
-        if (substitutionMatcher.find()) {
-            StringBuilder buffer = new StringBuilder();
-            int lastLocation = 0;
-            do {
-                // Find prefix, preceding ${var} construct
-                String prefix = substitutionMatcher.group(1);
-                buffer.append(prefix);
-                // Retrieve value of variable
-                String key = substitutionMatcher.group(2);
-                String value = getProperty(key);
-                if (value == null) {
-                    value = "";
-                }
-                buffer.append(value);
-
-                // Update lastLocation
-                lastLocation = substitutionMatcher.end();
-            } while (substitutionMatcher.find(lastLocation));
-            // Append final segment of the string
-            buffer.append(str.substring(lastLocation));
-            return buffer.toString();
-        } else {
-            return str;
-        }
-    }
-
-    private String getProperty(String key) {
-        String value = System.getenv(key);
-        if ((value == null) || (value.trim().length() == 0)) {
-
-            final StringBuilder builder = new StringBuilder();
-            final Map<String, String> envVariables = System.getenv();
-
-            builder.append("Variable ");
-            builder.append(key);
-            builder.append(" not found in system environment.");
-            builder.append(" Following the accessible context (");
-            builder.append(envVariables.size());
-            builder.append(" entries)");
-            builder.append('\n');
-
-            for (String envKey : envVariables.keySet()) {
-                builder.append(" - ");
-                builder.append(envKey);
-                builder.append(" = ");
-                builder.append(envVariables.get(envKey));
-                builder.append('\n');
-            }
-            String msg = builder.toString();
-            if (checkVariables) {
-                LOGGER.error(msg);
-                throw new IllegalArgumentException(msg);
-            } else {
-                LOGGER.warn(msg);
-                return null;
-            }
-
-        }
-        LOGGER.info("Substitution key " + key + " by " + value);
-        return value;
-    }
 }
