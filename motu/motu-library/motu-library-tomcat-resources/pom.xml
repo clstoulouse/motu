@@ -8,11 +8,11 @@
         <relativePath>../../motu-parent</relativePath>
     </parent>
     <groupId>cls.atoll.motu.library</groupId>
-    <artifactId>motu-library-naming-resources</artifactId>
+    <artifactId>motu-library-tomcat-resources</artifactId>
     <version>2.1.5-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Motu Library Naming Resources</name>
-    <description>This package holds the some naming resources implementations intended to be used within application servers (like Tomcat).</description>
+    <name>Motu Library Tomcat Resources</name>
+    <description>This package holds the some specific implementations intended to be used within Tomcat application server.</description>
     <dependencies>
         <!-- It's important to keep as much as possible the dependencies set minimal since this project is intended to be deployed in tomcat libraries. -->
         <dependency>
@@ -23,7 +23,7 @@
         </dependency>
     </dependencies>
     <scm>
-        <connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-naming-resources</connection>
-        <url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-naming-resources</url>
+        <connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-tomcat-resources</connection>
+        <url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-tomcat-resources</url>
     </scm>
 </project>
