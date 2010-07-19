@@ -13,12 +13,13 @@
 	<url>http://cls-motu.sourceforge.net/</url>
 	
 	<modules>
-		<module>motu-parent</module>
+		<module>motu-parent</module>        
 		<module>motu-library/motu-library-cas</module>
 		<module>motu-library/motu-library-converter</module>
 		<module>motu-library/motu-library-misc</module>
 		<module>motu-library/motu-library-inventory</module>
-		<module>motu-processor/motu-processor-wps</module>
+        <module>motu-library/motu-library-tomcat-resources</module>        
+		<module>motu-processor/motu-processor-wps</module>        
 		<module>motu-api/motu-api-client</module>		
 		<module>motu-api/motu-api-message</module>		
 		<module>motu-api/motu-api-rest</module>		
