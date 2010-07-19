@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.naming.resources;
+package fr.cls.atoll.motu.library.tomcat.loader;
 
 import java.net.URL;
 
