@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Points to the resources location used by the Motu Web Application.
+    
+    Supports multiple pathes and system variables (${var}).
+ -->
 <Context>
-    <Resources className="fr.cls.atoll.motu.library.naming.resources.MultipleDirectoriesContext" virtualDocBase="${MOTU_CONFIGURATION};." checkVariables="false"/>
+    <Resources className="fr.cls.atoll.motu.library.tomcat.resources.MultipleDirectoriesContext" virtualDocBase="${MOTU_CONFIGURATIONS_ASSETS};." checkVariables="false"/>
+    <Loader className="fr.cls.atoll.motu.library.tomcat.resources.MultipleClassPathLoader"   virtualClasspath="${MOTU_CONFIGURATIONS_RESOURCES};" checkVariables="false"/>    
 </Context>
