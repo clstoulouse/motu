@@ -4,7 +4,7 @@
 	
 	<groupId>cls.atoll.motu</groupId>
 	<artifactId>motu</artifactId>
-	<version>2.1.5-SNAPSHOT</version>
+	<version>2.1.5</version>
 	<packaging>pom</packaging>
 	
 	<name>Motu</name>	
@@ -152,8 +152,8 @@
 	</pluginRepositories>
 	
 	<scm>
-		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu</connection>
-		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu</url>
+		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/tags/motu-2.1.5</connection>
+		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/tags/motu-2.1.5</url>
 	</scm>
 	
 	<issueManagement>
