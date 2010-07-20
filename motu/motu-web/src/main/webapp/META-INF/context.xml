@@ -6,5 +6,5 @@
  -->
 <Context>
     <Resources className="fr.cls.atoll.motu.library.tomcat.resources.MultipleDirectoriesContext" virtualDocBase="${MOTU_CONFIGURATIONS_ASSETS};." checkVariables="false"/>
-    <Loader className="fr.cls.atoll.motu.library.tomcat.resources.MultipleClassPathLoader"   virtualClasspath="${MOTU_CONFIGURATIONS_RESOURCES};" checkVariables="false"/>    
+    <Loader className="fr.cls.atoll.motu.library.tomcat.loader.MultipleClassPathLoader"   virtualClasspath="${MOTU_CONFIGURATIONS_RESOURCES};" checkVariables="false"/>    
 </Context>
