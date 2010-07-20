@@ -9,25 +9,25 @@
     <fileSets>
         <fileSet>
             <directory>src/main/webapp</directory>
-            <outputDirectory></outputDirectory>
+            <outputDirectory>assets</outputDirectory>
+			<excludes>
+			  <exclude>WEB-INF/lib</exclude>
+			  <exclude>WEB-INF/classes</exclude>
+			</excludes>			
         </fileSet>
 		<fileSet>
             <directory>src/main/resources</directory>
-            <outputDirectory>/WEB-INF/classes/</outputDirectory>
+            <outputDirectory>resources</outputDirectory>
         </fileSet>
     </fileSets>
 	<files>
 		<file>
 			<source>notice.txt</source>
-			<outputDirectory>/WEB-INF/</outputDirectory>
-			<destName>${project.artifactId}-${version}-notice.txt</destName>
 			<fileMode>0664</fileMode>
 			<filtered>true</filtered>
 		</file>
 		<file>
 			<source>license.txt</source>
-			<outputDirectory>/WEB-INF/</outputDirectory>
-			<destName>${project.artifactId}-${version}-license.txt</destName>
 			<fileMode>0664</fileMode>
 			<filtered>false</filtered>
 		</file>
