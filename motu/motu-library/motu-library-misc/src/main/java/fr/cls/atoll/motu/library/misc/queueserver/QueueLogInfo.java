@@ -164,9 +164,13 @@ public class QueueLogInfo {
         xStream.useAttributeFor(ExtractionParameters.class, "temporalCoverageInDays");
 
         xStream.omitField(ExtractionParameters.class, "dataOutputFormat");
-        xStream.omitField(ExtractionParameters.class, "out");
+        xStream.omitField(ExtractionParameters.class, "out");      
         xStream.omitField(ExtractionParameters.class, "assertion");
-
+        
+        xStream.omitField(this.getClass(), "outputStream");
+        xStream.omitField(this.getClass(), "writer");
+        xStream.omitField(this.getClass(), "encoding");
+        
         xStream.omitField(this.getClass(), "xStream");
 
     }
