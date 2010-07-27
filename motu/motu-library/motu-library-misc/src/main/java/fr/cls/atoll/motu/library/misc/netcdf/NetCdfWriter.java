@@ -1873,13 +1873,13 @@ public class NetCdfWriter {
 
                 origin = it.next();
 
-                if (origin == null) {
+                if ((origin == null) && (var.getShape().length != 0)){
                     throw new MotuException("Error in NetCfdWriter finish - unable to find origin - (origin is null)");
                 }
 
                 shape = originAndShape.get(origin);
 
-                if (shape == null) {
+                if ((shape == null) && (var.getShape().length != 0)) {
                     throw new MotuException("Error in NetCfdWriter finish - unable to find shape - (shape is null)");
                 }
                 // CSOON: StrictDuplicateCode
@@ -2577,7 +2577,7 @@ public class NetCdfWriter {
             // throw new MotuException(String.format("Error in NetCdfWriter.countMaxElementData - incorrect
             // dimension %d for parameter varShape",
             // varShape.length));
-            return 0;
+            return 1;
         }
         int byteSize = datatype.getSize();
         if (byteSize <= 0) {
@@ -2624,8 +2624,9 @@ public class NetCdfWriter {
         double elementBlockSize = 1;
 
         if ((varShape.length <= 0) || (varShape.length > 4)) {
-            throw new MotuNotImplementedException(String
-                    .format("Error in  NetCdfWriter.getElementBlockSize - Processing for %d-dimension is not implemented", varShape.length));
+            // throw new MotuNotImplementedException(String
+            // .format("Error in  NetCdfWriter.getElementBlockSize - Processing for %d-dimension is not implemented",
+            // varShape.length));
         }
         double pow = 1.0 / varShape.length;
         elementBlockSize = Math.pow(maxDataToUse, pow);
@@ -2746,6 +2747,9 @@ public class NetCdfWriter {
         }
 
         switch (nDims) {
+        case 0:
+            map = NetCdfWriter.parseOriginAndShape0Dim(varShape);
+            break;
         case 1:
             map = NetCdfWriter.parseOriginAndShape1Dim(varShape, blockElementSize);
             break;
@@ -2818,6 +2822,24 @@ public class NetCdfWriter {
         return map;
     }
 
+    public static Map<int[], int[]> parseOriginAndShape0Dim(int[] varShape) throws MotuException {
+
+        Map<int[], int[]> map = new HashMap<int[], int[]>();
+        if (varShape.length != 0) {
+            throw new MotuException(String
+                    .format("Error in NetCdfWriter.parseOriginAndShape0Dim - incorrect dimension %d for parameter varShape - expected value is 0",
+                            varShape.length));
+        }
+
+        // int[] origin = new int[1];
+        // int[] shape = new int[1];
+
+        // origin[0] = 0;
+        // shape[0] = 0;
+        map.put(null, null);
+        return map;
+    }
+
     /**
      * Gets the origins and shapes for block 1-dimension data processing.
      * 
@@ -2830,8 +2852,9 @@ public class NetCdfWriter {
 
         Map<int[], int[]> map = new HashMap<int[], int[]>();
         if (varShape.length != 1) {
-            throw new MotuException(String.format("Error in NetCdfWriter.parseOriginAndShape - incorrect dimension %d for parameter varShape",
-                                                  varShape.length));
+            throw new MotuException(String
+                    .format("Error in NetCdfWriter.parseOriginAndShape1Dim - incorrect dimension %d for parameter varShape - expected value is 1",
+                            varShape.length));
         }
 
         for (int i = 0; i < varShape[0]; i = i + blockSize) {
@@ -2858,8 +2881,9 @@ public class NetCdfWriter {
 
         Map<int[], int[]> map = new HashMap<int[], int[]>();
         if (varShape.length != 2) {
-            throw new MotuException(String.format("Error in NetCdfWriter.parseOriginAndShape - incorrect dimension %d for parameter varShape",
-                                                  varShape.length));
+            throw new MotuException(String
+                    .format("Error in NetCdfWriter.parseOriginAndShape2Dim - incorrect dimension %d for parameter varShape - expected value is 2",
+                            varShape.length));
         }
         for (int i = 0; i < varShape[0]; i = i + blockSize) {
             for (int j = 0; j < varShape[1]; j = j + blockSize) {
@@ -2890,8 +2914,9 @@ public class NetCdfWriter {
 
         Map<int[], int[]> map = new HashMap<int[], int[]>();
         if (varShape.length != 3) {
-            throw new MotuException(String.format("Error in NetCdfWriter.parseOriginAndShape - incorrect dimension %d for parameter varShape",
-                                                  varShape.length));
+            throw new MotuException(String
+                    .format("Error in NetCdfWriter.parseOriginAndShape3Dim - incorrect dimension %d for parameter varShape - expected value is 3",
+                            varShape.length));
         }
         for (int i = 0; i < varShape[0]; i = i + blockSize) {
             for (int j = 0; j < varShape[1]; j = j + blockSize) {
@@ -2935,8 +2960,9 @@ public class NetCdfWriter {
 
         Map<int[], int[]> map = new HashMap<int[], int[]>();
         if (varShape.length != 4) {
-            throw new MotuException(String.format("Error in NetCdfWriter.parseOriginAndShape - incorrect dimension %d for parameter varShape",
-                                                  varShape.length));
+            throw new MotuException(String
+                    .format("Error in NetCdfWriter.parseOriginAndShape4Dim - incorrect dimension %d for parameter varShape - expected value is 4",
+                            varShape.length));
         }
         for (int i = 0; i < varShape[0]; i = i + blockSize) {
             for (int j = 0; j < varShape[1]; j = j + blockSize) {

@@ -30,6 +30,7 @@ package fr.cls.atoll.motu.library.misc.data;
 import fr.cls.atoll.motu.library.misc.MyAuthenticator;
 import fr.cls.atoll.motu.library.misc.Test;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.opendap.server.Aggregation;
 import fr.cls.atoll.motu.library.misc.opendap.server.Catalog;
@@ -53,6 +54,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import ucar.nc2.dataset.CoordinateAxis;
+
 /**
  * 
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
@@ -72,7 +75,8 @@ public class TestData {
         System.setProperty("proxyPort", "8080");
         Authenticator.setDefault(new MyAuthenticator());
 
-        testLoadCatalog();
+        //testLoadCatalog();
+        testLoadOpendapMetaData();
     }
 
     public static Catalog testLoadCatalogFromFile(String path) {
@@ -392,8 +396,8 @@ public class TestData {
 
     public static void testLoadOpendapMetaData() {
         Product product = new Product(false);
-        String url = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v1R1v_glo_mean_bulletin_2006_03_29";
-
+        //String url = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v1R1v_glo_mean_bulletin_2006_03_29";
+        String url = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_arc_mean_best_estimate";
         try {
             product.loadOpendapMetaData(url);
         } catch (Exception e) {
@@ -403,6 +407,14 @@ public class TestData {
         System.out.println(Test.dump(product));
         System.out.println("---->PRODUCTMETADATA");
         System.out.println(Test.dump(product.getProductMetaData()));
+        
+        ProductMetaData productMetaData = product.getProductMetaData();
+        List<CoordinateAxis> axes =  productMetaData.getLatLonAxis();
+        System.out.println(axes);
+        CoordinateAxis axis =  productMetaData.getTimeAxis();
+        System.out.println(axis);
+        
+        
     }
 
 }

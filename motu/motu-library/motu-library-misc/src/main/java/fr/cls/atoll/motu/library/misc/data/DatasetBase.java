@@ -934,6 +934,7 @@ public abstract class DatasetBase {
             double[] rangeLonVal = rangesLonValue.get(0);
             return new MAMath.MinMax(rangeLonVal[0], rangeLonVal[1]);
         } else if (rangesLonValue.size() == 0) {
+            // no range
             return new MAMath.MinMax(Double.MAX_VALUE, Double.MAX_VALUE);
         } else {
             throw new MotuNotImplementedException(String.format("Longitude ranges list more than 2 elements is not implemented (%s)", this.getClass()
@@ -952,15 +953,39 @@ public abstract class DatasetBase {
     public MAMath.MinMax getMinMaxLatNormal() throws MotuNotImplementedException {
 
         // Assumes size of lists are consistency.
-        // Assumes that all latitude's Ranges are the same.
         if ((rangesLatValue.size() == 1) || (rangesLatValue.size() == 2)) {
+            // Assumes that all latitude's Ranges are the same.
             double[] rangeLatVal = rangesLatValue.get(0);
             return new MAMath.MinMax(NetCdfReader.getLatNormal(rangeLatVal[0]), NetCdfReader.getLatNormal(rangeLatVal[1]));
         } else if (rangesLatValue.size() == 0) {
+            // no range
             return new MAMath.MinMax(Double.MAX_VALUE, Double.MAX_VALUE);
         } else {
-            throw new MotuNotImplementedException(String.format("Latitude ranges list with  more than 2 elements is not implemented (%s)", this
-                    .getClass().getName()));
+            double min = Double.MAX_VALUE;
+            double max = Double.MIN_VALUE;
+            for (double[] latValues : rangesLatValue) {
+                for (double value : latValues) {
+                    if (value < min) {
+                        min = value;
+                    } else if (value > max) {
+                        max = value;
+                    }
+                    System.out.print(value);
+                    System.out.print(" ");
+                }
+                System.out.print("--> nb values: ");
+                System.out.println(latValues.length);
+
+            }
+            System.out.print("--> min: ");
+            System.out.print(min);
+            System.out.print(" max: ");
+            System.out.println(max);
+            return new MAMath.MinMax(NetCdfReader.getLatNormal(min), NetCdfReader.getLatNormal(max));
+            // throw new
+            // MotuNotImplementedException(String.format("Latitude ranges list with  more than 2 elements is not implemented (%s)",
+            // this
+            // .getClass().getName()));
 
         }
     }

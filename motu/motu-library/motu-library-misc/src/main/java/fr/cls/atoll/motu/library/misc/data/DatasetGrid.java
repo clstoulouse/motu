@@ -49,6 +49,7 @@ import ucar.ma2.MAMath;
 import ucar.ma2.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
@@ -331,7 +332,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
                     throw new MotuException("Error in subsetting geo grid", e);
                 }
             }
-            // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get somme information
+            // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get some information
             // (lost
             // in subsetting - See bug below) about the variable of the GeoGrid
 
@@ -506,13 +507,41 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
                                 .size(), rangesLatValue.size(), this.getClass().getName()));
             }
 
-            MAMath.MinMax minMaxLat = getMinMaxLatNormal();
-            yRangeValue[0] = minMaxLat.min;
-            yRangeValue[1] = minMaxLat.max;
 
-            MAMath.MinMax minMaxLon = getMinMaxLonNormal();
-            xRangeValue[0] = minMaxLon.min;
-            xRangeValue[1] = minMaxLon.max;
+            MAMath.MinMax minMaxLat = null;
+            MAMath.MinMax minMaxLon = null;
+
+            if (productMetadata.hasLatLonAxis2D()) {
+                minMaxLat = extractCriteriaLatLon.getMinMaxYValue2D();
+                minMaxLon = extractCriteriaLatLon.getMinMaxXValue2D();
+                if (minMaxLat == null) {
+                    throw new MotuException(
+                            "Error in DatasetGrid#getAdjacentYXRange: Latitude/Longitude axes are 2D and min/max latitude values to extract are null");
+                }
+                if (minMaxLon == null) {
+                    throw new MotuException(
+                            "Error in DatasetGrid#getAdjacentYXRange: Latitude/Longitude axes are 2D and min/max longitude values to extract are null");
+                }
+//                System.out.println("extractCriteriaLatLon.minXValue2D");
+//                System.out.println(extractCriteriaLatLon.getMinMaxXValue2D().min);
+//                System.out.println("extractCriteriaLatLon.maxXValue2D");
+//                System.out.println(extractCriteriaLatLon.getMinMaxXValue2D().max);
+                yRangeValue[0] = minMaxLat.min;
+                yRangeValue[1] = minMaxLat.max;
+
+                xRangeValue[0] = minMaxLon.min;
+                xRangeValue[1] = minMaxLon.max;
+
+            } else {
+
+                minMaxLat = getMinMaxLatNormal();
+                yRangeValue[0] = minMaxLat.min;
+                yRangeValue[1] = minMaxLat.max;
+
+                minMaxLon = getMinMaxLonNormal();
+                xRangeValue[0] = minMaxLon.min;
+                xRangeValue[1] = minMaxLon.max;
+            }
         } else if (productMetadata.hasGeoXYAxis()) {
             throw new MotuNotImplementedException("X/Y axis is not implemented (method DatasetGridXYLatLon.getAdjacentYXRange");
         }

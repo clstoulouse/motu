@@ -1109,7 +1109,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         for (Iterator<int[]> it = keySet.iterator(); it.hasNext();) {
             Runtime runtime = Runtime.getRuntime();
             // TODO:
-            // See if the garbage collector invokation is necessary or not (FindBugs: Explicit garbage
+            // See if the garbage collector invocation is necessary or not (FindBugs: Explicit garbage
             // collection; extremely dubious except in benchmarking code)
             runtime.gc();
 

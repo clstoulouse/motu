@@ -55,6 +55,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.unidata.geoloc.LatLonRect;
 
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
@@ -1361,6 +1362,18 @@ public class ProductMetaData {
      */
     public boolean hasLatLonAxis() {
         return (getLatAxis() != null) && (getLonAxis() != null);
+    }
+
+    /**
+     * Checks for lat lon axis2 d.
+     *
+     * @return true, if successful
+     */
+    public boolean hasLatLonAxis2D() {
+        if (!hasLatLonAxis()) {
+            return false;
+        }
+        return (getLatAxis() instanceof CoordinateAxis2D) && (getLonAxis() instanceof CoordinateAxis2D);
     }
 
     /**

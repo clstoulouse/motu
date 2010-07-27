@@ -209,10 +209,10 @@ public class TestIntfce {
         // System.setProperty("http.proxyPort", "8080");
 
         
-        System.setProperty("proxyHost", "proxy.cls.fr"); // adresse IP
-        System.setProperty("proxyPort", "8080"); 
-        System.setProperty("socksProxyHost", "proxy.cls.fr");
-        System.setProperty("socksProxyPort", "1080");
+//        System.setProperty("proxyHost", "proxy.cls.fr"); // adresse IP
+//        System.setProperty("proxyPort", "8080"); 
+//        System.setProperty("socksProxyHost", "proxy.cls.fr");
+//        System.setProperty("socksProxyPort", "1080");
         //System.setProperty("java.net.useSystemProxies", "false");
         
         try {
@@ -331,7 +331,7 @@ public class TestIntfce {
         // testLoadMotuConfig();
         // testgetMotuConfigSchema();
         // productInformation();
-         productInformationFromLocationData();
+        // productInformationFromLocationData();
         // productExtractDataMersea();
         // productDownloadInfo();
         // productExtractDataHTMLAviso();
@@ -339,7 +339,7 @@ public class TestIntfce {
         // productExtractDataAvisofromProductId();
         // productInformationFromLocationData();
         // productExtractDataAviso2();
-        // productExtractDataMercator();
+         productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
         // productExtractDiversity();
@@ -1293,14 +1293,16 @@ public class TestIntfce {
     }
 
     public static void productExtractDataMercator() {
-        String productId = "nrt_glo_hr_infrared_sst";
+        //String productId = "nrt_glo_hr_infrared_sst";
         // String productId = "mercatorPsy3v2_nat_mean_best_estimate";
         // String productId = "mercatorPsy3v2_glo_mean_best_estimate";
         // String productId = "mercatorPsy3v2R1v_med_levitus_1998";
         // String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/" + productId;
         // String locationData = "http://rdp1-jaune.cls.fr:8880/thredds/dodsC/" + productId;
-        String locationData = "http://atoll-dev.cls.fr:43080/thredds/dodsC/" + productId;
-
+        //String locationData = "http://atoll-dev.cls.fr:43080/thredds/dodsC/" + productId;
+        //String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_arc_mean_best_estimate";
+        String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_glo_mean_best_estimate";
+        //String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_glo_mean_best_estimate";
         // String productId = "mercatorPsy3v2R1v_glo_mean_best_estimate_1182752515507.nc";
         // String locationData = "C:/Java/dev/" + productId;
 
@@ -1314,7 +1316,7 @@ public class TestIntfce {
         // listVar.add("salinity");
         // listVar.add("u");
         // listVar.add("temperature");
-        listVar.add("Grid_0001");
+        listVar.add("temperature");
         // listVar.add("sea_water_salinity");
         // listVar.add("sea_surface_elevation");
         // listVar.add("ocean_mixed_layer_thickness");
@@ -1333,10 +1335,10 @@ public class TestIntfce {
         // third element is high latitude
         // fourth element is high longitude
         List<String> listLatLonCoverage = new ArrayList<String>();
-        // listLatLonCoverage.add("1");
-        // listLatLonCoverage.add("-47");
-        // listLatLonCoverage.add("-1");
-        // listLatLonCoverage.add("44");
+        listLatLonCoverage.add("85");
+        listLatLonCoverage.add("179");
+        listLatLonCoverage.add("86");
+        listLatLonCoverage.add("-178");
         //
         // listLatLonCoverage.add("-10");
         // listLatLonCoverage.add("-1");
@@ -1348,8 +1350,8 @@ public class TestIntfce {
         // second element is high depth (optional)
         // if only low depth is set, high depth equals low depth value
         List<String> listDepthCoverage = new ArrayList<String>();
-        // listDepthCoverage.add("0");
-        // listDepthCoverage.add("0");
+        listDepthCoverage.add("0");
+        listDepthCoverage.add("0");
 
         Product product = null;
 

@@ -1005,8 +1005,9 @@ public class Product {
             dataset = new DatasetAlongTrack(this);
             throw new MotuException("Extraction of 'Along Track' Product is not yet available.");
         } else if (getNetCdfReader().hasGeoXYAxisWithLonLatEquivalence()) {
-            // dataset = new DatasetGridXYLatLon(this);
-            throw new MotuNotImplementedException("Dataset grid with 2-dimensional Lat/Lon data is not implemented");
+            //dataset = new DatasetGridXYLatLon(this);
+            dataset = new DatasetGrid(this);
+            //throw new MotuNotImplementedException("Dataset grid with 2-dimensional Lat/Lon data is not implemented");
         } else {
             dataset = new DatasetGrid(this);
         }
