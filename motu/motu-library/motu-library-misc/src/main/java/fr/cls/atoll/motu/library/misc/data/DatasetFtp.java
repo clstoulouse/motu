@@ -287,7 +287,7 @@ public class DatasetFtp extends DatasetBase {
                 stringBuffer.append(uriExtraction.toString());
                 stringBuffer.append("/");
                 if (!Organizer.isNullOrEmpty(dataFile.getPath())) {
-                    stringBuffer.append("dataFile.getPath()");
+                    stringBuffer.append(dataFile.getPath());
                     stringBuffer.append("/");
                 }
                 stringBuffer.append(dataFile.getName());
