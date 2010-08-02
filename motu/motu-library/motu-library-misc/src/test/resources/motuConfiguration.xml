@@ -107,7 +107,7 @@
 
 <motuConfig defaultService="avisoNRT" useProxy="true"
 	proxyLogin="" proxyPwd="" useAuthentication="false"
-	dataBlockSize="102400" maxSizePerFile="256"
+	dataBlockSize="102400" maxSizePerFile="1024"
 	extractionPath="C:\Java\apache-tomcat-6.0.9\webapps\motu-file-extract"
 	downloadHttpUrl="http://localhost:8080/motu-file-extract"
 	httpDocumentRoot="http://aviso-motu.cls.fr"
@@ -266,6 +266,15 @@
 		</catalog>
 		</configService>
 	-->
+	<!--===========================================-->
+	<!--        Mercator FTP MERCATOR              -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR" description="Ocean data"
+		group="motu-ftp-mercator" httpBaseRef="http://www.mercator-ocean.fr"
+		name="&atoll;motu-ftp-mercator" veloTemplatePrefix="mercator">
+		<catalog name="catalogMercatorFTP.xml" type="ftp"
+			urlSite="sftp://atoll:atoll@atoll-app1.vlandata.cls.fr/opt/atoll/hoa-mercator/publication/inventories" />	
+	</configService>
 	<!--===========================================-->
 	<!--                     Mercator TDS         -->
 	<!--===========================================-->

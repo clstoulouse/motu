@@ -339,7 +339,7 @@ public class TestIntfce {
         // productExtractDataAvisofromProductId();
         // productInformationFromLocationData();
         // productExtractDataAviso2();
-         productExtractDataMercator();
+         //productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
         // productExtractDiversity();
@@ -362,8 +362,8 @@ public class TestIntfce {
         // productExtractDataMerseaFromHttp();
         // testLoadInventoryOLA();
         // testLoadCatalogOLA();
-        // productInformationFromInventory();
-        // productExtractDataFromInventory();
+        //Product product = productInformationFromInventory();
+        productExtractDataFromInventory();
         // productListMercator();
         // productList();
         // testGetProductMetadataInfo();
@@ -416,8 +416,11 @@ public class TestIntfce {
         //
         // return productInformationFromLocationData(service, xmlUri);
 
-        String service = "http://atoll.cls.fr/2009/resource/individual/atoll#atoll:service:ftp-catsat:ftp";
-        String productId = "http://atoll.cls.fr/2009/resource/individual/atoll#datafile-nrt-med-infrared-sst-timestamp";
+//        String service = "http://atoll.cls.fr/2009/resource/individual/atoll#atoll:service:ftp-catsat:ftp";
+//        String productId = "http://atoll.cls.fr/2009/resource/individual/atoll#datafile-nrt-med-infrared-sst-timestamp";
+        
+        String service = "http://purl.org/cls/atoll/ontology/individual/atoll#motu-ftp-mercator";
+        String productId = "http://purl.org/cls/atoll/ontology/individual/atoll#dataset-psy3v2-pgs-arc-mercator-bestestimate";
         Product product = null;
         try {
             Organizer organizer = new Organizer();
@@ -626,16 +629,18 @@ public class TestIntfce {
 
     public static void productExtractDataFromInventory() {
         String prefix = "http://purl.org/cls/atoll/ontology/individual/atoll#";
-        String productId = prefix + "dataset-duacs-global-nrt-madt-merged-h";
-        String service = prefix + "motu-ftp-aviso";
+//        String productId = prefix + "dataset-duacs-global-nrt-madt-merged-h";
+//        String service = prefix + "motu-ftp-aviso";
+        String service = prefix + "motu-ftp-mercator";
+        String productId = prefix + "dataset-psy3v2-pgs-arc-mercator-bestestimate";
 
         // add temporal criteria
         // first element is start date
         // second element is end date (optional)
         // if only start date is set, end date equals start date
         List<String> listTemporalCoverage = new ArrayList<String>();
-        listTemporalCoverage.add("2009-12-24");
-        listTemporalCoverage.add("2009-12-25");
+        listTemporalCoverage.add("2010-08-02");
+        listTemporalCoverage.add("2010-08-02");
 
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 service,

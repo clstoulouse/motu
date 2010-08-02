@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.joda.time.Interval;
+import org.joda.time.Period;
 
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
@@ -47,6 +48,7 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer.Format;
+import fr.cls.atoll.motu.library.misc.utils.DateUtils;
 import fr.cls.atoll.motu.library.misc.utils.Zip;
 
 /**
@@ -221,7 +223,12 @@ public class DatasetFtp extends DatasetBase {
             if (fileStart.compareTo(end) > 0) {
                 break;
             }
-            if (datePeriod.contains(fileStart.getTime())) {
+            // WARNING : contains functions of org.joda.time.Interval is restrictive :
+            // A zero duration interval cannot contain anything
+            // if interval is [d1, d1] then Interval.contains(d1) returns false
+            // That's why the DateUtils.contains function have been defined :
+            // if interval is [d1, d1] then DateUtils.contains(interval, d1) returns true
+            if (DateUtils.contains(datePeriod, fileStart.getTime())) {
                 selected.add(dataFile);
             }
         }

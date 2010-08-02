@@ -38,6 +38,9 @@ import java.nio.channels.FileChannel;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.utils.Zip;
+
 /**
  * 
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
@@ -59,6 +62,13 @@ public class Test {
         getHostName("62.161.32.221, 10.1.253.25");
         // testDiskSpace();
         // testFileInUse();
+        
+        try {
+            Zip.zip("test.zip", "C:/tempVFS/test.txt", false);
+        } catch (MotuException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     public static String getHostName(String ip) {
