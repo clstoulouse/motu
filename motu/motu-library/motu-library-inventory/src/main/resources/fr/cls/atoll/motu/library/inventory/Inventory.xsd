@@ -116,6 +116,8 @@
 			</xs:sequence>
 			<xs:attribute name="lastModificationDate" type="xs:dateTime"
 				use="required" />
+			<xs:attribute name="updateFrequency" type="xs:duration"
+				use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<!--
