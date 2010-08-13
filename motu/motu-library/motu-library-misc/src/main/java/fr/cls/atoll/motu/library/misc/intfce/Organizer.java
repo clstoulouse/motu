@@ -1330,7 +1330,6 @@ public class Organizer {
         }
     }
 
- 
     /**
      * Gets the catalog ola.
      * 
@@ -5328,10 +5327,59 @@ public class Organizer {
     //
     // return user.getAuthentificationMode().toString();
     // }
+    /**
+     * Gets the product metadata info.
+     *
+     * @param locationData the location data
+     * @param catalogFileName the catalog file name
+     * @param loadTDSVariableVocabulary the load tds variable vocabulary
+     * @return the product metadata info
+     * @throws MotuExceptionBase the motu exception base
+     */
     public ProductMetadataInfo getProductMetadataInfo(String locationData, String catalogFileName, boolean loadTDSVariableVocabulary)
             throws MotuExceptionBase {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductMetadataInfo(String) - entering");
+        }
+        URI uri = null;
+
+        try {
+            uri = new URI(locationData);
+        } catch (URISyntaxException e) {
+            throw new MotuException(
+                    String.format("Organizer getProductMetadataInfo(String locationData) : location data seems not to be a valid URI : '%s'",
+                                  locationData),
+                    e);
+        }
+        
+        ProductMetadataInfo productMetadataInfo = null;
+        
+        // If uri is a file (netcdf file), don't load TDS (contained in TDS catalog) Metadata
+        if ((uri.getScheme().equalsIgnoreCase("http")) || (uri.getScheme().equalsIgnoreCase("https"))) {
+            productMetadataInfo = getProductMetadataInfoFromTDS(locationData, catalogFileName, loadTDSVariableVocabulary);
+        } else {
+            productMetadataInfo = getProductMetadataInfoFromFile(locationData);           
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductMetadataInfo(String) - exiting");
+        }
+        return productMetadataInfo;
+    }
+
+    /**
+     * Gets the product metadata info from tds.
+     *
+     * @param locationData the location data
+     * @param catalogFileName the catalog file name
+     * @param loadTDSVariableVocabulary the load tds variable vocabulary
+     * @return the product metadata info from tds
+     * @throws MotuExceptionBase the motu exception base
+     */
+    public ProductMetadataInfo getProductMetadataInfoFromTDS(String locationData, String catalogFileName, boolean loadTDSVariableVocabulary)
+            throws MotuExceptionBase {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductMetadataInfoFromTDS(String) - entering");
         }
 
         String catalogBaseUrl = getTDSCatalogBaseUrl(locationData);
@@ -5369,11 +5417,11 @@ public class Organizer {
 
             } catch (URISyntaxException e) {
                 throw new MotuException(String
-                        .format("Organizer getProductMetadataInfo(String locationData) : location data seems not to be a valid URI : '%s'",
+                        .format("Organizer getProductMetadataInfoFromTDS(String locationData) : location data seems not to be a valid URI : '%s'",
                                 locationData), e);
             } catch (IOException e) {
                 throw new MotuException(String
-                        .format("Organizer getProductMetadataInfo(String locationData) : location data seems not to be a valid URI : '%s'",
+                        .format("Organizer getProductMetadataInfoFromTDS(String locationData) : location data seems not to be a valid URI : '%s'",
                                 locationData), e);
             }
         }
@@ -5392,11 +5440,11 @@ public class Organizer {
         try {
             product = getProductInformation(productId, null, null);
         } catch (MotuNotImplementedException e) {
-            LOG.error("getProductMetadataInfo(String)", e);
+            LOG.error("getProductMetadataInfoFromTDS(String)", e);
 
-            throw new MotuException(String.format("ERROR in getProductMetadataInfo - location data is '%s' ", locationData), e);
+            throw new MotuException(String.format("ERROR in getProductMetadataInfoFromTDS - location data is '%s' ", locationData), e);
         } catch (NetCdfAttributeException e) {
-            LOG.error("getProductMetadataInfo(String)", e);
+            LOG.error("getProductMetadataInfoFromTDS(String)", e);
 
             // Do Nothing
         }
@@ -5408,7 +5456,44 @@ public class Organizer {
         productMetadataInfo.setUrl(locationData);
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("getProductMetadataInfo(String) - exiting");
+            LOG.debug("getProductMetadataInfoFromTDS(String) - exiting");
+        }
+        return productMetadataInfo;
+    }
+
+    /**
+     * Gets the product metadata info from file.
+     * 
+     * @param locationData the location data
+     * @return the product metadata info from file
+     * @throws MotuExceptionBase the motu exception base
+     */
+    public ProductMetadataInfo getProductMetadataInfoFromFile(String locationData) throws MotuExceptionBase {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductMetadataInfoFromFile(String) - entering");
+        }
+
+        Product product = null;
+        try {
+            product = getProductInformation(locationData);
+        } catch (MotuNotImplementedException e) {
+            LOG.error("getProductMetadataInfoFromFile(String)", e);
+
+            throw new MotuException(String.format("ERROR in getProductMetadataInfoFromFile - location data is '%s' ", locationData), e);
+        } catch (NetCdfAttributeException e) {
+            LOG.error("getProductMetadataInfoFromFile(String)", e);
+
+            // Do Nothing
+        }
+        if (product == null) {
+            throw new MotuException(String.format("Unknown product from location data '%s' (getProductMetadataInfo)", locationData));
+        }
+
+        ProductMetadataInfo productMetadataInfo = Organizer.initProductMetadataInfo(product);
+        productMetadataInfo.setUrl(locationData);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductMetadataInfoFromFile(String) - exiting");
         }
         return productMetadataInfo;
     }
