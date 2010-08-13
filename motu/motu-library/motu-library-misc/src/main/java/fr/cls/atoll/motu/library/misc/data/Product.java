@@ -555,7 +555,9 @@ public class Product {
             }
         }
 
-        productMetaData.setTimeCoverage(productMetaData.getTimeAxisMinValue(), productMetaData.getTimeAxisMaxValue());
+        if (productMetaData.hasTimeAxis()) {
+            productMetaData.setTimeCoverage(productMetaData.getTimeAxisMinValue(), productMetaData.getTimeAxisMaxValue());
+        }
 
         // Gets variables metadata.
         getOpendapVariableMetadata();
