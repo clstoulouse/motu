@@ -130,6 +130,7 @@ public class Main {
 
             System.err.print("ERROR: ");
             System.err.println(e.notifyException());
+            e.printStackTrace(System.err);
             Main.printUsage();
             status = -1;
         } catch (Exception e) {
@@ -137,6 +138,7 @@ public class Main {
 
             System.err.print("ERROR: ");
             System.err.println(e.getMessage());
+            e.printStackTrace(System.err);
             Main.printUsage();
             status = -1;
         }
