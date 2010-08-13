@@ -687,9 +687,9 @@ public class Product {
                 }
             }
             // Don't get cached variables
-            if (variable.isCaching()) {
-                continue;
-            }
+//            if (variable.isCaching()) {
+//                continue;
+//            }
 
             boolean isUnusedVar = false;
             String[] unusedVariables = null;
