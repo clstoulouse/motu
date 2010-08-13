@@ -787,9 +787,20 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         //
         // String ipaddress = getRemoteHost(request);
 
-        debugRequestHeaders(request);
+        try {
+            debugRequestHeaders(request);
 
-        execRequest(request, response);
+            execRequest(request, response);
+//        } catch (ServletException e) {            
+//            e.printStackTrace(response.getWriter());
+//            throw e;
+//        } catch (IOException e) {            
+//            e.printStackTrace(response.getWriter());
+//            throw e;
+        } catch (Exception e) {            
+            e.printStackTrace(response.getWriter());
+            throw new ServletException(e);
+        }
 
     }
 
@@ -2348,10 +2359,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                     }
                 }
             }
-        } 
-//        else {
-//            //listCatalogtype.add(CatalogData.CatalogType.getDefault());
-//        }
+        }
+        // else {
+        // //listCatalogtype.add(CatalogData.CatalogType.getDefault());
+        // }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("getCatalogTypeParams(HttpServletRequest) - end");
@@ -3078,10 +3089,11 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws IOException the IO exception
      */
     private boolean isActionDebug(String action, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        
-        if ( (!action.equalsIgnoreCase(MotuMonitoringParametersConstant.ACTION_DEBUG)) && (!action.equalsIgnoreCase(MotuMonitoringParametersConstant.ACTION_QUEUE_SERVER ))) {
+
+        if ((!action.equalsIgnoreCase(MotuMonitoringParametersConstant.ACTION_DEBUG))
+                && (!action.equalsIgnoreCase(MotuMonitoringParametersConstant.ACTION_QUEUE_SERVER))) {
             return false;
-        } 
+        }
 
         StringBuffer stringBuffer = new StringBuffer();
 
@@ -3296,7 +3308,6 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         if (LOG.isDebugEnabled()) {
             LOG.debug("listServices() - entering");
         }
-
 
         Organizer organizer = getOrganizer(session, response);
 
