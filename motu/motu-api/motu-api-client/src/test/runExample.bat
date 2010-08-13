@@ -1,15 +1,20 @@
 
-set MOTU-API-CLIENT-VERSION=1.0.0-SNAPSHOT
+set MOTU-API-CLIENT-VERSION=2.1.6
 set MOTU-API-CLIENT-JAR-PATH=J:\dev\motu\motu-api\motu-api-client\target
 set MOTU-API-CLIENT-JAR=%MOTU-API-CLIENT-JAR-PATH%\motu-api-client-%MOTU-API-CLIENT-VERSION%-full.jar
 
 REM --------------------------------
 REM example to list the usage of motu-api-client
 REM --------------------------------
-java -jar %MOTU-API-CLIENT-JAR%
+REM java -jar %MOTU-API-CLIENT-JAR%
 
 pause
 
+
+java -jar %MOTU-API-CLIENT-JAR% data="file://C:/Java/apache-tomcat-6.0.9/webapps/motu-file-extract/mercatorPsy3v2_arc_mean_best_estimate_1280231637778.nc"
+
+pause
+goto end
 REM --------------------------------
 REM example with a non-CAsified Opendap
 REM --------------------------------
@@ -34,3 +39,5 @@ REM --------------------------------
 REM example with all explicit parameters (except login and pwd).
 REM --------------------------------
 java -jar %MOTU-API-CLIENT-JAR% data=http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy2v3_med_mean_best_estimate xmlFile=catalog.xml authmode=CAS output=./test.xml login=%your_login% pwd=%your_pwd% extraMetadata=false
+
+:end

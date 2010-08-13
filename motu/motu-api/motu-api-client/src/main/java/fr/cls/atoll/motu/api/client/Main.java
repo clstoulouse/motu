@@ -128,12 +128,14 @@ public class Main {
         } catch (MotuExceptionBase e) {
             LOG.error("main(String[])", e);
 
+            System.err.print("ERROR: ");
             System.err.println(e.notifyException());
             Main.printUsage();
             status = -1;
         } catch (Exception e) {
             LOG.error("main(String[])", e);
 
+            System.err.print("ERROR: ");
             System.err.println(e.getMessage());
             Main.printUsage();
             status = -1;
