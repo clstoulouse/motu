@@ -51,6 +51,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -791,14 +792,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             debugRequestHeaders(request);
 
             execRequest(request, response);
-//        } catch (ServletException e) {            
-//            e.printStackTrace(response.getWriter());
-//            throw e;
-//        } catch (IOException e) {            
-//            e.printStackTrace(response.getWriter());
-//            throw e;
-        } catch (Exception e) {            
-            e.printStackTrace(response.getWriter());
+        } catch (Exception e) {   
             throw new ServletException(e);
         }
 
