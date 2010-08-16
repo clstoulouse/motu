@@ -69,7 +69,7 @@ public class MultipleDirectoriesContext extends FileDirContextAdapter {
     /**
      * Whether or not check the existence of variables.
      */
-    private boolean checkVariables = true;
+    private boolean checkVariables = false;
 
     /**
      * Set of virtual contexts configured (keep the insertion order).
