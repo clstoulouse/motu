@@ -355,13 +355,18 @@ public class TestFtp {
         toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.txt";
         userFrom = "anonymous@ftp.unidata.ucar.edu";
         pwdFrom = "email";
-        testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
+        //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
         fromUri = "http://proxy.cls.fr/19139/20060504/serviceMetadata.xsd";
         toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.txt";
         userFrom = "anonymous@schemas.opengis.net/iso";
         pwdFrom = "email";
-        // testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
+        //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
 
+        //fromUri= "ftp://idpopendap:ghf57sf6@ftpsedr.cls.fr/donnees/ftpsedr/DUACS/global/dt/upd/sla/e1//dt_upd_global_e1_sla_vfec_19950510_19950515_20100503.nc.gz";
+        fromUri= "ftp://idpopendap:ghf57sf6@ftpsedr.cls.fr/global/dt/upd/sla/e1//dt_upd_global_e1_sla_vfec_19950510_19950515_20100503.nc.gz";
+        toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.nc";
+        testPush(fromUri, toUri);
+        
         // URI uriTest = null;
         // try {
         // uriTest =

@@ -348,7 +348,7 @@ public class VFSManager {
                 if (sftpTimeOut > 0) {
                     sftpFscb.setTimeout(opts, (int) sftpTimeOut);
                 }
-                
+
                 if (Organizer.getMotuConfigInstance().isUseProxy()) {
                     String proxyHost = Organizer.getMotuConfigInstance().getProxyHost();
                     String proxyPort = Organizer.getMotuConfigInstance().getProxyPort();
@@ -368,6 +368,86 @@ public class VFSManager {
             LOG.debug("setSchemeOpts(String) - exiting");
         }
         return opts;
+    }
+
+    /**
+     * Sets the user dir is root.
+     * 
+     * @param scheme the scheme
+     * @param userDirIsRoot the user dir is root
+     * @return the file system options
+     * @throws MotuException the motu exception
+     */
+    public FileSystemOptions setUserDirIsRoot(String scheme, boolean userDirIsRoot) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setUserDirIsRoot(String, boolean) - start");
+        }
+
+        FileSystemOptions returnFileSystemOptions = setUserDirIsRoot(scheme, userDirIsRoot, this.opts);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setUserDirIsRoot(String, boolean) - end");
+        }
+        return returnFileSystemOptions;
+    }
+
+    /**
+     * Sets the user dir is root.
+     * 
+     * @param scheme the scheme
+     * @param userDirIsRoot the user dir is root
+     * @param fileSystemOptions the file system options
+     * @return the file system options
+     * @throws MotuException the motu exception
+     */
+    public FileSystemOptions setUserDirIsRoot(String scheme, boolean userDirIsRoot, FileSystemOptions fileSystemOptions) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setUserDirIsRoot(String, boolean, FileSystemOptions) - start");
+        }
+
+        if (Organizer.isNullOrEmpty(scheme)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("setUserDirIsRoot(String, boolean, FileSystemOptions) - end");
+            }
+            return fileSystemOptions;
+        }
+
+        if (fileSystemOptions == null) {
+            fileSystemOptions = new FileSystemOptions();
+        }
+
+        FileSystemConfigBuilder fscb = null;
+        try {
+            try {
+                fscb = standardFileSystemManager.getFileSystemConfigBuilder(scheme);
+            } catch (FileSystemException e) {
+                LOG.error("setUserDirIsRoot(String, boolean, FileSystemOptions)", e);
+
+                fscb = standardFileSystemManager.getFileSystemConfigBuilder(VFSManager.DEFAULT_SCHEME);
+            }
+
+            if (!(fscb instanceof FtpFileSystemConfigBuilder)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("setUserDirIsRoot(String, boolean) - end");
+                }
+                return fileSystemOptions;
+            }
+
+            FtpFileSystemConfigBuilder ftpFscb = (FtpFileSystemConfigBuilder) fscb;
+            ftpFscb.setUserDirIsRoot(fileSystemOptions, userDirIsRoot);
+
+        } catch (FileSystemException e) {
+            LOG.error("setUserDirIsRoot(String, boolean, FileSystemOptions)", e);
+
+            throw new MotuException("Error in VFSManager#setUserDirIsRoot", e);
+        }
+
+        if (LOG.isDebugEnabled()) {
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setUserDirIsRoot(String, boolean, FileSystemOptions) - end");
+        }
+        return fileSystemOptions;
     }
 
     /**
@@ -487,12 +567,25 @@ public class VFSManager {
             fileSystemOptions = setUserInfo(auth);
             fileSystemOptions = setSchemeOpts(uriObject.getScheme());
 
-            fileObject = standardFileSystemManager.resolveFile(uri, fileSystemOptions);
+            try {
+                fileObject = standardFileSystemManager.resolveFile(uri, fileSystemOptions);
+            } catch (FileSystemException e) {
 
-        } catch (FileSystemException e) {
-            LOG.error("resolveFile(String, FileSystemOptions)", e);
+                LOG.error("resolveFile(String, FileSystemOptions) - Try with 'UserDirIsRoot' options to true (scheme is" + uriObject.getScheme()
+                        + ")", e);
+                // Try with 'UserDirIsRoot' options to true
+                setUserDirIsRoot(uriObject.getScheme(), true, fileSystemOptions);
+                try {
+                    fileObject = standardFileSystemManager.resolveFile(uri, fileSystemOptions);
+                } catch (FileSystemException e1) {
+                    throw new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
+                } finally {
+                    // Reset 'UserDirIsRoot' options to false
+                    setUserDirIsRoot(uriObject.getScheme(), false, fileSystemOptions);
+                }
 
-            throw new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
+            }
+
         } catch (URISyntaxException e) {
             LOG.error("resolveFile(String, FileSystemOptions)", e);
 
@@ -532,10 +625,20 @@ public class VFSManager {
             setSchemeOpts(baseFile.getName().getScheme());
 
             fileObject = standardFileSystemManager.resolveFile(baseFile, file, opts);
-        } catch (FileSystemException e) {
-            LOG.error("resolveFile(FileObject, String)", e);
 
-            throw new MotuException(String.format("Unable to resolve uri '%s/%s' ", baseFile.getName().toString(), file), e);
+        } catch (FileSystemException e) {
+            LOG.error("resolveFile(FileObject, String) - Try with 'UserDirIsRoot' options to true (scheme is" + baseFile.getName().toString() + ")",
+                      e);
+            // Try with 'UserDirIsRoot' options to true
+            setUserDirIsRoot(baseFile.getName().getScheme(), true);
+            try {
+                fileObject = standardFileSystemManager.resolveFile(baseFile, file, opts);
+            } catch (FileSystemException e1) {
+                throw new MotuException(String.format("Unable to resolve uri '%s/%s' ", baseFile.getName().toString(), file), e);
+            } finally {
+                // Reset 'UserDirIsRoot' options to false
+                setUserDirIsRoot(baseFile.getName().getScheme(), false);
+            }
         }
 
         if (LOG.isDebugEnabled()) {
