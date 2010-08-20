@@ -135,6 +135,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.joda.time.Interval;
+import org.joda.time.Period;
 
 import ucar.ma2.MAMath.MinMax;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -4740,6 +4741,448 @@ public class Organizer {
     }
 
     /**
+     * Gets the current config service.
+     *
+     * @return the current config service
+     */
+    public ConfigService getCurrentConfigService() {
+        ServiceData serviceData = getCurrentService();
+        if (serviceData == null) {
+            return null;
+        }
+        
+        return serviceData.getConfigService();
+    }
+    
+    /**
+     * Checks if is current sftp user dir is root.
+     *
+     * @param organizer the organizer
+     * @return the boolean
+     * @throws MotuException the motu exception
+     */
+    public static Boolean isCurrentSftpUserDirIsRoot(Organizer organizer) throws MotuException {
+        if (organizer == null) {
+            return Organizer.getMotuConfigInstance().isSftpUserDirIsRoot();            
+        }
+        
+        return organizer.isCurrentSftpUserDirIsRoot();
+    }
+    
+    /**
+     * Checks if is current sftp user dir is root.
+     *
+     * @return the boolean
+     * @throws MotuException the motu exception
+     */
+    public Boolean isCurrentSftpUserDirIsRoot() throws MotuException {
+        ConfigService configService = getCurrentConfigService();
+        
+        Boolean globalValue =  Organizer.getMotuConfigInstance().isSftpUserDirIsRoot();
+        
+        if (configService == null) {
+            return globalValue;
+        }
+        
+        Boolean value =  configService.isSftpUserDirIsRoot();
+        
+        if (value == null) {
+            return globalValue;
+        }
+        
+        return value;
+    }
+    /**
+     * Checks if is current ftp user dir is root.
+     *
+     * @param organizer the organizer
+     * @return the boolean
+     * @throws MotuException the motu exception
+     */
+    public static Boolean isCurrentFtpUserDirIsRoot(Organizer organizer) throws MotuException {
+        if (organizer == null) {
+            return Organizer.getMotuConfigInstance().isFtpUserDirIsRoot();            
+        }
+        
+        return organizer.isCurrentFtpUserDirIsRoot();
+    }
+    /**
+     * Checks if is current ftp user dir is root.
+     *
+     * @return the boolean
+     * @throws MotuException the motu exception
+     */
+    public Boolean isCurrentFtpUserDirIsRoot() throws MotuException {
+        ConfigService configService = getCurrentConfigService();
+        
+        Boolean globalValue =  Organizer.getMotuConfigInstance().isFtpUserDirIsRoot();
+        
+        if (configService == null) {
+            return globalValue;
+        }
+        
+        Boolean value =  configService.isFtpUserDirIsRoot();
+        
+        if (value == null) {
+            return globalValue;
+        }
+        
+        return value;
+    }
+    
+    /**
+     * Checks if is current ftp passive mode.
+     *
+     * @param organizer the organizer
+     * @return the boolean
+     * @throws MotuException the motu exception
+     */
+    public static Boolean isCurrentFtpPassiveMode(Organizer organizer) throws MotuException {
+        if (organizer == null) {
+            return Organizer.getMotuConfigInstance().isFtpPassiveMode();            
+        }
+        
+        return organizer.isCurrentFtpPassiveMode();
+    }
+
+    /**
+     * Checks if is current ftp passive mode.
+     *
+     * @return the boolean
+     * @throws MotuException the motu exception
+     */
+    public Boolean isCurrentFtpPassiveMode() throws MotuException {
+        ConfigService configService = getCurrentConfigService();
+        
+        Boolean globalValue =  Organizer.getMotuConfigInstance().isFtpPassiveMode();
+        
+        if (configService == null) {
+            return globalValue;
+        }
+        
+        Boolean value =  configService.isFtpPassiveMode();
+        
+        if (value == null) {
+            return globalValue;
+        }
+        
+        return value;
+    }
+    
+    /**
+     * Gets the current ftp data time out.
+     *
+     * @param organizer the organizer
+     * @return the current ftp data time out
+     * @throws MotuException the motu exception
+     */
+    public static Period getCurrentFtpDataTimeOut(Organizer organizer) throws MotuException {
+        if (organizer == null) {
+            return Organizer.getMotuConfigInstance().getFtpDataTimeOut();            
+        }
+        
+        return organizer.getCurrentFtpDataTimeOut();
+    }
+    
+    /**
+     * Gets the current ftp data time out.
+     *
+     * @return the current ftp data time out
+     * @throws MotuException the motu exception
+     */
+    public Period getCurrentFtpDataTimeOut() throws MotuException {
+        ConfigService configService = getCurrentConfigService();
+        
+        Period globalValue =  Organizer.getMotuConfigInstance().getFtpDataTimeOut();
+        
+        if (configService == null) {
+            return globalValue;
+        }
+        
+        Period value =  configService.getFtpDataTimeOut();
+        
+        if (value == null) {
+            return globalValue;
+        }
+        
+        return value;
+    }
+    
+    /**
+     * Checks if is current use proxy.
+     *
+     * @param organizer the organizer
+     * @return the boolean
+     * @throws MotuException the motu exception
+     */
+    public static Boolean isCurrentUseProxy(Organizer organizer) throws MotuException {
+        if (organizer == null) {
+            return Organizer.getMotuConfigInstance().isUseProxy();            
+        }
+        
+        return organizer.isCurrentUseProxy();
+    }
+
+    /**
+     * Checks if is current use proxy.
+     *
+     * @return the boolean
+     * @throws MotuException the motu exception
+     */
+    public Boolean isCurrentUseProxy() throws MotuException {
+        ConfigService configService = getCurrentConfigService();
+        
+        Boolean globalValue =  Organizer.getMotuConfigInstance().isUseProxy();
+        
+        if (configService == null) {
+            return globalValue;
+        }
+        
+        Boolean value =  configService.isUseProxy();
+        
+        if (value == null) {
+            return globalValue;
+        }
+        
+        return value;
+    }
+    
+    /**
+     * Gets the current proxy host.
+     *
+     * @param organizer the organizer
+     * @return the current proxy host
+     * @throws MotuException the motu exception
+     */
+    public static String getCurrentProxyHost(Organizer organizer) throws MotuException {
+        if (organizer == null) {
+            return Organizer.getMotuConfigInstance().getProxyHost();            
+        }
+        
+        return organizer.getCurrentProxyHost();
+    }
+
+    /**
+     * Gets the current proxy host.
+     *
+     * @return the current proxy host
+     * @throws MotuException the motu exception
+     */
+    public String getCurrentProxyHost() throws MotuException {
+        ConfigService configService = getCurrentConfigService();
+        
+        String globalValue =  Organizer.getMotuConfigInstance().getProxyHost();
+        
+        if (configService == null) {
+            return globalValue;
+        }
+        
+        String value =  configService.getProxyHost();
+        
+        if (value == null) {
+            return globalValue;
+        }
+        
+        return value;
+    }
+    
+    /**
+     * Gets the current proxy port.
+     *
+     * @param organizer the organizer
+     * @return the current proxy port
+     * @throws MotuException the motu exception
+     */
+    public static String getCurrentProxyPort(Organizer organizer) throws MotuException {
+        if (organizer == null) {
+            return Organizer.getMotuConfigInstance().getProxyPort();            
+        }
+        
+        return organizer.getCurrentProxyPort();
+    }
+    
+    /**
+     * Gets the current proxy port.
+     *
+     * @return the current proxy port
+     * @throws MotuException the motu exception
+     */
+    public String getCurrentProxyPort() throws MotuException {
+        ConfigService configService = getCurrentConfigService();
+        
+        String globalValue =  Organizer.getMotuConfigInstance().getProxyPort();
+        
+        if (configService == null) {
+            return globalValue;
+        }
+        
+        String value =  configService.getProxyPort();
+        
+        if (value == null) {
+            return globalValue;
+        }
+        
+        return value;
+    }
+    
+    /**
+     * Gets the current proxy login.
+     *
+     * @param organizer the organizer
+     * @return the current proxy login
+     * @throws MotuException the motu exception
+     */
+    public static String getCurrentProxyLogin(Organizer organizer) throws MotuException {
+        if (organizer == null) {
+            return Organizer.getMotuConfigInstance().getProxyLogin();            
+        }
+        
+        return organizer.getCurrentProxyLogin();
+    }
+
+    /**
+     * Gets the current proxy login.
+     *
+     * @return the current proxy login
+     * @throws MotuException the motu exception
+     */
+    public String getCurrentProxyLogin() throws MotuException {
+        ConfigService configService = getCurrentConfigService();
+        
+        String globalValue =  Organizer.getMotuConfigInstance().getProxyLogin();
+        
+        if (configService == null) {
+            return globalValue;
+        }
+        
+        String value =  configService.getProxyLogin();
+        
+        if (value == null) {
+            return globalValue;
+        }
+        
+        return value;
+    }
+    
+    /**
+     * Gets the current proxy pwd.
+     *
+     * @param organizer the organizer
+     * @return the current proxy pwd
+     * @throws MotuException the motu exception
+     */
+    public static String getCurrentProxyPwd(Organizer organizer) throws MotuException {
+        if (organizer == null) {
+            return Organizer.getMotuConfigInstance().getProxyPwd();            
+        }
+        
+        return organizer.getCurrentProxyPwd();
+    }
+    
+    /**
+     * Gets the current proxy pwd.
+     *
+     * @return the current proxy pwd
+     * @throws MotuException the motu exception
+     */
+    public String getCurrentProxyPwd() throws MotuException {
+        ConfigService configService = getCurrentConfigService();
+        
+        String globalValue =  Organizer.getMotuConfigInstance().getProxyPwd();
+        
+        if (configService == null) {
+            return globalValue;
+        }
+        
+        String value =  configService.getProxyPwd();
+        
+        if (value == null) {
+            return globalValue;
+        }
+        
+        return value;
+    }
+    
+    /**
+     * Gets the current strict host key checking.
+     *
+     * @param organizer the organizer
+     * @return the current strict host key checking
+     * @throws MotuException the motu exception
+     */
+    public static String getCurrentStrictHostKeyChecking(Organizer organizer) throws MotuException {
+        if (organizer == null) {
+            return Organizer.getMotuConfigInstance().getStrictHostKeyChecking();            
+        }
+        
+        return organizer.getCurrentStrictHostKeyChecking();
+    }
+    
+    /**
+     * Gets the current strict host key checking.
+     *
+     * @return the current strict host key checking
+     * @throws MotuException the motu exception
+     */
+    public String getCurrentStrictHostKeyChecking() throws MotuException {
+        ConfigService configService = getCurrentConfigService();
+        
+        String globalValue =  Organizer.getMotuConfigInstance().getStrictHostKeyChecking();
+        
+        if (configService == null) {
+            return globalValue;
+        }
+        
+        String value =  configService.getStrictHostKeyChecking();
+        
+        if (value == null) {
+            return globalValue;
+        }
+        
+        return value;
+    }
+    
+    /**
+     * Gets the current sftp session time out.
+     *
+     * @param organizer the organizer
+     * @return the current sftp session time out
+     * @throws MotuException the motu exception
+     */
+    public static Period getCurrentSftpSessionTimeOut(Organizer organizer) throws MotuException {
+        if (organizer == null) {
+            return Organizer.getMotuConfigInstance().getSftpSessionTimeOut();            
+        }
+        
+        return organizer.getCurrentSftpSessionTimeOut();
+    }
+    
+    /**
+     * Gets the current sftp session time out.
+     *
+     * @return the current sftp session time out
+     * @throws MotuException the motu exception
+     */
+    public Period getCurrentSftpSessionTimeOut() throws MotuException {
+        ConfigService configService = getCurrentConfigService();
+        
+        Period globalValue =  Organizer.getMotuConfigInstance().getSftpSessionTimeOut();
+        
+        if (configService == null) {
+            return globalValue;
+        }
+        
+        Period value =  configService.getSftpSessionTimeOut();
+        
+        if (value == null) {
+            return globalValue;
+        }
+        
+        return value;
+    }
+
+    
+    /**
      * Getter of the property <tt>defaultServiceName</tt>.
      * 
      * @return Returns the defaultServiceName.
@@ -6106,6 +6549,8 @@ public class Organizer {
             service.setVeloTemplatePrefix(confServ.getVeloTemplatePrefix());
             service.setKeepDataFilesList(confServ.isKeepDataFilesList());
 
+            service.setConfigService(confServ);          
+            
             putServices(service.getName().toLowerCase(), service);
         }
 

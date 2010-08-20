@@ -53,6 +53,7 @@ import org.apache.commons.vfs.provider.ftp.FtpFileSystemConfigBuilder;
 import org.apache.commons.vfs.provider.http.HttpFileSystemConfigBuilder;
 import org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder;
 import org.apache.log4j.Logger;
+import org.joda.time.Period;
 
 /**
  * 
@@ -291,7 +292,7 @@ public class VFSManager {
      * 
      * @throws MotuException the motu exception
      */
-    public FileSystemOptions setSchemeOpts(String scheme) throws MotuException {
+    public FileSystemOptions setSchemeOpts(String scheme, Organizer organizer) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("setSchemeOpts(String) - entering");
         }
@@ -319,14 +320,36 @@ public class VFSManager {
 
             if (fscb instanceof FtpFileSystemConfigBuilder) {
                 FtpFileSystemConfigBuilder ftpFscb = (FtpFileSystemConfigBuilder) fscb;
-                // ftpFscb.setUserDirIsRoot(opts, true);
+                
+                Boolean  userDirIsRoot = Organizer.isCurrentFtpUserDirIsRoot(organizer);
+                if (userDirIsRoot != null) {
+                    ftpFscb.setUserDirIsRoot(opts, userDirIsRoot);
+                }
+                Boolean  passiveMode  = Organizer.isCurrentFtpPassiveMode(organizer);
+                if (passiveMode != null) {
+                    ftpFscb.setPassiveMode(opts, passiveMode);
+                }
+                Period  dataTimeOut = Organizer.getCurrentFtpDataTimeOut(organizer);
+                if (dataTimeOut != null) {
+                    long value = dataTimeOut.toStandardDuration().getMillis();
+                    if (value > Integer.MAX_VALUE) {
+                        throw new MotuException(String.format("Motu Configuration : sftp timeout value is too large '%ld' milliseconds. Max is '%d'",
+                                                              value,
+                                                              Integer.MAX_VALUE));
+                    }
+                    if (value > 0) {
+                        ftpFscb.setDataTimeout(opts, (int)value );
+                    }
+                }
             }
 
             if (fscb instanceof HttpFileSystemConfigBuilder) {
                 HttpFileSystemConfigBuilder httpFscb = (HttpFileSystemConfigBuilder) fscb;
-                if (Organizer.getMotuConfigInstance().isUseProxy()) {
-                    String proxyHost = Organizer.getMotuConfigInstance().getProxyHost();
-                    String proxyPort = Organizer.getMotuConfigInstance().getProxyPort();
+                
+                Boolean isUseProxy = Organizer.isCurrentUseProxy(organizer);         
+                if ((isUseProxy != null) && (isUseProxy)) {
+                    String proxyHost = Organizer.getCurrentProxyHost(organizer);
+                    String proxyPort = Organizer.getCurrentProxyPort(organizer);
                     httpFscb.setProxyHost(opts, proxyHost);
                     httpFscb.setProxyPort(opts, Integer.parseInt(proxyPort));
                 }
@@ -335,23 +358,34 @@ public class VFSManager {
 
             if (fscb instanceof SftpFileSystemConfigBuilder) {
                 SftpFileSystemConfigBuilder sftpFscb = (SftpFileSystemConfigBuilder) fscb;
-                // sftpFscb.setUserDirIsRoot(opts, true);
-                sftpFscb.setStrictHostKeyChecking(opts, Organizer.getMotuConfigInstance().getStrictHostKeyChecking());
 
-                long sftpTimeOut = Organizer.getMotuConfigInstance().getSftpSessionTimeOut().toStandardDuration().getMillis();
-                if (sftpTimeOut > Integer.MAX_VALUE) {
-                    throw new MotuException(String.format("Motu Configuration : sftp timeout value is too large '%ld' milliseconds. Max is '%d'",
-                                                          sftpTimeOut,
-                                                          Integer.MAX_VALUE));
+                Boolean  userDirIsRoot = Organizer.isCurrentSftpUserDirIsRoot(organizer);
+                if (userDirIsRoot != null) {
+                    sftpFscb.setUserDirIsRoot(opts, userDirIsRoot);
                 }
 
-                if (sftpTimeOut > 0) {
-                    sftpFscb.setTimeout(opts, (int) sftpTimeOut);
+                String strictHostKeyChecking = Organizer.getCurrentStrictHostKeyChecking(organizer);         
+                if (strictHostKeyChecking != null) {
+                    sftpFscb.setStrictHostKeyChecking(opts, strictHostKeyChecking);
+                }
+                
+                Period SftpSessionTimeOut = Organizer.getCurrentSftpSessionTimeOut(organizer);         
+                if (SftpSessionTimeOut != null) {
+                    long value = SftpSessionTimeOut.toStandardDuration().getMillis();
+                    if (value > Integer.MAX_VALUE) {
+                        throw new MotuException(String.format("Motu Configuration : sftp timeout value is too large '%ld' milliseconds. Max is '%d'",
+                                                              value,
+                                                              Integer.MAX_VALUE));
+                    }
+                    if (value > 0) {
+                        sftpFscb.setTimeout(opts, (int)value );
+                    }
                 }
 
-                if (Organizer.getMotuConfigInstance().isUseProxy()) {
-                    String proxyHost = Organizer.getMotuConfigInstance().getProxyHost();
-                    String proxyPort = Organizer.getMotuConfigInstance().getProxyPort();
+                Boolean isUseProxy = Organizer.isCurrentUseProxy(organizer);         
+                if ((isUseProxy != null) && (isUseProxy)) {
+                    String proxyHost = Organizer.getCurrentProxyHost(organizer);
+                    String proxyPort = Organizer.getCurrentProxyPort(organizer);
                     sftpFscb.setProxyHost(opts, proxyHost);
                     sftpFscb.setProxyPort(opts, Integer.parseInt(proxyPort));
                 }
@@ -369,6 +403,12 @@ public class VFSManager {
         }
         return opts;
     }
+
+    public FileSystemOptions setSchemeOpts(String scheme) throws MotuException {
+      return setSchemeOpts(scheme, null);            
+                
+    }
+    
 
     /**
      * Sets the user dir is root.

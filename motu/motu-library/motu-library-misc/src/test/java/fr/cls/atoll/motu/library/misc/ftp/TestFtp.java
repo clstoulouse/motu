@@ -363,8 +363,9 @@ public class TestFtp {
         //testPush(fromUri, toUri, userFrom, pwdFrom, userTo, pwdTo);
 
         //fromUri= "ftp://idpopendap:ghf57sf6@ftpsedr.cls.fr/donnees/ftpsedr/DUACS/global/dt/upd/sla/e1//dt_upd_global_e1_sla_vfec_19950510_19950515_20100503.nc.gz";
-        fromUri= "ftp://idpopendap:ghf57sf6@ftpsedr.cls.fr/global/dt/upd/sla/e1//dt_upd_global_e1_sla_vfec_19950510_19950515_20100503.nc.gz";
-        toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.nc";
+        //fromUri= "ftp://idpopendap:ghf57sf6@ftpsedr.cls.fr/global/dt/upd/sla/e1//dt_upd_global_e1_sla_vfec_19950510_19950515_20100503.nc.gz";
+        fromUri= "ftp://idpopendap:ghf57sf6@ftpsedr.cls.fr/global/dt/upd/sla/e1/dt_upd_global_e1_sla_vfec_19950510_19950515_20100503.nc.gz";
+                      toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.nc";
         testPush(fromUri, toUri);
         
         // URI uriTest = null;
