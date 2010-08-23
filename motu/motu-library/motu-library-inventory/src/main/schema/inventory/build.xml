@@ -25,7 +25,8 @@
 		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-xjc/2.1.7" includes="*.jar" />
 		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-impl/2.1.10" includes="*.jar" />
 		-->
-		<fileset dir="${m2repository.dir}/org/jvnet/jaxb2_commons/jaxb-xjc/2.1.10" includes="*.jar" />
+<!--		<fileset dir="${m2repository.dir}/org/jvnet/jaxb2_commons/jaxb-xjc/2.1.10" includes="*.jar" /> -->		
+		<fileset dir="${m2repository.dir}/org/jvnet/jaxb2_commons/jaxb2-basics-jaxb-xjc/2.1.13.MR2" includes="*.jar" />
 		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-impl/2.1.10" includes="*.jar" />
 		<fileset dir="${m2repository.dir}/com/sun/istack/istack-commons-tools/1.1" includes="*.jar" />
 		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-impl/2.1.10" includes="*.jar" />
@@ -55,6 +56,7 @@
 			<xjc  destdir="${src.dir}"  target="2.1" package="${schema.package}" binding="${schema.xjbfile}" removeOldOutput="no">
 			<schema dir="${schema.xsdpath}" includes="${schema.xsdfile}" />
 			<arg value="-extension"/>
+			<arg value="-enableIntrospection"/>				
 			<!-- <arg value="-Xdefault-value"/> -->
 			<produces dir="${src.dir}" />
 		</xjc>
