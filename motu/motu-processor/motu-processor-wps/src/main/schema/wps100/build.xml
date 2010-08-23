@@ -27,7 +27,8 @@
 		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-impl/2.1.10" includes="*.jar" />
 		-->
 		
-		<fileset dir="${m2repository.dir}/org/jvnet/jaxb2_commons/jaxb-xjc/2.1.10" includes="*.jar" />
+<!--		<fileset dir="${m2repository.dir}/org/jvnet/jaxb2_commons/jaxb-xjc/2.1.10" includes="*.jar" /> -->		
+		<fileset dir="${m2repository.dir}/org/jvnet/jaxb2_commons/jaxb2-basics-jaxb-xjc/2.1.13.MR2" includes="*.jar" />
 		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-impl/2.1.10" includes="*.jar" />
 		<fileset dir="${m2repository.dir}/com/sun/istack/istack-commons-tools/1.1" includes="*.jar" />
 		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-impl/2.1.10" includes="*.jar" />
@@ -87,6 +88,7 @@
 
 		<xjc  schema="http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd" destdir="${src.dir}"  target="2.1" binding="${schema.xjbfile}"  removeOldOutput="no">
 			 <arg value="-extension"/>
+			<arg value="-enableIntrospection"/>				
 				<produces dir="${src.dir}" />
 		</xjc>
 		
