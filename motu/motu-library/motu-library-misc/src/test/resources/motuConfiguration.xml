@@ -430,4 +430,7 @@
 		</queues>
 
 	</queueServerConfig>
+	
+	<configFileSystem host="test" ftpUserDirIsRoot = "true"/>
+		
 </motuConfig>

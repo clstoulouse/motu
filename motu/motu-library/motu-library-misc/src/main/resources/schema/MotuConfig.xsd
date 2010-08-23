@@ -14,16 +14,61 @@
 		<xs:attribute name="useProxy" type="xs:boolean" default="false" >
 			<xs:annotation>
 				<xs:documentation>
-					useProxy : True if a proxy is used between Motu and the opendaps,
+					True if an HTTP proxy is used between Motu and a remote connection,
 					false otherwise. Default value is false.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-			
+		
+		<xs:attribute name="useFtpProxy" type="xs:boolean" default="false" >
+			<xs:annotation>
+				<xs:documentation>
+					True if a FTP proxy is used between Motu and a remote connection,
+					false otherwise. Default value is false.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+		<xs:attribute name="useSftpProxy" type="xs:boolean" default="false" >
+			<xs:annotation>
+				<xs:documentation>
+					True if a SFTP proxy is used between Motu and a remote connection,
+					false otherwise. Default value is false.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+		<xs:attribute name="useSocksProxy" type="xs:boolean" default="false" >
+			<xs:annotation>
+				<xs:documentation>
+					True if a SOCKS proxy is used between Motu and a remote connection,
+					false otherwise. Default value is false.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+								
+		<xs:attributeGroup ref="httpProxyOptions" />
+		<xs:attributeGroup ref="ftpProxyOptions" />
+		<xs:attributeGroup ref="sftpProxyOptions" />
+		<xs:attributeGroup ref="socksProxyOptions" />
+
+		
+	</xs:attributeGroup>
+	
+	<!-- ===================  -->
+	<!-- HTTP PROXY options        -->
+	<!-- ===================  -->
+	<xs:attributeGroup name="httpProxyOptions">
+		<xs:annotation>
+			<xs:documentation>
+				HTTP PROXY options. 
+			</xs:documentation>
+		</xs:annotation>
+		
 		<xs:attribute name="proxyLogin" type="xs:string">
 			<xs:annotation>
 				<xs:documentation>
-					Login to connect to the proxy
+					Login to connect to the HTTP proxy
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -31,14 +76,14 @@
   		<xs:attribute name="proxyPwd" type="xs:string">
 			<xs:annotation>
 				<xs:documentation>
-					Password to connect to the proxy
+					Password to connect to the HTTP proxy
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="proxyHost" type="xs:string" default="proxy-prod.cls.fr">
 			<xs:annotation>
 				<xs:documentation>
-					proxyHost : Name of the proxy. Ignored if useProxy is false. Default
+					Name of the HTTP proxy. Ignored if useProxy is false. Default
 					value is proxy-prod.cls.fr).
 				</xs:documentation>
 			</xs:annotation>
@@ -47,14 +92,148 @@
 		<xs:attribute name="proxyPort" type="xs:string" default="8080">
 			<xs:annotation>
 				<xs:documentation>
-					proxyPort : Name of the proxy. Ignored if useProxy is false. Default
+					Port of the HTTP proxy. Ignored if useProxy is false. Default
 					value is 8080).
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		
+	</xs:attributeGroup>
+	
+	<!-- ===================  -->
+	<!-- FTP PROXY options        -->
+	<!-- ===================  -->
+	<xs:attributeGroup name="ftpProxyOptions">
+		<xs:annotation>
+			<xs:documentation>
+				FTP PROXY options. 
+			</xs:documentation>
+		</xs:annotation>
+		
+		<xs:attribute name="ftpProxyLogin" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					Login to connect to the FTP proxy
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	
+  		<xs:attribute name="ftpProxyPwd" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					Password to connect to the FTP proxy
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ftpProxyHost" type="xs:string" default="proxy-prod.cls.fr">
+			<xs:annotation>
+				<xs:documentation>
+					Name of the FTP proxy. Ignored if useFtpProxy is false. Default
+					value is proxy-prod.cls.fr).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 
+		<xs:attribute name="ftpProxyPort" type="xs:string" default="8080">
+			<xs:annotation>
+				<xs:documentation>
+					Port of the FTP proxy. Ignored if useFtpProxy is false. Default
+					value is 8080).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		
+	</xs:attributeGroup>
+	
+	<!-- ===================  -->
+	<!-- SFTP PROXY options        -->
+	<!-- ===================  -->
+	<xs:attributeGroup name="sftpProxyOptions">
+		<xs:annotation>
+			<xs:documentation>
+				SFTP PROXY options. 
+			</xs:documentation>
+		</xs:annotation>
+		
+		<xs:attribute name="sftpProxyLogin" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					Login to connect to the SFTP proxy
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	
+  		<xs:attribute name="sftpProxyPwd" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					Password to connect to the SFTP proxy
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="sftpProxyHost" type="xs:string" default="proxy-prod.cls.fr">
+			<xs:annotation>
+				<xs:documentation>
+					Name of the SFTP proxy. Ignored if useSftpProxy is false. Default
+					value is proxy-prod.cls.fr).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+		<xs:attribute name="sftpProxyPort" type="xs:string" default="8080">
+			<xs:annotation>
+				<xs:documentation>
+					Port of the SFTP proxy. Ignored if useSftpProxy is false. Default
+					value is 8080).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		
 	</xs:attributeGroup>
 
+	<!-- ===================  -->
+	<!-- SOCKS PROXY options        -->
+	<!-- ===================  -->
+	<xs:attributeGroup name="socksProxyOptions">
+		<xs:annotation>
+			<xs:documentation>
+				SOCKS PROXY options. 
+			</xs:documentation>
+		</xs:annotation>
+		
+		<xs:attribute name="socksProxyLogin" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					Login to connect to the SOCKS proxy
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	
+  		<xs:attribute name="socksProxyPwd" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					Password to connect to the SOCKS proxy
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="socksProxyHost" type="xs:string" default="proxy-prod.cls.fr">
+			<xs:annotation>
+				<xs:documentation>
+					Name of the SOCKS proxy. Ignored if useSocksProxy is false. Default
+					value is proxy-prod.cls.fr).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+		<xs:attribute name="socksProxyPort" type="xs:string" default="1080">
+			<xs:annotation>
+				<xs:documentation>
+					Port of the SOCKS proxy. Ignored if useSocksProxy is false. Default
+					value is 1080).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		
+	</xs:attributeGroup>
 	<!-- ===================  -->
 	<!-- FTP options          -->
 	<!-- ===================  -->
@@ -187,6 +366,33 @@
 
 		</xs:attribute>
 	</xs:attributeGroup>
+	
+	<!-- ===================  -->
+	<!-- File System configuration   -->
+	<!-- ===================  -->
+
+	<xs:complexType name="configFileSystemType">
+		<xs:annotation>
+			<xs:documentation>
+			 File system configuration.
+			 Allows to set protocol communication options and parameters for a host.
+			</xs:documentation>
+		</xs:annotation>
+		
+		<xs:attribute name="host" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					DNS or IP address of the host to configure.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		
+		<xs:attributeGroup ref="proxyOptions" />
+		<xs:attributeGroup ref="ftpOptions" />
+    	<xs:attributeGroup ref="sftpOptions" />
+		
+	</xs:complexType>	
+	
 
 	<!-- ===================  -->
 	<!-- Motu configuration   -->
@@ -199,6 +405,9 @@
 				</xs:element>
 				<xs:element name="queueServerConfig" type="queueServerType"
 					maxOccurs="1" minOccurs="1">
+				</xs:element>
+				<xs:element name="configFileSystem" minOccurs="0" maxOccurs="unbounded" 
+					type="configFileSystemType">
 				</xs:element>
 			</xs:sequence>
 			<!--
@@ -446,10 +655,6 @@
 			</xs:annotation>
 		</xs:attribute>
 		
-		<xs:attributeGroup ref="proxyOptions" />
-		<xs:attributeGroup ref="ftpOptions" />
-    	<xs:attributeGroup ref="sftpOptions" />
-
 	</xs:complexType>
 
 	<!-- =================================  -->
@@ -632,4 +837,5 @@
 		</xs:attribute>
 
 	</xs:complexType>
+	
 </xs:schema>

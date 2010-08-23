@@ -648,7 +648,7 @@ public class QueueServerManagement {
 
         // queues are sorted by data threshold (ascending)
         for (QueueType queueConfig : queuesConfig) {
-            if (runnableExtraction.isBatchQueue() != queueConfig.isBatch()) {
+            if (runnableExtraction.isBatchQueue() != queueConfig.getBatch()) {
                 continue;
             }
             if (size <= queueConfig.getDataThreshold()) {
@@ -695,7 +695,7 @@ public class QueueServerManagement {
 
         // queues are sorted by data threshold (ascending)
         for (QueueType queueConfig : queuesConfig) {
-            if (batchQueue != queueConfig.isBatch()) {
+            if (batchQueue != queueConfig.getBatch()) {
                 continue;
             }
             double dataThreshold = queueConfig.getDataThreshold();

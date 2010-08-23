@@ -796,17 +796,6 @@ public class ServiceData {
         this.casAuthentification = casAuthentification;
     }
 
-    protected ConfigService configService = null;
-
-
-    public ConfigService getConfigService() {
-        return configService;
-    }
-
-    public void setConfigService(ConfigService configService) {
-        this.configService = configService;
-    }
-
     /**
      * Returns the catalog location (urlSite + catalogFileName).
      * 

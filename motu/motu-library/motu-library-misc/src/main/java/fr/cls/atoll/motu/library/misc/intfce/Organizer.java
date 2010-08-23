@@ -24,6 +24,58 @@
  */
 package fr.cls.atoll.motu.library.misc.intfce;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.net.Authenticator;
+import java.net.MalformedURLException;
+import java.net.Proxy;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemConfigBuilder;
+import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.FileSystemOptions;
+import org.apache.commons.vfs.provider.ftp.FtpFileSystemConfigBuilder;
+import org.apache.commons.vfs.provider.http.HttpFileSystemConfigBuilder;
+import org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder;
+import org.apache.log4j.Logger;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.exception.ResourceNotFoundException;
+import org.joda.time.Interval;
+import org.joda.time.Period;
+
+import ucar.ma2.MAMath.MinMax;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.api.message.MotuMsgConstant;
 import fr.cls.atoll.motu.api.message.xml.AvailableDepths;
 import fr.cls.atoll.motu.api.message.xml.AvailableTimes;
@@ -42,12 +94,13 @@ import fr.cls.atoll.motu.api.message.xml.VariableNameVocabulary;
 import fr.cls.atoll.motu.api.message.xml.VariableVocabulary;
 import fr.cls.atoll.motu.api.message.xml.Variables;
 import fr.cls.atoll.motu.api.message.xml.VariablesVocabulary;
-import fr.cls.atoll.motu.library.inventory.CatalogOLA;
-import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.cas.UserBase;
 import fr.cls.atoll.motu.library.cas.util.AuthentificationHolder;
 import fr.cls.atoll.motu.library.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.cas.util.SimpleAuthenticator;
+import fr.cls.atoll.motu.library.inventory.CatalogOLA;
+import fr.cls.atoll.motu.library.inventory.Inventory;
+import fr.cls.atoll.motu.library.misc.configuration.ConfigFileSystemType;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.misc.data.CatalogData;
@@ -90,56 +143,14 @@ import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
 import fr.cls.atoll.motu.library.misc.tds.server.Property;
 import fr.cls.atoll.motu.library.misc.tds.server.VariableDesc;
 import fr.cls.atoll.motu.library.misc.utils.ConfigLoader;
+import fr.cls.atoll.motu.library.misc.utils.ListUtils;
+import fr.cls.atoll.motu.library.misc.utils.MotuConfigFileSystemWrapper;
+import fr.cls.atoll.motu.library.misc.utils.ObjectUtils;
 import fr.cls.atoll.motu.library.misc.utils.PropertiesUtilities;
 import fr.cls.atoll.motu.library.misc.utils.Zip;
 import fr.cls.atoll.motu.library.misc.vfs.VFSManager;
 import fr.cls.atoll.motu.library.misc.xml.XMLErrorHandler;
 import fr.cls.atoll.motu.library.misc.xml.XMLUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
-import java.net.Authenticator;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.vfs.FileObject;
-import org.apache.log4j.Logger;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.exception.ResourceNotFoundException;
-import org.joda.time.Interval;
-import org.joda.time.Period;
-
-import ucar.ma2.MAMath.MinMax;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.unidata.geoloc.LatLonRect;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and
 // trace log.
@@ -334,6 +345,11 @@ public class Organizer {
     /** Persistent info about services and products. */
     private static Map<String, ServicePersistent> servicesPersistent = new HashMap<String, ServicePersistent>();
 
+    private static final String CONFIG_FILE_SYSTEM_TYPE_KEY_FIELD = "host";
+
+    /** Persistent info about file system configuration (key is 'host'). */
+    private static Map<String, ConfigFileSystemType> configFileSystemMap = null;
+
     /** The Constant STDNAME_EQUIV_PACK_NAME. */
     private static final String STDNAME_EQUIV_PACK_NAME = "fr.cls.atoll.motu.library.misc.sdtnameequiv";
 
@@ -496,7 +512,7 @@ public class Organizer {
     // return FILE_SYSTEM_MANAGER.get();
     // }
     /** The Constant ZIP_EXTENSION. */
-    public static final String ZIP_EXTENSION = ".gz";
+    public static final String ZIP_EXTENSION = ".zip";
 
     /** The current language (default is english). */
     private Language currentLanguage = null;
@@ -1285,6 +1301,8 @@ public class Organizer {
                 throw new MotuException("Unable to load Motu configuration (motuConfig is null)");
             }
 
+            Organizer.setFileSystemConfiguration();
+
             try {
                 in.close();
             } catch (IOException io) {
@@ -1314,7 +1332,7 @@ public class Organizer {
             // LOG.debug(System.getProperties().toString());
         }
 
-        if (Organizer.getMotuConfigInstance().isUseProxy()) {
+        if (Organizer.getMotuConfigInstance().getUseProxy()) {
             String user = Organizer.getMotuConfigInstance().getProxyLogin();
             String pwd = Organizer.getMotuConfigInstance().getProxyPwd();
             System.setProperty("proxyHost", Organizer.getMotuConfigInstance().getProxyHost());
@@ -1814,6 +1832,32 @@ public class Organizer {
      */
     public static Map<String, ServicePersistent> getServicesPersistentInstance() {
         return Organizer.servicesPersistent;
+    }
+
+    /**
+     * Gets the config file sytem.
+     * 
+     * @param key the key
+     * @return the config file sytem
+     */
+    public static ConfigFileSystemType getConfigFileSytem(String key) {
+        if (Organizer.configFileSystemMap == null) {
+            return null;
+        }
+        String host = key.toLowerCase();
+        return Organizer.configFileSystemMap.get(host);
+    }
+
+    /**
+     * Checks if is config file sytem empty.
+     * 
+     * @return true, if is config file sytem empty
+     */
+    public static boolean isConfigFileSytemEmpty() {
+        if (Organizer.configFileSystemMap == null) {
+            return true;
+        }
+        return Organizer.configFileSystemMap.isEmpty();
     }
 
     /**
@@ -4740,448 +4784,7 @@ public class Organizer {
         return this.currentService;
     }
 
-    /**
-     * Gets the current config service.
-     *
-     * @return the current config service
-     */
-    public ConfigService getCurrentConfigService() {
-        ServiceData serviceData = getCurrentService();
-        if (serviceData == null) {
-            return null;
-        }
-        
-        return serviceData.getConfigService();
-    }
-    
-    /**
-     * Checks if is current sftp user dir is root.
-     *
-     * @param organizer the organizer
-     * @return the boolean
-     * @throws MotuException the motu exception
-     */
-    public static Boolean isCurrentSftpUserDirIsRoot(Organizer organizer) throws MotuException {
-        if (organizer == null) {
-            return Organizer.getMotuConfigInstance().isSftpUserDirIsRoot();            
-        }
-        
-        return organizer.isCurrentSftpUserDirIsRoot();
-    }
-    
-    /**
-     * Checks if is current sftp user dir is root.
-     *
-     * @return the boolean
-     * @throws MotuException the motu exception
-     */
-    public Boolean isCurrentSftpUserDirIsRoot() throws MotuException {
-        ConfigService configService = getCurrentConfigService();
-        
-        Boolean globalValue =  Organizer.getMotuConfigInstance().isSftpUserDirIsRoot();
-        
-        if (configService == null) {
-            return globalValue;
-        }
-        
-        Boolean value =  configService.isSftpUserDirIsRoot();
-        
-        if (value == null) {
-            return globalValue;
-        }
-        
-        return value;
-    }
-    /**
-     * Checks if is current ftp user dir is root.
-     *
-     * @param organizer the organizer
-     * @return the boolean
-     * @throws MotuException the motu exception
-     */
-    public static Boolean isCurrentFtpUserDirIsRoot(Organizer organizer) throws MotuException {
-        if (organizer == null) {
-            return Organizer.getMotuConfigInstance().isFtpUserDirIsRoot();            
-        }
-        
-        return organizer.isCurrentFtpUserDirIsRoot();
-    }
-    /**
-     * Checks if is current ftp user dir is root.
-     *
-     * @return the boolean
-     * @throws MotuException the motu exception
-     */
-    public Boolean isCurrentFtpUserDirIsRoot() throws MotuException {
-        ConfigService configService = getCurrentConfigService();
-        
-        Boolean globalValue =  Organizer.getMotuConfigInstance().isFtpUserDirIsRoot();
-        
-        if (configService == null) {
-            return globalValue;
-        }
-        
-        Boolean value =  configService.isFtpUserDirIsRoot();
-        
-        if (value == null) {
-            return globalValue;
-        }
-        
-        return value;
-    }
-    
-    /**
-     * Checks if is current ftp passive mode.
-     *
-     * @param organizer the organizer
-     * @return the boolean
-     * @throws MotuException the motu exception
-     */
-    public static Boolean isCurrentFtpPassiveMode(Organizer organizer) throws MotuException {
-        if (organizer == null) {
-            return Organizer.getMotuConfigInstance().isFtpPassiveMode();            
-        }
-        
-        return organizer.isCurrentFtpPassiveMode();
-    }
 
-    /**
-     * Checks if is current ftp passive mode.
-     *
-     * @return the boolean
-     * @throws MotuException the motu exception
-     */
-    public Boolean isCurrentFtpPassiveMode() throws MotuException {
-        ConfigService configService = getCurrentConfigService();
-        
-        Boolean globalValue =  Organizer.getMotuConfigInstance().isFtpPassiveMode();
-        
-        if (configService == null) {
-            return globalValue;
-        }
-        
-        Boolean value =  configService.isFtpPassiveMode();
-        
-        if (value == null) {
-            return globalValue;
-        }
-        
-        return value;
-    }
-    
-    /**
-     * Gets the current ftp data time out.
-     *
-     * @param organizer the organizer
-     * @return the current ftp data time out
-     * @throws MotuException the motu exception
-     */
-    public static Period getCurrentFtpDataTimeOut(Organizer organizer) throws MotuException {
-        if (organizer == null) {
-            return Organizer.getMotuConfigInstance().getFtpDataTimeOut();            
-        }
-        
-        return organizer.getCurrentFtpDataTimeOut();
-    }
-    
-    /**
-     * Gets the current ftp data time out.
-     *
-     * @return the current ftp data time out
-     * @throws MotuException the motu exception
-     */
-    public Period getCurrentFtpDataTimeOut() throws MotuException {
-        ConfigService configService = getCurrentConfigService();
-        
-        Period globalValue =  Organizer.getMotuConfigInstance().getFtpDataTimeOut();
-        
-        if (configService == null) {
-            return globalValue;
-        }
-        
-        Period value =  configService.getFtpDataTimeOut();
-        
-        if (value == null) {
-            return globalValue;
-        }
-        
-        return value;
-    }
-    
-    /**
-     * Checks if is current use proxy.
-     *
-     * @param organizer the organizer
-     * @return the boolean
-     * @throws MotuException the motu exception
-     */
-    public static Boolean isCurrentUseProxy(Organizer organizer) throws MotuException {
-        if (organizer == null) {
-            return Organizer.getMotuConfigInstance().isUseProxy();            
-        }
-        
-        return organizer.isCurrentUseProxy();
-    }
-
-    /**
-     * Checks if is current use proxy.
-     *
-     * @return the boolean
-     * @throws MotuException the motu exception
-     */
-    public Boolean isCurrentUseProxy() throws MotuException {
-        ConfigService configService = getCurrentConfigService();
-        
-        Boolean globalValue =  Organizer.getMotuConfigInstance().isUseProxy();
-        
-        if (configService == null) {
-            return globalValue;
-        }
-        
-        Boolean value =  configService.isUseProxy();
-        
-        if (value == null) {
-            return globalValue;
-        }
-        
-        return value;
-    }
-    
-    /**
-     * Gets the current proxy host.
-     *
-     * @param organizer the organizer
-     * @return the current proxy host
-     * @throws MotuException the motu exception
-     */
-    public static String getCurrentProxyHost(Organizer organizer) throws MotuException {
-        if (organizer == null) {
-            return Organizer.getMotuConfigInstance().getProxyHost();            
-        }
-        
-        return organizer.getCurrentProxyHost();
-    }
-
-    /**
-     * Gets the current proxy host.
-     *
-     * @return the current proxy host
-     * @throws MotuException the motu exception
-     */
-    public String getCurrentProxyHost() throws MotuException {
-        ConfigService configService = getCurrentConfigService();
-        
-        String globalValue =  Organizer.getMotuConfigInstance().getProxyHost();
-        
-        if (configService == null) {
-            return globalValue;
-        }
-        
-        String value =  configService.getProxyHost();
-        
-        if (value == null) {
-            return globalValue;
-        }
-        
-        return value;
-    }
-    
-    /**
-     * Gets the current proxy port.
-     *
-     * @param organizer the organizer
-     * @return the current proxy port
-     * @throws MotuException the motu exception
-     */
-    public static String getCurrentProxyPort(Organizer organizer) throws MotuException {
-        if (organizer == null) {
-            return Organizer.getMotuConfigInstance().getProxyPort();            
-        }
-        
-        return organizer.getCurrentProxyPort();
-    }
-    
-    /**
-     * Gets the current proxy port.
-     *
-     * @return the current proxy port
-     * @throws MotuException the motu exception
-     */
-    public String getCurrentProxyPort() throws MotuException {
-        ConfigService configService = getCurrentConfigService();
-        
-        String globalValue =  Organizer.getMotuConfigInstance().getProxyPort();
-        
-        if (configService == null) {
-            return globalValue;
-        }
-        
-        String value =  configService.getProxyPort();
-        
-        if (value == null) {
-            return globalValue;
-        }
-        
-        return value;
-    }
-    
-    /**
-     * Gets the current proxy login.
-     *
-     * @param organizer the organizer
-     * @return the current proxy login
-     * @throws MotuException the motu exception
-     */
-    public static String getCurrentProxyLogin(Organizer organizer) throws MotuException {
-        if (organizer == null) {
-            return Organizer.getMotuConfigInstance().getProxyLogin();            
-        }
-        
-        return organizer.getCurrentProxyLogin();
-    }
-
-    /**
-     * Gets the current proxy login.
-     *
-     * @return the current proxy login
-     * @throws MotuException the motu exception
-     */
-    public String getCurrentProxyLogin() throws MotuException {
-        ConfigService configService = getCurrentConfigService();
-        
-        String globalValue =  Organizer.getMotuConfigInstance().getProxyLogin();
-        
-        if (configService == null) {
-            return globalValue;
-        }
-        
-        String value =  configService.getProxyLogin();
-        
-        if (value == null) {
-            return globalValue;
-        }
-        
-        return value;
-    }
-    
-    /**
-     * Gets the current proxy pwd.
-     *
-     * @param organizer the organizer
-     * @return the current proxy pwd
-     * @throws MotuException the motu exception
-     */
-    public static String getCurrentProxyPwd(Organizer organizer) throws MotuException {
-        if (organizer == null) {
-            return Organizer.getMotuConfigInstance().getProxyPwd();            
-        }
-        
-        return organizer.getCurrentProxyPwd();
-    }
-    
-    /**
-     * Gets the current proxy pwd.
-     *
-     * @return the current proxy pwd
-     * @throws MotuException the motu exception
-     */
-    public String getCurrentProxyPwd() throws MotuException {
-        ConfigService configService = getCurrentConfigService();
-        
-        String globalValue =  Organizer.getMotuConfigInstance().getProxyPwd();
-        
-        if (configService == null) {
-            return globalValue;
-        }
-        
-        String value =  configService.getProxyPwd();
-        
-        if (value == null) {
-            return globalValue;
-        }
-        
-        return value;
-    }
-    
-    /**
-     * Gets the current strict host key checking.
-     *
-     * @param organizer the organizer
-     * @return the current strict host key checking
-     * @throws MotuException the motu exception
-     */
-    public static String getCurrentStrictHostKeyChecking(Organizer organizer) throws MotuException {
-        if (organizer == null) {
-            return Organizer.getMotuConfigInstance().getStrictHostKeyChecking();            
-        }
-        
-        return organizer.getCurrentStrictHostKeyChecking();
-    }
-    
-    /**
-     * Gets the current strict host key checking.
-     *
-     * @return the current strict host key checking
-     * @throws MotuException the motu exception
-     */
-    public String getCurrentStrictHostKeyChecking() throws MotuException {
-        ConfigService configService = getCurrentConfigService();
-        
-        String globalValue =  Organizer.getMotuConfigInstance().getStrictHostKeyChecking();
-        
-        if (configService == null) {
-            return globalValue;
-        }
-        
-        String value =  configService.getStrictHostKeyChecking();
-        
-        if (value == null) {
-            return globalValue;
-        }
-        
-        return value;
-    }
-    
-    /**
-     * Gets the current sftp session time out.
-     *
-     * @param organizer the organizer
-     * @return the current sftp session time out
-     * @throws MotuException the motu exception
-     */
-    public static Period getCurrentSftpSessionTimeOut(Organizer organizer) throws MotuException {
-        if (organizer == null) {
-            return Organizer.getMotuConfigInstance().getSftpSessionTimeOut();            
-        }
-        
-        return organizer.getCurrentSftpSessionTimeOut();
-    }
-    
-    /**
-     * Gets the current sftp session time out.
-     *
-     * @return the current sftp session time out
-     * @throws MotuException the motu exception
-     */
-    public Period getCurrentSftpSessionTimeOut() throws MotuException {
-        ConfigService configService = getCurrentConfigService();
-        
-        Period globalValue =  Organizer.getMotuConfigInstance().getSftpSessionTimeOut();
-        
-        if (configService == null) {
-            return globalValue;
-        }
-        
-        Period value =  configService.getSftpSessionTimeOut();
-        
-        if (value == null) {
-            return globalValue;
-        }
-        
-        return value;
-    }
-
-    
     /**
      * Getter of the property <tt>defaultServiceName</tt>.
      * 
@@ -5772,7 +5375,7 @@ public class Organizer {
     // }
     /**
      * Gets the product metadata info.
-     *
+     * 
      * @param locationData the location data
      * @param catalogFileName the catalog file name
      * @param loadTDSVariableVocabulary the load tds variable vocabulary
@@ -5794,14 +5397,14 @@ public class Organizer {
                                   locationData),
                     e);
         }
-        
+
         ProductMetadataInfo productMetadataInfo = null;
-        
+
         // If uri is a file (netcdf file), don't load TDS (contained in TDS catalog) Metadata
         if ((uri.getScheme().equalsIgnoreCase("http")) || (uri.getScheme().equalsIgnoreCase("https"))) {
             productMetadataInfo = getProductMetadataInfoFromTDS(locationData, catalogFileName, loadTDSVariableVocabulary);
         } else {
-            productMetadataInfo = getProductMetadataInfoFromFile(locationData);           
+            productMetadataInfo = getProductMetadataInfoFromFile(locationData);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -5812,7 +5415,7 @@ public class Organizer {
 
     /**
      * Gets the product metadata info from tds.
-     *
+     * 
      * @param locationData the location data
      * @param catalogFileName the catalog file name
      * @param loadTDSVariableVocabulary the load tds variable vocabulary
@@ -6545,12 +6148,10 @@ public class Organizer {
             service.setUrlSite(confServ.getCatalog().getUrlSite());
             service.setCatalogFileName(confServ.getCatalog().getName());
             service.setCatalogType(confServ.getCatalog().getType());
-            service.setCasAuthentification(confServ.getCatalog().isCasAuthentification());
+            service.setCasAuthentification(confServ.getCatalog().getCasAuthentification());
             service.setVeloTemplatePrefix(confServ.getVeloTemplatePrefix());
-            service.setKeepDataFilesList(confServ.isKeepDataFilesList());
+            service.setKeepDataFilesList(confServ.getKeepDataFilesList());
 
-            service.setConfigService(confServ);          
-            
             putServices(service.getName().toLowerCase(), service);
         }
 
@@ -6563,6 +6164,24 @@ public class Organizer {
         if (LOG.isDebugEnabled()) {
             LOG.debug("fillServices() - exiting");
         }
+    }
+
+    private static void setFileSystemConfiguration() throws MotuException {
+
+        List<ConfigFileSystemType> listConfigFileSystem = Organizer.getMotuConfigInstance().getConfigFileSystem();
+
+        if (listConfigFileSystem.size() <= 0) {
+            return;
+        }
+
+        try {
+            Organizer.configFileSystemMap = new ListUtils<String>().toMap(listConfigFileSystem, Organizer.CONFIG_FILE_SYSTEM_TYPE_KEY_FIELD);
+        } catch (Exception e) {
+            throw new MotuException(
+                    "ERROR in Organizer#getFileSystemConfiguration: unable to convert the list of file system configurations to a map object.",
+                    e);
+        }
+
     }
 
     /**
@@ -7148,6 +6767,153 @@ public class Organizer {
         return split[1];
     }
 
+    
+
+  public static URLConnection openConnection(URL url) throws MotuException {
+      String scheme = url.getProtocol();
+      String host = url.getHost();
+      
+      Proxy proxy = Organizer.getUrlConnectionOpts(scheme, host);
+
+      URLConnection urlConnection = null;
+      
+      if (proxy != null) {
+          try {
+            urlConnection = url.openConnection(proxy);
+        } catch (IOException e) {
+            throw new MotuException(String.format("Unable to open URL connection '%s' (Proxy: '%s')", url.toString(), proxy.toString()), e);
+        }
+      } else   {
+          try {
+            urlConnection = url.openConnection();
+        } catch (IOException e) {
+            throw new MotuException(String.format("Unable to open URL connection '%s' (No Proxy:)", url.toString()), e);
+        }          
+      }
+      
+      return urlConnection;
+  }
+  public static URLConnection openConnection(URI uri) throws MotuException  {
+      try {
+          return openConnection(uri.toURL());
+      } catch (MalformedURLException e) {
+          throw new MotuException(String.format("Unable to convert uri '%s' to URL object ", uri), e);
+    }
+  }
+
+  public static Proxy getUrlConnectionOpts(String scheme, String host) {
+      
+      return null;
+//      if (Organizer.isNullOrEmpty(scheme)) {
+//          if (LOG.isDebugEnabled()) {
+//              LOG.debug("setSchemeOpts(String) - exiting");
+//          }
+//          return opts;
+//      }
+//
+//      if (opts == null) {
+//          opts = new FileSystemOptions();
+//      }
+//
+//      FileSystemConfigBuilder fscb = null;
+//      MotuConfigFileSystemWrapper<Boolean> wrapperBoolean = new MotuConfigFileSystemWrapper<Boolean>();
+//      MotuConfigFileSystemWrapper<Period> wrapperPeriod = new MotuConfigFileSystemWrapper<Period>();
+//      MotuConfigFileSystemWrapper<String> wrapperString = new MotuConfigFileSystemWrapper<String>();
+//
+//      try {
+//          try {
+//              fscb = standardFileSystemManager.getFileSystemConfigBuilder(scheme);
+//          } catch (FileSystemException e) {
+//              LOG.error("setSchemeOpts(String)", e);
+//
+//              fscb = standardFileSystemManager.getFileSystemConfigBuilder(VFSManager.DEFAULT_SCHEME);
+//          }
+//
+//          if (fscb instanceof FtpFileSystemConfigBuilder) {
+//              FtpFileSystemConfigBuilder ftpFscb = (FtpFileSystemConfigBuilder) fscb;
+//              Boolean userDirIsRoot = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPUSERDIRISROOT);
+//              if (userDirIsRoot != null) {
+//                  ftpFscb.setUserDirIsRoot(opts, userDirIsRoot);
+//              }
+//              Boolean passiveMode = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPPASSIVEMODE);
+//              ;
+//              if (passiveMode != null) {
+//                  ftpFscb.setPassiveMode(opts, passiveMode);
+//              }
+//              Period dataTimeOut = wrapperPeriod.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPDATATIMEOUT);
+//              if (dataTimeOut != null) {
+//                  long value = dataTimeOut.toStandardDuration().getMillis();
+//                  if (value > Integer.MAX_VALUE) {
+//                      throw new MotuException(String.format("Motu Configuration : sftp timeout value is too large '%ld' milliseconds. Max is '%d'",
+//                                                            value,
+//                                                            Integer.MAX_VALUE));
+//                  }
+//                  if (value > 0) {
+//                      ftpFscb.setDataTimeout(opts, (int) value);
+//                  }
+//              }
+//          }
+//
+//          if (fscb instanceof HttpFileSystemConfigBuilder) {
+//              HttpFileSystemConfigBuilder httpFscb = (HttpFileSystemConfigBuilder) fscb;
+//
+//              Boolean isUseProxy = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_USEHTTPPROXY);
+//              if ((isUseProxy != null) && (isUseProxy)) {
+//                  String proxyHost = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_HTTPPROXYHOST);
+//                  String proxyPort = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_HTTPPROXYPORT);
+//                  httpFscb.setProxyHost(opts, proxyHost);
+//                  httpFscb.setProxyPort(opts, Integer.parseInt(proxyPort));
+//              }
+//
+//          }
+//
+//          if (fscb instanceof SftpFileSystemConfigBuilder) {
+//              SftpFileSystemConfigBuilder sftpFscb = (SftpFileSystemConfigBuilder) fscb;
+//
+//              Boolean userDirIsRoot = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPUSERDIRISROOT);
+//              if (userDirIsRoot != null) {
+//                  sftpFscb.setUserDirIsRoot(opts, userDirIsRoot);
+//              }
+//
+//              String strictHostKeyChecking = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_STRICTHOSTKEYCHECKING);
+//              if (strictHostKeyChecking != null) {
+//                  sftpFscb.setStrictHostKeyChecking(opts, strictHostKeyChecking);
+//              }
+//
+//              Period SftpSessionTimeOut = wrapperPeriod.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPSESSIONTIMEOUT);
+//              if (SftpSessionTimeOut != null) {
+//                  long value = SftpSessionTimeOut.toStandardDuration().getMillis();
+//                  if (value > Integer.MAX_VALUE) {
+//                      throw new MotuException(String.format("Motu Configuration : sftp timeout value is too large '%ld' milliseconds. Max is '%d'",
+//                                                            value,
+//                                                            Integer.MAX_VALUE));
+//                  }
+//                  if (value > 0) {
+//                      sftpFscb.setTimeout(opts, (int) value);
+//                  }
+//              }
+//
+//              Boolean isUseProxy = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_USESFTPPROXY);
+//              if ((isUseProxy != null) && (isUseProxy)) {
+//                  String proxyHost = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPPROXYHOST);
+//                  String proxyPort = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPPROXYPORT);
+//                  sftpFscb.setProxyHost(opts, proxyHost);
+//                  sftpFscb.setProxyPort(opts, Integer.parseInt(proxyPort));
+//              }
+//
+//          }
+//
+//      } catch (FileSystemException e) {
+//          LOG.error("setSchemeOpts(String)", e);
+//
+//          throw new MotuException("Error in VFSManager#setScheme", e);
+//      }
+//
+//      if (LOG.isDebugEnabled()) {
+//          LOG.debug("setSchemeOpts(String) - exiting");
+//      }
+//      return opts;
+  }
 }
 
 // CSON: MultipleStringLiterals

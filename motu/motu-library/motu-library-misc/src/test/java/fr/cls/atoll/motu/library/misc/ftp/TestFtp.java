@@ -30,6 +30,7 @@ import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.utils.ConfigLoader;
+import fr.cls.atoll.motu.library.misc.utils.MotuConfigFileSystemWrapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -283,7 +284,14 @@ public class TestFtp {
         // "NRT-SLA/maps/rt/j2/h/msla_rt_j2_err_21564.nc.gz");
         // testVFS("anonymous@ftp.unidata.ucar.edu", "", "ftp", "proxy.cls.fr", "/pub/README");
 
-        // testVFS("", "", "http", "catsat-data1.cls.fr:43080", "/thredds/catalog.xml");
+        try {
+            Boolean value = new MotuConfigFileSystemWrapper<Boolean>().getFieldValue("test", "ftpUserDirIsRoot");
+        } catch (MotuException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        testVFS("", "", "http", "catsat-data1.cls.fr:43080", "/thredds/catalog.xml");
 
         // testVFS("anonymous@gridftp.bigred.iu.teragrid.org:2811", "email", "gsiftp",        // "proxy.cls.fr", "/pub/README");
         // testVFS("anonymous@dcgftp.usatlas.bnl.gov:2811/", "email", "gsiftp",

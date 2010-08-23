@@ -28,12 +28,14 @@ import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.utils.ConfigLoader;
+import fr.cls.atoll.motu.library.misc.utils.MotuConfigFileSystemWrapper;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.CacheStrategy;
@@ -160,7 +162,7 @@ public class VFSManager {
             LOG.debug("open() - entering");
         }
 
-        open("", "", "");
+        open("", "", "", "");
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("open() - exiting");
@@ -176,7 +178,7 @@ public class VFSManager {
      * 
      * @throws MotuException the motu exception
      */
-    public void open(String user, String pwd, String scheme) throws MotuException {
+    public void open(String user, String pwd, String scheme, String host) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("open(String, String, String) - entering");
         }
@@ -209,7 +211,7 @@ public class VFSManager {
         opts = new FileSystemOptions();
 
         setUserInfo(user, pwd);
-        setSchemeOpts(scheme);
+        setSchemeOpts(scheme, host);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("open(String, String, String) - exiting");
@@ -292,7 +294,7 @@ public class VFSManager {
      * 
      * @throws MotuException the motu exception
      */
-    public FileSystemOptions setSchemeOpts(String scheme, Organizer organizer) throws MotuException {
+    public FileSystemOptions setSchemeOpts(String scheme, String host) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("setSchemeOpts(String) - entering");
         }
@@ -308,7 +310,11 @@ public class VFSManager {
             opts = new FileSystemOptions();
         }
 
-        FileSystemConfigBuilder fscb;
+        FileSystemConfigBuilder fscb = null;
+        MotuConfigFileSystemWrapper<Boolean> wrapperBoolean = new MotuConfigFileSystemWrapper<Boolean>();
+        MotuConfigFileSystemWrapper<Period> wrapperPeriod = new MotuConfigFileSystemWrapper<Period>();
+        MotuConfigFileSystemWrapper<String> wrapperString = new MotuConfigFileSystemWrapper<String>();
+
         try {
             try {
                 fscb = standardFileSystemManager.getFileSystemConfigBuilder(scheme);
@@ -320,16 +326,16 @@ public class VFSManager {
 
             if (fscb instanceof FtpFileSystemConfigBuilder) {
                 FtpFileSystemConfigBuilder ftpFscb = (FtpFileSystemConfigBuilder) fscb;
-                
-                Boolean  userDirIsRoot = Organizer.isCurrentFtpUserDirIsRoot(organizer);
+                Boolean userDirIsRoot = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPUSERDIRISROOT);
                 if (userDirIsRoot != null) {
                     ftpFscb.setUserDirIsRoot(opts, userDirIsRoot);
                 }
-                Boolean  passiveMode  = Organizer.isCurrentFtpPassiveMode(organizer);
+                Boolean passiveMode = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPPASSIVEMODE);
+                ;
                 if (passiveMode != null) {
                     ftpFscb.setPassiveMode(opts, passiveMode);
                 }
-                Period  dataTimeOut = Organizer.getCurrentFtpDataTimeOut(organizer);
+                Period dataTimeOut = wrapperPeriod.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPDATATIMEOUT);
                 if (dataTimeOut != null) {
                     long value = dataTimeOut.toStandardDuration().getMillis();
                     if (value > Integer.MAX_VALUE) {
@@ -338,18 +344,18 @@ public class VFSManager {
                                                               Integer.MAX_VALUE));
                     }
                     if (value > 0) {
-                        ftpFscb.setDataTimeout(opts, (int)value );
+                        ftpFscb.setDataTimeout(opts, (int) value);
                     }
                 }
             }
 
             if (fscb instanceof HttpFileSystemConfigBuilder) {
                 HttpFileSystemConfigBuilder httpFscb = (HttpFileSystemConfigBuilder) fscb;
-                
-                Boolean isUseProxy = Organizer.isCurrentUseProxy(organizer);         
+
+                Boolean isUseProxy = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_USEHTTPPROXY);
                 if ((isUseProxy != null) && (isUseProxy)) {
-                    String proxyHost = Organizer.getCurrentProxyHost(organizer);
-                    String proxyPort = Organizer.getCurrentProxyPort(organizer);
+                    String proxyHost = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_HTTPPROXYHOST);
+                    String proxyPort = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_HTTPPROXYPORT);
                     httpFscb.setProxyHost(opts, proxyHost);
                     httpFscb.setProxyPort(opts, Integer.parseInt(proxyPort));
                 }
@@ -359,17 +365,17 @@ public class VFSManager {
             if (fscb instanceof SftpFileSystemConfigBuilder) {
                 SftpFileSystemConfigBuilder sftpFscb = (SftpFileSystemConfigBuilder) fscb;
 
-                Boolean  userDirIsRoot = Organizer.isCurrentSftpUserDirIsRoot(organizer);
+                Boolean userDirIsRoot = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPUSERDIRISROOT);
                 if (userDirIsRoot != null) {
                     sftpFscb.setUserDirIsRoot(opts, userDirIsRoot);
                 }
 
-                String strictHostKeyChecking = Organizer.getCurrentStrictHostKeyChecking(organizer);         
+                String strictHostKeyChecking = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_STRICTHOSTKEYCHECKING);
                 if (strictHostKeyChecking != null) {
                     sftpFscb.setStrictHostKeyChecking(opts, strictHostKeyChecking);
                 }
-                
-                Period SftpSessionTimeOut = Organizer.getCurrentSftpSessionTimeOut(organizer);         
+
+                Period SftpSessionTimeOut = wrapperPeriod.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPSESSIONTIMEOUT);
                 if (SftpSessionTimeOut != null) {
                     long value = SftpSessionTimeOut.toStandardDuration().getMillis();
                     if (value > Integer.MAX_VALUE) {
@@ -378,14 +384,14 @@ public class VFSManager {
                                                               Integer.MAX_VALUE));
                     }
                     if (value > 0) {
-                        sftpFscb.setTimeout(opts, (int)value );
+                        sftpFscb.setTimeout(opts, (int) value);
                     }
                 }
 
-                Boolean isUseProxy = Organizer.isCurrentUseProxy(organizer);         
+                Boolean isUseProxy = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_USESFTPPROXY);
                 if ((isUseProxy != null) && (isUseProxy)) {
-                    String proxyHost = Organizer.getCurrentProxyHost(organizer);
-                    String proxyPort = Organizer.getCurrentProxyPort(organizer);
+                    String proxyHost = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPPROXYHOST);
+                    String proxyPort = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPPROXYPORT);
                     sftpFscb.setProxyHost(opts, proxyHost);
                     sftpFscb.setProxyPort(opts, Integer.parseInt(proxyPort));
                 }
@@ -405,10 +411,22 @@ public class VFSManager {
     }
 
     public FileSystemOptions setSchemeOpts(String scheme) throws MotuException {
-      return setSchemeOpts(scheme, null);            
-                
+        return setSchemeOpts(scheme, null);
+
     }
-    
+
+    public FileSystemOptions setSchemeOpts(URL url) throws MotuException {
+        try {
+            return setSchemeOpts(url.toURI());
+        } catch (URISyntaxException e) {
+            throw new MotuException(String.format("Unable to convert url '%s' to URI object ", url), e);
+        }
+    }
+    public FileSystemOptions setSchemeOpts(URI uri) throws MotuException {
+        String scheme = uri.getScheme();
+        String host = uri.getHost();
+        return setSchemeOpts(scheme, host);
+    }
 
     /**
      * Sets the user dir is root.
@@ -605,25 +623,12 @@ public class VFSManager {
             URI uriObject = Organizer.newURI(uri);
 
             fileSystemOptions = setUserInfo(auth);
-            fileSystemOptions = setSchemeOpts(uriObject.getScheme());
+            fileSystemOptions = setSchemeOpts(uriObject);
 
             try {
                 fileObject = standardFileSystemManager.resolveFile(uri, fileSystemOptions);
             } catch (FileSystemException e) {
-
-                LOG.error("resolveFile(String, FileSystemOptions) - Try with 'UserDirIsRoot' options to true (scheme is" + uriObject.getScheme()
-                        + ")", e);
-                // Try with 'UserDirIsRoot' options to true
-                setUserDirIsRoot(uriObject.getScheme(), true, fileSystemOptions);
-                try {
-                    fileObject = standardFileSystemManager.resolveFile(uri, fileSystemOptions);
-                } catch (FileSystemException e1) {
-                    throw new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
-                } finally {
-                    // Reset 'UserDirIsRoot' options to false
-                    setUserDirIsRoot(uriObject.getScheme(), false, fileSystemOptions);
-                }
-
+                throw new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
             }
 
         } catch (URISyntaxException e) {
@@ -662,23 +667,13 @@ public class VFSManager {
 
         try {
 
-            setSchemeOpts(baseFile.getName().getScheme());
+            // setSchemeOpts(baseFile.getName().getScheme());
+            setSchemeOpts(baseFile.getURL());
 
             fileObject = standardFileSystemManager.resolveFile(baseFile, file, opts);
 
         } catch (FileSystemException e) {
-            LOG.error("resolveFile(FileObject, String) - Try with 'UserDirIsRoot' options to true (scheme is" + baseFile.getName().toString() + ")",
-                      e);
-            // Try with 'UserDirIsRoot' options to true
-            setUserDirIsRoot(baseFile.getName().getScheme(), true);
-            try {
-                fileObject = standardFileSystemManager.resolveFile(baseFile, file, opts);
-            } catch (FileSystemException e1) {
-                throw new MotuException(String.format("Unable to resolve uri '%s/%s' ", baseFile.getName().toString(), file), e);
-            } finally {
-                // Reset 'UserDirIsRoot' options to false
-                setUserDirIsRoot(baseFile.getName().getScheme(), false);
-            }
+            throw new MotuException(String.format("Unable to resolve uri '%s/%s' ", baseFile.getName().toString(), file), e);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -705,7 +700,7 @@ public class VFSManager {
             LOG.debug("copyFileToLocalFile(String, String, String, String, String, String) - entering");
         }
 
-        open(user, pwd, scheme);
+        open(user, pwd, scheme, null);
 
         FileObject foSrc = null;
         FileObject foDest = null;
