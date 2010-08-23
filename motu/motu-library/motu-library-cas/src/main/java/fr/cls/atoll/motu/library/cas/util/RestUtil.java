@@ -251,7 +251,7 @@ public class RestUtil {
             return null;
         }
 
-        HttpsURLConnection hsu = (HttpsURLConnection) RestUtil.openConn(casRestUrl);
+        HttpsURLConnection hsu = (HttpsURLConnection) RestUtil.openHttpsConnection(casRestUrl);
         StringBuffer stringBuffer = new StringBuffer();
 
         stringBuffer.append(URLEncoder.encode("username", "UTF-8"));
@@ -384,7 +384,7 @@ public class RestUtil {
             LOG.debug("loginToCAS(String, String, String) - url is: " + casURL);
         }
         System.out.println(casURL);
-        HttpsURLConnection hsu = (HttpsURLConnection) RestUtil.openConn(casURL);
+        HttpsURLConnection hsu = (HttpsURLConnection) RestUtil.openHttpsConnection(casURL);
         OutputStreamWriter out = new OutputStreamWriter(hsu.getOutputStream());
         BufferedWriter bwr = new BufferedWriter(out);
         bwr.write(encodedServiceURL);
@@ -424,7 +424,7 @@ public class RestUtil {
      * 
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    static URLConnection openConn(String urlk) throws IOException {
+    static URLConnection openHttpsConnection(String urlk) throws IOException {
 
         URL url = new URL(urlk);
         HttpsURLConnection hsu = (HttpsURLConnection) url.openConnection();
