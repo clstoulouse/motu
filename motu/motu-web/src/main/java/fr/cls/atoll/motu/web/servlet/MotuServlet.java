@@ -520,7 +520,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
         List<ConfigService> listConfServ = Organizer.getMotuConfigInstance().getConfigService();
         for (ConfigService confServ : listConfServ) {
-            if (confServ.getGroup().equalsIgnoreCase(groupName) && confServ.isDefaultGroupService()) {
+            if (confServ.getGroup().equalsIgnoreCase(groupName) && confServ.getDefaultGroupService()) {
                 serviceName = confServ.getName();
 
                 if (LOG.isInfoEnabled()) {
@@ -837,7 +837,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         setLanguageParameter(request, session, response);
 
         try {
-            if (Organizer.getMotuConfigInstance().isDefaultActionIsListServices()) {
+            if (Organizer.getMotuConfigInstance().getDefaultActionIsListServices()) {
                 listServices(request, session, response);
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("execDefaultRequest() - exiting");
@@ -1979,7 +1979,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             if (queueManagement == null) {
                 continue;
             }
-            if (queueConfig.isBatch() != batch) {
+            if (queueConfig.getBatch() != batch) {
                 continue;
             }
 
@@ -1993,13 +1993,13 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             stringBuffer.append("<table border=\"1\">\n");
             stringBuffer.append("<p>\n");
             stringBuffer.append("Max. pool anonymous: ");
-            if (queueConfig.isBatch()) {
+            if (queueConfig.getBatch()) {
                 stringBuffer.append("unlimited");
             } else {
                 stringBuffer.append(queueServerManagement.computeMaxPoolAnonymous(queueManagement));
             }
             stringBuffer.append(" Max. pool authenticate: ");
-            if (queueConfig.isBatch()) {
+            if (queueConfig.getBatch()) {
                 stringBuffer.append("unlimited");
             } else {
                 stringBuffer.append(queueServerManagement.computeMaxPoolAuthenticate(queueManagement));
@@ -2951,7 +2951,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     private void initAuthentification() throws ServletException {
         try {
             MotuConfig motuConfig = Organizer.getMotuConfigInstance();
-            if (motuConfig.isUseAuthentication()) {
+            if (motuConfig.getUseAuthentication()) {
                 authentificationProps = PropertiesUtilities.loadFromClasspath("motuUser.properties");
             }
         } catch (IOException e) {
