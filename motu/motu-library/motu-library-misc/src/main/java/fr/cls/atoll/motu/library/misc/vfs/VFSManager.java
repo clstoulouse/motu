@@ -296,12 +296,12 @@ public class VFSManager {
      */
     public FileSystemOptions setSchemeOpts(String scheme, String host) throws MotuException {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("setSchemeOpts(String) - entering");
+            LOG.debug("setSchemeOpts(String, String) - start");
         }
 
         if (Organizer.isNullOrEmpty(scheme)) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("setSchemeOpts(String) - exiting");
+                LOG.debug("setSchemeOpts(String, String) - end");
             }
             return opts;
         }
@@ -399,114 +399,75 @@ public class VFSManager {
             }
 
         } catch (FileSystemException e) {
-            LOG.error("setSchemeOpts(String)", e);
+            LOG.error("setSchemeOpts(String, String)", e);
 
             throw new MotuException("Error in VFSManager#setScheme", e);
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("setSchemeOpts(String) - exiting");
+            LOG.debug("setSchemeOpts(String, String) - end");
         }
         return opts;
     }
 
+    /**
+     * Sets the scheme opts.
+     *
+     * @param scheme the scheme
+     * @return the file system options
+     * @throws MotuException the motu exception
+     */
     public FileSystemOptions setSchemeOpts(String scheme) throws MotuException {
         return setSchemeOpts(scheme, null);
 
     }
 
-    public FileSystemOptions setSchemeOpts(URL url) throws MotuException {
-        try {
-            return setSchemeOpts(url.toURI());
-        } catch (URISyntaxException e) {
-            throw new MotuException(String.format("Unable to convert url '%s' to URI object ", url), e);
-        }
-    }
-    public FileSystemOptions setSchemeOpts(URI uri) throws MotuException {
-        String scheme = uri.getScheme();
-        String host = uri.getHost();
-        return setSchemeOpts(scheme, host);
-    }
-
     /**
-     * Sets the user dir is root.
-     * 
-     * @param scheme the scheme
-     * @param userDirIsRoot the user dir is root
+     * Sets the scheme opts.
+     *
+     * @param url the url
      * @return the file system options
      * @throws MotuException the motu exception
      */
-    public FileSystemOptions setUserDirIsRoot(String scheme, boolean userDirIsRoot) throws MotuException {
+    public FileSystemOptions setSchemeOpts(URL url) throws MotuException {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("setUserDirIsRoot(String, boolean) - start");
+            LOG.debug("setSchemeOpts(URL) - start");
         }
 
-        FileSystemOptions returnFileSystemOptions = setUserDirIsRoot(scheme, userDirIsRoot, this.opts);
+        try {
+            FileSystemOptions returnFileSystemOptions = setSchemeOpts(url.toURI());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("setSchemeOpts(URL) - end");
+            }
+            return returnFileSystemOptions;
+        } catch (URISyntaxException e) {
+            LOG.error("setSchemeOpts(URL)", e);
+
+            throw new MotuException(String.format("Unable to convert url '%s' to URI object ", url), e);
+        }
+    }
+    
+    /**
+     * Sets the scheme opts.
+     *
+     * @param uri the uri
+     * @return the file system options
+     * @throws MotuException the motu exception
+     */
+    public FileSystemOptions setSchemeOpts(URI uri) throws MotuException {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("setUserDirIsRoot(String, boolean) - end");
+            LOG.debug("setSchemeOpts(URI) - start");
+        }
+
+        String scheme = uri.getScheme();
+        String host = uri.getHost();
+        FileSystemOptions returnFileSystemOptions = setSchemeOpts(scheme, host);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setSchemeOpts(URI) - end");
         }
         return returnFileSystemOptions;
     }
 
-    /**
-     * Sets the user dir is root.
-     * 
-     * @param scheme the scheme
-     * @param userDirIsRoot the user dir is root
-     * @param fileSystemOptions the file system options
-     * @return the file system options
-     * @throws MotuException the motu exception
-     */
-    public FileSystemOptions setUserDirIsRoot(String scheme, boolean userDirIsRoot, FileSystemOptions fileSystemOptions) throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("setUserDirIsRoot(String, boolean, FileSystemOptions) - start");
-        }
-
-        if (Organizer.isNullOrEmpty(scheme)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("setUserDirIsRoot(String, boolean, FileSystemOptions) - end");
-            }
-            return fileSystemOptions;
-        }
-
-        if (fileSystemOptions == null) {
-            fileSystemOptions = new FileSystemOptions();
-        }
-
-        FileSystemConfigBuilder fscb = null;
-        try {
-            try {
-                fscb = standardFileSystemManager.getFileSystemConfigBuilder(scheme);
-            } catch (FileSystemException e) {
-                LOG.error("setUserDirIsRoot(String, boolean, FileSystemOptions)", e);
-
-                fscb = standardFileSystemManager.getFileSystemConfigBuilder(VFSManager.DEFAULT_SCHEME);
-            }
-
-            if (!(fscb instanceof FtpFileSystemConfigBuilder)) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("setUserDirIsRoot(String, boolean) - end");
-                }
-                return fileSystemOptions;
-            }
-
-            FtpFileSystemConfigBuilder ftpFscb = (FtpFileSystemConfigBuilder) fscb;
-            ftpFscb.setUserDirIsRoot(fileSystemOptions, userDirIsRoot);
-
-        } catch (FileSystemException e) {
-            LOG.error("setUserDirIsRoot(String, boolean, FileSystemOptions)", e);
-
-            throw new MotuException("Error in VFSManager#setUserDirIsRoot", e);
-        }
-
-        if (LOG.isDebugEnabled()) {
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("setUserDirIsRoot(String, boolean, FileSystemOptions) - end");
-        }
-        return fileSystemOptions;
-    }
 
     /**
      * Close.

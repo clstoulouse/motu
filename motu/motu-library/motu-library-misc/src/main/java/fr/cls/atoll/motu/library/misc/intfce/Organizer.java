@@ -28,8 +28,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
 import java.net.Authenticator;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URI;
@@ -59,12 +59,6 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemConfigBuilder;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileSystemOptions;
-import org.apache.commons.vfs.provider.ftp.FtpFileSystemConfigBuilder;
-import org.apache.commons.vfs.provider.http.HttpFileSystemConfigBuilder;
-import org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -145,7 +139,6 @@ import fr.cls.atoll.motu.library.misc.tds.server.VariableDesc;
 import fr.cls.atoll.motu.library.misc.utils.ConfigLoader;
 import fr.cls.atoll.motu.library.misc.utils.ListUtils;
 import fr.cls.atoll.motu.library.misc.utils.MotuConfigFileSystemWrapper;
-import fr.cls.atoll.motu.library.misc.utils.ObjectUtils;
 import fr.cls.atoll.motu.library.misc.utils.PropertiesUtilities;
 import fr.cls.atoll.motu.library.misc.utils.Zip;
 import fr.cls.atoll.motu.library.misc.vfs.VFSManager;
@@ -4784,7 +4777,6 @@ public class Organizer {
         return this.currentService;
     }
 
-
     /**
      * Getter of the property <tt>defaultServiceName</tt>.
      * 
@@ -6767,153 +6759,154 @@ public class Organizer {
         return split[1];
     }
 
-    
-
-  public static URLConnection openConnection(URL url) throws MotuException {
-      String scheme = url.getProtocol();
-      String host = url.getHost();
-      
-      Proxy proxy = Organizer.getUrlConnectionOpts(scheme, host);
-
-      URLConnection urlConnection = null;
-      
-      if (proxy != null) {
-          try {
-            urlConnection = url.openConnection(proxy);
-        } catch (IOException e) {
-            throw new MotuException(String.format("Unable to open URL connection '%s' (Proxy: '%s')", url.toString(), proxy.toString()), e);
+    /**
+     * Open connection.
+     * 
+     * @param url the url
+     * @return the uRL connection
+     * @throws MotuException the motu exception
+     */
+    public static URLConnection openConnection(URL url) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("openConnection(URL) - start - url=" + url);
         }
-      } else   {
-          try {
-            urlConnection = url.openConnection();
-        } catch (IOException e) {
-            throw new MotuException(String.format("Unable to open URL connection '%s' (No Proxy:)", url.toString()), e);
-        }          
-      }
-      
-      return urlConnection;
-  }
-  public static URLConnection openConnection(URI uri) throws MotuException  {
-      try {
-          return openConnection(uri.toURL());
-      } catch (MalformedURLException e) {
-          throw new MotuException(String.format("Unable to convert uri '%s' to URL object ", uri), e);
-    }
-  }
 
-  public static Proxy getUrlConnectionOpts(String scheme, String host) {
-      
-      return null;
-//      if (Organizer.isNullOrEmpty(scheme)) {
-//          if (LOG.isDebugEnabled()) {
-//              LOG.debug("setSchemeOpts(String) - exiting");
-//          }
-//          return opts;
-//      }
-//
-//      if (opts == null) {
-//          opts = new FileSystemOptions();
-//      }
-//
-//      FileSystemConfigBuilder fscb = null;
-//      MotuConfigFileSystemWrapper<Boolean> wrapperBoolean = new MotuConfigFileSystemWrapper<Boolean>();
-//      MotuConfigFileSystemWrapper<Period> wrapperPeriod = new MotuConfigFileSystemWrapper<Period>();
-//      MotuConfigFileSystemWrapper<String> wrapperString = new MotuConfigFileSystemWrapper<String>();
-//
-//      try {
-//          try {
-//              fscb = standardFileSystemManager.getFileSystemConfigBuilder(scheme);
-//          } catch (FileSystemException e) {
-//              LOG.error("setSchemeOpts(String)", e);
-//
-//              fscb = standardFileSystemManager.getFileSystemConfigBuilder(VFSManager.DEFAULT_SCHEME);
-//          }
-//
-//          if (fscb instanceof FtpFileSystemConfigBuilder) {
-//              FtpFileSystemConfigBuilder ftpFscb = (FtpFileSystemConfigBuilder) fscb;
-//              Boolean userDirIsRoot = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPUSERDIRISROOT);
-//              if (userDirIsRoot != null) {
-//                  ftpFscb.setUserDirIsRoot(opts, userDirIsRoot);
-//              }
-//              Boolean passiveMode = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPPASSIVEMODE);
-//              ;
-//              if (passiveMode != null) {
-//                  ftpFscb.setPassiveMode(opts, passiveMode);
-//              }
-//              Period dataTimeOut = wrapperPeriod.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPDATATIMEOUT);
-//              if (dataTimeOut != null) {
-//                  long value = dataTimeOut.toStandardDuration().getMillis();
-//                  if (value > Integer.MAX_VALUE) {
-//                      throw new MotuException(String.format("Motu Configuration : sftp timeout value is too large '%ld' milliseconds. Max is '%d'",
-//                                                            value,
-//                                                            Integer.MAX_VALUE));
-//                  }
-//                  if (value > 0) {
-//                      ftpFscb.setDataTimeout(opts, (int) value);
-//                  }
-//              }
-//          }
-//
-//          if (fscb instanceof HttpFileSystemConfigBuilder) {
-//              HttpFileSystemConfigBuilder httpFscb = (HttpFileSystemConfigBuilder) fscb;
-//
-//              Boolean isUseProxy = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_USEHTTPPROXY);
-//              if ((isUseProxy != null) && (isUseProxy)) {
-//                  String proxyHost = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_HTTPPROXYHOST);
-//                  String proxyPort = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_HTTPPROXYPORT);
-//                  httpFscb.setProxyHost(opts, proxyHost);
-//                  httpFscb.setProxyPort(opts, Integer.parseInt(proxyPort));
-//              }
-//
-//          }
-//
-//          if (fscb instanceof SftpFileSystemConfigBuilder) {
-//              SftpFileSystemConfigBuilder sftpFscb = (SftpFileSystemConfigBuilder) fscb;
-//
-//              Boolean userDirIsRoot = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPUSERDIRISROOT);
-//              if (userDirIsRoot != null) {
-//                  sftpFscb.setUserDirIsRoot(opts, userDirIsRoot);
-//              }
-//
-//              String strictHostKeyChecking = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_STRICTHOSTKEYCHECKING);
-//              if (strictHostKeyChecking != null) {
-//                  sftpFscb.setStrictHostKeyChecking(opts, strictHostKeyChecking);
-//              }
-//
-//              Period SftpSessionTimeOut = wrapperPeriod.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPSESSIONTIMEOUT);
-//              if (SftpSessionTimeOut != null) {
-//                  long value = SftpSessionTimeOut.toStandardDuration().getMillis();
-//                  if (value > Integer.MAX_VALUE) {
-//                      throw new MotuException(String.format("Motu Configuration : sftp timeout value is too large '%ld' milliseconds. Max is '%d'",
-//                                                            value,
-//                                                            Integer.MAX_VALUE));
-//                  }
-//                  if (value > 0) {
-//                      sftpFscb.setTimeout(opts, (int) value);
-//                  }
-//              }
-//
-//              Boolean isUseProxy = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_USESFTPPROXY);
-//              if ((isUseProxy != null) && (isUseProxy)) {
-//                  String proxyHost = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPPROXYHOST);
-//                  String proxyPort = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPPROXYPORT);
-//                  sftpFscb.setProxyHost(opts, proxyHost);
-//                  sftpFscb.setProxyPort(opts, Integer.parseInt(proxyPort));
-//              }
-//
-//          }
-//
-//      } catch (FileSystemException e) {
-//          LOG.error("setSchemeOpts(String)", e);
-//
-//          throw new MotuException("Error in VFSManager#setScheme", e);
-//      }
-//
-//      if (LOG.isDebugEnabled()) {
-//          LOG.debug("setSchemeOpts(String) - exiting");
-//      }
-//      return opts;
-  }
+        String scheme = url.getProtocol();
+        String host = url.getHost();
+
+        Proxy proxy = Organizer.getUrlConnectionProxy(scheme, host);
+
+        URLConnection urlConnection = null;
+
+        if (proxy != null) {
+            try {
+                urlConnection = url.openConnection(proxy);
+
+            } catch (IOException e) {
+                LOG.error("openConnection(URL)", e);
+
+                throw new MotuException(String.format("Unable to open URL connection '%s' (Proxy: '%s')", url.toString(), proxy.toString()), e);
+            }
+        } else {
+            try {
+                urlConnection = url.openConnection();
+            } catch (IOException e) {
+                LOG.error("openConnection(URL)", e);
+
+                throw new MotuException(String.format("Unable to open URL connection '%s' (No Proxy:)", url.toString()), e);
+            }
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("openConnection(URL) - end");
+        }
+        return urlConnection;
+    }
+
+    /**
+     * Open connection.
+     * 
+     * @param uri the uri
+     * @return the uRL connection
+     * @throws MotuException the motu exception
+     */
+    public static URLConnection openConnection(URI uri) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("openConnection(URI) - start");
+        }
+
+        try {
+            URLConnection returnURLConnection = Organizer.openConnection(uri.toURL());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("openConnection(URI) - end");
+            }
+            return returnURLConnection;
+        } catch (MalformedURLException e) {
+            LOG.error("openConnection(URI)", e);
+
+            throw new MotuException(String.format("Unable to convert uri '%s' to URL object ", uri), e);
+        }
+    }
+
+    /**
+     * Gets the url connection opts.
+     * 
+     * @param scheme the scheme
+     * @param host the host
+     * @return the url connection opts
+     * @throws MotuException the motu exception
+     */
+    public static Proxy getUrlConnectionProxy(String scheme, String host) throws MotuException {
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getUrlConnectionProxy(String, String) - start - scheme=" + scheme + ", host=" + host);
+        }
+
+        Proxy proxy = null;
+        String proxyHost = null;
+        String proxyPort = null;
+        String proxyLogin = null;
+        String proxyPwd = null;
+        
+        Authenticator.setDefault(null);
+        
+        if (Organizer.isNullOrEmpty(scheme)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getUrlConnectionProxy(String, String) - end - scheme is null or empty");
+            }
+            return proxy;
+        }
+
+        MotuConfigFileSystemWrapper<Boolean> wrapperBoolean = new MotuConfigFileSystemWrapper<Boolean>();
+        MotuConfigFileSystemWrapper<Period> wrapperPeriod = new MotuConfigFileSystemWrapper<Period>();
+        MotuConfigFileSystemWrapper<String> wrapperString = new MotuConfigFileSystemWrapper<String>();
+
+        if (scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https")) {
+            Boolean isUseProxy = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_USEHTTPPROXY);
+            if ((isUseProxy != null) && (isUseProxy)) {
+                proxyHost = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_HTTPPROXYHOST);
+                proxyPort = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_HTTPPROXYPORT);
+                proxyLogin = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_HTTPPROXYLOGIN);
+                proxyPwd = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_HTTPPROXYPWD);
+            }
+        } else if (scheme.equalsIgnoreCase("ftp")) {
+            Boolean isUseProxy = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_USEFTPPROXY);
+            if ((isUseProxy != null) && (isUseProxy)) {
+                proxyHost = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPPROXYHOST);
+                proxyPort = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPPROXYPORT);
+                proxyLogin = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPPROXYLOGIN);
+                proxyPwd = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPPROXYPWD);
+            }
+        } else if (scheme.equalsIgnoreCase("sftp")) {
+            Boolean isUseProxy = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_USESFTPPROXY);
+            if ((isUseProxy != null) && (isUseProxy)) {
+                proxyHost = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPPROXYHOST);
+                proxyPort = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPPROXYPORT);
+                proxyLogin = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPPROXYLOGIN);
+                proxyPwd = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPPROXYPWD);
+            }
+
+        }
+
+        if ((proxyHost != null) && (proxyPort != null)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getUrlConnectionProxy(String, String) - Create Proxy -  proxyHost=" + proxyHost + ", proxyPort=" + proxyPort);
+            }
+            proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, Integer.parseInt(proxyPort)));
+
+            if ((proxyLogin != null) && (proxyPwd != null)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("getUrlConnectionProxy(String, String) - set authentication - proxyLogin=" + proxyLogin + ", proxyPwd=" + proxyPwd);
+                }
+                Authenticator.setDefault(new SimpleAuthenticator(proxyLogin, proxyPwd));
+            }
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getUrlConnectionProxy(String, String) - end");
+        }
+        return proxy;
+    }
 }
 
 // CSON: MultipleStringLiterals

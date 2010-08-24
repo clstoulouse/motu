@@ -20,6 +20,7 @@
 			</xs:annotation>
 		</xs:attribute>
 		
+<!-- WARNING - The useFtpProxy option is not used yet - Declared for future developpment  -->
 		<xs:attribute name="useFtpProxy" type="xs:boolean" default="false" >
 			<xs:annotation>
 				<xs:documentation>
@@ -29,6 +30,7 @@
 			</xs:annotation>
 		</xs:attribute>
 
+<!-- WARNING - The useSftpProxy  option is not used yet - Declared for future developpment  -->
 		<xs:attribute name="useSftpProxy" type="xs:boolean" default="false" >
 			<xs:annotation>
 				<xs:documentation>
@@ -38,6 +40,7 @@
 			</xs:annotation>
 		</xs:attribute>
 
+<!-- WARNING - The useSocksProxy option is not used yet - Declared for future developpment  -->
 		<xs:attribute name="useSocksProxy" type="xs:boolean" default="false" >
 			<xs:annotation>
 				<xs:documentation>
@@ -48,8 +51,12 @@
 		</xs:attribute>
 								
 		<xs:attributeGroup ref="httpProxyOptions" />
+
+<!-- WARNING - The ftpProxyOptions options are not used yet - Declared for future developpment  -->
 		<xs:attributeGroup ref="ftpProxyOptions" />
+<!-- WARNING - The sftpProxyOptions options are not used yet - Declared for future developpment  -->
 		<xs:attributeGroup ref="sftpProxyOptions" />
+<!-- WARNING - The socksProxyOptions options are not used yet - Declared for future developpment  -->
 		<xs:attributeGroup ref="socksProxyOptions" />
 
 		
@@ -387,6 +394,7 @@
 			</xs:annotation>
 		</xs:attribute>
 		
+<!-- WARNING - The proxyOptions options are not used yet for configFileSystemType - Declared for future developpment  -->
 		<xs:attributeGroup ref="proxyOptions" />
 		<xs:attributeGroup ref="ftpOptions" />
     	<xs:attributeGroup ref="sftpOptions" />
@@ -460,6 +468,7 @@
 			<xs:attribute name="httpDocumentRoot" type="xs:string"
 				use="required" />
 
+<!-- WARNING - Within proxyOptions, only http proxy options are used - The others are declared for future developpment  -->
 			<xs:attributeGroup ref="proxyOptions" />
 			<xs:attributeGroup ref="ftpOptions" />
 			<xs:attributeGroup ref="sftpOptions" />

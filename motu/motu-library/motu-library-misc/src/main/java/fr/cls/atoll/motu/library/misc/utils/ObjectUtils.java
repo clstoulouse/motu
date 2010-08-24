@@ -1,5 +1,7 @@
 package fr.cls.atoll.motu.library.misc.utils;
 
+import org.apache.log4j.Logger;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,28 +25,63 @@ import org.springframework.beans.BeanWrapperImpl;
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class ObjectUtils<K> {
+    /**
+     * Logger for this class
+     */
+    private static final Logger LOG = Logger.getLogger(ObjectUtils.class);
 
     @SuppressWarnings("unchecked")
     public K getValue(Object object, String keyField) throws IllegalArgumentException, SecurityException, IllegalAccessException,
             InvocationTargetException, NoSuchMethodException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getValue(Object, String) - start");
+        }
+
         BeanWrapper wrapper = new BeanWrapperImpl(object);
-        return (K) wrapper.getPropertyValue(keyField);
+        K returnK = (K) wrapper.getPropertyValue(keyField);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getValue(Object, String) - end");
+        }
+        return returnK;
     }
 
     public static String getValueAsString(Object object, String keyField) throws IllegalArgumentException, SecurityException, IllegalAccessException,
             InvocationTargetException, NoSuchMethodException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getValueAsString(Object, String) - start");
+        }
+
         BeanWrapper wrapper = new BeanWrapperImpl(object);
-        return (String) wrapper.getPropertyValue(keyField);
+        String returnString = (String) wrapper.getPropertyValue(keyField);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getValueAsString(Object, String) - end");
+        }
+        return returnString;
     }
 
     public static String getValueAsString(Object object, String... keyFields) throws IllegalArgumentException, SecurityException,
             IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        return ObjectUtils.getValueAsString(object, Arrays.asList(keyFields));
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getValueAsString(Object, String) - start");
+        }
+
+        String returnString = ObjectUtils.getValueAsString(object, Arrays.asList(keyFields));
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getValueAsString(Object, String) - end");
+        }
+        return returnString;
     }
 
     public static String getValueAsString(Object object, Iterable<String> keyFields) throws IllegalArgumentException, IllegalAccessException,
             InvocationTargetException, SecurityException, NoSuchMethodException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getValueAsString(Object, Iterable<String>) - start");
+        }
+
         if (!(keyFields.iterator().hasNext())) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getValueAsString(Object, Iterable<String>) - end");
+            }
             return null;
         }
 
@@ -57,7 +94,11 @@ public class ObjectUtils<K> {
             stringBuilder.append(value);
         }
 
-        return stringBuilder.toString();
+        String returnString = stringBuilder.toString();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getValueAsString(Object, Iterable<String>) - end");
+        }
+        return returnString;
 
     }
 

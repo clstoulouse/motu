@@ -25,13 +25,8 @@
 
 package fr.cls.atoll.motu.library.misc.utils;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.apache.log4j.Logger;
 
-import org.joda.time.Period;
-
-import fr.cls.atoll.motu.library.converter.jaxb.JodaPeriodAdapter;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigFileSystemType;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
@@ -45,8 +40,15 @@ import fr.cls.atoll.motu.library.misc.intfce.Organizer;
  */
 
 public class MotuConfigFileSystemWrapper<K> extends ObjectUtils<K> {
+    /**
+     * Logger for this class
+     */
+    private static final Logger LOG = Logger.getLogger(MotuConfigFileSystemWrapper.class);
     
-    @XmlAttribute(name = "host", required = true)
+//    public static final String FTP_PROTOCOL = "ftp";
+//    public static final String SFTP_PROTOCOL = "ftp";
+//    public static final String HTTP_PROTOCOL = "http";
+    
     public static final String PROP_HOST = "host";
     public static final String PROP_FTPUSERDIRISROOT = "ftpUserDirIsRoot";
     public static final String PROP_FTPPASSIVEMODE = "ftpPassiveMode";
@@ -55,6 +57,7 @@ public class MotuConfigFileSystemWrapper<K> extends ObjectUtils<K> {
     public static final String PROP_SFTPSESSIONTIMEOUT = "sftpSessionTimeOut";
     public static final String PROP_STRICTHOSTKEYCHECKING = "strictHostKeyChecking";
     public static final String PROP_USEHTTPPROXY = "useProxy";
+    public static final String PROP_USEFTPPROXY = "useFtpProxy";
     public static final String PROP_USESFTPPROXY = "useSftpProxy";
     public static final String PROP_HTTPPROXYLOGIN = "proxyLogin";
     public static final String PROP_HTTPPROXYPWD = "proxyPwd";
@@ -64,8 +67,23 @@ public class MotuConfigFileSystemWrapper<K> extends ObjectUtils<K> {
     public static final String PROP_SFTPPROXYPWD = "sftpProxyPwd";
     public static final String PROP_SFTPPROXYHOST = "sftpProxyHost";
     public static final String PROP_SFTPPROXYPORT = "sftpProxyPort";
+    public static final String PROP_FTPPROXYLOGIN = "ftpProxyLogin";
+    public static final String PROP_FTPPROXYPWD = "ftpProxyPwd";
+    public static final String PROP_FTPPROXYHOST = "ftpProxyHost";
+    public static final String PROP_FTPPROXYPORT = "ftpProxyPort";
     
+    /**
+     * Gets the field value.
+     *
+     * @param key the key
+     * @param fieldName the field name
+     * @return the field value
+     * @throws MotuException the motu exception
+     */
     public K getFieldValue(String key, String fieldName) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getFieldValue(String, String) - start");
+        }
 
         ObjectUtils<K> objectUtils = new ObjectUtils<K>();        
         K value = null;
@@ -76,26 +94,40 @@ public class MotuConfigFileSystemWrapper<K> extends ObjectUtils<K> {
         globalValue = objectUtils.getValue(Organizer.getMotuConfigInstance(), fieldName);
 
         if (Organizer.isNullOrEmpty(key)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("getFieldValue(String, String) - end");
+                }
             return globalValue;
         }
 
         ConfigFileSystemType configFileSystem = Organizer.getConfigFileSytem(key);
 
         if (configFileSystem == null) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("getFieldValue(String, String) - end");
+                }
             return globalValue;
         }
 
             value = objectUtils.getValue(configFileSystem, fieldName);
         } catch (Exception e) {
+            LOG.error("getFieldValue(String, String)", e);
+
             throw new MotuException(
                     "ERROR in Organizer#isBooleanOptions: unable to convert the list of file system configurations to a map object.",
                     e);
         }
 
         if (value == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getFieldValue(String, String) - end");
+            }
             return globalValue;
         }
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getFieldValue(String, String) - end");
+        }
         return value;
 
     }
