@@ -1,27 +1,5 @@
 package fr.cls.atoll.motu.library.misc.intfce;
 
-import fr.cls.atoll.motu.library.inventory.CatalogOLA;
-import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
-import fr.cls.atoll.motu.library.inventory.Inventory;
-import fr.cls.atoll.motu.library.inventory.Resource;
-import fr.cls.atoll.motu.library.inventory.ResourceOLA;
-import fr.cls.atoll.motu.library.inventory.TimePeriod;
-import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
-import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
-import fr.cls.atoll.motu.library.misc.configuration.QueueServerType;
-import fr.cls.atoll.motu.library.misc.configuration.QueueType;
-import fr.cls.atoll.motu.library.misc.data.CatalogData;
-import fr.cls.atoll.motu.library.misc.data.DataFile;
-import fr.cls.atoll.motu.library.misc.data.Product;
-import fr.cls.atoll.motu.library.misc.data.ServiceData;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
-import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
-import fr.cls.atoll.motu.library.misc.threadpools.TestTheadPools;
-
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -34,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.math.RoundingMode;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
@@ -44,7 +21,6 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -60,7 +36,6 @@ import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBElement;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.log4j.Logger;
 import org.joda.time.Interval;
 
@@ -85,6 +60,27 @@ import ucar.nc2.ft.point.writer.CFPointObWriter;
 import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
+import fr.cls.atoll.motu.library.inventory.CatalogOLA;
+import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
+import fr.cls.atoll.motu.library.inventory.Inventory;
+import fr.cls.atoll.motu.library.inventory.Resource;
+import fr.cls.atoll.motu.library.inventory.ResourceOLA;
+import fr.cls.atoll.motu.library.inventory.TimePeriod;
+import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
+import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
+import fr.cls.atoll.motu.library.misc.configuration.QueueServerType;
+import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+import fr.cls.atoll.motu.library.misc.data.CatalogData;
+import fr.cls.atoll.motu.library.misc.data.DataFile;
+import fr.cls.atoll.motu.library.misc.data.Product;
+import fr.cls.atoll.motu.library.misc.data.ServiceData;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
+import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
+import fr.cls.atoll.motu.library.misc.threadpools.TestThreadPools;
 
 /**
  * 
@@ -105,20 +101,23 @@ public class TestIntfce {
      */
     public static void main(String[] args) {
         
-//        
-//        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/GOS-MED-L4-SST-NRTv1_aggr_time"));
-//        System.out.println(Organizer.getTDSDatasetId("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/GOS-MED-L4-SST-NRTv1_aggr_time"));
-//        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/GOS-MED-L4-SST-NRTv1_aggr_time"));
-//        System.out.println(Organizer.getTDSDatasetId("http://misgw-qt.cls.fr:40080/thredds/dodsC/GOS-MED-L4-SST-NRTv1_aggr_time"));
-//        
-//        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/"));
-//        System.out.println(Organizer.getTDSDatasetId("http://misgw-qt.cls.fr:40080/thredds/dodsC/"));
-//        
-//        String patternExpression = "(http://.*thredds/)(dodsC/)(.*/)*(.*$)";
-//
-//        Pattern pattern = Pattern.compile(patternExpression);
-//        Matcher matcher = pattern.matcher("http://misgw-qt.cls.fr:40080/thredds/dodsC/GOS-MED-L4-SST-NRTv1_aggr_time");
-//        String test = matcher.group(3);
+        
+        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/GOS-MED-L4-SST-NRTv1_aggr_time"));
+        System.out.println(Organizer.getTDSDatasetUrlPath("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/GOS-MED-L4-SST-NRTv1_aggr_time"));
+        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/GOS-MED-L4-SST-NRTv1_aggr_time"));
+        System.out.println(Organizer.getTDSDatasetUrlPath("http://misgw-qt.cls.fr:40080/thredds/dodsC/GOS-MED-L4-SST-NRTv1_aggr_time"));
+        
+        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/P1/P2/P3/GOS-MED-L4-SST-NRTv1_aggr_time"));
+        System.out.println(Organizer.getTDSDatasetUrlPath("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/P1/P2/P3/GOS-MED-L4-SST-NRTv1_aggr_time"));
+
+        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/"));
+        System.out.println(Organizer.getTDSDatasetUrlPath("http://misgw-qt.cls.fr:40080/thredds/dodsC/"));
+        
+        String patternExpression = "(http://.*thredds/)(dodsC/)(.*/)*(.*$)";
+
+        Pattern pattern = Pattern.compile(patternExpression);
+        Matcher matcher = pattern.matcher("http://misgw-qt.cls.fr:40080/thredds/dodsC/GOS-MED-L4-SST-NRTv1_aggr_time");
+        String test = matcher.group(3);
         
         
         // System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#dataset-identifiant"));
@@ -836,7 +835,7 @@ public class TestIntfce {
     }
 
     public static void productExtractDataAvisofromExtractionParameters() {
-        ExtractionParameters extractionParameters = TestTheadPools.getAvisoRequests().get(0);
+        ExtractionParameters extractionParameters = TestThreadPools.getAvisoRequests().get(0);
         Product product = null;
         FileWriter writer = null;
 

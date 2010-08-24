@@ -5271,7 +5271,8 @@ public class Organizer {
      */
     public static Matcher matchTDSCatalogUrl(String locationData) {
 
-        String patternExpression = "(http://.*thredds/)(dodsC/)(.*/)*(.*$)";
+        //String patternExpression = "(http://.*thredds/)(dodsC/)(.*/)*(.*$)";
+        String patternExpression = "(http://.*thredds/)(dodsC/)(.*)";
 
         Pattern pattern = Pattern.compile(patternExpression);
         Matcher matcher = pattern.matcher(locationData);
@@ -5330,7 +5331,7 @@ public class Organizer {
      * 
      * @return the tDS dataset id
      */
-    public static String getTDSDatasetId(String locationData) {
+    public static String getTDSDatasetUrlPath(String locationData) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getTDSDatasetId(String) - start - locationData=" + locationData);
         }
@@ -5360,7 +5361,67 @@ public class Organizer {
         return value;
 
     }
+    
+    /**
+     * Gets the product from tds url path.
+     *
+     * @param tdsUrlPath the tds url path
+     * @return the product from tds url path
+     * @throws MotuNotImplementedException 
+     * @throws NetCdfAttributeException 
+     * @throws MotuException 
+     */
+    public Product getProductFromTdsUrlPath(String tdsUrlPath) throws MotuException, NetCdfAttributeException, MotuNotImplementedException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductFromTdsUrlPath(String) - start");
+        }
 
+        if (currentService == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getProductFromTdsUrlPath(String) - end - currentService is null");
+            }
+            return null;
+        }
+
+        Product product = currentService.getProductFromTdsUrlPath(tdsUrlPath);
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductFromTdsUrlPath(String) - end");
+        }
+        return product;
+
+    }
+    
+    /**
+     * Gets the product id from tds url path.
+     *
+     * @param tdsUrlPath the tds url path
+     * @return the product id from tds url path
+     * @throws MotuNotImplementedException 
+     * @throws NetCdfAttributeException 
+     * @throws MotuException 
+     */
+    public String getProductIdFromTdsUrlPath(String tdsUrlPath) throws MotuException, NetCdfAttributeException, MotuNotImplementedException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductIdFromTdsUrlPath(String) - start");
+        }
+
+        Product product = getProductFromTdsUrlPath(tdsUrlPath);
+        
+        if (product == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getProductIdFromTdsUrlPath(String) - end - product is null");
+            }
+            return null;            
+        }
+        
+        String returnString = product.getProductId();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProductIdFromTdsUrlPath(String) - end");
+        }
+        return returnString;
+
+    }
     // /**
     // * Checks if is user authentification.
     // *
@@ -5459,7 +5520,7 @@ public class Organizer {
         }
 
         String catalogBaseUrl = Organizer.getTDSCatalogBaseUrl(locationData);
-        String productId = Organizer.getTDSDatasetId(locationData);
+        String tdsUrlPath = Organizer.getTDSDatasetUrlPath(locationData);
 
         ServiceData service = new ServiceData();
         service.setVelocityEngine(this.velocityEngine);
@@ -5514,6 +5575,7 @@ public class Organizer {
 
         Product product = null;
         try {
+            String productId = getProductIdFromTdsUrlPath(tdsUrlPath);
             product = getProductInformation(productId, null, null);
         } catch (MotuNotImplementedException e) {
             LOG.error("getProductMetadataInfoFromTDS(String)", e);

@@ -192,8 +192,6 @@ public class CatalogData {
             LOG.debug("init() - entering");
         }
 
-        productsMap = new HashMap<String, Product>();
-
         if (LOG.isDebugEnabled()) {
             LOG.debug("init() - exiting");
         }
@@ -856,12 +854,17 @@ public class CatalogData {
         }
 
         String productId = "";
+        String tdsUrlPath = "";
         boolean newProduct = true;
+
+        if (dataset.getUrlPath() != null) {
+            tdsUrlPath = dataset.getUrlPath();
+        }
 
         if (dataset.getID() != null) {
             productId = dataset.getID();
-        } else {
-            productId = dataset.getUrlPath();
+        } else {            
+            productId = tdsUrlPath;
         }
 
         ProductMetaData productMetaData = null;
@@ -871,6 +874,7 @@ public class CatalogData {
             product = new Product(this.casAuthentification);
             productMetaData = new ProductMetaData();
             productMetaData.setProductId(productId);
+            productMetaData.setTdsUrlPath(tdsUrlPath);
         } else {
             newProduct = false;
             productMetaData = product.getProductMetaData();
@@ -1002,16 +1006,21 @@ public class CatalogData {
         }
 
         String productId = "";
+        String tdsUrlPath = "";
         boolean newProduct = true;
+
+        if (datasetType.getUrlPath() != null) {
+            tdsUrlPath = datasetType.getUrlPath();
+        }
 
         if (datasetType.getID() != null) {
             if (datasetType.getID().equals("")) {
                 productId = datasetType.getUrlPath();
             } else {
-                productId = datasetType.getID();
+                productId = tdsUrlPath;
             }
         } else {
-            productId = datasetType.getUrlPath();
+            productId = tdsUrlPath;
         }
 
         ProductMetaData productMetaData = null;
@@ -1021,6 +1030,7 @@ public class CatalogData {
             product = new Product(this.casAuthentification);
             productMetaData = new ProductMetaData();
             productMetaData.setProductId(productId);
+            productMetaData.setTdsUrlPath(tdsUrlPath);
         } else {
             newProduct = false;
             productMetaData = product.getProductMetaData();
@@ -1978,8 +1988,8 @@ public class CatalogData {
         this.sameProductTypeDataset = sameProductTypeDataset;
     }
 
-    /** The products map. */
-    private Map<String, Product> productsMap;
+    /** The products map. Key is product id*/
+    private Map<String, Product> productsMap =  new HashMap<String, Product>();;
 
     /**
      * Getter of the property <tt>products</tt>.
@@ -2112,6 +2122,13 @@ public class CatalogData {
         if (key == null) {
             return null;
         }
+        
+        if (value == null) {
+            return null;
+        }
+        
+        this.productsByTdsUrlMap.put(value.getTdsUrlPath(), value);
+        
         return this.productsMap.put(key.trim(), value);
     }
 
@@ -2126,6 +2143,12 @@ public class CatalogData {
      * @uml.property name="products"
      */
     public Product removeProducts(String key) {
+        Product product = this.productsMap.get(key);
+        if (product == null) {
+            return null; 
+        }
+        
+        this.productsByTdsUrlMap.clear();
         return this.productsMap.remove(key);
     }
 
@@ -2136,7 +2159,43 @@ public class CatalogData {
      * @uml.property name="products"
      */
     public void clearProducts() {
+        this.productsByTdsUrlMap.clear();
         this.productsMap.clear();
+    }
+    
+    /** The products map. Key is product tds url path*/
+    private Map<String, Product> productsByTdsUrlMap = new HashMap<String, Product>();;
+
+
+    /**
+     * Gets the products by tds url map.
+     *
+     * @return the products by tds url map
+     */
+    public Map<String, Product> getProductsByTdsUrl() {
+        return productsByTdsUrlMap;
+    }
+    
+    /**
+     * Gets the products by tds url map.
+     *
+     * @param key the key
+     * @return the products by tds url map
+     */
+    public Product getProductsByTdsUrl(String key) {
+        if (key == null) {
+            return null;
+        }
+        return this.productsByTdsUrlMap.get(key.trim());
+    }
+
+    /**
+     * Sets the products by tds url map.
+     *
+     * @param productsByTdsUrlMap the products by tds url map
+     */
+    public void setProductsByTdsUrl(Map<String, Product> productsByTdsUrlMap) {
+        this.productsByTdsUrlMap = productsByTdsUrlMap;
     }
 
     /** List contains each ath element to a Xml Tds catalog. */

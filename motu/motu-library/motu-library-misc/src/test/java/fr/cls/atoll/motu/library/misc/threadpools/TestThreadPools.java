@@ -68,7 +68,7 @@ import org.apache.log4j.Logger;
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-public class TestTheadPools {
+public class TestThreadPools {
 
     public class Client extends Thread {
         String name;
@@ -466,7 +466,7 @@ public class TestTheadPools {
         List<ExtractionParameters> listRequest = getAvisoRequests();
 
         XStream xstream = new XStream();
-        TestTheadPools testTheadPools = new TestTheadPools();
+        TestThreadPools testTheadPools = new TestThreadPools();
         DateT date = testTheadPools.new DateT();
         date.year = 2004;
         date.month = 8;
@@ -589,7 +589,7 @@ public class TestTheadPools {
             System.out.println(queue.getMaxPoolSize());
         }
         List<ExtractionParameters> listRequest = getAvisoRequests();
-        List<TestTheadPools.Client> listClient = new ArrayList<TestTheadPools.Client>();
+        List<TestThreadPools.Client> listClient = new ArrayList<TestThreadPools.Client>();
         int i = 0;
         for (ExtractionParameters extractionParameters : listRequest) {
             i++;
@@ -608,7 +608,7 @@ public class TestTheadPools {
             // }
         }
 
-        for (TestTheadPools.Client client : listClient) {
+        for (TestThreadPools.Client client : listClient) {
             client.start();
         }
         try {

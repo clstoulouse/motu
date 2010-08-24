@@ -1114,6 +1114,24 @@ public class ServiceData {
         }
         return product;
     }
+    
+    /**
+     * Gets the product id from tds url path.
+     *
+     * @param tdsUrlPath the tds url path
+     * @return the product id from tds url path
+     * @throws MotuException the motu exception
+     * @throws NetCdfAttributeException the net cdf attribute exception
+     * @throws MotuNotImplementedException the motu not implemented exception
+     */
+    public Product getProductFromTdsUrlPath(String tdsUrlPath) throws MotuException, NetCdfAttributeException, MotuNotImplementedException {
+
+        Product product = getProductByTdsUrlPath(tdsUrlPath);
+
+        getProductInformation(product);
+
+        return product;
+    }
 
     /**
      * Gets the product's informations (metadata) of the current service in HTML format.
@@ -2481,6 +2499,23 @@ public class ServiceData {
         return product;
     }
 
+    /**
+     * Gets the product by tds url path.
+     *
+     * @param tdsUrlPath the tds url path
+     * @return the product by tds url path
+     * @throws MotuException the motu exception
+     */
+    public Product getProductByTdsUrlPath(String tdsUrlPath) throws MotuException {
+
+        Product product = getCatalog().getProductsByTdsUrl(tdsUrlPath);
+
+        if (product == null) {
+            throw new MotuException(String.format("Unknown product/Tds url path %s for service name %s ", tdsUrlPath, this.name));
+        }
+        currentProduct = product;
+        return product;
+    }
     /**
      * Gets the global velo template.
      * 

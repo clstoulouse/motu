@@ -220,6 +220,28 @@ public class ProductMetaData {
             this.productId = productId.trim();
         }
     }
+    
+    /** The tds url path. */
+    private String tdsUrlPath = "";
+
+
+    /**
+     * Gets the tds url path.
+     *
+     * @return the tds url path
+     */
+    public String getTdsUrlPath() {
+        return tdsUrlPath;
+    }
+
+    /**
+     * Sets the tds url path.
+     *
+     * @param tdsUrlPath the new tds url path
+     */
+    public void setTdsUrlPath(String tdsUrlPath) {
+        this.tdsUrlPath = tdsUrlPath;
+    }
 
     /** Type of product. */
     private String productType = "";

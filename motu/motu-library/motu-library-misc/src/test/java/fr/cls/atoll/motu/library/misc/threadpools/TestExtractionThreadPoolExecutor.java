@@ -126,8 +126,8 @@ public class TestExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
-        if (r instanceof TestTheadPools.RunnableSomething) {
-            TestTheadPools.RunnableSomething r2 = (TestTheadPools.RunnableSomething) r;
+        if (r instanceof TestThreadPools.RunnableSomething) {
+            TestThreadPools.RunnableSomething r2 = (TestThreadPools.RunnableSomething) r;
             System.out.print("afterExecute ");
             System.out.print(r2.getText());
             System.out.print("r2.getPriority()");
@@ -157,8 +157,8 @@ public class TestExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     @Override
     protected void beforeExecute(Thread t, Runnable r) {
-        if (r instanceof TestTheadPools.RunnableSomething) {
-            TestTheadPools.RunnableSomething r2 = (TestTheadPools.RunnableSomething) r;
+        if (r instanceof TestThreadPools.RunnableSomething) {
+            TestThreadPools.RunnableSomething r2 = (TestThreadPools.RunnableSomething) r;
             System.out.print("beforeExecute ");
             System.out.print(r2.getText());
             System.out.print("r2.getPriority()");

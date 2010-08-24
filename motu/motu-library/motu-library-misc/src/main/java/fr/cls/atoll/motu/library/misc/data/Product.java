@@ -1903,6 +1903,19 @@ public class Product {
             return "Unknown_product_Id";
         }
     }
+    
+    /**
+     * Gets the tds url path.
+     *
+     * @return the tds url path
+     */
+    public String getTdsUrlPath() {
+        if (productMetaData != null) {
+            return productMetaData.getTdsUrlPath();
+        } else {
+            return "Unknown_tds_url_path";
+        }
+    }
 
     /** The output location path and file name. */
     private String extractFilename = "";
