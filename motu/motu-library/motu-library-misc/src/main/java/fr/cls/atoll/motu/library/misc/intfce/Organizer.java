@@ -5269,16 +5269,16 @@ public class Organizer {
      * 
      * @return the matcher
      */
-    public Matcher matchTDSCatalogUrl(String locationData) {
+    public static Matcher matchTDSCatalogUrl(String locationData) {
 
-        String patternExpression = "(http://.*thredds/)(dodsC/)(.*)";
+        String patternExpression = "(http://.*thredds/)(dodsC/)(.*/)*(.*$)";
 
         Pattern pattern = Pattern.compile(patternExpression);
         Matcher matcher = pattern.matcher(locationData);
         // System.out.println(matcher.groupCount());
-        if (matcher.groupCount() != 3) {
-            return null;
-        }
+//        if (matcher.groupCount() != 4) {
+//            return null;
+//        }
         if (!(matcher.find())) {
             return null;
         }
@@ -5294,15 +5294,33 @@ public class Organizer {
      * 
      * @return the tDS catalog base url
      */
-    public String getTDSCatalogBaseUrl(String locationData) {
-
-        Matcher matcher = matchTDSCatalogUrl(locationData);
-        if (matcher == null) {
-            return null;
+    public static String getTDSCatalogBaseUrl(String locationData) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getTDSCatalogBaseUrl(String) - start");
         }
 
-        return matcher.group(1);
+        String value = "";
 
+        Matcher matcher = Organizer.matchTDSCatalogUrl(locationData);
+        if (matcher == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getTDSCatalogBaseUrl(String) - end");
+            }
+            return value;
+        }
+
+        try {
+            value = matcher.group(1);
+        } catch (Exception e) {
+            LOG.error("getTDSCatalogBaseUrl(String)", e);
+
+            // Do nothing else
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getTDSCatalogBaseUrl(String) - end");
+        }
+        return value;
     }
 
     /**
@@ -5312,14 +5330,34 @@ public class Organizer {
      * 
      * @return the tDS dataset id
      */
-    public String getTDSDatasetId(String locationData) {
-
-        Matcher matcher = matchTDSCatalogUrl(locationData);
-        if (matcher == null) {
-            return null;
+    public static String getTDSDatasetId(String locationData) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getTDSDatasetId(String) - start - locationData=" + locationData);
         }
 
-        return matcher.group(3);
+        String value = "";
+        
+        Matcher matcher = matchTDSCatalogUrl(locationData);
+        if (matcher == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getTDSDatasetId(String) - end - matcher is null");
+            }
+            return null;
+        }
+        
+        try {
+            value = matcher.group(matcher.groupCount());
+        } catch (Exception e) {
+            LOG.error("getTDSDatasetId(String) - matcher.group", e);
+
+            // Do nothing else
+        }
+        
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getTDSDatasetId(String) - end");
+        }
+        return value;
 
     }
 
@@ -5420,8 +5458,8 @@ public class Organizer {
             LOG.debug("getProductMetadataInfoFromTDS(String) - entering");
         }
 
-        String catalogBaseUrl = getTDSCatalogBaseUrl(locationData);
-        String productId = getTDSDatasetId(locationData);
+        String catalogBaseUrl = Organizer.getTDSCatalogBaseUrl(locationData);
+        String productId = Organizer.getTDSDatasetId(locationData);
 
         ServiceData service = new ServiceData();
         service.setVelocityEngine(this.velocityEngine);

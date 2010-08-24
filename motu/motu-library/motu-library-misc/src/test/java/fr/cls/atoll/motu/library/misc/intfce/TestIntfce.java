@@ -55,6 +55,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBElement;
 
@@ -102,6 +104,22 @@ public class TestIntfce {
      * @param args
      */
     public static void main(String[] args) {
+        
+//        
+//        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/GOS-MED-L4-SST-NRTv1_aggr_time"));
+//        System.out.println(Organizer.getTDSDatasetId("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/GOS-MED-L4-SST-NRTv1_aggr_time"));
+//        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/GOS-MED-L4-SST-NRTv1_aggr_time"));
+//        System.out.println(Organizer.getTDSDatasetId("http://misgw-qt.cls.fr:40080/thredds/dodsC/GOS-MED-L4-SST-NRTv1_aggr_time"));
+//        
+//        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/"));
+//        System.out.println(Organizer.getTDSDatasetId("http://misgw-qt.cls.fr:40080/thredds/dodsC/"));
+//        
+//        String patternExpression = "(http://.*thredds/)(dodsC/)(.*/)*(.*$)";
+//
+//        Pattern pattern = Pattern.compile(patternExpression);
+//        Matcher matcher = pattern.matcher("http://misgw-qt.cls.fr:40080/thredds/dodsC/GOS-MED-L4-SST-NRTv1_aggr_time");
+//        String test = matcher.group(3);
+        
         
         // System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#dataset-identifiant"));
         // System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#identifiant"));
@@ -363,7 +381,7 @@ public class TestIntfce {
         // testLoadInventoryOLA();
         // testLoadCatalogOLA();
         //Product product = productInformationFromInventory();
-        productExtractDataFromInventory();
+        // productExtractDataFromInventory();
         // productListMercator();
         // productList();
         // testGetProductMetadataInfo();
