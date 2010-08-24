@@ -346,7 +346,8 @@
 	<pluginRepositories>
 		<pluginRepository>
 			<id>Codehaus repository</id>
-			<url>http://repository.codehaus.org/</url>
+			<url>https://nexus.codehaus.org/content/repositories/releases</url>
+			<!-- <url>http://repository.codehaus.org/</url>-->
 		</pluginRepository>
 	</pluginRepositories>
 	
