@@ -37,6 +37,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
@@ -170,6 +171,19 @@ public class RestUtil {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public static String getRedirectUrl(String path) throws IOException  {
+        return RestUtil.getRedirectUrl(path, null);
+        
+    }
+    
+    /**
+     * Gets the redirect url.
+     *
+     * @param path the path
+     * @param proxy the proxy
+     * @return the redirect url
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public static String getRedirectUrl(String path, Proxy proxy) throws IOException  {
 
         String redirectUrl = "";
 
@@ -181,10 +195,13 @@ public class RestUtil {
         String protocol = url.getProtocol();
         HttpURLConnection conn = null;
 
-        if (protocol.equalsIgnoreCase("http")) {
-            conn = (HttpURLConnection) url.openConnection();
-        } else if (protocol.equalsIgnoreCase("https")) {
-            conn = (HttpsURLConnection) url.openConnection();
+        if ((protocol.equalsIgnoreCase("http")) || (protocol.equalsIgnoreCase("https"))) {           
+
+            if (proxy == null) {
+                conn = (HttpURLConnection) url.openConnection();
+            } else {
+                conn = (HttpURLConnection) url.openConnection(proxy);                
+            }
         } else {
             return redirectUrl;
         }
