@@ -143,11 +143,12 @@ public class Main {
             status = -1;
         }
 
-        System.exit(status);
-
         if (LOG.isDebugEnabled()) {
             LOG.debug("main(String[]) - exiting");
         }
+
+        System.exit(status);
+
     }
 
     /**
