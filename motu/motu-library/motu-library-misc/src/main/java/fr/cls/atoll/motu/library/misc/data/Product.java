@@ -207,6 +207,11 @@ public class Product {
     public DatasetBase getDataset() {
         return this.dataset;
     }
+    
+    public void  resetDataset() {
+        dataset = null;
+    }
+
 
     /**
      * Setter of the property <tt>dataset</tt>.

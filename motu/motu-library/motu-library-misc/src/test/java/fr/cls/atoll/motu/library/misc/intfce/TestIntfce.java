@@ -24,6 +24,7 @@ import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,8 +37,11 @@ import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBElement;
 
+import junit.framework.TestCase;
+
 import org.apache.log4j.Logger;
 import org.joda.time.Interval;
+import org.junit.Test;
 
 import ucar.ma2.StructureData;
 import ucar.ma2.MAMath.MinMax;
@@ -59,6 +63,7 @@ import ucar.nc2.ft.TrajectoryFeatureCollection;
 import ucar.nc2.ft.point.writer.CFPointObWriter;
 import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
 import ucar.unidata.geoloc.EarthLocation;
+import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
@@ -101,24 +106,46 @@ public class TestIntfce {
      */
     public static void main(String[] args) {
         
+        double min = 354.5;
+        double max = 364.5;
+        double max180 =  LatLonPointImpl.lonNormal(max, min+180);
+        int mult =  (int) (min / 180);
         
-        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/GOS-MED-L4-SST-NRTv1_aggr_time"));
-        System.out.println(Organizer.getTDSDatasetUrlPath("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/GOS-MED-L4-SST-NRTv1_aggr_time"));
-        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/GOS-MED-L4-SST-NRTv1_aggr_time"));
-        System.out.println(Organizer.getTDSDatasetUrlPath("http://misgw-qt.cls.fr:40080/thredds/dodsC/GOS-MED-L4-SST-NRTv1_aggr_time"));
+        double longitudeCenter = min + 180.0;
+        double data = LatLonPointImpl.lonNormal(-4.0, longitudeCenter);
+        data = LatLonPointImpl.lonNormal(min, longitudeCenter);
+        data = LatLonPointImpl.lonNormal(359.5, longitudeCenter);
+        data = LatLonPointImpl.lonNormal(max, longitudeCenter);
         
-        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/P1/P2/P3/GOS-MED-L4-SST-NRTv1_aggr_time"));
-        System.out.println(Organizer.getTDSDatasetUrlPath("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/P1/P2/P3/GOS-MED-L4-SST-NRTv1_aggr_time"));
-
-        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/"));
-        System.out.println(Organizer.getTDSDatasetUrlPath("http://misgw-qt.cls.fr:40080/thredds/dodsC/"));
+        max = 540.0;
+        max180 =  LatLonPointImpl.lonNormal(max);
         
-        String patternExpression = "(http://.*thredds/)(dodsC/)(.*/)*(.*$)";
-
-        Pattern pattern = Pattern.compile(patternExpression);
-        Matcher matcher = pattern.matcher("http://misgw-qt.cls.fr:40080/thredds/dodsC/GOS-MED-L4-SST-NRTv1_aggr_time");
-        String test = matcher.group(3);
+        data = LatLonPointImpl.lonNormal(356.0, longitudeCenter);
+        max180 =  LatLonPointImpl.lonNormal(545.0);
+        data = LatLonPointImpl.lonNormal(545.0, longitudeCenter);
+        max180 =  LatLonPointImpl.lonNormal(180.0);
+        max180 =  LatLonPointImpl.lonNormal(-5.);
+        max180 =  LatLonPointImpl.lonNormal(10.);
         
+        data = LatLonPointImpl.lonNormal(180, 180);
+        
+//        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/GOS-MED-L4-SST-NRTv1_aggr_time"));
+//        System.out.println(Organizer.getTDSDatasetUrlPath("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/GOS-MED-L4-SST-NRTv1_aggr_time"));
+//        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/GOS-MED-L4-SST-NRTv1_aggr_time"));
+//        System.out.println(Organizer.getTDSDatasetUrlPath("http://misgw-qt.cls.fr:40080/thredds/dodsC/GOS-MED-L4-SST-NRTv1_aggr_time"));
+//        
+//        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/P1/P2/P3/GOS-MED-L4-SST-NRTv1_aggr_time"));
+//        System.out.println(Organizer.getTDSDatasetUrlPath("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/P1/P2/P3/GOS-MED-L4-SST-NRTv1_aggr_time"));
+//
+//        System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/"));
+//        System.out.println(Organizer.getTDSDatasetUrlPath("http://misgw-qt.cls.fr:40080/thredds/dodsC/"));
+//        
+//        String patternExpression = "(http://.*thredds/)(dodsC/)(.*/)*(.*$)";
+//
+//        Pattern pattern = Pattern.compile(patternExpression);
+//        Matcher matcher = pattern.matcher("http://misgw-qt.cls.fr:40080/thredds/dodsC/GOS-MED-L4-SST-NRTv1_aggr_time");
+//        String test = matcher.group(3);
+//        
         
         // System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#dataset-identifiant"));
         // System.out.println(Organizer.getDatasetIdFromURI("//http://atoll.cls.fr/2009/resource/metadata/environmental-resource#identifiant"));
@@ -384,6 +411,9 @@ public class TestIntfce {
         // productListMercator();
         // productList();
         // testGetProductMetadataInfo();
+        //testExtractdataLon0360();
+        testExtractdataLon180();
+        //productExtractDataMercator();
 
     }
 
@@ -490,7 +520,8 @@ public class TestIntfce {
         //String locationData = "C:/Documents and Settings/user+ productId";
         //String locationData="http%3A%2F%2Fpurl.org%2Fmyocean%2Fontology%2Findividual%2Fmyocean%23anotherduname/GOS-L4HRfnd-MED_NRTv1-OBS";
         String locationData="http://ce01.artov.rm.cnr.it:8080/thredds/dodsC/sst_nrt_v1_aggr/GOS-MED-L4-SST-NRTv1_aggr";        
-        try {
+        //String locationData="http://misgw-qt.cls.fr:40080/thredds/dodsC/dataset-duacs-global-nrt-madt-merged-h";
+            try {
             locationData = URLDecoder.decode(locationData, "UTF-8");
         } catch (UnsupportedEncodingException e1) {
             // TODO Auto-generated catch block
@@ -1621,15 +1652,16 @@ public class TestIntfce {
         // listVar.add("salinity");
         // listVar.add("temperature");
         // listVar.add("ssh");
-        listVar.add("ext_link/win_speed_alt");
+        //listVar.add("ext_link/win_speed_alt");
+        listVar.add("Grid_0001");
 
         // add temporal criteria
         // first element is start date
         // second element is end date (optional)
         // if only start date is set, end date equals start date
         List<String> listTemporalCoverage = new ArrayList<String>();
-        // listTemporalCoverage.add("2006-08-30");
-        // listTemporalCoverage.add("2006-08-31");
+         listTemporalCoverage.add("2010-04-25");
+         listTemporalCoverage.add("2010-04-25");
 
         // add Lat/Lon criteria
         // first element is low latitude
@@ -1637,18 +1669,18 @@ public class TestIntfce {
         // third element is high latitude
         // fourth element is high longitude
         List<String> listLatLonCoverage = new ArrayList<String>();
-        listLatLonCoverage.add("75");
-        listLatLonCoverage.add("150");
+        listLatLonCoverage.add("80");
+        listLatLonCoverage.add("-5");
         listLatLonCoverage.add("76");
-        listLatLonCoverage.add("151");
+        listLatLonCoverage.add("5");
 
         // add depth (Z) criteria
         // first element is low depth
         // second element is high depth (optional)
         // if only low depth is set, high depth equals low depth value
         List<String> listDepthCoverage = new ArrayList<String>();
-        listDepthCoverage.add("0");
-        listDepthCoverage.add("15");
+//        listDepthCoverage.add("0");
+//        listDepthCoverage.add("15");
 
         try {
             Organizer organizer = new Organizer();
@@ -1669,6 +1701,116 @@ public class TestIntfce {
             System.out.println(e.getMessage());
         }
 
+    }
+    
+    public static String globalLocationData = "";
+    public static List<String> globalListVar = null;
+    public static List<String> globalListTemporalCoverage = null;
+    public static List<String> globalListLatLonCoverage = null;
+    public static List<String> globalListDepthCoverage = null;
+    public static Product globalProduct = null;
+
+
+    public static void testExtractdataLon0360() {
+        
+        globalLocationData = "http://misgw-qt.cls.fr:40080/thredds/dodsC/dataset-duacs-global-nrt-madt-merged-h";
+
+        globalProduct = productInformationFromLocationData(globalLocationData);
+        
+        globalListVar = new ArrayList<String>();
+        globalListVar.add("Grid_0001");
+
+        globalListTemporalCoverage = new ArrayList<String>();
+        globalListTemporalCoverage.add("2010-04-25");
+        globalListTemporalCoverage.add("2010-04-25");
+
+        testAllExtractdataLon();
+    }
+    
+    public static void testExtractdataLon180() {
+                     
+        globalLocationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_glo_mean_best_estimate";
+
+        globalProduct = productInformationFromLocationData(globalLocationData);
+        
+        globalListVar = new ArrayList<String>();
+        globalListVar.add("temperature");
+
+        globalListTemporalCoverage = new ArrayList<String>();
+        globalListTemporalCoverage.add("2009-10-21");
+        globalListTemporalCoverage.add("2009-10-21");
+
+        globalListDepthCoverage = new ArrayList<String>();
+        globalListDepthCoverage.add("0");
+        globalListDepthCoverage.add("0");
+
+        testAllExtractdataLon();
+    }    
+    
+    public static void testAllExtractdataLon() {
+        
+        testExtractdataLon("80", "-5", "76", "5");
+        globalProduct.resetDataset();
+        testExtractdataLon("80", "-10", "76", "5");
+        globalProduct.resetDataset();
+        testExtractdataLon("80", "20", "76", "85");
+        globalProduct.resetDataset();
+        
+        testExtractdataLon("80", "190", "76", "350");        
+        globalProduct.resetDataset();
+        testExtractdataLon("80", "-170", "76", "350");
+        globalProduct.resetDataset();
+        testExtractdataLon("80", "-170", "76", "-10");
+        globalProduct.resetDataset();
+        
+        testExtractdataLon("80", "150", "76", "190");
+        globalProduct.resetDataset();
+        testExtractdataLon("80", "150", "76", "-170");
+        globalProduct.resetDataset();
+        
+        testExtractdataLon("80", "0", "76", "-180");
+        globalProduct.resetDataset();
+
+        testExtractdataLon("80", "180", "76", "-180");
+        globalProduct.resetDataset();
+        testExtractdataLon("80", "-180", "76", "180");
+        globalProduct.resetDataset();
+
+        testExtractdataLon("80", "-180", "76", "-190");
+        globalProduct.resetDataset();
+        
+        testExtractdataLon("80", "-180", "76", "2");
+        globalProduct.resetDataset();
+        
+        testExtractdataLon("80", "-170", "76", "-182");
+        globalProduct.resetDataset();
+        
+        testExtractdataLon("80", "179", "76", "-178");
+        globalProduct.resetDataset();
+    }
+    public static void testExtractdataLon(String ...coords) {
+
+
+        List<String> listLatLonCoverage = Arrays.asList(coords);
+
+        try {
+            Organizer organizer = new Organizer();
+
+             organizer.extractData(globalProduct, globalListVar, globalListTemporalCoverage, listLatLonCoverage, globalListDepthCoverage, null, Organizer.Format.NETCDF);
+
+            // get the output full file name (with path)
+            String extractLocationData = globalProduct.getExtractLocationData();
+            // get the url to download the output file.
+            String urlExtractPath = globalProduct.getDownloadUrlPath();
+
+            System.out.println(String.format("Product file is stored on the server in %s", extractLocationData));
+            System.out.println(String.format("Product %s can be downloaded with http at %s", globalProduct.getProductId(), urlExtractPath));
+
+        } catch (MotuExceptionBase e) {
+            System.out.println(e.notifyException());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public static void testProjection() {

@@ -62,6 +62,7 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.stream.old.NetcdfRemote;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
 /**
@@ -1891,11 +1892,13 @@ public class NetCdfWriter {
 
                     MAMath.MinMax minMaxTemp = new MAMath.MinMax(minMax.min, minMax.max);
                     NetCdfWriter.applyScaleFactorAndOffset(minMaxTemp, axisLon);
-
-                    if ((minMaxTemp.min > minMaxTemp.max) || (minMaxTemp.max > 180.)) {
-                        longitudeCenter = minMaxTemp.min + 180.0;
+                    
+//                    if ((minMaxTemp.min > minMaxTemp.max) || (minMaxTemp.max > 180.)) {
+//                        longitudeCenter = minMaxTemp.min + 180.0;
+//                        normalizeLongitudeData(data, axisLon);
+//                    }
+                        longitudeCenter = (minMaxTemp.min + minMax.max)/2;
                         normalizeLongitudeData(data, axisLon);
-                    }
                 }
 
                 writeVariableData(var, origin, data);
