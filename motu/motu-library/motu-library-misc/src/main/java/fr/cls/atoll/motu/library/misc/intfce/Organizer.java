@@ -6799,8 +6799,9 @@ public class Organizer {
      * @param serviceName the service name
      * 
      * @return the dataset id from uri
+     * @throws MotuException 
      */
-    public String getDatasetIdFromURI(String uri, String serviceName) {
+    public String getDatasetIdFromURI(String uri, String serviceName) throws MotuException {
 
         String productId = uri;
 
@@ -6809,7 +6810,13 @@ public class Organizer {
         }
 
         ServiceData serviceData = this.getServices(serviceName.toLowerCase());
+        if (serviceData == null) {
+            throw new MotuException(String.format("Unknown service name '%s')", serviceName));
+        }
         CatalogData.CatalogType catalogType = serviceData.getCatalogType();
+        if (catalogType == null) {
+            throw new MotuException(String.format("Type of the catalog is null (not set?) - service is '%s'", serviceName));
+        }
 
         if ((catalogType.compareTo(CatalogType.OPENDAP) == 0) || (catalogType.compareTo(CatalogType.TDS) == 0)) {
             // Extraire uniquement l'id du dataset
