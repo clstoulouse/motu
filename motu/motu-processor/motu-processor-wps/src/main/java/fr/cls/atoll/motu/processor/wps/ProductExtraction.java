@@ -97,19 +97,19 @@ public class ProductExtraction extends MotuWPSProcess {
             if (WPSUtils.isNullOrEmpty(userId)) {
                 userId = MotuWPSProcess.PARAM_ANONYMOUS;
             }
-
-            MotuWPSProcessData motuWPSProcessData = getProductInfoParameters(in);
-
-            ExtractionParameters extractionParameters = new ExtractionParameters(motuWPSProcessData.getServiceName(), motuWPSProcessData
-                    .getLocationData(), getVariables(in), getTemporalCoverage(in), getGeoCoverage(in), getDepthCoverage(in), motuWPSProcessData
-                    .getProductId(), getDataFormat(in), null, responseFormat, userId, anonymousUser);
-
-            extractionParameters.setBatchQueue(isBatch(in));
-
-            // Set assertion to manage CAS.
-            extractionParameters.setAssertion(AssertionHolder.getAssertion());
-
             try {
+
+                MotuWPSProcessData motuWPSProcessData = getProductInfoParameters(in);
+
+                ExtractionParameters extractionParameters = new ExtractionParameters(motuWPSProcessData.getServiceName(), motuWPSProcessData
+                        .getLocationData(), getVariables(in), getTemporalCoverage(in), getGeoCoverage(in), getDepthCoverage(in), motuWPSProcessData
+                        .getProductId(), getDataFormat(in), null, responseFormat, userId, anonymousUser);
+
+                extractionParameters.setBatchQueue(isBatch(in));
+
+                // Set assertion to manage CAS.
+                extractionParameters.setAssertion(AssertionHolder.getAssertion());
+
                 productDownload(in, extractionParameters, mode, priority);
             } catch (MotuExceptionBase e) {
                 LOG.error("process(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo)", e);

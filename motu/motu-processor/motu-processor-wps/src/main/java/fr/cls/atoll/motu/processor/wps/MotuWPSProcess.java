@@ -752,8 +752,9 @@ public abstract class MotuWPSProcess implements Processlet {
      * @return the product info parameters
      * 
      * @throws ProcessletException the processlet exception
+     * @throws MotuException 
      */
-    protected MotuWPSProcessData getProductInfoParameters(ProcessletInputs in) throws ProcessletException {
+    protected MotuWPSProcessData getProductInfoParameters(ProcessletInputs in) throws ProcessletException, MotuException {
         MotuWPSProcessData motuWPSProcessData = getMotuWPSProcessData(in);
 
         String serviceName = null;

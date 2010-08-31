@@ -68,19 +68,19 @@ public class ProductExtractionDataSize extends MotuWPSProcess {
         }
 
         super.process(in, out, info);
-
-        MotuWPSProcessData motuWPSProcessData = getProductInfoParameters(in);
-
-        ExtractionParameters extractionParameters = new ExtractionParameters(motuWPSProcessData.getServiceName(), motuWPSProcessData
-                .getLocationData(), getVariables(in), getTemporalCoverage(in), getGeoCoverage(in), getDepthCoverage(in), motuWPSProcessData
-                .getProductId(), getDataFormat(in), null, null, null, true);
-
-        extractionParameters.setBatchQueue(isBatch(in));
-
-        // Set assertion to manage CAS.
-        extractionParameters.setAssertion(AssertionHolder.getAssertion());
-
         try {
+
+            MotuWPSProcessData motuWPSProcessData = getProductInfoParameters(in);
+
+            ExtractionParameters extractionParameters = new ExtractionParameters(motuWPSProcessData.getServiceName(), motuWPSProcessData
+                    .getLocationData(), getVariables(in), getTemporalCoverage(in), getGeoCoverage(in), getDepthCoverage(in), motuWPSProcessData
+                    .getProductId(), getDataFormat(in), null, null, null, true);
+
+            extractionParameters.setBatchQueue(isBatch(in));
+
+            // Set assertion to manage CAS.
+            extractionParameters.setAssertion(AssertionHolder.getAssertion());
+
             getAmountDataSize(in, extractionParameters);
         } catch (MotuExceptionBase e) {
             setReturnCode(out, e, true);

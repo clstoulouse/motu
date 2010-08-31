@@ -66,12 +66,12 @@ public class ProductTimeCoverageProcess extends MotuWPSProcess {
             LOG.debug("BEGIN TimeCoverageProcess.process(), context: " + OGCFrontController.getContext());
         }
 
-        MotuWPSProcessData motuWPSProcessData = getProductInfoParameters(in);
-
-        // -------------------------------------------------
-        // get Time coverage
-        // -------------------------------------------------
         try {
+            MotuWPSProcessData motuWPSProcessData = getProductInfoParameters(in);
+
+            // -------------------------------------------------
+            // get Time coverage
+            // -------------------------------------------------
             if (!WPSUtils.isNullOrEmpty(motuWPSProcessData.getLocationDataParamIn())) {
                 productGetTimeCoverage(in, motuWPSProcessData.getLocationDataParamIn().getValue());
             } else if (!WPSUtils.isNullOrEmpty(motuWPSProcessData.getServiceNameParamIn())
