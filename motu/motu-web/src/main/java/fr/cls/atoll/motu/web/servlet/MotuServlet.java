@@ -792,7 +792,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             debugRequestHeaders(request);
 
             execRequest(request, response);
-        } catch (Exception e) {   
+        } catch (Exception e) {
             throw new ServletException(e);
         }
 
@@ -909,8 +909,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * 
      * @throws IOException the IO exception
      * @throws ServletException the servlet exception
+     * @throws MotuException
      */
-    protected void execRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void execRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("execRequest() - entering");
         }
@@ -1007,9 +1008,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @return true, if is action describe product
      * @throws ServletException
      * @throws IOException
+     * @throws MotuException
      */
     private boolean isActionDescribeProduct(String action, HttpServletRequest request, HttpServletResponse response) throws IOException,
-            ServletException {
+            ServletException, MotuException {
 
         if (!action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_DESCRIBE_PRODUCT)) {
             return false;
@@ -1152,8 +1154,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * 
      * @throws IOException the IO exception
      * @throws ServletException the servlet exception
+     * @throws MotuException
      */
-    protected boolean isActionGetSize(String action, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected boolean isActionGetSize(String action, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException,
+            MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionListGetSize(String, HttpServletRequest, HttpSession, HttpServletResponse) - entering");
         }
@@ -1214,9 +1218,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * 
      * @throws IOException the IO exception
      * @throws ServletException the servlet exception
+     * @throws MotuException
      */
     protected boolean isActionGetTimeCoverage(String action, HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
+            IOException, MotuException {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionGetTimeCoverage() - entering");
@@ -1343,9 +1348,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * 
      * @throws IOException the IO exception
      * @throws ServletException the servlet exception
+     * @throws MotuException
      */
     protected boolean isActionListProductDownloadHome(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, MotuException {
 
         response.setContentType(CONTENT_TYPE_HTML);
 
@@ -1367,7 +1373,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             }
             return false;
         }
-        String productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
+        String productId;
+        productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
         if (MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("isActionListProductDownloadHome() - exiting");
@@ -1398,9 +1405,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * 
      * @throws IOException the IO exception
      * @throws ServletException the servlet exception
+     * @throws MotuException 
      */
     protected boolean isActionDescribeCoverage(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, MotuException {
 
         response.setContentType(CONTENT_TYPE_XML);
 
@@ -1451,9 +1459,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * 
      * @throws IOException the IO exception
      * @throws ServletException the servlet exception
+     * @throws MotuException 
      */
     protected boolean isActionListProductMetaData(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, MotuException {
         response.setContentType(CONTENT_TYPE_HTML);
 
         if (LOG.isDebugEnabled()) {
@@ -1575,9 +1584,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * 
      * @throws IOException the IO exception
      * @throws ServletException the servlet exception
+     * @throws MotuException 
      */
     protected boolean isActionProductDownload(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
-            throws IOException, ServletException {
+            throws IOException, ServletException, MotuException {
 
         response.setContentType(CONTENT_TYPE_HTML);
 
@@ -1692,9 +1702,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * 
      * @throws IOException the IO exception
      * @throws ServletException the servlet exception
+     * @throws MotuException 
      */
     protected boolean isActionProductDownloadNoQueueing(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionProductDownloadNoQueueing() - entering");
         }
@@ -3895,9 +3906,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * 
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws ServletException
+     * @throws MotuException
      */
     protected String getProductIdFromParamId(final String productId, HttpServletRequest request, HttpServletResponse response) throws IOException,
-            ServletException {
+            ServletException, MotuException {
         String serviceName = request.getParameter(PARAM_SERVICE);
 
         if ((MotuServlet.isNullOrEmpty(serviceName)) || (MotuServlet.isNullOrEmpty(productId))) {
