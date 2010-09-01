@@ -55,11 +55,13 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -207,11 +209,10 @@ public class Product {
     public DatasetBase getDataset() {
         return this.dataset;
     }
-    
-    public void  resetDataset() {
+
+    public void resetDataset() {
         dataset = null;
     }
-
 
     /**
      * Setter of the property <tt>dataset</tt>.
@@ -694,9 +695,9 @@ public class Product {
                 }
             }
             // Don't get cached variables
-//            if (variable.isCaching()) {
-//                continue;
-//            }
+            // if (variable.isCaching()) {
+            // continue;
+            // }
 
             boolean isUnusedVar = false;
             String[] unusedVariables = null;
@@ -817,7 +818,12 @@ public class Product {
      */
     public void updateVariables(List<String> listVar) throws MotuException, MotuNotImplementedException {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("updateVariables() - entering");
+            LOG.debug("updateVariables(List<String>) - start");
+        }
+        // if list of variables to extract is no set, 
+        // get all variables form this product
+        if (Organizer.isNullOrEmpty(listVar)) {
+            listVar = getVariables();
         }
 
         if (dataset == null) {
@@ -827,8 +833,50 @@ public class Product {
         dataset.updateVariables(listVar);
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("updateVariables() - exiting");
+            LOG.debug("updateVariables(List<String>) - end");
         }
+    }
+
+    /**
+     * Update variables.
+     * 
+     * @throws MotuException the motu exception
+     * @throws MotuNotImplementedException the motu not implemented exception
+     */
+    public List<String> getVariables() throws MotuException, MotuNotImplementedException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getVariables() - start");
+        }
+
+        List<String> listVar = new ArrayList<String>();
+
+        if (productMetaData == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getVariables() - end - productMetaData is null");
+            }
+            return listVar;
+        }
+
+        Map<String, ParameterMetaData> parameterMetaDatas = productMetaData.getParameterMetaDatas();
+        if (parameterMetaDatas == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getVariables() - end - parameterMetaDatas is null");
+            }
+            return listVar;
+        }
+
+        Collection<ParameterMetaData> listParameterMetaData = parameterMetaDatas.values();
+        for (ParameterMetaData parameterMetaData : listParameterMetaData) {
+            if (Organizer.isNullOrEmpty(parameterMetaData.getName())) {
+                continue;
+            }
+            listVar.add(parameterMetaData.getName());
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getVariables() - end");
+        }
+        return listVar;
     }
 
     /**
@@ -1012,9 +1060,10 @@ public class Product {
             dataset = new DatasetAlongTrack(this);
             throw new MotuException("Extraction of 'Along Track' Product is not yet available.");
         } else if (getNetCdfReader().hasGeoXYAxisWithLonLatEquivalence()) {
-            //dataset = new DatasetGridXYLatLon(this);
+            // dataset = new DatasetGridXYLatLon(this);
             dataset = new DatasetGrid(this);
-            //throw new MotuNotImplementedException("Dataset grid with 2-dimensional Lat/Lon data is not implemented");
+            // throw new
+            // MotuNotImplementedException("Dataset grid with 2-dimensional Lat/Lon data is not implemented");
         } else {
             dataset = new DatasetGrid(this);
         }
@@ -1908,10 +1957,10 @@ public class Product {
             return "Unknown_product_Id";
         }
     }
-    
+
     /**
      * Gets the tds url path.
-     *
+     * 
      * @return the tds url path
      */
     public String getTdsUrlPath() {

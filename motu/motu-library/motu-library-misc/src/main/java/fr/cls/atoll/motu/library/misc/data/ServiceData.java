@@ -274,10 +274,10 @@ public class ServiceData {
 
     /** The disable href link. */
     private boolean disableHrefLink = false;
-    
+
     /**
      * Checks if is disable href link.
-     *
+     * 
      * @return true, if is disable href link
      */
     public boolean isDisableHrefLink() {
@@ -286,7 +286,7 @@ public class ServiceData {
 
     /**
      * Sets the disable href link.
-     *
+     * 
      * @param disableHrefLink the new disable href link
      */
     public void setDisableHrefLink(boolean disableHrefLink) {
@@ -1114,10 +1114,10 @@ public class ServiceData {
         }
         return product;
     }
-    
+
     /**
      * Gets the product id from tds url path.
-     *
+     * 
      * @param tdsUrlPath the tds url path
      * @return the product id from tds url path
      * @throws MotuException the motu exception
@@ -1998,12 +1998,7 @@ public class ServiceData {
         if (product == null) {
             throw new MotuException("Error in updateVariables - product is null");
         }
-
-        if (listVar == null) {
-            product.clearVariables();
-        } else {
-            product.updateVariables(listVar);
-        }
+        product.updateVariables(listVar);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("updateVariables() - exiting");
@@ -2501,7 +2496,7 @@ public class ServiceData {
 
     /**
      * Gets the product by tds url path.
-     *
+     * 
      * @param tdsUrlPath the tds url path
      * @return the product by tds url path
      * @throws MotuException the motu exception
@@ -2516,6 +2511,7 @@ public class ServiceData {
         currentProduct = product;
         return product;
     }
+
     /**
      * Gets the global velo template.
      * 

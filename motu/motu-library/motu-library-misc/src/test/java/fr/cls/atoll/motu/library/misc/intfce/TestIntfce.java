@@ -383,7 +383,7 @@ public class TestIntfce {
         // productExtractDataAvisofromProductId();
         // productInformationFromLocationData();
         // productExtractDataAviso2();
-         //productExtractDataMercator();
+         productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
         // productExtractDiversity();
@@ -412,7 +412,7 @@ public class TestIntfce {
         // productList();
         // testGetProductMetadataInfo();
         //testExtractdataLon0360();
-        testExtractdataLon180();
+        //testExtractdataLon180();
         //productExtractDataMercator();
 
     }
@@ -1369,7 +1369,7 @@ public class TestIntfce {
         // listVar.add("salinity");
         // listVar.add("u");
         // listVar.add("temperature");
-        listVar.add("temperature");
+        //listVar.add("temperature");
         // listVar.add("sea_water_salinity");
         // listVar.add("sea_surface_elevation");
         // listVar.add("ocean_mixed_layer_thickness");
@@ -1786,6 +1786,9 @@ public class TestIntfce {
         globalProduct.resetDataset();
         
         testExtractdataLon("80", "179", "76", "-178");
+        globalProduct.resetDataset();
+
+        testExtractdataLon("80", "-9", "76", "-1");
         globalProduct.resetDataset();
     }
     public static void testExtractdataLon(String ...coords) {
