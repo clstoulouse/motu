@@ -1,0 +1,12 @@
+Changelog for ${project.artifactId}
+
+This document lists all changes of the ${project.artifactId} releases.
+
+. ${project.artifactId} v2.1.9
+
+* Fixed bugs:
+  - NullPointerException while submitting an order with a unknown service id.
+  - In some case, the extracted longitude values in NetCdf file are not monotonic.
+  
+* Changes:
+  - If parameter variable list is empty, all variables contained in the TDS netcdf dataset are extracted.
