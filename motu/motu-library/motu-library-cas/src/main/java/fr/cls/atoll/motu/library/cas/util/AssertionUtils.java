@@ -238,7 +238,7 @@ public class AssertionUtils {
             if (AssertionUtils.isNullOrEmpty(casRestUrlSuffixToUse)) {
                 casRestUrlSuffixToUse = RestUtil.CAS_REST_URL_SUFFIX;
             }
-            returnString = AssertionUtils.addCASTicketFromTGT(casRestUrlSuffix, username, password, targetService);
+            returnString = AssertionUtils.addCASTicketFromTGT(casRestUrlSuffixToUse, username, password, targetService);
         }
 
         if (LOG.isDebugEnabled()) {

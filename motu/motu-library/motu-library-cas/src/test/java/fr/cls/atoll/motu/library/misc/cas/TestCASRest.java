@@ -58,6 +58,9 @@ import org.jasig.cas.client.validation.Assertion;
 import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.jasig.cas.client.validation.TicketValidationException;
 
+import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
+import fr.cls.atoll.motu.library.cas.util.RestUtil;
+
 
 /**
  * 
@@ -80,7 +83,15 @@ public class TestCASRest {
         // validateFromCAS(username, password);
         // loginToCAS(username, password);
         // getRedirectUrl();
+        
+        System.setProperty("http.proxyHost", "proxy-prod.cls.fr");
+        System.setProperty("http.proxyPort", "8080");
 
+        String targetService = "http://mis-qt1.vlandata.cls.fr/atoll-is/resources/orders?_context=default";
+        //RestUtil.getRedirectUrl("http://web-qt.cls.fr/mis-gateway-servlet/Motu");
+        //RestUtil.getRedirectUrl("http://mis-qt1.vlandata.cls.fr/atoll-is/resources/metadata?_context=default");
+        //RestUtil.getRedirectUrl("http://mis-qt1.vlandata.cls.fr/atoll-is/resources/orders?_context=default");
+        AssertionUtils.addCASTicket(targetService, "demo", "demo", null);
 
     }
 
