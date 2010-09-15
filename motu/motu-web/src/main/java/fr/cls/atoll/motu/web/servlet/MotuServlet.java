@@ -1024,7 +1024,16 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
         String locationData = request.getParameter(MotuRequestParametersConstant.PARAM_DATA);
 
-        String productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
+        String productId = "";
+        try {
+            productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
+        } catch (MotuException e) {
+            response.sendError(400, String.format("ERROR: '%s' ", e.notifyException()));
+            return true;
+        } catch (Exception e) {
+            response.sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
+            return true;
+        }
 
         if (MotuServlet.isNullOrEmpty(locationData) && MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
@@ -1174,8 +1183,20 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             dataFormat = getDataFormat(request);
         } catch (MotuExceptionBase e) {
             response.sendError(400, String.format("ERROR: %s", e.notifyException()));
+            return true;
         } catch (Exception e) {
             response.sendError(400, String.format("ERROR: %s", e.getMessage()));
+            return true;
+        }
+        String productId = "";
+        try {
+            productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
+        } catch (MotuException e) {
+            response.sendError(400, String.format("ERROR: '%s' ", e.notifyException()));
+            return true;
+        } catch (Exception e) {
+            response.sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
+            return true;
         }
 
         ExtractionParameters extractionParameters = new ExtractionParameters(
@@ -1185,7 +1206,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 getTemporalCoverage(request),
                 getGeoCoverage(request),
                 getDepthCoverage(request),
-                getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response),
+                productId,
                 dataFormat,
                 response.getWriter(),
                 null,
@@ -1237,7 +1258,16 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
         String locationData = request.getParameter(PARAM_DATA);
 
-        String productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
+        String productId = "";
+        try {
+            productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
+        } catch (MotuException e) {
+            response.sendError(400, String.format("ERROR: '%s' ", e.notifyException()));
+            return true;
+        } catch (Exception e) {
+            response.sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
+            return true;
+        }
 
         if (MotuServlet.isNullOrEmpty(locationData) && MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
@@ -1373,9 +1403,17 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             }
             return false;
         }
-        String productId;
-        productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
-        if (MotuServlet.isNullOrEmpty(productId)) {
+        String productId = "";
+        try {
+            productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
+        } catch (MotuException e) {
+            response.sendError(400, String.format("ERROR: '%s' ", e.notifyException()));
+            return true;
+        } catch (Exception e) {
+            response.sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
+            return true;
+        }
+         if (MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("isActionListProductDownloadHome() - exiting");
             }
@@ -1405,7 +1443,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * 
      * @throws IOException the IO exception
      * @throws ServletException the servlet exception
-     * @throws MotuException 
+     * @throws MotuException
      */
     protected boolean isActionDescribeCoverage(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException, MotuException {
@@ -1430,7 +1468,16 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             }
             return false;
         }
-        String productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_DATASET_ID), request, response);
+        String productId = "";
+        try {
+            productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_DATASET_ID), request, response);
+        } catch (MotuException e) {
+            response.sendError(400, String.format("ERROR: '%s' ", e.notifyException()));
+            return true;
+        } catch (Exception e) {
+            response.sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
+            return true;
+        }
         if (MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("isActionDescribeCoverage() - exiting");
@@ -1459,7 +1506,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * 
      * @throws IOException the IO exception
      * @throws ServletException the servlet exception
-     * @throws MotuException 
+     * @throws MotuException
      */
     protected boolean isActionListProductMetaData(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException, MotuException {
@@ -1483,7 +1530,18 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             }
             return false;
         }
-        String productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
+        
+        String productId = "";
+        try {
+            productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
+        } catch (MotuException e) {
+            response.sendError(400, String.format("ERROR: '%s' ", e.notifyException()));
+            return true;
+        } catch (Exception e) {
+            response.sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
+            return true;
+        }
+        
         if (MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("isActionListProductMetaData() - exiting");
@@ -1584,7 +1642,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * 
      * @throws IOException the IO exception
      * @throws ServletException the servlet exception
-     * @throws MotuException 
+     * @throws MotuException
      */
     protected boolean isActionProductDownload(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws IOException, ServletException, MotuException {
@@ -1652,8 +1710,21 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             dataFormat = getDataFormat(request);
         } catch (MotuExceptionBase e) {
             response.sendError(400, String.format("ERROR: %s", e.notifyException()));
+            return true;
         } catch (Exception e) {
             response.sendError(400, String.format("ERROR: %s", e.getMessage()));
+            return true;
+        }
+
+        String productId = "";
+        try {
+            productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
+        } catch (MotuException e) {
+            response.sendError(400, String.format("ERROR: '%s' ", e.notifyException()));
+            return true;
+        } catch (Exception e) {
+            response.sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
+            return true;
         }
 
         ExtractionParameters extractionParameters = new ExtractionParameters(
@@ -1663,7 +1734,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 getTemporalCoverage(request),
                 getGeoCoverage(request),
                 getDepthCoverage(request),
-                getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response),
+                productId,
                 dataFormat,
                 out,
                 responseFormat,
@@ -1702,7 +1773,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * 
      * @throws IOException the IO exception
      * @throws ServletException the servlet exception
-     * @throws MotuException 
+     * @throws MotuException
      */
     protected boolean isActionProductDownloadNoQueueing(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException, MotuException {
@@ -1739,7 +1810,17 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         } catch (Exception e) {
             response.sendError(400, String.format("ERROR: %s", e.getMessage()));
         }
-
+        
+        String productId = "";
+        try {
+            productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
+        } catch (MotuException e) {
+            response.sendError(400, String.format("ERROR: '%s' ", e.notifyException()));
+            return true;
+        } catch (Exception e) {
+            response.sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
+            return true;
+        }
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 request.getParameter(MotuRequestParametersConstant.PARAM_SERVICE),
                 request.getParameter(MotuRequestParametersConstant.PARAM_DATA),
@@ -1747,7 +1828,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 getTemporalCoverage(request),
                 getGeoCoverage(request),
                 getDepthCoverage(request),
-                getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response),
+                productId,
                 dataFormat,
                 out,
                 responseFormat,
