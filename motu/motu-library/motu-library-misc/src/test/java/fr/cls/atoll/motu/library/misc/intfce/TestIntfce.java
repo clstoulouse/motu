@@ -383,7 +383,7 @@ public class TestIntfce {
         // productExtractDataAvisofromProductId();
         // productInformationFromLocationData();
         // productExtractDataAviso2();
-         productExtractDataMercator();
+       // productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
         // productExtractDiversity();
@@ -406,13 +406,13 @@ public class TestIntfce {
         // productExtractDataMerseaFromHttp();
         // testLoadInventoryOLA();
         // testLoadCatalogOLA();
-        //Product product = productInformationFromInventory();
-        // productExtractDataFromInventory();
+        // Product product = productInformationFromInventory();
+         //productExtractDataFromInventory();
         // productListMercator();
         // productList();
         // testGetProductMetadataInfo();
         //testExtractdataLon0360();
-        //testExtractdataLon180();
+        testExtractdataLon180();
         //productExtractDataMercator();
 
     }
