@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>cls.atoll.motu</groupId>
 		<artifactId>motu-parent</artifactId>
-		<version>2.1.9-SNAPSHOT</version>
+		<version>2.1.9</version>
 		<relativePath>../../motu-parent</relativePath>
 	</parent>
 	
     <groupId>cls.atoll.motu.processor</groupId>
     <artifactId>motu-processor-wps</artifactId>
-    <version>2.1.9-SNAPSHOT</version>
+    <version>2.1.9</version>
     <packaging>jar</packaging>
 	
     <name>Motu WPS Processor</name>
@@ -27,12 +27,12 @@
         <dependency>
             <groupId>cls.atoll.motu.library</groupId>
             <artifactId>motu-library-misc</artifactId>
-            <version>2.1.9-SNAPSHOT</version>
+            <version>2.1.9</version>
         </dependency>
         <dependency>
             <groupId>cls.atoll.motu.api</groupId>
             <artifactId>motu-api-message</artifactId>
-            <version>2.1.9-SNAPSHOT</version>
+            <version>2.1.9</version>
         </dependency>
         <dependency>
             <groupId>org.apache.ant</groupId>
@@ -151,8 +151,8 @@
     </dependencies>
 	
 	<scm>
-		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-processor/motu-processor-wps</connection>
-		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-processor/motu-processor-wps</url>
+		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/tags/motu-2.1.9/motu-processor/motu-processor-wps</connection>
+		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/tags/motu-2.1.9/motu-processor/motu-processor-wps</url>
 	</scm>
 
 </project>

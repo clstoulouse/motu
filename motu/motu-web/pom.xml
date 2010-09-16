@@ -4,13 +4,13 @@
     <parent>
         <groupId>cls.atoll.motu</groupId>
         <artifactId>motu-parent</artifactId>
-        <version>2.1.9-SNAPSHOT</version>
+        <version>2.1.9</version>
         <relativePath>../motu-parent</relativePath>
     </parent>
     <groupId>cls.atoll.motu</groupId>
     <artifactId>motu-web</artifactId>
     <packaging>war</packaging>
-    <version>2.1.9-SNAPSHOT</version>
+    <version>2.1.9</version>
     <name>Motu Web</name>
     <description>This package holds the motu web server.</description>
     <properties>
@@ -37,22 +37,22 @@
         <dependency>
             <groupId>cls.atoll.motu.library</groupId>
             <artifactId>motu-library-misc</artifactId>
-            <version>2.1.9-SNAPSHOT</version>
+            <version>2.1.9</version>
         </dependency>
         <dependency>
             <groupId>cls.atoll.motu.api</groupId>
             <artifactId>motu-api-rest</artifactId>
-            <version>2.1.9-SNAPSHOT</version>
+            <version>2.1.9</version>
         </dependency>
         <dependency>
             <groupId>cls.atoll.motu.api</groupId>
             <artifactId>motu-api-message</artifactId>
-            <version>2.1.9-SNAPSHOT</version>
+            <version>2.1.9</version>
         </dependency>
         <dependency>
             <groupId>cls.atoll.motu.processor</groupId>
             <artifactId>motu-processor-wps</artifactId>
-            <version>2.1.9-SNAPSHOT</version>
+            <version>2.1.9</version>
         </dependency>
         <!-- 
 		-->
@@ -152,8 +152,8 @@
         </plugins>
     </build>
     <scm>
-        <connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-web</connection>
-        <url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-web</url>
+        <connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/tags/motu-2.1.9/motu-web</connection>
+        <url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/tags/motu-2.1.9/motu-web</url>
     </scm>
     <repositories>
         <repository>
