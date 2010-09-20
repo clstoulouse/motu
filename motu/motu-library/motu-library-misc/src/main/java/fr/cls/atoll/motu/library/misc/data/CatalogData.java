@@ -801,6 +801,17 @@ public class CatalogData {
             getCurrentProductSubTypes().add(datasetType.getName());
         }
 
+        List<fr.cls.atoll.motu.library.misc.tds.server.Service> listServices = datasetType.getService();
+        for (fr.cls.atoll.motu.library.misc.tds.server.Service o : listServices) {
+            if (o == null) {
+                continue;
+            }
+            catalogXml.getService().add(o);
+//            System.out.print(o.getName());
+//            System.out.print(":");
+//            System.out.println(o.getServiceType());
+        }
+
         List<JAXBElement<? extends DatasetType>> list = datasetType.getDataset();
 
         for (Iterator<JAXBElement<? extends DatasetType>> it = list.iterator(); it.hasNext();) {
@@ -951,6 +962,7 @@ public class CatalogData {
             throw new MotuException(String.format("Error in getUrlOpendapFromTds - No TDS service found in TDS catalog for dataset '%s' ",
                                                   datasetType.getName()));
         }
+        
         // search 'opendap' seruce type. If not found search 'dods' service type.
         fr.cls.atoll.motu.library.misc.tds.server.Service tdsService = findTdsService(tdsServiceName, TDS_OPENDAP_SERVICE, catalogXml.getService());
 
@@ -1015,9 +1027,9 @@ public class CatalogData {
 
         if (datasetType.getID() != null) {
             if (datasetType.getID().equals("")) {
-                productId = datasetType.getUrlPath();
-            } else {
                 productId = tdsUrlPath;
+            } else {
+                productId = datasetType.getID();
             }
         } else {
             productId = tdsUrlPath;
