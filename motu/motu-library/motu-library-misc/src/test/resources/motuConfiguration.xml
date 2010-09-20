@@ -128,6 +128,15 @@
 		<catalog name="catalog.xml" type="tds"
 			urlSite="http://opendap.mercator-ocean.fr/thredds" />
 	</configService>
+	<!--===========================================-->
+	<!--                    TEST MyOcean Mercator TDS         -->
+	<!--===========================================-->
+	<configService defaultLanguage="UK" description="Test MyOcean data"
+		group="MetNo" httpBaseRef="http:///www.myocean.eu.org"
+		name="MetNo" veloTemplatePrefix="myocean">
+		<catalog name="myocean/ARC-MFC/myocean-class1-nat.xml" type="tds"
+			urlSite="http://thredds.met.no/thredds" />
+	</configService>
     <!--===========================================================-->
 	<!--                   motu-ftp-aviso Service                 -->
 	<!--===========================================================-->

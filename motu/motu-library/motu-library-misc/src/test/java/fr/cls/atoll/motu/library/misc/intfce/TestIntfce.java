@@ -374,7 +374,7 @@ public class TestIntfce {
         // }
         // testLoadMotuConfig();
         // testgetMotuConfigSchema();
-        // productInformation();
+         productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
         // productDownloadInfo();
@@ -412,7 +412,7 @@ public class TestIntfce {
         // productList();
         // testGetProductMetadataInfo();
         //testExtractdataLon0360();
-        testExtractdataLon180();
+        //testExtractdataLon180();
         //productExtractDataMercator();
 
     }
@@ -627,10 +627,13 @@ public class TestIntfce {
             // String productId = "duacs_regional-gomex_nrt_g2_slaext";
             // String serviceName = "dev";
             // String productId = "res_oer_g2";
-            String serviceName = "mercator";
+            //String serviceName = "mercator";
+            String serviceName = "MetNo";
+            
             // String serviceName = "cls";
             // String serviceName = "AvisoDT";
-            String productId = "mercatorPsy3v2_nat_mean_best_estimate";
+            //String productId = "mercatorPsy3v2_nat_mean_best_estimate";
+            String productId = "myocean/nat/tmipv2n-class1-be";
             // String productId = "mercatorPsy3v2R1v_med_levitus_1998";
             // String productId = "global_sst";
             // String productId = "dt_ref_global_merged_madt_h";
