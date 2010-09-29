@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
@@ -2095,22 +2096,28 @@ public class Organizer {
 
         MinMax depthCoverage = productMetaData.getDepthCoverage();
         if (depthCoverage != null) {
-            geospatialCoverage.setDepthMax(productMetaData.getDepthCoverage().max);
-            geospatialCoverage.setDepthMin(productMetaData.getDepthCoverage().min);
+            geospatialCoverage.setDepthMax(new BigDecimal(productMetaData.getDepthCoverage().max));
+            geospatialCoverage.setDepthMin(new BigDecimal(productMetaData.getDepthCoverage().min));
         }
-        geospatialCoverage.setDepthResolution(productMetaData.getDepthResolution());
+        if (productMetaData.getDepthResolution() != null) {
+            geospatialCoverage.setDepthResolution(new BigDecimal(productMetaData.getDepthResolution()));
+        }
         geospatialCoverage.setDepthUnits(productMetaData.getDepthUnits());
 
         LatLonRect geoBBox = productMetaData.getGeoBBox();
         if (geoBBox != null) {
-            geospatialCoverage.setEast(productMetaData.getGeoBBox().getLonMax());
-            geospatialCoverage.setWest(productMetaData.getGeoBBox().getLonMin());
-            geospatialCoverage.setNorth(productMetaData.getGeoBBox().getLatMax());
-            geospatialCoverage.setSouth(productMetaData.getGeoBBox().getLatMin());
+            geospatialCoverage.setEast(new BigDecimal(productMetaData.getGeoBBox().getLonMax()));
+            geospatialCoverage.setWest(new BigDecimal(productMetaData.getGeoBBox().getLonMin()));
+            geospatialCoverage.setNorth(new BigDecimal(productMetaData.getGeoBBox().getLatMax()));
+            geospatialCoverage.setSouth(new BigDecimal(productMetaData.getGeoBBox().getLatMin()));
         }
-        geospatialCoverage.setEastWestResolution(productMetaData.getEastWestResolution());
+        if (productMetaData.getEastWestResolution() != null) {
+            geospatialCoverage.setEastWestResolution(new BigDecimal(productMetaData.getEastWestResolution()));
+        }
         geospatialCoverage.setEastWestUnits(productMetaData.getEastWestUnits());
-        geospatialCoverage.setNorthSouthResolution(productMetaData.getNorthSouthResolution());
+        if (productMetaData.getNorthSouthResolution() != null) {
+            geospatialCoverage.setNorthSouthResolution(new BigDecimal(productMetaData.getNorthSouthResolution()));
+        }
         geospatialCoverage.setNorthSouthUnits(productMetaData.getNorthSouthUnits());
 
         geospatialCoverage.setCode(ErrorType.OK);
@@ -2241,8 +2248,8 @@ public class Organizer {
 
         MinMax minMax = productMetaData.getAxisMinMaxValue(coordinateAxis.getAxisType());
         if (minMax != null) {
-            axis.setLower(minMax.min);
-            axis.setUpper(minMax.max);
+            axis.setLower(new BigDecimal(minMax.min));
+            axis.setUpper(new BigDecimal(minMax.max));
         }
 
         axis.setCode(ErrorType.OK);
@@ -5271,15 +5278,15 @@ public class Organizer {
      */
     public static Matcher matchTDSCatalogUrl(String locationData) {
 
-        //String patternExpression = "(http://.*thredds/)(dodsC/)(.*/)*(.*$)";
+        // String patternExpression = "(http://.*thredds/)(dodsC/)(.*/)*(.*$)";
         String patternExpression = "(http://.*thredds/)(dodsC/)(.*)";
 
         Pattern pattern = Pattern.compile(patternExpression);
         Matcher matcher = pattern.matcher(locationData);
         // System.out.println(matcher.groupCount());
-//        if (matcher.groupCount() != 4) {
-//            return null;
-//        }
+        // if (matcher.groupCount() != 4) {
+        // return null;
+        // }
         if (!(matcher.find())) {
             return null;
         }
@@ -5337,7 +5344,7 @@ public class Organizer {
         }
 
         String value = "";
-        
+
         Matcher matcher = matchTDSCatalogUrl(locationData);
         if (matcher == null) {
             if (LOG.isDebugEnabled()) {
@@ -5345,7 +5352,7 @@ public class Organizer {
             }
             return null;
         }
-        
+
         try {
             value = matcher.group(matcher.groupCount());
         } catch (Exception e) {
@@ -5353,7 +5360,6 @@ public class Organizer {
 
             // Do nothing else
         }
-        
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("getTDSDatasetId(String) - end");
@@ -5361,15 +5367,15 @@ public class Organizer {
         return value;
 
     }
-    
+
     /**
      * Gets the product from tds url path.
-     *
+     * 
      * @param tdsUrlPath the tds url path
      * @return the product from tds url path
-     * @throws MotuNotImplementedException 
-     * @throws NetCdfAttributeException 
-     * @throws MotuException 
+     * @throws MotuNotImplementedException
+     * @throws NetCdfAttributeException
+     * @throws MotuException
      */
     public Product getProductFromTdsUrlPath(String tdsUrlPath) throws MotuException, NetCdfAttributeException, MotuNotImplementedException {
         if (LOG.isDebugEnabled()) {
@@ -5384,22 +5390,22 @@ public class Organizer {
         }
 
         Product product = currentService.getProductFromTdsUrlPath(tdsUrlPath);
-        
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductFromTdsUrlPath(String) - end");
         }
         return product;
 
     }
-    
+
     /**
      * Gets the product id from tds url path.
-     *
+     * 
      * @param tdsUrlPath the tds url path
      * @return the product id from tds url path
-     * @throws MotuNotImplementedException 
-     * @throws NetCdfAttributeException 
-     * @throws MotuException 
+     * @throws MotuNotImplementedException
+     * @throws NetCdfAttributeException
+     * @throws MotuException
      */
     public String getProductIdFromTdsUrlPath(String tdsUrlPath) throws MotuException, NetCdfAttributeException, MotuNotImplementedException {
         if (LOG.isDebugEnabled()) {
@@ -5407,14 +5413,14 @@ public class Organizer {
         }
 
         Product product = getProductFromTdsUrlPath(tdsUrlPath);
-        
+
         if (product == null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getProductIdFromTdsUrlPath(String) - end - product is null");
             }
-            return null;            
+            return null;
         }
-        
+
         String returnString = product.getProductId();
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductIdFromTdsUrlPath(String) - end");
@@ -5422,6 +5428,7 @@ public class Organizer {
         return returnString;
 
     }
+
     // /**
     // * Checks if is user authentification.
     // *
@@ -6799,7 +6806,7 @@ public class Organizer {
      * @param serviceName the service name
      * 
      * @return the dataset id from uri
-     * @throws MotuException 
+     * @throws MotuException
      */
     public String getDatasetIdFromURI(String uri, String serviceName) throws MotuException {
 
@@ -6954,9 +6961,9 @@ public class Organizer {
         String proxyPort = null;
         String proxyLogin = null;
         String proxyPwd = null;
-        
+
         Authenticator.setDefault(null);
-        
+
         if (Organizer.isNullOrEmpty(scheme)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getUrlConnectionProxy(String, String) - end - scheme is null or empty");
