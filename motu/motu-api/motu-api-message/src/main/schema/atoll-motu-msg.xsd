@@ -414,17 +414,17 @@
 					Response on geospatial coverage of a product.
 				</xsd:documentation>
 			</xsd:annotation>
-			<xsd:attribute name="north" type="xsd:double" default="90"/>
-			<xsd:attribute name="south" type="xsd:double" default="-90"/>
-			<xsd:attribute name="east" type="xsd:double" default="180"/>
-			<xsd:attribute name="west" type="xsd:double" default="-180"/>
-			<xsd:attribute name="northSouthResolution" type="xsd:double" use="optional"/>
+			<xsd:attribute name="north" type="xsd:decimal" default="90"/>
+			<xsd:attribute name="south" type="xsd:decimal" default="-90"/>
+			<xsd:attribute name="east" type="xsd:decimal" default="180"/>
+			<xsd:attribute name="west" type="xsd:decimal" default="-180"/>
+			<xsd:attribute name="northSouthResolution" type="xsd:decimal" use="optional"/>
 			<xsd:attribute name="northSouthUnits" type="xsd:string" use="optional"/>
-			<xsd:attribute name="eastWestResolution" type="xsd:double" use="optional"/>
+			<xsd:attribute name="eastWestResolution" type="xsd:decimal" use="optional"/>
 			<xsd:attribute name="eastWestUnits" type="xsd:string" use="optional"/>
-			<xsd:attribute name="depthMin" type="xsd:double" use="optional"/>
-			<xsd:attribute name="depthMax" type="xsd:double" use="optional"/>
-			<xsd:attribute name="depthResolution" type="xsd:double" use="optional"/>
+			<xsd:attribute name="depthMin" type="xsd:decimal" use="optional"/>
+			<xsd:attribute name="depthMax" type="xsd:decimal" use="optional"/>
+			<xsd:attribute name="depthResolution" type="xsd:decimal" use="optional"/>
 			<xsd:attribute name="depthUnits" type="xsd:string" use="optional"/>
 			<xsd:attributeGroup ref="codeMsg"/>			  		  	  		    
 			
@@ -440,8 +440,8 @@
 			</xsd:annotation>
 			<xsd:attributeGroup ref="variableAttributes"/>			  		  	  		    	        								
 			<xsd:attribute name="axisType" type="xsd:string" use="optional"/>
-			<xsd:attribute name="lower" type="xsd:double" use="optional"/>
-			<xsd:attribute name="upper" type="xsd:double" use="optional"/>
+			<xsd:attribute name="lower" type="xsd:decimal" use="optional"/>
+			<xsd:attribute name="upper" type="xsd:decimal" use="optional"/>
 			<xsd:attributeGroup ref="codeMsg"/>			  		  	  		    
 			
 		</xsd:complexType>
