@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javolution.UtilTestSuite.MapRemove;
+
 import org.apache.log4j.Logger;
 
 import ucar.ma2.Array;
@@ -52,6 +54,8 @@ import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
@@ -59,6 +63,9 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis2D;
+import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
@@ -1226,6 +1233,29 @@ public class NetCdfWriter {
                     listAxis.add(axis);
                 }
                 mapAxis.put(axisType, listAxis);
+
+                // TODO DEDE X/Y
+                //                
+                // if (axis instanceof CoordinateAxis2D) {
+                // CoordinateAxis2D axis2D = (CoordinateAxis2D) axis;
+                // List<CoordinateSystem> list = axis2D.getCoordinateSystems();
+                // for (CoordinateSystem coordinateSystem : list) {
+                // List<CoordinateAxis> axesTemp = coordinateSystem.getCoordinateAxes();
+                // for (CoordinateAxis axisTemp : axesTemp) {
+                // computeValidMinMaxVarAttributes(axisTemp);
+                //
+                // AxisType axisTypeTemp = axisTemp.getAxisType();
+                // List<Variable> listAxisTemp = mapAxis.get(axisTypeTemp);
+                // if (listAxisTemp == null) {
+                // listAxisTemp = new ArrayList<Variable>();
+                // listAxisTemp.add(axisTemp);
+                // }
+                // mapAxis.put(axisType, listAxisTemp);
+                // }
+                // }
+                // }
+                // TODO DEDE X/Y
+
                 // addShapes(axis);
 
                 // processAxisAttributes(axis);
@@ -1261,6 +1291,197 @@ public class NetCdfWriter {
             }
             setValidMinMaxVarAttributes(var);
         }
+    }
+
+    public void writeVariablesWithGeoXY(List<GeoGrid> listGeoGridSubset,
+                                        GeoGrid geoGridOrigin,
+                                        GridDataset gds,
+                                        Map<String, Variable> originalVariables) throws MotuException, MotuNotImplementedException,
+            MotuExceedingCapacityException {
+        if (listGeoGridSubset == null) {
+            throw new MotuException("Error in writeVariablesGeoXY - list of geogrids is null");
+        }
+        if (listGeoGridSubset.size() <= 0) {
+            throw new MotuException("Error in writeVariablesGeoXY - list of geoGrids is empty");
+        }
+
+        putDimensionsGeoXY(listGeoGridSubset);
+
+        Map<AxisType, List<Variable>> mapAxis = new HashMap<AxisType, List<Variable>>();
+
+        for (GeoGrid geoGridSubset : listGeoGridSubset) {
+            if (geoGridSubset == null) {
+                throw new MotuException("Error in writeVariablesGeoXY - geoGrid is null");
+            }
+
+            Variable v = geoGridSubset.getVariable();
+
+            amountDataSize += NetCdfWriter.countVarSize(v);
+            if (amountDataSize > Organizer.getMotuConfigInstance().getMaxSizePerFile().doubleValue()) {
+                throw new MotuExceedingCapacityException(Organizer.getMotuConfigInstance().getMaxSizePerFile().doubleValue());
+            }
+
+            putVariables(v.getName(), v);
+            // addShapes(v);
+
+            // Removes valid_min and valid_max attribute from the variables :
+            // because their values can't be modified after file is created.
+            // the valid_min and valid_max can't be calculated after reading the data
+            // of the variable, and it's too late to modify objects (variables, dimensions,
+            // attributes) in the NetCdf file (see NetCdfFileWriteable class).
+            // To have efficient performance, we don't want to read data variable twice :
+            // once before file creation, to compute valid min an valid max value,
+            // and once after file creation, to write data in the file.
+
+            // Modif : 21/11/07 : Remove only for variables that are not a dimension.
+            // Comment this 'if' block, if you activate computeValidMinMaxVarAttributes, below
+            if (!(v instanceof CoordinateAxis)) {
+                removeValidMinMaxVarAttributes(v);
+            }
+
+            // Valid_min and valid_max attribute from the variables :
+            // because their values can't be modified after file is created.
+            // the valid_min and valid_max can't be calculated after reading the data
+            // of the variable, and it's too late to modify objects (variables, dimensions,
+            // attributes) in the NetCdf file (see NetCdfFileWriteable class).
+            // We have to read data variable twice :
+            // once before file creation, to compute valid min an valid max value,
+            // and once after file creation, to write data in the file.
+
+            // VariableDS vtemp = (VariableDS)geoGridOrigin.getVariable();
+            // DataType dd = vtemp.getOriginalDataType();
+
+            // Begin Modif : 21/11/07 : Don't compute MinMax for variable that are not a dimension
+            // Uncomment the line below to comptute MinMax
+            // computeValidMinMaxVarAttributes(v, geoGridSubset, geoGridOrigin);
+            // End Modif : 21/11/07
+
+            //          
+            // MAMath.MinMax minMax = minMaxHash.get(v.getName());
+            //
+            // if (geoGridOrigin != null) {
+            // minMax = NetCdfWriter.getMinMaxSkipMissingData(geoGridOrigin, v, minMax);
+            // } else {
+            // minMax = NetCdfWriter.getMinMaxSkipMissingData(geoGridSubset, v, minMax);
+            // }
+            //
+            // if (minMax != null) {
+            // setValidMinMaxVarAttributes(v, minMax);
+            // minMaxHash.put(v.getName(), minMax);
+            // } else {
+            // removeValidMinMaxVarAttributes(v);
+            // }
+
+            CoordinateAxis axis = null;
+
+            // NetCDF 2.2.16
+            // ArrayList axes = geoGrid.getCoordinateSystem().getCoordinateAxes();
+            // NetCDF 2.2.18
+            List<CoordinateAxis> axes = geoGridSubset.getCoordinateSystem().getCoordinateAxes();
+
+            // Add axes as variable
+            for (int i = 0; i < axes.size(); i++) {
+                axis = axes.get(i);
+
+                computeValidMinMaxVarAttributes(axis);
+
+                AxisType axisType = axis.getAxisType();
+
+                // // To bypass a bug in Netcdf-java 4.0.31 : axis.getAxisType() returns null.
+                // // This bug will normally fixed in the next Netcdf-java version 4.0.32
+                // if (axisType == null) {
+                // List<CoordinateAxis> axesOrigin = geoGridOrigin.getCoordinateSystem().getCoordinateAxes();
+                // for (CoordinateAxis axisOrigin : axesOrigin) {
+                // if (axisOrigin.getName() != axis.getName()) {
+                // continue;
+                // }
+                // axisType = axisOrigin.getAxisType();
+                // break;
+                // }
+                // }
+                // // END To bypass a bug in Netcdf 4.0.31
+                // if (axisType == null) {
+                // throw new
+                // MotuException(String.format("ERROR - axisType is null (coordinate axis '%s') - (NetCdfWriter.writeVariables)",
+                // axis.getName()));
+                // }
+
+                List<Variable> listAxis = mapAxis.get(axisType);
+                if (listAxis == null) {
+                    listAxis = new ArrayList<Variable>();
+                    listAxis.add(axis);
+                } else if (axisType == AxisType.Lon) {
+                    listAxis.add(axis);
+                } else if (axisType == AxisType.Lat) {
+                    listAxis.add(axis);
+                }
+                mapAxis.put(axisType, listAxis);
+
+                // addShapes(axis);
+
+                // processAxisAttributes(axis);
+            }
+
+            writeDependentVariables(geoGridSubset, gds);
+
+        } // end for (GeoGrid geoGridSubset : listGeoGridSubset)
+
+        // process axis for the variable
+        for (List<Variable> listAxis : mapAxis.values()) {
+            if (listAxis.size() <= 0) {
+                continue;
+            }
+
+            List<Variable> vPreviouslyListAdded = getVariables(listAxis.get(0).getName());
+            if (vPreviouslyListAdded != null) {
+                continue;
+            }
+            putVariables(listAxis.get(0).getName(), listAxis);
+
+            for (Variable var : listAxis) {
+                if (var instanceof CoordinateAxis) {
+                    CoordinateAxis axis = (CoordinateAxis) var;
+                    processAxisAttributes(axis, originalVariables);
+                }
+            }
+        }
+        List<Variable> listVar = getVariables(listGeoGridSubset.get(0).getVariable().getName());
+        for (Variable var : listVar) {
+            if (var instanceof CoordinateAxis) {
+                continue;
+            }
+            setValidMinMaxVarAttributes(var);
+        }
+    }
+
+    public void writeVariables(List<CoordinateAxis> listCoordinateAxis, Map<String, Range> mapRange, Map<String, Variable> originalVariables)
+            throws MotuException, MotuNotImplementedException, MotuExceedingCapacityException {
+        if (Organizer.isNullOrEmpty(listCoordinateAxis)) {
+            return;
+        }
+
+        putDimensionsAxis(listCoordinateAxis, mapRange);
+
+        for (CoordinateAxis var : listCoordinateAxis) {
+            writeVariables(var, originalVariables);
+        }
+
+    }
+
+    public void writeVariables(CoordinateAxis axis, Map<String, Variable> originalVariables) throws MotuException, MotuNotImplementedException,
+            MotuExceedingCapacityException {
+
+        if (axis == null) {
+            throw new MotuException("Error in writeVariables - axis is null");
+        }
+
+        amountDataSize += NetCdfWriter.countVarSize(axis);
+        if (amountDataSize > Organizer.getMotuConfigInstance().getMaxSizePerFile().doubleValue()) {
+            throw new MotuExceedingCapacityException(Organizer.getMotuConfigInstance().getMaxSizePerFile().doubleValue());
+        }
+
+        putVariables(axis.getName(), axis);
+
     }
 
     /**
@@ -1511,10 +1732,10 @@ public class NetCdfWriter {
      */
     public void putDimensions(List<GeoGrid> listGeoGrid) throws MotuException {
         if (listGeoGrid == null) {
-            throw new MotuException("Error in writeDimensions - list of geoGrids is null");
+            throw new MotuException("Error in putDimensions - list of geoGrids is null");
         }
         if (listGeoGrid.size() <= 0) {
-            throw new MotuException("Error in writeDimensions - list of geoGrids is empty");
+            throw new MotuException("Error in putDimensions - list of geoGrids is empty");
         }
 
         Dimension computedXDim = null;
@@ -1549,6 +1770,152 @@ public class NetCdfWriter {
                 putDimension(geoGrid.getDimension(indexDim));
             }
         }
+
+    }
+
+    public void putDimensionsGeoXY(List<GeoGrid> listGeoGrid) throws MotuException {
+        if (listGeoGrid == null) {
+            throw new MotuException("Error in putDimensions - list of geoGrids is null");
+        }
+        if (listGeoGrid.size() <= 0) {
+            throw new MotuException("Error in putDimensions - list of geoGrids is empty");
+        }
+
+        // Here we dont't computed X/Y dimensions.
+        // X/Y dimensions are computed separately
+
+        // write geogrid dimension
+        GeoGrid geoGrid = listGeoGrid.get(0);
+        int indexXDim = geoGrid.getXDimensionIndex();
+        int indexYDim = geoGrid.getYDimensionIndex();
+
+        for (int indexDim = 0; indexDim < geoGrid.getDimensions().size(); indexDim++) {
+
+            // Set dimension except X and Y dimension
+            if ((indexDim != indexXDim) && ((indexDim != indexYDim))) {
+                putDimension(geoGrid.getDimension(indexDim));
+            }
+        }
+
+    }
+
+    public void putDimensionsAxis(List<CoordinateAxis> listCoordinateAxis, Map<String, Range> mapRange) throws MotuException,
+            MotuNotImplementedException {
+        if (listCoordinateAxis == null) {
+            throw new MotuException("Error in putDimensionsAxis - list of CoordinateAxis is null");
+        }
+        if (listCoordinateAxis.size() <= 0) {
+            throw new MotuException("Error in putDimensionsAxis - list of CoordinateAxis is empty");
+        }
+        // -----------------
+        AxisType axisType = null;
+        // Compute output dimension
+        for (CoordinateAxis axis : listCoordinateAxis) {
+            if (!(axis instanceof CoordinateAxis1D)) {
+                throw new MotuNotImplementedException(
+                        String
+                                .format("ERROR in putDimensionsAxis : Process a coordinate axis with more than one dimensions is not yet implemented (axis name:'%s')",
+                                        axis.getName()));
+            }
+
+            if (axisType == null) {
+
+                axisType = axis.getAxisType();
+
+                if ((axisType != AxisType.GeoX) && (axisType != AxisType.GeoY)) {
+                    throw new MotuNotImplementedException(
+                            String
+                                    .format("ERROR in putDimensionsAxis : Process a coordinate axis with type '%s' than one dimensions is not yet implemented (axis name:'%s'). Only type '%s' and '%s' are accepted",
+                                            axisType.toString(),
+                                            axis.getName(),
+                                            AxisType.GeoX.toString(),
+                                            AxisType.GeoY.toString()));
+
+                } else if (axisType != axis.getAxisType()) {
+                    throw new MotuNotImplementedException(
+                            String
+                                    .format("ERROR in putDimensionsAxis : All of the axis have not the sam type. Expected '%s' but got '%s' (axis name:'%s')",
+                                            axisType.toString(),
+                                            axis.getAxisType().toString(),
+                                            axis.getName()));
+                }
+            }
+        }
+
+        CoordinateAxis axis = listCoordinateAxis.get(0);
+        Dimension dim = axis.getDimension(0);
+        if (dim == null) {
+            // TODO : thow exception
+            return;
+        }
+
+        int length = -1;
+
+        if (!dim.isUnlimited()) {
+            length = 0;
+            for (Range r : mapRange.values()) {
+                length = length + r.length();
+            }
+        }
+
+        Dimension computedDim = new Dimension(dim.getName(), length, dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
+
+        // -----------------
+        // ==========================
+        //
+        // CoordinateAxis axis = listCoordinateAxis.get(0);
+        // if (axis == null) {
+        // return;
+        // }
+        //
+        // if (!(axis instanceof CoordinateAxis1D)) {
+        // throw new MotuNotImplementedException(
+        // String
+        // .format("ERROR in putDimensionsAxis : Process a coordinate axis with more than one dimensions is not yet implemented (axis name:'%s')",
+        // axis.getName()));
+        // }
+        //
+        // AxisType axisType = axis.getAxisType();
+        //
+        // axisType = axis.getAxisType();
+        //
+        // if ((axisType != AxisType.GeoX) && (axisType != AxisType.GeoY)) {
+        // throw new MotuNotImplementedException(
+        // String
+        // .format("ERROR in putDimensionsAxis : Process a coordinate axis with type '%s' than one dimensions is not yet implemented (axis name:'%s'). Only type '%s' and '%s' are accepted",
+        // axisType.toString(),
+        // axis.getName(),
+        // AxisType.GeoX.toString(),
+        // AxisType.GeoY.toString()));
+        //
+        // } else if (axisType != axis.getAxisType()) {
+        // throw new MotuNotImplementedException(String
+        // .format("ERROR in putDimensionsAxis : All of the axis have not the sam type. Expected '%s' but got '%s' (axis name:'%s')",
+        // axisType.toString(),
+        // axis.getAxisType().toString(),
+        // axis.getName()));
+        // }
+        //
+        // Dimension dim = axis.getDimension(0);
+        // if (dim == null) {
+        // return;
+        // }
+        //
+        // int length = 0;
+        // if (dim.isUnlimited()) {
+        // length = -1;
+        // } else {
+        // Collection<Range> ranges = mapRange.values();
+        //
+        // for (Range range : ranges) {
+        // length = length + range.length();
+        // }
+        // }
+        //
+        // Dimension computedDim = new Dimension(dim.getName(), length, dim.isShared(), dim.isUnlimited(),
+        // dim.isVariableLength());
+        // ==========================
+        putDimension(computedDim);
 
     }
 
@@ -1675,6 +2042,39 @@ public class NetCdfWriter {
                     // writeVariableByBlock(var, shape);
                     // }
 
+                }
+            }
+
+            ncfile.close();
+        } catch (Exception e) {
+            LOG.error("finish()", e);
+
+            throw new MotuException("Error in NetcdfWriter finish", e);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("finish() - exiting");
+        }
+    }
+
+    public void finishGeoXY(String[] varAttrToRemove,
+                            List<Range> listDistinctXRange,
+                            List<Range> listDistinctYRange,
+                            Map<String, List<Section>> mapVarOrgRanges) throws MotuException, MotuExceedingCapacityException,
+            MotuNotImplementedException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("finish() - entering");
+        }
+
+        // Add variables to file and create it.
+        create(varAttrToRemove);
+
+        try {
+            for (List<Variable> listVar : variablesMap.values()) {
+                longitudeCenter = 0.0;
+                for (Variable var : listVar) {
+                    List<Section> listVarOrgRanges = mapVarOrgRanges.get(var.getName());
+                    writeVariableByBlockGeoXY(var, listDistinctXRange, listDistinctYRange, listVarOrgRanges);
                 }
             }
 
@@ -1830,6 +2230,14 @@ public class NetCdfWriter {
         if (LOG.isDebugEnabled()) {
             LOG.debug("writeVariableByBlock() - entering");
         }
+        if (var.getName().equalsIgnoreCase("longitude")) {
+            String msg;
+            msg = "dsdf";
+        }
+        if (var.getName().equalsIgnoreCase("temperature")) {
+            String msg;
+            msg = "dsdf";
+        }
 
         int[] origin = null;
         int[] shape = null;
@@ -1874,14 +2282,14 @@ public class NetCdfWriter {
 
                 origin = it.next();
 
-                if ((origin == null) && (var.getShape().length != 0)){
-                    throw new MotuException("Error in NetCfdWriter finish - unable to find origin - (origin is null)");
+                if ((origin == null) && (var.getShape().length != 0)) {
+                    throw new MotuException("Error in NetCfdWriter writeVariableByBlock - unable to find origin - (origin is null)");
                 }
 
                 shape = originAndShape.get(origin);
 
                 if ((shape == null) && (var.getShape().length != 0)) {
-                    throw new MotuException("Error in NetCfdWriter finish - unable to find shape - (shape is null)");
+                    throw new MotuException("Error in NetCfdWriter writeVariableByBlock - unable to find shape - (shape is null)");
                 }
                 // CSOON: StrictDuplicateCode
 
@@ -1892,13 +2300,13 @@ public class NetCdfWriter {
 
                     MAMath.MinMax minMaxTemp = new MAMath.MinMax(minMax.min, minMax.max);
                     NetCdfWriter.applyScaleFactorAndOffset(minMaxTemp, axisLon);
-                    
-//                    if ((minMaxTemp.min > minMaxTemp.max) || (minMaxTemp.max > 180.)) {
-//                        longitudeCenter = minMaxTemp.min + 180.0;
-//                        normalizeLongitudeData(data, axisLon);
-//                    }
-                        longitudeCenter = (minMaxTemp.min + minMax.max)/2;
-                        normalizeLongitudeData(data, axisLon);
+
+                    // if ((minMaxTemp.min > minMaxTemp.max) || (minMaxTemp.max > 180.)) {
+                    // longitudeCenter = minMaxTemp.min + 180.0;
+                    // normalizeLongitudeData(data, axisLon);
+                    // }
+                    longitudeCenter = (minMaxTemp.min + minMax.max) / 2;
+                    normalizeLongitudeData(data, axisLon);
                 }
 
                 writeVariableData(var, origin, data);
@@ -1935,6 +2343,217 @@ public class NetCdfWriter {
         if (LOG.isDebugEnabled()) {
             LOG.debug("writeVariableByBlock() - exiting");
         }
+    }
+
+    protected void writeVariableByBlockGeoXY(Variable var,
+                                             List<Range> listDistinctXRange,
+                                             List<Range> listDistinctYRange,
+                                             List<Section> listVarOrgRanges) throws MotuException, MotuNotImplementedException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("writeVariableByBlockGeoXY() - entering");
+        }
+        if (var.getName().equalsIgnoreCase("longitude")) {
+            String msg;
+            msg = "dsdf";
+        }
+        if (var.getName().equalsIgnoreCase("temperature")) {
+            String msg;
+            msg = "dsdf";
+        }
+
+        if (listVarOrgRanges != null) {
+            System.out.println("listVarOrgRanges.size()=" + listVarOrgRanges.size());
+        }
+
+        int geoXAxisIndex = getGeoXDimVarIndex(var);
+        int geoYAxisIndex = getGeoYDimVarIndex(var);
+
+        if (geoXAxisIndex != -1) {
+            for (Range r : listDistinctXRange) {
+                System.out.println(r);
+                for (Section sectionOrg : listVarOrgRanges) {
+                    Range rOrg = sectionOrg.getRange(geoXAxisIndex);
+                    if (rOrg.intersects(r)) {
+                        System.out.println(rOrg.toString() + " intersects with " + r.toString());
+                    }
+                }
+            }
+        }
+        if (geoYAxisIndex != -1) {
+            for (Range r : listDistinctYRange) {
+                System.out.println(r);
+                for (Section sectionOrg : listVarOrgRanges) {
+                    Range rOrg = sectionOrg.getRange(geoYAxisIndex);
+                    if (rOrg.intersects(r)) {
+                        System.out.println(rOrg.toString() + " intersects with " + r.toString());
+                    }
+                }
+            }
+        }
+
+        int[] origin = null;
+        int[] shape = null;
+        Array data = null;
+        int rank = var.getRank();
+        // int[] outDimValues = getOutputDimension(var);
+        CoordinateAxis axisLon = null;
+        if (var instanceof CoordinateAxis) {
+            axisLon = (CoordinateAxis) var;
+            if (axisLon.getAxisType() != AxisType.Lon) {
+                axisLon = null;
+            }
+        }
+        int[] originOutOffset = originOutOffsetHash.get(var.getName());
+        if (originOutOffset == null) {
+            originOutOffset = new int[rank];
+            for (int i = 0; i < rank; i++) {
+                originOutOffset[i] = 0;
+            }
+            originOutOffsetHash.put(var.getName(), originOutOffset);
+        }
+
+        int[] originMax = new int[rank];
+        for (int i = 0; i < rank; i++) {
+            originMax[i] = 0;
+        }
+
+        try {
+            // Map<int[], int[]> originAndShape = NetCdfWriter.parseOriginAndShape(varShape,
+            // var.getDataType());
+            Map<int[], int[]> originAndShape = NetCdfWriter.parseOriginAndShape(var);
+
+            // CSOFF: StrictDuplicateCode : normal duplication code.
+
+            Set<int[]> keySet = originAndShape.keySet();
+
+            for (Iterator<int[]> it = keySet.iterator(); it.hasNext();) {
+                // get a Runtime object
+                // Runtime r = Runtime.getRuntime();
+                // run the garbage collector, to avoid Socket Exception too many files opened ?
+                // r.gc();
+
+                origin = it.next();
+
+                if ((origin == null) && (var.getShape().length != 0)) {
+                    throw new MotuException("Error in NetCfdWriter writeVariableByBlockGeoXY - unable to find origin - (origin is null)");
+                }
+
+                shape = originAndShape.get(origin);
+
+                if ((shape == null) && (var.getShape().length != 0)) {
+                    throw new MotuException("Error in NetCfdWriter writeVariableByBlockGeoXY - unable to find shape - (shape is null)");
+                }
+                // CSOON: StrictDuplicateCode
+
+                data = var.read(origin, shape);
+                // Normalize longitude if necessary.
+                if (axisLon != null) {
+                    MAMath.MinMax minMax = minMaxHash.get(axisLon.getName());
+
+                    MAMath.MinMax minMaxTemp = new MAMath.MinMax(minMax.min, minMax.max);
+                    NetCdfWriter.applyScaleFactorAndOffset(minMaxTemp, axisLon);
+
+                    // if ((minMaxTemp.min > minMaxTemp.max) || (minMaxTemp.max > 180.)) {
+                    // longitudeCenter = minMaxTemp.min + 180.0;
+                    // normalizeLongitudeData(data, axisLon);
+                    // }
+                    longitudeCenter = (minMaxTemp.min + minMax.max) / 2;
+                    normalizeLongitudeData(data, axisLon);
+                }
+
+                writeVariableData(var, origin, data);
+
+                // Computes max origin of the data
+                for (int i = rank - 1; i >= 0; i--) {
+                    int newIndexValue = originOutOffset[i] + origin[i] + shape[i] - 1;
+                    originMax[i] = Math.max(originMax[i], newIndexValue);
+                }
+
+            }
+            // Computes offset origin of the next data for longitude dim
+            originOutOffset = originMax.clone();
+            // int indexDimLongitude =
+            // for (int i = rank - 1; i >= 0; i--) {
+            // originOut[i] += shape[i] - 1;
+            // }
+            originOutOffset = getNextOriginOffset(originOutOffset, var);
+            originOutOffsetHash.remove(var.getName());
+            if (originOutOffset != null) {
+                originOutOffsetHash.put(var.getName(), originOutOffset);
+            }
+
+        } catch (IOException e) {
+            LOG.error("writeVariableByBlockGeoXY()", e);
+
+            throw new MotuException("Error IOException in NetcdfWriter writeVariableByBlockGeoXY", e);
+        } catch (InvalidRangeException e) {
+            LOG.error("writeVariableByBlockGeoXY()", e);
+
+            throw new MotuException("Error InvalidRangeException in NetcdfWriter writeVariableByBlockGeoXY", e);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("writeVariableByBlockGeoXY() - exiting");
+        }
+    }
+
+    protected int getGeoXDimVarIndex(Variable var) {
+        return getGeoDimVarIndex(var, AxisType.GeoX);
+    }
+
+    protected int getGeoYDimVarIndex(Variable var) {
+        return getGeoDimVarIndex(var, AxisType.GeoY);
+    }
+
+    protected int getGeoDimVarIndex(Variable var, AxisType axisType) {
+        int index = -1;
+        for (int i = 0; i < var.getDimensions().size(); i++) {
+            List<Variable> axes = variablesMap.get(var.getDimension(i).getName());
+            if (Organizer.isNullOrEmpty(axes)) {
+                return index;
+            }
+
+            Variable v = axes.get(0);
+            if (v instanceof CoordinateAxis) {
+                CoordinateAxis axis = (CoordinateAxis) v;
+                if (axis.getAxisType() == axisType) {
+                    index = i;
+                    break;
+                }
+            }
+        }
+
+        return index;
+    }
+
+    protected CoordinateAxis getGeoXDimVar(Variable var) {
+        return getGeoDimVar(var, AxisType.GeoX);
+    }
+
+    protected CoordinateAxis getGeoYDimVar(Variable var) {
+        return getGeoDimVar(var, AxisType.GeoY);
+    }
+
+    protected CoordinateAxis getGeoDimVar(Variable var, AxisType axisType) {
+        CoordinateAxis axis = null;
+
+        for (Dimension dim : var.getDimensions()) {
+            List<Variable> axes = variablesMap.get(dim.getName());
+            if (Organizer.isNullOrEmpty(axes)) {
+                return axis;
+            }
+
+            Variable v = axes.get(0);
+            if (v instanceof CoordinateAxis) {
+                axis = (CoordinateAxis) v;
+                if (axis.getAxisType() == axisType) {
+                    break;
+                }
+            }
+        }
+
+        return axis;
+
     }
 
     /**

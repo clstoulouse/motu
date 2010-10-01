@@ -24,6 +24,31 @@
  */
 package fr.cls.atoll.motu.library.misc.data;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.log4j.Logger;
+import org.springframework.util.ReflectionUtils;
+
+import ucar.ma2.MAMath;
+import ucar.ma2.Range;
+import ucar.ma2.MAMath.MinMax;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.unidata.geoloc.LatLonPointImpl;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
@@ -39,27 +64,6 @@ import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
-
-import ucar.ma2.MAMath;
-import ucar.ma2.Range;
-import ucar.ma2.MAMath.MinMax;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.Variable;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.unidata.geoloc.LatLonPointImpl;
 
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -231,6 +235,17 @@ public abstract class DatasetBase {
      */
     public double getAmountDataSizeAsGBytes() {
         return getAmountDataSize() / 1024d;
+    }
+
+    /**
+     * Adds the variables.
+     * 
+     * @param vars the vars
+     * @return the list
+     * @throws MotuException the motu exception
+     */
+    public List<String> addVariables(String... vars) throws MotuException {
+        return addVariables(Arrays.asList(vars));
     }
 
     /**
@@ -1424,6 +1439,84 @@ public abstract class DatasetBase {
 
     /** The product metadata. */
     protected ProductMetaData productMetadata = null;
+
+//    public static class RangeComparator implements Comparator<Range> {
+//        /**
+//         * Logger for this class
+//         */
+//        private static final Logger LOG = Logger.getLogger(RangeComparator.class);
+//
+//        private String property;
+//        private boolean ascending = true;
+//
+//        public RangeComparator(String property) {
+//            this.property = property;
+//        }
+//
+//        public RangeComparator(String property, boolean ascending) {
+//            this(property);
+//            this.ascending = ascending;
+//        }
+//
+//        /** {@inheritDoc} */
+//        @SuppressWarnings("unchecked")
+//        @Override
+//        public int compare(Range r1, Range r2) {
+//            try {
+//                Field field = ReflectionUtils.findField(Range.class, property);
+//                if (field != null) {
+//                    Comparable c1 = (Comparable) field.get(r1);
+//                    Comparable c2 = (Comparable) field.get(r2);
+//                    if (ascending) {
+//                        return new CompareToBuilder().append(c1, c2).toComparison();
+//                    } else {
+//                        return new CompareToBuilder().append(c2, c1).toComparison();
+//                    }
+//                }
+//            } catch (IllegalArgumentException e) {
+//            } catch (IllegalAccessException e) {
+//            }
+//            return 0;
+//        }
+//
+//    }
+    public static class RangeComparator implements Comparator<Range> {
+        /**
+         * Logger for this class
+         */
+        private static final Logger LOG = Logger.getLogger(RangeComparator.class);
+      private boolean ascending = true;
+
+      public RangeComparator() {
+      }
+
+      public RangeComparator(boolean ascending) {
+          this.ascending = ascending;
+      }
+
+
+        /** {@inheritDoc} */
+        @SuppressWarnings("unchecked")
+        @Override
+        public int compare(Range r1, Range r2) {
+            if (r1.first() > r2.first()) {
+                if (ascending) {
+                    return 1;
+                } else {
+                    return -1;                    
+                }
+            }
+            if (r1.first() < r2.first()) {
+                if (ascending) {
+                    return -1;                    
+                } else {
+                    return 1;
+                }
+            }
+            return 0;
+        }
+
+    }
 
 }
 // CSON: MultipleStringLiterals
