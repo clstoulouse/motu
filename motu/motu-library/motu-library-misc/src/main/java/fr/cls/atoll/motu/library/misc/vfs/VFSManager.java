@@ -220,29 +220,49 @@ public class VFSManager {
 
     /**
      * Sets the user info.
-     * 
+     *
      * @param user the user
      * @param pwd the pwd
-     * 
+     * @param fileSystemOptions the file system options
      * @return the file system options
-     * 
+     * @throws MotuException the motu exception
+     */
+    public FileSystemOptions setUserInfo(String user, String pwd, FileSystemOptions fileSystemOptions) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setUserInfo(String, String, FileSystemOptions) - start");
+        }
+
+        if (fileSystemOptions == null) {
+            fileSystemOptions = new FileSystemOptions();
+        }
+        StaticUserAuthenticator auth = new StaticUserAuthenticator(null, user, pwd);
+
+        FileSystemOptions returnFileSystemOptions = setUserInfo(auth);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setUserInfo(String, String, FileSystemOptions) - end");
+        }
+        return returnFileSystemOptions;
+
+    }
+    
+    /**
+     * Sets the user info.
+     *
+     * @param user the user
+     * @param pwd the pwd
+     * @return the file system options
      * @throws MotuException the motu exception
      */
     public FileSystemOptions setUserInfo(String user, String pwd) throws MotuException {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("setUserInfo(String, String) - entering");
+            LOG.debug("setUserInfo(String, String) - start");
         }
-
-        if (opts == null) {
-            opts = new FileSystemOptions();
-        }
-        StaticUserAuthenticator auth = new StaticUserAuthenticator(null, user, pwd);
-
+ 
+        FileSystemOptions returnFileSystemOptions = setUserInfo(user, pwd, opts);
         if (LOG.isDebugEnabled()) {
-            LOG.debug("setUserInfo(String, String) - exiting");
+            LOG.debug("setUserInfo(String, String) - end");
         }
-
-        return setUserInfo(auth);
+        return returnFileSystemOptions;
 
     }
 
@@ -462,6 +482,15 @@ public class VFSManager {
         String scheme = uri.getScheme();
         String host = uri.getHost();
         FileSystemOptions returnFileSystemOptions = setSchemeOpts(scheme, host);
+        
+        String theUserInfo = uri.getUserInfo();
+        if (!Organizer.isNullOrEmpty(theUserInfo)) {
+            String userInfo[] = theUserInfo.split(":");
+            if (userInfo.length >= 2) {
+                setUserInfo(userInfo[0], userInfo[1], returnFileSystemOptions);
+            }
+        }
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("setSchemeOpts(URI) - end");
         }
