@@ -1476,6 +1476,32 @@ public class Product {
         return productMetaData.hasGeoYAxisWithLatEquivalence(this.netCdfReader);
 
     }
+    
+    /**
+     * Gets the geo x axis.
+     *
+     * @return the geo x axis
+     */
+    public CoordinateAxis getGeoXAxis() {
+        if (productMetaData == null) {
+            return null;
+        }
+        
+        return productMetaData.getGeoXAxis();
+    }
+    
+    /**
+     * Gets the geo y axis.
+     *
+     * @return the geo y axis
+     */
+    public CoordinateAxis getGeoYAxis() {
+        if (productMetaData == null) {
+            return null;
+        }
+        
+        return productMetaData.getGeoYAxis();
+    }
 
     /**
      * Find variable in a NetCdf dataset.
