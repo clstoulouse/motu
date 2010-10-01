@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rdf:RDF [
 <!ENTITY atoll "http://purl.org/cls/atoll/ontology/individual/atoll#" >
+<!ENTITY myoceanUrn "http://purl.org/myocean/ontology/individual/myocean#" >
 ]>
 
 <!--
@@ -105,8 +106,9 @@
 	
 -->
 
-<motuConfig defaultService="avisoNRT" useProxy="true"
-	proxyLogin="" proxyPwd="" useAuthentication="false"
+<motuConfig defaultService="avisoNRT" useProxy="false"
+	proxyLogin="" proxyPwd="" proxyHost="proxy-prod.cls.fr" proxyPort="8080"
+	 useAuthentication="false"
 	dataBlockSize="102400" maxSizePerFile="1024"
 	extractionPath="C:\Java\apache-tomcat-6.0.9\webapps\motu-file-extract"
 	downloadHttpUrl="http://localhost:8080/motu-file-extract"
@@ -119,6 +121,19 @@
 	runGCInterval="10"
 	sftpSessionTimeOut="PT10S"
 	strictHostKeyChecking="no">
+	
+	<!--===========================================================-->
+	<!--                   motu  'SLTAC' FTP        Service                  -->
+	<!--===========================================================-->
+		
+	<configService defaultLanguage="UK" description="SLTAC"
+			group="SLTAC" httpBaseRef="http://www.myocean.eu.org"
+			name="&myoceanUrn;SL-CLS-TOULOUSE-FR-MOTU-REST" veloTemplatePrefix="myocean">
+			<catalog name="catalogFTP.xml" type="ftp"
+					urlSite="sftp://atoll:atoll@atoll-aviso.vlandata.cls.fr/opt/atoll/misgw-sltac/hoa/publication/inventories" />
+	</configService>
+
+	
 	<!--===========================================-->
 	<!--                    TEST MyOcean Mercator TDS         -->
 	<!--===========================================-->
@@ -127,6 +142,10 @@
 		name="Myocean" veloTemplatePrefix="myocean">
 		<catalog name="catalog.xml" type="tds"
 			urlSite="http://opendap.mercator-ocean.fr/thredds" />
+			<!-- 
+			"http://opendap.mercator-ocean.fr/thredds"
+			http://mercator-data1.cls.fr:43080/thredds
+			 -->
 	</configService>
 	<!--===========================================-->
 	<!--                    TEST MyOcean Mercator TDS         -->
@@ -292,6 +311,10 @@
 		name="Mercator" veloTemplatePrefix="mercator">
 		<catalog name="catalog.xml" type="tds"
 			urlSite="http://opendap.mercator-ocean.fr/thredds" />
+			<!-- 
+			"http://opendap.mercator-ocean.fr/thredds"
+			http://mercator-data1.cls.fr:43080/thredds
+			 -->
 	</configService>
 	<!--===========================================-->
 	<!--                     Mercator IBI TDS         -->
