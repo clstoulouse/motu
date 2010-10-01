@@ -24,7 +24,7 @@
 		#end
 
 		<li>
-		<a href=?action=describeProduct&data=${product.getLocationData()}>
+		<a href=?action=describeProduct&data=${product.getLocationData()}&xmlfile=${service.getCatalogFileName()}>
 		Dataset description
 		</a>	
 		</li>
