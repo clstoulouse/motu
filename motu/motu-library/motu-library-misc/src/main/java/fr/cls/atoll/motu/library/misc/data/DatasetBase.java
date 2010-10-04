@@ -29,6 +29,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -42,6 +43,7 @@ import org.springframework.util.ReflectionUtils;
 
 import ucar.ma2.MAMath;
 import ucar.ma2.Range;
+import ucar.ma2.Section;
 import ucar.ma2.MAMath.MinMax;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -149,6 +151,18 @@ public abstract class DatasetBase {
 
     /** Has output Z dimension. */
     protected boolean hasOutputZDimension = false;
+
+    
+    
+    protected List<CoordinateAxis> listVariableXSubset = new ArrayList<CoordinateAxis>();
+    protected List<CoordinateAxis> listVariableYSubset = new ArrayList<CoordinateAxis>();
+    protected Map<String, Range> mapXRange = new HashMap<String, Range>();
+    protected Map<String, Range> mapYRange = new HashMap<String, Range>();
+
+    protected Map<String, List<Section>> mapVarOrgRanges = new HashMap<String, List<Section>>();
+    
+    protected List<Range> listDistinctXRange = null;
+    protected List<Range> listDistinctYRange = null;
 
     /**
      * Checks for T range value.
