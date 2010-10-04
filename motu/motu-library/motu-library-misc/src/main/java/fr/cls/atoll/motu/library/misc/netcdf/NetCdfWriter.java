@@ -2072,9 +2072,21 @@ public class NetCdfWriter {
         try {
             for (List<Variable> listVar : variablesMap.values()) {
                 longitudeCenter = 0.0;
-                for (Variable var : listVar) {
-                    List<Section> listVarOrgRanges = mapVarOrgRanges.get(var.getName());
-                    writeVariableByBlockGeoXY(var, listDistinctXRange, listDistinctYRange, listVarOrgRanges);
+                List<Section> listVarOrgRanges = null;
+                if (!Organizer.isNullOrEmpty(listVar)) {
+                    listVarOrgRanges = mapVarOrgRanges.get(listVar.get(0).getName());
+                }
+                // if (listVarOrgRanges != null) {
+                // System.out.println("listVarOrgRanges.size()=" + listVarOrgRanges.size());
+                // System.out.println("listVar.size()=" + listVar.size());
+                // }
+                for (int index = 0; index < listVar.size(); index++) {
+                    Variable var = listVar.get(index);
+                    Section varOrgRanges = null;
+                    if (listVarOrgRanges != null) {
+                        varOrgRanges = listVarOrgRanges.get(index);
+                    }
+                    writeVariableByBlockGeoXY(var, listDistinctXRange, listDistinctYRange, varOrgRanges);
                 }
             }
 
@@ -2345,14 +2357,16 @@ public class NetCdfWriter {
         }
     }
 
-    protected void writeVariableByBlockGeoXY(Variable var,
-                                             List<Range> listDistinctXRange,
-                                             List<Range> listDistinctYRange,
-                                             List<Section> listVarOrgRanges) throws MotuException, MotuNotImplementedException {
+    protected void writeVariableByBlockGeoXY(Variable var, List<Range> listDistinctXRange, List<Range> listDistinctYRange, Section varOrgRanges)
+            throws MotuException, MotuNotImplementedException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("writeVariableByBlockGeoXY() - entering");
         }
         if (var.getName().equalsIgnoreCase("longitude")) {
+            String msg;
+            msg = "dsdf";
+        }
+        if (var.getName().equalsIgnoreCase("x")) {
             String msg;
             msg = "dsdf";
         }
@@ -2361,32 +2375,41 @@ public class NetCdfWriter {
             msg = "dsdf";
         }
 
-        if (listVarOrgRanges != null) {
-            System.out.println("listVarOrgRanges.size()=" + listVarOrgRanges.size());
-        }
-
         int geoXAxisIndex = getGeoXDimVarIndex(var);
         int geoYAxisIndex = getGeoYDimVarIndex(var);
 
-        if (geoXAxisIndex != -1) {
+        int rank = var.getRank();
+
+        int[] originSectionOffset = new int[rank];
+        for (int i = 0; i < rank; i++) {
+            originSectionOffset[i] = 0;
+        }
+
+        if ((geoXAxisIndex != -1) && (varOrgRanges != null)) {
             for (Range r : listDistinctXRange) {
                 System.out.println(r);
-                for (Section sectionOrg : listVarOrgRanges) {
-                    Range rOrg = sectionOrg.getRange(geoXAxisIndex);
-                    if (rOrg.intersects(r)) {
-                        System.out.println(rOrg.toString() + " intersects with " + r.toString());
+                Range rOrg = varOrgRanges.getRange(geoXAxisIndex);
+                if (rOrg.intersects(r)) {
+                    System.out.println(rOrg.toString() + " intersects with " + r.toString());
+                    int diff = rOrg.first()- r.first();
+                    if (diff > 0) {
+                        originSectionOffset[geoXAxisIndex] = diff;   
                     }
-                }
+                    break;
+                 }
             }
         }
-        if (geoYAxisIndex != -1) {
+        if ((geoYAxisIndex != -1) && (varOrgRanges != null)){
             for (Range r : listDistinctYRange) {
                 System.out.println(r);
-                for (Section sectionOrg : listVarOrgRanges) {
-                    Range rOrg = sectionOrg.getRange(geoYAxisIndex);
-                    if (rOrg.intersects(r)) {
-                        System.out.println(rOrg.toString() + " intersects with " + r.toString());
+                Range rOrg = varOrgRanges.getRange(geoYAxisIndex);
+                if (rOrg.intersects(r)) {
+                    System.out.println(rOrg.toString() + " intersects with " + r.toString());
+                    int diff = rOrg.first()- r.first();
+                    if (diff > 0) {
+                        originSectionOffset[geoYAxisIndex] = diff;     
                     }
+                    break;
                 }
             }
         }
@@ -2394,8 +2417,7 @@ public class NetCdfWriter {
         int[] origin = null;
         int[] shape = null;
         Array data = null;
-        int rank = var.getRank();
-        // int[] outDimValues = getOutputDimension(var);
+         // int[] outDimValues = getOutputDimension(var);
         CoordinateAxis axisLon = null;
         if (var instanceof CoordinateAxis) {
             axisLon = (CoordinateAxis) var;
@@ -2407,11 +2429,14 @@ public class NetCdfWriter {
         if (originOutOffset == null) {
             originOutOffset = new int[rank];
             for (int i = 0; i < rank; i++) {
-                originOutOffset[i] = 0;
+                originOutOffset[i] = originSectionOffset[i];
             }
             originOutOffsetHash.put(var.getName(), originOutOffset);
+        } else {
+            for (int i = 0; i < rank; i++) {
+                originOutOffset[i] += originSectionOffset[i];
+            }
         }
-
         int[] originMax = new int[rank];
         for (int i = 0; i < rank; i++) {
             originMax[i] = 0;

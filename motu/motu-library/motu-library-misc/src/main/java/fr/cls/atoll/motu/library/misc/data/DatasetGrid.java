@@ -48,6 +48,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import javolution.UtilTestSuite.MapRemove;
+
 import org.apache.log4j.Logger;
 
 import ucar.ma2.Array;
@@ -425,26 +427,12 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
                     Range yRange = yxRanges.get(0);
                     Range xRange = yxRanges.get(1);
 
-                    boolean added = DatasetGrid.addRange(yRange, mapYRange);
+                    DatasetGrid.addRange(yRange, mapYRange);
 
-                    if (added) {
-                        CoordinateAxis axis = DatasetGrid.subset(product.getGeoYAxis(), yRange);
-                        listVariableYSubset.add(axis);
-                    }
-
-                    added = DatasetGrid.addRange(xRange, mapXRange);
-
-                    if (added) {
-                        CoordinateAxis axis = DatasetGrid.subset(product.getGeoXAxis(), xRange);
-                        listVariableXSubset.add(axis);
-                    }
-
-                    // listYXRangesToUse = new ArrayList<List<Range>>();
-                    // // WARNING : add Y first
-                    // listYXRangesToUse.add(new ArrayList<Range>(mapYRange.values()));
-                    // listYXRangesToUse.add(new ArrayList<Range>(mapXRange.values()));
+                    DatasetGrid.addRange(xRange, mapXRange);
 
                 }
+                
                 for (List<Range> yxRanges : listYXRanges) {
                     // GridDatatype geoGridSubset = null;
                     Range yRange = yxRanges.get(0);
@@ -455,8 +443,6 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
                     System.out.println(" ");
                 }
 
-                netCdfWriter.writeVariables(listVariableXSubset, mapXRange, product.getNetCdfReader().getOrignalVariables());
-                netCdfWriter.writeVariables(listVariableYSubset, mapYRange, product.getNetCdfReader().getOrignalVariables());
 
                 RangeComparator rangeComparator = new RangeComparator();
 
@@ -465,6 +451,19 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
 
                 List<Range> listDistinctYRange = new ArrayList<Range>(mapYRange.values());
                 Collections.sort(listDistinctYRange, rangeComparator);
+                
+                for (Range range : listDistinctYRange) {
+                    CoordinateAxis axis = DatasetGrid.subset(product.getGeoYAxis(), range);
+                    listVariableYSubset.add(axis);
+                }
+
+                for (Range range : listDistinctXRange) {
+                    CoordinateAxis axis = DatasetGrid.subset(product.getGeoXAxis(), range);
+                    listVariableXSubset.add(axis);
+                }
+                
+                netCdfWriter.writeVariables(listVariableXSubset, mapXRange, product.getNetCdfReader().getOrignalVariables());
+                netCdfWriter.writeVariables(listVariableYSubset, mapYRange, product.getNetCdfReader().getOrignalVariables());
 
                 for (Range r : listDistinctXRange) {
                     // GridDatatype geoGridSubset = null;
@@ -484,9 +483,9 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
                     System.out.print(" ");
                     for (Section section : sections) {
                         System.out.print(section);
-                        System.out.print(" / ");                        
+                        System.out.print(" / ");
                     }
-                   System.out.println(" ");
+                    System.out.println(" ");
                 }
 
                 // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get some information
@@ -514,8 +513,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
         }
     }
 
-    public Section getOriginalRangeListGeoAxis(CoordinateAxis axis, Range y_range, Range x_range)
-            throws InvalidRangeException {
+    public Section getOriginalRangeListGeoAxis(CoordinateAxis axis, Range y_range, Range x_range) throws InvalidRangeException {
 
         // get the ranges list
         int rank = axis.getRank();
@@ -571,8 +569,6 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
 
         return new Section(rangesList);
     }
-
-    
 
     public static int findDimension(GeoGrid geoGrid, Dimension want) {
         List<Dimension> dims = geoGrid.getVariable().getDimensions();
@@ -631,11 +627,9 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
 
                 // Intersection:
 
-                // rangeRef !-------------!
-                // range !-----!
-                //
-                if ((range.first() > rangeRef.first()) && (range.last() < rangeRef.last())) {
-                    rangeIsAdded = true;
+                // range is include in rangeRef : break 
+                if ((range.first() >= rangeRef.first()) && (range.last() <= rangeRef.last())) {
+                    rangeIsAdded = false;
                     break;
                 }
 
