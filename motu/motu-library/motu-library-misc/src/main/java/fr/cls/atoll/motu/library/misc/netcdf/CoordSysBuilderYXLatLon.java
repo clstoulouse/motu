@@ -24,10 +24,6 @@
  */
 package fr.cls.atoll.motu.library.misc.netcdf;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,6 +47,9 @@ import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
 
 // CSOFF: MultipleStringLiterals : avoid message in '@SuppressWarnings("unchecked")'.
 
@@ -70,6 +69,17 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
     public CoordSysBuilderYXLatLon() {
         debug = true;
     }
+    
+    public boolean isAugmented() {
+        return isAugmented;
+    }
+
+    public void setAugmented(boolean isAugmented) {
+        this.isAugmented = isAugmented;
+    }
+
+    boolean isAugmented = true;
+
 
     /**
      * Makes changes to the dataset, like adding new variables, attribuites, etc.
@@ -82,7 +92,7 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
      */
     @Override
     public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
-
+        
         clearCoordinateTransform();
 
         List<Variable> listVars = ds.getVariables();
@@ -90,11 +100,17 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
         Variable varLon = NetCdfReader.findLongitudeIgnoreCase(listVars);
 
         if ((varLat == null) || (varLon == null)) {
+            setAugmented(false);
             return;
         }
         if (!(varLat instanceof VariableDS) || !(varLon instanceof VariableDS)) {
+            setAugmented(false);
             return;
         }
+//        if ((varLat instanceof CoordinateAxis) && (varLon instanceof CoordinateAxis)) {
+//            setAugmented(false);
+//            return;
+//        }
 
         // add Coordinate Axis Type Attribute
         addLatAxisTypeAttr(ds, varLat);

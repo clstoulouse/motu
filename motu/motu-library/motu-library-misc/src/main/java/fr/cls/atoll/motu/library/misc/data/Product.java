@@ -73,6 +73,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -691,7 +692,9 @@ public class Product {
             if (variable instanceof CoordinateAxis) {
                 CoordinateAxis coordinateAxis = (CoordinateAxis) variable;
                 if (coordinateAxis.getAxisType() != null) {
-                    continue;
+                    if (!(coordinateAxis instanceof CoordinateAxis2D)) {
+                        continue;
+                    }
                 }
             }
             // Don't get cached variables
@@ -737,21 +740,21 @@ public class Product {
 
             unitLong = "";
             try {
-                unitLong = netCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_UNIT_LONG);
+                unitLong = NetCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_UNIT_LONG);
                 parameterMetaData.setUnitLong(unitLong);
             } catch (MotuExceptionBase e) {
                 parameterMetaData.setUnitLong(unitLong);
             }
             standardName = "";
             try {
-                standardName = netCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_STANDARD_NAME);
+                standardName = NetCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_STANDARD_NAME);
                 parameterMetaData.setStandardName(standardName);
             } catch (MotuExceptionBase e) {
                 parameterMetaData.setStandardName(standardName);
             }
             longName = "";
             try {
-                longName = netCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_LONG_NAME);
+                longName = NetCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_LONG_NAME);
                 parameterMetaData.setLongName(longName);
             } catch (MotuExceptionBase e) {
                 parameterMetaData.setLongName(longName);
@@ -820,7 +823,7 @@ public class Product {
         if (LOG.isDebugEnabled()) {
             LOG.debug("updateVariables(List<String>) - start");
         }
-        // if list of variables to extract is no set, 
+        // if list of variables to extract is no set,
         // get all variables form this product
         if (Organizer.isNullOrEmpty(listVar)) {
             listVar = getVariables();
@@ -1476,30 +1479,30 @@ public class Product {
         return productMetaData.hasGeoYAxisWithLatEquivalence(this.netCdfReader);
 
     }
-    
+
     /**
      * Gets the geo x axis.
-     *
+     * 
      * @return the geo x axis
      */
     public CoordinateAxis getGeoXAxis() {
         if (productMetaData == null) {
             return null;
         }
-        
+
         return productMetaData.getGeoXAxis();
     }
-    
+
     /**
      * Gets the geo y axis.
-     *
+     * 
      * @return the geo y axis
      */
     public CoordinateAxis getGeoYAxis() {
         if (productMetaData == null) {
             return null;
         }
-        
+
         return productMetaData.getGeoYAxis();
     }
 

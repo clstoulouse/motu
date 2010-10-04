@@ -883,7 +883,7 @@ public class NetCdfReader {
 
                     MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
                     httpClientCAS = new HttpClientCAS(connectionManager);
-                                        
+
                     HttpClientParams httpClientParams = new HttpClientParams();
                     httpClientParams.setParameter("http.protocol.allow-circular-redirects", true);
                     httpClientCAS.setParams(httpClientParams);
@@ -1112,7 +1112,7 @@ public class NetCdfReader {
      * @throws NetCdfAttributeNotFoundException attribute is not found
      * @throws NetCdfAttributeException invalid request (see error message).
      */
-    public String getStringValue(Variable variable, String attributeName) throws NetCdfAttributeNotFoundException, NetCdfAttributeException {
+    public static String getStringValue(Variable variable, String attributeName) throws NetCdfAttributeNotFoundException, NetCdfAttributeException {
 
         Attribute attribute = NetCdfReader.getAttribute(variable, attributeName);
         return getStringValue(variable, attribute);
@@ -1130,6 +1130,9 @@ public class NetCdfReader {
      */
     public static String getStringValue(Variable variable, Attribute attribute) throws NetCdfAttributeException {
         String value = null;
+        if (attribute == null) {
+            return value;
+        }
 
         if (!attribute.isString()) {
             throw new NetCdfAttributeException(variable, attribute, String
@@ -2168,7 +2171,24 @@ public class NetCdfReader {
                     varFound = var;
                     break;
                 }
+                String stdNameValue = null;
+                try {
+                    stdNameValue = NetCdfReader.getStringValue(var, VARIABLEATTRIBUTE_STANDARD_NAME);
+                } catch (Exception e) {
+                    // Do nothing
+                }
+                if (!Organizer.isNullOrEmpty(stdNameValue)) {
+                    if (stdNameValue.equals(name)) {
+                        varFound = var;
+                        break;
+                    }
+
+                }
             }
+            if (varFound != null) {
+                break;
+            }
+
         }
         return varFound;
     }
@@ -2203,6 +2223,22 @@ public class NetCdfReader {
                     varFound = var;
                     break;
                 }
+                String stdNameValue = null;
+                try {
+                    stdNameValue = NetCdfReader.getStringValue(var, VARIABLEATTRIBUTE_STANDARD_NAME);
+                } catch (Exception e) {
+                    // Do nothing
+                }
+                if (!Organizer.isNullOrEmpty(stdNameValue)) {
+                    if (stdNameValue.equals(name)) {
+                        varFound = var;
+                        break;
+                    }
+
+                }
+            }
+            if (varFound != null) {
+                break;
             }
         }
         return varFound;
@@ -2215,7 +2251,7 @@ public class NetCdfReader {
      */
 
     public Variable findLatitudeIgnoreCase() {
-        return findLongitudeIgnoreCase(getRootVariables());
+        return findLatitudeIgnoreCase(getRootVariables());
     }
 
     /**
@@ -2528,6 +2564,8 @@ public class NetCdfReader {
     // //dateFormat.applyPattern("yyyyMMdd_HHmmss");
     // return dateFormat.format(d);
     // }
+
+
 }
 // CSON: MultipleStringLiterals
 

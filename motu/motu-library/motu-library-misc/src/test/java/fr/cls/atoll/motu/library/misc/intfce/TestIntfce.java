@@ -255,8 +255,8 @@ public class TestIntfce {
 
         // System.setProperty("proxyHost", "proxy.cls.fr"); // adresse IP
         // System.setProperty("proxyPort", "8080");
-        // System.setProperty("socksProxyHost", "proxy.cls.fr");
-        // System.setProperty("socksProxyPort", "1080");
+//         System.setProperty("socksProxyHost", "proxy.cls.fr");
+//         System.setProperty("socksProxyPort", "1080");
         // System.setProperty("java.net.useSystemProxies", "false");
 
         try {
@@ -375,7 +375,7 @@ public class TestIntfce {
         // testLoadMotuConfig();
         // testgetMotuConfigSchema();
         //
-        //productInformation();
+        // productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
         // productDownloadInfo();
@@ -407,14 +407,19 @@ public class TestIntfce {
         // productExtractDataMerseaFromHttp();
         // testLoadInventoryOLA();
         // testLoadCatalogOLA();
-        //Product product = productInformationFromInventory();
+        // Product product = productInformationFromInventory();
         // productExtractDataFromInventory();
         // productListMercator();
         // productList();
         // testGetProductMetadataInfo();
         // testExtractdataLon0360();
         // testExtractdataLon180();
-        productExtractDataMercator();
+
+        //productExtractXYDataMercator1();
+        //productExtractXYDataMercator2();
+        // productExtractXYDataMercator3();
+        
+        productExtractXYTopaz1();
 
     }
 
@@ -471,10 +476,10 @@ public class TestIntfce {
         // String service = "http://purl.org/cls/atoll/ontology/individual/atoll#motu-ftp-mercator";
         // String productId =
         // "http://purl.org/cls/atoll/ontology/individual/atoll#dataset-psy3v2-pgs-arc-mercator-bestestimate";
-        
+
         String service = "http://purl.org/myocean/ontology/individual/myocean#SL-CLS-TOULOUSE-FR-MOTU-REST";
         String productId = "http://purl.org/myocean/ontology/individual/myocean#dataset-duacs-nrt-blacksea-en-sla-l3";
-        
+
         Product product = null;
         try {
             Organizer organizer = new Organizer();
@@ -1365,8 +1370,9 @@ public class TestIntfce {
         // String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/" + productId;
         // String locationData = "http://rdp1-jaune.cls.fr:8880/thredds/dodsC/" + productId;
         // String locationData = "http://atoll-dev.cls.fr:43080/thredds/dodsC/" + productId;
-         String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_arc_mean_best_estimate";
-        // String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_glo_mean_best_estimate";
+        String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_arc_mean_best_estimate";
+        // String locationData =
+        // "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_glo_mean_best_estimate";
         // String locationData =
         // "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_glo_mean_best_estimate";
         // String locationData =
@@ -2634,7 +2640,8 @@ public class TestIntfce {
             // String patternExpression = "(http://.*thredds/)(dodsC/)(.*)";
             // String locationData =
             // "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_med_mean_best_estimate";
-            //String locationData = "http://web-qt.cls.fr/mis-gateway-servlet/Motu?action=describeProduct&data=http://thredds.met.no/thredds/dodsC/topaz/myocean/nat/tmipv2n-class1-be";
+            // String locationData =
+            // "http://web-qt.cls.fr/mis-gateway-servlet/Motu?action=describeProduct&data=http://thredds.met.no/thredds/dodsC/topaz/myocean/nat/tmipv2n-class1-be";
             String locationData = "C:/Downloads/nrt_global_en_adt_vfec_20100926_20100926_20100929.nc";
             //
             // Pattern pattern = Pattern.compile(patternExpression);
@@ -2661,6 +2668,263 @@ public class TestIntfce {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+    }
+
+    public static void productExtractXYDataMercator1() {
+        String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_arc_mean_best_estimate";
+        List<String> listVar = new ArrayList<String>();
+        // add variable to extract
+        // listVar.add("salinity");
+        // listVar.add("u");
+        listVar.add("temperature");
+
+        // add temporal criteria
+        // first element is start date
+        // second element is end date (optional)
+        // if only start date is set, end date equals start date
+        List<String> listTemporalCoverage = new ArrayList<String>();
+        listTemporalCoverage.add("2009-12-21");
+        listTemporalCoverage.add("2009-12-21");
+
+        // add Lat/Lon criteria
+        // first element is low latitude
+        // second element is low longitude
+        // third element is high latitude
+        // fourth element is high longitude
+        List<String> listLatLonCoverage = new ArrayList<String>();
+        listLatLonCoverage.add("85");
+        listLatLonCoverage.add("179");
+        listLatLonCoverage.add("86");
+        listLatLonCoverage.add("-178");
+
+        // add depth (Z) criteria
+        // first element is low depth
+        // second element is high depth (optional)
+        // if only low depth is set, high depth equals low depth value
+        List<String> listDepthCoverage = new ArrayList<String>();
+        listDepthCoverage.add("0");
+        listDepthCoverage.add("0");
+
+        Product product = null;
+
+        try {
+            Organizer organizer = new Organizer();
+
+            product = organizer.extractData(locationData,
+                                            listVar,
+                                            listTemporalCoverage,
+                                            listLatLonCoverage,
+                                            listDepthCoverage,
+                                            null,
+                                            Organizer.Format.NETCDF);
+
+            // get the output full file name (with path)
+            String extractLocationData = product.getExtractLocationData();
+            // get the url to download the output file.
+            String urlExtractPath = product.getDownloadUrlPath();
+
+            System.out.println(String.format("Product file is stored on the server in %s", extractLocationData));
+            System.out.println(String.format("Product %s can be downloaded with http at %s", product.getProductId(), urlExtractPath));
+
+        } catch (MotuExceptionBase e) {
+            System.out.println(e.notifyException());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    public static void productExtractXYDataMercator2() {
+        String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_arc_mean_best_estimate";
+        List<String> listVar = new ArrayList<String>();
+        // add variable to extract
+        // listVar.add("salinity");
+        // listVar.add("u");
+        listVar.add("temperature");
+
+        // add temporal criteria
+        // first element is start date
+        // second element is end date (optional)
+        // if only start date is set, end date equals start date
+        List<String> listTemporalCoverage = new ArrayList<String>();
+        listTemporalCoverage.add("2009-12-21");
+        listTemporalCoverage.add("2009-12-22");
+
+        // add Lat/Lon criteria
+        // first element is low latitude
+        // second element is low longitude
+        // third element is high latitude
+        // fourth element is high longitude
+        List<String> listLatLonCoverage = new ArrayList<String>();
+        listLatLonCoverage.add("85");
+        listLatLonCoverage.add("10");
+        listLatLonCoverage.add("86");
+        listLatLonCoverage.add("-178");
+
+        // add depth (Z) criteria
+        // first element is low depth
+        // second element is high depth (optional)
+        // if only low depth is set, high depth equals low depth value
+        List<String> listDepthCoverage = new ArrayList<String>();
+        listDepthCoverage.add("0");
+        listDepthCoverage.add("12");
+
+        Product product = null;
+
+        try {
+            Organizer organizer = new Organizer();
+
+            product = organizer.extractData(locationData,
+                                            listVar,
+                                            listTemporalCoverage,
+                                            listLatLonCoverage,
+                                            listDepthCoverage,
+                                            null,
+                                            Organizer.Format.NETCDF);
+
+            // get the output full file name (with path)
+            String extractLocationData = product.getExtractLocationData();
+            // get the url to download the output file.
+            String urlExtractPath = product.getDownloadUrlPath();
+
+            System.out.println(String.format("Product file is stored on the server in %s", extractLocationData));
+            System.out.println(String.format("Product %s can be downloaded with http at %s", product.getProductId(), urlExtractPath));
+
+        } catch (MotuExceptionBase e) {
+            System.out.println(e.notifyException());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    public static void productExtractXYDataMercator3() {
+        String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_arc_mean_best_estimate";
+        List<String> listVar = new ArrayList<String>();
+        // add variable to extract
+        // listVar.add("salinity");
+        // listVar.add("u");
+        listVar.add("temperature");
+
+        // add temporal criteria
+        // first element is start date
+        // second element is end date (optional)
+        // if only start date is set, end date equals start date
+        List<String> listTemporalCoverage = new ArrayList<String>();
+        listTemporalCoverage.add("2009-12-21");
+        listTemporalCoverage.add("2009-12-21");
+
+        // add Lat/Lon criteria
+        // first element is low latitude
+        // second element is low longitude
+        // third element is high latitude
+        // fourth element is high longitude
+        List<String> listLatLonCoverage = new ArrayList<String>();
+        listLatLonCoverage.add("85");
+        listLatLonCoverage.add("0");
+        listLatLonCoverage.add("-86");
+        listLatLonCoverage.add("360");
+
+        // add depth (Z) criteria
+        // first element is low depth
+        // second element is high depth (optional)
+        // if only low depth is set, high depth equals low depth value
+        List<String> listDepthCoverage = new ArrayList<String>();
+        listDepthCoverage.add("0");
+        listDepthCoverage.add("0");
+
+        Product product = null;
+
+        try {
+            Organizer organizer = new Organizer();
+
+            product = organizer.extractData(locationData,
+                                            listVar,
+                                            listTemporalCoverage,
+                                            listLatLonCoverage,
+                                            listDepthCoverage,
+                                            null,
+                                            Organizer.Format.NETCDF);
+
+            // get the output full file name (with path)
+            String extractLocationData = product.getExtractLocationData();
+            // get the url to download the output file.
+            String urlExtractPath = product.getDownloadUrlPath();
+
+            System.out.println(String.format("Product file is stored on the server in %s", extractLocationData));
+            System.out.println(String.format("Product %s can be downloaded with http at %s", product.getProductId(), urlExtractPath));
+
+        } catch (MotuExceptionBase e) {
+            System.out.println(e.notifyException());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    public static void productExtractXYTopaz1() {
+        String locationData = "http://tomcat.nersc.no:8080/thredds/dodsC/topaz/mersea-ipv2/arctic/tmipv2a-class1-b-be";
+        //productInformationFromLocationData(locationData);
+        
+        List<String> listVar = new ArrayList<String>();
+        // add variable to extract
+        // listVar.add("salinity");
+        // listVar.add("u");
+        listVar.add("temperature");
+
+        // add temporal criteria
+        // first element is start date
+        // second element is end date (optional)
+        // if only start date is set, end date equals start date
+        List<String> listTemporalCoverage = new ArrayList<String>();
+        listTemporalCoverage.add("2009-12-21");
+        listTemporalCoverage.add("2009-12-21");
+
+        // add Lat/Lon criteria
+        // first element is low latitude
+        // second element is low longitude
+        // third element is high latitude
+        // fourth element is high longitude
+        List<String> listLatLonCoverage = new ArrayList<String>();
+        listLatLonCoverage.add("85");
+        listLatLonCoverage.add("179");
+        listLatLonCoverage.add("86");
+        listLatLonCoverage.add("-178");
+
+        // add depth (Z) criteria
+        // first element is low depth
+        // second element is high depth (optional)
+        // if only low depth is set, high depth equals low depth value
+        List<String> listDepthCoverage = new ArrayList<String>();
+        listDepthCoverage.add("5");
+        listDepthCoverage.add("5");
+
+        Product product = null;
+
+        try {
+            Organizer organizer = new Organizer();
+
+            product = organizer.extractData(locationData,
+                                            listVar,
+                                            listTemporalCoverage,
+                                            listLatLonCoverage,
+                                            listDepthCoverage,
+                                            null,
+                                            Organizer.Format.NETCDF);
+
+            // get the output full file name (with path)
+            String extractLocationData = product.getExtractLocationData();
+            // get the url to download the output file.
+            String urlExtractPath = product.getDownloadUrlPath();
+
+            System.out.println(String.format("Product file is stored on the server in %s", extractLocationData));
+            System.out.println(String.format("Product %s can be downloaded with http at %s", product.getProductId(), urlExtractPath));
+
+        } catch (MotuExceptionBase e) {
+            System.out.println(e.notifyException());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 

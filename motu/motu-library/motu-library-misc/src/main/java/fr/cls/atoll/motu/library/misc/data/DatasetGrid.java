@@ -366,27 +366,30 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
                         Section section = DatasetGrid.getOriginalRangeList(geoGridSubset, tRange, zRange, yRange, xRange);
                         listVarOrgRanges.add(section);
 
-                        CoordinateAxis xaxis = geoGridSubset.getCoordinateSystem().getXHorizAxis();
-                        String xName = xaxis.getName();
-                        listVarOrgRanges = mapVarOrgRanges.get(xName);
-                        if (Organizer.isNullOrEmpty(listVarOrgRanges)) {
-                            listVarOrgRanges = new ArrayList<Section>();
-                            mapVarOrgRanges.put(xName, listVarOrgRanges);
-                        }
-
-                        section = getOriginalRangeListGeoAxis(xaxis, yRange, xRange);
-                        listVarOrgRanges.add(section);
-
-                        CoordinateAxis yaxis = geoGridSubset.getCoordinateSystem().getYHorizAxis();
-                        String yName = yaxis.getName();
-                        listVarOrgRanges = mapVarOrgRanges.get(yName);
-                        if (Organizer.isNullOrEmpty(listVarOrgRanges)) {
-                            listVarOrgRanges = new ArrayList<Section>();
-                            mapVarOrgRanges.put(yName, listVarOrgRanges);
-                        }
-
-                        section = getOriginalRangeListGeoAxis(yaxis, yRange, xRange);
-                        listVarOrgRanges.add(section);
+// DEDE
+//                        CoordinateAxis xaxis = geoGridSubset.getCoordinateSystem().getXHorizAxis();
+//                        String xName = xaxis.getName();
+//                        listVarOrgRanges = mapVarOrgRanges.get(xName);
+//                        if (Organizer.isNullOrEmpty(listVarOrgRanges)) {
+//                            listVarOrgRanges = new ArrayList<Section>();
+//                            mapVarOrgRanges.put(xName, listVarOrgRanges);
+//                        }
+//
+//                        section = getOriginalRangeListGeoAxis(xaxis, yRange, xRange);
+//                        listVarOrgRanges.add(section);
+//
+//                        CoordinateAxis yaxis = geoGridSubset.getCoordinateSystem().getYHorizAxis();
+//                        String yName = yaxis.getName();
+//                        listVarOrgRanges = mapVarOrgRanges.get(yName);
+//                        if (Organizer.isNullOrEmpty(listVarOrgRanges)) {
+//                            listVarOrgRanges = new ArrayList<Section>();
+//                            mapVarOrgRanges.put(yName, listVarOrgRanges);
+//                        }
+//
+//                        section = getOriginalRangeListGeoAxis(yaxis, yRange, xRange);
+//                        listVarOrgRanges.add(section);
+// DEDE
+                        
                     }
                     // geoGridSubset = geoGrid.makeSubset(null, null, tRange, zRange, yxRange[0], yxRange[1]);
 
@@ -486,11 +489,33 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
         for (Range range : listDistinctYRange) {
             CoordinateAxis axis = DatasetGrid.subset(product.getGeoYAxis(), range);
             listVariableYSubset.add(axis);
+            String axisName = axis.getName();
+            List<Section> listVarOrgRanges = mapVarOrgRanges.get(axisName);
+            if (Organizer.isNullOrEmpty(listVarOrgRanges)) {
+                listVarOrgRanges = new ArrayList<Section>();
+                mapVarOrgRanges.put(axisName, listVarOrgRanges);
+            }
+            List<Range> lr = new ArrayList<Range>();
+            lr.add(range);
+            Section section = new Section(lr);
+            listVarOrgRanges.add(section);
+
+
         }
 
         for (Range range : listDistinctXRange) {
             CoordinateAxis axis = DatasetGrid.subset(product.getGeoXAxis(), range);
             listVariableXSubset.add(axis);
+            String axisName = axis.getName();
+            List<Section> listVarOrgRanges = mapVarOrgRanges.get(axisName);
+            if (Organizer.isNullOrEmpty(listVarOrgRanges)) {
+                listVarOrgRanges = new ArrayList<Section>();
+                mapVarOrgRanges.put(axisName, listVarOrgRanges);
+            }
+            List<Range> lr = new ArrayList<Range>();
+            lr.add(range);
+            Section section = new Section(lr);
+            listVarOrgRanges.add(section);
         }
         
         for (Range r : listDistinctXRange) {
@@ -634,7 +659,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
 
                 // range is include in rangeRef : break 
                 if ((range.first() >= rangeRef.first()) && (range.last() <= rangeRef.last())) {
-                    rangeIsAdded = false;
+                    rangeIsAdded = true;
                     break;
                 }
 
@@ -910,7 +935,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
                 xRangeValue[1] = minMaxLon.max;
             }
         } else if (productMetadata.hasGeoXYAxis()) {
-            throw new MotuNotImplementedException("X/Y axis is not implemented (method DatasetGridXYLatLon.getAdjacentYXRange");
+            throw new MotuNotImplementedException("X/Y axis is not implemented (method DatasetGrid#getAdjacentYXRange");
         }
 
         if (LOG.isDebugEnabled()) {

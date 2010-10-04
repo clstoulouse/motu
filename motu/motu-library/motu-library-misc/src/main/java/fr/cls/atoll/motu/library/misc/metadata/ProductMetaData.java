@@ -30,6 +30,7 @@ import fr.cls.atoll.motu.library.misc.data.Product;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.library.misc.tds.server.Property;
@@ -46,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.globus.myproxy.GetParams;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
@@ -1378,6 +1380,29 @@ public class ProductMetaData {
     }
 
     /**
+     * Gets the parameter meta data from standard name.
+     *
+     * @param name the name
+     * @return the parameter meta data from standard name
+     */
+    public ParameterMetaData getParameterMetaDataFromStandardName(String name) {
+        ParameterMetaData parameterMetaData = null;
+        
+        Collection<ParameterMetaData>  list = parameterMetaDatasValues();
+        for (ParameterMetaData  p : list) {
+            String standardNameValue = p.getStandardName();
+            if (!Organizer.isNullOrEmpty(standardNameValue)) {
+                if (standardNameValue.equals(name)) {
+                    parameterMetaData = p;
+                    break;
+                }
+
+            }
+        }
+        return parameterMetaData;
+    }
+        
+    /**
      * Checks for lat lon axis.
      * 
      * @return true if axes collection contains latitude and longitude axes.
@@ -1920,6 +1945,13 @@ public class ProductMetaData {
             if (parameterMetaData != null) {
                 break;
             }
+            
+            parameterMetaData = getParameterMetaDataFromStandardName(name);
+
+            if (parameterMetaData != null) {
+                break;
+            }
+            
         }
         return parameterMetaData;
     }
@@ -1934,6 +1966,12 @@ public class ProductMetaData {
         ParameterMetaData parameterMetaData = null;
         for (String name : NetCdfReader.LATITUDE_NAMES) {
             parameterMetaData = getParameterMetaDatas(name);
+            if (parameterMetaData != null) {
+                break;
+            }
+
+            parameterMetaData = getParameterMetaDataFromStandardName(name);
+
             if (parameterMetaData != null) {
                 break;
             }
