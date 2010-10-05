@@ -107,10 +107,12 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
             setAugmented(false);
             return;
         }
-//        if ((varLat instanceof CoordinateAxis) && (varLon instanceof CoordinateAxis)) {
-//            setAugmented(false);
-//            return;
-//        }
+        if ((varLat instanceof CoordinateAxis) && (varLon instanceof CoordinateAxis)) {
+            addLatAxisTypeAttr(ds, varLat);
+            addLonAxisTypeAttr(ds, varLon);            
+            ds.finish();
+            return;
+        }
 
         // add Coordinate Axis Type Attribute
         addLatAxisTypeAttr(ds, varLat);
@@ -236,6 +238,9 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
             List<CoordinateAxis> listOriginAxes = cs.getCoordinateAxes();
             for (CoordinateAxis axis : listOriginAxes) {
                 if ((axis.getAxisType() == AxisType.GeoX) || (axis.getAxisType() == AxisType.GeoY)) {
+                    continue;
+                }
+                if ((axis.getAxisType() == AxisType.Lat) || (axis.getAxisType() == AxisType.Lon)) {
                     continue;
                 }
                 listNewAxes.add(axis);

@@ -415,11 +415,11 @@ public class TestIntfce {
         // testExtractdataLon0360();
         // testExtractdataLon180();
 
-        //productExtractXYDataMercator1();
+        productExtractXYDataMercator1();
         //productExtractXYDataMercator2();
         // productExtractXYDataMercator3();
         
-        productExtractXYTopaz1();
+        //productExtractXYTopaz1();
 
     }
 
@@ -2865,6 +2865,8 @@ public class TestIntfce {
 
     public static void productExtractXYTopaz1() {
         String locationData = "http://tomcat.nersc.no:8080/thredds/dodsC/topaz/mersea-ipv2/arctic/tmipv2a-class1-b-be";
+        //String locationData = "http://topaz.nersc.no/thredds/dodsC/topaz/reanalysis-v1/assim/arc-class1-be";
+        
         //productInformationFromLocationData(locationData);
         
         List<String> listVar = new ArrayList<String>();
@@ -2872,6 +2874,8 @@ public class TestIntfce {
         // listVar.add("salinity");
         // listVar.add("u");
         listVar.add("temperature");
+        listVar.add("longitude");
+        listVar.add("latitude");
 
         // add temporal criteria
         // first element is start date

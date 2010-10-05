@@ -838,11 +838,13 @@ public class NetCdfReader {
 
             conv.augmentDataset(netcdfDataset, ct);
 
-            if (ct.hasError()) {
-                throw new MotuException(ct.getError());
-            }
+            if (conv.isAugmented()) {
+                if (ct.hasError()) {
+                    throw new MotuException(ct.getError());
+                }
 
-            conv.buildCoordinateSystems(netcdfDataset);
+                conv.buildCoordinateSystems(netcdfDataset);
+            }
         }
     }
 
@@ -2564,7 +2566,6 @@ public class NetCdfReader {
     // //dateFormat.applyPattern("yyyyMMdd_HHmmss");
     // return dateFormat.format(d);
     // }
-
 
 }
 // CSON: MultipleStringLiterals
