@@ -442,18 +442,21 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
                 // in subsetting - See bug below) about the variable of the GeoGrid
                 netCdfWriter.writeVariablesWithGeoXY(listGeoGridSubset, geoGrid, gds, product.getNetCdfReader().getOrignalVariables());
 
-                netCdfWriter.finishGeoXY(VAR_ATTR_TO_REMOVE, listDistinctXRange, listDistinctYRange, mapVarOrgRanges);
-
             } else {
 
                 // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get some information
                 // (lost
                 // in subsetting - See bug below) about the variable of the GeoGrid
                 netCdfWriter.writeVariables(listGeoGridSubset, geoGrid, gds, product.getNetCdfReader().getOrignalVariables());
-                netCdfWriter.finish(VAR_ATTR_TO_REMOVE);
             }
 
         }
+        if (isGeoXY) {
+            netCdfWriter.finishGeoXY(VAR_ATTR_TO_REMOVE, listDistinctXRange, listDistinctYRange, mapVarOrgRanges);
+        } else {
+            netCdfWriter.finish(VAR_ATTR_TO_REMOVE);
+        }
+
 
         product.moveTempExtractFileToFinalExtractFile();
 
@@ -464,6 +467,12 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
 
     protected void prepareLatLonWriting(GeoGrid geoGridSubset, Range yRange, Range xRange) throws MotuException, MotuNotImplementedException {
         CoordinateAxis xaxis = geoGridSubset.getCoordinateSystem().getXHorizAxis();
+        CoordinateAxis yaxis = geoGridSubset.getCoordinateSystem().getYHorizAxis();
+
+        if ((xaxis.getAxisType() == AxisType.GeoX) || (yaxis.getAxisType() == AxisType.GeoY)) {
+            return;
+        }
+        
         String xName = xaxis.getName();
         List<Section> listVarOrgRanges = mapVarOrgRanges.get(xName);
         if (Organizer.isNullOrEmpty(listVarOrgRanges)) {
@@ -474,7 +483,6 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
         Section section = getOriginalRangeListGeoAxis(xaxis, yRange, xRange);
         listVarOrgRanges.add(section);
 
-        CoordinateAxis yaxis = geoGridSubset.getCoordinateSystem().getYHorizAxis();
         String yName = yaxis.getName();
         listVarOrgRanges = mapVarOrgRanges.get(yName);
         if (Organizer.isNullOrEmpty(listVarOrgRanges)) {
