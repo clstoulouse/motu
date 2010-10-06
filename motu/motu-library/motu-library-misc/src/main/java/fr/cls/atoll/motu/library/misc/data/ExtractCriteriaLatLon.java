@@ -1060,7 +1060,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
 
     /**
      * Compute lat lon min max.
-     *
+     * 
      * @param latAxis the lat axis
      * @param lonAxis the lon axis
      * @param minj the minj
@@ -1078,7 +1078,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
 
     /**
      * Compute lon min max.
-     *
+     * 
      * @param lonAxis the lon axis
      * @param minj the minj
      * @param mini the mini
@@ -1125,13 +1125,13 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         // System.out.println("LON AFTER:" + lonMin + " " + lonMax);
         //      
         // System.out.println("-----------END NEW RANGE---------------");
-        minMaxXValue2D = new MinMax(lonMin, lonMax);
+        minMaxXValue2D = computeMinMax(minMaxXValue2D, new MinMax(lonMin, lonMax));
 
     }
 
     /**
      * Compute lat min max.
-     *
+     * 
      * @param latAxis the lat axis
      * @param minj the minj
      * @param mini the mini
@@ -1163,8 +1163,24 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
             latMax = temp;
         }
 
-        minMaxYValue2D = new MinMax(latMin, latMax);
+        minMaxYValue2D = computeMinMax(minMaxYValue2D, new MinMax(latMin, latMax));
 
+    }
+
+    public MinMax computeMinMax(MinMax ref, MinMax work) {
+
+        if (ref == null) {
+            ref = work;
+        } else {
+            if (ref.min > work.min) {
+                ref.min = work.min;
+            }
+            if (ref.max < work.max) {
+                ref.max = work.max;
+            }
+        }
+
+        return ref;
     }
 
     /**

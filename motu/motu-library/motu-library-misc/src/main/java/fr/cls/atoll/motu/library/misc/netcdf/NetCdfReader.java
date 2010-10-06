@@ -191,6 +191,9 @@ public class NetCdfReader {
     /** NetCdf variable attribute "long_name". */
     public final static String VARIABLEATTRIBUTE_LONG_NAME = "long_name";
 
+    /** The Constant VARIABLEATTRIBUTE_GRID_MAPPING. */
+    public final static String VARIABLEATTRIBUTE_GRID_MAPPING = "grid_mapping";
+
     /** NetCdf variable attribute "standard_name". */
     public final static String VARIABLEATTRIBUTE_STANDARD_NAME = "standard_name";
 

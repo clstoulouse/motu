@@ -2874,7 +2874,7 @@ public class TestIntfce {
         // listVar.add("salinity");
         // listVar.add("u");
         listVar.add("temperature");
-        listVar.add("longitude");
+//        listVar.add("longitude");
 //        listVar.add("latitude");
 
         // add temporal criteria

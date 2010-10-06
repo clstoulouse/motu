@@ -1604,6 +1604,7 @@ public class NetCdfWriter {
     public void writeDependentVariables(Variable v, GridDataset gds) throws MotuException, MotuNotImplementedException {
 
         try {
+            // Find variable relative to Coordinate Systems attribute
             Attribute attribute = NetCdfReader.getAttribute(v, _Coordinate.Systems);
             String[] listCoordinateSystems = attribute.getStringValue().split(" ");
             for (String coordinateSystem : listCoordinateSystems) {
@@ -1621,6 +1622,20 @@ public class NetCdfWriter {
                                     coordinateSystemTrimmed,
                                     v.getName()));
 
+                }
+            }
+        } catch (NetCdfAttributeNotFoundException e) {
+            // Nothing to do
+        }
+
+        try {
+            // Find variable relative to Coordinate Systems attribute
+            Attribute attribute = NetCdfReader.getAttribute(v, NetCdfReader.VARIABLEATTRIBUTE_GRID_MAPPING);
+            String varProjectionName = attribute.getStringValue();
+            if (!Organizer.isNullOrEmpty(varProjectionName)) {
+                Variable varProjection = (Variable) gds.getDataVariable(varProjectionName);
+                if (varProjection != null) {
+                    putVariables(varProjection.getName(), varProjection);
                 }
             }
         } catch (NetCdfAttributeNotFoundException e) {
@@ -2075,9 +2090,8 @@ public class NetCdfWriter {
                 if (Organizer.isNullOrEmpty(listVar)) {
                     continue;
                 }
-
                 List<Section> listVarOrgRanges = mapVarOrgRanges.get(listVar.get(0).getName());
-                
+
                 for (int index = 0; index < listVar.size(); index++) {
                     longitudeCenter = 0.0;
                     // if (listVarOrgRanges != null) {
@@ -2369,6 +2383,12 @@ public class NetCdfWriter {
             String msg;
             msg = "dsdf";
         }
+        if (var.getName().equalsIgnoreCase("polar_stereographic")) {
+            String msg;
+            msg = "dsdf";
+        }
+
+        
 
         int geoXAxisIndex = getGeoXDimVarIndex(var);
         int geoYAxisIndex = getGeoYDimVarIndex(var);
