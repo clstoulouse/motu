@@ -24,6 +24,8 @@
  */
 package fr.cls.atoll.motu.library.misc.data;
 
+import fr.cls.atoll.motu.library.misc.metadata.ParameterMetaData;
+
 /**
  * Data parameter (variable) class.
  * 
@@ -220,4 +222,25 @@ public class VarData {
         this.mathExpression = mathExpression;
     }
 
+    /**
+     * Creates the from.
+     *
+     * @param parameterMetaData the parameter meta data
+     * @return the var data
+     */
+    public static VarData createFrom(ParameterMetaData parameterMetaData) {
+            if (parameterMetaData == null) {
+                return null;
+            }
+            VarData varData = new VarData(parameterMetaData.getName());
+            varData.setStandardName(parameterMetaData.getStandardName().trim());
+            return varData;        
+    }
+
+    @Override
+    public String toString() {
+        return "VarData [" + (name != null ? "name=" + name + ", " : "") + (outputName != null ? "outputName=" + outputName + ", " : "")
+                + (standardName != null ? "standardName=" + standardName : "") + "]";
+    }
+    
 }

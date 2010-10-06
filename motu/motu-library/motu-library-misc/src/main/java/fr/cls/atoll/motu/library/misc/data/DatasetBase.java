@@ -156,12 +156,12 @@ public abstract class DatasetBase {
     
 //    protected List<CoordinateAxis> listVariableLatSubset = new ArrayList<CoordinateAxis>();
 //    protected List<CoordinateAxis> listVariableLonSubset = new ArrayList<CoordinateAxis>();
-    protected List<CoordinateAxis> listVariableXSubset = new ArrayList<CoordinateAxis>();
-    protected List<CoordinateAxis> listVariableYSubset = new ArrayList<CoordinateAxis>();
-    protected Map<String, Range> mapXRange = new HashMap<String, Range>();
-    protected Map<String, Range> mapYRange = new HashMap<String, Range>();
+    protected List<CoordinateAxis> listVariableXSubset = null;
+    protected List<CoordinateAxis> listVariableYSubset = null;
+    protected Map<String, Range> mapXRange = null;
+    protected Map<String, Range> mapYRange = null;
 
-    protected Map<String, List<Section>> mapVarOrgRanges = new HashMap<String, List<Section>>();
+    protected Map<String, List<Section>> mapVarOrgRanges = null;
     
     protected List<Range> listDistinctXRange = null;
     protected List<Range> listDistinctYRange = null;

@@ -1536,6 +1536,30 @@ public class Product {
     }
 
     /**
+     * Find longitude ignore case.
+     *
+     * @return the parameter meta data
+     */
+    public ParameterMetaData findLongitudeIgnoreCase() {
+        if (productMetaData == null) {
+            return null;
+        }
+        return productMetaData.findLongitudeIgnoreCase();
+    }
+    
+    /**
+     * Find latitude ignore case.
+     *
+     * @return the parameter meta data
+     */
+    public ParameterMetaData findLatitudeIgnoreCase() {
+        if (productMetaData == null) {
+            return null;
+        }
+        return productMetaData.findLatitudeIgnoreCase();
+    }
+
+    /**
      * Reads all the data for the variable and returns a memory resident Array. The Array has the same element
      * type and shape as the Variable.
      * <p>
