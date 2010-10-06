@@ -255,8 +255,8 @@ public class TestIntfce {
 
         // System.setProperty("proxyHost", "proxy.cls.fr"); // adresse IP
         // System.setProperty("proxyPort", "8080");
-//         System.setProperty("socksProxyHost", "proxy.cls.fr");
-//         System.setProperty("socksProxyPort", "1080");
+        // System.setProperty("socksProxyHost", "proxy.cls.fr");
+        // System.setProperty("socksProxyPort", "1080");
         // System.setProperty("java.net.useSystemProxies", "false");
 
         try {
@@ -375,10 +375,10 @@ public class TestIntfce {
         // testLoadMotuConfig();
         // testgetMotuConfigSchema();
         //
-        // productInformation();
+        productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
-        // productDownloadInfo();
+        //productDownloadInfo();
         // productExtractDataHTMLAviso();
         // productExtractDataAviso();
         // productExtractDataAvisofromProductId();
@@ -415,11 +415,11 @@ public class TestIntfce {
         // testExtractdataLon0360();
         // testExtractdataLon180();
 
-        //productExtractXYDataMercator1();
-        //productExtractXYDataMercator2();
-        //productExtractXYDataMercator3();
-        
-        productExtractXYTopaz1();
+        // productExtractXYDataMercator1();
+        // productExtractXYDataMercator2();
+        // productExtractXYDataMercator3();
+
+        // productExtractXYTopaz1();
 
     }
 
@@ -532,9 +532,9 @@ public class TestIntfce {
         // String locationData = "C:/Documents and Settings/user+ productId";
         // String
         // locationData="http%3A%2F%2Fpurl.org%2Fmyocean%2Fontology%2Findividual%2Fmyocean%23anotherduname/GOS-L4HRfnd-MED_NRTv1-OBS";
-        String locationData = "http://ce01.artov.rm.cnr.it:8080/thredds/dodsC/sst_nrt_v1_aggr/GOS-MED-L4-SST-NRTv1_aggr";
-        // String
-        // locationData="http://misgw-qt.cls.fr:40080/thredds/dodsC/dataset-duacs-global-nrt-madt-merged-h";
+        // String locationData =
+        // "http://ce01.artov.rm.cnr.it:8080/thredds/dodsC/sst_nrt_v1_aggr/GOS-MED-L4-SST-NRTv1_aggr";
+        String locationData = "http://misgw-qt.cls.fr:40080/thredds/dodsC/dataset-duacs-global-nrt-madt-merged-h";
         try {
             locationData = URLDecoder.decode(locationData, "UTF-8");
         } catch (UnsupportedEncodingException e1) {
@@ -641,13 +641,15 @@ public class TestIntfce {
             // String productId = "duacs_regional-gomex_nrt_g2_slaext";
             // String serviceName = "dev";
             // String productId = "res_oer_g2";
-            // String serviceName = "mercator";
-            String serviceName = "MetNo";
+            String serviceName = "mercator";
+            //String serviceName = "MetNo";
+            //String serviceName = "Topaz";
 
             // String serviceName = "cls";
             // String serviceName = "AvisoDT";
-            // String productId = "mercatorPsy3v2_nat_mean_best_estimate";
-            String productId = "myocean/nat/tmipv2n-class1-be";
+            String productId = "mercatorPsy3v2_arc_mean_best_estimate";
+            //String productId = "myocean/nat/tmipv2n-class1-be";
+            //String productId = "mersea-ipv2/arctic/tmipv2a-class1-b-be";
             // String productId = "mercatorPsy3v2R1v_med_levitus_1998";
             // String productId = "global_sst";
             // String productId = "dt_ref_global_merged_madt_h";
@@ -669,12 +671,15 @@ public class TestIntfce {
     public static void productDownloadInfo() {
 
         try {
-            String serviceName = "Myocean";
+            // String serviceName = "Myocean";
+            String serviceName = "Topaz";
+
             // String serviceName = "MercatorIBI";
             // String serviceName = "avisoNRT";
             // String productId = "duacs_global_nrt_madt_merged_h";
             // String productId = "mercatorPsy2v3_ibi_mean_best_estimate";
-            String productId = "mercatorPsy3v2_glo_mean_best_estimate";
+            // String productId = "mercatorPsy3v2_glo_mean_best_estimate";
+            String productId = "mersea-ipv2/arctic/tmipv2a-class1-b-be";
             // String serviceName = "mercator";
             // String productId = "mercatorPsy3v1R1v_nat_mean_best_estimate";
             // String productId = "mercatorPsy3v1R1v_arc_mean_best_estimate";
@@ -2677,7 +2682,8 @@ public class TestIntfce {
         // add variable to extract
         // listVar.add("salinity");
         // listVar.add("u");
-        listVar.add("temperature");
+        // listVar.add("temperature");
+        // listVar.add("ssh");
 
         // add temporal criteria
         // first element is start date
@@ -2685,7 +2691,7 @@ public class TestIntfce {
         // if only start date is set, end date equals start date
         List<String> listTemporalCoverage = new ArrayList<String>();
         listTemporalCoverage.add("2009-12-21");
-        listTemporalCoverage.add("2009-12-21");
+        listTemporalCoverage.add("2009-12-22");
 
         // add Lat/Lon criteria
         // first element is low latitude
@@ -2704,7 +2710,7 @@ public class TestIntfce {
         // if only low depth is set, high depth equals low depth value
         List<String> listDepthCoverage = new ArrayList<String>();
         listDepthCoverage.add("0");
-        listDepthCoverage.add("0");
+        listDepthCoverage.add("15");
 
         Product product = null;
 
@@ -2865,17 +2871,18 @@ public class TestIntfce {
 
     public static void productExtractXYTopaz1() {
         String locationData = "http://tomcat.nersc.no:8080/thredds/dodsC/topaz/mersea-ipv2/arctic/tmipv2a-class1-b-be";
-        //String locationData = "http://topaz.nersc.no/thredds/dodsC/topaz/reanalysis-v1/assim/arc-class1-be";
-        
-        //productInformationFromLocationData(locationData);
-        
+        // String locationData =
+        // "http://topaz.nersc.no/thredds/dodsC/topaz/reanalysis-v1/assim/arc-class1-be";
+
+        // productInformationFromLocationData(locationData);
+
         List<String> listVar = new ArrayList<String>();
         // add variable to extract
         // listVar.add("salinity");
         // listVar.add("u");
-        listVar.add("temperature");
-//        listVar.add("longitude");
-//        listVar.add("latitude");
+        // listVar.add("temperature");
+        // listVar.add("longitude");
+        // listVar.add("latitude");
 
         // add temporal criteria
         // first element is start date
@@ -2883,7 +2890,7 @@ public class TestIntfce {
         // if only start date is set, end date equals start date
         List<String> listTemporalCoverage = new ArrayList<String>();
         listTemporalCoverage.add("2009-12-21");
-        listTemporalCoverage.add("2009-12-21");
+        listTemporalCoverage.add("2009-12-22");
 
         // add Lat/Lon criteria
         // first element is low latitude
@@ -2902,7 +2909,7 @@ public class TestIntfce {
         // if only low depth is set, high depth equals low depth value
         List<String> listDepthCoverage = new ArrayList<String>();
         listDepthCoverage.add("5");
-        listDepthCoverage.add("5");
+        listDepthCoverage.add("30");
 
         Product product = null;
 

@@ -1625,7 +1625,7 @@ public class ProductMetaData {
         }
 
         MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
-        return NetCdfReader.getStandardZAsString(minMax.min);
+        return NetCdfReader.getStandardZAsString(minMax.min, axis.getUnitsString());
     }
 
     /**

@@ -246,7 +246,7 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
                 listNewAxes.add(axis);
             }
             i++;
-            String coordTransName = String.format("LatLonCoordinateSystem%d", i);
+            String coordTransName = String.format("latLonCoordinateSystem%d", i);
             addCoordinateTransformVariable(ds, coordTransName, listNewAxes, listOriginAxes);
             //
             // coordTransName = String.format("ProjectionCoordinateSystem%d", i);

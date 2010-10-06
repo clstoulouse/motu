@@ -124,18 +124,18 @@
 		#if(($productMetaData.hasLonAxis()) && (!$product.hasGeoXAxisWithLonEquivalence()))
 			<td class ="right">$productMetaData.getLonAxisMinValueAsString()</td>
 		#end
-		#if($productMetaData.hasGeoXAxis())
-			#if ($product.hasGeoXAxisWithLonEquivalence())
-				<td class ="right">$productMetaData.getGeoXAxisMinValueAsLonString(${product})</td>
-            #else				
-				<td class ="right">$productMetaData.getGeoXAxisMinValueAsString()</td>
-			#end
-		#end
 		#if($productMetaData.hasGeoYAxis())
 			#if ($product.hasGeoYAxisWithLatEquivalence())
 				<td class ="right">$productMetaData.getGeoYAxisMinValueAsLatString(${product})</td>
             #else				
 				<td class ="right">$productMetaData.getGeoYAxisMinValueAsString()</td>
+			#end
+		#end
+		#if($productMetaData.hasGeoXAxis())
+			#if ($product.hasGeoXAxisWithLonEquivalence())
+				<td class ="right">$productMetaData.getGeoXAxisMinValueAsLonString(${product})</td>
+            #else				
+				<td class ="right">$productMetaData.getGeoXAxisMinValueAsString()</td>
 			#end
 		#end
 				
@@ -155,18 +155,18 @@
 		#if(($productMetaData.hasLonAxis()) && (!$product.hasGeoXAxisWithLonEquivalence()))
 			<td class ="right">$productMetaData.getLonAxisMaxValueAsString()</td>
 		#end
-		#if($productMetaData.hasGeoXAxis())
-			#if ($product.hasGeoXAxisWithLonEquivalence())
-				<td class ="right">$productMetaData.getGeoXAxisMaxValueAsLonString(${product})</td>
-            #else				
-				<td class ="right">$productMetaData.getGeoXAxisMaxValueAsString()</td>
-			#end
-		#end
 		#if($productMetaData.hasGeoYAxis())
 			#if ($product.hasGeoYAxisWithLatEquivalence())
 				<td class ="right">$productMetaData.getGeoYAxisMaxValueAsLatString(${product})</td>
             #else				
 				<td class ="right">$productMetaData.getGeoYAxisMaxValueAsString()</td>
+			#end
+		#end
+		#if($productMetaData.hasGeoXAxis())
+			#if ($product.hasGeoXAxisWithLonEquivalence())
+				<td class ="right">$productMetaData.getGeoXAxisMaxValueAsLonString(${product})</td>
+            #else				
+				<td class ="right">$productMetaData.getGeoXAxisMaxValueAsString()</td>
 			#end
 		#end
 		#if($productMetaData.hasZAxis())

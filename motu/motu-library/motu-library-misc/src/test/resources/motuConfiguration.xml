@@ -132,6 +132,19 @@
 			<catalog name="catalogFTP.xml" type="ftp"
 					urlSite="sftp://atoll:atoll@atoll-aviso.vlandata.cls.fr/opt/atoll/misgw-sltac/hoa/publication/inventories" />
 	</configService>
+	<!--===========================================-->
+	<!--                    TEST MyOcean Mercator TDS         -->
+	<!--===========================================-->
+	<configService defaultLanguage="UK" description="Test Topaz data"
+		group="Topaz" httpBaseRef="http:///www.myocean.eu.org"
+		name="Topaz" veloTemplatePrefix="myocean">
+		<catalog name="catalogs/mersea-ipv2-class1-arctic-b.xml" type="tds"
+			urlSite="http://tomcat.nersc.no:8080/thredds" />
+			<!-- 
+			"http://opendap.mercator-ocean.fr/thredds"
+			http://mercator-data1.cls.fr:43080/thredds
+			 -->
+	</configService>
 
 	
 	<!--===========================================-->
