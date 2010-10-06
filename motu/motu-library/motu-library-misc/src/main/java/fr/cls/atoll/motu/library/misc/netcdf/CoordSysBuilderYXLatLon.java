@@ -63,6 +63,7 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException
  */
 public class CoordSysBuilderYXLatLon extends CF1Convention {
 
+    public static final String LAT_LON_COORDINATE_SYSTEM_PREFIX = "latLonCoordinateSystem";
     /**
      * Default constructor.
      */

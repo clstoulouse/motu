@@ -31,6 +31,7 @@ import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.netcdf.CoordSysBuilderYXLatLon;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.library.misc.tds.server.Property;
@@ -42,10 +43,12 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.globus.myproxy.GetParams;
 import org.joda.time.DateTime;
@@ -1236,6 +1239,30 @@ public class ProductMetaData {
      */
     public Map<String, ParameterMetaData> getParameterMetaDatas() {
         return this.parameterMetaDatasMap;
+    }
+
+    /**
+     * Gets the parameter meta datas filtered.
+     *
+     * @return the parameter meta datas filtered
+     */
+    public Map<String, ParameterMetaData> getParameterMetaDatasFiltered() {
+        Map<String, ParameterMetaData> map = new HashMap<String, ParameterMetaData>();
+        Set<Entry<String, ParameterMetaData>>  entries = getParameterMetaDatas().entrySet();
+        for (Entry<String, ParameterMetaData> entry : entries) {
+            ParameterMetaData parameterMetaData = entry.getValue();
+            if (parameterMetaData == null) {
+                continue;
+            }
+            if (parameterMetaData.getName().startsWith(CoordSysBuilderYXLatLon.LAT_LON_COORDINATE_SYSTEM_PREFIX)) {
+                continue;
+        
+            }
+            
+            map.put(entry.getKey(), parameterMetaData);
+        }
+        
+        return map;
     }
 
     /**
