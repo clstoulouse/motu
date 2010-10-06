@@ -307,7 +307,15 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
         listVariableYSubset = new ArrayList<CoordinateAxis>();
         mapXRange = new HashMap<String, Range>();
         mapYRange = new HashMap<String, Range>();
+        
+        if (isGeoXY) {
+            //prepareLatLonWriting(listGeoGridSubset);
+            prepareXYWriting();
 
+            netCdfWriter.writeVariables(listVariableXSubset, mapXRange, product.getNetCdfReader().getOrignalVariables());
+            netCdfWriter.writeVariables(listVariableYSubset, mapYRange, product.getNetCdfReader().getOrignalVariables());
+
+        }
         // List<CoordinateAxis> listVariableXSubset = new ArrayList<CoordinateAxis>();
         // List<CoordinateAxis> listVariableYSubset = new ArrayList<CoordinateAxis>();
         // Map<String, Range> mapXRange = new HashMap<String, Range>();
@@ -431,11 +439,11 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
             // // }
             // }
             if (isGeoXY) {
-                //prepareLatLonWriting(listGeoGridSubset);
-                prepareXYWriting();
-
-                netCdfWriter.writeVariables(listVariableXSubset, mapXRange, product.getNetCdfReader().getOrignalVariables());
-                netCdfWriter.writeVariables(listVariableYSubset, mapYRange, product.getNetCdfReader().getOrignalVariables());
+//                //prepareLatLonWriting(listGeoGridSubset);
+//                prepareXYWriting();
+//
+//                netCdfWriter.writeVariables(listVariableXSubset, mapXRange, product.getNetCdfReader().getOrignalVariables());
+//                netCdfWriter.writeVariables(listVariableYSubset, mapYRange, product.getNetCdfReader().getOrignalVariables());
 
                 // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get some information
                 // (lost

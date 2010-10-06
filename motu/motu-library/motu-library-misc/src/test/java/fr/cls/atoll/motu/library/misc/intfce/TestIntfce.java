@@ -415,11 +415,11 @@ public class TestIntfce {
         // testExtractdataLon0360();
         // testExtractdataLon180();
 
-        productExtractXYDataMercator1();
+        //productExtractXYDataMercator1();
         //productExtractXYDataMercator2();
-        // productExtractXYDataMercator3();
+        //productExtractXYDataMercator3();
         
-        //productExtractXYTopaz1();
+        productExtractXYTopaz1();
 
     }
 
@@ -2875,7 +2875,7 @@ public class TestIntfce {
         // listVar.add("u");
         listVar.add("temperature");
         listVar.add("longitude");
-        listVar.add("latitude");
+//        listVar.add("latitude");
 
         // add temporal criteria
         // first element is start date

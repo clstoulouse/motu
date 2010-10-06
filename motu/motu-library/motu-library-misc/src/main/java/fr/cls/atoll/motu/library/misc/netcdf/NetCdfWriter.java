@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javolution.UtilTestSuite.MapRemove;
 
@@ -2071,19 +2072,21 @@ public class NetCdfWriter {
 
         try {
             for (List<Variable> listVar : variablesMap.values()) {
-                longitudeCenter = 0.0;
-                List<Section> listVarOrgRanges = null;
-                if (!Organizer.isNullOrEmpty(listVar)) {
-                    listVarOrgRanges = mapVarOrgRanges.get(listVar.get(0).getName());
+                if (Organizer.isNullOrEmpty(listVar)) {
+                    continue;
                 }
-                // if (listVarOrgRanges != null) {
-                // System.out.println("listVarOrgRanges.size()=" + listVarOrgRanges.size());
-                // System.out.println("listVar.size()=" + listVar.size());
-                // }
+
+                List<Section> listVarOrgRanges = mapVarOrgRanges.get(listVar.get(0).getName());
+                
                 for (int index = 0; index < listVar.size(); index++) {
+                    longitudeCenter = 0.0;
+                    // if (listVarOrgRanges != null) {
+                    // System.out.println("listVarOrgRanges.size()=" + listVarOrgRanges.size());
+                    // System.out.println("listVar.size()=" + listVar.size());
+                    // }
                     Variable var = listVar.get(index);
                     Section varOrgRanges = null;
-                    if (listVarOrgRanges != null) {
+                    if (!Organizer.isNullOrEmpty(listVarOrgRanges)) {
                         varOrgRanges = listVarOrgRanges.get(index);
                     }
                     writeVariableByBlockGeoXY(var, listDistinctXRange, listDistinctYRange, varOrgRanges);
