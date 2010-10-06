@@ -1053,7 +1053,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
                 xRangeValue[1] = minMaxLon.max;
             }
         } else if (productMetadata.hasGeoXYAxis()) {
-            throw new MotuNotImplementedException("X/Y axis is not implemented (method DatasetGrid#getAdjacentYXRange");
+            throw new MotuNotImplementedException("Extraction with X/Y axes and without Lat/Lon data are not implemented (method DatasetGrid#getAdjacentYXRange");
         }
 
         if (LOG.isDebugEnabled()) {
