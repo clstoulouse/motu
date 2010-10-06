@@ -261,7 +261,7 @@
 #product_metadata_fr_printTemporalCoverage()
 
 <h2>Métadonnées par variable</h2>
-#set ($listParameterMetadata = $productMetaData.getParameterMetaDatas() )
+#set ($listParameterMetadata = $productMetaData.getParameterMetaDatasFiltered() )
 <ul>
 #foreach( $parameterMetadata in $listParameterMetadata )	
 	#product_metadata_fr_printParameter()

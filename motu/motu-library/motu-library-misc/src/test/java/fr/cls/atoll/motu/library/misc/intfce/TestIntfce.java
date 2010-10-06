@@ -378,7 +378,7 @@ public class TestIntfce {
         productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
-        //productDownloadInfo();
+        productDownloadInfo();
         // productExtractDataHTMLAviso();
         // productExtractDataAviso();
         // productExtractDataAvisofromProductId();
@@ -641,16 +641,15 @@ public class TestIntfce {
             // String productId = "duacs_regional-gomex_nrt_g2_slaext";
             // String serviceName = "dev";
             // String productId = "res_oer_g2";
-            String serviceName = "mercator";
+            //String serviceName = "mercator";
             //String serviceName = "MetNo";
-            //String serviceName = "Topaz";
+            String serviceName = "Topaz";
 
             // String serviceName = "cls";
             // String serviceName = "AvisoDT";
-            String productId = "mercatorPsy3v2_arc_mean_best_estimate";
+            //String productId = "mercatorPsy3v2_arc_mean_best_estimate";
             //String productId = "myocean/nat/tmipv2n-class1-be";
-            //String productId = "mersea-ipv2/arctic/tmipv2a-class1-b-be";
-            // String productId = "mercatorPsy3v2R1v_med_levitus_1998";
+            String productId = "mersea-ipv2/arctic/tmipv2a-class1-b-be";
             // String productId = "global_sst";
             // String productId = "dt_ref_global_merged_madt_h";
 
@@ -672,6 +671,7 @@ public class TestIntfce {
 
         try {
             // String serviceName = "Myocean";
+            //String serviceName = "mercator";
             String serviceName = "Topaz";
 
             // String serviceName = "MercatorIBI";
@@ -680,9 +680,7 @@ public class TestIntfce {
             // String productId = "mercatorPsy2v3_ibi_mean_best_estimate";
             // String productId = "mercatorPsy3v2_glo_mean_best_estimate";
             String productId = "mersea-ipv2/arctic/tmipv2a-class1-b-be";
-            // String serviceName = "mercator";
-            // String productId = "mercatorPsy3v1R1v_nat_mean_best_estimate";
-            // String productId = "mercatorPsy3v1R1v_arc_mean_best_estimate";
+            //String productId = "mercatorPsy3v2_arc_mean_best_estimate";
             FileWriter writer = new FileWriter("./target/resultProductDownloadInfo.html");
             Organizer organizer = new Organizer();
             // organizer.setCurrentLanguage("uk");
