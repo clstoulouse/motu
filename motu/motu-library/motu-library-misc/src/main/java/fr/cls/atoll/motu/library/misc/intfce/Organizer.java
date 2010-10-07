@@ -2094,34 +2094,39 @@ public class Organizer {
             return geospatialCoverage;
         }
 
-        MinMax depthCoverage = productMetaData.getDepthCoverage();
-        if (depthCoverage != null) {
-            geospatialCoverage.setDepthMax(new BigDecimal(productMetaData.getDepthCoverage().max));
-            geospatialCoverage.setDepthMin(new BigDecimal(productMetaData.getDepthCoverage().min));
-        }
-        if (productMetaData.getDepthResolution() != null) {
-            geospatialCoverage.setDepthResolution(new BigDecimal(productMetaData.getDepthResolution()));
-        }
-        geospatialCoverage.setDepthUnits(productMetaData.getDepthUnits());
+        try {
+            MinMax depthCoverage = productMetaData.getDepthCoverage();
+            if (depthCoverage != null) {
+                geospatialCoverage.setDepthMax(new BigDecimal(productMetaData.getDepthCoverage().max));
+                geospatialCoverage.setDepthMin(new BigDecimal(productMetaData.getDepthCoverage().min));
+            }
+            if (productMetaData.getDepthResolution() != null) {
+                geospatialCoverage.setDepthResolution(new BigDecimal(productMetaData.getDepthResolution()));
+            }
+            geospatialCoverage.setDepthUnits(productMetaData.getDepthUnits());
 
-        LatLonRect geoBBox = productMetaData.getGeoBBox();
-        if (geoBBox != null) {
-            geospatialCoverage.setEast(new BigDecimal(productMetaData.getGeoBBox().getLonMax()));
-            geospatialCoverage.setWest(new BigDecimal(productMetaData.getGeoBBox().getLonMin()));
-            geospatialCoverage.setNorth(new BigDecimal(productMetaData.getGeoBBox().getLatMax()));
-            geospatialCoverage.setSouth(new BigDecimal(productMetaData.getGeoBBox().getLatMin()));
-        }
-        if (productMetaData.getEastWestResolution() != null) {
-            geospatialCoverage.setEastWestResolution(new BigDecimal(productMetaData.getEastWestResolution()));
-        }
-        geospatialCoverage.setEastWestUnits(productMetaData.getEastWestUnits());
-        if (productMetaData.getNorthSouthResolution() != null) {
-            geospatialCoverage.setNorthSouthResolution(new BigDecimal(productMetaData.getNorthSouthResolution()));
-        }
-        geospatialCoverage.setNorthSouthUnits(productMetaData.getNorthSouthUnits());
+            LatLonRect geoBBox = productMetaData.getGeoBBox();
+            if (geoBBox != null) {
+                geospatialCoverage.setEast(new BigDecimal(productMetaData.getGeoBBox().getLonMax()));
+                geospatialCoverage.setWest(new BigDecimal(productMetaData.getGeoBBox().getLonMin()));
+                geospatialCoverage.setNorth(new BigDecimal(productMetaData.getGeoBBox().getLatMax()));
+                geospatialCoverage.setSouth(new BigDecimal(productMetaData.getGeoBBox().getLatMin()));
+            }
+            if (productMetaData.getEastWestResolution() != null) {
+                geospatialCoverage.setEastWestResolution(new BigDecimal(productMetaData.getEastWestResolution()));
+            }
+            geospatialCoverage.setEastWestUnits(productMetaData.getEastWestUnits());
+            if (productMetaData.getNorthSouthResolution() != null) {
+                geospatialCoverage.setNorthSouthResolution(new BigDecimal(productMetaData.getNorthSouthResolution()));
+            }
+            geospatialCoverage.setNorthSouthUnits(productMetaData.getNorthSouthUnits());
 
-        geospatialCoverage.setCode(ErrorType.OK);
-        geospatialCoverage.setMsg(ErrorType.OK.toString());
+            geospatialCoverage.setCode(ErrorType.OK);
+            geospatialCoverage.setMsg(ErrorType.OK.toString());
+        } catch (Exception e) {
+            geospatialCoverage.setCode(ErrorType.SYSTEM);
+            geospatialCoverage.setMsg("Error while getting geospatial coverage (N/S, E/W) from TDS configuration file: " + e.getMessage() + ". Please, check your configuration file");
+        }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("initGeospatialCoverage(ProductMetaData) - exiting");
@@ -2234,22 +2239,27 @@ public class Organizer {
         if (coordinateAxis == null) {
             return axis;
         }
-        axis.setAxisType(coordinateAxis.getAxisType().toString());
-        axis.setName(coordinateAxis.getName());
-        axis.setDescription(coordinateAxis.getDescription());
-        axis.setUnits(coordinateAxis.getUnitsString());
+        try {
+            axis.setAxisType(coordinateAxis.getAxisType().toString());
+            axis.setName(coordinateAxis.getName());
+            axis.setDescription(coordinateAxis.getDescription());
+            axis.setUnits(coordinateAxis.getUnitsString());
 
-        ParameterMetaData parameterMetaData = productMetaData.getParameterMetaDatas(coordinateAxis.getName());
+            ParameterMetaData parameterMetaData = productMetaData.getParameterMetaDatas(coordinateAxis.getName());
 
-        if (parameterMetaData != null) {
-            axis.setStandardName(parameterMetaData.getStandardName());
-            axis.setLongName(parameterMetaData.getLongName());
-        }
+            if (parameterMetaData != null) {
+                axis.setStandardName(parameterMetaData.getStandardName());
+                axis.setLongName(parameterMetaData.getLongName());
+            }
 
-        MinMax minMax = productMetaData.getAxisMinMaxValue(coordinateAxis.getAxisType());
-        if (minMax != null) {
-            axis.setLower(new BigDecimal(minMax.min));
-            axis.setUpper(new BigDecimal(minMax.max));
+            MinMax minMax = productMetaData.getAxisMinMaxValue(coordinateAxis.getAxisType());
+            if (minMax != null) {
+                axis.setLower(new BigDecimal(minMax.min));
+                axis.setUpper(new BigDecimal(minMax.max));
+            }
+        } catch (Exception e) {
+            axis.setCode(ErrorType.SYSTEM);
+            axis.setMsg("Error while getting geospatial coverage (axes) from TDS dataset: " + e.getMessage() + ". Please, check your dataset");
         }
 
         axis.setCode(ErrorType.OK);
@@ -7021,6 +7031,7 @@ public class Organizer {
         }
         return proxy;
     }
+
 }
 
 // CSON: MultipleStringLiterals

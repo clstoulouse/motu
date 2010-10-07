@@ -133,7 +133,7 @@
 					urlSite="sftp://atoll:atoll@atoll-aviso.vlandata.cls.fr/opt/atoll/misgw-sltac/hoa/publication/inventories" />
 	</configService>
 	<!--===========================================-->
-	<!--                    TEST MyOcean Mercator TDS         -->
+	<!--                    TEST TOPAZ -->
 	<!--===========================================-->
 	<configService defaultLanguage="UK" description="Test Topaz data"
 		group="Topaz" httpBaseRef="http:///www.myocean.eu.org"

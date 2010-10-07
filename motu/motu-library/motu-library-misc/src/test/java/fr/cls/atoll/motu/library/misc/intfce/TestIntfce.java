@@ -375,7 +375,7 @@ public class TestIntfce {
         // testLoadMotuConfig();
         // testgetMotuConfigSchema();
         //
-        productInformation();
+        // productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
         //productDownloadInfo();
@@ -384,7 +384,7 @@ public class TestIntfce {
         // productExtractDataAvisofromProductId();
         // productInformationFromLocationData();
         // productExtractDataAviso2();
-        // productExtractDataMercator();
+        //productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
         // productExtractDiversity();
@@ -411,16 +411,16 @@ public class TestIntfce {
         // productExtractDataFromInventory();
         // productListMercator();
         // productList();
-        // testGetProductMetadataInfo();
+        testGetProductMetadataInfo();
         // testExtractdataLon0360();
         // testExtractdataLon180();
 
         // productExtractXYDataMercator1();
         // productExtractXYDataMercator2();
-        productExtractXYDataMercator3();
+        //productExtractXYDataMercator3();
 
         // productExtractXYTopaz1();
-        productExtractXYTopaz2();
+        //productExtractXYTopaz2();
 
     }
 
@@ -1374,9 +1374,9 @@ public class TestIntfce {
         // String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/" + productId;
         // String locationData = "http://rdp1-jaune.cls.fr:8880/thredds/dodsC/" + productId;
         // String locationData = "http://atoll-dev.cls.fr:43080/thredds/dodsC/" + productId;
-        String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_arc_mean_best_estimate";
-        // String locationData =
-        // "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_glo_mean_best_estimate";
+        //String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_arc_mean_best_estimate";
+         String locationData =
+         "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_glo_mean_best_estimate";
         // String locationData =
         // "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_glo_mean_best_estimate";
         // String locationData =
@@ -1393,7 +1393,7 @@ public class TestIntfce {
         // add variable to extract
         // listVar.add("salinity");
         // listVar.add("u");
-        listVar.add("temperature");
+        //listVar.add("temperature");
         // listVar.add("temperature");
         // listVar.add("sea_water_salinity");
         // listVar.add("sea_surface_elevation");
@@ -2646,7 +2646,10 @@ public class TestIntfce {
             // "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_med_mean_best_estimate";
             // String locationData =
             // "http://web-qt.cls.fr/mis-gateway-servlet/Motu?action=describeProduct&data=http://thredds.met.no/thredds/dodsC/topaz/myocean/nat/tmipv2n-class1-be";
-            String locationData = "C:/Downloads/nrt_global_en_adt_vfec_20100926_20100926_20100929.nc";
+            //String locationData = "C:/Downloads/nrt_global_en_adt_vfec_20100926_20100926_20100929.nc";
+            String locationData = "http://tomcat.nersc.no:8080/thredds/dodsC/topaz/mersea-ipv2/arctic/tmipv2a-class1-b-be";
+//             String locationData =
+//             "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_arc_mean_best_estimate";
             //
             // Pattern pattern = Pattern.compile(patternExpression);
             // Matcher matcher = pattern.matcher(locationData);
@@ -2664,7 +2667,11 @@ public class TestIntfce {
             //            
             Organizer organizer = new Organizer();
             FileWriter writer = new FileWriter("resultProductMetadataInfo.xml");
-            organizer.getProductMetadataInfo(locationData, writer);
+//            organizer.getProductMetadataInfo(locationData, writer);
+            
+            String xmlFile = "catalogs/mersea-ipv2-class1-arctic-b.xml";
+            organizer.getProductMetadataInfo(locationData, xmlFile, true, writer);
+            
 
         } catch (MotuExceptionBase e) {
             // TODO Auto-generated catch block
