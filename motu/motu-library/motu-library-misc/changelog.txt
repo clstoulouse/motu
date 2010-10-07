@@ -2,7 +2,7 @@ Changelog for ${project.artifactId}
 
 This document lists all changes of the ${project.artifactId} releases.
 
-. ${project.artifactId} v2.1.9
+. ${project.artifactId} v2.1.10
 * Changes:
   - Some internal changes to read TDS configuration file.
   - Minor internal changes
