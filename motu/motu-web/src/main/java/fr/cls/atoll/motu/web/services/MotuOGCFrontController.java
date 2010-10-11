@@ -24,6 +24,7 @@
  */
 package fr.cls.atoll.motu.web.services;
 
+import fr.cls.atoll.motu.library.cas.HttpClientCAS;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
@@ -52,6 +53,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.core.ApplicationContext;
 import org.apache.catalina.core.ApplicationContextFacade;
 import org.apache.log4j.Logger;
+import org.deegree.commons.utils.HttpUtils;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.ProcessletException;
 
@@ -122,7 +124,10 @@ public class MotuOGCFrontController extends OGCFrontController {
         super.init(wrapServletConfig(config));
 
         try {
+                        
             initProxyLogin();
+            
+            HttpUtils.setHttpClient(new HttpClientCAS());
 
             // Initialisation Queue Server
             initRequestManagement();
