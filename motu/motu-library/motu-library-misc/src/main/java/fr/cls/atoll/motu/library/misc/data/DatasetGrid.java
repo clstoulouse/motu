@@ -544,15 +544,15 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
 
         }
 
-        for (List<Range> yxRanges : listYXRanges) {
-            // GridDatatype geoGridSubset = null;
-            Range yRange = yxRanges.get(0);
-            Range xRange = yxRanges.get(1);
-            System.out.print(yRange.toString());
-            System.out.print(" ");
-            System.out.print(xRange.toString());
-            System.out.println(" ");
-        }
+//        for (List<Range> yxRanges : listYXRanges) {
+//            // GridDatatype geoGridSubset = null;
+//            Range yRange = yxRanges.get(0);
+//            Range xRange = yxRanges.get(1);
+//            System.out.print(yRange.toString());
+//            System.out.print(" ");
+//            System.out.print(xRange.toString());
+//            System.out.println(" ");
+//        }
 
         RangeComparator rangeComparator = new RangeComparator();
 
@@ -593,28 +593,28 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
             listVarOrgRanges.add(section);
         }
 
-        for (Range r : listDistinctXRange) {
-            // GridDatatype geoGridSubset = null;
-            System.out.print(r.toString());
-            System.out.println(" ");
-        }
-        for (Range r : listDistinctYRange) {
-            // GridDatatype geoGridSubset = null;
-            System.out.print(r.toString());
-            System.out.println(" ");
-        }
-
-        for (Entry<String, List<Section>> entry : mapVarOrgRanges.entrySet()) {
-            String key = entry.getKey();
-            List<Section> sections = entry.getValue();
-            System.out.print(key);
-            System.out.print(" ");
-            for (Section section : sections) {
-                System.out.print(section);
-                System.out.print(" / ");
-            }
-            System.out.println(" ");
-        }
+//        for (Range r : listDistinctXRange) {
+//            // GridDatatype geoGridSubset = null;
+//            System.out.print(r.toString());
+//            System.out.println(" ");
+//        }
+//        for (Range r : listDistinctYRange) {
+//            // GridDatatype geoGridSubset = null;
+//            System.out.print(r.toString());
+//            System.out.println(" ");
+//        }
+//
+//        for (Entry<String, List<Section>> entry : mapVarOrgRanges.entrySet()) {
+//            String key = entry.getKey();
+//            List<Section> sections = entry.getValue();
+//            System.out.print(key);
+//            System.out.print(" ");
+//            for (Section section : sections) {
+//                System.out.print(section);
+//                System.out.print(" / ");
+//            }
+//            System.out.println(" ");
+//        }
 
     }
 
