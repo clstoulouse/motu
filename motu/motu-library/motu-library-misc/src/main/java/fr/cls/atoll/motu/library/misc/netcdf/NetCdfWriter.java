@@ -2371,22 +2371,22 @@ public class NetCdfWriter {
         if (LOG.isDebugEnabled()) {
             LOG.debug("writeVariableByBlockGeoXY() - entering");
         }
-        if (var.getName().equalsIgnoreCase("longitude")) {
-            String msg;
-            msg = "dsdf";
-        }
-        if (var.getName().equalsIgnoreCase("x")) {
-            String msg;
-            msg = "dsdf";
-        }
-        if (var.getName().equalsIgnoreCase("temperature")) {
-            String msg;
-            msg = "dsdf";
-        }
-        if (var.getName().equalsIgnoreCase("polar_stereographic")) {
-            String msg;
-            msg = "dsdf";
-        }
+//        if (var.getName().equalsIgnoreCase("longitude")) {
+//            String msg;
+//            msg = "dsdf";
+//        }
+//        if (var.getName().equalsIgnoreCase("x")) {
+//            String msg;
+//            msg = "dsdf";
+//        }
+//        if (var.getName().equalsIgnoreCase("temperature")) {
+//            String msg;
+//            msg = "dsdf";
+//        }
+//        if (var.getName().equalsIgnoreCase("polar_stereographic")) {
+//            String msg;
+//            msg = "dsdf";
+//        }
 
         
 
