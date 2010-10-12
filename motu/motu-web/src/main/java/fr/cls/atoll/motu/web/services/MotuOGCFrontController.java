@@ -52,6 +52,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.core.ApplicationContext;
 import org.apache.catalina.core.ApplicationContextFacade;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.log4j.Logger;
 import org.deegree.commons.utils.HttpUtils;
 import org.deegree.services.controller.OGCFrontController;
@@ -127,7 +128,10 @@ public class MotuOGCFrontController extends OGCFrontController {
                         
             initProxyLogin();
             
-            HttpUtils.setHttpClient(new HttpClientCAS());
+            MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+            HttpClientCAS httpClientCAS = new HttpClientCAS(connectionManager);
+
+            HttpUtils.setHttpClient(httpClientCAS);
 
             // Initialisation Queue Server
             initRequestManagement();
