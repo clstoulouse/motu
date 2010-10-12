@@ -45,6 +45,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -190,7 +191,9 @@ public class WPSUtils {
             LOG.debug("post(Worker<T>, String, InputStream, Map<String,String>) - start");
         }
 
-        HttpClientCAS client = new HttpClientCAS();
+        MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+        HttpClientCAS client = new HttpClientCAS(connectionManager);
+        
         PostMethod post = new PostMethod(url);
         post.setRequestEntity(new InputStreamRequestEntity(postBody));
         for (String key : headers.keySet()) {
@@ -300,8 +303,9 @@ public class WPSUtils {
         if (LOG.isDebugEnabled()) {
             LOG.debug("get(Worker<T>, String, Map<String,String>) - start");
         }
+        MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+        HttpClientCAS client = new HttpClientCAS(connectionManager);
 
-        HttpClientCAS client = new HttpClientCAS();
         GetMethod get = new GetMethod( url );
         for ( String key : headers.keySet() ) {
             get.setRequestHeader( key, headers.get( key ));    
