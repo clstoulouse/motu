@@ -1,0 +1,8 @@
+Changelog for ${project.artifactId}
+
+This document lists all changes of the ${project.artifactId} releases.
+
+
+. ${project.artifactId} v1.0.0
+
+This is the initial release.
