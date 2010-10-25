@@ -363,7 +363,8 @@ public class Product {
             throw new MotuException("Error in isProductDownloadable - productMetaData is null");
         }
 
-        return !(productMetaData.isProductAlongTrack() || hasGeoXYAxisWithLonLatEquivalence());
+        //return !(productMetaData.isProductAlongTrack() || hasGeoXYAxisWithLonLatEquivalence());
+        return !(productMetaData.isProductAlongTrack());
     }
 
     /**
