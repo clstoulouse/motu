@@ -2,6 +2,14 @@ Changelog for ${project.artifactId}
 
 This document lists all changes of the ${project.artifactId} releases.
 
+. ${project.artifactId} v2.1.12
+* Fixed bugs:
+  - Within the Motu 'download product' HTML page, the link to extract GeoX/GeoY product is not available. 
+
+. ${project.artifactId} v2.1.11
+* Fixed bugs:
+  - WPS requests doesn't work when a proxy is used for http request. 
+
 . ${project.artifactId} v2.1.10
 * Changes:
   - Some internal changes to read TDS configuration file.
