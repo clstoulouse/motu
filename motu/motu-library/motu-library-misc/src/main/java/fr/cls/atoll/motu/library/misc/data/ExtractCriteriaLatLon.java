@@ -940,12 +940,12 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                     continue;
                 }
                 if (lon < minx) {
-                    // if ((lon < -160)) {
-                    // System.out.print(lat);
-                    // System.out.print(" ");
-                    // System.out.print(lon);
-                    // System.out.println(" ");
-                    // }
+//                     if ((lon > 0)) {
+//                     System.out.print(lat);
+//                     System.out.print(" ");
+//                     System.out.print(lon);
+//                     System.out.println(" ");
+//                     }
 
                     double longitudeCenter = minx + 180;
                     lon = LatLonPointImpl.lonNormal(lon, longitudeCenter);

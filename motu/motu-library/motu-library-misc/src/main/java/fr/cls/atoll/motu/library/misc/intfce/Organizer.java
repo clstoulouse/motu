@@ -1176,8 +1176,10 @@ public class Organizer {
             MotuInvalidLatLonRangeException ex = (MotuInvalidLatLonRangeException) e;
             stringBuffer.append("Latitude/Longitude bounding box: ");
             stringBuffer.append(ex.getInvalidRectAsString());
-            stringBuffer.append(" is out of range.\nLatitude/Longitude bounding box must intersect: ");
+            stringBuffer.append(" is out of range.\n1) Either Latitude/Longitude bounding box doesn't intersect: ");
             stringBuffer.append(ex.getValidRectAsString());
+            stringBuffer.append("\n2) Or intersection is not empty, but there is no data for the requested bounding box: ");
+            stringBuffer.append(ex.getInvalidRectAsString());
 
         } else if (e instanceof MotuExceedingCapacityException) {
             MotuExceedingCapacityException ex = (MotuExceedingCapacityException) e;

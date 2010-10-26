@@ -415,14 +415,14 @@ public class TestIntfce {
         // testExtractdataLon0360();
         // testExtractdataLon180();
 
-        productExtractXYDataMercator1();
-        productExtractXYDataMercator2();
-        productExtractXYDataMercator3();
+//        productExtractXYDataMercator1();
+//        productExtractXYDataMercator2();
+//        productExtractXYDataMercator3();
 
 //        productExtractXYTopaz1();
 //        productExtractXYTopaz2();
 //        productExtractXYTopaz3();
-//        productExtractXYMetNo1();
+        productExtractXYMetNo1();
 
     }
 
@@ -3112,10 +3112,10 @@ public class TestIntfce {
         // third element is high latitude
         // fourth element is high longitude
         List<String> listLatLonCoverage = new ArrayList<String>();
-        listLatLonCoverage.add("85");
-        listLatLonCoverage.add("179");
-        listLatLonCoverage.add("86");
-        listLatLonCoverage.add("-178");
+        listLatLonCoverage.add("40");
+        listLatLonCoverage.add("0");
+        listLatLonCoverage.add("34.68649673461914");
+        listLatLonCoverage.add("100");
 
         // add depth (Z) criteria
         // first element is low depth

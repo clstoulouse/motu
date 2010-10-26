@@ -99,6 +99,22 @@ public class MotuInvalidLatLonRangeException extends MotuExceptionBase {
             stringBuffer.append("\nValid bounding box: lower/left point [");
             stringBuffer.append(getValidRectAsString());
         }
+        
+        stringBuffer.append("\n1) Either Latitude/Longitude bounding box doesn't intersect: ");
+        
+        if (validRect != null) {
+            stringBuffer.append(getValidRectAsString());
+        } else {
+            stringBuffer.append("null");
+        }
+        
+        stringBuffer.append("\n2) Or intersection is not empty, but there is no data for the requested bounding box: ");
+        
+        if (invalidRect != null) {
+            stringBuffer.append(getInvalidRectAsString());
+        } else {
+            stringBuffer.append("null");
+        }
 
         return stringBuffer.toString();
     }
