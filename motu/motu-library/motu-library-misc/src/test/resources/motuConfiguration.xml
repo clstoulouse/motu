@@ -105,7 +105,7 @@
 	minInclusive value="0"
 	
 -->
-
+<!-- dataBlockSize="102400"  -->
 <motuConfig defaultService="avisoNRT" useProxy="true"
 	proxyLogin="" proxyPwd="" proxyHost="proxy-bureautique.cls.fr" proxyPort="8080"
 	 useAuthentication="false"

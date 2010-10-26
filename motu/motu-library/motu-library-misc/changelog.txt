@@ -5,6 +5,7 @@ This document lists all changes of the ${project.artifactId} releases.
 . ${project.artifactId} v2.1.12
 * Fixed bugs:
   - Within the Motu 'download product' HTML page, the link to extract GeoX/GeoY product is not available. 
+  - Sometimes extraction crashes with GeoX/GeoY TDS dataset. 
 
 . ${project.artifactId} v2.1.11
 * Fixed bugs:

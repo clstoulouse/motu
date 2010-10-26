@@ -2153,6 +2153,27 @@ public class NetCdfWriter {
     }
 
     /**
+     * Gets the output dimension value.
+     * 
+     * @param var the var
+     * @param dimIndex the dim index
+     * @return the output dimension value
+     * @throws MotuException the motu exception
+     */
+    public int getOutputDimensionValue(Variable var, int dimIndex) throws MotuException {
+
+        int[] outDimValues = getOutputDimensionValues(var);
+        if ((dimIndex < 0) || (dimIndex >= outDimValues.length)) {
+            throw new MotuException(String
+                    .format("Error in NetcdfWriter getOutputDimensionValue - dimIndex (%d) is out-of-ange. Valid range is [0, %d].",
+                            dimIndex,
+                            outDimValues.length));
+        }
+
+        return outDimValues[dimIndex];
+    }
+
+    /**
      * Gets the lengths of each dimension of a variable.
      * 
      * @param var varaible to get dimension
@@ -2375,20 +2396,18 @@ public class NetCdfWriter {
 //            String msg;
 //            msg = "dsdf";
 //        }
-//        if (var.getName().equalsIgnoreCase("x")) {
-//            String msg;
-//            msg = "dsdf";
-//        }
-//        if (var.getName().equalsIgnoreCase("temperature")) {
-//            String msg;
-//            msg = "dsdf";
-//        }
-//        if (var.getName().equalsIgnoreCase("polar_stereographic")) {
-//            String msg;
-//            msg = "dsdf";
-//        }
-
-        
+        // if (var.getName().equalsIgnoreCase("x")) {
+        // String msg;
+        // msg = "dsdf";
+        // }
+        // if (var.getName().equalsIgnoreCase("temperature")) {
+        // String msg;
+        // msg = "dsdf";
+        // }
+        // if (var.getName().equalsIgnoreCase("polar_stereographic")) {
+        // String msg;
+        // msg = "dsdf";
+        // }
 
         int geoXAxisIndex = getGeoXDimVarIndex(var);
         int geoYAxisIndex = getGeoYDimVarIndex(var);
@@ -2400,11 +2419,16 @@ public class NetCdfWriter {
             originSectionOffset[i] = 0;
         }
 
+        int outDimXValue = -1;
+        int outDimYValue = -1;
+        
         if (geoXAxisIndex != -1) {
-            originSectionOffset[geoXAxisIndex] = computeSectionOffset(geoXAxisIndex, varOrgRanges, listDistinctXRange, true);
+            outDimXValue = getOutputDimensionValue(var, geoXAxisIndex);
+            originSectionOffset[geoXAxisIndex] = computeSectionOffset(outDimXValue, geoXAxisIndex, varOrgRanges, listDistinctXRange, true);
         }
         if (geoYAxisIndex != -1) {
-            originSectionOffset[geoYAxisIndex] = computeSectionOffset(geoYAxisIndex, varOrgRanges, listDistinctYRange, true);
+            outDimYValue = getOutputDimensionValue(var, geoYAxisIndex);
+            originSectionOffset[geoYAxisIndex] = computeSectionOffset(outDimYValue, geoYAxisIndex, varOrgRanges, listDistinctYRange, true);
         }
 
         int[] origin = null;
@@ -2423,10 +2447,10 @@ public class NetCdfWriter {
                 originOutOffset[i] += originSectionOffset[i];
             }
         }
-        int[] originMax = new int[rank];
-        for (int i = 0; i < rank; i++) {
-            originMax[i] = 0;
-        }
+//        int[] originMax = new int[rank];
+//        for (int i = 0; i < rank; i++) {
+//            originMax[i] = 0;
+//        }
 
         try {
             // Map<int[], int[]> originAndShape = NetCdfWriter.parseOriginAndShape(varShape,
@@ -2461,35 +2485,35 @@ public class NetCdfWriter {
                 writeVariableData(var, origin, data);
 
                 // Computes max origin of the data
-                for (int i = rank - 1; i >= 0; i--) {
-                    int newIndexValue = originOutOffset[i] + origin[i] + shape[i] - 1;
-                    originMax[i] = Math.max(originMax[i], newIndexValue);
-                }
+//                for (int i = rank - 1; i >= 0; i--) {
+//                    int newIndexValue = originOutOffset[i] + origin[i] + shape[i] - 1;
+//                    originMax[i] = Math.max(originMax[i], newIndexValue);
+//                }
 
             }
             // Computes offset origin of the next data
-            originOutOffset = originMax.clone();
+            //originOutOffset = originMax.clone();
 
-            for (int i = 0; i < rank; i++) {
-                originSectionOffset[i] = 0;
-            }
+//            for (int i = 0; i < rank; i++) {
+//                originSectionOffset[i] = 0;
+//            }
 
-            if (geoXAxisIndex != -1) {
-                originSectionOffset[geoXAxisIndex] = computeSectionOffset(geoXAxisIndex, varOrgRanges, listDistinctXRange, false);
-            }
-            if (geoYAxisIndex != -1) {
-                originSectionOffset[geoYAxisIndex] = computeSectionOffset(geoYAxisIndex, varOrgRanges, listDistinctYRange, false);
-            }
+//            if (geoXAxisIndex != -1) {
+//                originSectionOffset[geoXAxisIndex] = computeSectionOffset(outDimXValue, geoXAxisIndex, varOrgRanges, listDistinctXRange, false);
+//            }
+//            if (geoYAxisIndex != -1) {
+//                originSectionOffset[geoYAxisIndex] = computeSectionOffset(outDimYValue, geoYAxisIndex, varOrgRanges, listDistinctYRange, false);
+//            }
 
-            for (int i = 0; i < rank; i++) {
-                originOutOffset[i] += originSectionOffset[i];
-            }
+//            for (int i = 0; i < rank; i++) {
+//                originOutOffset[i] += originSectionOffset[i];
+//            }
 
-            originOutOffset = getNextOriginOffset(originOutOffset, var);
+            //originOutOffset = getNextOriginOffset(originOutOffset, var);
             originOutOffsetHash.remove(var.getName());
-            if (originOutOffset != null) {
-                originOutOffsetHash.put(var.getName(), originOutOffset);
-            }
+//            if (originOutOffset != null) {
+//                originOutOffsetHash.put(var.getName(), originOutOffset);
+//            }
 
         } catch (IOException e) {
             LOG.error("writeVariableByBlockGeoXY()", e);
@@ -2506,40 +2530,93 @@ public class NetCdfWriter {
         }
     }
 
-    protected int computeSectionOffset(int dimIndex, Section originalSection, List<Range> listDistinctRange, boolean fromFirst) {
+    /**
+     * Compute section offset.
+     *
+     * @param dimIndex the dim index
+     * @param originalSection the original section
+     * @param listDistinctRange the list distinct range
+     * @param fromFirst the from first
+     * @return the int
+     * @throws MotuException 
+     */
+    protected int computeSectionOffset(int outDimValue, int dimIndex, Section originalSection, List<Range> listDistinctRange, boolean fromFirst) throws MotuException {
 
         int diff = 0;
-        if ((dimIndex == -1) || (originalSection == null)) {
+        if (Organizer.isNullOrEmpty(listDistinctRange)) {
+            return diff;
+            // throw new
+            // MotuException("Error in NetcdfWriter computeSectionOffset - listDistinctRange is null or empty");
+        }
+ 
+        if ((dimIndex < 0) || (outDimValue < 0) || (originalSection == null)) {
             return diff;
         }
-        for (Range r : listDistinctRange) {
-            System.out.println(r);
-            Range rOrg = originalSection.getRange(dimIndex);
-            if (rOrg.intersects(r)) {
-                System.out.println(rOrg.toString() + " intersects with " + r.toString());
-                if (fromFirst) {
-                    diff = rOrg.first() - r.first();
-                } else {
-                    diff = r.last() - rOrg.last();
-                }
 
-                // if (diff > 0) {
-                // originSectionOffset[geoXAxisIndex] = diff;
-                // }
+        Range rOrg = originalSection.getRange(dimIndex);
+
+        int listDistinctRangeSize = listDistinctRange.size();
+
+        // Loop from first Range
+        if (fromFirst) {
+            for (int i = 0; i < listDistinctRangeSize; i++) {
+                Range r = listDistinctRange.get(i);
+                //System.out.println(r);
+                if (rOrg.intersects(r)) {
+                    //System.out.println(rOrg.toString() + " intersects with " + r.toString());
+                    diff += rOrg.first() - r.first();
+                    break;
+                } else {
+                    diff += r.length();
+                }
+            }
+            return diff;
+        }
+        
+        diff = outDimValue - 1;
+        // Loop from last Range
+        for (int i = listDistinctRangeSize - 1; i >= 0; i--) {
+            Range r = listDistinctRange.get(i);
+            //System.out.println(r);
+            if (rOrg.intersects(r)) {
+                //System.out.println(rOrg.toString() + " intersects with " + r.toString());
+                diff -= (r.last() - rOrg.last());
                 break;
+            } else {
+                diff -= r.length();
             }
         }
+        
         return diff;
     }
 
+    /**
+     * Gets the geo x dim var index.
+     *
+     * @param var the var
+     * @return the geo x dim var index
+     */
     protected int getGeoXDimVarIndex(Variable var) {
         return getGeoDimVarIndex(var, AxisType.GeoX);
     }
 
+    /**
+     * Gets the geo y dim var index.
+     *
+     * @param var the var
+     * @return the geo y dim var index
+     */
     protected int getGeoYDimVarIndex(Variable var) {
         return getGeoDimVarIndex(var, AxisType.GeoY);
     }
 
+    /**
+     * Gets the geo dim var index.
+     *
+     * @param var the var
+     * @param axisType the axis type
+     * @return the geo dim var index
+     */
     protected int getGeoDimVarIndex(Variable var, AxisType axisType) {
         int index = -1;
         for (int i = 0; i < var.getDimensions().size(); i++) {
@@ -2561,14 +2638,33 @@ public class NetCdfWriter {
         return index;
     }
 
+    /**
+     * Gets the geo x dim var.
+     *
+     * @param var the var
+     * @return the geo x dim var
+     */
     protected CoordinateAxis getGeoXDimVar(Variable var) {
         return getGeoDimVar(var, AxisType.GeoX);
     }
 
+    /**
+     * Gets the geo y dim var.
+     *
+     * @param var the var
+     * @return the geo y dim var
+     */
     protected CoordinateAxis getGeoYDimVar(Variable var) {
         return getGeoDimVar(var, AxisType.GeoY);
     }
 
+    /**
+     * Gets the geo dim var.
+     *
+     * @param var the var
+     * @param axisType the axis type
+     * @return the geo dim var
+     */
     protected CoordinateAxis getGeoDimVar(Variable var, AxisType axisType) {
         CoordinateAxis axis = null;
 

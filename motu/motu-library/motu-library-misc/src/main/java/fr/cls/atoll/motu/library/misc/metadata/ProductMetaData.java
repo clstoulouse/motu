@@ -54,6 +54,8 @@ import org.globus.myproxy.GetParams;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
+import com.thoughtworks.xstream.converters.collections.MapConverter;
+
 import ucar.ma2.MAMath;
 import ucar.ma2.MAMath.MinMax;
 import ucar.nc2.Dimension;
@@ -2004,6 +2006,37 @@ public class ProductMetaData {
             }
         }
         return parameterMetaData;
+    }
+
+    /**
+     * Find coordinate axis.
+     *
+     * @param axisName the axis name
+     * @return the coordinate axis
+     */
+    public CoordinateAxis findCoordinateAxis(String axisName) {
+        Collection<CoordinateAxis> axes = coordinateAxesMap.values();
+        for (CoordinateAxis axis : axes) {
+            if (axis.getName().equalsIgnoreCase(axisName))
+            {
+                return axis;
+            }
+        }        
+        return null;
+    }
+    
+    /**
+     * Gets the coordinate axis type.
+     *
+     * @param axisName the axis name
+     * @return the coordinate axis type
+     */
+    public AxisType getCoordinateAxisType(String axisName) {
+        CoordinateAxis axis = findCoordinateAxis(axisName);
+        if (axis == null){
+            return null;
+        }
+        return axis.getAxisType();
     }
 
     /**

@@ -411,16 +411,18 @@ public class TestIntfce {
         // productExtractDataFromInventory();
         // productListMercator();
         // productList();
-        testGetProductMetadataInfo();
+        //testGetProductMetadataInfo();
         // testExtractdataLon0360();
         // testExtractdataLon180();
 
-        // productExtractXYDataMercator1();
-        // productExtractXYDataMercator2();
-        //productExtractXYDataMercator3();
+        productExtractXYDataMercator1();
+        productExtractXYDataMercator2();
+        productExtractXYDataMercator3();
 
-        // productExtractXYTopaz1();
-        //productExtractXYTopaz2();
+//        productExtractXYTopaz1();
+//        productExtractXYTopaz2();
+//        productExtractXYTopaz3();
+//        productExtractXYMetNo1();
 
     }
 
@@ -2886,7 +2888,7 @@ public class TestIntfce {
         // add variable to extract
         // listVar.add("salinity");
         // listVar.add("u");
-        // listVar.add("temperature");
+        listVar.add("temperature");
         // listVar.add("longitude");
         // listVar.add("latitude");
 
@@ -3013,4 +3015,141 @@ public class TestIntfce {
             System.out.println(e.getMessage());
         }
     }
+    
+    public static void productExtractXYTopaz3() {
+                
+        String locationData = "http://tomcat.nersc.no:8080/thredds/dodsC/topaz/reanalysis-v1/assim/arc-class1-be";
+
+        // productInformationFromLocationData(locationData);
+
+        List<String> listVar = new ArrayList<String>();
+        // add variable to extract
+        // listVar.add("salinity");
+        // listVar.add("u");
+        listVar.add("temperature");
+        // listVar.add("longitude");
+        // listVar.add("latitude");
+
+        // add temporal criteria
+        // first element is start date
+        // second element is end date (optional)
+        // if only start date is set, end date equals start date
+        List<String> listTemporalCoverage = new ArrayList<String>();
+        listTemporalCoverage.add("2008-09-30");
+        listTemporalCoverage.add("2008-11-30");
+
+        // add Lat/Lon criteria
+        // first element is low latitude
+        // second element is low longitude
+        // third element is high latitude
+        // fourth element is high longitude
+        List<String> listLatLonCoverage = new ArrayList<String>();
+        listLatLonCoverage.add("89.9");
+        listLatLonCoverage.add("-6");
+        listLatLonCoverage.add("86");
+        listLatLonCoverage.add("5");
+
+        // add depth (Z) criteria
+        // first element is low depth
+        // second element is high depth (optional)
+        // if only low depth is set, high depth equals low depth value
+        List<String> listDepthCoverage = new ArrayList<String>();
+        listDepthCoverage.add("5");
+        listDepthCoverage.add("30");
+
+        Product product = null;
+
+        try {
+            Organizer organizer = new Organizer();
+
+            product = organizer.extractData(locationData,
+                                            listVar,
+                                            listTemporalCoverage,
+                                            listLatLonCoverage,
+                                            listDepthCoverage,
+                                            null,
+                                            Organizer.Format.NETCDF);
+
+            // get the output full file name (with path)
+            String extractLocationData = product.getExtractLocationData();
+            // get the url to download the output file.
+            String urlExtractPath = product.getDownloadUrlPath();
+
+            System.out.println(String.format("Product file is stored on the server in %s", extractLocationData));
+            System.out.println(String.format("Product %s can be downloaded with http at %s", product.getProductId(), urlExtractPath));
+
+        } catch (MotuExceptionBase e) {
+            System.out.println(e.notifyException());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }    
+    
+    public static void productExtractXYMetNo1() {
+        String locationData = "http://thredds.met.no/thredds/dodsC/topaz/myocean/arctic/tmipv2a-class1-be";
+
+        // productInformationFromLocationData(locationData);
+
+        List<String> listVar = new ArrayList<String>();
+        // add variable to extract
+        // listVar.add("salinity");
+        // listVar.add("u");
+        listVar.add("temperature");
+        // listVar.add("longitude");
+        // listVar.add("latitude");
+
+        // add temporal criteria
+        // first element is start date
+        // second element is end date (optional)
+        // if only start date is set, end date equals start date
+        List<String> listTemporalCoverage = new ArrayList<String>();
+        listTemporalCoverage.add("2009-12-21");
+        listTemporalCoverage.add("2009-12-22");
+
+        // add Lat/Lon criteria
+        // first element is low latitude
+        // second element is low longitude
+        // third element is high latitude
+        // fourth element is high longitude
+        List<String> listLatLonCoverage = new ArrayList<String>();
+        listLatLonCoverage.add("85");
+        listLatLonCoverage.add("179");
+        listLatLonCoverage.add("86");
+        listLatLonCoverage.add("-178");
+
+        // add depth (Z) criteria
+        // first element is low depth
+        // second element is high depth (optional)
+        // if only low depth is set, high depth equals low depth value
+        List<String> listDepthCoverage = new ArrayList<String>();
+        listDepthCoverage.add("5");
+        listDepthCoverage.add("30");
+
+        Product product = null;
+
+        try {
+            Organizer organizer = new Organizer();
+
+            product = organizer.extractData(locationData,
+                                            listVar,
+                                            listTemporalCoverage,
+                                            listLatLonCoverage,
+                                            listDepthCoverage,
+                                            null,
+                                            Organizer.Format.NETCDF);
+
+            // get the output full file name (with path)
+            String extractLocationData = product.getExtractLocationData();
+            // get the url to download the output file.
+            String urlExtractPath = product.getDownloadUrlPath();
+
+            System.out.println(String.format("Product file is stored on the server in %s", extractLocationData));
+            System.out.println(String.format("Product %s can be downloaded with http at %s", product.getProductId(), urlExtractPath));
+
+        } catch (MotuExceptionBase e) {
+            System.out.println(e.notifyException());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }    
 }

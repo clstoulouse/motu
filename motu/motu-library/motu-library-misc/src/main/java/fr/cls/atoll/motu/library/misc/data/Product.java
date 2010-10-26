@@ -1561,6 +1561,32 @@ public class Product {
     }
 
     /**
+     * Find coordinate axis.
+     *
+     * @param axisName the axis name
+     * @return the coordinate axis
+     */
+    public CoordinateAxis findCoordinateAxis(String axisName) {
+        if (productMetaData == null) {
+            return null;
+        }
+        return productMetaData.findCoordinateAxis(axisName);        
+    }
+    
+    /**
+     * Gets the coordinate axis type.
+     *
+     * @param axisName the axis name
+     * @return the coordinate axis type
+     */
+    public AxisType getCoordinateAxisType(String axisName) {
+        if (productMetaData == null) {
+            return null;
+        }
+        return productMetaData.getCoordinateAxisType(axisName);        
+    }
+
+    /**
      * Reads all the data for the variable and returns a memory resident Array. The Array has the same element
      * type and shape as the Variable.
      * <p>

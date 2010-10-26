@@ -305,7 +305,6 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
 
         netCdfWriter.resetAmountDataSize();
 
-        product.findLongitudeIgnoreCase();
         // -------------------------------------------------
         // If GeoXY then compute the X/Y dim and subset the X/Y variables
         // Write variables X/Y definitions.
@@ -314,7 +313,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
         // range).
         // -------------------------------------------------
         if (isGeoXY) {
-                        
+
             // If GeoXY then compute the X/Y dim and subset the X/Y variables
             prepareXYWriting();
 
@@ -493,8 +492,23 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
         CoordinateAxis xaxis = geoGridSubset.getCoordinateSystem().getXHorizAxis();
         CoordinateAxis yaxis = geoGridSubset.getCoordinateSystem().getYHorizAxis();
 
+        // Bug the Netcdf-java Library in subset method of GeoGrid, the axis Type is not always set.
+        if (xaxis.getAxisType() == null) {
+            xaxis.setAxisType(product.getCoordinateAxisType(xaxis.getName()));
+        }
+        if (yaxis.getAxisType() == null) {
+            yaxis.setAxisType(product.getCoordinateAxisType(yaxis.getName()));
+        }
+
         if ((xaxis.getAxisType() == AxisType.GeoX) || (yaxis.getAxisType() == AxisType.GeoY)) {
             return;
+        }
+
+        if (xaxis.getAxisType() == null) {
+            throw new MotuException(String.format("ERROR in DatasetGrid#prepareLatLonWriting - axis type for '%s' axis is null", xaxis.getName()));
+        }
+        if (yaxis.getAxisType() == null) {
+            throw new MotuException(String.format("ERROR in DatasetGrid#prepareLatLonWriting - axis type for '%s' axis is null", yaxis.getName()));
         }
 
         String xName = xaxis.getName();
@@ -544,15 +558,15 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
 
         }
 
-//        for (List<Range> yxRanges : listYXRanges) {
-//            // GridDatatype geoGridSubset = null;
-//            Range yRange = yxRanges.get(0);
-//            Range xRange = yxRanges.get(1);
-//            System.out.print(yRange.toString());
-//            System.out.print(" ");
-//            System.out.print(xRange.toString());
-//            System.out.println(" ");
-//        }
+        // for (List<Range> yxRanges : listYXRanges) {
+        // // GridDatatype geoGridSubset = null;
+        // Range yRange = yxRanges.get(0);
+        // Range xRange = yxRanges.get(1);
+        // System.out.print(yRange.toString());
+        // System.out.print(" ");
+        // System.out.print(xRange.toString());
+        // System.out.println(" ");
+        // }
 
         RangeComparator rangeComparator = new RangeComparator();
 
@@ -593,28 +607,28 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
             listVarOrgRanges.add(section);
         }
 
-//        for (Range r : listDistinctXRange) {
-//            // GridDatatype geoGridSubset = null;
-//            System.out.print(r.toString());
-//            System.out.println(" ");
-//        }
-//        for (Range r : listDistinctYRange) {
-//            // GridDatatype geoGridSubset = null;
-//            System.out.print(r.toString());
-//            System.out.println(" ");
-//        }
-//
-//        for (Entry<String, List<Section>> entry : mapVarOrgRanges.entrySet()) {
-//            String key = entry.getKey();
-//            List<Section> sections = entry.getValue();
-//            System.out.print(key);
-//            System.out.print(" ");
-//            for (Section section : sections) {
-//                System.out.print(section);
-//                System.out.print(" / ");
-//            }
-//            System.out.println(" ");
-//        }
+        // for (Range r : listDistinctXRange) {
+        // // GridDatatype geoGridSubset = null;
+        // System.out.print(r.toString());
+        // System.out.println(" ");
+        // }
+        // for (Range r : listDistinctYRange) {
+        // // GridDatatype geoGridSubset = null;
+        // System.out.print(r.toString());
+        // System.out.println(" ");
+        // }
+        //
+        // for (Entry<String, List<Section>> entry : mapVarOrgRanges.entrySet()) {
+        // String key = entry.getKey();
+        // List<Section> sections = entry.getValue();
+        // System.out.print(key);
+        // System.out.print(" ");
+        // for (Section section : sections) {
+        // System.out.print(section);
+        // System.out.print(" / ");
+        // }
+        // System.out.println(" ");
+        // }
 
     }
 
@@ -770,7 +784,9 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
 
                 // No intersection : add range into the map
                 if (!(rangeRef.intersects(range))) {
-                    continue;
+                    if (((rangeRef.last() + 1) != range.first()) && ((rangeRef.first() - 1) != range.last())) {                        
+                        continue;                        
+                    }
                 }
 
                 // Intersection:
@@ -1053,7 +1069,8 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
                 xRangeValue[1] = minMaxLon.max;
             }
         } else if (productMetadata.hasGeoXYAxis()) {
-            throw new MotuNotImplementedException("Extraction with X/Y axes and without Lat/Lon data are not implemented (method DatasetGrid#getAdjacentYXRange");
+            throw new MotuNotImplementedException(
+                    "Extraction with X/Y axes and without Lat/Lon data are not implemented (method DatasetGrid#getAdjacentYXRange");
         }
 
         if (LOG.isDebugEnabled()) {
