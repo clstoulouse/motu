@@ -378,7 +378,7 @@ public class TestIntfce {
         // productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
-        //productDownloadInfo();
+        productDownloadInfo();
         // productExtractDataHTMLAviso();
         // productExtractDataAviso();
         // productExtractDataAvisofromProductId();
@@ -422,7 +422,7 @@ public class TestIntfce {
 //        productExtractXYTopaz1();
 //        productExtractXYTopaz2();
 //        productExtractXYTopaz3();
-        productExtractXYMetNo1();
+//        productExtractXYMetNo1();
 
     }
 
