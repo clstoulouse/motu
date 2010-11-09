@@ -1,0 +1,174 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>sltac-download-misgw.pl - Download SL-TAC products via the MIS-Gateway</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style type="text/css" media="screen, print">
+<!--
+body {
+    color: black;
+    font-family: arial,sans-serif;
+    margin: 0;
+    padding: 1ex;
+}
+pre {
+    background: #eeeeee;
+    border: 1px solid #888888;
+    color: black;
+    padding: 1em;
+    white-space: pre-wrap;
+}
+h1 {
+  background: transparent;
+  color: #006699;
+  font-size: large;
+}
+a:link, a:visited {
+  background: transparent;
+  color: #006699;
+}
+-->
+</style>
+</head>
+
+<body style="background-color: white">
+
+
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#algorithm">ALGORITHM</a></li>
+	<li><a href="#xml_configuration_file">XML CONFIGURATION FILE</a></li>
+	<li><a href="#installation">INSTALLATION</a></li>
+	<li><a href="#usage">USAGE</a></li>
+	<li><a href="#required_modules">REQUIRED MODULES</a></li>
+	<li><a href="#bugs_and_questions">BUGS AND QUESTIONS</a></li>
+	<li><a href="#license">LICENSE</a></li>
+	<li><a href="#author">AUTHOR</a></li>
+</ul>
+</div>
+<!-- INDEX END -->
+
+<h1><a name="name">NAME</a></h1>
+<p>sltac-download-misgw.pl - Download SL-TAC products via the MIS-Gateway</p>
+<p>
+</p>
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p>This program can be integrated into a processing chain in order to automate the
+downloading of SL-TAC products via the MIS-Gateway.</p>
+<p>
+</p>
+<h1><a name="algorithm">ALGORITHM</a></h1>
+<p>The communication algorithm with the MIS-Gateway is the following:</p>
+<ul>
+<li>
+<p>The program builds a URL based on parameters provided by the user to download
+the requested product.</p>
+</li>
+<li>
+<p>The program sends the URL built to the MIS-Gateway.</p>
+</li>
+<li>
+<p>The MIS-Gateway sends a new URL to perform the authentication server via a 
+&quot;Central Authentication Service&quot; (CAS).</p>
+</li>
+<li>
+<p>The program posts a new URL to get a &quot;Ticket Granting Ticket&quot; (TGT) to download
+the requested product.</p>
+</li>
+<li>
+<p>The CAS server sends the ticket.</p>
+</li>
+<li>
+<p>The program sends the query joined with ticket obtained above and download
+the requested product.</p>
+</li>
+</ul>
+<p>
+</p>
+<h1><a name="xml_configuration_file">XML CONFIGURATION FILE</a></h1>
+<p>The program parameters are contained in an XML file. This file is located in the
+directory:</p>
+<ul>
+<li>
+<p>&quot;$HOME/.sltac-gateway&quot; on Unix platforms.</p>
+</li>
+<li>
+<p>&quot;%USERPROFILE%\.sltac-gateway&quot; on Windows platforms.</p>
+</li>
+</ul>
+<p>This file must be read-only because it contains the password use to authenticate
+to the CAS server.</p>
+<p>The expected structure of the XML file is:</p>
+<pre>
+    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+        &lt;configuration&gt;
+        &lt;mis_gateway&gt;<a href="http://web-qt.cls.fr/sltac-gateway-servlet&lt;/mis_gateway&gt">http://web-qt.cls.fr/sltac-gateway-servlet</a>&lt;/mis_gateway&gt;
+        &lt;service&gt;SL-CLS-TOULOUSE-FR-MOTU-REST&lt;/service&gt;
+        &lt;user&gt;john&lt;/user&gt;
+        &lt;password&gt;secret&lt;/password&gt;
+    &lt;/configuration&gt;</pre>
+<p>
+</p>
+<h1><a name="installation">INSTALLATION</a></h1>
+<p>Copy the script in the directory of your choice. Create a configuration file
+(see <a href="#xml_configuration_file">XML CONFIGURATION FILE</a>) to inform the user and password to use to
+connect to the CAS server.</p>
+<p>Installing Perl modules which are not provided in the standard installation of
+Perl. The list of modules to be installed is described in section
+<a href="#required_modules">REQUIRED MODULES</a>.</p>
+<p>
+</p>
+<h1><a name="usage">USAGE</a></h1>
+<pre>
+    Usage: sltac-gateway.pl dataset dir
+        --help      Print this message
+        --date_min  Date of first file to download. A full date may include a
+                    calendar date (year, month, day), a time of day (hour, minute,
+                    second), and time zone information. All of this can be entered
+                    in many different formats. If this option is not set, the
+                    program takes into account the date 20 days ago.
+        --date_max  Date of last file to download. The date format expected is
+                    described in the previous option. If this option is not set, the
+                    program takes into account today's date.
+        --verbose   Verbose mode.
+        dataset     Dataset to download. The list of known dataset is:
+                        * dataset-duacs-X-Y-Z-W-l3
+                    where X, Y, Z, W can take the following values:
+                        * X: nrt, dt
+                        * Y: global, medsea, blacksea
+                        * Z: tp, tpn, j1, j1n, j2, e1, e2, en, g2
+                        * W: sla, adt
+        dir         Directory where files will be deposited</pre>
+<p>
+</p>
+<h1><a name="required_modules">REQUIRED MODULES</a></h1>
+<p>This program requires several other modules:</p>
+<p><a href="http://search.cpan.org/~adamk/Archive-Zip/">Archive::Zip</a></p>
+<p><a href="http://search.cpan.org/~sbeck/Date-Manip/">Date::Manip</a></p>
+<p><a href="http://search.cpan.org/~roode/Readonly/">Readonly</a></p>
+<p><a href="http://search.cpan.org/~grantm/XML-Simple/">XML::Simple</a></p>
+<p>
+</p>
+<h1><a name="bugs_and_questions">BUGS AND QUESTIONS</a></h1>
+<p>Please refer to the documentation for information on submitting bug reports or
+questions to the author.</p>
+<p>
+</p>
+<h1><a name="license">LICENSE</a></h1>
+<p>This script is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.</p>
+<p>
+</p>
+<h1><a name="author">AUTHOR</a></h1>
+<p>AVISO (<a href="mailto:aviso@cls.fr">aviso@cls.fr</a>)</p>
+
+</body>
+
+</html>
