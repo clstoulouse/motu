@@ -27,14 +27,10 @@
 
 import urllib
 import urllib2
-try:
-    from cls.utils import exceptions
-except ImportError:
-    pass
-else:
-    # for verbose exceptions handling
-    exceptions.change_except_hook()
-
+import traceback
+import platform
+import sys
+import httplib
 import HTMLParser
 import os
 import re
@@ -43,12 +39,14 @@ import datetime
 import shutil
 import zipfile
 import cookielib
+import logging
+import logging.config
+
 
 # the config file to load from 
 CFG_FILE = '~/py_motu_gateway'
-
-# Verbose Mode
-VERBOSE = True
+MESSAGES_FILE = './etc/messages.properties'
+LOG_CFG_FILE = './etc/log.ini'
 
 _GEOGRAPHIC = False
 _VERTICAL   = False
@@ -56,25 +54,70 @@ _TEMPORAL   = False
 _PROXY      = False
 
 _opener = None
+_messages = None
+
+log = None
+
+#===============================================================================
+# Version
+#===============================================================================
+
+def get_client_version():
+    return '${project.version}'
 
 #===============================================================================
 # print_url
 #===============================================================================
 def print_url(url):
     urls = url.split('?')
-    print urls[0]
+    log.debug( urls[0] )
     if len(urls) > 1:
         for a in sorted(urls[1].split('&')):
-            print '\t', a.split('=')
+            log.debug( '\t' + a.split('=') )
+
+class HTTPDebugProcessor(urllib2.BaseHandler):
+    """ Track HTTP requests and responses with this custom handler.
+    """
+    def __init__(self, httpout=sys.stdout):
+        self.httpout = httpout
+
+    def http_request(self, request):
+        host, full_url = request.get_host(), request.get_full_url()
+        url_path = full_url[full_url.find(host) + len(host):]
+        log.log( logging.NOTSET, "zob %s\n", request.get_full_url())
+        self.httpout.write('\n')
+        self.httpout.write("%s %s\n" % (request.get_method(), url_path))
+
+        for header in request.header_items():
+            self.httpout.write("%s: %s\n" % header[:])
+
+        self.httpout.write('\n')
+
+        return request
+
+    def http_response(self, request, response):
+        code, msg, hdrs = response.code, response.msg, response.info()
+        self.httpout.write("HTTP/1.x %s %s\n" % (code, msg))
+        self.httpout.write(str(hdrs))
+
+        return response
+
 
 #===============================================================================
 # open_url
 #===============================================================================
 def open_url(*args, **kargs):
-    global _opener, VERBOSE, _PROXY
+    global _opener, _PROXY
     if _opener is None:    
-        handlers = [urllib2.HTTPCookieProcessor(cookielib.CookieJar())]
-        # add proxy credentials if necessary        
+        # common handlers
+        handlers = [urllib2.HTTPCookieProcessor(cookielib.CookieJar()),
+                    urllib2.HTTPHandler(),
+                    urllib2.HTTPSHandler(),
+                    HTTPErrorProcessor(),
+                    HTTPDebugProcessor()
+                   ]
+
+        # add handlers for managing proxy credentials if necessary        
         if _PROXY:
             # extract protocol
             url = get_option(key = 'proxy-server').partition(':')
@@ -83,33 +126,15 @@ def open_url(*args, **kargs):
                 proxy_auth_handler = urllib2.HTTPBasicAuthHandler()
                 proxy_auth_handler.add_password('realm', get_option(key = 'proxy-user'), 'username', get_option(key = 'proxy-pwd'))
                 handlers.append(proxy_auth_handler)
-        
         _opener = urllib2.build_opener(*handlers)
-        if VERBOSE:
-            print '\thandlers:\n\t\t', '\n\t\t'.join(
-                str(h) for h in _opener.handlers)
+        log.debug( 'handlers:\n\t\t' + '\n\t\t'.join(str(h) for h in _opener.handlers))
 
-    if VERBOSE:
-        print '\tOpening url:\n\t\targs:\n\t\t\t', '\n\t\t\t'.join(str(a) for a in args)
-        print '\t\tkargs:\n\t\t\t', '\n\t\t\t'.join('%s\t%s' % (k, v) for k, v in kargs.iteritems())
-        # print '\tWith cookiers:\t\t', _opener.handlers[7].cookiejar
-        print
-
-    kargs['headers'] = {"Accept": "text/plain"}
+    kargs['headers'] = {"Accept": "text/plain", "X-Client-Id" : "motu-client-python", "X-Client-Version" : "1.0.0"}
 
     r = urllib2.Request(*args, **kargs)
-    
-    try:
-        return _opener.open(r)
-    except urllib2.HTTPError, he:
-        if VERBOSE:
-            print he.code
-            print he.msg
-            for l in he.fp:
-                print l
-            print he.filename
-        raise he
-
+  
+    # open the url, but let the exception propagates to the caller  
+    return _opener.open(r)
 
 #===============================================================================
 # encode
@@ -120,6 +145,18 @@ def encode(**kargs):
         opts.append('%s=%s' % (str(k), str(v)))
     return '&'.join(opts)
 
+
+
+#===============================================================================
+# HTTPErrorProcessor
+#===============================================================================
+class HTTPErrorProcessor(urllib2.HTTPErrorProcessor):
+    def https_response(self, request, response):
+        # Consider error codes that are not 2xx (201 is an acceptable response)
+        code, msg, hdrs = response.code, response.msg, response.info()
+        if code >= 300: 
+            response = self.parent.error('http', request, response, code, msg, hdrs)
+        return response
 
 #===============================================================================
 # FounderParser
@@ -146,12 +183,27 @@ def load_options():
     load options to handle
     '''
 
+    add_option(key = 'quiet',
+                       help = "prevent any output in stdout",
+                       action = 'store_const',
+                       const = logging.WARN,
+                       dest='level',
+                       inline = ('--quiet','-q'))
+
     add_option(key = 'verbose',
                        help = "print information in stdout",
-                       action = 'store_true',
-                       default = False,
+                       action='store_const',
+                       const = logging.DEBUG,
+                       dest='level',
                        inline = ('--verbose',))
-
+ 
+    add_option(key = 'noisy',
+                       help = "print more information (traces) in stdout",
+                       action='store_const',
+                       const = logging.NOTSET,
+                       dest='level',
+                       inline = ('--noisy',)) 
+                       
     add_option(key = 'user',
                        help = "the user name",
                        inline = ('--user', '-u'))
@@ -253,7 +305,7 @@ def get_product():
     Return the product string
     """
     # '#' is a special character in url, so we have to encode it
-    return get_option(key = 'product-id').replace('#', '%s%%23%s' )
+    return get_option(key = 'product-id').replace('#', '%23' )
     
     
 #===============================================================================
@@ -264,7 +316,7 @@ def get_service():
     Return the service string
     """
     # '#' is a special character in url, so we have to encode it
-    return get_option(key = 'service-id').replace('#', '%s%%23%s' )
+    return get_option(key = 'service-id').replace('#', '%23' )
 
 
 #===============================================================================
@@ -331,28 +383,35 @@ def check_options():
     """
     Check Mandatory Options
     """
+    if get_option(key = 'quiet') == True and get_option(key = 'verbose' ) == True:
+        raise Exception('"quiet" option and "verbose option" can not both be set')
+        
     if get_option(key = 'user') == 'None' :
-        raise Exception('Missing user')
+        raise Exception(getExternalMessages()['motu-client.exception.missing-user'])
 
     if get_option(key = 'pwd') == 'None' :
-        raise Exception('Missing pwd')
+        raise Exception(getExternalMessages()['motu-client.exception.missing-pwd'])
     
     if get_option(key = 'motu') == 'None' :
-        raise Exception('Missing motu server url')
+        raise Exception(getExternalMessages()['motu-client.exception.missing-motu'])
     
     if get_option(key = 'service-id') == 'None' :
-        raise Exception('Missing service-id')
+        raise Exception(getExternalMessages()['motu-client.exception.missing-serviceid'])
     
     if get_option(key = 'product-id') == 'None' :
-        raise Exception('Missing product-id')
+        raise Exception(getExternalMessages()['motu-client.exception.missing-productid'])
     
     if get_option(key = 'out-dir') == 'None' :
-        raise Exception('Missing out-dir')
+        raise Exception(getExternalMessages()['motu-client.exception.missing-outdir'])
     
     out_dir = get_option(key = 'out-dir')
+    
+    # check directory existance
     if not os.path.exists(out_dir):
-        raise Exception(
-                'Directory : "%s" does not exist' % out_dir)
+        raise Exception(getExternalMessages()['motu-client.exception.outdir-notexist'] % out_dir)
+    # check whether directory is writable or not
+    if not os.access(out_dir, os.W_OK):
+        raise Exception(getExternalMessages()['motu-client.exception.outdir-notwritable'] % out_dir)
     
     if get_option(key = 'out-name') == 'None' :
         raise Exception('Missing out-name')
@@ -431,8 +490,7 @@ def get_ticket(url, main_url, usr, pwd):
         raise Exception('Unable to find the URL of the CAS server')
     url_cas = m.group(1) + '/v1/tickets'
 
-    if VERBOSE:
-        print "url cas:\t", url_cas
+    log.debug( "url cas:\t%s" %  url_cas )
 
     opts = encode(username = usr,
                   password = pwd)
@@ -446,13 +504,12 @@ def get_ticket(url, main_url, usr, pwd):
     if url_ticket is None:
         raise Exception('Unable to find the form to get the Ticket Granting Ticket (TGT)')
 
-    if VERBOSE:
-        print "url ticket:\t",
-        print_url(url_ticket)
-        print "url service:\t",
-        print_url(url)
-        print "main url:\t",
-        print_url(main_url)
+    log.debug( "url ticket:" )
+    print_url(url_ticket)
+    log.debug( "url service:" )
+    print_url(url)
+    log.debug( "main url:" )
+    print_url(main_url)
 
     opts = encode(service = main_url)
     return open_url(url_ticket, opts).readline()
@@ -463,18 +520,63 @@ def get_ticket(url, main_url, usr, pwd):
 #===============================================================================
 def dl_2_file(url, ticket, fh):
     """
-    Download the file with the main url,
-    the ticket and the destination zip file
+    Download the file with the main url (of Motu), the ticket and the destination
+    file.
+    Motu can return an error message in the response stream without setting an
+    appropriate http error code. So, in that case, the content-type response is
+    checked, and if it is text/plain, we consider this as an error.    
     """
-
-    temp = open(fh, 'w+b')
+    global VERBOSE, QUIET
     
+    size = -1
+    bs = 2048*8
+    read = 0
+    blocknum = 0
+    
+    log.info( "Begining to write file: %s " % os.path.abspath(fh) )
+
     dl_url = url + '&ticket=' + ticket
-    m = open_url(dl_url)
-    for l in m:
-        temp.write(l)
-    temp.flush()
-    temp.close()
+    
+    try:
+      temp = open(fh, 'w+b')       
+      try:
+        m = open_url(dl_url)
+        # check that content type is not text/plain
+        headers = m.info()
+        if "Content-Type" in headers:
+          if headers['Content-Type'] == 'text/plain':
+             raise Exception('Motu server failed to process the request. Response returned is the following:\n%s' % m.read() )
+          
+          log.info( 'File type: %s' % headers['Content-Type'] )
+        
+        if "Content-Length" in headers:
+          log.info( 'File size: %s' % headers['Content-Length'] )
+          size = int(headers["Content-Length"])     
+        else:
+          log.info( 'File size: %s' % 'unknown' )
+        
+        log.info( 'Downloding file...')
+        
+        while 1:
+           block = m.read(bs)
+           if block == "":
+               break;
+           read += len(block)
+           blocknum += 1;
+           if True:
+               percent = int(blocknum*bs*100/size)
+               log.info( str(blocknum*bs ) + '/' + str(size) + '  (' + str(percent) + '%)' )
+           
+      finally:
+        m.close()
+    finally:
+      temp.flush()
+      temp.close()
+
+    # raise exception if actual size does not match content-length header
+    if size >= 0 and read < size:
+        raise ContentTooShortError("Dataset retrival incomplete. Got only %i out "
+                                    "of %i bytes" % (read, size), result)
 
 #===============================================================================
 # main
@@ -484,16 +586,34 @@ def main():
     """
     the main function
     """
-    global loaded, VERBOSE
+    global loaded, log
+    
+    # first initialize the logger
+    logging.config.fileConfig(  os.path.join(os.path.dirname(__file__),LOG_CFG_FILE) )
+    log = logging.getLogger("motu-client-python")
+
+    
     if not loaded:
         # we prepare options we want
         load_options()
         # we load the configuration
         load_config(os.path.expanduser(CFG_FILE))
         loaded = True
+        
+    # we put the verbose option before check parameters
+    if eval(unicode(get_option(key = 'noisy'))):       
+       log.setLevel(logging.NOSET)
+    elif eval(unicode(get_option(key = 'verbose'))):
+       log.setLevel(logging.DEBUG)
+    elif eval(unicode(get_option(key = 'quiet'))):
+       log.setLevel(logging.WARN)
+    else: 
+       log.setLevel(logging.INFO)
+       
+    print 'ici :', get_attr_option(key='lel')
+    
+    # then we check given options are ok
     check_options()
-
-    VERBOSE = eval(unicode(get_option(key = 'verbose')))
 
     # we build the url
     main_cas_url = get_option(key = 'motu') + urllib.quote_plus(build_url())
@@ -501,22 +621,46 @@ def main():
     main_url = get_option(key = 'motu') + build_url()
     
     
-    if VERBOSE:
-        print 'Main URL:\t', main_url
+    log.info( 'Main URL:%s' % main_url )
+    
     # now we connect
     # if a problem append, an exception is thrown
+    log.info("Contacting server")
+    
     connexion = open_url(main_url)
 
+    log.info( 'Authenticating user %s' % get_option('user') )
     ticket = get_ticket(connexion.url,
                         main_cas_url,
                         get_option('user'),
                         get_option('pwd'))
-    if VERBOSE:
-        print 'ticket:\t', ticket
+    log.debug( 'ticket: %s' % ticket )
     
-    fh = get_option(key = 'out-dir')+get_option(key = 'out-name')
+    fh = os.path.join(get_option(key = 'out-dir'),get_option(key = 'out-name'))
     dl_2_file(main_url, ticket, fh)
 
+#===============================================================================
+# external messages
+#===============================================================================
+def getExternalMessages():
+    global _messages
+    if _messages is None:
+        propFile= file( os.path.join(os.path.dirname(__file__),MESSAGES_FILE), "rU" )
+        propDict= dict()
+        for propLine in propFile:
+            propDef= propLine.strip()
+            if len(propDef) == 0:
+                continue
+            if propDef[0] in ( '!', '#' ):
+                continue
+            punctuation= [ propDef.find(c) for c in ':= ' ] + [ len(propDef) ]
+            found= min( [ pos for pos in punctuation if pos != -1 ] )
+            name= propDef[:found].rstrip()
+            value= propDef[found:].lstrip(":= ").rstrip()
+            propDict[name]= value
+        propFile.close()
+        _messages = propDict
+    return _messages
 
 #===============================================================================
 # options module... included
@@ -528,7 +672,7 @@ import optparse
 _SECTION_GENERAL = 'Main'
 _options = None
 _arguments = None
-_parser = optparse.OptionParser()
+_parser = optparse.OptionParser(version=get_client_version())
 _conf_parser = ConfigParser.SafeConfigParser()
 _all_opt = {}
 
@@ -609,7 +753,10 @@ def get_default(key, section = None):
     Return the default value
     """
     section = section or _SECTION_GENERAL
-    return _all_opt[section][key].get('default')
+    if key in _all_opt[section]:
+       return _all_opt[section][key].get('default')
+    else:
+       return None
 
 
 def get_option(key, section = None):
@@ -641,8 +788,37 @@ def get_attr_option(key, section = None):
 
     return opt
 
+
 #===============================================================================
 # The Main function
 #===============================================================================
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception, e:
+        print "Execution failed:\n %s" % e
+        if hasattr(e, 'reason'):
+          print '\t- reason: ', e.reason
+        if hasattr(e, 'code'):
+          print '\t- code  : ', e.code  
+        if hasattr(e, 'read'):
+          print '\t- detail:\n', e.read()
+       
+        print
+        print "Stack trace exception is detailed herafter:"
+        print '-'*60
+        print traceback.print_exc(e)
+        print '-'*60
+        print 'System info is provided hereafter:'
+        system, node, release, version, machine, processor = platform.uname()
+        print 'system   : %s' % system
+        print 'node     : %s' % node
+        print 'release  : %s' % release
+        print 'version  : %s' % version
+        print 'machine  : %s' % machine
+        print 'processor: %s' % processor
+        print 'python   : %s' % sys.version
+        print 'client   : %s' % get_client_version()
+        print '-'*60
+
+
