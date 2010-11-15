@@ -8,6 +8,7 @@
 
 <body style="background-color: white">
 
+
 <div id="parsed">
 		<p>
 Motu python client ${project.version}
@@ -50,8 +51,8 @@ Motu python client ${project.version}
 </p>
 
    <ul>
-   <li>on Unix platforms: <code>$HOME/py_motu_gateway</code>
-   </li><li>on Windows platforms: <code>%USERPROFILE%\py_motu_gateway</code>
+   <li>on Unix platforms: <code>$HOME/motu-client/motu-client-python.ini</code>
+   </li><li>on Windows platforms: <code>%USERPROFILE%\motu-client/motu-client-python.ini</code>
    </li></ul>
 
 <p>
@@ -61,13 +62,26 @@ Motu python client ${project.version}
 <pre>  		[Main]
   		user=john
   		pwd=secret
-  		verbose=False
-  		gateway=http://web-qt.cls.fr/mis-gateway-servlet/Motu?
-  		service_url=http://purl.org/myocean/ontology/individual/myocean
-  		service_name=CLS-TOULOUSE-FR-MOTU-REST
-  		product_name=dataset-duacs-nrt-blacksea-en-sla-l3
+  		log_level=10
+  		proxy_server=proxy.domain.net:8080
+  		proxy_user=john
+  		proxy_pwd=secret
+  		motu=http://web-qt.cls.fr/mis-gateway-servlet/Motu?
+  		service_id=http//purl.org/myocean/ontology/service/database#CLS-TOULOUSE-FR-MERCATOR-MOTU-REST
+  		product_id=dataset-psy2v3-pgs-med-myocean-bestestimate
+  		date_min=2010-11-08
+  		date_max=2010-11-10
+  		latitude_min=-75.0
+  		latitude_max=30.0
+  		longitude_min=20.0
+  		longitude_max=120.0
+  		depth_min=
+  		depth_max=
+  		variable=
   		out_dir=./out_dir
   		out_name=test.nc
+  		block_size=65535
+  		socket_timeout=
 </pre>
 
 <h2>INSTALLATION</h2>
@@ -168,4 +182,8 @@ Motu python client ${project.version}
 	<blockquote>
 	<a href="http://www.cls.fr">www.cls.fr</a>
 	</blockquote>
-		</div></html>
+</div>
+
+</body>
+
+</html>

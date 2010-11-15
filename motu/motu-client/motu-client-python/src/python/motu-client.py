@@ -49,9 +49,11 @@ import socket
 REQUIRED_VERSION = (2,5)
 
 # the config file to load from 
-CFG_FILE = '~/py_motu_gateway'
+CFG_FILE = '~/motu-client/motu-client-python.ini'
 MESSAGES_FILE = './etc/messages.properties'
 LOG_CFG_FILE = './etc/log.ini'
+
+SECTION = 'Main'
 
 TRACE_LEVEL = 1
 
@@ -199,11 +201,13 @@ def load_options():
     '''
     global _options, TRACE_LEVEL
     
+    # create option parser
     parser = optparse.OptionParser(version=get_client_artefact() + ' v' + get_client_version())
-    conf_parser = ConfigParser.SafeConfigParser()
-
-    #load_config(os.path.expanduser(CFG_FILE))
     
+    # create config parser
+    conf_parser = ConfigParser.SafeConfigParser()
+    conf_parser.read(os.path.expanduser(CFG_FILE))
+                     
     # add available options
     parser.add_option( '--quiet', '-q',
                        help = "prevent any output in stdout",
@@ -298,7 +302,15 @@ def load_options():
     parser.add_option( '--socket-timeout',
                        type = 'float',
                        help = "Set a timeout on blocking socket operations (float expressing seconds)")                                          
-                                              
+                  
+    # set default values by picking from the configuration file
+    default_values = {}
+    for option in parser.option_list:        
+        if (option.dest != None) and conf_parser.has_option(SECTION, option.dest):
+            default_values[option.dest] = conf_parser.get(SECTION, option.dest)
+    
+    parser.set_defaults( **default_values )
+                      
     (_options, args) = parser.parse_args()
 
 #===============================================================================
@@ -617,6 +629,17 @@ def main():
     # then we check given options are ok
     check_options()
 
+    # print some trace info about the options set
+    log.log( TRACE_LEVEL, '-'*60 )
+    log.log( TRACE_LEVEL, '[%s]' % SECTION )
+    
+    for option in dir(_options):
+        if not option.startswith('_'):
+            log.log(TRACE_LEVEL, "%s=%s" % (option, getattr( _options, option ) ) )
+
+    log.log( TRACE_LEVEL, '-'*60 )
+    
+    
     # we build the url
     main_cas_url = _options.motu + urllib.quote_plus(build_url())
 
