@@ -16,9 +16,6 @@
 		<fileSet>
 			<directory>src/python</directory>
 			<outputDirectory>/</outputDirectory>
-			<includes>
-				<include>*.py</include>
-			</includes>
 			<!--
 				filtering allows to inject project properties (like version) as python
 				constants in the code.
