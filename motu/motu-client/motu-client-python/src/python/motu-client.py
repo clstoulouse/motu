@@ -41,12 +41,19 @@ import zipfile
 import cookielib
 import logging
 import logging.config
+import ConfigParser
+import optparse
+import socket
 
+# The necessary required version of Python interpreter
+REQUIRED_VERSION = (2,5)
 
 # the config file to load from 
 CFG_FILE = '~/py_motu_gateway'
 MESSAGES_FILE = './etc/messages.properties'
 LOG_CFG_FILE = './etc/log.ini'
+
+TRACE_LEVEL = 1
 
 _GEOGRAPHIC = False
 _VERTICAL   = False
@@ -55,6 +62,7 @@ _PROXY      = False
 
 _opener = None
 _messages = None
+_options = None
 
 log = None
 
@@ -65,40 +73,46 @@ log = None
 def get_client_version():
     return '${project.version}'
 
+def get_client_artefact():
+    return '${project.artifactId}'    
+    
 #===============================================================================
 # print_url
 #===============================================================================
-def print_url(url):
+def print_url(message, url, level = logging.DEBUG ):
     urls = url.split('?')
-    log.debug( urls[0] )
+    log.log( level, message + urllib2.unquote(urls[0]) )
     if len(urls) > 1:
         for a in sorted(urls[1].split('&')):
-            log.debug( '\t' + a.split('=') )
+            param = a.split('=')
+            if( len(param) < 2 ):
+              param.append('')
+            log.log( level, ' . %s = %s', urllib2.unquote(param[0]), urllib2.unquote(param[1]) )
 
 class HTTPDebugProcessor(urllib2.BaseHandler):
     """ Track HTTP requests and responses with this custom handler.
     """
-    def __init__(self, httpout=sys.stdout):
-        self.httpout = httpout
+    def __init__(self, log_level=TRACE_LEVEL):
+        self.log_level = log_level
 
     def http_request(self, request):
         host, full_url = request.get_host(), request.get_full_url()
         url_path = full_url[full_url.find(host) + len(host):]
-        log.log( logging.NOTSET, "zob %s\n", request.get_full_url())
-        self.httpout.write('\n')
-        self.httpout.write("%s %s\n" % (request.get_method(), url_path))
+        print_url ( "Requesting: ", request.get_full_url(), TRACE_LEVEL )
+        log.log(self.log_level, "%s %s" % (request.get_method(), url_path))
 
         for header in request.header_items():
-            self.httpout.write("%s: %s\n" % header[:])
-
-        self.httpout.write('\n')
+            log.log(self.log_level, " . %s: %s" % header[:])
 
         return request
 
     def http_response(self, request, response):
-        code, msg, hdrs = response.code, response.msg, response.info()
-        self.httpout.write("HTTP/1.x %s %s\n" % (code, msg))
-        self.httpout.write(str(hdrs))
+        code, msg, hdrs = response.code, response.msg, response.headers
+        log.log(self.log_level, "Response:")
+        log.log(self.log_level," HTTP/1.x %s %s" % (code, msg))
+        
+        for headers in hdrs.headers:
+            log.log(self.log_level, " . %s%s %s" % headers.rstrip().partition(':'))
 
         return response
 
@@ -107,7 +121,7 @@ class HTTPDebugProcessor(urllib2.BaseHandler):
 # open_url
 #===============================================================================
 def open_url(*args, **kargs):
-    global _opener, _PROXY
+    global _opener, _PROXY, _options
     if _opener is None:    
         # common handlers
         handlers = [urllib2.HTTPCookieProcessor(cookielib.CookieJar()),
@@ -120,14 +134,16 @@ def open_url(*args, **kargs):
         # add handlers for managing proxy credentials if necessary        
         if _PROXY:
             # extract protocol
-            url = get_option(key = 'proxy-server').partition(':')
+            url = _options.proxy_server.partition(':')
             handlers.append( urllib2.ProxyHandler({url[0]:url[2]}) )
-            if (get_option(key = 'proxy-user') != 'None'):
+            if (_options.proxy_user != None):
                 proxy_auth_handler = urllib2.HTTPBasicAuthHandler()
-                proxy_auth_handler.add_password('realm', get_option(key = 'proxy-user'), 'username', get_option(key = 'proxy-pwd'))
+                proxy_auth_handler.add_password('realm', _options.proxy_user, 'username', _options.proxy_pwd)
                 handlers.append(proxy_auth_handler)
         _opener = urllib2.build_opener(*handlers)
-        log.debug( 'handlers:\n\t\t' + '\n\t\t'.join(str(h) for h in _opener.handlers))
+        log.log( TRACE_LEVEL, 'list of handlers:' )
+        for h in _opener.handlers:
+            log.log( TRACE_LEVEL, ' . %s',str(h))
 
     kargs['headers'] = {"Accept": "text/plain", "X-Client-Id" : "motu-client-python", "X-Client-Version" : "1.0.0"}
 
@@ -173,8 +189,7 @@ class FounderParser(HTMLParser.HTMLParser):
         d = dict(attrs)
         if tag == 'form' and 'action' in d:
             self.action_ = d['action']
-
-
+           
 #===============================================================================
 # load_options
 #===============================================================================
@@ -182,110 +197,109 @@ def load_options():
     '''
     load options to handle
     '''
+    global _options, TRACE_LEVEL
+    
+    parser = optparse.OptionParser(version=get_client_artefact() + ' v' + get_client_version())
+    conf_parser = ConfigParser.SafeConfigParser()
 
-    add_option(key = 'quiet',
+    #load_config(os.path.expanduser(CFG_FILE))
+    
+    # add available options
+    parser.add_option( '--quiet', '-q',
                        help = "prevent any output in stdout",
                        action = 'store_const',
                        const = logging.WARN,
-                       dest='level',
-                       inline = ('--quiet','-q'))
+                       dest='log_level')
 
-    add_option(key = 'verbose',
+    parser.add_option( '--verbose',
                        help = "print information in stdout",
                        action='store_const',
                        const = logging.DEBUG,
-                       dest='level',
-                       inline = ('--verbose',))
+                       dest='log_level')
  
-    add_option(key = 'noisy',
+    parser.add_option( '--noisy',
                        help = "print more information (traces) in stdout",
                        action='store_const',
-                       const = logging.NOTSET,
-                       dest='level',
-                       inline = ('--noisy',)) 
+                       const = TRACE_LEVEL,
+                       dest='log_level')
                        
-    add_option(key = 'user',
-                       help = "the user name",
-                       inline = ('--user', '-u'))
+    parser.add_option( '--user', '-u',
+                       help = "the user name (string)")
 
-    add_option(key = 'pwd',
-                       help = "the user password",
-                       inline = ('--pwd', '-p'))
+    parser.add_option( '--pwd', '-p',
+                       help = "the user password (string)")
 
-    add_option(key = 'proxy-server',
-                       help = "the proxy server",
-                       inline = ('--proxy-server',))                       
+    parser.add_option( '--proxy-server',
+                       help = "the proxy server (url)")
 
-    add_option(key = 'proxy-user',
-                       help = "the proxy user",
-                       inline = ('--proxy-user',))                       
+    parser.add_option( '--proxy-user',
+                       help = "the proxy user (string)")
 
-    add_option(key = 'proxy-pwd',
-                       help = "the proxy password",
-                       inline = ('--proxy-pwd',))                       
+    parser.add_option( '--proxy-pwd',
+                       help = "the proxy password (string)")
                        
-    add_option(key = 'motu',
-                       help = "the motu server to use",
-                       inline = ('--motu', '-m'))
+    parser.add_option( '--motu', '-m',
+                       help = "the motu server to use (url)")
 
-    add_option(key = 'service-id',
-                       help = "The service identifier",
-                       inline = ('--service-id', '-s'))
+    parser.add_option( '--service-id', '-s',
+                       help = "The service identifier (string)")
                               
-    add_option(key = 'product-id',
-                       help = "The product (data set) to download",
-                       inline = ('--product-id', '-d'))
+    parser.add_option( '--product-id', '-d',
+                       help = "The product (data set) to download (string)")
+
+    parser.add_option( '--date-min', '-t',
+                       help = "The min date (string following format YYYY-MM-DD)")
+
+    parser.add_option( '--date-max', '-T',
+                       help = "The max date (string following format YYYY-MM-DD)",
+                       default = datetime.date.today().isoformat())
                
+    parser.add_option( '--latitude-min', '-y',
+                       type = 'float',
+                       help = "The min latitude (float in the interval [-90 ; 90])")
 
-    add_option(key = 'date-min',
-                       help = "The min date (YYYY-MM-DD)",
-                       inline = ('--date-min', '-t'))
-
-    add_option(key = 'date-max',
-                       help = "The max date (YYYY-MM-DD)",
-                       inline = ('--date-max', '-T'),
-               default = datetime.date.today().isoformat())
+    parser.add_option( '--latitude-max', '-Y',
+                       type = 'float',
+                       help = "The max latitude (float in the interval [-90 ; 90])")
                
-    add_option(key = 'latitude-min',
-                       help = "The min latitude [-90 ; 90]",
-                       inline = ('--latitude-min', '-y'))
+    parser.add_option( '--longitude-min', '-x',
+                       type = 'float',    
+                       help = "The min longitude (float in the interval [-180 ; 180])")
 
-    add_option(key = 'latitude-max',
-                       help = "The max latitude [-90 ; 90]",
-                       inline = ('--latitude-max', '-Y'))
+    parser.add_option( '--longitude-max', '-X',
+                       type = 'float',    
+                       help = "The max longitude (float in the interval [-180 ; 180])")
                
-    add_option(key = 'longitude-min',
-                       help = "The min longitude [-180 ; 180]",
-                       inline = ('--longitude-min', '-x'))
+    parser.add_option( '--depth-min', '-z',
+                       type = 'float',    
+                       help = "The min depth (float in the interval [0 ; 2e31])")
 
-    add_option(key = 'longitude-max',
-                       help = "The max longitude [-180 ; 180]",
-                       inline = ('--longitude-max', '-X'))
-               
-    add_option(key = 'depth-min',
-                       help = "The min depth [0 ; 2e31]",
-                       inline = ('--depth-min', '-z'))
+    parser.add_option( '--depth-max', '-Z',
+                       type = 'float',    
+                       help = "The max depth (float in the interval [0 ; 2e31])")
 
-    add_option(key = 'depth-max',
-                       help = "The max depth [0 ; 2e31]",
-                       inline = ('--depth-max', '-Z'))
-
-    add_option(key = 'variable',
-                       help = "The variable",
-                       action="append",
-                       inline = ('--variable', '-v'))
+    parser.add_option( '--variable', '-v',
+                       help = "The variable (list of strings)",
+                       action="append")
                        
-    add_option(key = 'out-dir',
-                       help = "The output dir",
-                       inline = ('--out-dir', '-o'),
+    parser.add_option( '--out-dir', '-o',
+                       help = "The output dir (string)",
                        default=".")
                
-    add_option(key = 'out-name',
-                       help = "The output file name",
-                       inline = ('--out-name', '-f'),
+    parser.add_option( '--out-name', '-f',
+                       help = "The output file name (string)",
                        default="data.nc")
 
-
+    parser.add_option( '--block-size',
+                       type = 'int',
+                       help = "The block used to download file (integer expressing bytes)",
+                       default="65536")
+                                              
+    parser.add_option( '--socket-timeout',
+                       type = 'float',
+                       help = "Set a timeout on blocking socket operations (float expressing seconds)")                                          
+                                              
+    (_options, args) = parser.parse_args()
 
 #===============================================================================
 # format_date
@@ -304,8 +318,10 @@ def get_product():
     """
     Return the product string
     """
+    global _options
+    
     # '#' is a special character in url, so we have to encode it
-    return get_option(key = 'product-id').replace('#', '%23' )
+    return _options.product_id.replace('#', '%23' )
     
     
 #===============================================================================
@@ -315,15 +331,17 @@ def get_service():
     """
     Return the service string
     """
+    global _options
+    
     # '#' is a special character in url, so we have to encode it
-    return get_option(key = 'service-id').replace('#', '%23' )
+    return _options.service_id.replace('#', '%23' )
 
 
 #===============================================================================
 # build_url
 #===============================================================================
 def build_url():
-    global _GEOGRAPHIC, _VERTICAL, _TEMPORAL
+    global _GEOGRAPHIC, _VERTICAL, _TEMPORAL, _options
     temporal = ''
     geographic = ''
     vertical = ''
@@ -336,30 +354,31 @@ def build_url():
     opts = encode(action = 'productdownload',
                    mode = 'console',
                    service = get_service(),
-                   product = get_option(key = 'product-id'),
+                   product = _options.product_id,
                    )
     
 
     if _GEOGRAPHIC:
-        geographic = '&' + encode(x_lo = get_option(key = 'latitude-min'),
-                x_hi = get_option(key = 'latitude-max'),
-                y_lo = get_option(key = 'longitude-min'),
-                y_hi = get_option(key = 'longitude-max'),
+        geographic = '&' + encode(
+                x_lo = _options.latitude_min,
+                x_hi = _options.latitude_max,
+                y_lo = _options.longitude_min,
+                y_hi = _options.longitude_max,
                 )
     
     if _VERTICAL:
-        vertical = '&' + encode(z_lo = get_option(key = 'depth-min'),
-                z_hi = get_option(key = 'depth-max'),
+        vertical = '&' + encode(z_lo = _options.depth_min,
+                z_hi = _options.depth_max,
                 )
     
     if _TEMPORAL:
         # we change date types
-        date_max = get_option(key = 'date-max')
+        date_max = _options.date_max
         if isinstance(date_max, basestring):
             date_max = datetime.date(*(int(x) for x in date_max.split('-')))
         
-        date_min = get_option(key = 'date-min')
-        if date_min is None or date_min == 'None':
+        date_min = _options.date_min
+        if date_min is None or date_min == None:
             date_min = date_max - datetime.timedelta(20)
         elif isinstance(date_min, basestring):
             date_min = datetime.date(*(int(x) for x in date_min.split('-')))
@@ -368,7 +387,7 @@ def build_url():
                 t_hi = format_date(date_max),
                 )
 
-    variable = get_attr_option(key = 'variable')
+    variable = _options.variable
     if variable is not None:
         for i, opt in enumerate(variable):
             other_opt = other_opt + '&variable='+opt
@@ -379,101 +398,97 @@ def build_url():
 # check_options
 #===============================================================================
 def check_options():
-    global _GEOGRAPHIC, _VERTICAL, _TEMPORAL, _PROXY
+    global _GEOGRAPHIC, _VERTICAL, _TEMPORAL, _PROXY, _options
     """
     Check Mandatory Options
-    """
-    if get_option(key = 'quiet') == True and get_option(key = 'verbose' ) == True:
-        raise Exception('"quiet" option and "verbose option" can not both be set')
-        
-    if get_option(key = 'user') == 'None' :
-        raise Exception(getExternalMessages()['motu-client.exception.missing-user'])
+    """        
+    if _options.user == None :
+        raise Exception(getExternalMessages()['motu-client.exception.option.mandatory'] % 'user')
 
-    if get_option(key = 'pwd') == 'None' :
-        raise Exception(getExternalMessages()['motu-client.exception.missing-pwd'])
+    if _options.pwd == None :
+        raise Exception(getExternalMessages()['motu-client.exception.option.mandatory'] % 'pwd')
     
-    if get_option(key = 'motu') == 'None' :
-        raise Exception(getExternalMessages()['motu-client.exception.missing-motu'])
+    if _options.motu == None :
+        raise Exception(getExternalMessages()['motu-client.exception.option.mandatory'] % 'motu')
     
-    if get_option(key = 'service-id') == 'None' :
-        raise Exception(getExternalMessages()['motu-client.exception.missing-serviceid'])
+    if _options.service_id == None :
+        raise Exception(getExternalMessages()['motu-client.exception.option.mandatory'] % 'service-id')
     
-    if get_option(key = 'product-id') == 'None' :
-        raise Exception(getExternalMessages()['motu-client.exception.missing-productid'])
+    if _options.product_id == None :
+        raise Exception(getExternalMessages()['motu-client.exception.option.mandatory'] % 'product-id')
     
-    if get_option(key = 'out-dir') == 'None' :
-        raise Exception(getExternalMessages()['motu-client.exception.missing-outdir'])
+    if _options.out_dir == None :
+        raise Exception(getExternalMessages()['motu-client.exception.option.mandatory'] % 'out-dir')
     
-    out_dir = get_option(key = 'out-dir')
+    out_dir = _options.out_dir
     
     # check directory existance
     if not os.path.exists(out_dir):
-        raise Exception(getExternalMessages()['motu-client.exception.outdir-notexist'] % out_dir)
+        raise Exception(getExternalMessages()['motu-client.exception.option.outdir-notexist'] % out_dir)
     # check whether directory is writable or not
     if not os.access(out_dir, os.W_OK):
-        raise Exception(getExternalMessages()['motu-client.exception.outdir-notwritable'] % out_dir)
+        raise Exception(getExternalMessages()['motu-client.exception.option.outdir-notwritable'] % out_dir)
     
-    if get_option(key = 'out-name') == 'None' :
-        raise Exception('Missing out-name')
+    if _options.out_name == None :
+        raise Exception(getExternalMessages()['motu-client.exception.option.mandatory'] % 'out-name')
 
     """
     Check PROXY Options
     """
-    if get_option(key='proxy-server' ) != 'None':
+    if _options.proxy_server != None:
         _PROXY = True
         # check that proxy server is a valid url
-        url = get_option(key='proxy-server' )
+        url = _options.proxy_server
         p = re.compile('^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?')
         m = p.match(url)
         if not m :
-            raise Exception( 'Bad url scheme for proxy server: "%s"' % url )
+            raise Exception( getExternalMessages()['motu-client.exception.not-url'] % ( 'proxy-server', url ) )
         # check that if proxy-user is defined then proxy-pwd shall be also, and reciprocally.
-        if (get_option(key = 'proxy-user') != 'None') != ( get_option(key = 'proxy-pwd') != 'None' ) :
-            raise Exception( 'both proxy user and proxy password must be defined' )
+        if (_options.proxy_user != None) != ( _options.proxy_pwd != None ) :
+            raise Exception( getExternalMessages()['motu-client.exception.option.linked'] % ('proxy-user', 'proxy-name') )
     
         
     """
     Check VERTICAL Options
     """
-    if get_option(key = 'depth-min') != 'None' and get_option(key = 'depth-max') != 'None' :
+    if _options.depth_min != None and _options.depth_max != None :
         _VERTICAL = True
-        tempvalue = float(get_option(key = 'depth-min'))
+        tempvalue = float(_options.depth_min)
         if tempvalue < 0 :
-            raise Exception('Vertical parameter depth-min is out of range for "%s"' % tempvalue)
-        tempvalue = float(get_option(key = 'depth-max'))
+            raise Exception( getExternalMessages()['motu-client.exception.option.out-of-range'] % ( 'depth_min', str(tempvalue)) ) 
+        tempvalue = float(_options.depth_max)
         if tempvalue < 0 :
-            raise Exception('Vertical parameter depth-max is out of range for "%s"' % tempvalue)
+            raise Exception( getExternalMessages()['motu-client.exception.option.out-of-range'] % ( 'depth_max', str(tempvalue)) ) 
         
     
     """
     Check TEMPORAL Options
     """
-    if get_option(key = 'date-min') != 'None' and get_option(key = 'date-max') != 'None' :
+    if _options.date_min != None and _options.date_max != None :
         _TEMPORAL = True
     
     
     """
     Check GEOGRAPHIC Options
     """
-    if get_option(key = 'latitude-min') != 'None' and get_option(key = 'latitude-max') != 'None' and get_option(key = 'longitude-min') != 'None' and get_option(key = 'longitude-max') != 'None' :
+    if _options.latitude_min != None and _options.latitude_max != None and _options.longitude_min != None and _options.longitude_max != None :
         _GEOGRAPHIC = True
-        tempvalue = float(get_option(key = 'latitude-min'))
+        tempvalue = float(_options.latitude_min)
         if tempvalue < -90 or tempvalue > 90 :
-            raise Exception('Geographic parameter latitude-min is out of range for "%s"' % tempvalue)
-        tempvalue = float(get_option(key = 'latitude-max'))
+            raise Exception( getExternalMessages()['motu-client.exception.option.out-of-range'] % ( 'latitude_min', str(tempvalue)) )
+        tempvalue = float(_options.latitude_max)
         if tempvalue < -90 or tempvalue > 90 :
-            raise Exception('Geographic parameter latitude-max is out of range for "%s"' % tempvalue)
-        tempvalue = float(get_option(key = 'longitude-min'))
+            raise Exception(getExternalMessages()['motu-client.exception.option.out-of-range'] % ( 'latitude_max', str(tempvalue)))
+        tempvalue = float(_options.longitude_min)
         if tempvalue < -180 or tempvalue > 180 :
-            raise Exception('Geographic parameter longitude-min is out of range for "%s"' % tempvalue)
-        tempvalue = float(get_option(key = 'longitude-max'))
+            raise Exception(getExternalMessages()['motu-client.exception.option.out-of-range'] % ( 'logitude_min', str(tempvalue)))
+        tempvalue = float(_options.longitude_max)
         if tempvalue < -180 or tempvalue > 180 :
-            raise Exception('Geographic parameter longitude-max is out of range for "%s"' % tempvalue)
-        
-        
-    elif get_option(key = 'latitude-min') != 'None' or get_option(key = 'latitude-max')!= 'None' or get_option(key = 'longitude-min') != 'None' or get_option(key = 'longitude-max') != 'None' :
+            raise Exception(getExternalMessages()['motu-client.exception.option.out-of-range'] % ( 'longitude_max', str(tempvalue)))
+                
+    elif _options.latitude_min != None or _options.latitude_max != None or _options.longitude_min != None or _options.longitude_max != None :
         #raise exception missing one parameter
-        raise Exception('Missing one or more Geographic parameter')
+        raise Exception(getExternalMessages()['motu-client.exception.option.geographic-box'])
     
     
 #===============================================================================
@@ -487,7 +502,7 @@ def get_ticket(url, main_url, usr, pwd):
 
     m = re.search('(https://.+/cas)', url)
     if m is None:
-        raise Exception('Unable to find the URL of the CAS server')
+        raise Exception(getExternalMessages()['motu-client.exception.authentication.unfound-url'] % url)
     url_cas = m.group(1) + '/v1/tickets'
 
     log.debug( "url cas:\t%s" %  url_cas )
@@ -502,14 +517,11 @@ def get_ticket(url, main_url, usr, pwd):
 
     url_ticket = fp.action_
     if url_ticket is None:
-        raise Exception('Unable to find the form to get the Ticket Granting Ticket (TGT)')
+        raise Exception(getExternalMessages()['motu-client.exception.authentication.tgt'])
 
-    log.debug( "url ticket:" )
-    print_url(url_ticket)
-    log.debug( "url service:" )
-    print_url(url)
-    log.debug( "main url:" )
-    print_url(main_url)
+    print_url( "url ticket:\t",url_ticket)
+    print_url( "url service\t", url)
+    print_url( "main url:\t", main_url)
 
     opts = encode(service = main_url)
     return open_url(url_ticket, opts).readline()
@@ -526,46 +538,46 @@ def dl_2_file(url, ticket, fh):
     appropriate http error code. So, in that case, the content-type response is
     checked, and if it is text/plain, we consider this as an error.    
     """
-    global VERBOSE, QUIET
     
-    size = -1
-    bs = 2048*8
-    read = 0
-    blocknum = 0
+   
+    log.debug( "Output file: %s " % os.path.abspath(fh) )
+    log.info( "Requesting file to download..." )
     
-    log.info( "Begining to write file: %s " % os.path.abspath(fh) )
-
     dl_url = url + '&ticket=' + ticket
     
+    
+    temp = open(fh, 'w+b')             
     try:
-      temp = open(fh, 'w+b')       
+      m = open_url(dl_url)
       try:
-        m = open_url(dl_url)
         # check that content type is not text/plain
         headers = m.info()
         if "Content-Type" in headers:
           if headers['Content-Type'] == 'text/plain':
-             raise Exception('Motu server failed to process the request. Response returned is the following:\n%s' % m.read() )
+             raise Exception( getExternalMessages()['motu-client.exception.motu.error'] % m.read() )
           
           log.info( 'File type: %s' % headers['Content-Type'] )
         
         if "Content-Length" in headers:
-          log.info( 'File size: %s' % headers['Content-Length'] )
+          log.info( 'File size: %s bytes' % headers['Content-Length'] )
           size = int(headers["Content-Length"])     
         else:
-          log.info( 'File size: %s' % 'unknown' )
+          size = -1
+          log.warn( 'File size: %s' % 'unknown' )
         
-        log.info( 'Downloding file...')
-        
+        log.info( 'Downloding file:')
+
+        padding = len(str(size)) 
+        read = 0        
         while 1:
-           block = m.read(bs)
+           block = m.read(_options.block_size)
            if block == "":
                break;
            read += len(block)
-           blocknum += 1;
+           temp.write(block)
            if True:
-               percent = int(blocknum*bs*100/size)
-               log.info( str(blocknum*bs ) + '/' + str(size) + '  (' + str(percent) + '%)' )
+               percent = read*100./size
+               log.info( "%s/%i (%.1f%%)", str(read ).rjust(padding), size, percent )
            
       finally:
         m.close()
@@ -575,8 +587,7 @@ def dl_2_file(url, ticket, fh):
 
     # raise exception if actual size does not match content-length header
     if size >= 0 and read < size:
-        raise ContentTooShortError("Dataset retrival incomplete. Got only %i out "
-                                    "of %i bytes" % (read, size), result)
+        raise ContentTooShortError( getExternalMessages()['motu-client.exception.download.too-short'] % (read, size), result)
 
 #===============================================================================
 # main
@@ -586,57 +597,49 @@ def main():
     """
     the main function
     """
-    global loaded, log
-    
+    global loaded, log, _options
+       
     # first initialize the logger
+    logging.addLevelName(TRACE_LEVEL, 'TRACE')
     logging.config.fileConfig(  os.path.join(os.path.dirname(__file__),LOG_CFG_FILE) )
     log = logging.getLogger("motu-client-python")
 
+    log.setLevel(logging.INFO)
     
     if not loaded:
         # we prepare options we want
         load_options()
-        # we load the configuration
-        load_config(os.path.expanduser(CFG_FILE))
         loaded = True
-        
-    # we put the verbose option before check parameters
-    if eval(unicode(get_option(key = 'noisy'))):       
-       log.setLevel(logging.NOSET)
-    elif eval(unicode(get_option(key = 'verbose'))):
-       log.setLevel(logging.DEBUG)
-    elif eval(unicode(get_option(key = 'quiet'))):
-       log.setLevel(logging.WARN)
-    else: 
-       log.setLevel(logging.INFO)
+
+    if _options.log_level != None:
+        log.setLevel( _options.log_level )
        
-    print 'ici :', get_attr_option(key='lel')
-    
     # then we check given options are ok
     check_options()
 
     # we build the url
-    main_cas_url = get_option(key = 'motu') + urllib.quote_plus(build_url())
+    main_cas_url = _options.motu + urllib.quote_plus(build_url())
 
-    main_url = get_option(key = 'motu') + build_url()
-    
-    
-    log.info( 'Main URL:%s' % main_url )
-    
+    main_url = _options.motu + build_url()
+           
     # now we connect
     # if a problem append, an exception is thrown
     log.info("Contacting server")
+
+    # set-up the socket timeout if any
+    if _options.socket_timeout != None:
+        socket.setdefaulttimeout(_options.socket_timeout)
     
     connexion = open_url(main_url)
 
-    log.info( 'Authenticating user %s' % get_option('user') )
+    log.info( 'Authenticating user %s' % _options.user )
     ticket = get_ticket(connexion.url,
                         main_cas_url,
-                        get_option('user'),
-                        get_option('pwd'))
+                        _options.user,
+                        _options.pwd)
     log.debug( 'ticket: %s' % ticket )
     
-    fh = os.path.join(get_option(key = 'out-dir'),get_option(key = 'out-name'))
+    fh = os.path.join(_options.out_dir,_options.out_name)
     dl_2_file(main_url, ticket, fh)
 
 #===============================================================================
@@ -662,163 +665,52 @@ def getExternalMessages():
         _messages = propDict
     return _messages
 
-#===============================================================================
-# options module... included
-#===============================================================================
-
-import ConfigParser
-import optparse
-
-_SECTION_GENERAL = 'Main'
-_options = None
-_arguments = None
-_parser = optparse.OptionParser(version=get_client_version())
-_conf_parser = ConfigParser.SafeConfigParser()
-_all_opt = {}
-
-
-def load_config(path):
-    global _options, _arguments
-    if _options is None and _arguments is None:
-        _options, _arguments = _parser.parse_args()
-
-    if os.path.exists(path) and os.path.isfile(path):
-        _conf_parser.read(path)
-
-
-def add_option(key = None, section = None, **kargs):
-    """
-    Ajoute les options à traiter par plog.
     
-    ces options doivent être de la forme:
-    section: la section a utiliser (Main par defaut)
-    nom_option: le nom de l'option (avec lequel on la récupère)
-    val: arguments
-
-    Les arguments sont ceux de optparse et d'autres:
-        inline: la liste des options en ligne de commande:
-            (-a, --all)
-        help: le message d'aide
-        type: le type de la variable
-        default: la valeur par default
-        action: l'action de stockage (cf optparse)
-        
-    """
-    section = section or _SECTION_GENERAL
-    _all_opt.setdefault(section, {}).setdefault(key, {}).update(kargs)
-
-    if kargs.get('inline') and len(kargs.get('inline')) > 0:
-        d = dict()
-        d.update(kargs)
-        d.update(dest = key)
-        d.pop('inline')
-        _parser.add_option(*(kargs.get('inline')), **d)
-
-    if not _conf_parser.has_section(section):
-        _conf_parser.add_section(section)
-    _conf_parser.set(section, key, str(kargs.get('default')))
-
-
-
-def add_section_option(dic = None, **kargs):
-    """
-    Ajoute les options à traiter par plog.
-    
-    ces options doivent être de la forme:
-    {section -> {nom_option -> {arguments}}}
-
-    Les arguments sont ceux de optparse et d'autres:
-        inline: la liste des options en ligne de commande:
-            (-a, --all)
-        help: le message d'aide
-        type: le type de la variable
-        default: la valeur par default
-        action: l'action de stockage (cf optparse)
-        
-    """
-    def _add_section(d):
-        for s, d in dic.iteritems():
-            for k, v in d.iteritems():
-                add_option(section = s, key = k, **v)
-
-    if dic is not None:
-        _add_section(dic)
-    if len(kargs) > 1:
-        _add_section(kargs)
-
-
-
-def get_default(key, section = None):
-    """
-    Return the default value
-    """
-    section = section or _SECTION_GENERAL
-    if key in _all_opt[section]:
-       return _all_opt[section][key].get('default')
+def check_version():
+    global REQUIRED_VERSION
+    cur_version = sys.version_info
+    if (cur_version[0] > REQUIRED_VERSION[0] or
+        cur_version[0] == REQUIRED_VERSION[0] and
+        cur_version[1] >= REQUIRED_VERSION[1]):   
+       return
     else:
-       return None
-
-
-def get_option(key, section = None):
-    """
-    Return the option value
-    """
-    section = section or _SECTION_GENERAL
-    default = get_default(key, section)
-
-    opt = None
-    if hasattr(_options, key):
-        opt = getattr(_options, key)
-
-    if opt is None or opt == default:
-        opt = _conf_parser.get(section, key)
-
-    return opt
-
-def get_attr_option(key, section = None):
-    """
-    Return the attribut option value
-    """
-    section = section or _SECTION_GENERAL
-    default = get_default(key, section)
-
-    opt = None
-    if hasattr(_options, key):
-        opt = getattr(_options, key)
-
-    return opt
-
-
+       raise Exception( "This tool uses python 2.5 or greater. You version is %s. " % str(cur_version) )
+    
 #===============================================================================
 # The Main function
 #===============================================================================
 if __name__ == '__main__':
-    try:
+    check_version()
+    start_time = datetime.datetime.now()
+    try:                
         main()
     except Exception, e:
-        print "Execution failed:\n %s" % e
+        log.error( "Execution failed: %s", e )
         if hasattr(e, 'reason'):
-          print '\t- reason: ', e.reason
+          log.info( ' . reason: %s', e.reason )
         if hasattr(e, 'code'):
-          print '\t- code  : ', e.code  
+          log.info( ' . code  %s: ', e.code )
         if hasattr(e, 'read'):
-          print '\t- detail:\n', e.read()
-       
-        print
-        print "Stack trace exception is detailed herafter:"
-        print '-'*60
-        print traceback.print_exc(e)
-        print '-'*60
-        print 'System info is provided hereafter:'
+          log.info( ' . detail:\n%s', e.read() )
+        
+        log.debug( '-'*60 )
+        log.debug( "Stack trace exception is detailed herafter:" )
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        x = traceback.format_exception(exc_type, exc_value, exc_tb)
+        for stack in x:
+            log.debug( ' . %s', stack.replace('\n', '') )
+        log.debug( '-'*60 )
+        log.log( TRACE_LEVEL, 'System info is provided hereafter:' )
         system, node, release, version, machine, processor = platform.uname()
-        print 'system   : %s' % system
-        print 'node     : %s' % node
-        print 'release  : %s' % release
-        print 'version  : %s' % version
-        print 'machine  : %s' % machine
-        print 'processor: %s' % processor
-        print 'python   : %s' % sys.version
-        print 'client   : %s' % get_client_version()
-        print '-'*60
-
+        log.log( TRACE_LEVEL, ' . system   : %s', system )
+        log.log( TRACE_LEVEL, ' . node     : %s', node )
+        log.log( TRACE_LEVEL, ' . release  : %s', release )
+        log.log( TRACE_LEVEL, ' . version  : %s', version ) 
+        log.log( TRACE_LEVEL, ' . machine  : %s', machine )
+        log.log( TRACE_LEVEL, ' . processor: %s', processor )
+        log.log( TRACE_LEVEL, ' . python   : %s', sys.version )
+        log.log( TRACE_LEVEL, ' . client   : %s', get_client_version() )
+        log.log( TRACE_LEVEL, '-'*60 )
+    finally:
+        log.debug( "Elapsed time : %s", str(datetime.datetime.now() - start_time) )
 
