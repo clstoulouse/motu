@@ -2347,7 +2347,7 @@ public class NetCdfWriter {
                     // longitudeCenter = minMaxTemp.min + 180.0;
                     // normalizeLongitudeData(data, axisLon);
                     // }
-                    longitudeCenter = (minMaxTemp.min + minMax.max) / 2;
+                    longitudeCenter = (minMaxTemp.min + minMaxTemp.max) / 2;
                     normalizeLongitudeData(data, axisLon);
                 }
 
@@ -3119,7 +3119,8 @@ public class NetCdfWriter {
         // Normalize longitude with first part min value (as center longitude)
         if (axis.getAxisType() == AxisType.Lon) {
             minMaxWork.min = minMax.min;
-            double center = ((minMax.min != 0.) ? minMax.min : minMax.max);
+            //double center = ((minMax.min != 0.) ? minMax.min : minMax.max);
+            double center = (minMax.min + minMax.max) / 2;
             minMaxWork.max = LatLonPointImpl.lonNormal(minMaxWork.max, center);
         } else {
 
