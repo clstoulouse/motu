@@ -366,7 +366,7 @@ def build_url():
     opts = encode(action = 'productdownload',
                    mode = 'console',
                    service = get_service(),
-                   product = _options.product_id,
+                   product = get_product(),
                    )
     
 
@@ -474,7 +474,7 @@ def check_options():
         
     
     """
-    Check TEMPORAL Options
+    Check TEMPORAL  Options
     """
     if _options.date_min != None and _options.date_max != None :
         _TEMPORAL = True
@@ -483,8 +483,20 @@ def check_options():
     """
     Check GEOGRAPHIC Options
     """
-    if _options.latitude_min != None and _options.latitude_max != None and _options.longitude_min != None and _options.longitude_max != None :
+    if _options.latitude_min != None or _options.latitude_max != None or _options.longitude_min != None or _options.longitude_max != None :
         _GEOGRAPHIC = True
+        if( _options.latitude_min == None ):
+            raise Exception(getExternalMessages()['motu-client.exception.option.geographic-box'] % 'latitude_min' )
+
+        if( _options.latitude_max == None ):
+            raise Exception(getExternalMessages()['motu-client.exception.option.geographic-box'] % 'latitude_max' )            
+        
+        if( _options.longitude_min == None ):
+            raise Exception(getExternalMessages()['motu-client.exception.option.geographic-box'] % 'longitude_min' )
+        
+        if( _options.longitude_max == None ):
+            raise Exception(getExternalMessages()['motu-client.exception.option.geographic-box'] % 'longitude_max' )
+        
         tempvalue = float(_options.latitude_min)
         if tempvalue < -90 or tempvalue > 90 :
             raise Exception( getExternalMessages()['motu-client.exception.option.out-of-range'] % ( 'latitude_min', str(tempvalue)) )
@@ -496,12 +508,7 @@ def check_options():
             raise Exception(getExternalMessages()['motu-client.exception.option.out-of-range'] % ( 'logitude_min', str(tempvalue)))
         tempvalue = float(_options.longitude_max)
         if tempvalue < -180 or tempvalue > 180 :
-            raise Exception(getExternalMessages()['motu-client.exception.option.out-of-range'] % ( 'longitude_max', str(tempvalue)))
-                
-    elif _options.latitude_min != None or _options.latitude_max != None or _options.longitude_min != None or _options.longitude_max != None :
-        #raise exception missing one parameter
-        raise Exception(getExternalMessages()['motu-client.exception.option.geographic-box'])
-    
+            raise Exception(getExternalMessages()['motu-client.exception.option.out-of-range'] % ( 'longitude_max', str(tempvalue)))                    
     
 #===============================================================================
 # get_ticket
@@ -551,8 +558,6 @@ def dl_2_file(url, ticket, fh):
     checked, and if it is text/plain, we consider this as an error.    
     """
     
-   
-    log.debug( "Output file: %s " % os.path.abspath(fh) )
     log.info( "Requesting file to download..." )
     
     dl_url = url + '&ticket=' + ticket
@@ -565,8 +570,9 @@ def dl_2_file(url, ticket, fh):
         # check that content type is not text/plain
         headers = m.info()
         if "Content-Type" in headers:
-          if headers['Content-Type'] == 'text/plain':
-             raise Exception( getExternalMessages()['motu-client.exception.motu.error'] % m.read() )
+          if len(headers['Content-Type']) > 0:
+            if   headers['Content-Type'].startswith('text') or headers['Content-Type'].find('html') != -1:
+               raise Exception( getExternalMessages()['motu-client.exception.motu.error'] % m.read() )
           
           log.info( 'File type: %s' % headers['Content-Type'] )
         
@@ -577,7 +583,7 @@ def dl_2_file(url, ticket, fh):
           size = -1
           log.warn( 'File size: %s' % 'unknown' )
         
-        log.info( 'Downloding file:')
+        log.info( 'Downloading file %s:' % os.path.abspath(fh) )
 
         padding = len(str(size)) 
         read = 0        
