@@ -372,10 +372,10 @@ def build_url():
 
     if _GEOGRAPHIC:
         geographic = '&' + encode(
-                x_lo = _options.latitude_min,
-                x_hi = _options.latitude_max,
-                y_lo = _options.longitude_min,
-                y_hi = _options.longitude_max,
+                x_lo = _options.longitude_min,
+                x_hi = _options.longitude_max,
+                y_lo = _options.latitude_min,
+                y_hi = _options.latitude_max,
                 )
     
     if _VERTICAL:
