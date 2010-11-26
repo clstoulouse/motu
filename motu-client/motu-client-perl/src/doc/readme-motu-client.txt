@@ -1,9 +1,9 @@
 NAME
-    sltac-gateway.pl - Download SL-TAC products via the MIS-Gateway
+    download-misgw.pl - Download MOTU products via the MIS-Gateway
 
 SYNOPSIS
     This program can be integrated into a processing chain in order to
-    automate the downloading of SL-TAC products via the MIS-Gateway.
+    automate the downloading of MOTU products via the MIS-Gateway.
 
 ALGORITHM
     The communication algorithm with the MIS-Gateway is the following:
@@ -28,9 +28,9 @@ XML CONFIGURATION FILE
     The program parameters are contained in an XML file. This file is
     located in the directory:
 
-    * "$HOME/.sltac-gateway" on Unix platforms.
+    * "$HOME/pl_motu_gateway" on Unix platforms.
 
-    * "%USERPROFILE%\.sltac-gateway" on Windows platforms.
+    * "%USERPROFILE%\pl_motu_gateway" on Windows platforms.
 
     This file must be read-only because it contains the password use to
     authenticate to the CAS server.
@@ -39,10 +39,25 @@ XML CONFIGURATION FILE
 
         <?xml version="1.0" encoding="UTF-8"?>
             <configuration>
-            <mis_gateway>http://web-qt.cls.fr/sltac-gateway-servlet</mis_gateway>
-            <service>SL-CLS-TOULOUSE-FR-MOTU-REST</service>
             <user>john</user>
             <password>secret</password>
+			<verbose>0</verbose>
+			<mis_gateway>http://web-qt.cls.fr/mis-gateway-servlet/Motu?</mis_gateway>
+			<service_url>http://purl.org/myocean/ontology/service/database</service_url>
+			<service_name>CLS-TOULOUSE-FR-MERCATOR-MOTU-REST</service_name>
+			<dataset_url>http://purl.org/myocean/ontology/product/database</dataset_url>
+			<dataset_name>dataset-psy2v3-pgs-med-myocean-bestestimate</dataset_name>
+			<out_dir>C:/MIS-152/out_dir/</out_dir>
+			<out_name>perlTest.nc</out_name>
+			<date_min>2010-11-08</date_min>
+			<date_max>2010-11-10</date_max>
+			<latitude_min>-75</latitude_min>
+			<latitude_max>30</latitude_max>
+			<longitude_min>20</longitude_min>
+			<longitude_max>120</longitude_max>
+			<depth_min>0</depth_min>
+			<depth_max>15</depth_max>
+			<variable>sea_water_x_velocity</variable>
         </configuration>
 
 INSTALLATION
@@ -55,25 +70,54 @@ INSTALLATION
     in section "REQUIRED MODULES".
 
 USAGE
-        Usage: sltac-gateway.pl dataset dir
-            --help      Print this message
-            --date_min  Date of first file to download. A full date may include a
-                        calendar date (year, month, day), a time of day (hour, minute,
-                        second), and time zone information. All of this can be entered
-                        in many different formats. If this option is not set, the
-                        program takes into account the date 20 days ago.
-            --date_max  Date of last file to download. The date format expected is
-                        described in the previous option. If this option is not set, the
-                    program takes into account today's date.
-            --verbose   Verbose mode.
-            dataset     Dataset to download. The list of known dataset is:
-                            * dataset-duacs-X-Y-Z-W-l3
-                        where X, Y, Z, W can take the following values:
-                            * X: nrt, dt
-                            * Y: global, medsea, blacksea
-                            * Z: tp, tpn, j1, j1n, j2, e1, e2, en, g2
-                            * W: sla, adt
-            dir         Directory where files will be deposited
+        Usage: download-misgw.pl 
+		
+        Options:
+		  --help            
+		  				show this help message and exit
+		  --verbose
+		  				print information in stdout
+		  -u USER, --user=USER
+								The user name
+		  -p PWD, --password=PWD
+								The user password
+		  -g GATEWAY, --mis_gateway=GATEWAY
+		                        The gateway to use
+		  -S SERVICE_URL, --service_url=SERVICE_URL
+		                        The service url
+		  -s SERVICE_NAME, --service_name=SERVICE_NAME
+		                        The service name
+		  -D=DATASET_URL, --dataset_url=DATASET_URL
+		                        The dataset url
+		  -d DATASET_NAME, --dataset_name=DATASET_NAME
+		                        The dataset to download
+		  		  
+		  -o OUT_DIR, --out_dir=OUT_DIR
+		                        The output dir
+		  -f OUT_NAME, --out_name=OUT_NAME
+		                        The output file name
+		                        
+		  -t DATE_MIN, --date_min=DATE_MIN
+		                        The min date (YYYY-MM-DD)
+		  -T DATE_MAX, --date_max=DATE_MAX
+		                        The max date (YYYY-MM-DD)
+		                        
+		  -y LATITUDE_MIN, --latitude_min=LATITUDE_MIN
+		                        The min latitude [-90 ; 90]
+		  -Y LATITUDE_MAX, --latitude_min=LATITUDE_MAX
+		                        The max latitude [-90 ; 90]                      
+		  -x LONGITUDE_MIN, --longitude_min=LONGITUDE_MIN
+		                        The min longitude [-180 ; 180]
+		  -X LONGITUDE_MAX, --longitude_max=LONGITUDE_MAX
+		                        The max longitude [-180 ; 180]
+		                        
+		  -z DEPTH_MIN, --depth_min=DEPTH_MIN
+		                        The min depth [0 ; 2e31]
+		  -Z DEPTH_MAX, --depth_min=DEPTH_MAX
+		                        The max depth [0 ; 2e31]
+		                        
+		  -v VARIABLE, --variable=VARIABLE
+		  						The physical variables to be extracted
 
 REQUIRED MODULES
     This program requires several other modules:

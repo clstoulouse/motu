@@ -1,30 +1,57 @@
 #!/usr/bin/env perl
+
+#
+# Perl motu client v.${project.version} 
+#
+# Motu, a high efficient, robust and Standard compliant Web Server for Geographic
+#  Data Dissemination.
+# 
+#  http://cls-motu.sourceforge.net/
+# 
+#  (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites) -
+#  http://www.cls.fr - and Contributors
+# 
+# 
+#  This library is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation; either version 2.1 of the License, or
+#  (at your option) any later version.
+# 
+#  This library is distributed in the hope that it will be useful, but
+#  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+#  or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+#  License for more details.
+# 
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with this library; if not, write to the Free Software Foundation,
+#  Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+
 use strict;
 use warnings;
-use Archive::Zip qw(:ERROR_CODES);
 use Carp;
 use Date::Manip;
 use English qw(-no_match_vars);
 use File::Basename;
 use File::stat;
 use File::Temp qw(tempdir);
-use Getopt::Long;
+use Getopt::Long qw(:config no_ignore_case bundling);
 use HTTP::Cookies;
 use HTML::TokeParser;
 use LWP::UserAgent;
 use Readonly;
 use XML::Simple;
+use File::Spec;
 
 =pod
 
 =head1 NAME
 
-sltac-download-misgw.pl - Download SL-TAC products via the MIS-Gateway
+motu-client.pl - Download MOTU products via the MIS-Gateway
 
 =head1 SYNOPSIS
 
 This program can be integrated into a processing chain in order to automate the
-downloading of SL-TAC products via the MIS-Gateway.
+downloading of MOTU products via the MIS-Gateway.
 
 =head1 ALGORITHM
 
@@ -71,26 +98,38 @@ directory:
 
 =item *
 
-"$HOME/.sltac-gateway" on Unix platforms.
+"$HOME/motu-client/motu-client-perl.xml" on Unix platforms.
 
 =item *
 
-"%USERPROFILE%\.sltac-gateway" on Windows platforms.
+"%USERPROFILE%\motu-client/motu-client-perl.xml" on Windows platforms.
 
 =back
 
-This file must be read-only because it contains the password use to authenticate
-to the CAS server.
 
 The expected structure of the XML file is:
 
     <?xml version="1.0" encoding="UTF-8"?>
-        <configuration>
-        <mis_gateway>http://web-qt.cls.fr/sltac-gateway-servlet</mis_gateway>
-        <service>SL-CLS-TOULOUSE-FR-MOTU-REST</service>
-        <user>john</user>
-        <password>secret</password>
-    </configuration>
+            <configuration>
+            <user>john</user>
+            <password>secret</password>
+			<verbose>0</verbose>
+			<mis_gateway>http://web-qt.cls.fr/mis-gateway-servlet/Motu?</mis_gateway>
+			<service_url>http://purl.org/myocean/ontology/service/database</service_url>
+			<service_name>CLS-TOULOUSE-FR-MERCATOR-MOTU-REST</service_name>
+			<dataset_name>dataset-psy2v3-pgs-med-myocean-bestestimate</dataset_name>
+			<out_dir>C:/MIS-152/out_dir/</out_dir>
+			<out_name>perlTest.nc</out_name>
+			<date_min>2010-11-08</date_min>
+			<date_max>2010-11-10</date_max>
+			<latitude_min>-75</latitude_min>
+			<latitude_max>30</latitude_max>
+			<longitude_min>20</longitude_min>
+			<longitude_max>120</longitude_max>
+			<depth_min>0</depth_min>
+			<depth_max>15</depth_max>
+			<variable>sea_water_x_velocity</variable>
+        </configuration>
 
 =head1 INSTALLATION
 
@@ -104,30 +143,56 @@ L</REQUIRED MODULES>.
 
 =head1 USAGE
 
-    Usage: sltac-gateway.pl dataset dir
-        --help      Print this message
-        --date_min  Date of first file to download. A full date may include a
-                    calendar date (year, month, day), a time of day (hour, minute,
-                    second), and time zone information. All of this can be entered
-                    in many different formats. If this option is not set, the
-                    program takes into account the date 20 days ago.
-        --date_max  Date of last file to download. The date format expected is
-                    described in the previous option. If this option is not set, the
-                program takes into account today's date.
-        --verbose   Verbose mode.
-        dataset     Dataset to download. The list of known dataset is:
-                        * dataset-duacs-X-Y-Z-sla-l3
-                    where X, Y, Z, W can take the following values:
-                        * X: nrt, dt
-                        * Y: global, medsea, blacksea
-                        * Z: tp, tpn, j1, j1n, j2, e1, e2, en, g2
-        dir         Directory where files will be deposited
+    Usage: motu-client.pl 
+		
+        Options:
+		  --help            
+		  				show this help message and exit
+		  --verbose
+		  				print information in stdout
+		  -u USER, --user=USER
+								The user name
+		  -p PWD, --password=PWD
+								The user password
+		  -g GATEWAY, --mis_gateway=GATEWAY
+		                        The gateway to use
+		  -S SERVICE_URL, --service_url=SERVICE_URL
+		                        The service url
+		  -s SERVICE_NAME, --service_name=SERVICE_NAME
+		                        The service name
+		  -d DATASET_NAME, --dataset_name=DATASET_NAME
+		                        The dataset to download
+		  		  
+		  -o OUT_DIR, --out_dir=OUT_DIR
+		                        The output dir
+		  -f OUT_NAME, --out_name=OUT_NAME
+		                        The output file name
+		                        
+		  -t DATE_MIN, --date_min=DATE_MIN
+		                        The min date (YYYY-MM-DD)
+		  -T DATE_MAX, --date_max=DATE_MAX
+		                        The max date (YYYY-MM-DD)
+		                        
+		  -y LATITUDE_MIN, --latitude_min=LATITUDE_MIN
+		                        The min latitude [-90 ; 90]
+		  -Y LATITUDE_MAX, --latitude_min=LATITUDE_MAX
+		                        The max latitude [-90 ; 90]                      
+		  -x LONGITUDE_MIN, --longitude_min=LONGITUDE_MIN
+		                        The min longitude [-180 ; 180]
+		  -X LONGITUDE_MAX, --longitude_max=LONGITUDE_MAX
+		                        The max longitude [-180 ; 180]
+		                        
+		  -z DEPTH_MIN, --depth_min=DEPTH_MIN
+		                        The min depth [0 ; 2e31]
+		  -Z DEPTH_MAX, --depth_min=DEPTH_MAX
+		                        The max depth [0 ; 2e31]
+		                        
+		  -v VARIABLE, --variable=VARIABLE
+		  						The physical variables to be extracted
 
 =head1 REQUIRED MODULES
 
 This program requires several other modules:
-
-L<Archive::Zip>
 
 L<Date::Manip>
 
@@ -151,44 +216,77 @@ AVISO (aviso@cls.fr)
 
 =cut
 
-Readonly my $MY_OCEAN => 'http://purl.org/myocean/ontology/individual/myocean';
+use constant false => 0;
+use constant true  => 1;
+
+my $_GEOGRAPHIC = false;
+my $_VERTICAL = false;
+my $_TEMPORAL = false;
+my $config;
+my %options;
+
 
 #
 # Returns the URL for the service name
 #
 sub _get_service
 {
-    my $service_name = shift;
 
-    return sprintf '%s%%23%s', $MY_OCEAN, $service_name;
+    return sprintf '%s%%23%s', _get_param('service_url'), _get_param('service_name');
 }
 
+
 #
-# Returns the URL for the product name
+# Returns the URL for the service name
 #
 sub _get_product
 {
-    my $product_name = shift;
 
-    return sprintf '%s%%23%s', $MY_OCEAN, $product_name;
+    return sprintf '%s%%23%s', _get_param('dataset_url'), _get_param('dataset_name');
 }
+
 
 #
 # Returns the request parameters.
 #
 sub _get_parameter
 {
-    my ($p) = @_;
 
     my $parameters = {
         action  => 'productdownload',
-        service => _get_service( $p->{service} ),
-        product => _get_product( $p->{product} ),
+        service => _get_service(),
+        product => _get_product(),
         mode    => 'console'
     };
 
-    $parameters->{t_lo} = $p->{date_min};
-    $parameters->{t_hi} = $p->{date_max};
+	if($_TEMPORAL){
+		
+		# Setup default value for the last date
+		#my $max_date = $options{date_max} ? ( $options{date_max} ) : $config->{date_max};
+		#$max_date = $max_date ? $max_date : 'today';
+		
+		
+		#my $min_date = $options{date_min} ? ( $options{date_min} ) : $config->{date_min};
+		#$min_date = $min_date ? $min_date : ($max_date, '20 days ago' );
+		
+		
+	    $parameters->{t_lo} = _get_param('date_min');
+	    $parameters->{t_hi} = _get_param('date_max');
+	}
+	
+	if($_GEOGRAPHIC){
+	    $parameters->{y_lo} = _get_param('latitude_min');
+	    $parameters->{y_hi} = _get_param('latitude_max');
+	    $parameters->{x_lo} = _get_param('longitude_min');
+	    $parameters->{x_hi} = _get_param('longitude_max');
+	}
+    
+    if($_VERTICAL){
+	    $parameters->{z_lo} = _get_param('depth_min');
+	    $parameters->{z_hi} = _get_param('depth_max');
+    }
+    
+    
 
     my @argv;
 
@@ -196,6 +294,16 @@ sub _get_parameter
     {
         push @argv, sprintf '%s=%s', $_, $parameters->{$_};
     }
+    
+    my $key;
+    my $_variable = _get_param('variable');
+    
+    foreach $key (@$_variable)
+    {
+		push @argv, sprintf '%s=%s', 'variable', $key;
+    }
+    
+    
     return join q{&}, @argv;
 }
 
@@ -204,9 +312,8 @@ sub _get_parameter
 #
 sub _get_url
 {
-    my ($p) = @_;
 
-    return sprintf '%s/Motu?%s', $p->{mis_gateway}, _get_parameter($p);
+    return sprintf '%s%s', _get_param('mis_gateway'), _get_parameter();
 }
 
 #
@@ -280,6 +387,16 @@ sub _get_ticket
 }
 
 #
+# Displays the version of the program
+#
+sub _version
+{
+	print '${project.artifactId} v${project.version}';
+	print "\n";
+    exit 1;
+}
+
+#
 # Displays the syntax of the program
 #
 sub _usage
@@ -287,24 +404,56 @@ sub _usage
     my $progname = basename($PROGRAM_NAME);
 
     print <<"EOF";
-Usage: $progname dataset dir
-    --help      Print this message
-    --date_min  Date of first file to download. A full date may include a
-                calendar date (year, month, day), a time of day (hour, minute,
-                second), and time zone information. All of this can be entered
-                in many different formats. If this option is not set, the
-                program takes into account the date 20 days ago.
-    --date_max  Date of last file to download. The date format expected is
-                described in the previous option. If this option is not set, the
-                program takes into account today's date.
-    --verbose   Verbose mode.
-    dataset     Dataset to download. The list of known dataset is:
-                    * dataset-duacs-X-Y-Z-sla-l3
-                where X, Y, Z, W can take the following values:
-                    * X: nrt, dt
-                    * Y: global, medsea, blacksea
-                    * Z: tp, tpn, j1, j1n, j2, e1, e2, en, g2
-    dir         Directory where files will be deposited
+Usage: $progname 1.2 dataset dir
+    Options:
+		  --help            
+		  				show this help message and exit
+		  --version
+		  				show program's version number and exit
+		  --verbose
+		  				print information in stdout
+		  -u=USER, --user=USER
+		  				the user name
+		  -p=PWD, --password=PWD
+		  			    the user password
+		  -g=GATEWAY, --mis_gateway=GATEWAY
+		                        the gateway to use
+		  -S=SERVICE_URL, --service_url=SERVICE_URL
+		                        The service url
+		  -s=SERVICE_NAME, --service_name=SERVICE_NAME
+		                        The service name
+		  -D=DATASET_URL, --dataset_url=DATASET_URL
+		                        The dataset url
+		  -d=DATASET_NAME, --dataset_name=DATASET_NAME
+		                        The dataset to download
+		  		  
+		  -o=OUT_DIR, --out_dir=OUT_DIR
+		                        The output dir
+		  -f=OUT_NAME, --out_name=OUT_NAME
+		                        The output file name
+		                        
+		  -t=DATE_MIN, --date_min=DATE_MIN
+		                        The min date (YYYY-MM-DD)
+		  -T=DATE_MAX, --date_max=DATE_MAX
+		                        The max date (YYYY-MM-DD)
+		                        
+		  -y=LATITUDE_MIN, --latitude_min=LATITUDE_MIN
+		                        The min latitude [-90 ; 90]
+		  -Y=LATITUDE_MAX, --latitude_min=LATITUDE_MAX
+		                        The max latitude [-90 ; 90]                      
+		  -x=LONGITUDE_MIN, --longitude_min=LONGITUDE_MIN
+		                        The min longitude [-180 ; 180]
+		  -X=LONGITUDE_MAX, --longitude_max=LONGITUDE_MAX
+		                        The max longitude [-180 ; 180]
+		                        
+		  -z=DEPTH_MIN, --depth_min=DEPTH_MIN
+		                        The min depth [0 ; 2e31]
+		  -Z=DEPTH_MAX, --depth_min=DEPTH_MAX
+		                        The max depth [0 ; 2e31]
+		                        
+		  -v=VARIABLE, --variable=VARIABLE
+		  						The physical variables to be extracted
+
 EOF
     exit 1;
 }
@@ -331,45 +480,164 @@ sub _configuration
     my (%p) = @_;
 
     my $path =
-      ( $OSNAME eq 'MSWin32' ? $ENV{USERPROFILE} : $ENV{HOME} ) . q{/.}
-      . basename($PROGRAM_NAME);
-    $path =~ s/\.\w+$//;
-
-    # The configuration file must be read-only.
-    my $st = stat $path or croak "cannot acces `$path' : $OS_ERROR";
-    my $mode = $st->mode & 07777;
-
-    if ( $OSNAME ne 'MSWin32' )
-    {
-        croak "`$path' must be in user read-only mode"
-          unless $mode == 256 || $mode == 384;
-    }
-    my $config = XMLin($path);
-
-    $config->{date_min} = $p{date_min};
-    $config->{date_max} = $p{date_max};
-    $config->{product}  = $p{product};
-
-    # Check configuration file
-    _defined( 'mis_gateway', $config->{mis_gateway} );
-    _defined( 'service',     $config->{service} );
-    _defined( 'user',        $config->{user} );
-    _defined( 'password',    $config->{password} );
+      ( $OSNAME eq 'MSWin32' ? $ENV{USERPROFILE} : $ENV{HOME} )
+        . '/motu-client/motu-client-perl.xml';	
+	$path = File::Spec->canonpath( $path );	
+	
+	my $config;
+	
+	if (-e $path ) {
+		$config = XMLin($path);	
+	} else
+	{
+	  $config = XMLin('<?xml version="1.0" encoding="UTF-8"?><configuration></configuration>');
+	}
 
     return $config;
 }
 
 #
-# Returns the name of the temporary ZIP created.
+# Return param value
 #
-sub _tmp_zip
+sub _check_param
 {
-    my ($dir) = @_;
+	my $val;
+	
+	$val = _get_param('user');
+	if ( !defined $val )
+    {
+        croak "<user> is missing";
+    }
+    
+    $val = _get_param('password');
+	if ( !defined $val )
+    {
+        croak "<password> is missing";
+    }
+    
+    $val = _get_param('mis_gateway');
+	if ( !defined $val )
+    {
+        croak "<mis_gateway> is missing";
+    }
+    
+    $val = _get_param('service_url');
+	if ( !defined $val )
+    {
+        croak "<service_url> is missing";
+    }
+    
+    $val = _get_param('service_name');
+	if ( !defined $val )
+    {
+        croak "<service_name> is missing";
+    }
+    
+    $val = _get_param('dataset_url');
+	if ( !defined $val )
+    {
+        croak "<dataset_url> is missing";
+    }
+    
+    $val = _get_param('dataset_name');
+	if ( !defined $val )
+    {
+        croak "<dataset_name> is missing";
+    }
+    
+    $val = _get_param('out_name');
+	if ( !defined $val )
+    {
+        croak "<out_name> is missing";
+    }
+    
+    $val = _get_param('out_dir');
+	if ( !defined $val )
+    {
+        croak "<out_dir> is missing";
+    }
+    
+    
+	#
+	# Check VERTICAL Options
+	#
+	if( defined _get_param('depth_min') and defined _get_param('depth_max'))
+	{
+		$_VERTICAL = true;
+		if(_get_param('depth_min') < 0 )
+		{
+			croak "<depth_min> is out of range";
+		}
+		if(_get_param('depth_max') < 0 )
+		{
+			croak "<depth_max> is out of range";
+		}
+	}elsif(defined _get_param('depth_min') or defined _get_param('depth_max')){
+		croak "Missing one vertical parameter";
+	}
+	
+	#
+	# Check TEMPORAL Options
+	#
+	if( defined _get_param('date_min') and defined _get_param('date_max'))
+	{
+		$_TEMPORAL = true;
 
-    my $tmp = File::Temp->new( UNLINK => 0, DIR => $dir, SUFFIX => '.zip' );
-    $tmp->close;
+	}elsif(defined _get_param('date_min') or defined _get_param('date_max')){
+		croak "Missing one temporal parameter";
+	}
+	
+	#
+	# Check GEOGRAPHIC Options
+	#
+	if( defined _get_param('latitude_min') and defined _get_param('latitude_max') and defined _get_param('longitude_min') and defined _get_param('longitude_max'))
+	{
+		$_GEOGRAPHIC = true;
+		if(_get_param('latitude_min') < -90 or _get_param('latitude_min') > 90 )
+		{
+			croak "<latitude_min> is out of range";
+		}
+		if(_get_param('latitude_max') < -90 or _get_param('latitude_max') > 90 )
+		{
+			croak "<latitude_max> is out of range";
+		}
+		if(_get_param('longitude_min') < -180 or _get_param('longitude_min') > 180 )
+		{
+			croak "<longitude_min> is out of range";
+		}
+		if(_get_param('longitude_max') < -180 or _get_param('longitude_max') > 180 )
+		{
+			croak "<longitude_max> is out of range";
+		}
 
-    return $tmp->filename;
+	}elsif(defined _get_param('latitude_min') or defined _get_param('latitude_max') or defined _get_param('longitude_min') or defined _get_param('longitude_max')){
+		croak "Missing one or more Geogrphic parameter";
+	}
+	
+}
+
+
+#
+# Return param value
+#
+sub _get_param
+{
+	my ($p) = @_;
+	my $value;
+	
+	$value = $options{$p} ? ( $options{$p} ) : $config->{$p};
+	
+	return $value;
+}
+
+#
+# Returns the name of the file to created.
+#
+sub _result_file
+{
+	my $myfile = _get_param('out_dir')._get_param('out_name');
+	
+    return $myfile;
 }
 
 #
@@ -391,24 +659,7 @@ sub _parse_date
     return UnixDate( $date, '%Y-%m-%d' );
 }
 
-#
-# On Archive::Zip error do nothing
-#
-sub _zip_error_null_handler
-{
-    return;
-}
 
-#
-# On Archive::Zip error croak
-#
-sub _zip_error_handler
-{
-    my ($msg) = @_;
-
-    croak $msg;
-    return;
-}
 
 #
 # If the request sent to the server contains an error, the resulting file is not
@@ -428,61 +679,65 @@ sub _server_error
     chomp $line;
     $fh->close();
 
-    my ($dataset) = $line =~ m{product.*#(.*)'\s+not found};
+    my ($dataset) = $line =~ m/ERROR/;
 
     if ( defined $dataset )
     {
-        croak "Dataset `$dataset' not found.";
-    }
-    else
-    {
         croak $line;
     }
+    
 }
 
 #
 # Main program
 #
-my %options;
+
+
 
 # Check syntax
 _usage()
-  unless GetOptions( \%options, 'help', 'date_min=s', 'date_max=s', 'verbose' );
+  unless GetOptions( \%options, 'help', 'version', 'verbose', 'user|u=s', 'password|p=s', 'mis_gateway|g=s', 'service_url|S=s', 'service_name|s=s',
+  'dataset_url|D=s', 'dataset_name|d=s', 'out_dir|o=s', 'out_name|f=s', 'date_min|t=s', 'date_max|T=s', 'latitude_min|y=s', 'latitude_max|Y=s',
+  'longitude_min|x=s', 'longitude_max|X=s', 'depth_min|z=s', 'depth_max|Z=s', 'variable|v=s@');
 
 _usage()
-  if $options{help} || @ARGV != 2;
+  if $options{help};
 
+_version()
+  if $options{version};
+  
 # Setup default value for the last date
-$options{date_max} = $options{date_max} ? $options{date_max} : 'today';
+#$options{date_max} = $options{date_max} ? $options{date_max} : 'today';
 
 # Setup default value for the first date
-my @date_min =
-  $options{date_min}
-  ? ( $options{date_min} )
-  : ( $options{date_max}, '20 days ago' );
+#my @date_min =$options{date_min} ? ( $options{date_min} ) : ( $options{date_max}, '20 days ago' );
 
 # Read configuration file
-my $config = _configuration(
-    date_min => _parse_date(@date_min),
-    date_max => _parse_date( $options{date_max} ),
-    product  => $ARGV[0],
-);
+$config = _configuration();
+
+# Check parameters
+_check_param();
 
 # Go to the working directory
-croak "Unable to change working directory to `$ARGV[1]`: $OS_ERROR"
-  unless chdir $ARGV[1];
+#croak "Unable to change working directory to `$ARGV[1]`: $OS_ERROR"
+#  unless chdir $ARGV[1];
 
 # Setup temporary file
-my $dir = tempdir( CLEANUP => 1 );
-my $tmp = _tmp_zip($dir);
+my $tmp = _result_file();
 
 # Create the URL for downloading the required products
-my $url = _get_url($config);
+
+my $url = _get_url();
+
 my $ua  = LWP::UserAgent->new();
 
 # Setup LWP::UserAgent
 $ua->env_proxy();
-$ua->show_progress('TRUE') if $options{verbose};
+my $verb = $options{verbose} ? ( $options{verbose} ) : $config->{verbose};
+if ($verb){
+	$ua->show_progress('TRUE');
+}
+
 
 my $cookie_jar = HTTP::Cookies->new();
 $ua->cookie_jar($cookie_jar);
@@ -498,9 +753,10 @@ if ( $response->is_success() )
     my $ticket = _get_ticket(
         $ua, $url,
         _get_cas_url(
-            $ua, $response->base(), $config->{user}, $config->{password}
+            $ua, $response->base(), _get_param('user'), _get_param('password')
         )
     );
+
 
     # Download the product
     $response = $ua->get( "$url&ticket=$ticket", ':content_file' => $tmp );
@@ -513,23 +769,8 @@ if ( $response->is_success() )
           : $response->status_line();
     }
 
-    # Disables error handling for Archive::Zip.
-    Archive::Zip::setErrorHandler( \&_zip_error_null_handler );
-    my $zip = Archive::Zip->new($tmp);
-
-    # If an error occurs while extracting the archive the program is stopped
-    Archive::Zip::setErrorHandler( \&_zip_error_handler );
-
-    # If the opening of the archive failed, the received file is a text file
-    # containing the error message
-    _server_error($tmp) if !defined $zip;
-
-    # Unpacks the archive and displays the downloaded files
-    foreach my $element ( $zip->members() )
-    {
-        print $element->fileName() . "\n";
-        $zip->extractMember($element);
-    }
+	_server_error($tmp)
+    
 }
 else
 {
