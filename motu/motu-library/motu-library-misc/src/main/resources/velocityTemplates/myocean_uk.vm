@@ -6,78 +6,54 @@
 ##----------------------------------------------------------------------------------
 ## ------------------------------ myocean_uk_printSubTitleCatalog --------------------------------
 #macro(myocean_uk_printSubTitleListInventories)
-<li class="mainlevel">
-	<span class="join"></span>
-	<span class="document"></span>
-    <a class="mainlevel">Access Services</a>	
+<li>
+    <a>Access Services</a>	
 </li>
 
 #end
 ## ------------------------------ myocean_uk_printSubTitleProductMetadata --------------------------------
 #macro(myocean_uk_printSubTitleCatalog)
-<li class="mainlevel">
-	<span class="join"></span>
-	<span class="document"></span>
-	<a href="?action=listservices" class="mainlevel">Access Services</a>
+<li>
+	<a href="?action=listservices">Access Services</a>
 </li>
-<li class="mainlevel">
-	<span class="join"></span>
-	<span class="document"></span>
-    <a class="mainlevel">&gt;&nbsp;Data Product Catalogue</a>	
+<li>
+    <a>&gt;&nbsp;Data Product Catalogue</a>	
 </li>
 
 #end
 
 ## ------------------------------ myocean_uk_printSubTitleProductMetadata --------------------------------
 #macro(myocean_uk_printSubTitleProductMetadata)
-<li class="mainlevel">
-	<span class="join"></span>
-	<span class="document"></span>
+<li>
 	<a href="?action=listservices" class="mainlevel">Access Services</a>
 </li>
-<li class="mainlevel">
-	<span class="join"></span>
-	<span class="document"></span>
-	<a href="?action=listcatalog&service=${service.getNameEncoded()}" class="mainlevel">&gt;&nbsp;Data Product Catalogue</a>
+<li>
+	<a href="?action=listcatalog&service=${service.getNameEncoded()}">&gt;&nbsp;Data Product Catalogue</a>
 </li>
-<li class="mainlevel">
-	<span class="join"></span>
-	<span class="document"></span>
-    <a class="mainlevel">&gt;&nbsp;Product Metadata</a>
+<li>
+    <a>&gt;&nbsp;Product Metadata</a>
 </li>
 
 #end
 
 ## ------------------------------ myocean_uk_printSubTitleProductDownloadHome --------------------------------
 #macro(myocean_uk_printSubTitleProductDownloadHome)
-<li class="mainlevel">
-	<span class="join"></span>
-	<span class="document"></span>
-	<a href="?action=listservices" class="mainlevel">Access Services</a>
+<li>
+	<a href="?action=listservices">Access Services</a>
 </li>
-<li class="mainlevel">
-	<span class="join"></span>
-	<span class="document"></span>
-	<a href="?action=listcatalog&service=${service.getNameEncoded()}" class="mainlevel">&gt;&nbsp;Data Product Catalogue</a>
+<li>
+	<a href="?action=listcatalog&service=${service.getNameEncoded()}">&gt;&nbsp;Data Product Catalogue</a>
 </li>
-<li class="mainlevel">
-	<span class="join"></span>
-	<span class="document"></span>
-	<a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductId()}" class="mainlevel">&gt;&nbsp;Product Metadata</a>
+<li>
+	<a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductId()}">&gt;&nbsp;Product Metadata</a>
 </li>
-<li class="mainlevel">
-	<span class="join"></span>
-	<span class="document"></span>
-    <a class="mainlevel">&gt;&nbsp;Download</a>
+<li>
+    <a>&gt;&nbsp;Download</a>
 </li>
 #end
 
 ## -------------------------------------------- myocean_uk_printSubTitle --------------------------------
 #macro(myocean_uk_printSubTitle)
-	#*
-	<table width="95%" border="0" cellspacing="0"><tr>
-	<td class="parents">		
-	*#
 	#if($body_template.equalsIgnoreCase($templateListInventories))
 		#myocean_uk_printSubTitleListInventories()	
 	#end
@@ -90,10 +66,6 @@
 	#if($body_template.equalsIgnoreCase($templateProductDownloadHome))
 		#myocean_uk_printSubTitleProductDownloadHome()	
 	#end
-	#*	
-	</td>
-	</tr></table>
-	*#
 #end
 
 ## -------------------------------------------- main --------------------------------
@@ -115,261 +87,48 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <meta name="robots" content="index, follow" />
   <meta name="keywords" content="Maritime Security, Oil Spill combat, Marine Resources management, Climate Change, Seasonal Forecast, Coastal Activities, Ice Survey, Water Quality, Pollution" />
-  <meta name="title" content="MyOcean Service" />
+  <meta name="title" content="MyOcean Gateway services" />
   <meta name="description" content="MyOcean is a project granted by the European Commission within the GMES Program. The areas of benefit are: Maritime Security, Oil Spill combat, Marine Resources management, Climate Change, Seasonal Forecast, Coastal Activities, Ice Survey and Water Quality and Pollution." />
-  <meta name="generator" content="Joomla! 1.5 - Open Source Content Management" />
+  <meta name="generator" content="Motu (cls-motu.sourceforge.net)" />
 
   <title>MyOcean Service - MyOcean</title>
-  <link href="$httpSite/templates/myocean/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-  <link rel="stylesheet" href="$httpSite/plugins/system/jceutilities/css/jceutilities.css?v=224" type="text/css" />
-  <link rel="stylesheet" href="$httpSite/plugins/system/jceutilities/themes/standard/css/style.css?version=224" type="text/css" />
-  <script type="text/javascript" src="$httpSite/media/system/js/mootools.js"></script>
-  <script type="text/javascript" src="$httpSite/plugins/system/jceutilities/js/mediaobject.js?v=224"></script>
-  <script type="text/javascript" src="$httpSite/plugins/system/jceutilities/js/jceutilities.js?v=224"></script>
+  
+  <link rel="stylesheet" type="text/css" href="$httpSite/templates/myocean/css/screen/content.css" media="all" />
+  <link rel="stylesheet" type="text/css" href="$httpSite/templates/myocean/css/screen/content_cc.css" media="all" />
+  <link rel="stylesheet" type="text/css" href="$httpSite/templates/myocean/css/screen/mis-gw.css" media="all" />
 
-  <script type="text/javascript" src="$httpSite/media/system/js/caption.js"></script>
-  <script type="text/javascript">
-	MediaObject.init({flash:"10,0,22,87",windowmedia:"5,1,52,701",quicktime:"6,0,2,0",realmedia:"7,0,0,0",shockwave:"8,5,1,0"});window.addEvent('domready', function(){window.jcepopup=new JCEUtilities({popup:{legacy:0,resize:1,icons:1,overlay:1,overlayopacity:0.8,overlaycolor:"#000000",fadespeed:500,scalespeed:500,hideobjects:1,scrollpopup:1},tooltip:{className:"tooltip",opacity:1,speed:150,position:"br",offsets:{x: 16, y: 16}},imgpath:"plugins/system/jceutilities/img",theme:"standard",themecustom:"",themepath:"plugins/system/jceutilities/themes"});});
-  </script>
-
-
-<link rel="icon" type="image/png" href="$httpSite/templates/myocean/favicon.png" />
-
-
-<link rel="stylesheet" href="$httpSite/templates/system/css/system.css" type="text/css" />
-<link rel="stylesheet" href="$httpSite/templates/system/css/general.css" type="text/css" />
-
-<link href="$httpSite/templates/myocean/css/styles.css" rel="stylesheet" type="text/css" >
-
-<!--[if lte IE 7]>
-<link href="$httpSite/templates/myocean/css/patches/patch_styles.css" rel="stylesheet" type="text/css" >
-<![endif]-->
-
-<!--[if lte IE 6]>
-<link href="$httpSite/templates/myocean/css/screen/ie6.css" rel="stylesheet" type="text/css" />
-<![endif]-->
-
-<link href="$httpSite/templates/myocean/css/screen/cssservice.css" rel="stylesheet" type="text/css" >
-<!--[if lte IE 6]>
-<link href="$httpSite/templates/myocean/css/screen/ie6-cssservice.css" rel="stylesheet" type="text/css" />
-<![endif]-->
-
+  <!--[if lte IE 7]>
+  <link href="$httpSite/templates/myocean/css/patches/patch_my_layout.css" rel="stylesheet" type="text/css" />
+  <![endif]-->	
+  
+  <script type="text/javascript" src="$httpSite/components/com_csw/assets/js/mootools.js"></script>
 </head>
 
-<style>
-##	table.encadre	{border-bottom: 1px solid #8A8AD2;border-top: 1px solid #8A8AD2;}	
-	table.encadre
-	{
-	    BORDER-RIGHT: #8A8AD2 2px solid;
-	    BORDER-TOP: #8A8AD2 2px solid;
-	    BORDER-LEFT: #8A8AD2 2px solid;
-	    BORDER-BOTTOM: #8A8AD2 2px solid;
-	    BORDER-COLLAPSE: collapse
-	}
-	table.encadre TD
-	{
-	    BORDER-RIGHT: #8A8AD2 1px solid;
-	    BORDER-TOP: #8A8AD2 1px solid;
-	    BORDER-LEFT: #8A8AD2 1px solid;
-	    BORDER-BOTTOM: #8A8AD2 1px solid;
-	    BORDER-COLLAPSE: collapse;
-	    BACKGROUND-COLOR: #f8f8ff
-	}
-	table.encadre TH
-	{
-	    BORDER-RIGHT: #8A8AD2 1px solid;
-	    BORDER-TOP: #8A8AD2 1px solid;
-	    BORDER-LEFT: #8A8AD2 1px solid;
-	    BORDER-BOTTOM: #8A8AD2 1px solid;
-	    BORDER-COLLAPSE: collapse;
-	    BACKGROUND-COLOR: #F8F8E7;
-	    TEXT-ALIGN: center
-	}	
-	table.toc
-	{
-	    background-color:#DDECF8;
-	}
-	table.toc TD
-	{
-		font-size: 9pt;
-		font-family: Arial, Helvetica, sans-serif;
-	}
-	table.toc TH
-	{
-		font-family: Arial, Helvetica, sans-serif;
-        width: 100%;
-        background-color: #99CCFF;
-		color: #000000;
-		font-size: 10pt; padding: 2px;
-		border: #FFF1B3
-		font-weight: bold
-	}
-	img.suiv2
-	{
-		width:18;
-		height:14;
-		alt="";
-		border=0;
-	}
-		
-</style>
-
 <body onLoad="init()">
+	<base target="_top" />
+	<a name="up" id="up"></a>
 
-<base target="_top" />
-<a name="up" id="up"></a>
-  <div id="page_margins">
-    <div id="page">
-      <div id="main">
-        <div id="col1" class="homepage">
-        <div id="col1_logo">
-        <div class="module">
-		<div>
-		<div>
-		<div>
-			<ul class="menu"><li class="item30">
-			<a href="http://www.myocean.eu/"><img src="$httpSite/images/stories/logo-gauche.gif" alt="home" />
-			</a></li></ul>
-		</div>
-		</div>
-		</div>
-		</div>
-	
-	 </div>
-
-        </div>
-
-        <div id="col3">
-
-          <div id="col3_content" class="clearfix">
-
-            <!-- RIGHT COL START -->
-		      <div id="headerTopSpace">
-		      </div>
-		      <div id="header">
-			  	<!-- HEADER -->
-				<div id="top-logos"><img src="$httpSite/templates/myocean/images/spacer.png" usemap="#toplogos" width=327 height=60 border="0" alt=""></div>
-				<map name="toplogos">
-
-				<area shape="rect" coords="108,8,230,60" href="http://www.gmes.info" target="_blank" title="GMES website">
-				<area shape="rect" coords="244,8,307,60" href="http://cordis.europa.eu/fp7/home_en.html" target="_blank" title="Seventh Framework Programme website">
-				</map>
-		      </div>
-		      <div id="nav">
-		        <!-- skiplink anchor: navigation -->
-
-		        <a id="navigation" name="navigation"></a>
-		        <div id="nav_main">
-
-		          <!-- main navigation: #nav_main -->
-				  <div class="tree">
-					<div class="start"></div>
-					<ul>
-							#myocean_uk_printSubTitle()
-					</ul>
-				  </div>
-		        </div>
-		      </div>
-
+	<div id="col3_content" class="clearfix">
+		<div id="nav_main">
+		   <div id="ps_nav">
+			  <div class="hlist">
+				<ul>
+					#myocean_uk_printSubTitle()
+				</ul>
+			   </div>
+			 </div>
+	      </div>
 			  
-			  <!-- CONTENT START -->
+	      <!-- CONTENT START -->
+	      <div id="content">
+#set($tocLowLevel = 1)
+#set($tocHighLevel = 1)
+#set($tocAsRow = true)
+#set($printcatalogtoc = true)
 
-<div style="height:20px;" class="noprint"></div>
-
-
-      <!-- begin: #corps -->
-
-##    <div id="corps">
-##    <div id="corps_top"/>
-    <div id="corps_page">
-    <div id="corps_content">
-    <div id="pathway"> </div>		
-	
-	#set($tocLowLevel = 1)
-	#set($tocHighLevel = 1)
-	#set($tocAsRow = true)
-	#set($printcatalogtoc = true)
-
-	#parse ($body_template)
-	
+#parse ($body_template)
+		  </div>	
     </div>
-    </div>
-    </div>
-##    </div>
-##    </div>
-
-
-<!-- Pied de page -->
-          </div>
-          <!-- IE Column Clearing -->
-          <div id="ie_clearing"> &#160; </div>
-
-        </div>
-      </div>
-
-
-      <!-- begin: #footer -->
-
-      <div id="footer">
-        <div class="subcolumns">
-          <div class="c25l">
-            <div class="subcl">
-              <!-- FOOTER LEFT -->
-
-				<table width="100%" border="0" cellpadding="0" cellspacing="1"><tr><td nowrap="nowrap"><a href="$httpSite/contact.html" class="mainlevel" >CONTACT</a><span class="mainlevel"> - </span><span class="mainlevel" >CREDITS</span><span class="mainlevel"> - </span><a href="$httpSite/legal-notice.html" class="mainlevel" >LEGAL NOTICE</a></td></tr></table>
-
-            </div>
-          </div>
-          <div class="c75r">
-            <div class="subcr">
-              <!-- FOOTER RIGHT -->
-
-			<img src="$httpSite/templates/myocean/images/common/flags/eu.jpg" width=17 height=13 border="0" alt="" title="Europe" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/be.gif" width=17 height=13 border=0 alt="" title="Belgium" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/bg.gif" width=17 height=13 border=0 alt="" title="Bulgaria" style="margin:3px 1px 0 1px;">
-
-			<img src="$httpSite/templates/myocean/images/common/flags/ca.gif" width=17 height=13 border=0 alt="" title="Canada" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/cy.gif" width=17 height=13 border=0 alt="" title="Cyprus" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/dk.jpg" width=17 height=13 border="0" alt="" title="Denmark" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/ee.gif" width=17 height=13 border=0 alt="" title="Estonia" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/fi.gif" width=17 height=13 border=0 alt="" title="Finland" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/fr.jpg" width=17 height=13 border="0" alt="" title="France" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/de.gif" width=17 height=13 border=0 alt="" title="Germany" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/gr.gif" width=17 height=13 border=0 alt="" title="Greece" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/ie.gif" width=17 height=13 border=0 alt="" title="Ireland" style="margin:3px 1px 0 1px;">
-
-			<img src="$httpSite/templates/myocean/images/common/flags/il.gif" width=17 height=13 border=0 alt="" title="Israel" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/it.jpg" width=17 height=13 border="0" alt="" title="Italy" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/lv.gif" width=17 height=13 border=0 alt="" title="Latvia" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/lt.gif" width=17 height=13 border=0 alt="" title="Lithuania" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/mt.gif" width=17 height=13 border=0 alt="" title="Malta" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/ma.gif" width=17 height=13 border=0 alt="" title="Morocco" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/nl.gif" width=17 height=13 border=0 alt="" title="Netherlands" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/no.jpg" width=17 height=13 border="0" alt="" title="Norway" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/pl.gif" width=17 height=13 border=0 alt="" title="Poland" style="margin:3px 1px 0 1px;">
-
-			<img src="$httpSite/templates/myocean/images/common/flags/pt.gif" width=17 height=13 border=0 alt="" title="Portugal" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/ro.gif" width=17 height=13 border=0 alt="" title="Romania" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/ru.gif" width=17 height=13 border=0 alt="" title="Russian Federation" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/si.gif" width=17 height=13 border=0 alt="" title="Slovenia" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/es.jpg" width=17 height=13 border="0" alt="" title="Spain" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/se.gif" width=17 height=13 border=0 alt="" title="Sweden" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/tr.gif" width=17 height=13 border=0 alt="" title="Turkey" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/ua.gif" width=17 height=13 border=0 alt="" title="Ukraine" style="margin:3px 1px 0 1px;">
-			<img src="$httpSite/templates/myocean/images/common/flags/uk.jpg" width=17 height=13 border="0" alt="" title="United Kingdom" style="margin:3px 1px 0 1px;">
-
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-
-
 </body>
-
-
 
 </html>
