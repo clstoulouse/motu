@@ -101,7 +101,8 @@
   <link href="$httpSite/templates/myocean/css/patches/patch_my_layout.css" rel="stylesheet" type="text/css" />
   <![endif]-->	
   
-  <script type="text/javascript" src="$httpSite/components/com_csw/assets/js/mootools.js"></script>
+  <script type="text/javascript" src="$httpSite/templates/myocean/js/mootools.js"></script>
+  <script type="text/javascript" src="$httpSite/templates/myocean/js/mis-gw.js"></script>
 </head>
 
 <body onLoad="init()">
