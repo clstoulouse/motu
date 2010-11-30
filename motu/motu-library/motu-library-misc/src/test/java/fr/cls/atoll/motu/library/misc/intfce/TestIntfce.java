@@ -364,7 +364,7 @@ public class TestIntfce {
         //            
         // }
         // MAMath.MinMax minMax = NetCdfReader.getMinMaxLonNormal(r1, r2, r1Values, r2Values)
-        // listServices();
+        listServices();
         // catalogInformation();
         // try {
         // ServiceData.Language test = ServiceData.Language.valueOf("ee");
@@ -423,7 +423,7 @@ public class TestIntfce {
 //        productExtractXYTopaz2();
 //        productExtractXYTopaz3();
 //        productExtractXYMetNo1();
-          productExtractAcri();
+          //productExtractAcri();
 
     }
 
@@ -3181,10 +3181,10 @@ public class TestIntfce {
         // third element is high latitude
         // fourth element is high longitude
         List<String> listLatLonCoverage = new ArrayList<String>();
-//        listLatLonCoverage.add("40");
-//        listLatLonCoverage.add("0");
-//        listLatLonCoverage.add("34.68649673461914");
-//        listLatLonCoverage.add("100");
+        listLatLonCoverage.add("40");
+        listLatLonCoverage.add("20");
+        listLatLonCoverage.add("30");
+        listLatLonCoverage.add("-100");
 
         // add depth (Z) criteria
         // first element is low depth

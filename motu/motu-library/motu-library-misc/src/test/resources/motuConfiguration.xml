@@ -112,6 +112,7 @@
 	dataBlockSize="102400" maxSizePerFile="1024"
 	extractionPath="C:\Java\apache-tomcat-6.0.9\webapps\motu-file-extract"
 	downloadHttpUrl="http://localhost:8080/motu-file-extract"
+	httpBaseRef="http://mercator-myoceanv1.netaktiv.com"
 	httpDocumentRoot="http://aviso-motu.cls.fr"
 	cleanExtractionFileInterval="60"
 	cleanRequestInterval="2"
@@ -136,7 +137,7 @@
 	<!--                    TEST TOPAZ -->
 	<!--===========================================-->
 	<configService defaultLanguage="UK" description="Test Topaz data"
-		group="Topaz" httpBaseRef="http:///www.myocean.eu.org"
+		group="Topaz" httpBaseRef="http://mercator-myoceanv1.netaktiv.com"
 		name="Topaz" veloTemplatePrefix="myocean">
 		<catalog name="catalogs/mersea-ipv2-class1-arctic-b.xml" type="tds"
 			urlSite="http://tomcat.nersc.no:8080/thredds" />
