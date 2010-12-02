@@ -106,7 +106,6 @@
 </head>
 
 <body onLoad="init()">
-	<base target="_top" />
 	<a name="up" id="up"></a>
 
 	<div id="col3_content" class="clearfix">
