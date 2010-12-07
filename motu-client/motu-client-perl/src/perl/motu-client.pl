@@ -683,6 +683,8 @@ sub _server_error
 
     if ( defined $dataset )
     {
+    	unlink($filename) or die ("Erreur suppression \n");
+    	
         croak $line;
     }
     
