@@ -481,7 +481,7 @@ sub _configuration
 
     my $path =
       ( $OSNAME eq 'MSWin32' ? $ENV{USERPROFILE} : $ENV{HOME} )
-        . '/motu-client-perl.xml';	
+        . '/motu-client/motu-client-perl.xml';	
 	$path = File::Spec->canonpath( $path );	
 	
 	my $config;
