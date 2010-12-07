@@ -324,7 +324,7 @@ sub _get_cas_url
 {
     my ( $ua, $content, $username, $password ) = @_;
 
-    my ($url) = $content =~ m{(https://.*/cas)}xms;
+    my ($url) = $content =~ m{(http(s|)://.*/cas)}xms;
 
     if ( !defined $url )
     {
@@ -481,7 +481,7 @@ sub _configuration
 
     my $path =
       ( $OSNAME eq 'MSWin32' ? $ENV{USERPROFILE} : $ENV{HOME} )
-        . '/motu-client/motu-client-perl.xml';	
+        . '/motu-client-perl.xml';	
 	$path = File::Spec->canonpath( $path );	
 	
 	my $config;
