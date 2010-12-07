@@ -1,216 +1,201 @@
-<?xml version="1.0" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>download-misgw.pl - Download MOTU products via the MIS-Gateway</title>
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<style type="text/css" media="screen, print">
-<!--
-body {
-    color: black;
-    font-family: arial,sans-serif;
-    margin: 0;
-    padding: 1ex;
-}
-pre {
-    background: #eeeeee;
-    border: 1px solid #888888;
-    color: black;
-    padding: 1em;
-    white-space: pre-wrap;
-}
-h1 {
-  background: transparent;
-  color: #006699;
-  font-size: large;
-}
-a:link, a:visited {
-  background: transparent;
-  color: #006699;
-}
--->
-</style>
-</head>
-
-<body style="background-color: white">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<META NAME="generator" CONTENT="http://txt2tags.org">
+<TITLE>Motu perl client</TITLE>
+</HEAD><BODY BGCOLOR="white" TEXT="black">
+<CENTER>
+<H1>Motu perl client</H1>
+</CENTER>
 
 
-<!-- INDEX BEGIN -->
-<div name="index">
-<p><a name="__index__"></a></p>
+<H2>NAME</H2>
 
-<ul>
+<PRE>
+  ./motu-client.pl
+</PRE>
 
-	<li><a href="#name">NAME</a></li>
-	<li><a href="#synopsis">SYNOPSIS</a></li>
-	<li><a href="#algorithm">ALGORITHM</a></li>
-	<li><a href="#xml_configuration_file">XML CONFIGURATION FILE</a></li>
-	<li><a href="#installation">INSTALLATION</a></li>
-	<li><a href="#usage">USAGE</a></li>
-	<li><a href="#required_modules">REQUIRED MODULES</a></li>
-	<li><a href="#bugs_and_questions">BUGS AND QUESTIONS</a></li>
-	<li><a href="#license">LICENSE</a></li>
-	<li><a href="#author">AUTHOR</a></li>
-</ul>
-</div>
-<!-- INDEX END -->
+<P>
+The motu perl client.
+</P>
 
-<h1><a name="name">NAME</a></h1>
-<p>download-misgw.pl - Download MOTU products via the MIS-Gateway</p>
-<p>
-</p>
-<h1><a name="synopsis">SYNOPSIS</a></h1>
-<p>This program can be integrated into a processing chain in order to automate the
-downloading of MOTU products via the MIS-Gateway.</p>
-<p>
-</p>
-<h1><a name="algorithm">ALGORITHM</a></h1>
-<p>The communication algorithm with the MIS-Gateway is the following:</p>
-<ul>
-<li>
-<p>The program builds a URL based on parameters provided by the user to download
-the requested product.</p>
-</li>
-<li>
-<p>The program sends the URL built to the MIS-Gateway.</p>
-</li>
-<li>
-<p>The MIS-Gateway sends a new URL to perform the authentication server via a 
-&quot;Central Authentication Service&quot; (CAS).</p>
-</li>
-<li>
-<p>The program posts a new URL to get a &quot;Ticket Granting Ticket&quot; (TGT) to download
-the requested product.</p>
-</li>
-<li>
-<p>The CAS server sends the ticket.</p>
-</li>
-<li>
-<p>The program sends the query joined with ticket obtained above and download
-the requested product.</p>
-</li>
-</ul>
-<p>
-</p>
-<h1><a name="xml_configuration_file">XML CONFIGURATION FILE</a></h1>
-<p>The program parameters are contained in an XML file. This file is located in the
-directory:</p>
-<ul>
-<li>
-<p>&quot;$HOME/pl_motu_gateway&quot; on Unix platforms.</p>
-</li>
-<li>
-<p>&quot;%USERPROFILE%\pl_motu_gateway&quot; on Windows platforms.</p>
-</li>
-</ul>
+<H2>SYNOPSIS</H2>
 
-<p>The expected structure of the XML file is:</p>
-<pre>
-    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-        &lt;configuration&gt;
-	        &lt;user&gt;john&lt;/user&gt;
-	        &lt;password&gt;secret&lt;/password&gt;
-			&lt;verbose&gt;0&lt;/verbose&gt;
-			&lt;mis_gateway&gt;http://web-qt.cls.fr/mis-gateway-servlet/Motu?&lt;/mis_gateway&gt;
-			&lt;service_url&gt;http://purl.org/myocean/ontology/service/database&lt;/service_url&gt;
-			&lt;service_name&gt;CLS-TOULOUSE-FR-MERCATOR-MOTU-REST&lt;/service_name&gt;
-			&lt;dataset_url&gt;http://purl.org/myocean/ontology/product/database&lt;/dataset_url&gt;
-			&lt;dataset_name&gt;dataset-psy2v3-pgs-med-myocean-bestestimate&lt;/dataset_name&gt;
-			&lt;out_dir&gt;C:/MIS-152/out_dir/&lt;/out_dir&gt;
-			&lt;out_name&gt;perlTest.nc&lt;/out_name&gt;
-			&lt;date_min&gt;2010-11-08&lt;/date_min&gt;
-			&lt;date_max&gt;2010-11-10&lt;/date_max&gt;
-			&lt;latitude_min&gt;-75&lt;/latitude_min&gt;
-			&lt;latitude_max&gt;30&lt;/latitude_max&gt;
-			&lt;longitude_min&gt;20&lt;/longitude_min&gt;
-			&lt;longitude_max&gt;120&lt;/longitude_max&gt;
-			&lt;depth_min&gt;0&lt;/depth_min&gt;
-			&lt;depth_max&gt;15&lt;/depth_max&gt;
-			&lt;variable&gt;sea_water_x_velocity&lt;/variable&gt;
-    &lt;/configuration&gt;</pre>
-<p>
-</p>
-<h1><a name="installation">INSTALLATION</a></h1>
-<p>Copy the script in the directory of your choice. Create a configuration file
-(see <a href="#xml_configuration_file">XML CONFIGURATION FILE</a>) to inform the user and password to use to
-connect to the CAS server.</p>
-<p>Installing Perl modules which are not provided in the standard installation of
-Perl. The list of modules to be installed is described in section
-<a href="#required_modules">REQUIRED MODULES</a>.</p>
-<p>
-</p>
-<h1><a name="usage">USAGE</a></h1>
-<pre>
-    Usage: download-misgw.pl
-        Options:
-		  --help            
-		  				show this help message and exit
-		  --verbose
-		  				print information in stdout
-		  -u USER, --user=USER
-								The user name
-		  -p PWD, --password=PWD
-								The user password
-		  -g GATEWAY, --mis_gateway=GATEWAY
-		                        The gateway to use
-		  -S SERVICE_URL, --service_url=SERVICE_URL
-		                        The service url
-		  -s SERVICE_NAME, --service_name=SERVICE_NAME
-		                        The service name
-		  -D=DATASET_URL, --dataset_url=DATASET_URL
-		                        The dataset url
-		  -d DATASET_NAME, --dataset_name=DATASET_NAME
-		                        The dataset to download
-		  		  
-		  -o OUT_DIR, --out_dir=OUT_DIR
-		                        The output dir
-		  -f OUT_NAME, --out_name=OUT_NAME
-		                        The output file name
-		                        
-		  -t DATE_MIN, --date_min=DATE_MIN
-		                        The min date (YYYY-MM-DD)
-		  -T DATE_MAX, --date_max=DATE_MAX
-		                        The max date (YYYY-MM-DD)
-		                        
-		  -y LATITUDE_MIN, --latitude_min=LATITUDE_MIN
-		                        The min latitude [-90 ; 90]
-		  -Y LATITUDE_MAX, --latitude_min=LATITUDE_MAX
-		                        The max latitude [-90 ; 90]                      
-		  -x LONGITUDE_MIN, --longitude_min=LONGITUDE_MIN
-		                        The min longitude [-180 ; 180]
-		  -X LONGITUDE_MAX, --longitude_max=LONGITUDE_MAX
-		                        The max longitude [-180 ; 180]
-		                        
-		  -z DEPTH_MIN, --depth_min=DEPTH_MIN
-		                        The min depth [0 ; 2e31]
-		  -Z DEPTH_MAX, --depth_min=DEPTH_MAX
-		                        The max depth [0 ; 2e31]
-		                        
-		  -v VARIABLE, --variable=VARIABLE
-		  						The physical variables to be extracted</pre>
-<p>
-</p>
-<h1><a name="required_modules">REQUIRED MODULES</a></h1>
-<p>This program requires several other modules:</p>
-<p><a href="http://search.cpan.org/~adamk/Archive-Zip/">Archive::Zip</a></p>
-<p><a href="http://search.cpan.org/~sbeck/Date-Manip/">Date::Manip</a></p>
-<p><a href="http://search.cpan.org/~roode/Readonly/">Readonly</a></p>
-<p><a href="http://search.cpan.org/~grantm/XML-Simple/">XML::Simple</a></p>
-<p>
-</p>
-<h1><a name="bugs_and_questions">BUGS AND QUESTIONS</a></h1>
-<p>Please refer to the documentation for information on submitting bug reports or
-questions to the author.</p>
-<p>
-</p>
-<h1><a name="license">LICENSE</a></h1>
-<p>This script is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself.</p>
-<p>
-</p>
-<h1><a name="author">AUTHOR</a></h1>
-<p>AVISO (<a href="mailto:aviso@cls.fr">aviso@cls.fr</a>)</p>
+<P>
+This program can be integrated into a processing chain in order to automate the downloading of products via the Motu.
+</P>
 
-</body>
+<H2>ALGORITHM</H2>
 
-</html>
+<P>
+The communication algorithm with the MIS-Gateway is the following:
+</P>
+
+  <OL>
+  <LI>The program builds a URL based on parameters provided by the user to download the requested product.
+  <LI>The program sends the URL built to the Motu.
+  <LI>The Motu sends a new URL to perform the authentication server via a "Central Authentication Service" (CAS).
+  <LI>The program posts a new URL to get a "Ticket Granting Ticket" (TGT) to download the requested product.
+  <LI>The CAS server sends the ticket.
+  <LI>The program sends the first joined with ticket obtained above and download the requested product.
+  </OL>
+
+<H2>CONFIGURATION FILE</H2>
+
+<P>
+The program parameters are contained in an XML file. This file is located in the following directory:
+</P>
+
+   <UL>
+   <LI>on Unix platforms: <CODE>$HOME/motu-client/motu-client-perl.xml</CODE>
+   <LI>on Windows platforms: <CODE>%USERPROFILE%\motu-client/motu-client-perl.xml</CODE>
+   </UL>
+
+<P>
+This file may be read-only because it may contains the password use to authenticate to the CAS server.
+</P>
+<P>
+The expected structure of the XML file is:
+</P>
+
+<PRE>
+    	&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+    		&lt;configuration&gt;
+    		&lt;user&gt;john&lt;/user&gt;
+    		&lt;password&gt;secret&lt;/password&gt;
+    		&lt;verbose&gt;0&lt;/verbose&gt;
+    		&lt;mis_gateway&gt;http://web-qt.cls.fr/mis-gateway-servlet/Motu?&lt;/mis_gateway&gt;
+    		&lt;service_url&gt;http://purl.org/myocean/ontology/service/database&lt;/service_url&gt;
+    		&lt;service_name&gt;CLS-TOULOUSE-FR-MERCATOR-MOTU-REST&lt;/service_name&gt;
+    		&lt;dataset_url&gt;http://purl.org/myocean/ontology/product/database&lt;/dataset_url&gt;
+    		&lt;dataset_name&gt;dataset-psy2v3-pgs-med-myocean-bestestimate&lt;/dataset_name&gt;
+    		&lt;out_dir&gt;C:/MIS-152/out_dir/&lt;/out_dir&gt;
+    		&lt;out_name&gt;perlTest.nc&lt;/out_name&gt;
+    		&lt;date_min&gt;2010-11-08&lt;/date_min&gt;
+    		&lt;date_max&gt;2010-11-10&lt;/date_max&gt;
+    		&lt;latitude_min&gt;-75&lt;/latitude_min&gt;
+    		&lt;latitude_max&gt;30&lt;/latitude_max&gt;
+    		&lt;longitude_min&gt;20&lt;/longitude_min&gt;
+    		&lt;longitude_max&gt;120&lt;/longitude_max&gt;
+    		&lt;depth_min&gt;0&lt;/depth_min&gt;
+    		&lt;depth_max&gt;15&lt;/depth_max&gt;
+    		&lt;variable&gt;sea_water_salinity&lt;/variable&gt;
+    	&lt;/configuration&gt;
+</PRE>
+
+<H2>INSTALLATION</H2>
+
+<P>
+Copy the script in the directory of your choice. Create a configuration file (see "CONFIGURATION FILE") to inform the user and password to use to connect to the CAS server.
+</P>
+<P>
+Installing Perl modules which are not provided in the standard installation of Perl. The list of modules to be installed is described in section "REQUIRED MODULES".
+</P>
+
+<H2>USAGE</H2>
+
+<P>
+Usage: <CODE>./motu-client.pl -h</CODE>
+</P>
+
+<PRE>
+    	Usage: motu-client.pl [options]
+    
+          Options:
+              --help            
+                                    show this help message and exit
+              --verbose
+                                    print information in stdout
+              -u USER, --user=USER
+                                    The user name, mandatory
+                                    No user name ? You must register to MyOcean
+              -p PWD, --password=PWD
+                                    The user password, mandatory
+              -g GATEWAY, --mis_gateway=GATEWAY
+                                    The gateway to use (url), mandatory
+                                    Should be something like http://atoll.cls.fr/mfcglo-armor-gateway-servlet/Motu?
+              -S SERVICE_URL, --service_url=SERVICE_URL
+                                    The service url, mandatory
+                                    Should be something like "http://purl.org/myocean/ontology/service/database"
+              -s SERVICE_NAME, --service_name=SERVICE_NAME
+                                    The service name, mandatory
+                                    Should be something like GLOBAL_REANALYSIS_PHYS_001_003_b-TDS
+              -D=DATASET_URL, --dataset_url=DATASET_URL
+                                    The dataset url, mandatory
+                                    Should be something like "http://purl.org/myocean/ontology/product/database"
+              -d DATASET_NAME, --dataset_name=DATASET_NAME
+                                    The dataset to download, mandatory
+                                    Should be something like dataset-armor-3d-ran-v1-myocean
+              -o OUT_DIR, --out_dir=OUT_DIR
+                                    The output dir, mandatory
+              -f OUT_NAME, --out_name=OUT_NAME
+                                    The output file name
+                                    Can be a netCDF file or a zip file containing netCDF files, depending on the server configuration
+              -t DATE_MIN, --date_min=DATE_MIN
+                                    The min date (YYYY-MM-DD)
+              -T DATE_MAX, --date_max=DATE_MAX
+                                    The max date (YYYY-MM-DD)
+              -y LATITUDE_MIN, --latitude_min=LATITUDE_MIN
+                                    The min latitude [-90 ; 90]
+              -Y LATITUDE_MAX, --latitude_min=LATITUDE_MAX
+                                    The max latitude [-90 ; 90]                      
+              -x LONGITUDE_MIN, --longitude_min=LONGITUDE_MIN
+                                    The min longitude [-180 ; 180]
+              -X LONGITUDE_MAX, --longitude_max=LONGITUDE_MAX
+                                    The max longitude [-180 ; 180]
+              -z DEPTH_MIN, --depth_min=DEPTH_MIN
+                                    The min depth [0 ; 2e31]
+              -Z DEPTH_MAX, --depth_min=DEPTH_MAX
+                                    The max depth [0 ; 2e31]
+              -v VARIABLE, --variable=VARIABLE
+                                    The physical variables to be extracted, you can use netCDF variable name or standard_name attribute
+                                    Generic standard name table is available here:
+                                    http://cf-pcmdi.llnl.gov/documents/cf-standard-names/standard-name-table/16/cf-standard-name-table.html
+</PRE>
+
+<H2>REQUIRED MODULES</H2>
+
+<P>
+This program requires several other modules:
+</P>
+
+<UL>
+<LI>Archive::Zip
+<LI>Date::Manip
+<LI>Readonly
+<LI>XML::Simple 
+</UL>
+
+<H2>BUGS AND QUESTIONS</H2>
+
+<P>
+Please refer to the documentation for information on submitting bug reports or questions to the author.
+</P>
+
+<H2>LICENSE</H2>
+
+<P>
+This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
+</P>
+<P>
+This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+</P>
+<P>
+You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+</P>
+
+<H2>AUTHOR</H2>
+
+<P>
+CLS (Collecte Localisation Satellites) for MyOcean
+</P>
+<P>
+<A HREF="http://www.cls.fr">www.cls.fr</A>
+</P>
+<P>
+<A HREF="mailto:operation.mis@myocean.eu.org">operation.mis@myocean.eu.org</A>
+</P>
+
+<!-- html code generated by txt2tags 2.6 (http://txt2tags.org) -->
+<!-- cmdline: txt2tags -t html -i J:\workspaces\atoll-v2\cls-motu\motu-client\motu-client-perl\src\doc\readme-motu-client.t2t -o J:\workspaces\atoll-v2\cls-motu\motu-client\motu-client-perl\src\doc\readme-motu-client.html -->
+</BODY></HTML>

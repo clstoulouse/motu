@@ -1,0 +1,196 @@
+.TH "Motu perl client" 1 "" ""
+
+
+.SS NAME
+
+.nf
+\&./motu-client.pl
+.fi
+
+
+.P
+The motu perl client.
+
+.SS SYNOPSIS
+
+.P
+This program can be integrated into a processing chain in order to automate the downloading of products via the Motu.
+
+.SS ALGORITHM
+
+.P
+The communication algorithm with the MIS\-Gateway is the following:
+
+.RS
+.IP 1. 3
+The program builds a URL based on parameters provided by the user to download the requested product.
+.IP 2. 3
+The program sends the URL built to the Motu.
+.IP 3. 3
+The Motu sends a new URL to perform the authentication server via a "Central Authentication Service" (CAS).
+.IP 4. 3
+The program posts a new URL to get a "Ticket Granting Ticket" (TGT) to download the requested product.
+.IP 5. 3
+The CAS server sends the ticket.
+.IP 6. 3
+The program sends the first joined with ticket obtained above and download the requested product.
+.RE
+
+.SS CONFIGURATION FILE
+
+.P
+The program parameters are contained in an XML file. This file is located in the following directory:
+
+.RS
+.IP \(bu 3
+on Unix platforms: $HOME/motu\-client/motu\-client\-perl.xml
+.IP \(bu 3
+on Windows platforms: %USERPROFILE%\emotu\-client/motu\-client\-perl.xml
+.RE
+
+.P
+This file may be read\-only because it may contains the password use to authenticate to the CAS server.
+
+.P
+The expected structure of the XML file is:
+
+.nf
+  	<?xml version="1.0" encoding="UTF-8"?>
+  		<configuration>
+  		<user>john</user>
+  		<password>secret</password>
+  		<verbose>0</verbose>
+  		<mis_gateway>http://web-qt.cls.fr/mis-gateway-servlet/Motu?</mis_gateway>
+  		<service_url>http://purl.org/myocean/ontology/service/database</service_url>
+  		<service_name>CLS-TOULOUSE-FR-MERCATOR-MOTU-REST</service_name>
+  		<dataset_url>http://purl.org/myocean/ontology/product/database</dataset_url>
+  		<dataset_name>dataset-psy2v3-pgs-med-myocean-bestestimate</dataset_name>
+  		<out_dir>C:/MIS-152/out_dir/</out_dir>
+  		<out_name>perlTest.nc</out_name>
+  		<date_min>2010-11-08</date_min>
+  		<date_max>2010-11-10</date_max>
+  		<latitude_min>-75</latitude_min>
+  		<latitude_max>30</latitude_max>
+  		<longitude_min>20</longitude_min>
+  		<longitude_max>120</longitude_max>
+  		<depth_min>0</depth_min>
+  		<depth_max>15</depth_max>
+  		<variable>sea_water_salinity</variable>
+  	</configuration>
+.fi
+
+
+.SS INSTALLATION
+
+.P
+Copy the script in the directory of your choice. Create a configuration file (see "CONFIGURATION FILE") to inform the user and password to use to connect to the CAS server.
+
+.P
+Installing Perl modules which are not provided in the standard installation of Perl. The list of modules to be installed is described in section "REQUIRED MODULES".
+
+.SS USAGE
+
+.P
+Usage: \&./motu\-client.pl \-h
+
+.nf
+  	Usage: motu-client.pl [options]
+  
+        Options:
+            --help            
+                                  show this help message and exit
+            --verbose
+                                  print information in stdout
+            -u USER, --user=USER
+                                  The user name, mandatory
+                                  No user name ? You must register to MyOcean
+            -p PWD, --password=PWD
+                                  The user password, mandatory
+            -g GATEWAY, --mis_gateway=GATEWAY
+                                  The gateway to use (url), mandatory
+                                  Should be something like http://atoll.cls.fr/mfcglo-armor-gateway-servlet/Motu?
+            -S SERVICE_URL, --service_url=SERVICE_URL
+                                  The service url, mandatory
+                                  Should be something like "http://purl.org/myocean/ontology/service/database"
+            -s SERVICE_NAME, --service_name=SERVICE_NAME
+                                  The service name, mandatory
+                                  Should be something like GLOBAL_REANALYSIS_PHYS_001_003_b-TDS
+            -D=DATASET_URL, --dataset_url=DATASET_URL
+                                  The dataset url, mandatory
+                                  Should be something like "http://purl.org/myocean/ontology/product/database"
+            -d DATASET_NAME, --dataset_name=DATASET_NAME
+                                  The dataset to download, mandatory
+                                  Should be something like dataset-armor-3d-ran-v1-myocean
+            -o OUT_DIR, --out_dir=OUT_DIR
+                                  The output dir, mandatory
+            -f OUT_NAME, --out_name=OUT_NAME
+                                  The output file name
+                                  Can be a netCDF file or a zip file containing netCDF files, depending on the server configuration
+            -t DATE_MIN, --date_min=DATE_MIN
+                                  The min date (YYYY-MM-DD)
+            -T DATE_MAX, --date_max=DATE_MAX
+                                  The max date (YYYY-MM-DD)
+            -y LATITUDE_MIN, --latitude_min=LATITUDE_MIN
+                                  The min latitude [-90 ; 90]
+            -Y LATITUDE_MAX, --latitude_min=LATITUDE_MAX
+                                  The max latitude [-90 ; 90]                      
+            -x LONGITUDE_MIN, --longitude_min=LONGITUDE_MIN
+                                  The min longitude [-180 ; 180]
+            -X LONGITUDE_MAX, --longitude_max=LONGITUDE_MAX
+                                  The max longitude [-180 ; 180]
+            -z DEPTH_MIN, --depth_min=DEPTH_MIN
+                                  The min depth [0 ; 2e31]
+            -Z DEPTH_MAX, --depth_min=DEPTH_MAX
+                                  The max depth [0 ; 2e31]
+            -v VARIABLE, --variable=VARIABLE
+                                  The physical variables to be extracted, you can use netCDF variable name or standard_name attribute
+                                  Generic standard name table is available here:
+                                  http://cf-pcmdi.llnl.gov/documents/cf-standard-names/standard-name-table/16/cf-standard-name-table.html
+.fi
+
+
+.SS REQUIRED MODULES
+
+.P
+This program requires several other modules:
+
+.RS
+.IP \(bu 3
+Archive::Zip
+.IP \(bu 3
+Date::Manip
+.IP \(bu 3
+Readonly
+.IP \(bu 3
+XML::Simple 
+.RE
+
+.SS BUGS AND QUESTIONS
+
+.P
+Please refer to the documentation for information on submitting bug reports or questions to the author.
+
+.SS LICENSE
+
+.P
+This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
+
+.P
+This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+
+.P
+You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111\-1307, USA.
+
+.SS AUTHOR
+
+.P
+CLS (Collecte Localisation Satellites) for MyOcean
+
+.P
+www.cls.fr
+
+.P
+operation.mis@myocean.eu.org
+
+.\" man code generated by txt2tags 2.6 (http://txt2tags.org)
+.\" cmdline: txt2tags -t man -i J:\workspaces\atoll-v2\cls-motu\motu-client\motu-client-perl\src\doc\readme-motu-client.t2t -o J:\workspaces\atoll-v2\cls-motu\motu-client\motu-client-perl\src\doc\readme-motu-client.man
