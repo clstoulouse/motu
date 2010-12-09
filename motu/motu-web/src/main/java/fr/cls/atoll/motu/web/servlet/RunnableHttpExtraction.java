@@ -24,6 +24,7 @@
  */
 package fr.cls.atoll.motu.web.servlet;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.rest.MotuRequestParameters;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
@@ -268,6 +269,11 @@ public class RunnableHttpExtraction extends RunnableExtraction {
 
         try {
             super.setEnded();
+            
+            if (! (statusModeResponse.getCode().equals(ErrorType.OK)) ) {
+                aborted();
+                return;
+            } 
 
             if (noMode()) {
                 return;
@@ -509,7 +515,11 @@ public class RunnableHttpExtraction extends RunnableExtraction {
             return;
         }
         try {
-            response.sendRedirect(product.getDownloadUrlPath());
+            if (statusModeResponse.getCode().equals(ErrorType.OK)) {
+                response.sendRedirect(product.getDownloadUrlPath());
+            } else {
+                sendResponseError500(statusModeResponse.getMsg());   
+            }
         } catch (Exception e) {
             LOG.error("setResponseModeConsole()", e);
 
