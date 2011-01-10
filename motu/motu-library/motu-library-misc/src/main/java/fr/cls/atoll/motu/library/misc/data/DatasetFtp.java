@@ -223,12 +223,12 @@ public class DatasetFtp extends DatasetBase {
             if (fileStart.compareTo(end) > 0) {
                 break;
             }
-            // WARNING : contains functions of org.joda.time.Interval is restrictive :
-            // A zero duration interval cannot contain anything
-            // if interval is [d1, d1] then Interval.contains(d1) returns false
-            // That's why the DateUtils.contains function have been defined :
-            // if interval is [d1, d1] then DateUtils.contains(interval, d1) returns true
-            if (DateUtils.contains(datePeriod, fileStart.getTime())) {
+            
+            Date fileEnd = dataFile.getEndCoverageDate().toDate();
+            
+            Interval filePeriod = new Interval(fileStart.getTime(), fileEnd.getTime());
+            
+            if (DateUtils.intersects(filePeriod, datePeriod)) {
                 selected.add(dataFile);
             }
         }

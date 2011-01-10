@@ -35,10 +35,17 @@ import java.net.Authenticator;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
+import java.util.Date;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.joda.time.Interval;
+import org.joda.time.ReadableInterval;
+
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.utils.DateUtils;
 import fr.cls.atoll.motu.library.misc.utils.Zip;
 
 /**
@@ -59,16 +66,47 @@ public class Test {
         System.setProperty("proxyPort", "8080");
         Authenticator.setDefault(new MyAuthenticator());
 
-        getHostName("62.161.32.221, 10.1.253.25");
-        // testDiskSpace();
-        // testFileInUse();
-        
         try {
-            Zip.zip("test.zip", "C:/tempVFS/test.txt", false);
-        } catch (MotuException e) {
+            Date d1a = NetCdfReader.parseDate("1993-06-01");
+            Date d1b = NetCdfReader.parseDate("1993-06-20");
+            Date d2a = NetCdfReader.parseDate("1991-01-01");
+            Date d2b = NetCdfReader.parseDate("1993-06-01");
+
+            Interval d1Period = new Interval(d1a.getTime(), d1b.getTime());
+            Interval d2Period = new Interval(d2a.getTime(), d2b.getTime());
+
+            System.out.println(DateUtils.contains(d1Period, d2Period));
+            System.out.println(DateUtils.contains(d2Period, d1Period));
+
+            System.out.println(DateUtils.contains(d2Period, d1a.getTime()));
+            System.out.println(DateUtils.contains(d2Period, d1b.getTime()));
+            
+            
+            System.out.println(d2Period.overlap(d1Period));
+            System.out.println(d1Period.overlap(d2Period));
+
+            System.out.println(DateUtils.intersects(d1Period, d2Period));
+            System.out.println(DateUtils.intersects(d2Period, d1Period));
+
+            System.out.println(DateUtils.intersect(d1Period, d2Period));
+            System.out.println(DateUtils.intersect(d2Period, d1Period));
+
+        } catch (MotuInvalidDateException e1) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            e1.printStackTrace();
         }
+        
+
+//        getHostName("62.161.32.221, 10.1.253.25");
+//        // testDiskSpace();
+//        // testFileInUse();
+//        
+//        try {
+//            Zip.zip("test.zip", "C:/tempVFS/test.txt", false);
+//        } catch (MotuException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
     }
 
     public static String getHostName(String ip) {
