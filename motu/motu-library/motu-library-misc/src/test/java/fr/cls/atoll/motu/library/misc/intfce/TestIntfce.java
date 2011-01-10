@@ -364,7 +364,7 @@ public class TestIntfce {
         //            
         // }
         // MAMath.MinMax minMax = NetCdfReader.getMinMaxLonNormal(r1, r2, r1Values, r2Values)
-        listServices();
+        //listServices();
         // catalogInformation();
         // try {
         // ServiceData.Language test = ServiceData.Language.valueOf("ee");
@@ -408,7 +408,7 @@ public class TestIntfce {
         // testLoadInventoryOLA();
         // testLoadCatalogOLA();
         // Product product = productInformationFromInventory();
-        // productExtractDataFromInventory();
+        productExtractDataFromInventory();
         // productListMercator();
         // productList();
         //testGetProductMetadataInfo();
@@ -700,12 +700,16 @@ public class TestIntfce {
     }
 
     public static void productExtractDataFromInventory() {
-        String prefix = "http://purl.org/cls/atoll/ontology/individual/atoll#";
+        //String prefix = "http://purl.org/cls/atoll/ontology/individual/atoll#";
+        String prefix = "http://purl.org/myocean/ontology/service/database#";
         // String productId = prefix + "dataset-duacs-global-nrt-madt-merged-h";
         // String service = prefix + "motu-ftp-aviso";
-        String service = prefix + "motu-ftp-mercator";
-        String productId = prefix + "dataset-psy3v2-pgs-arc-mercator-bestestimate";
-
+        //String service = prefix + "motu-ftp-mercator";
+        String service = prefix + "cls-toulouse-fr-sltac-motu-rest";
+        
+        //String productId = prefix + "dataset-psy3v2-pgs-arc-mercator-bestestimate";
+        String productId = prefix + "http://purl.org/myocean/ontology/product/database#dataset-psy3v2-pgs-glo-myocean-bestestimate";
+ 
         // add temporal criteria
         // first element is start date
         // second element is end date (optional)
