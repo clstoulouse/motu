@@ -38,22 +38,23 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.CacheStrategy;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSelector;
-import org.apache.commons.vfs.FileSystemConfigBuilder;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileSystemOptions;
-import org.apache.commons.vfs.FileType;
-import org.apache.commons.vfs.Selectors;
-import org.apache.commons.vfs.UserAuthenticator;
-import org.apache.commons.vfs.VFS;
-import org.apache.commons.vfs.auth.StaticUserAuthenticator;
-import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
-import org.apache.commons.vfs.impl.StandardFileSystemManager;
-import org.apache.commons.vfs.provider.ftp.FtpFileSystemConfigBuilder;
-import org.apache.commons.vfs.provider.http.HttpFileSystemConfigBuilder;
-import org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder;
+import org.apache.commons.vfs2.CacheStrategy;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSelector;
+import org.apache.commons.vfs2.FileSystemConfigBuilder;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileSystemOptions;
+import org.apache.commons.vfs2.FileType;
+import org.apache.commons.vfs2.Selectors;
+import org.apache.commons.vfs2.UserAuthenticator;
+import org.apache.commons.vfs2.VFS;
+import org.apache.commons.vfs2.auth.StaticUserAuthenticator;
+import org.apache.commons.vfs2.impl.DefaultFileSystemConfigBuilder;
+import org.apache.commons.vfs2.impl.StandardFileSystemManager;
+import org.apache.commons.vfs2.provider.ftp.FtpFileSystem;
+import org.apache.commons.vfs2.provider.ftp.FtpFileSystemConfigBuilder;
+import org.apache.commons.vfs2.provider.http.HttpFileSystemConfigBuilder;
+import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
 import org.apache.log4j.Logger;
 import org.joda.time.Period;
 
@@ -220,7 +221,7 @@ public class VFSManager {
 
     /**
      * Sets the user info.
-     *
+     * 
      * @param user the user
      * @param pwd the pwd
      * @param fileSystemOptions the file system options
@@ -244,10 +245,10 @@ public class VFSManager {
         return returnFileSystemOptions;
 
     }
-    
+
     /**
      * Sets the user info.
-     *
+     * 
      * @param user the user
      * @param pwd the pwd
      * @return the file system options
@@ -257,7 +258,7 @@ public class VFSManager {
         if (LOG.isDebugEnabled()) {
             LOG.debug("setUserInfo(String, String) - start");
         }
- 
+
         FileSystemOptions returnFileSystemOptions = setUserInfo(user, pwd, opts);
         if (LOG.isDebugEnabled()) {
             LOG.debug("setUserInfo(String, String) - end");
@@ -349,7 +350,10 @@ public class VFSManager {
                 Boolean userDirIsRoot = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPUSERDIRISROOT);
                 if (userDirIsRoot != null) {
                     ftpFscb.setUserDirIsRoot(opts, userDirIsRoot);
+                } else {
+                    ftpFscb.setUserDirIsRoot(opts, false);
                 }
+
                 Boolean passiveMode = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPPASSIVEMODE);
                 ;
                 if (passiveMode != null) {
@@ -388,6 +392,8 @@ public class VFSManager {
                 Boolean userDirIsRoot = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPUSERDIRISROOT);
                 if (userDirIsRoot != null) {
                     sftpFscb.setUserDirIsRoot(opts, userDirIsRoot);
+                } else {
+                    sftpFscb.setUserDirIsRoot(opts, false);
                 }
 
                 String strictHostKeyChecking = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_STRICTHOSTKEYCHECKING);
@@ -432,7 +438,7 @@ public class VFSManager {
 
     /**
      * Sets the scheme opts.
-     *
+     * 
      * @param scheme the scheme
      * @return the file system options
      * @throws MotuException the motu exception
@@ -444,7 +450,7 @@ public class VFSManager {
 
     /**
      * Sets the scheme opts.
-     *
+     * 
      * @param url the url
      * @return the file system options
      * @throws MotuException the motu exception
@@ -466,10 +472,10 @@ public class VFSManager {
             throw new MotuException(String.format("Unable to convert url '%s' to URI object ", url), e);
         }
     }
-    
+
     /**
      * Sets the scheme opts.
-     *
+     * 
      * @param uri the uri
      * @return the file system options
      * @throws MotuException the motu exception
@@ -482,7 +488,7 @@ public class VFSManager {
         String scheme = uri.getScheme();
         String host = uri.getHost();
         FileSystemOptions returnFileSystemOptions = setSchemeOpts(scheme, host);
-        
+
         String theUserInfo = uri.getUserInfo();
         if (!Organizer.isNullOrEmpty(theUserInfo)) {
             String userInfo[] = theUserInfo.split(":");
@@ -496,7 +502,6 @@ public class VFSManager {
         }
         return returnFileSystemOptions;
     }
-
 
     /**
      * Close.
@@ -709,7 +714,8 @@ public class VFSManager {
             if (foDest == null) {
                 throw new MotuException(String.format("Unable to resolve dest uri '%s' ", fileDest));
             }
-            foDest.copyFrom(foSrc, Selectors.SELECT_ALL);
+
+            this.copyFrom(foSrc, foDest, Selectors.SELECT_ALL);
 
         } catch (MotuExceptionBase e) {
             LOG.error("copyFileToLocalFile(String, String, String, String, String, String)", e);
@@ -769,10 +775,11 @@ public class VFSManager {
             }
 
             foDest = standardFileSystemManager.toFileObject(newFile);
-            if (foSrc == null) {
+            if (foDest == null) {
                 throw new MotuException(String.format("Unable to resolve dest uri '%s' ", newFile.getAbsolutePath()));
             }
-            foDest.copyFrom(foSrc, Selectors.SELECT_ALL);
+
+            this.copyFrom(foSrc, foDest, Selectors.SELECT_ALL);
 
         } catch (Exception e) {
             LOG.error("copyFileToLocalFile(String, String)", e);
@@ -1098,7 +1105,7 @@ public class VFSManager {
                                         to.getName().toString(),
                                         to.getName().toString()));
             }
-            to.copyFrom(from, Selectors.SELECT_ALL);
+            this.copyFrom(from, to, Selectors.SELECT_ALL);
         } catch (MotuException e) {
             LOG.error("copyFile(FileObject, FileObject)", e);
 
@@ -1114,5 +1121,50 @@ public class VFSManager {
         if (LOG.isDebugEnabled()) {
             LOG.debug("copyFile(FileObject, FileObject) - exiting");
         }
+    }
+
+    /**
+     * Refresh ftp cache.
+     * 
+     * @param fileObject the file object
+     * @throws FileSystemException
+     */
+    public void refreshFtpCache(FileObject fileObject) throws FileSystemException {
+
+        if (fileObject == null) {
+            return;
+        }
+
+        if (!(fileObject.getFileSystem() instanceof FtpFileSystem)) {
+            return;
+        }
+        if (fileObject.exists()) {
+            return;
+        }
+        FileObject fileObjectParent = fileObject.getParent();
+        if (fileObjectParent == null) {
+            return;
+        }
+
+        fileObjectParent.getType(); // force to attach : needed for force refresh
+        fileObjectParent.refresh();
+
+    }
+
+    /**
+     * Copy from.
+     * 
+     * @param srcFile the src file
+     * @param destFile the dest file
+     * @param selector the selector
+     * @throws FileSystemException the file system exception
+     */
+    public void copyFrom(FileObject srcFile, FileObject destFile, FileSelector selector) throws FileSystemException {
+
+        // MIS-203
+        refreshFtpCache(srcFile);
+
+        destFile.copyFrom(srcFile, selector);
+
     }
 }
