@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<providers>
+
+<!-- 
+    <default-provider class-name="org.apache.commons.vfs.provider.url.UrlFileProvider"/>
+ -->
+    <default-provider class-name="org.apache.commons.vfs.provider.local.DefaultLocalFileProvider"/>
+    
+    <provider class-name="org.apache.commons.vfs.provider.local.DefaultLocalFileProvider">
+        <scheme name="local"/>
+    </provider>
+    
+    <provider class-name="org.apache.commons.vfs.provider.local.DefaultLocalFileProvider">
+        <scheme name="file"/>
+    </provider>
+
+    <provider class-name="org.apache.commons.vfs.provider.ftp.FtpFileProvider">
+        <scheme name="ftp"/>
+        <if-available class-name="org.apache.commons.net.ftp.FTPFile"/>
+    </provider>
+    
+    <provider class-name="org.apache.commons.vfs.provider.sftp.SftpFileProvider">
+        <scheme name="sftp"/>
+    </provider>
+    
+    <provider class-name="org.apache.commons.vfs.provider.http.HttpFileProvider">
+        <scheme name="http"/>
+    </provider>
+    
+    <provider class-name="org.apache.commons.vfs.provider.https.HttpsFileProvider">
+        <scheme name="https"/>
+    </provider>
+
+    <provider class-name="org.apache.commons.vfs.provider.jar.JarFileProvider">
+        <scheme name="jar"/>
+    </provider>
+
+</providers>

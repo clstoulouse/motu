@@ -38,21 +38,22 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemConfigBuilder;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileSystemOptions;
-import org.apache.commons.vfs.Selectors;
-import org.apache.commons.vfs.VFS;
-import org.apache.commons.vfs.auth.StaticUserAuthenticator;
-import org.apache.commons.vfs.impl.DefaultFileReplicator;
-import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
-import org.apache.commons.vfs.impl.StandardFileSystemManager;
-import org.apache.commons.vfs.provider.ftp.FtpClientFactory;
-import org.apache.commons.vfs.provider.ftp.FtpFileSystemConfigBuilder;
-import org.apache.commons.vfs.provider.http.HttpFileSystemConfigBuilder;
-import org.apache.commons.vfs.provider.sftp.SftpClientFactory;
-import org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder;
+import org.apache.commons.vfs2.CacheStrategy;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemConfigBuilder;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileSystemOptions;
+import org.apache.commons.vfs2.Selectors;
+import org.apache.commons.vfs2.VFS;
+import org.apache.commons.vfs2.auth.StaticUserAuthenticator;
+import org.apache.commons.vfs2.impl.DefaultFileReplicator;
+import org.apache.commons.vfs2.impl.DefaultFileSystemConfigBuilder;
+import org.apache.commons.vfs2.impl.StandardFileSystemManager;
+import org.apache.commons.vfs2.provider.ftp.FtpClientFactory;
+import org.apache.commons.vfs2.provider.ftp.FtpFileSystemConfigBuilder;
+import org.apache.commons.vfs2.provider.http.HttpFileSystemConfigBuilder;
+import org.apache.commons.vfs2.provider.sftp.SftpClientFactory;
+import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
 import org.apache.log4j.Logger;
 
 /**
@@ -275,7 +276,13 @@ public class TestFtp {
         //
 
         // testFtp();
-        // testSftp();
+         testSftp();
+         // "sftp://atoll:atoll@atoll-misgw.vlandata.cls.fr/opt/atoll/misgw-sltac/hoa/publication/inventories/dataset-duacs-ran-global-en-sla-l3__cls-toulouse-fr-sltac-motu-rest.xml");
+        //testVFS("atoll", "atoll", "sftp", "atoll-misgw.vlandata.cls.fr", "opt/atoll/misgw-sltac/hoa/publication/inventories/dataset-duacs-ran-global-en-sla-l3__cls-toulouse-fr-sltac-motu-rest.xml");
+        //testVFS_OLD("atoll", "atoll", "sftp", "atoll-misgw.vlandata.cls.fr", "opt/atoll/misgw-sltac/hoa/publication/inventories/dataset-duacs-ran-global-en-sla-l3__cls-toulouse-fr-sltac-motu-rest.xml");
+         if (true) {
+             return;
+         }
         // testVFS("t", "t", "sftp", "CLS-EARITH.pc.cls.fr", "AsciiEnvisat.txt");
         // testVFS("atoll", "atoll", "sftp", "catsat-data1.cls.fr/home/atoll",
         // "/atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_20090516.xml");
@@ -284,14 +291,14 @@ public class TestFtp {
         // "NRT-SLA/maps/rt/j2/h/msla_rt_j2_err_21564.nc.gz");
         // testVFS("anonymous@ftp.unidata.ucar.edu", "", "ftp", "proxy.cls.fr", "/pub/README");
 
-        try {
-            Boolean value = new MotuConfigFileSystemWrapper<Boolean>().getFieldValue("test", "ftpUserDirIsRoot");
-        } catch (MotuException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        
-        testVFS("", "", "http", "catsat-data1.cls.fr:43080", "/thredds/catalog.xml");
+//        try {
+//            Boolean value = new MotuConfigFileSystemWrapper<Boolean>().getFieldValue("test", "ftpUserDirIsRoot");
+//        } catch (MotuException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        
+//        testVFS("", "", "http", "catsat-data1.cls.fr:43080", "/thredds/catalog.xml");
 
         // testVFS("anonymous@gridftp.bigred.iu.teragrid.org:2811", "email", "gsiftp",        // "proxy.cls.fr", "/pub/README");
         // testVFS("anonymous@dcgftp.usatlas.bnl.gov:2811/", "email", "gsiftp",
@@ -474,15 +481,19 @@ public class TestFtp {
             // SftpFileSystemConfigBuilder.PROXY_SOCKS5 );
             // //SftpFileSystemConfigBuilder.getInstance().setProxyType(opts,
             // SftpFileSystemConfigBuilder.PROXY_HTTP );
-            FileObject fo = VFS.getManager().resolveFile("sftp://t:t@CLS-EARITH.pc.cls.fr/AsciiEnvisat.txt", opts);
+            //FileObject fo = VFS.getManager().resolveFile("sftp://t:t@CLS-EARITH.pc.cls.fr/AsciiEnvisat.txt", opts);
             String server = "CLS-EARITH.pc.cls.fr";
             String user = "t";
             String pass = "t";
+            
 
             server = "aviso-motu.cls.fr";
             user = "mapserv";
             pass = "mapserv";
-            Session sftpClient = SftpClientFactory.createConnection(server, 22, user.toCharArray(), pass.toCharArray(), opts);
+//            Session sftpClient = SftpClientFactory.createConnection(server, 22, user.toCharArray(), pass.toCharArray(), opts);
+
+            Organizer.getUriAsInputStream("sftp://atoll:atoll@atoll-misgw.vlandata.cls.fr/opt/atoll/misgw-sltac/hoa/publication/inventories/dataset-duacs-ran-global-en-sla-l3__cls-toulouse-fr-sltac-motu-rest.xml");
+            
         } catch (FileSystemException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -492,10 +503,14 @@ public class TestFtp {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } catch (MotuException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
-
+ 
     public static void testVFS(String user, String pwd, String scheme, String host, String file) {
+                
         StandardFileSystemManager fsManager = null;
 
         try {
@@ -505,7 +520,7 @@ public class TestFtp {
             StaticUserAuthenticator auth = new StaticUserAuthenticator(null, user, pwd);
 
             fsManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderConfig()));
-            // fsManager.setCacheStrategy(CacheStrategy.ON_CALL);
+            fsManager.setCacheStrategy(CacheStrategy.ON_CALL);
             // fsManager.addProvider("moi", new DefaultLocalFileProvider());
             fsManager.init();
 
@@ -518,7 +533,7 @@ public class TestFtp {
 
             if (fscb instanceof FtpFileSystemConfigBuilder) {
                 FtpFileSystemConfigBuilder ftpFscb = (FtpFileSystemConfigBuilder) fscb;
-                ftpFscb.setUserDirIsRoot(opts, true);
+//                ftpFscb.setUserDirIsRoot(opts, false);
 
             }
             if (fscb instanceof HttpFileSystemConfigBuilder) {
@@ -529,7 +544,7 @@ public class TestFtp {
             }
             if (fscb instanceof SftpFileSystemConfigBuilder) {
                 SftpFileSystemConfigBuilder sftpFscb = (SftpFileSystemConfigBuilder) fscb;
-                // sftpFscb.setUserDirIsRoot(opts, true);
+                sftpFscb.setUserDirIsRoot(opts, false);
 
                 // TrustEveryoneUserInfo trustEveryoneUserInfo = new TrustEveryoneUserInfo();
                 // trustEveryoneUserInfo.promptYesNo("eddfsdfs");
@@ -564,12 +579,13 @@ public class TestFtp {
             // FileObject ff = fsManager.resolveFile("sftp://t:t@CLS-EARITH.pc.cls.fr/AsciiEnvisat.txt",
             // opts);
             String uri = String.format("%s://%s/%s", scheme, host, file);
-            // FileObject ff2 =
-            // fsManager.resolveFile("sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll/atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_20090516.xml");
             FileObject ff = fsManager.resolveFile(uri, opts);
             FileObject dest = fsManager.toFileObject(newFile);
-            // dest.copyFrom(ff2, Selectors.SELECT_ALL);
-            dest.copyFrom(ff, Selectors.SELECT_ALL);
+
+            ff.getContent().getInputStream();
+
+            //dest.copyFrom(ff, Selectors.SELECT_ALL);
+            
             //            
             // URL url = ff.getURL();
             //            
@@ -595,7 +611,99 @@ public class TestFtp {
         }
 
     }
-
+//    public static void testVFS_OLD(String user, String pwd, String scheme, String host, String file) {
+//        
+//        // "sftp://atoll:atoll@atoll-misgw.vlandata.cls.fr/opt/atoll/misgw-sltac/hoa/publication/inventories/dataset-duacs-ran-global-en-sla-l3__cls-toulouse-fr-sltac-motu-rest.xml");
+//
+//        
+//
+//        org.apache.commons.vfs.impl.StandardFileSystemManager fsManager = null;
+//
+//        try {
+//            fsManager = new org.apache.commons.vfs.impl.StandardFileSystemManager();
+//            fsManager.setLogger(_LOG);
+//
+//            org.apache.commons.vfs.auth.StaticUserAuthenticator auth = new org.apache.commons.vfs.auth.StaticUserAuthenticator(null, user, pwd);
+//
+//            fsManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderOldConfig()));
+//            fsManager.setCacheStrategy(org.apache.commons.vfs.CacheStrategy.ON_CALL);
+//            // fsManager.addProvider("moi", new DefaultLocalFileProvider());
+//            fsManager.init();
+//
+//            org.apache.commons.vfs.FileSystemOptions opts = new org.apache.commons.vfs.FileSystemOptions();
+//            org.apache.commons.vfs.FileSystemConfigBuilder fscb = fsManager.getFileSystemConfigBuilder(scheme);
+//            org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
+//            org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
+//
+//            System.out.println(fsManager.getProviderCapabilities(scheme));
+//
+//            if (fscb instanceof org.apache.commons.vfs.provider.ftp.FtpFileSystemConfigBuilder) {
+//                org.apache.commons.vfs.provider.ftp.FtpFileSystemConfigBuilder ftpFscb = (org.apache.commons.vfs.provider.ftp.FtpFileSystemConfigBuilder) fscb;
+//                ftpFscb.setUserDirIsRoot(opts, true);
+//
+//            }
+//            if (fscb instanceof org.apache.commons.vfs.provider.http.HttpFileSystemConfigBuilder) {
+//                org.apache.commons.vfs.provider.http.HttpFileSystemConfigBuilder httpFscb = (org.apache.commons.vfs.provider.http.HttpFileSystemConfigBuilder) fscb;
+//                httpFscb.setProxyHost(opts, "proxy-bureautique.cls.fr");
+//                httpFscb.setProxyPort(opts, 8080);
+//
+//            }
+//            if (fscb instanceof org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder) {
+//                org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder sftpFscb = (org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder) fscb;
+//                // sftpFscb.setUserDirIsRoot(opts, true);
+//
+//                // TrustEveryoneUserInfo trustEveryoneUserInfo = new TrustEveryoneUserInfo();
+//                // trustEveryoneUserInfo.promptYesNo("eddfsdfs");
+//                // sftpFscb.setUserInfo(opts, new TrustEveryoneUserInfo());
+//                sftpFscb.setTimeout(opts, 5000);
+//                // SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(opts, true);
+//                // SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(opts, "no");
+//
+//            }
+//            // FileObject fo =
+//            // fsManager.resolveFile("ftp://ftp.cls.fr/pub/oceano/AVISO/NRT-SLA/maps/rt/j2/h/msla_rt_j2_err_21564.nc.gz",
+//            // opts);
+//
+//            // String uri = String.format("%s://%s/%s", scheme, host, file);
+//            // String uri = String.format("%s://%s/", scheme, host);
+//            // FileObject originBase = fsManager.resolveFile(uri, opts);
+//            // fsManager.setBaseFile(originBase);
+//
+//            File tempDir = new File("c:/tempVFS");
+//            // File tempFile = File.createTempFile("AsciiEnvisat", ".txt", tempDir);
+//            File hostFile = new File(file);
+//            String fileName = hostFile.getName();
+//            File newFile = new File(tempDir, fileName);
+//            newFile.createNewFile();
+//
+//            org.apache.commons.vfs.impl.DefaultFileReplicator dfr = new org.apache.commons.vfs.impl.DefaultFileReplicator(tempDir);
+//            fsManager.setTemporaryFileStore(dfr);
+//            String uri = String.format("%s://%s/%s", scheme, host, file);
+//            org.apache.commons.vfs.FileObject ff = fsManager.resolveFile(uri, opts);
+//            org.apache.commons.vfs.FileObject dest = fsManager.toFileObject(newFile);
+//
+//            ff.getContent().getInputStream();
+//
+//            
+//            //dest.copyFrom(ff, org.apache.commons.vfs.Selectors.SELECT_ALL);
+//
+//
+//        } catch (FileSystemException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        } catch (MotuException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        } finally {
+//            // fsManager.close();
+//            // fsManager.freeUnusedResources();
+//        }
+//
+//    }
+    
     public static void testPush(String fromUri, String toUri) {
 
         try {

@@ -4,22 +4,22 @@
 <!-- 
     <default-provider class-name="org.apache.commons.vfs.provider.url.UrlFileProvider"/>
  -->
-    <default-provider class-name="org.apache.commons.vfs.provider.local.DefaultLocalFileProvider"/>
+    <default-provider class-name="org.apache.commons.vfs2.provider.local.DefaultLocalFileProvider"/>
     
-    <provider class-name="org.apache.commons.vfs.provider.local.DefaultLocalFileProvider">
+    <provider class-name="org.apache.commons.vfs2.provider.local.DefaultLocalFileProvider">
         <scheme name="local"/>
     </provider>
     
-    <provider class-name="org.apache.commons.vfs.provider.local.DefaultLocalFileProvider">
+    <provider class-name="org.apache.commons.vfs2.provider.local.DefaultLocalFileProvider">
         <scheme name="file"/>
     </provider>
 
-    <provider class-name="org.apache.commons.vfs.provider.ftp.FtpFileProvider">
+    <provider class-name="org.apache.commons.vfs2.provider.ftp.FtpFileProvider">
         <scheme name="ftp"/>
         <if-available class-name="org.apache.commons.net.ftp.FTPFile"/>
     </provider>
     
-    <provider class-name="org.apache.commons.vfs.provider.sftp.SftpFileProvider">
+    <provider class-name="org.apache.commons.vfs2.provider.sftp.SftpFileProvider">
         <scheme name="sftp"/>
     </provider>
 
@@ -27,15 +27,15 @@
         <scheme name="gsiftp"/>
     </provider>
     
-    <provider class-name="org.apache.commons.vfs.provider.http.HttpFileProvider">
+    <provider class-name="org.apache.commons.vfs2.provider.http.HttpFileProvider">
         <scheme name="http"/>
     </provider>
     
-    <provider class-name="org.apache.commons.vfs.provider.https.HttpsFileProvider">
+    <provider class-name="org.apache.commons.vfs2.provider.https.HttpsFileProvider">
         <scheme name="https"/>
     </provider>
 
-    <provider class-name="org.apache.commons.vfs.provider.jar.JarFileProvider">
+    <provider class-name="org.apache.commons.vfs2.provider.jar.JarFileProvider">
         <scheme name="jar"/>
     </provider>
 

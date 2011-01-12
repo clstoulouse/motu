@@ -24,8 +24,8 @@
  */
 package fr.cls.atoll.motu.library.misc.vfs.provider.gsiftp;
 
-import org.apache.commons.vfs.provider.FileNameParser;
-import org.apache.commons.vfs.provider.URLFileNameParser;
+import org.apache.commons.vfs2.provider.FileNameParser;
+import org.apache.commons.vfs2.provider.URLFileNameParser;
 
 /**
  * Implementation for sftp. set default port to 22

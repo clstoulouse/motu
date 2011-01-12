@@ -59,7 +59,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -329,6 +329,8 @@ public class Organizer {
 
     /** The Constant PROPS_VFS_PROVIDER. */
     private static final String PROPS_VFS_PROVIDER = "vfsProvider";
+
+    private static final String PROPS_VFS_PROVIDER_OLD = "vfsProviderOLD";
 
     /** The Constant PROPS_STDNAMES_EQUIV_FILE. */
     private static final String PROPS_STDNAMES_EQUIV_FILE = "sdtNameEquiv";
@@ -1510,6 +1512,17 @@ public class Organizer {
     public static String getVFSProviderConfig() throws MotuException {
 
         return Organizer.getPropertiesInstance().getProperty(PROPS_VFS_PROVIDER);
+    }
+    
+    /**
+     * Gets the vFS provider old config.
+     *
+     * @return the vFS provider old config
+     * @throws MotuException the motu exception
+     */
+    public static String getVFSProviderOldConfig() throws MotuException {
+
+        return Organizer.getPropertiesInstance().getProperty(PROPS_VFS_PROVIDER_OLD);
     }
 
     /**

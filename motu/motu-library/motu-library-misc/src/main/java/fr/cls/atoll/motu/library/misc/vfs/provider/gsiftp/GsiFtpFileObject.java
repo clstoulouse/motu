@@ -36,13 +36,14 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.FileName;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileType;
-import org.apache.commons.vfs.provider.AbstractFileObject;
-import org.apache.commons.vfs.provider.UriParser;
-import org.apache.commons.vfs.util.Messages;
+import org.apache.commons.vfs2.FileName;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileType;
+import org.apache.commons.vfs2.provider.AbstractFileName;
+import org.apache.commons.vfs2.provider.AbstractFileObject;
+import org.apache.commons.vfs2.provider.UriParser;
+import org.apache.commons.vfs2.util.Messages;
 import org.globus.ftp.FileInfo;
 import org.globus.ftp.GridFTPClient;
 import org.globus.ftp.exception.ClientException;
@@ -91,7 +92,7 @@ public class GsiFtpFileObject extends AbstractFileObject {
      * 
      * @throws FileSystemException the file system exception
      */
-    protected GsiFtpFileObject(final FileName name, final GsiFtpFileSystem fileSystem, final FileName rootName) throws FileSystemException {
+    protected GsiFtpFileObject(final AbstractFileName name, final GsiFtpFileSystem fileSystem, final FileName rootName) throws FileSystemException {
         super(name, fileSystem);
         ftpFs = fileSystem;
         String relPathTmp = UriParser.decode(rootName.getRelativeName(name));

@@ -26,8 +26,8 @@ package fr.cls.atoll.motu.library.misc.vfs.provider.gsiftp;
 
 import java.io.IOException;
 
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileSystemOptions;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileSystemOptions;
 import org.globus.ftp.GridFTPClient;
 
 /**

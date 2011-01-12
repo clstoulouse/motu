@@ -31,13 +31,15 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.FileName;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystem;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileSystemOptions;
-import org.apache.commons.vfs.provider.AbstractFileSystem;
-import org.apache.commons.vfs.provider.GenericFileName;
+import org.apache.commons.vfs2.Capability;
+import org.apache.commons.vfs2.FileName;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystem;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileSystemOptions;
+import org.apache.commons.vfs2.provider.AbstractFileName;
+import org.apache.commons.vfs2.provider.AbstractFileSystem;
+import org.apache.commons.vfs2.provider.GenericFileName;
 import org.globus.ftp.GridFTPClient;
 import org.globus.ftp.exception.ServerException;
 
@@ -96,7 +98,7 @@ public class GsiFtpFileSystem extends AbstractFileSystem implements FileSystem {
      */
     @Override
     @SuppressWarnings("unchecked")
-    protected void addCapabilities(final Collection caps) {
+    protected void addCapabilities(final Collection<Capability> caps) {
         caps.addAll(GsiFtpFileProvider.CAPABILITIES);
     }
 
@@ -179,7 +181,7 @@ public class GsiFtpFileSystem extends AbstractFileSystem implements FileSystem {
      * @throws FileSystemException the file system exception
      */
     @Override
-    protected FileObject createFile(final FileName name) throws FileSystemException {
+    protected FileObject createFile(final AbstractFileName name) throws FileSystemException {
         return new GsiFtpFileObject(name, this, getRootName());
     }
 
@@ -195,5 +197,7 @@ public class GsiFtpFileSystem extends AbstractFileSystem implements FileSystem {
     public Object getAttribute(final String attrName) throws FileSystemException {
         return attribs.get(attrName);
     }
+
+ 
 
 }
