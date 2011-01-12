@@ -92,7 +92,7 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.apache.log4j.Logger;
 import org.apache.xerces.dom.DocumentImpl;
 import org.geotoolkit.parameter.DefaultParameterDescriptor;
