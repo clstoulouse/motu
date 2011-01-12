@@ -196,7 +196,8 @@ public class VFSManager {
         standardFileSystemManager.setClassLoader(this.getClass().getClassLoader());
         try {
             standardFileSystemManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderConfig()));
-            standardFileSystemManager.setCacheStrategy(CacheStrategy.ON_CALL);
+            //standardFileSystemManager.setCacheStrategy(CacheStrategy.ON_CALL);
+            standardFileSystemManager.setCacheStrategy(CacheStrategy.ON_RESOLVE);
             // standardFileSystemManager.setFilesCache(new SoftRefFilesCache());
             // standardFileSystemManager.addProvider("jar", new JarFileProvider());
             standardFileSystemManager.init();
