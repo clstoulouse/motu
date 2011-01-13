@@ -2288,7 +2288,7 @@ public class Product {
         String dir = Organizer.getMotuConfigInstance().getExtractionPath();
         stringBuffer.append(dir);
 
-        if (!(dir.endsWith("/") || !dir.endsWith("\\"))) {
+        if (!(dir.endsWith("/") || dir.endsWith("\\"))) {
             stringBuffer.append("/");
         }
         return stringBuffer.toString();
