@@ -528,7 +528,7 @@ public class Product {
             LOG.error("loadOpendapGlobalMetaData()", e);
             throw new MotuException("Error in loadOpendapGlobalMetaData", e);
         } catch (NetCdfAttributeNotFoundException e) {
-            LOG.error("loadOpendapGlobalMetaData()", e);
+            //LOG.error("loadOpendapGlobalMetaData()", e);
 
             // Do nothing
         }
@@ -543,7 +543,7 @@ public class Product {
             throw new MotuException("Error in loadOpendapGlobalMetaData", e);
 
         } catch (NetCdfAttributeNotFoundException e) {
-            LOG.error("loadOpendapGlobalMetaData()", e);
+            //LOG.error("loadOpendapGlobalMetaData()", e);
 
             // Do nothing
         }
@@ -2288,7 +2288,7 @@ public class Product {
         String dir = Organizer.getMotuConfigInstance().getExtractionPath();
         stringBuffer.append(dir);
 
-        if (!(dir.endsWith("/") || dir.endsWith("\\"))) {
+        if (!(dir.endsWith("/") || !dir.endsWith("\\"))) {
             stringBuffer.append("/");
         }
         return stringBuffer.toString();

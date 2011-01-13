@@ -580,7 +580,7 @@ public abstract class DatasetBase {
         try {
             attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_TITLE);
         } catch (NetCdfAttributeNotFoundException e) {
-            LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
+            //LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
 
             attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_TITLE, productMetadata.getTitle());
         }
@@ -591,7 +591,7 @@ public abstract class DatasetBase {
         try {
             attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_INSTITUTION);
         } catch (NetCdfAttributeNotFoundException e) {
-            LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
+            //LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
 
             if (productMetadata.getDataProvider() != null) {
                 attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_INSTITUTION, productMetadata.getDataProvider().getName());
@@ -606,7 +606,7 @@ public abstract class DatasetBase {
         try {
             attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_REFERENCES);
         } catch (NetCdfAttributeNotFoundException e) {
-            LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
+            //LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
 
             if (productMetadata.getDataProvider() != null) {
                 attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_REFERENCES, productMetadata.getDataProvider().getWebSite());
@@ -621,7 +621,7 @@ public abstract class DatasetBase {
         try {
             attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_SOURCE);
         } catch (NetCdfAttributeNotFoundException e) {
-            LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
+            //LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
 
             attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_SOURCE, " ");
         }
@@ -637,7 +637,7 @@ public abstract class DatasetBase {
         try {
             attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_COMMENT);
         } catch (NetCdfAttributeNotFoundException e) {
-            LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
+            //LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
 
             attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_COMMENT, productMetadata.getDescription());
         }
@@ -654,7 +654,7 @@ public abstract class DatasetBase {
         try {
             attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_EASTING);
         } catch (NetCdfAttributeNotFoundException e) {
-            LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
+            //LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
 
             // Do nothing
         }
@@ -664,7 +664,7 @@ public abstract class DatasetBase {
         try {
             attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_NORTHING);
         } catch (NetCdfAttributeNotFoundException e) {
-            LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
+            //LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
 
             // Do nothing
         }

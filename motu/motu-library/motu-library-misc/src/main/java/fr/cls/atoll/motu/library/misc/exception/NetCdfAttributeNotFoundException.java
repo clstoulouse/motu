@@ -73,8 +73,8 @@ public class NetCdfAttributeNotFoundException extends MotuExceptionBase {
     @Override
     public void notifyLogException() {
 
-        super.notifyLogException();
-        LOG.warn(notifyException());
+        //super.notifyLogException();
+        //LOG.warn(notifyException());
     }
 
     /**
@@ -93,7 +93,7 @@ public class NetCdfAttributeNotFoundException extends MotuExceptionBase {
     }
 
     /**
-     * NetCDF varialbe whose attribute is not found.
+     * NetCDF variable whose attribute is not found.
      */
     final private Variable netCdfVariable;
 
