@@ -400,7 +400,7 @@ public class RestUtil {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loginToCAS(String, String, String) - url is: " + casURL);
         }
-        System.out.println(casURL);
+        //System.out.println(casURL);
         HttpsURLConnection hsu = (HttpsURLConnection) RestUtil.openHttpsConnection(casURL);
         OutputStreamWriter out = new OutputStreamWriter(hsu.getOutputStream());
         BufferedWriter bwr = new BufferedWriter(out);
