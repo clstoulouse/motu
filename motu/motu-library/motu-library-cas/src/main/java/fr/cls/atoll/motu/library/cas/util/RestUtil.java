@@ -48,7 +48,10 @@ import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.log4j.Logger;
 
+import fr.cls.atoll.motu.api.message.AuthenticationMode;
 import fr.cls.atoll.motu.library.cas.UserBase;
+import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
+import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
 
 /**
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
@@ -63,9 +66,16 @@ public class RestUtil {
 
     /** The Constant CAS_REST_URL_SUFFIX. */
     public static final String CAS_REST_URL_SUFFIX = "/v1/tickets";
-    
+
+    /** The Constant LOCATION_HTTP_HEADER_KEY. */
+    public static final String LOCATION_HTTP_HEADER_KEY = "Location";
+
+    /** The Constant WWW_AUTHENTICATE_HTTP_HEADER_KEY. */
+    public static final String WWW_AUTHENTICATE_HTTP_HEADER_KEY = "WWW-Authenticate";
+
     /** The Constant DEFAULT_BUFFER_SIZE. */
     private static final int DEFAULT_BUFFER_SIZE = 4096;
+
     //
     // private static String CAS_SERVER_URL_PREFIX = null;
     //
@@ -97,30 +107,155 @@ public class RestUtil {
     //
     // return stringBuffer.toString();
     // }
-    
     /**
-     * Checks if is casified url.
+     * Check authentication mode.
      *
-     * @param serviceURL the service url
-     * @return true, if is casified url
+     * @param uri the uri
+     * @return the authentication mode
      * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasException the motu cas exception
      */
-    public static boolean isCasifiedUrl(URI serviceURL) throws IOException {
-
-        return isCasifiedUrl(serviceURL.toString());
-
+    public static AuthenticationMode checkAuthenticationMode(URI uri) throws IOException, MotuCasException {
+        return RestUtil.checkAuthenticationMode(uri.toString(), null);
     }
     
     /**
-     * Checks if is casified url.
+     * Check authentication mode.
      *
+     * @param uri the uri
+     * @param proxy the proxy
+     * @return the authentication mode
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasException the motu cas exception
+     */
+    public static AuthenticationMode checkAuthenticationMode(URI uri, Proxy proxy) throws IOException, MotuCasException {
+        return RestUtil.checkAuthenticationMode(uri.toString(), proxy);
+    }
+
+    /**
+     * Check authentication mode.
+     * 
+     * @param url the url
+     * @return the authentication mode
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasException the motu cas exception
+     */
+    public static AuthenticationMode checkAuthenticationMode(String url) throws IOException, MotuCasException {
+        return RestUtil.checkAuthenticationMode(url, null);
+    }
+
+    /**
+     * Check authentication mode.
+     * 
+     * @param url the url
+     * @param proxy the proxy
+     * @return the authentication mode
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasException the motu cas exception
+     */
+    public static AuthenticationMode checkAuthenticationMode(String url, Proxy proxy) throws IOException, MotuCasException {
+
+        AuthenticationMode authenticationMode = AuthenticationMode.NONE;
+
+        try {
+            boolean isCasified = RestUtil.isCasifiedUrl(url, proxy);
+            if (isCasified) {
+                authenticationMode = AuthenticationMode.CAS;
+            }
+        } catch (MotuCasBadRequestException e) {
+
+            switch (e.getCode()) {
+
+            case HttpURLConnection.HTTP_UNAUTHORIZED:
+            case HttpURLConnection.HTTP_FORBIDDEN:
+                authenticationMode = checkAuthenticationMode(e);
+                break;
+
+            default:
+                throw e;
+            }
+        }
+
+        return authenticationMode;
+
+    }
+
+    /**
+     * Check authentication mode.
+     * 
+     * @param e the excetion that contains request headers to check authentication
+     * @return the authentication mode
+     * @throws MotuCasException the motu cas exception
+     */
+    public static AuthenticationMode checkAuthenticationMode(MotuCasBadRequestException e) throws MotuCasException {
+
+        String wwwAuthenticate = e.getHeaderField(RestUtil.WWW_AUTHENTICATE_HTTP_HEADER_KEY);
+
+        if (RestUtil.isNullOrEmpty(wwwAuthenticate)) {
+            return AuthenticationMode.NONE;
+        }
+
+        String wwwAuthenticateUpperCase = wwwAuthenticate.toUpperCase();
+
+        if (wwwAuthenticateUpperCase.startsWith("BASIC")) {
+            return AuthenticationMode.BASIC;
+        }
+
+        throw new MotuCasException(String.format("Authentication '%s' is not implemented", wwwAuthenticate));
+
+    }
+
+    /**
+     * Checks if is casified url.
+     * 
      * @param serviceURL the service url
      * @return true, if is casified url
      * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException
      */
-    public static boolean isCasifiedUrl(String serviceURL) throws IOException {
+    public static boolean isCasifiedUrl(URI serviceURL) throws IOException, MotuCasBadRequestException {
 
-        String casUrl = RestUtil.getRedirectUrl(serviceURL);
+        return isCasifiedUrl(serviceURL.toString(), null);
+
+    }
+
+    /**
+     * Checks if is casified url.
+     * 
+     * @param serviceURL the service url
+     * @param proxy the proxy
+     * @return true, if is casified url
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException the motu cas bad request exception
+     */
+    public static boolean isCasifiedUrl(URI serviceURL, Proxy proxy) throws IOException, MotuCasBadRequestException {
+        return isCasifiedUrl(serviceURL.toString());
+    }
+
+    /**
+     * Checks if is casified url.
+     * 
+     * @param serviceURL the service url
+     * @return true, if is casified url
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException
+     */
+    public static boolean isCasifiedUrl(String serviceURL) throws IOException, MotuCasBadRequestException {
+        return isCasifiedUrl(serviceURL, null);
+    }
+
+    /**
+     * Checks if is casified url.
+     * 
+     * @param serviceURL the service url
+     * @param proxy the proxy
+     * @return true, if is casified url
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException the motu cas bad request exception
+     */
+    public static boolean isCasifiedUrl(String serviceURL, Proxy proxy) throws IOException, MotuCasBadRequestException {
+
+        String casUrl = RestUtil.getRedirectUrl(serviceURL, proxy);
         return (!AssertionUtils.isNullOrEmpty(casUrl));
 
     }
@@ -132,11 +267,12 @@ public class RestUtil {
      * @param casRestUrlSuffix the cas rest url suffix
      * 
      * @return the cas restlet url
-     * @throws IOException 
+     * @throws IOException
      * 
      * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException
      */
-    public static String getCasRestletUrl(String serviceURL, String casRestUrlSuffix) throws IOException {
+    public static String getCasRestletUrl(String serviceURL, String casRestUrlSuffix) throws IOException, MotuCasBadRequestException {
 
         String casServerPrefix = RestUtil.getRedirectUrl(serviceURL);
         if (AssertionUtils.isNullOrEmpty(casServerPrefix)) {
@@ -166,24 +302,26 @@ public class RestUtil {
      * @param path the path
      * 
      * @return the redirect url
-     * @throws IOException 
+     * @throws IOException
      * 
      * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException
      */
-    public static String getRedirectUrl(String path) throws IOException  {
+    public static String getRedirectUrl(String path) throws IOException, MotuCasBadRequestException {
         return RestUtil.getRedirectUrl(path, null);
-        
+
     }
-    
+
     /**
      * Gets the redirect url.
-     *
+     * 
      * @param path the path
      * @param proxy the proxy
      * @return the redirect url
      * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException
      */
-    public static String getRedirectUrl(String path, Proxy proxy) throws IOException  {
+    public static String getRedirectUrl(String path, Proxy proxy) throws IOException, MotuCasBadRequestException {
 
         String redirectUrl = "";
 
@@ -195,12 +333,12 @@ public class RestUtil {
         String protocol = url.getProtocol();
         HttpURLConnection conn = null;
 
-        if ((protocol.equalsIgnoreCase("http")) || (protocol.equalsIgnoreCase("https"))) {           
+        if ((protocol.equalsIgnoreCase("http")) || (protocol.equalsIgnoreCase("https"))) {
 
             if (proxy == null) {
                 conn = (HttpURLConnection) url.openConnection();
             } else {
-                conn = (HttpURLConnection) url.openConnection(proxy);                
+                conn = (HttpURLConnection) url.openConnection(proxy);
             }
         } else {
             return redirectUrl;
@@ -209,8 +347,16 @@ public class RestUtil {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getRedirectUrl(String) - HttpURLConnection response code=" + conn.getResponseCode());
         }
+        int responseCode = conn.getResponseCode();
+        if (responseCode >= 400) {
+            throw new MotuCasBadRequestException(
+                    conn,
+                    responseCode,
+                    path,
+                    "Error while trying to retrieve CAS url (RestUtil.getRedirectUrl(String path, Proxy proxy)");
+        }
 
-        redirectUrl = conn.getHeaderField("location");
+        redirectUrl = conn.getHeaderField(RestUtil.LOCATION_HTTP_HEADER_KEY);
 
         // Iterator<?> it = conn.getHeaderFields().entrySet().iterator();
         // while (it.hasNext()) {
@@ -296,7 +442,7 @@ public class RestUtil {
             LOG.debug("getTicketGrantingTicket(String, String, String) - hsu.getResponseCode()=" + hsu.getResponseCode());
         }
 
-        String ticketGrantingTicket = hsu.getHeaderField("location");
+        String ticketGrantingTicket = hsu.getHeaderField(RestUtil.LOCATION_HTTP_HEADER_KEY);
 
         //
         // Iterator<?> it = hsu.getHeaderFields().entrySet().iterator();
@@ -400,7 +546,7 @@ public class RestUtil {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loginToCAS(String, String, String) - url is: " + casURL);
         }
-        //System.out.println(casURL);
+        // System.out.println(casURL);
         HttpsURLConnection hsu = (HttpsURLConnection) RestUtil.openHttpsConnection(casURL);
         OutputStreamWriter out = new OutputStreamWriter(hsu.getOutputStream());
         BufferedWriter bwr = new BufferedWriter(out);
@@ -460,6 +606,7 @@ public class RestUtil {
     static void closeConn(HttpsURLConnection c) {
         c.disconnect();
     }
+
     static public boolean isNullOrEmpty(String value) {
         if (value == null) {
             return true;
@@ -490,23 +637,23 @@ public class RestUtil {
 
     /**
      * Url to input stream.
-     *
+     * 
      * @param url the url
      * @return the input stream
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public static final InputStream urlToInputStream(String url) throws IOException {
         url = url.trim();
-        if (url.indexOf(':') > 1) { 
+        if (url.indexOf(':') > 1) {
             URL urlObject = new URL(url);
             return urlObject.openStream();
         }
         return new FileInputStream(url);
     }
-    
+
     /**
      * Copy stream to file.
-     *
+     * 
      * @param input the input
      * @param destination the destination
      * @throws IOException Signals that an I/O exception has occurred.
@@ -530,10 +677,10 @@ public class RestUtil {
             RestUtil.close(output);
         }
     }
-    
+
     /**
      * Copy.
-     *
+     * 
      * @param in the in
      * @param out the out
      * @throws IOException Signals that an I/O exception has occurred.
@@ -544,7 +691,7 @@ public class RestUtil {
 
     /**
      * Copy.
-     *
+     * 
      * @param in the in
      * @param out the out
      * @throws IOException Signals that an I/O exception has occurred.
@@ -555,7 +702,7 @@ public class RestUtil {
 
     /**
      * Copy.
-     *
+     * 
      * @param in the in
      * @param out the out
      * @param bufferSize the buffer size
@@ -567,10 +714,10 @@ public class RestUtil {
             out.write(buf, 0, len);
         }
     }
-    
+
     /**
      * Copy.
-     *
+     * 
      * @param in the in
      * @param out the out
      * @param bufferSize the buffer size
@@ -582,10 +729,10 @@ public class RestUtil {
             out.write(buf, 0, len);
         }
     }
-    
+
     /**
      * Close.
-     *
+     * 
      * @param in the in
      */
     public static final void close(InputStream in) {
@@ -600,7 +747,7 @@ public class RestUtil {
 
     /**
      * Close.
-     *
+     * 
      * @param out the out
      */
     public static final void close(OutputStream out) {
@@ -615,7 +762,7 @@ public class RestUtil {
 
     /**
      * Close.
-     *
+     * 
      * @param in the in
      */
     public static final void close(Reader in) {
@@ -630,7 +777,7 @@ public class RestUtil {
 
     /**
      * Close.
-     *
+     * 
      * @param out the out
      */
     public static final void close(Writer out) {
@@ -642,6 +789,5 @@ public class RestUtil {
         } catch (Exception ex) {
         }
     }
-
 
 }

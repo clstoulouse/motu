@@ -25,6 +25,7 @@
 package fr.cls.atoll.motu.library.cas.util;
 
 import fr.cls.atoll.motu.library.cas.UserBase;
+import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
 import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
 
 import java.io.IOException;
@@ -194,10 +195,11 @@ public class AssertionUtils {
      * 
      * @return the string
      * @throws IOException
+     * @throws MotuCasBadRequestException 
      * 
      * @throws URIException the URI exception
      */
-    public static String addCASTicket(String targetService) throws IOException {
+    public static String addCASTicket(String targetService) throws IOException, MotuCasBadRequestException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(String) - entering");
         }
@@ -222,8 +224,9 @@ public class AssertionUtils {
      * 
      * @throws MotuException the motu exception
      * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException 
      */
-    public static String addCASTicket(String targetService, String username, String password, String casRestUrlSuffix) throws IOException {
+    public static String addCASTicket(String targetService, String username, String password, String casRestUrlSuffix) throws IOException, MotuCasBadRequestException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(String, String, String, String) - entering");
         }
@@ -272,12 +275,13 @@ public class AssertionUtils {
      * @param casRestUrlSuffix the cas rest url suffix
      * @return the string
      * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException 
      */
     public static String addCASTicket(URI targetService,
                                       MultivaluedMap<String, String> data,
                                       String username,
                                       String password,
-                                      String casRestUrlSuffix) throws IOException {
+                                      String casRestUrlSuffix) throws IOException, MotuCasBadRequestException {
         return addCASTicket(targetService.toString(), data, username, password, casRestUrlSuffix);
     }
 
@@ -291,12 +295,13 @@ public class AssertionUtils {
      * @param casRestUrlSuffix the cas rest url suffix
      * @return the string
      * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException 
      */
     public static String addCASTicket(String targetService,
                                       MultivaluedMap<String, String> data,
                                       String username,
                                       String password,
-                                      String casRestUrlSuffix) throws IOException {
+                                      String casRestUrlSuffix) throws IOException, MotuCasBadRequestException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(String, MultivaluedMap<String,String>, String, String, String) - start");
         }
@@ -387,9 +392,10 @@ public class AssertionUtils {
      * @throws IOException
      * 
      * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException 
      * @throws MotuException the motu exception
      */
-    public static String addCASTicketFromTGT(String casRestUrlSuffix, String username, String password, String targetService) throws IOException {
+    public static String addCASTicketFromTGT(String casRestUrlSuffix, String username, String password, String targetService) throws IOException, MotuCasBadRequestException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicketFromTGT(String, String, String, String) - entering");
         }
@@ -442,12 +448,13 @@ public class AssertionUtils {
      * @param data the data
      * @return the string
      * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException 
      */
     public static String addCASTicketFromTGT(String casRestUrlSuffix,
                                              String username,
                                              String password,
                                              String targetService,
-                                             MultivaluedMap<String, String> data) throws IOException {
+                                             MultivaluedMap<String, String> data) throws IOException, MotuCasBadRequestException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicketFromTGT(String, String, String, String, MultivaluedMap<String,String>) - start");
         }

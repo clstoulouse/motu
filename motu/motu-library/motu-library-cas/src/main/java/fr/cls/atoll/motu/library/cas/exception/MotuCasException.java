@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
 /**
- * Base exception class of Motu.
+ * Base exception class of Motu CAS Library
  * 
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
