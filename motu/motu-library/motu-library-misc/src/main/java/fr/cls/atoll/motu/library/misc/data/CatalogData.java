@@ -31,7 +31,7 @@ import fr.cls.atoll.motu.library.inventory.Resource;
 import fr.cls.atoll.motu.library.inventory.ResourceOLA;
 import fr.cls.atoll.motu.library.inventory.ResourcesOLA;
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.cas.util.AuthentificationHolder;
+import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
@@ -261,7 +261,7 @@ public class CatalogData {
         Product product = getProducts(productId);
 
         if (product == null) {
-            product = new Product(this.casAuthentification);
+            product = new Product(this.casAuthentication);
             productMetaData = new ProductMetaData();
             productMetaData.setProductId(productId);
 
@@ -882,7 +882,7 @@ public class CatalogData {
 
         Product product = getProducts(productId);
         if (product == null) {
-            product = new Product(this.casAuthentification);
+            product = new Product(this.casAuthentication);
             productMetaData = new ProductMetaData();
             productMetaData.setProductId(productId);
             productMetaData.setTdsUrlPath(tdsUrlPath);
@@ -1039,7 +1039,7 @@ public class CatalogData {
 
         Product product = getProducts(productId);
         if (product == null) {
-            product = new Product(this.casAuthentification);
+            product = new Product(this.casAuthentication);
             productMetaData = new ProductMetaData();
             productMetaData.setProductId(productId);
             productMetaData.setTdsUrlPath(tdsUrlPath);
@@ -1777,10 +1777,10 @@ public class CatalogData {
             // Unmarshaller unmarshaller = jc.createUnmarshaller();
 
             String newPath = path;
-            if (casAuthentification) {
+            if (casAuthentication) {
                 newPath = AssertionUtils.addCASTicket(path);
                 if (!AssertionUtils.hasCASTicket(newPath)) {
-                    newPath = AssertionUtils.addCASTicket(path, AuthentificationHolder.getUser());
+                    newPath = AssertionUtils.addCASTicket(path, AuthenticationHolder.getUser());
                     // throw new MotuException(
                     // "Unable to load TDS configuration. TDS has been declared as CASified, but the Motu application is not. \nTo access this TDS, the Motu Application must be CASified.");
                 }
@@ -2242,25 +2242,25 @@ public class CatalogData {
         }
     }
 
-    /** Does Service needs CAS authentification to access catalog resources and data. */
-    protected boolean casAuthentification = false;
+    /** Does Service needs CAS authentication to access catalog resources and data. */
+    protected boolean casAuthentication = false;
 
     /**
-     * Checks if is cas authentification.
+     * Checks if is cas authentication.
      * 
-     * @return true, if is cas authentification
+     * @return true, if is cas authentication
      */
-    public boolean isCasAuthentification() {
-        return casAuthentification;
+    public boolean isCasAuthentication() {
+        return casAuthentication;
     }
 
     /**
-     * Sets the cas authentification.
+     * Sets the cas authentication.
      * 
-     * @param casAuthentification the new cas authentification
+     * @param casAuthentication the new cas authentication
      */
-    public void setCasAuthentification(boolean casAuthentification) {
-        this.casAuthentification = casAuthentification;
+    public void setCasAuthentication(boolean casAuthentication) {
+        this.casAuthentication = casAuthentication;
     }
 
     /**

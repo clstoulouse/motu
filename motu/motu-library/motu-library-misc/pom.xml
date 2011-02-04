@@ -150,7 +150,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>1.4</version>
+            <version>${dependencies.version.commons-io}</version>
         </dependency>
         <dependency>
             <groupId>commons-net</groupId>

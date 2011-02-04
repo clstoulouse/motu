@@ -105,8 +105,8 @@ public class Product {
     /**
      * Default constructor.
      */
-    public Product(boolean casAuthentification) {
-        this.casAuthentification = casAuthentification;
+    public Product(boolean casAuthentication) {
+        this.casAuthentication = casAuthentication;
     }
 
     /**
@@ -152,50 +152,6 @@ public class Product {
         this.productMetaData = productMetaData;
     }
 
-    // /**
-    // * Checks if is cas authentification.
-    // *
-    // * @return true, if is cas authentification
-    // */
-    // public boolean isCASAuthentification() {
-    // if (this.user == null) {
-    // return false;
-    // }
-    // return user.isCASAuthentification();
-    // }
-    //
-    // /**
-    // * Sets the cas authentification.
-    // *
-    // * @param casAuthentification the new cas authentification
-    // */
-    // public void setCASAuthentification(boolean casAuthentification) {
-    // if (user == null) {
-    // user = new User();
-    // }
-    // user.setCASAuthentification(casAuthentification);
-    // }
-    //      
-    // /** The user. */
-    // private User user = null;
-    //
-    // /**
-    // * Gets the user.
-    // *
-    // * @return the user
-    // */
-    // public User getUser() {
-    // return this.user;
-    // }
-    //
-    // /**
-    // * Sets the user.
-    // *
-    // * @param user the new user
-    // */
-    // public void setUser(User user) {
-    // this.user = user;
-    // }
 
     /** The dataset. */
     private DatasetBase dataset;
@@ -226,25 +182,25 @@ public class Product {
         this.dataset = dataset;
     }
 
-    /** Does Service needs CAS authentification to access catalog resources and data. */
-    protected boolean casAuthentification = false;
+    /** Does Service needs CAS authentication to access catalog resources and data. */
+    protected boolean casAuthentication = false;
 
     /**
-     * Checks if is cas authentification.
+     * Checks if is cas authentication.
      * 
-     * @return true, if is cas authentification
+     * @return true, if is cas authentication
      */
-    public boolean isCasAuthentification() {
-        return casAuthentification;
+    public boolean isCasAuthentication() {
+        return casAuthentication;
     }
 
     /**
-     * Sets the cas authentification.
+     * Sets the cas authentication.
      * 
-     * @param casAuthentification the new cas authentification
+     * @param casAuthentication the new cas authentication
      */
-    public void setCasAuthentification(boolean casAuthentification) {
-        this.casAuthentification = casAuthentification;
+    public void setCasAuthentication(boolean casAuthentication) {
+        this.casAuthentication = casAuthentication;
     }
 
     /**
@@ -1965,7 +1921,7 @@ public class Product {
      */
     public NetCdfReader getNetCdfReader() {
         if (netCdfReader == null) {
-            netCdfReader = new NetCdfReader(locationData, this.casAuthentification);
+            netCdfReader = new NetCdfReader(locationData, this.casAuthentication);
         }
         return this.netCdfReader;
     }

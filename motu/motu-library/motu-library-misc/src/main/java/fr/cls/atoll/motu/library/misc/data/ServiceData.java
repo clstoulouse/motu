@@ -25,6 +25,7 @@
 package fr.cls.atoll.motu.library.misc.data;
 
 import fr.cls.atoll.motu.library.inventory.Inventory;
+import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
 import fr.cls.atoll.motu.library.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
@@ -774,26 +775,26 @@ public class ServiceData {
     }
 
     /**
-     * Does Service needs CAS authentification to access catalog resources and data.
+     * Does Service needs CAS authentication to access catalog resources and data.
      */
-    protected boolean casAuthentification = false;
+    protected boolean casAuthentication = false;
 
     /**
-     * Checks if is cas authentification.
+     * Checks if is cas authentication.
      * 
-     * @return true, if is cas authentification
+     * @return true, if is cas authentication
      */
-    public boolean isCasAuthentification() {
-        return casAuthentification;
+    public boolean isCasAuthentication() {
+        return casAuthentication;
     }
 
     /**
-     * Sets the cas authentification.
+     * Sets the cas authentication.
      * 
-     * @param casAuthentification the new cas authentification
+     * @param casAuthentication the new cas authentication
      */
-    public void setCasAuthentification(boolean casAuthentification) {
-        this.casAuthentification = casAuthentification;
+    public void setCasAuthentication(boolean casAuthentication) {
+        this.casAuthentication = casAuthentication;
     }
 
     /**
@@ -825,7 +826,7 @@ public class ServiceData {
     public CatalogData createCatalogData(Boolean loadTDSVariableVocabulary) {
         CatalogData catalogData = new CatalogData();
         catalogData.setUrlSite(urlSite);
-        catalogData.setCasAuthentification(casAuthentification);
+        catalogData.setCasAuthentication(casAuthentication);
         if (loadTDSVariableVocabulary != null) {
             catalogData.setLoadTDSExtraMetadata(loadTDSVariableVocabulary);
         }
@@ -1063,7 +1064,7 @@ public class ServiceData {
             LOG.debug("getProductInformationFromLocation() - entering");
         }
 
-        if (!this.casAuthentification && isGenericService()) {
+        if (!this.casAuthentication && isGenericService()) {
 
             // Service could be a virtual service at this point (call directly
             // without service loading),
@@ -1071,7 +1072,7 @@ public class ServiceData {
             try {
                 URI uri = new URI(locationData);
                 if ((uri.getScheme().equalsIgnoreCase("http")) || (uri.getScheme().equalsIgnoreCase("https"))) {
-                    this.casAuthentification = RestUtil.isCasifiedUrl(locationData);
+                    this.casAuthentication = RestUtil.isCasifiedUrl(locationData);
                 }
 
             } catch (URISyntaxException e) {
@@ -1082,10 +1083,14 @@ public class ServiceData {
                 throw new MotuException(String
                         .format("Organizer getProductInformation(String locationData) : location data seems not to be a valid URI : '%s'",
                                 locationData), e);
+            } catch (MotuCasBadRequestException e) {
+                throw new MotuException(String
+                                        .format("Organizer getProductInformation(String locationData) : location data seems not to be a valid URI : '%s'",
+                                                locationData), e);
             }
         }
 
-        Product product = new Product(this.casAuthentification);
+        Product product = new Product(this.casAuthentication);
         currentProduct = product;
 
         if (Organizer.isXMLFile(locationData)) {

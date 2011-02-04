@@ -58,6 +58,7 @@ import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.jasig.cas.client.validation.TicketValidationException;
 
 import ucar.nc2.util.net.EasySSLProtocolSocketFactory;
+import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.library.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
@@ -193,7 +194,7 @@ public class TestCASRest {
 
     }
 
-    public static void testgetCASifiedResource() throws MotuException, IOException {
+    public static void testgetCASifiedResource() throws MotuException, IOException, MotuCasBadRequestException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("testLoginToCAS() - entering");
         }
@@ -261,7 +262,7 @@ public class TestCASRest {
 
     }
 
-    public static void testDownloadCASifiedResource() throws MotuException, IOException {
+    public static void testDownloadCASifiedResource() throws MotuException, IOException, MotuCasBadRequestException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("testDownloadCASifiedResource() - entering");
         }

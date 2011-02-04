@@ -90,7 +90,8 @@ import fr.cls.atoll.motu.api.message.xml.VariableVocabulary;
 import fr.cls.atoll.motu.api.message.xml.Variables;
 import fr.cls.atoll.motu.api.message.xml.VariablesVocabulary;
 import fr.cls.atoll.motu.library.cas.UserBase;
-import fr.cls.atoll.motu.library.cas.util.AuthentificationHolder;
+import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
+import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
 import fr.cls.atoll.motu.library.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.cas.util.SimpleAuthenticator;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
@@ -571,52 +572,7 @@ public class Organizer {
         init();
     }
 
-    // /**
-    // * Instantiates a new organizer.
-    // *
-    // * @param userLogin the user login
-    // * @param userPwd the user pwd
-    // *
-    // * @throws MotuException the motu exception
-    // */
-    // public Organizer(String userLogin, String userPwd, AuthentificationMode
-    // authentificationMode) throws
-    // MotuException {
-    //
-    // this();
-    //
-    // if (!Organizer.isNullOrEmpty(userLogin)) {
-    // user.setLogin(userLogin);
-    // user.setPwd(userPwd);
-    // user.setAuthentificationMode(authentificationMode);
-    // }
-    //
-    // }
-    //
-    // /**
-    // * Instantiates a new organizer.
-    // *
-    // * @param userLogin the user login
-    // * @param userPwd the user pwd
-    // *
-    // * @throws MotuException the motu exception
-    // */
-    // public Organizer(String userLogin, String userPwd) throws MotuException {
-    // this(userLogin, userPwd, AuthentificationMode.CAS);
-    // }
-    //
-    // /**
-    // * Instantiates a new organizer.
-    // *
-    // * @param user the user
-    // *
-    // * @throws MotuException the motu exception
-    // */
-    // public Organizer(User user) throws MotuException {
-    // this();
-    // setUser(user);
-    // }
-
+ 
     /**
      * Removes all mappings from this map (optional operation).
      * 
@@ -5454,48 +5410,7 @@ public class Organizer {
 
     }
 
-    // /**
-    // * Checks if is user authentification.
-    // *
-    // * @return true, if is user authentification
-    // */
-    // public boolean isUserAuthentification() {
-    //
-    // if (user == null) {
-    // return false;
-    // }
-    //
-    // return user.isAuthentification();
-    // }
-    //
-    // /**
-    // * Checks if is user cas authentification.
-    // *
-    // * @return true, if is user cas authentification
-    // */
-    // public boolean isUserCASAuthentification() {
-    //
-    // if (user == null) {
-    // return false;
-    // }
-    //
-    // return user.isCASAuthentification();
-    // }
-    //
-    //
-    // /**
-    // * Gets the user authentification.
-    // *
-    // * @return the user authentification
-    // */
-    // public String getUserAuthentification() {
-    //
-    // if (user == null) {
-    // return AuthentificationMode.NONE.toString();
-    // }
-    //
-    // return user.getAuthentificationMode().toString();
-    // }
+
     /**
      * Gets the product metadata info.
      * 
@@ -5569,7 +5484,7 @@ public class Organizer {
         // Only TDS are accepted
         service.setCatalogType(CatalogData.CatalogType.TDS);
 
-        UserBase user = AuthentificationHolder.getUser();
+        UserBase user = AuthenticationHolder.getUser();
 
         if (user == null) {
 
@@ -5580,8 +5495,8 @@ public class Organizer {
                 URI uri = new URI(locationData);
                 if ((uri.getScheme().equalsIgnoreCase("http")) || (uri.getScheme().equalsIgnoreCase("https"))) {
 
-                    boolean casAuthentification = RestUtil.isCasifiedUrl(locationData);
-                    AuthentificationHolder.setCASAuthentification(casAuthentification);
+                    boolean casAuthentication = RestUtil.isCasifiedUrl(locationData);
+                    AuthenticationHolder.setCASAuthentication(casAuthentication);
                 }
 
             } catch (URISyntaxException e) {
@@ -5592,14 +5507,18 @@ public class Organizer {
                 throw new MotuException(String
                         .format("Organizer getProductMetadataInfoFromTDS(String locationData) : location data seems not to be a valid URI : '%s'",
                                 locationData), e);
+            } catch (MotuCasBadRequestException e) {
+                throw new MotuException(String
+                                        .format("Organizer getProductMetadataInfoFromTDS(String locationData) : location data seems not to be a valid URI : '%s'",
+                                                locationData), e);
             }
         }
 
-        service.setCasAuthentification(AuthentificationHolder.isCASAuthentification());
+        service.setCasAuthentication(AuthenticationHolder.isCASAuthentication());
 
-        if (AuthentificationHolder.isAuthentification() && (!AuthentificationHolder.isCASAuthentification())) {
-            throw new MotuNotImplementedException(String.format("Authentification mode '%s' is not yet implemented", AuthentificationHolder
-                    .getAuthentificationMode().toString()));
+        if (AuthenticationHolder.isAuthentication() && (!AuthenticationHolder.isCASAuthentication())) {
+            throw new MotuNotImplementedException(String.format("Authentication mode '%s' is not yet implemented", AuthenticationHolder
+                    .getAuthenticationMode().toString()));
         }
 
         service.loadCatalogInfo(loadTDSVariableVocabulary);
@@ -5713,11 +5632,11 @@ public class Organizer {
             service.setUrlSite(currentService.getUrlSite());
             service.setCatalogFileName(currentService.getCatalogFileName());
             service.setCatalogType(currentService.getCatalogType());
-            service.setCasAuthentification(currentService.isCasAuthentification());
+            service.setCasAuthentication(currentService.isCasAuthentication());
 
-            if (AuthentificationHolder.isAuthentification() && (!AuthentificationHolder.isCASAuthentification())) {
-                throw new MotuNotImplementedException(String.format("Authentification mode '%s' is not yet implemented", AuthentificationHolder
-                        .getAuthentificationMode().toString()));
+            if (AuthenticationHolder.isAuthentication() && (!AuthenticationHolder.isCASAuthentication())) {
+                throw new MotuNotImplementedException(String.format("Authentication mode '%s' is not yet implemented", AuthenticationHolder
+                        .getAuthenticationMode().toString()));
             }
             service.loadCatalogInfo(loadTDSVariableVocabulary);
             this.currentService = service;
@@ -5730,9 +5649,9 @@ public class Organizer {
 
         setCurrentService(serviceName);
 
-        if (AuthentificationHolder.isAuthentification() && (!AuthentificationHolder.isCASAuthentification())) {
-            throw new MotuNotImplementedException(String.format("Authentification mode '%s' is not yet implemented", AuthentificationHolder
-                    .getAuthentificationMode().toString()));
+        if (AuthenticationHolder.isAuthentication() && (!AuthenticationHolder.isCASAuthentication())) {
+            throw new MotuNotImplementedException(String.format("Authentication mode '%s' is not yet implemented", AuthenticationHolder
+                    .getAuthenticationMode().toString()));
         }
 
         Product product = null;
@@ -5886,7 +5805,7 @@ public class Organizer {
      * @uml.property name="user"
      */
     public UserBase getUser() {
-        return AuthentificationHolder.getUser();
+        return AuthenticationHolder.getUser();
     }
 
     /**
@@ -5897,7 +5816,7 @@ public class Organizer {
      * @uml.property name="user"
      */
     public void setUser(User user) {
-        AuthentificationHolder.setUser(user);
+        AuthenticationHolder.setUser(user);
     }
 
     /**
@@ -6272,7 +6191,7 @@ public class Organizer {
             service.setUrlSite(confServ.getCatalog().getUrlSite());
             service.setCatalogFileName(confServ.getCatalog().getName());
             service.setCatalogType(confServ.getCatalog().getType());
-            service.setCasAuthentification(confServ.getCatalog().getCasAuthentification());
+            service.setCasAuthentication(confServ.getCatalog().getCasAuthentication());
             service.setVeloTemplatePrefix(confServ.getVeloTemplatePrefix());
             service.setKeepDataFilesList(confServ.getKeepDataFilesList());
 

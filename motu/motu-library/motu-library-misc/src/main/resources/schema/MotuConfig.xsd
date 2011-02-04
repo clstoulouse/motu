@@ -432,7 +432,7 @@
 			<xs:attribute name="authFilePath" type="xs:string" use="optional">
 				<xs:annotation>
 					<xs:documentation>
-						Path to the file that contains authentification
+						Path to the file that contains authentication
 						data (login, pwd).
 					</xs:documentation>
 				</xs:annotation>
@@ -684,10 +684,10 @@
 		-->
 		<xs:attribute name="type" type="xs:string" />
 
-		<!-- casAuthentification :
-			Service needs CAS authentification ?
+		<!-- casAuthentication :
+			Service needs CAS authentication ?
 		-->
-		<xs:attribute name="casAuthentification" type="xs:boolean"
+		<xs:attribute name="casAuthentication" type="xs:boolean"
 			default="false" />
 
 		<!--
