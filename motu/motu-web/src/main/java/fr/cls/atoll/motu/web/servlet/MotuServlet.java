@@ -385,8 +385,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         PROXY_HEADERS.add("HTTP_FORWARDED");
         PROXY_HEADERS.add("HTTP_CLIENT_IP");
     }
-    /** The authentification props. */
-    private Properties authentificationProps = null;
+    /** The authentication props. */
+    private Properties authenticationProps = null;
 
     /** The request management. */
     private RequestManagement requestManagement = null;
@@ -588,7 +588,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         initProxyLogin();
 
         // Initialisation de la liste des utilisateurs autorisés
-        initAuthentification();
+        initAuthentication();
 
         String paramValue = getServletConfig().getInitParameter(PARAM_USE_QUEUE_SERVER);
         if (!MotuServlet.isNullOrEmpty(paramValue)) {
@@ -1937,7 +1937,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws ServletException the servlet exception
      */
     private boolean checkAuthorized(HttpServletRequest request, HttpSession session, HttpServletResponse response) throws ServletException {
-        if (authentificationProps == null) {
+        if (authenticationProps == null) {
             return true;
         }
 
@@ -1951,7 +1951,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
         if (!isAuthorized(login, password)) {
             try {
-                response.sendError(401, "Authentification failure");
+                response.sendError(401, "Authentication failure");
             } catch (IOException e) {
                 LOG.error("response sendError failed", e);
                 throw new ServletException("response sendError failed", e);
@@ -3036,20 +3036,20 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     }
 
     /**
-     * Inits the authentification.
+     * Inits the authentication.
      * 
      * @throws ServletException the servlet exception
      */
-    private void initAuthentification() throws ServletException {
+    private void initAuthentication() throws ServletException {
         try {
             MotuConfig motuConfig = Organizer.getMotuConfigInstance();
             if (motuConfig.getUseAuthentication()) {
-                authentificationProps = PropertiesUtilities.loadFromClasspath("motuUser.properties");
+                authenticationProps = PropertiesUtilities.loadFromClasspath("motuUser.properties");
             }
         } catch (IOException e) {
-            throw new ServletException("Authentification initialisation failure ", e);
+            throw new ServletException("Authentication initialisation failure ", e);
         } catch (MotuException e) {
-            throw new ServletException(String.format("Authentification initialisation failure - %s", e.notifyException()), e);
+            throw new ServletException(String.format("Authentication initialisation failure - %s", e.notifyException()), e);
         }
     }
 
@@ -3236,13 +3236,13 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @return true, if is authorized
      */
     private boolean isAuthorized(String login, String password) {
-        if (authentificationProps == null) {
+        if (authenticationProps == null) {
             return true;
         }
         if (login == null || password == null) {
             return false;
         }
-        String loginPassword = authentificationProps.getProperty(login);
+        String loginPassword = authenticationProps.getProperty(login);
         if (loginPassword == null) {
             return false;
         }
