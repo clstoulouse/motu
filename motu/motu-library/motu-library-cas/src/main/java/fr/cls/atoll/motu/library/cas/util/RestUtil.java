@@ -45,8 +45,13 @@ import java.net.URLEncoder;
 import java.util.Collection;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
 
 import fr.cls.atoll.motu.api.message.AuthenticationMode;
 import fr.cls.atoll.motu.library.cas.UserBase;
@@ -75,6 +80,13 @@ public class RestUtil {
 
     /** The Constant DEFAULT_BUFFER_SIZE. */
     private static final int DEFAULT_BUFFER_SIZE = 4096;
+
+    /**
+     * The Enum HttpMethod.
+     */
+    public enum HttpMethod {
+        DELETE, GET, HEAD, POST, PUT,
+    }
 
     //
     // private static String CAS_SERVER_URL_PREFIX = null;
@@ -109,7 +121,7 @@ public class RestUtil {
     // }
     /**
      * Check authentication mode.
-     *
+     * 
      * @param uri the uri
      * @return the authentication mode
      * @throws IOException Signals that an I/O exception has occurred.
@@ -118,10 +130,10 @@ public class RestUtil {
     public static AuthenticationMode checkAuthenticationMode(URI uri) throws IOException, MotuCasException {
         return RestUtil.checkAuthenticationMode(uri.toString(), null);
     }
-    
+
     /**
      * Check authentication mode.
-     *
+     * 
      * @param uri the uri
      * @param proxy the proxy
      * @return the authentication mode
@@ -158,7 +170,9 @@ public class RestUtil {
         AuthenticationMode authenticationMode = AuthenticationMode.NONE;
 
         try {
-            boolean isCasified = RestUtil.isCasifiedUrl(url, proxy);
+            String casUrl = RestUtil.getRedirectUrl(url, proxy);
+            boolean isCasified = (!AssertionUtils.isNullOrEmpty(casUrl));
+
             if (isCasified) {
                 authenticationMode = AuthenticationMode.CAS;
             }
@@ -183,7 +197,7 @@ public class RestUtil {
     /**
      * Check authentication mode.
      * 
-     * @param e the excetion that contains request headers to check authentication
+     * @param e the exception that contains request headers to check authentication
      * @return the authentication mode
      * @throws MotuCasException the motu cas exception
      */
@@ -202,6 +216,63 @@ public class RestUtil {
         }
 
         throw new MotuCasException(String.format("Authentication '%s' is not implemented", wwwAuthenticate));
+
+    }
+
+    /**
+     * Check authentication mode.
+     * 
+     * @param targetService the target service
+     * @param client the client
+     * @param method the method
+     * @return the authentication mode
+     * @throws MotuCasException the motu cas exception
+     */
+    public static AuthenticationMode checkAuthenticationMode(URI targetService, Client client, RestUtil.HttpMethod method, UserBase user) throws MotuCasException {
+        return checkAuthenticationMode(targetService.toString(), client, method, user);
+    }
+
+    /**
+     * Check authentication mode.
+     * 
+     * @param targetService the target service
+     * @param client the client
+     * @param method the method
+     * @return the authentication mode
+     * @throws MotuCasException
+     */
+    public static AuthenticationMode checkAuthenticationMode(String targetService, Client client, RestUtil.HttpMethod method, UserBase user) throws MotuCasException {
+
+        AuthenticationMode authenticationMode = AuthenticationMode.NONE;
+        String casUrl = null;
+
+        try {
+            casUrl = RestUtil.getRedirectUrl(targetService, client, method);
+            boolean isCasified = (!AssertionUtils.isNullOrEmpty(casUrl));
+
+            if (isCasified) {
+                authenticationMode = AuthenticationMode.CAS;
+            }            
+        } catch (MotuCasBadRequestException e) {
+
+            switch (e.getCode()) {
+
+            case HttpURLConnection.HTTP_UNAUTHORIZED:
+            case HttpURLConnection.HTTP_FORBIDDEN:
+                authenticationMode = checkAuthenticationMode(e);
+                break;
+
+            default:
+                throw e;
+            }
+        }
+
+        if (user != null) {
+            user.setAuthenticationMode(authenticationMode);
+            user.setCasURL(casUrl);
+        }
+        
+        return authenticationMode;
 
     }
 
@@ -257,6 +328,73 @@ public class RestUtil {
 
         String casUrl = RestUtil.getRedirectUrl(serviceURL, proxy);
         return (!AssertionUtils.isNullOrEmpty(casUrl));
+
+    }
+
+    /**
+     * Checks if is casified url.
+     * 
+     * @param serviceURL the service url
+     * @param client the client
+     * @param method the method
+     * @return true, if is casified url
+     * @throws MotuCasBadRequestException
+     */
+    public static boolean isCasifiedUrl(String serviceURL, Client client, RestUtil.HttpMethod method) throws MotuCasBadRequestException {
+        String casUrl = RestUtil.getRedirectUrl(serviceURL, client, method);
+        return (!AssertionUtils.isNullOrEmpty(casUrl));
+    }
+
+    /**
+     * Append path.
+     *
+     * @param prefix the prefix
+     * @param suffix the suffix
+     * @return the string
+     */
+    public static String appendPath(String prefix, String suffix) {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append(prefix);
+        if ((!prefix.endsWith("/")) && (!suffix.startsWith("/"))) {
+            stringBuffer.append("/");
+        }
+
+        if ((prefix.endsWith("/")) && (suffix.startsWith("/"))) {
+            stringBuffer.append(suffix.substring(1));
+        } else {
+            stringBuffer.append(suffix);
+        }
+
+        return stringBuffer.toString();
+
+    }
+
+    public static String getCasRestletUrl(Client client, RestUtil.HttpMethod method, String serviceURL, String casRestUrlSuffix) throws IOException,
+            MotuCasBadRequestException {
+
+        if (client == null) {
+            return null;
+
+        }
+        String casServerPrefix = RestUtil.getRedirectUrl(serviceURL, client, method);
+        if (AssertionUtils.isNullOrEmpty(casServerPrefix)) {
+
+            return null;
+        }
+
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append(casServerPrefix);
+        if ((!casServerPrefix.endsWith("/")) && (!casRestUrlSuffix.startsWith("/"))) {
+            stringBuffer.append("/");
+        }
+
+        if ((casServerPrefix.endsWith("/")) && (casRestUrlSuffix.startsWith("/"))) {
+            stringBuffer.append(casRestUrlSuffix.substring(1));
+        } else {
+            stringBuffer.append(casRestUrlSuffix);
+        }
+
+        return stringBuffer.toString();
 
     }
 
@@ -356,7 +494,7 @@ public class RestUtil {
                     "Error while trying to retrieve CAS url (RestUtil.getRedirectUrl(String path, Proxy proxy)");
         }
 
-        redirectUrl = conn.getHeaderField(RestUtil.LOCATION_HTTP_HEADER_KEY);
+        redirectUrl = RestUtil.extractRedirectUrl(conn.getHeaderField(RestUtil.LOCATION_HTTP_HEADER_KEY), responseCode);
 
         // Iterator<?> it = conn.getHeaderFields().entrySet().iterator();
         // while (it.hasNext()) {
@@ -366,20 +504,63 @@ public class RestUtil {
         // System.out.println(entry.getValue());
         // }
 
-        if ((redirectUrl != null) && (conn.getResponseCode() == 302)) {
-            redirectUrl = redirectUrl.substring(0, redirectUrl.lastIndexOf("/") + 1);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getRedirectUrl(String) - redirectUrl=" + redirectUrl);
-            }
-        }
         conn.disconnect();
         return redirectUrl;
     }
 
-    // public static String getTicketGrantingTicket(String casServerUrlPrefix, String username, String
-    // password) throws IOException {
-    //    
-    // }
+    /**
+     * Gets the redirect url.
+     * 
+     * @param path the path
+     * @param client the client
+     * @param method the method
+     * @return the redirect url
+     * @throws MotuCasBadRequestException
+     */
+    public static String getRedirectUrl(String path, Client client, RestUtil.HttpMethod method) throws MotuCasBadRequestException {
+        
+        WebResource webResource = client.resource(path);
+
+        ClientResponse response = webResource.accept(MediaType.WILDCARD).method(method.toString(), ClientResponse.class);
+
+        Integer responseCode = response.getStatus();
+
+        if (responseCode >= 400) {
+            throw MotuCasBadRequestException
+                    .createMotuCasBadRequestException(response,
+                                                      path,
+                                                      "Error while trying to retrieve CAS url (RestUtil.getRedirectUrl(String path, Proxy proxy)");
+        }
+
+        return RestUtil.extractRedirectUrl(response.getLocation().toString(), responseCode);
+
+    }
+
+    /**
+     * Extract redirect url.
+     *
+     * @param url the url
+     * @param httpCode the http code
+     * @return the string
+     */
+    public static String extractRedirectUrl(String url, int httpCode) {
+        String redirectUrl = url;
+        if (!RestUtil.isNullOrEmpty(redirectUrl) && (httpCode == 302)) {
+            redirectUrl = redirectUrl.substring(0, redirectUrl.lastIndexOf("/") + 1);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("extractRedirectUrl(String url, int httpCode) - redirectUrl=" + redirectUrl);
+            }
+        }
+        return redirectUrl;
+    }
+    /**
+     * Gets the ticket granting ticket.
+     * 
+     * @param casRestUrl the cas rest url
+     * @param user the user
+     * @return the ticket granting ticket
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public static String getTicketGrantingTicket(String casRestUrl, UserBase user) throws IOException {
         return getTicketGrantingTicket(casRestUrl, user.getLogin(), user.getPwd());
     }
@@ -593,7 +774,7 @@ public class RestUtil {
         HttpsURLConnection hsu = (HttpsURLConnection) url.openConnection();
         hsu.setDoInput(true);
         hsu.setDoOutput(true);
-        hsu.setRequestMethod("POST");
+        hsu.setRequestMethod(HttpMethod.POST.toString());
         return hsu;
 
     }

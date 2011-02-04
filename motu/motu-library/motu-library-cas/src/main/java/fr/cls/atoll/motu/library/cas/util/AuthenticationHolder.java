@@ -33,7 +33,7 @@ import fr.cls.atoll.motu.library.cas.UserBase;
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-public class AuthentificationHolder {
+public class AuthenticationHolder {
     /**
      * ThreadLocal to hold the Assertion for Threads to access.
      */
@@ -42,43 +42,43 @@ public class AuthentificationHolder {
     /**
      * Retrieve the assertion from the ThreadLocal.
      */
-    public static Boolean isCASAuthentification() {
+    public static Boolean isCASAuthentication() {
         UserBase user = threadLocal.get();
         if (user == null) {
             return false;
         }
 
-        return user.isCASAuthentification();
+        return user.isCASAuthentication();
 
     }
 
     /**
-     * Checks if is authentification.
+     * Checks if is authentication.
      * 
      * @return the boolean
      */
-    public static Boolean isAuthentification() {
+    public static Boolean isAuthentication() {
         UserBase user = threadLocal.get();
         if (user == null) {
             return false;
         }
 
-        return user.isAuthentification();
+        return user.isAuthentication();
 
     }
 
     /**
-     * Gets the authentification mode.
+     * Gets the authentication mode.
      * 
-     * @return the authentification mode
+     * @return the authentication mode
      */
-    public static AuthenticationMode getAuthentificationMode() {
+    public static AuthenticationMode getAuthenticationMode() {
         UserBase user = threadLocal.get();
         if (user == null) {
             return AuthenticationMode.NONE;
         }
 
-        return user.getAuthentificationMode();
+        return user.getAuthenticationMode();
 
     }
 
@@ -108,7 +108,7 @@ public class AuthentificationHolder {
      * @return the user login
      */
     public static String getUserLogin() {
-        UserBase user = AuthentificationHolder.getUser();
+        UserBase user = AuthenticationHolder.getUser();
         if (user == null) {
             return "(null)";
         }
@@ -125,24 +125,24 @@ public class AuthentificationHolder {
     /**
      * Add the Assertion to the ThreadLocal.
      * 
-     * @param casAuthentification the cas authentification
+     * @param casAuthentication the cas authentication
      */
-    public static void setCASAuthentification(final Boolean casAuthentification) {
-        UserBase user = AuthentificationHolder.getUser();
+    public static void setCASAuthentication(final Boolean casAuthentication) {
+        UserBase user = AuthenticationHolder.getUser();
         if (user == null) {
             user = new UserBase();
         }
-        user.setCASAuthentification(casAuthentification);
-        AuthentificationHolder.setUser(user);
+        user.setCASAuthentication(casAuthentication);
+        AuthenticationHolder.setUser(user);
     }
 
     /**
-     * Sets the cas authentification.
+     * Sets the cas authentication.
      * 
-     * @param user the new cas authentification
+     * @param user the new cas authentication
      */
-    public static void setCASAuthentification(final UserBase user) {
-        AuthentificationHolder.setUser(user);
+    public static void setCASAuthentication(final UserBase user) {
+        AuthenticationHolder.setUser(user);
     }
 
     /**

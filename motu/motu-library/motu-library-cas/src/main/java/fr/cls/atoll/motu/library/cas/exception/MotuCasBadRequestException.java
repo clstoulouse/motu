@@ -24,11 +24,18 @@
  */
 package fr.cls.atoll.motu.library.cas.exception;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
+import javax.ws.rs.core.MultivaluedMap;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import fr.cls.atoll.motu.library.cas.util.RestUtil;
 
@@ -55,7 +62,7 @@ public class MotuCasBadRequestException extends MotuCasException {
     public static final String STATUS_LINE_FIELD = "Status-line";
     
     /** The header fields. */
-    protected Map<String, String> headerFields = new HashMap<String, String>();
+    protected MultivaluedMap<String, String> headerFields = new MultivaluedMapImpl();
 
     // public MotuCasBadRequestException(String message, Throwable cause) {
     // super(message, cause);
@@ -170,6 +177,49 @@ public class MotuCasBadRequestException extends MotuCasException {
         setHeaderFields(conn);
     }
     
+    public static MotuCasBadRequestException createMotuCasBadRequestException(ClientResponse response, String url) {     
+            return MotuCasBadRequestException.createMotuCasBadRequestException(response, url, "");
+    }       
+    /**
+     * Creates the motu cas bad request exception.
+     *
+     * @param response the response
+     * @param url the url
+     * @return the motu cas bad request exception
+     */
+    public static MotuCasBadRequestException createMotuCasBadRequestException(ClientResponse response, String url, String message) {     
+        if (response == null) {
+            return new MotuCasBadRequestException(-1, url);
+        }
+        
+        InputStream entity = response.getEntityInputStream();
+
+        String responseEntity = "";
+        if (entity != null) {
+            try {
+                responseEntity = IOUtils.toString(entity);
+            } catch (IOException e) {
+                // Do nothing
+            }
+        }
+        
+        StringBuffer stringBuffer = new StringBuffer();
+        
+        if (!RestUtil.isNullOrEmpty(message)) {
+            stringBuffer.append(message);
+            stringBuffer.append("\n");
+        }
+        
+        stringBuffer.append(responseEntity);
+        
+        MotuCasBadRequestException exception = new MotuCasBadRequestException(response.getStatus(), url, stringBuffer.toString());
+        exception.setHeaderFields(response.getHeaders());
+        exception.getHeaderFields().add(MotuCasBadRequestException.STATUS_LINE_FIELD, response.toString());
+        
+        return exception;
+    }
+
+    
     /**
      * Gets the code.
      *
@@ -193,7 +243,7 @@ public class MotuCasBadRequestException extends MotuCasException {
      *
      * @return the header fields
      */
-    public Map<String, String> getHeaderFields() {
+    public MultivaluedMap<String, String> getHeaderFields() {
         return headerFields;
     }
     
@@ -203,8 +253,18 @@ public class MotuCasBadRequestException extends MotuCasException {
      * @param key the key
      * @return the header field
      */
-    public String getHeaderField(String key) {
+    public List<String> getHeaderFields(String key) {
         return headerFields.get(key);
+    }
+    
+    /**
+     * Gets the header fields.
+     *
+     * @param key the key
+     * @return the header fields
+     */
+    public String getHeaderField(String key) {
+        return headerFields.getFirst(key);
     }
 
     /**
@@ -212,7 +272,7 @@ public class MotuCasBadRequestException extends MotuCasException {
      *
      * @param headerFields the header fields
      */
-    public void setHeaderFields(Map<String, String> headerFields) {
+    public void setHeaderFields(MultivaluedMap<String, String> headerFields) {
         this.headerFields = headerFields;
     }
 
@@ -298,7 +358,7 @@ public class MotuCasBadRequestException extends MotuCasException {
         boolean hasField = ((fieldKey != null) && (fieldValue != null));
 
         if (hasField) {
-            headerFields.put(fieldKey, fieldValue);
+            headerFields.add(fieldKey, fieldValue);
         }
 
         index++;
@@ -309,7 +369,7 @@ public class MotuCasBadRequestException extends MotuCasException {
         hasField = ((fieldKey != null) && (fieldValue != null));
 
         while (hasField) {
-            headerFields.put(fieldKey, fieldValue);
+            headerFields.add(fieldKey, fieldValue);
 
             index++;
 

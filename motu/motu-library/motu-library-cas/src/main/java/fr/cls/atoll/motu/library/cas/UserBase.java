@@ -169,93 +169,92 @@ public class UserBase {
         }
     }
 
-    /** The cas authentification. */
-    private AuthenticationMode authentificationMode = AuthenticationMode.NONE;
+    /** The cas authentication. */
+    private AuthenticationMode authenticationMode = AuthenticationMode.NONE;
 
     /**
-     * Gets the authentification mode.
+     * Gets the authentication mode.
      * 
-     * @return the authentification mode
+     * @return the authentication mode
      */
-    public AuthenticationMode getAuthentificationMode() {
-        return authentificationMode;
+    public AuthenticationMode getAuthenticationMode() {
+        return authenticationMode;
     }
 
     /**
-     * Sets the authentification mode.
+     * Sets the authentication mode.
      * 
-     * @param authentificationMode the new authentification mode
+     * @param authenticationMode the new authentication mode
      */
-    public void setAuthentificationMode(AuthenticationMode authentificationMode) {
-        if (authentificationMode != null) {
-            this.authentificationMode = authentificationMode;
+    public void setAuthenticationMode(AuthenticationMode authenticationMode) {
+        if (authenticationMode != null) {
+            this.authenticationMode = authenticationMode;
         } else {
-            this.authentificationMode = AuthenticationMode.NONE;
+            this.authenticationMode = AuthenticationMode.NONE;
         }
     }
 
     /**
-     * Sets the authentification mode.
-     * 
-     * @param authentificationMode the new authentification mode
-     * 
+     * Sets the authentication mode.
+     *
+     * @param authenticationMode the new authentication mode
      * @throws MotuCasException the motu exception
      */
-    public void setAuthentificationMode(String authentificationMode) throws MotuCasException {
+    public void setAuthenticationMode(String authenticationMode) throws MotuCasException {
 
-        if (RestUtil.isNullOrEmpty(authentificationMode)) {
-            this.authentificationMode = AuthenticationMode.NONE;
+        if (RestUtil.isNullOrEmpty(authenticationMode)) {
+            this.authenticationMode = AuthenticationMode.NONE;
             return;
         }
 
         try {
-            this.authentificationMode = AuthenticationMode.fromValue(authentificationMode);
+            this.authenticationMode = AuthenticationMode.fromValue(authenticationMode);
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            throw new MotuCasException(String.format("Invalid authentification mode '%s'. Valid values are: %s",
-                                                  authentificationMode,
+            throw new MotuCasException(String.format("Invalid authentication mode '%s'. Valid values are: %s",
+                                                     authenticationMode,
                                                   AuthenticationMode.getAvailableValues()));
         }
     }
     
     /**
-     * Checks if is basic authentification.
+     * Checks if is basic authentication.
      *
-     * @return true, if is basic authentification
+     * @return true, if is basic authentication
      */
-    public boolean isBasicAuthentification() {
-        return this.authentificationMode.equals(AuthenticationMode.BASIC);
+    public boolean isBasicAuthentication() {
+        return this.authenticationMode.equals(AuthenticationMode.BASIC);
     }
 
     /**
-     * Checks if is cas authentification.
+     * Checks if is cas authentication.
      * 
-     * @return true, if is cas authentification
+     * @return true, if is cas authentication
      */
-    public boolean isCASAuthentification() {
-        return this.authentificationMode.equals(AuthenticationMode.CAS);
+    public boolean isCASAuthentication() {
+        return this.authenticationMode.equals(AuthenticationMode.CAS);
     }
 
     /**
-     * Checks if is none authentification.
+     * Checks if is none authentication.
      * 
-     * @return true, if is none authentification
+     * @return true, if is none authentication
      */
-    public boolean isNoneAuthentification() {
-        return this.authentificationMode.equals(AuthenticationMode.NONE);
+    public boolean isNoneAuthentication() {
+        return this.authenticationMode.equals(AuthenticationMode.NONE);
     }
 
     /**
-     * Checks if is authentification.
+     * Checks if is authentication.
      * 
-     * @return true, if is authentification
+     * @return true, if is authentication
      */
-    public boolean isAuthentification() {
-        return !isNoneAuthentification();
+    public boolean isAuthentication() {
+        return !isNoneAuthentication();
     }
 
-    public void setCASAuthentification(boolean casAuthentification) {
-        this.authentificationMode = (casAuthentification) ? AuthenticationMode.CAS : AuthenticationMode.NONE;
+    public void setCASAuthentication(boolean casAuthentication) {
+        this.authenticationMode = (casAuthentication) ? AuthenticationMode.CAS : AuthenticationMode.NONE;
     }
 
     /** The cas rest suff url. */
@@ -279,6 +278,27 @@ public class UserBase {
      */
     public void setCasRestSuffURL(String casRestSuffURL) {
         this.casRestSuffURL = casRestSuffURL;
+    }
+    
+    /** The cas url. */
+    protected String casURL = null;
+
+    /**
+     * Gets the cas url.
+     *
+     * @return the cas url
+     */
+    public String getCasURL() {
+        return casURL;
+    }
+
+    /**
+     * Sets the cas url.
+     *
+     * @param casURL the new cas url
+     */
+    public void setCasURL(String casURL) {
+        this.casURL = casURL;
     }
 
 }

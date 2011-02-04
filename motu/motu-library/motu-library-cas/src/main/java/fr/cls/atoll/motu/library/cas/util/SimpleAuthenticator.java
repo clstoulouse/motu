@@ -51,7 +51,7 @@ public class SimpleAuthenticator extends Authenticator {
 
     /**
      * @see java.net.Authenticator#getPasswordAuthentication()
-     * @return a password authentification.
+     * @return a password authentication.
      */
     @Override
     protected PasswordAuthentication getPasswordAuthentication() {

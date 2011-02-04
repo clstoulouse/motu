@@ -26,7 +26,7 @@ package fr.cls.atoll.motu.library.cas;
 
 import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.cas.util.AuthentificationHolder;
+import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
 import fr.cls.atoll.motu.library.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.cas.util.SimpleAuthenticator;
 
@@ -76,7 +76,7 @@ public class HttpClientCAS extends HttpClient {
         // DODSNetcdfFile.debugServerCall = true;
     }
 
-    // /** Does Service needs CAS authentification to access catalog resources and data. */
+    // /** Does Service needs CAS authentication to access catalog resources and data. */
     // protected final ThreadLocal<Boolean> isCas = new ThreadLocal<Boolean>();
     //
     // public ThreadLocal<Boolean> getIsCas() {
@@ -257,9 +257,9 @@ public class HttpClientCAS extends HttpClient {
             LOG.debug("addCASTicket(HttpMethod) - entering : debugHttpMethod BEFORE  " + HttpClientCAS.debugHttpMethod(method));
         }
 
-        if (!AuthentificationHolder.isCASAuthentification()) {
+        if (!AuthenticationHolder.isCASAuthentication()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("addCASTicket(HttpMethod) - exiting - NO CAS AUTHENTIFICATION : debugHttpMethod AFTER  "
+                LOG.debug("addCASTicket(HttpMethod) - exiting - NO CAS AUTHENTICATION : debugHttpMethod AFTER  "
                         + HttpClientCAS.debugHttpMethod(method));
             }
             return;
@@ -267,11 +267,11 @@ public class HttpClientCAS extends HttpClient {
 
         String newURIAsString = AssertionUtils.addCASTicket(method.getURI().getEscapedURI());
         if (!AssertionUtils.hasCASTicket(newURIAsString)) {
-            newURIAsString = AssertionUtils.addCASTicket(method.getURI().getEscapedURI(), AuthentificationHolder.getUser());
+            newURIAsString = AssertionUtils.addCASTicket(method.getURI().getEscapedURI(), AuthenticationHolder.getUser());
 
             if (!AssertionUtils.hasCASTicket(newURIAsString)) {
 
-                String login = AuthentificationHolder.getUserLogin();
+                String login = AuthenticationHolder.getUserLogin();
                 throw new MotuCasException(
                         String
                                 .format("Unable to access resource '%s'. This resource has been declared as CASified, but the Motu application/API can't retrieve any ticket from CAS via REST. \nFor information, current user login is:'%s'",
