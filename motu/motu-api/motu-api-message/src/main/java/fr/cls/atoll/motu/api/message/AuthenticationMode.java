@@ -37,13 +37,13 @@ import java.util.List;
  */
 public enum AuthenticationMode {
 
-    /** No Authentification. */
+    /** No Authentication. */
     NONE(0),
 
-    /** CAS Authentification. */
+    /** CAS Authentication. */
     CAS(1),
     
-    /** Basic Authentification. */
+    /** Basic Authentication. */
     BASIC(2);
 
     /** The value. */
@@ -88,7 +88,7 @@ public enum AuthenticationMode {
      * 
      * @param v the v
      * 
-     * @return the authentification mode
+     * @return the authentication mode
      */
     public static AuthenticationMode fromValue(String v) {
         for (AuthenticationMode c : AuthenticationMode.values()) {

@@ -96,10 +96,10 @@ public interface MotuRequestParametersConstant {
     /** The PARA m_ ca s_ res t_ suffi x_ url. */
     final String PARAM_CAS_REST_SUFFIX_URL = "cas_rest_suff_url";
 
-    /** The PARAM authentification mode. */
-    final String PARAM_AUTHENTIFICATION_MODE = "authmode";
+    /** The PARAM authentication mode. */
+    final String PARAM_AUTHENTICATION_MODE = "authmode";
 
-    /** The PARAM authentification mode. */
+    /** The PARAM xml file. */
     final String PARAM_XML_FILE = "xmlfile";
 
     /**
