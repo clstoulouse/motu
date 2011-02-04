@@ -528,7 +528,7 @@ public class AssertionUtils {
         if (AssertionUtils.isNullOrEmpty(casUrlToUse)) {
             casRestUrl = RestUtil.getCasRestletUrl(client, method, targetService, casRestUrlSuffix);
         } else {
-            casRestUrl = casUrlToUse;
+            casRestUrl = RestUtil.appendPath(casUrlToUse, casRestUrlSuffix);
         }
 
         String ticket = RestUtil.loginToCAS(casRestUrl, username, password, targetService);
@@ -611,7 +611,7 @@ public class AssertionUtils {
         if (AssertionUtils.isNullOrEmpty(casUrlToUse)) {
             casRestUrl = RestUtil.getCasRestletUrl(targetService, casRestUrlSuffix);
         } else {
-            casRestUrl = casUrlToUse;
+            casRestUrl = RestUtil.appendPath(casUrlToUse, casRestUrlSuffix);
         }
 
         String ticket = RestUtil.loginToCAS(casRestUrl, username, password, targetService);
@@ -690,7 +690,7 @@ public class AssertionUtils {
         if (AssertionUtils.isNullOrEmpty(casUrlToUse)) {
             casRestUrl = RestUtil.getCasRestletUrl(targetService, casRestUrlSuffix);
         } else {
-            casRestUrl = casUrlToUse;
+            casRestUrl = RestUtil.appendPath(casUrlToUse, casRestUrlSuffix);
         }
 
         ticket = RestUtil.loginToCAS(casRestUrl, username, password, targetService);

@@ -375,6 +375,17 @@ public class RestUtil {
 
     }
 
+    /**
+     * Gets the cas restlet url.
+     *
+     * @param client the client
+     * @param method the method
+     * @param serviceURL the service url
+     * @param casRestUrlSuffix the cas rest url suffix
+     * @return the cas restlet url
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException the motu cas bad request exception
+     */
     public static String getCasRestletUrl(Client client, RestUtil.HttpMethod method, String serviceURL, String casRestUrlSuffix) throws IOException,
             MotuCasBadRequestException {
 
@@ -386,21 +397,23 @@ public class RestUtil {
         if (AssertionUtils.isNullOrEmpty(casServerPrefix)) {
 
             return null;
-        }
+        }                
 
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(casServerPrefix);
-        if ((!casServerPrefix.endsWith("/")) && (!casRestUrlSuffix.startsWith("/"))) {
-            stringBuffer.append("/");
-        }
-
-        if ((casServerPrefix.endsWith("/")) && (casRestUrlSuffix.startsWith("/"))) {
-            stringBuffer.append(casRestUrlSuffix.substring(1));
-        } else {
-            stringBuffer.append(casRestUrlSuffix);
-        }
-
-        return stringBuffer.toString();
+//        StringBuffer stringBuffer = new StringBuffer();
+//        stringBuffer.append(casServerPrefix);
+//        if ((!casServerPrefix.endsWith("/")) && (!casRestUrlSuffix.startsWith("/"))) {
+//            stringBuffer.append("/");
+//        }
+//
+//        if ((casServerPrefix.endsWith("/")) && (casRestUrlSuffix.startsWith("/"))) {
+//            stringBuffer.append(casRestUrlSuffix.substring(1));
+//        } else {
+//            stringBuffer.append(casRestUrlSuffix);
+//        }
+//
+//        return stringBuffer.toString();
+        
+        return RestUtil.appendPath(casServerPrefix, casRestUrlSuffix);
 
     }
 
@@ -424,19 +437,21 @@ public class RestUtil {
             return null;
         }
 
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(casServerPrefix);
-        if ((!casServerPrefix.endsWith("/")) && (!casRestUrlSuffix.startsWith("/"))) {
-            stringBuffer.append("/");
-        }
+//        StringBuffer stringBuffer = new StringBuffer();
+//        stringBuffer.append(casServerPrefix);
+//        if ((!casServerPrefix.endsWith("/")) && (!casRestUrlSuffix.startsWith("/"))) {
+//            stringBuffer.append("/");
+//        }
+//
+//        if ((casServerPrefix.endsWith("/")) && (casRestUrlSuffix.startsWith("/"))) {
+//            stringBuffer.append(casRestUrlSuffix.substring(1));
+//        } else {
+//            stringBuffer.append(casRestUrlSuffix);
+//        }
+//
+//        return stringBuffer.toString();
 
-        if ((casServerPrefix.endsWith("/")) && (casRestUrlSuffix.startsWith("/"))) {
-            stringBuffer.append(casRestUrlSuffix.substring(1));
-        } else {
-            stringBuffer.append(casRestUrlSuffix);
-        }
-
-        return stringBuffer.toString();
+        return RestUtil.appendPath(casServerPrefix, casRestUrlSuffix);
 
     }
 
