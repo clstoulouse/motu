@@ -127,8 +127,8 @@ public class RestUtil {
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws MotuCasException the motu cas exception
      */
-    public static AuthenticationMode checkAuthenticationMode(URI uri) throws IOException, MotuCasException {
-        return RestUtil.checkAuthenticationMode(uri.toString(), null);
+    public static AuthenticationMode checkAuthenticationMode(URI uri, UserBase user) throws IOException, MotuCasException {
+        return RestUtil.checkAuthenticationMode(uri.toString(), null, user);
     }
 
     /**
@@ -140,8 +140,8 @@ public class RestUtil {
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws MotuCasException the motu cas exception
      */
-    public static AuthenticationMode checkAuthenticationMode(URI uri, Proxy proxy) throws IOException, MotuCasException {
-        return RestUtil.checkAuthenticationMode(uri.toString(), proxy);
+    public static AuthenticationMode checkAuthenticationMode(URI uri, Proxy proxy, UserBase user) throws IOException, MotuCasException {
+        return RestUtil.checkAuthenticationMode(uri.toString(), proxy, user);
     }
 
     /**
@@ -152,8 +152,8 @@ public class RestUtil {
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws MotuCasException the motu cas exception
      */
-    public static AuthenticationMode checkAuthenticationMode(String url) throws IOException, MotuCasException {
-        return RestUtil.checkAuthenticationMode(url, null);
+    public static AuthenticationMode checkAuthenticationMode(String url, UserBase user) throws IOException, MotuCasException {
+        return RestUtil.checkAuthenticationMode(url, null, user);
     }
 
     /**
@@ -165,12 +165,13 @@ public class RestUtil {
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws MotuCasException the motu cas exception
      */
-    public static AuthenticationMode checkAuthenticationMode(String url, Proxy proxy) throws IOException, MotuCasException {
+    public static AuthenticationMode checkAuthenticationMode(String url, Proxy proxy, UserBase user) throws IOException, MotuCasException {
 
         AuthenticationMode authenticationMode = AuthenticationMode.NONE;
+        String casUrl = null;
 
         try {
-            String casUrl = RestUtil.getRedirectUrl(url, proxy);
+            casUrl = RestUtil.getRedirectUrl(url, proxy);
             boolean isCasified = (!AssertionUtils.isNullOrEmpty(casUrl));
 
             if (isCasified) {
@@ -188,6 +189,11 @@ public class RestUtil {
             default:
                 throw e;
             }
+        }
+        
+        if (user != null) {
+            user.setAuthenticationMode(authenticationMode);
+            user.setCasURL(casUrl);
         }
 
         return authenticationMode;
