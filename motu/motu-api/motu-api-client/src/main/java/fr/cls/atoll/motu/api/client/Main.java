@@ -27,8 +27,9 @@ package fr.cls.atoll.motu.api.client;
 import fr.cls.atoll.motu.api.message.AuthenticationMode;
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.library.misc.intfce.User;
+import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
 import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
-import fr.cls.atoll.motu.library.cas.util.AuthentificationHolder;
+import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
 import fr.cls.atoll.motu.library.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
@@ -133,6 +134,14 @@ public class Main {
             e.printStackTrace(System.err);
             Main.printUsage();
             status = -1;
+        } catch (MotuCasException e) {
+            LOG.error("main(String[])", e);
+
+            System.err.print("ERROR: ");
+            System.err.println(e.notifyException());
+            e.printStackTrace(System.err);
+            Main.printUsage();
+            status = -1;            
         } catch (Exception e) {
             LOG.error("main(String[])", e);
 
@@ -211,9 +220,9 @@ public class Main {
         stringBuffer.append("PARAMETERS:\n");
         stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_DATA + "=dataset/product url (required)\n");
         stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_OUTPUT + "=output file path (optional - default is stdout)\n");
-        stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_LOGIN + "=login authentification if needed (optional)\n");
-        stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_PWD + "=password authentification if needed (optional)\n");
-        stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_AUTHENTIFICATION_MODE + "=authentification mode (optional - default is '"
+        stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_LOGIN + "=login authentication if needed (optional)\n");
+        stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_PWD + "=password authentication if needed (optional)\n");
+        stringBuffer.append("\t" + MotuRequestParametersConstant.PARAM_AUTHENTICATION_MODE + "=authentication mode (optional - default is '"
                 + AuthenticationMode.CAS.toString() + "' - valid values: ");
         stringBuffer.append(AuthenticationMode.getAvailableValues().toString());
         stringBuffer.append(")\n");
@@ -336,13 +345,13 @@ public class Main {
         user.setLogin(login);
         user.setPwd(mapParams.get(MotuRequestParametersConstant.PARAM_PWD));
         try {
-            user.setAuthentificationMode(mapParams.get(MotuRequestParametersConstant.PARAM_AUTHENTIFICATION_MODE));
+            user.setAuthenticationMode(mapParams.get(MotuRequestParametersConstant.PARAM_AUTHENTICATION_MODE));
         } catch (MotuCasException e) {
             throw new MotuException(e);
         }
 
-        if ((user.getLogin() != null) && (user.getAuthentificationMode().equals(AuthenticationMode.NONE))) {
-            user.setAuthentificationMode(AuthenticationMode.CAS);
+        if ((user.getLogin() != null) && (user.getAuthenticationMode().equals(AuthenticationMode.NONE))) {
+            user.setAuthenticationMode(AuthenticationMode.CAS);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -358,8 +367,9 @@ public class Main {
      * @throws IOException
      * @throws MotuExceptionBase
      * @throws MotuMarshallException
+     * @throws MotuCasBadRequestException 
      */
-    private static void execRequest() throws MotuMarshallException, MotuExceptionBase, IOException {
+    private static void execRequest() throws MotuMarshallException, MotuExceptionBase, IOException, MotuCasBadRequestException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("execRequest() - entering");
         }
@@ -384,8 +394,9 @@ public class Main {
      * @throws MotuExceptionBase the motu exception base
      * @throws MotuMarshallException the motu marshall exception
      * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException 
      */
-    private static boolean isActionDescribeProduct(String action) throws MotuMarshallException, MotuExceptionBase, IOException {
+    private static boolean isActionDescribeProduct(String action) throws MotuMarshallException, MotuExceptionBase, IOException, MotuCasBadRequestException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionDescribeProduct(String) - entering");
         }
@@ -403,7 +414,7 @@ public class Main {
                                                   action));
         }
 
-        boolean casAuthentification = RestUtil.isCasifiedUrl(data);
+        boolean casAuthentication = RestUtil.isCasifiedUrl(data);
 
         Writer writer = null;
 
@@ -418,9 +429,9 @@ public class Main {
         // Gets and sets user parameters or null
         User user = Main.getUser();
         if (user != null) {
-            user.setCASAuthentification(casAuthentification);            
+            user.setCASAuthentication(casAuthentication);            
         }
-        AuthentificationHolder.setUser(user);
+        AuthenticationHolder.setUser(user);
 
         // Get the TDS Catalog file name
         String xmlFile = Main.getXmlFile();
