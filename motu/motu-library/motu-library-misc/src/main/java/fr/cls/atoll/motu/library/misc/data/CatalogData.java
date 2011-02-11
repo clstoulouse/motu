@@ -196,6 +196,23 @@ public class CatalogData {
             LOG.debug("init() - exiting");
         }
     }
+    public void loadFtpCatalogInit() {
+
+        // Set to store product id that are in the catalog.
+        if (productsLoaded == null) {
+            productsLoaded = new HashSet<String>();
+        }
+        productsLoaded.clear();
+
+        listProductTypeDataset = new ArrayList<List<Product>>();
+        listCatalogRefSubPaths = new ArrayList<String>();
+        this.currentProductType = "";
+        // this.currentProductSubTypes = null;
+        getCurrentProductSubTypes();
+
+        sameProductTypeDataset = new ArrayList<Product>();
+
+    }
 
     /**
      * Load ftp catalog.
@@ -206,12 +223,14 @@ public class CatalogData {
      */
     public void loadFtpCatalog(String path) throws MotuException {
 
-        // Set to store product id that are in the catalog.
-        if (productsLoaded == null) {
-            productsLoaded = new HashSet<String>();
-        }
-        productsLoaded.clear();
+//        // Set to store product id that are in the catalog.
+//        if (productsLoaded == null) {
+//            productsLoaded = new HashSet<String>();
+//        }
+//        productsLoaded.clear();
 
+        loadFtpCatalogInit();
+        
         // Products map are not cleared, it always refresh :
         // - Products that have previously loaded are refresh
         // - Products that are newly inserted in the catalog are insert in the
@@ -231,6 +250,8 @@ public class CatalogData {
         for (ResourceOLA resourceOLA : resourcesOLA.getResourceOLA()) {
             currentProductType = resourceOLA.getUrn().toString();
             loadFtpInventory(resourceOLA.getInventoryUrl().toString());
+            listProductTypeDataset.add(sameProductTypeDataset);
+
         }
 
         // Remove products that are not anymore in the catalog
@@ -273,7 +294,11 @@ public class CatalogData {
         product.setProductMetaData(productMetaData);
 
         product.setLocationMetaData(xmlUri);
-
+        
+        productMetaData.setProductType(currentProductType);
+        sameProductTypeDataset = new ArrayList<Product>();
+        sameProductTypeDataset.add(product);
+        
         productsLoaded.add(productId);
 
         product.loadInventoryGlobalMetaData(inventoryOLA);

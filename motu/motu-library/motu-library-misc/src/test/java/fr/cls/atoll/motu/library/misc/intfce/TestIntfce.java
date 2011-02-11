@@ -365,7 +365,7 @@ public class TestIntfce {
         // }
         // MAMath.MinMax minMax = NetCdfReader.getMinMaxLonNormal(r1, r2, r1Values, r2Values)
         //listServices();
-        // catalogInformation();
+        catalogInformation();
         // try {
         // ServiceData.Language test = ServiceData.Language.valueOf("ee");
         // } catch (RuntimeException e) {
@@ -408,7 +408,7 @@ public class TestIntfce {
         // testLoadInventoryOLA();
         // testLoadCatalogOLA();
         // Product product = productInformationFromInventory();
-        productExtractDataFromInventory();
+        // productExtractDataFromInventory();
         // productListMercator();
         // productList();
         //testGetProductMetadataInfo();
@@ -450,7 +450,11 @@ public class TestIntfce {
             // String serviceName = "aviso_dt";
             // String serviceName = "Mercator";
             // String serviceName = "MercatorIBI";
-            String serviceName = "Myocean";
+            //String serviceName = "Myocean";
+            String myoceanUrn = "http://purl.org/myocean/ontology/service/database#";
+            //String serviceName = myoceanUrn + "cls-toulouse-fr-sltac-motu-rest_bis";
+            String serviceName = myoceanUrn + "SL-CLS-TOULOUSE-FR-MOTU-REST";
+            
             // String serviceName = "Catsat";
             // String serviceName = "AvisoNRT";
             // String serviceName = "aviso_dt";

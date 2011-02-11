@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rdf:RDF [
 <!ENTITY atoll "http://purl.org/cls/atoll/ontology/individual/atoll#" >
-<!ENTITY myoceanUrn "http://purl.org/myocean/ontology/individual/myocean#" >
+<!ENTITY myoceanUrnOLD "http://purl.org/myocean/ontology/individual/myocean#" >
+<!ENTITY myoceanUrn "http://purl.org/myocean/ontology/service/database#" >
+
 ]>
 
 <!--
@@ -123,16 +125,28 @@
 	sftpSessionTimeOut="PT10S"
 	strictHostKeyChecking="no">
 	
+    <!--===========================================================-->
+    <!--                   motu  'SLTAC' FTP        Service                  -->
+    <!--===========================================================-->
+
+    <configService defaultLanguage="UK" description="SLTAC"
+                    group="SLTAC" httpBaseRef="http://resources.myocean.eu"
+                    name="&myoceanUrn;cls-toulouse-fr-sltac-motu-rest" veloTemplatePrefix="myocean">
+                    <catalog name="catalogFTP.xml" type="ftp"
+                                    urlSite="sftp://atoll:atoll@atoll-misgw.vlandata.cls.fr/opt/atoll/misgw-sltac/hoa/publication/inventories" />
+    </configService>
+	
 	<!--===========================================================-->
-	<!--                   motu  'SLTAC' FTP        Service                  -->
+	<!--                   motu  'SLTAC' FTP with template mercator        Service                  -->
 	<!--===========================================================-->
-		
+ 	
 	<configService defaultLanguage="UK" description="SLTAC"
-			group="SLTAC" httpBaseRef="http://www.myocean.eu.org"
-			name="&myoceanUrn;SL-CLS-TOULOUSE-FR-MOTU-REST" veloTemplatePrefix="myocean">
+			group="SLTAC" httpBaseRef="http://www.mercator-ocean.fr"
+			name="&myoceanUrn;SL-CLS-TOULOUSE-FR-MOTU-REST" veloTemplatePrefix="mercator">
 			<catalog name="catalogFTP.xml" type="ftp"
 					urlSite="sftp://atoll:atoll@atoll-aviso.vlandata.cls.fr/opt/atoll/misgw-sltac/hoa/publication/inventories" />
 	</configService>
+
 	<!--===========================================-->
 	<!--                    TEST TOPAZ -->
 	<!--===========================================-->

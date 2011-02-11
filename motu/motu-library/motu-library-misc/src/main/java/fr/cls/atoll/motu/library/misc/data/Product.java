@@ -549,7 +549,7 @@ public class Product {
         }
 
         productMetaData.setProductId(inventoryOLA.getResource().getUrn().toString());
-        productMetaData.setTitle(inventoryOLA.getResource().getUrn().toString());
+        productMetaData.setTitle(Organizer.getDatasetIdFromURI(inventoryOLA.getResource().getUrn().toString()));
 
         Resource resource = inventoryOLA.getResource();
 

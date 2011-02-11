@@ -166,9 +166,15 @@
 	<tr>	
 	<td>
 		<li>
-		<a href=?action=listproductmetadata&service=${service.getNameEncoded()}&product=${productMetaData.getProductId()}>
+		#if($catalogType != "FTP")						
+		    <a href=?action=listproductmetadata&service=${service.getNameEncoded()}&product=${productMetaData.getProductId()}>
 					 $productMetaData.getTitle()
-		</a>	
+			</a>	
+		#else
+			<a href=?action=productdownloadhome&service=${service.getNameEncoded()}&product=${productMetaData.getProductId()}>
+					 $productMetaData.getTitle()
+			</a>	
+		#end
 		</li>	
 	</td>
 	<td class="producttype">
@@ -195,8 +201,8 @@
 	#set ( $printheaders = true )
 	#foreach( $product in $sameProductTypeDataset )
 		#set($productMetaData = $product.getProductMetaData())
-		#if($printheaders == true)
-			#set($printheaders = false )			
+		#if(($printheaders == true) && ($catalogType != "FTP"))
+			#set($printheaders = false )	 		
 			#catalog_fr_printheader()			
 		<table width="90%" border="0" cellspacing="0" cellpadding="0"><tr>
 		#end		
@@ -215,8 +221,9 @@
 
 
 ## ------------------------ print table of contents ---------------------
+#set ($catalogType = $service.getCatalogType().toString().toUpperCase())
 
-#if($printcatalogtoc)
+#if($printcatalogtoc && ($catalogType != "FTP"))
 	#catalog_fr_table_of_contents()
 #end
 
