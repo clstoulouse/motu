@@ -276,13 +276,30 @@
 
 ## -------------------------------------------- product_downloadhome_uk_timeSelection --------------------------------
 #macro(product_downloadhome_uk_timeSelection)
-#set ($listdate = $product.getTimeAxisDataAsString())
+
+#if($catalogType != "FTP")	
+	#set ($listdate = $product.getTimeAxisDataAsString())
+#else
+	#set ($listdate = $product.getTimeCoverageFromDataFiles())
+#end
+	
 #set ($listdateSize = $listdate.size())
 #if($listdateSize > 0)
 	#set ($lastIndex = ${listdateSize} - 1)
 	#set ($lastdate = $listdate.get(${lastIndex}))
+	#if($lastIndex == 0)
+		#set ($beforelastdate = $listdate.get(${lastIndex}))		
+	#else
+		#set ($beforelastIndex = ${lastIndex} - 1)
+		#set ($beforelastdate = $listdate.get(${beforelastIndex}))		
+	#end
 ##	#set ($timeLowValue = $listdate.get(0))
-	#set ($timeLowValue = $lastdate)
+	#if($catalogType != "FTP")	
+		#set ($timeLowValue = $lastdate)
+	#else
+		#set ($timeLowValue = $beforelastdate)
+	#end
+	
 	#set ($timeHighValue = $lastdate)
 ##	#set ($timeHighValue = $listdate.get(0))
 	#product_downloadhome_uk_setTimeMinMax()
@@ -392,6 +409,7 @@
 #set($formName = "download")
 #set($productMetaData = $product.getProductMetaData())
 #set($images_dir = "${product.getHpptServerDocumentRoot()}/atoll-motuservlet/images")
+#set ($catalogType = $service.getCatalogType().toString().toUpperCase())
 
 #product_downloadhome_uk_setXYMinMax()
 
@@ -454,7 +472,7 @@ td.advice_noimg { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fo
 	</td></tr>
 #end
 
-#if($productMetaData.hasTimeAxis())
+#if($productMetaData.hasTimeAxis() || ($catalogType == "FTP"))
 	<tr><td>
 	#product_downloadhome_uk_timeSelection()
 	</td></tr>
@@ -467,22 +485,25 @@ td.advice_noimg { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fo
 #end
 </table>
 
-<h2>Variable</h2>
-#set ($listParameterMetadata = $productMetaData.getParameterMetaDatasFiltered() )
-<table class="encadre" width="95%" border="0" cellspacing="2">
-	<tr>
-		<th>Download</th>
-		<th>Name</th>
-		<th>Description</th>
-		<th>Standard name</th>
-		<th>Unit</th>
-		<th>Dimensions</th>
-####		<th>Quicklook</th>
-	</tr>
-	#foreach( $parameterMetadata in $listParameterMetadata )	
-		#product_downloadhome_uk_printVar()
-	#end
-</table>
+#if($catalogType != "FTP")	
+    <h2>Variable</h2>
+    #set ($listParameterMetadata = $productMetaData.getParameterMetaDatasFiltered() )
+    <table class="encadre" width="95%" border="0" cellspacing="2">
+    	<tr>
+    		<th>Download</th>
+    		<th>Name</th>
+    		<th>Description</th>
+    		<th>Standard name</th>
+    		<th>Unit</th>
+    		<th>Dimensions</th>
+    ####		<th>Quicklook</th>
+    	</tr>
+    	#foreach( $parameterMetadata in $listParameterMetadata )	
+    		#product_downloadhome_uk_printVar()
+    	#end
+    </table>
+#end
+
 <p>&nbsp;</p>
 <input onClick="updateMap()" type="submit" value="Download" />
 </form>

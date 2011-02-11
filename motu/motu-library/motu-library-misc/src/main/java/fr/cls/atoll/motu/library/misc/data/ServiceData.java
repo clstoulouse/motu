@@ -1422,9 +1422,9 @@ public class ServiceData {
         if (productMetaData == null) {
             return false;
         }
-        if (productMetaData.getCoordinateAxes() == null) {
-            return false;
-        }
+//        if (productMetaData.getCoordinateAxes() == null) {
+//            return false;
+//        }
         if (productMetaData.getParameterMetaDatas() == null) {
             return false;
         }

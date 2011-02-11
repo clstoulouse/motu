@@ -143,8 +143,12 @@
 	<configService defaultLanguage="UK" description="SLTAC"
 			group="SLTAC" httpBaseRef="http://www.mercator-ocean.fr"
 			name="&myoceanUrn;SL-CLS-TOULOUSE-FR-MOTU-REST" veloTemplatePrefix="mercator">
+			<!-- 
 			<catalog name="catalogFTP.xml" type="ftp"
 					urlSite="sftp://atoll:atoll@atoll-aviso.vlandata.cls.fr/opt/atoll/misgw-sltac/hoa/publication/inventories" />
+ 			-->
+            <catalog name="catalogFTP.xml" type="ftp"
+                                    urlSite="sftp://atoll:atoll@atoll-misgw.vlandata.cls.fr/opt/atoll/misgw-sltac/hoa/publication/inventories" />
 	</configService>
 
 	<!--===========================================-->

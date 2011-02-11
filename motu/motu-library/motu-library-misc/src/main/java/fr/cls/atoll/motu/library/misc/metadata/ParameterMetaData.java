@@ -328,6 +328,9 @@ public class ParameterMetaData {
      * @uml.property name="dimensions"
      */
     public int dimensionsSize() {
+        if (dimensions == null) {
+            return 0;
+        }
         return this.dimensions.size();
     }
 

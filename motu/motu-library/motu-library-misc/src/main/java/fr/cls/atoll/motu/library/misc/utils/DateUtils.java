@@ -1,8 +1,16 @@
 package fr.cls.atoll.motu.library.misc.utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.Interval;
 import org.joda.time.ReadableInterval;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISOPeriodFormat;
+import org.joda.time.format.PeriodFormatter;
 /**
  * 
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
@@ -12,6 +20,50 @@ import org.joda.time.ReadableInterval;
  */
 public class DateUtils {
     
+    /** Logger for this class. */
+    private static final Logger LOG = Logger.getLogger(DateUtils.class);
+
+    /** The Constant DATETIME_PATTERN1. */
+    public static final String DATETIME_PATTERN1 = "yyyy-MM-dd";
+
+    /** The Constant DATETIME_PATTERN2. */
+    public static final String DATETIME_PATTERN2 = "yyyy-MM-dd'T'HH:mm:ss";
+
+    /** The Constant DATETIME_PATTERN3. */
+    public static final String DATETIME_PATTERN3 = "yyyy-MM-dd' 'HH:mm:ss";
+
+    /** The Constant DATETIME_PATTERN4. */
+    public static final String DATETIME_PATTERN4 = "yyyy-MM-dd' 'HH:mm:ss.SSSZZ";
+
+    /** The Constant DATETIME_PATTERN5. */
+    public static final String DATETIME_PATTERN5 = "yyyy-MM-dd'T'HH:mm:ss.SSSZZ";
+
+    /** The Constant DATETIME_FORMATTERS. */
+    public static final Map<String, DateTimeFormatter> DATETIME_FORMATTERS = new HashMap<String, DateTimeFormatter>();
+
+    public static final String PERIOD_PATTERN_ISO_STANDARD = "PyYmMwWdDThHmMsS";
+    public static final String PERIOD_PATTERN_ISO_ALTERNATE = "PyyyymmddThhmmss";
+    public static final String PERIOD_PATTERN_ISO_ALTERNATE_WITH_WEEKS = "PyyyyWwwddThhmmss";
+    public static final String PERIOD_PATTERN_ISO_ALTERNATE_EXTENDED = "Pyyyy-mm-ddThh:mm:ss";
+    public static final String PERIOD_PATTERN_ISO_ALTERNATE_EXTENDED_WITH_WEEKS = "Pyyyy-Www-ddThh:mm:ss";
+
+    /** The Constant PERIOD_FORMATTERS. */
+    public static final Map<String, PeriodFormatter> PERIOD_FORMATTERS = new HashMap<String, PeriodFormatter>();
+
+    static {
+        DATETIME_FORMATTERS.put(DATETIME_PATTERN1, DateTimeFormat.forPattern(DATETIME_PATTERN1));
+        DATETIME_FORMATTERS.put(DATETIME_PATTERN2, DateTimeFormat.forPattern(DATETIME_PATTERN2));
+        DATETIME_FORMATTERS.put(DATETIME_PATTERN3, DateTimeFormat.forPattern(DATETIME_PATTERN3));
+        DATETIME_FORMATTERS.put(DATETIME_PATTERN4, DateTimeFormat.forPattern(DATETIME_PATTERN4));
+        DATETIME_FORMATTERS.put(DATETIME_PATTERN5, DateTimeFormat.forPattern(DATETIME_PATTERN5));
+
+        PERIOD_FORMATTERS.put(PERIOD_PATTERN_ISO_STANDARD, ISOPeriodFormat.standard());
+        PERIOD_FORMATTERS.put(PERIOD_PATTERN_ISO_ALTERNATE, ISOPeriodFormat.alternate());
+        PERIOD_FORMATTERS.put(PERIOD_PATTERN_ISO_ALTERNATE_WITH_WEEKS, ISOPeriodFormat.alternateWithWeeks());
+        PERIOD_FORMATTERS.put(PERIOD_PATTERN_ISO_ALTERNATE_EXTENDED, ISOPeriodFormat.alternateExtended());
+        PERIOD_FORMATTERS.put(PERIOD_PATTERN_ISO_ALTERNATE_EXTENDED_WITH_WEEKS, ISOPeriodFormat.alternateExtendedWithWeeks());
+
+    }    
     /**
      * Does a time interval contain the specified millisecond instant.
      *

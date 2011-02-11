@@ -24,6 +24,35 @@
  */
 package fr.cls.atoll.motu.library.misc.data;
 
+import java.io.File;
+import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+
+import ucar.ma2.Array;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.MAMath;
+import ucar.ma2.MAMath.MinMax;
+import ucar.nc2.Attribute;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis2D;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.library.inventory.DepthCoverage;
 import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
 import fr.cls.atoll.motu.library.inventory.Inventory;
@@ -47,35 +76,7 @@ import fr.cls.atoll.motu.library.misc.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
-
-import java.io.File;
-import java.io.IOException;
-import java.math.RoundingMode;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
-
-import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.MAMath;
-import ucar.ma2.MAMath.MinMax;
-import ucar.nc2.Attribute;
-import ucar.nc2.Variable;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateAxis2D;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.geoloc.LatLonRect;
+import fr.cls.atoll.motu.library.misc.utils.DateUtils;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -151,7 +152,6 @@ public class Product {
     public void setProductMetaData(ProductMetaData productMetaData) {
         this.productMetaData = productMetaData;
     }
-
 
     /** The dataset. */
     private DatasetBase dataset;
@@ -319,7 +319,7 @@ public class Product {
             throw new MotuException("Error in isProductDownloadable - productMetaData is null");
         }
 
-        //return !(productMetaData.isProductAlongTrack() || hasGeoXYAxisWithLonLatEquivalence());
+        // return !(productMetaData.isProductAlongTrack() || hasGeoXYAxisWithLonLatEquivalence());
         return !(productMetaData.isProductAlongTrack());
     }
 
@@ -484,7 +484,7 @@ public class Product {
             LOG.error("loadOpendapGlobalMetaData()", e);
             throw new MotuException("Error in loadOpendapGlobalMetaData", e);
         } catch (NetCdfAttributeNotFoundException e) {
-            //LOG.error("loadOpendapGlobalMetaData()", e);
+            // LOG.error("loadOpendapGlobalMetaData()", e);
 
             // Do nothing
         }
@@ -499,7 +499,7 @@ public class Product {
             throw new MotuException("Error in loadOpendapGlobalMetaData", e);
 
         } catch (NetCdfAttributeNotFoundException e) {
-            //LOG.error("loadOpendapGlobalMetaData()", e);
+            // LOG.error("loadOpendapGlobalMetaData()", e);
 
             // Do nothing
         }
@@ -1494,7 +1494,7 @@ public class Product {
 
     /**
      * Find longitude ignore case.
-     *
+     * 
      * @return the parameter meta data
      */
     public ParameterMetaData findLongitudeIgnoreCase() {
@@ -1503,10 +1503,10 @@ public class Product {
         }
         return productMetaData.findLongitudeIgnoreCase();
     }
-    
+
     /**
      * Find latitude ignore case.
-     *
+     * 
      * @return the parameter meta data
      */
     public ParameterMetaData findLatitudeIgnoreCase() {
@@ -1518,7 +1518,7 @@ public class Product {
 
     /**
      * Find coordinate axis.
-     *
+     * 
      * @param axisName the axis name
      * @return the coordinate axis
      */
@@ -1526,12 +1526,12 @@ public class Product {
         if (productMetaData == null) {
             return null;
         }
-        return productMetaData.findCoordinateAxis(axisName);        
+        return productMetaData.findCoordinateAxis(axisName);
     }
-    
+
     /**
      * Gets the coordinate axis type.
-     *
+     * 
      * @param axisName the axis name
      * @return the coordinate axis type
      */
@@ -1539,7 +1539,7 @@ public class Product {
         if (productMetaData == null) {
             return null;
         }
-        return productMetaData.getCoordinateAxisType(axisName);        
+        return productMetaData.getCoordinateAxisType(axisName);
     }
 
     /**
@@ -1854,6 +1854,30 @@ public class Product {
      */
     public void setDataFiles(List<DataFile> dataFiles) {
         this.dataFiles = dataFiles;
+    }
+
+    public List<String> getTimeCoverageFromDataFiles() {
+
+        List<String> timeCoverage = new ArrayList<String>();
+
+        if (dataFiles == null) {
+            return timeCoverage;
+        }
+
+        for (DataFile dataFile : dataFiles) {            
+            DateTime fileStart = dataFile.getStartCoverageDate();
+            if (fileStart != null) {
+                timeCoverage.add(DateUtils.DATETIME_FORMATTERS.get(DateUtils.DATETIME_PATTERN3).print(fileStart));
+            }
+
+            DateTime fileEnd = dataFile.getEndCoverageDate();
+            if (fileEnd != null) {
+                timeCoverage.add(DateUtils.DATETIME_FORMATTERS.get(DateUtils.DATETIME_PATTERN3).print(fileEnd));
+            }
+        }
+        
+        return timeCoverage;
+        
     }
 
     /** URL to find the product (URL Opendap , ...). */
