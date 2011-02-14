@@ -41,6 +41,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
@@ -1865,15 +1866,13 @@ public class Product {
         }
 
         for (DataFile dataFile : dataFiles) {            
-            DateTime fileStart = dataFile.getStartCoverageDate();
+            // Warning : get Datetime as UTC 
+            DateTime fileStart = new DateTime(dataFile.getStartCoverageDate(), DateTimeZone.UTC);
+            
             if (fileStart != null) {
                 timeCoverage.add(DateUtils.DATETIME_FORMATTERS.get(DateUtils.DATETIME_PATTERN3).print(fileStart));
             }
 
-            DateTime fileEnd = dataFile.getEndCoverageDate();
-            if (fileEnd != null) {
-                timeCoverage.add(DateUtils.DATETIME_FORMATTERS.get(DateUtils.DATETIME_PATTERN3).print(fileEnd));
-            }
         }
         
         return timeCoverage;

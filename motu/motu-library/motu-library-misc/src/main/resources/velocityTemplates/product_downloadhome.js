@@ -77,9 +77,11 @@ function Widget(form, element) {
   Assert(theFormEl);
   this.mForm = theFormEl;
   this.mElement = theFormEl.elements[element];
-  Assert(this.mElement);
-  this.mElement.mObject = this;
-  this.mCallbackList = new Array();
+  //Assert(this.mElement);
+  if (this.mElement) {
+	  this.mElement.mObject = this;
+	  this.mCallbackList = new Array();
+  }
 }
 
  // Set the currently selected to value (if it exists)

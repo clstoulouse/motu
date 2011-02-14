@@ -170,7 +170,7 @@
 	<!--                    TEST MyOcean Mercator TDS         -->
 	<!--===========================================-->
 	<configService defaultLanguage="UK" description="Test MyOcean data"
-		group="Myocean" httpBaseRef="http:///www.myocean.eu.org"
+		group="Myocean" httpBaseRef="http://resources.myocean.eu"
 		name="Myocean" veloTemplatePrefix="myocean">
 		<catalog name="catalog.xml" type="tds"
 			urlSite="http://opendap.mercator-ocean.fr/thredds" />

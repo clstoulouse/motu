@@ -678,7 +678,7 @@ public class TestIntfce {
     public static void productDownloadInfo() {
 
         try {
-            // String serviceName = "Myocean";
+            //String serviceName = "Myocean";
             //String serviceName = "mercator";
             //String serviceName = "Topaz";
 
@@ -691,7 +691,7 @@ public class TestIntfce {
             // String serviceName = "avisoNRT";
             // String productId = "duacs_global_nrt_madt_merged_h";
             // String productId = "mercatorPsy2v3_ibi_mean_best_estimate";
-            // String productId = "mercatorPsy3v2_glo_mean_best_estimate";
+            //String productId = "mercatorPsy3v2_glo_mean_best_estimate";
             //String productId = "mersea-ipv2/arctic/tmipv2a-class1-b-be";
             String productId = "http://purl.org/myocean/ontology/product/database#dataset-duacs-ran-global-en-sla-l3";            //String productId = "mercatorPsy3v2_arc_mean_best_estimate";
             FileWriter writer = new FileWriter("./target/resultProductDownloadInfo.html");
