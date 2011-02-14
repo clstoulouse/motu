@@ -39,11 +39,12 @@
 	<property name="password.default" value=""/>
 	<property name="tomcat.dir.default" value="tomcat-motu"/>
 	<property name="contexts.dir" value="${deploy.root}/${tomcat.dir}/lib/fr/cls/atoll/contexts"/>
-	<property name="contexts.name.default" value="default"/>
 	<property name="motu.prefix" value="motu-web"/>
 	<property name="config.prefix" value="motu-configuration"/>
 	<property name="config.prefix.common" value="${config.prefix}-common"/>
 	<property name="contexts.prefix" value="atoll-contexts"/>
+	<property name="tomcat.resources.prefix" value="motu-library-tomcat-resources"/>
+	<property name="motu.servlet.name.default" value="mis-gateway-servlet"/>
 	
 	<tstamp>
 		<format property="now" pattern="yyyy-MM-dd-HH-mm-ss.S"  />
@@ -57,7 +58,7 @@
 	<!-- Deploy (main target)  -->
 	<!-- //////////////////////////////////////////////////////////////// -->
 	<target name="deploy"
-		depends="init, stop-atoll-is, create-link-atoll-config, create-link-atoll-is, create-link-atoll-context, start-atoll-is"
+		depends="init, stop-motu-web, create-link-motu-config, create-link-motu-web, start-motu-web"
 	/> 
 	
 	
@@ -77,20 +78,54 @@
 			addproperty="deploy.root"/>
 		<input message="Tomcat directory ? " defaultvalue="${tomcat.dir.default}"
 			addproperty="tomcat.dir"/>
-		<input message="Motu Web package  name ? "
-			defaultvalue="${motu.prefix}-${deploy.version}"
+		
+		<input message="Motu Web package  name (without version) ? "
+			defaultvalue="${motu.prefix}"
 			addproperty="motu.web.package.name"/>
-		<input message="Common configuration package  name ? "
-			defaultvalue="${config.prefix.common}-${deploy.version}"
-			addproperty="common.config.package.name"/>
-		<input message="Configuration package  name ? "
-			defaultvalue="${config.prefix}-${hostprefix}"
-			addproperty="config.package.name"/>
+
+		<!-- Ask the user  Motu Common configuration deployment -->
+		<input message="Deploy Motu Common Configuration [yes, no]? " defaultvalue="no"
+			addproperty="common.config.deploy"/>
 		
-		<propertyregex property="config.suffix" input="${config.package.name}" regexp="${config.prefix}-([^\.]*)-${deploy.version}" select="\1"
-			casesensitive="false"/>
+		<if>
+			<equals arg1="${common.config.deploy}" arg2="yes" casesensitive="true"/>
+			<then>
+				<input message="Motu Common configuration package  name  (without version)  ? "
+					defaultvalue="${config.prefix.common}"
+					addproperty="common.config.package.name"/>
+				
+			</then>
+			
+		</if>
 		
+		<!-- Ask the user  Motu Custom  configuration deployment -->
+		<input message="Deploy Motu  Configuration [yes, no]? " defaultvalue="no"
+			addproperty="config.deploy"/>
+		
+		<if>
+			<equals arg1="${config.deploy}" arg2="yes" casesensitive="true"/>
+			<then>
+				<input message="Motu Custom Configuration package  name  (without version)  ? "
+					defaultvalue="${config.prefix}-${hostprefix}"
+					addproperty="config.package.name"/>
+				
+				<input message="Motu Custom Configuration package  version  ? "
+					defaultvalue="${deploy.version}"
+					addproperty="config.deploy.version"/>
+			</then>
+				
+		</if>				
+		
+
+		<input message="Motu Web servlet name  ? "
+			defaultvalue="${motu.servlet.name.default}"
+			addproperty="motu.servlet.name"/>
+		
+		
+<!--		<propertyregex property="config.suffix" input="${config.package.name}"
+			regexp="${config.prefix}-([^\.]*)-${deploy.version}" select="\1" casesensitive="false"/>
 		<property name="config.prefix.custom.pathname" value="${config.prefix}-${config.suffix}"/>
+-->		
 		
 		<input message="Start Motu Web script ? " defaultvalue="${deploy.root}/${start.motu.default}"
 			addproperty="start.motu"/>
@@ -101,15 +136,27 @@
 		
 		
 	</target>
-	
+			
 	<!-- ============================ -->
 	<!-- Initialisation  -->
 	<!-- ============================ -->
 	<target name="init" depends="prompt"> 
 		
+		<!-- Set remote directory name  -->
+		<property name="motu.remote.dir" value="${motu.web.package.name}-${deploy.version}"/>
+		<property name="config.remote.dir" value="${config.package.name}-${config.deploy.version}"/>
+		<property name="common.config.remote.dir" value="${common.config.package.name}-${deploy.version}"/>
+		
+		
 		<!-- Ask the user to confirm deployment -->
 		<input message="Are you sure to deploy atoll-is [yes, no]? " defaultvalue="no"
 			addproperty="accept.deploy"/>
+		
+		<!-- check motu common configuration jar is in the maven local repository -->		
+		<property name="common.config.package.jar" value="${common.config.package.name}-${deploy.version}-delivery.${zip.ext}"/>
+		<property name="common.config.package.jar.local"
+			value="${maven.local.repo.motu.config}/${config.prefix.common}/${deploy.version}/${common.config.package.jar}"
+		/>
 		
 		<fail message="Deployment cancelled by user.">
 			<condition>
@@ -119,16 +166,6 @@
 			</condition>
 		</fail>
 		
-		<!-- Set remote directory name  -->
-		<property name="motu.remote.dir" value="${motu.web.package.name}"/>
-		<property name="config.remote.dir" value="${config.package.name}"/>
-		<property name="common.config.remote.dir" value="${common.config.package.name}"/>
-
-		<!-- check motu common configuration jar is in the maven local repository -->		
-		<property name="common.config.package.jar" value="${common.config.package.name}-delivery.${zip.ext}"/>
-		<property name="common.config.package.jar.local"
-			value="${maven.local.repo.motu.config}/${config.prefix.common}/${deploy.version}/${common.config.package.jar}"
-		/>
 		<fail message="File ${common.config.package.jar.local} is mssing.">
 			<condition>
 				<not>
@@ -139,9 +176,9 @@
 		</fail>
 		
 		<!-- check motu custom configuration jar is in the maven local repository -->		
-		<property name="config.package.jar" value="${config.package.name}.${zip.ext}"/>
+		<property name="config.package.jar" value="${config.package.name}-${config.deploy.version}-delivery.${zip.ext}"/>
 		<property name="config.package.jar.local"
-			value="${maven.local.repo.motu.config}/${config.prefix.custom.pathname]/${deploy.version}/${config.package.jar}"
+			value="${maven.local.repo.motu.config}/${config.package.name]/${deploy.version}/${config.package.jar}"
 		/>
 
 		
@@ -157,7 +194,7 @@
 		
 		<!-- check motu web  is in the maven local repository -->
 		
-		<property name="motu.web.package.jar" value="${motu.web.package.name}.${war.ext}"/>
+		<property name="motu.web.package.jar" value="${motu.web.package.name}-${deploy.version}.${war.ext}"/>
 		<property name="motu.web.package.jar.local"
 			value="${maven.local.repo.motu}/motu-web/${deploy.version}/${motu.web.package.jar}"
 		/>
@@ -185,7 +222,7 @@
 
 	</target>
 	<!-- ============================ -->
-	<!-- Stop motu web -->
+	<!-- Start motu web -->
 	<!-- ============================ -->	
 	<target name="start-motu-web"> 
 		<sshexec host="${host}" username="${username}" password="${password}" trust="true"
@@ -195,26 +232,26 @@
 	<!-- ============================ -->
 	<!-- Checks if motu-web directory exists -->
 	<!-- ============================ -->	
-	<target name="check-dir-atoll-motu">	
+	<target name="check-dir-motu-web">	
 		<sshexec host="${host}" username="${username}" password="${password}" trust="true"
 			failonerror="false" outputproperty="rc-motu"
 			command="find  ${deploy.root} -name ${motu.remote.dir}  | wc -l"/>
 		<echo message="sshexec_rc = ${rc-motu}"/>
-		<propertyregex property="check-atoll-motu" input="${rc-motu}" regexp="([\d]*)\.*" select="\1"
+		<propertyregex property="check-motu-web" input="${rc-motu}" regexp="([\d]*)\.*" select="\1"
 			casesensitive="false"/>
 		
-		<echo message="check-atoll-motu = ${check-atoll-motu}"/>
-		<condition property="move-atoll-motu" value="true">
-			<equals arg1="${check-atoll-motu}" arg2="1" forcestring="true"/>
+		<echo message="check-motu-web = ${check-motu-web}"/>
+		<condition property="move-motu-web" value="true">
+			<equals arg1="${check-motu-web}" arg2="1" forcestring="true"/>
 		</condition>
 				
-		<echo message="move-atoll-motu = ${move-atoll-motu}"/>
+		<echo message="move-motu-web = ${move-motu-web}"/>
 	</target>
 	
 	<!-- ============================ -->
 	<!-- Move motu web directory to a temp directory if exists -->
 	<!-- ============================ -->
-	<target name="move-dir-atoll-motu"  depends="check-dir-atoll-motu" if="move-atoll-motu">
+	<target name="move-dir-motu-web"  depends="check-dir-motu-web" if="move-motu-web">
 		<sshexec host="${host}" username="${username}" password="${password}" trust="true"
 			failonerror="true" 
 			command="mv  ${deploy.root}/${motu.remote.dir} ${deploy.root}/${motu.remote.dir}.${now}"/>		
@@ -292,64 +329,74 @@
 	</target>
 	
 	<!-- ============================ -->
+	<!-- Process motu common configuration package on the remote host -->
+	<!--  Copy tar.gz file, untar, remove tar.gz file -->
+	<!-- ============================ -->
+	<target name="process-package-motu-common-config" depends="move-dir-motu-common-config">
+		<scp localFile="${common.config.package.jar.local}"
+			remoteTodir="${username}@${host}:${deploy.root}" password="${password}" trust="true"/>	
+		
+		<sshexec host="${host}" username="${username}" password="${password}" trust="true"
+			failonerror="true" 
+			command="cd ${deploy.root}; tar -zxf  ${deploy.root}/${common.config.package.jar};rm -f ${deploy.root}/${common.config.package.jar}"/>
+	</target>
+	
+	
+	<!-- ============================ -->
 	<!-- Process atoll-is package on the remote host -->
 	<!--  Copy war file, create directory, unjar, remove war file -->
 	<!-- ============================ -->
-	<target name="process-package-atoll-is" depends="move-dir-atoll-motu">
+	<target name="process-package-motu-web" depends="move-dir-motu-web">
 		<scp localFile="${motu.web.package.jar.local}"
 			remoteTodir="${username}@${host}:${deploy.root}" password="${password}" trust="true"/>	
 		
 		<sshexec host="${host}" username="${username}" password="${password}" trust="true"
 			failonerror="true" 
-			command="cd ${deploy.root}; mkdir ${motu.web.package.name}; cd ${motu.web.package.name}; jar -xf ${deploy.root}/${motu.web.package.jar}; rm -f ${deploy.root}/${motu.web.package.jar}"/>
+			command="cd ${deploy.root}; mkdir ${motu.remote.dir}; cd ${motu.remote.dir}; jar -xf ${deploy.root}/${motu.web.package.jar}; rm -f ${deploy.root}/${motu.web.package.jar}"/>
 		
 	</target>
 	
 	<!-- ============================ -->
-	<!-- Create link to atoll-is -->
+	<!-- Create link to atoll motu web -->
 	<!-- ============================ -->
-	<target name="create-link-atoll-is" depends="process-package-atoll-is">
-		<property name="tomcat-is-webapps" value="${deploy.root}/${tomcat.dir}/webapps" />
+	<target name="create-link-motu-web" depends="process-package-motu-web">
+		<property name="tomcat-motu-webapps" value="${deploy.root}/${tomcat.dir}/webapps" />
 		<!-- Remove link to atoll-is in tomcat webapps directory. 
 		Use an specific sshexec task with  failonerror="false" if link doesn't exist -->
 		<sshexec host="${host}" username="${username}" password="${password}" trust="true"
-			failonerror="false" command="rm ${tomcat-is-webapps}/${motu.prefix}"/>
+			failonerror="false" command="rm ${tomcat-motu-webapps}/${motu.servlet.name}"/>
 
 		<!-- Create link to atoll-is in tomcat webapps directory -->
 		<sshexec host="${host}" username="${username}" password="${password}" trust="true"
-			failonerror="true" command="cd ${tomcat-is-webapps}; ln -s ${deploy.root}/${motu.web.package.name} ${motu.prefix}"/>
+			failonerror="true" command="cd ${tomcat-motu-webapps}; ln -s ${deploy.root}/${motu.remote.dir} ${motu.servlet.name}"/>
 
 	</target>
 	<!-- ============================ -->
-	<!-- Create link to atoll-configuration -->
+	<!-- Create link to motu configuration -->
 	<!-- ============================ -->
-	<target name="create-link-atoll-config" depends="process-package-motu-config">
-		<property name="tomcat-is-lib" value="${deploy.root}/${tomcat.dir}/lib" />
-		<property name="atoll-config-fr-link" value="fr" />
-		<!-- Remove link to atoll-configuration in tomcat lib directory. 
+	<target name="create-link-motu-config" depends="process-package-motu-config">
+		<!-- Remove link to motu configuration in tomcat lib directory. 
 			Use an specific sshexec task with  failonerror="false" if link doesn't exist -->
 		<sshexec host="${host}" username="${username}" password="${password}" trust="true"
-			failonerror="false" command="rm ${tomcat-is-lib}/${atoll-config-fr-link}"/>
+			failonerror="false" command="rm ${deploy.root}/${config.package.name}"/>
 		
-		<!-- Create link to atoll-is in tomcat webapps directory -->
+		<!-- Create link to to motu configuration in the deploy root  directory -->
 		<sshexec host="${host}" username="${username}" password="${password}" trust="true"
-			failonerror="true" command="cd ${tomcat-is-lib}; ln -s ${deploy.root}/${config.remote.dir}/${atoll-config-fr-link} ${atoll-config-fr-link}"/>
+			failonerror="true" command="cd ${deploy.root}; ln -s ${deploy.root}/${config.remote.dir} ${config.package.name}"/>
 		
 	</target>
 	<!-- ============================ -->
-	<!-- Create link to atoll-configuration -->
+	<!-- Create link to motu common configuration -->
 	<!-- ============================ -->
-	<target name="create-link-atoll-context" depends="process-package-motu-config, process-package-atoll-context">
-		<property name="atoll-config-context" value="${deploy.root}/${config.remote.dir}/fr/cls/atoll" />
-		<property name="atoll-config-context-link" value="contexts" />
-		<!-- Remove link to atoll-configuration in tomcat lib directory. 
+	<target name="create-link-motu-commom-config" depends="process-package-motu-common-config">
+		<!-- Remove link to motu common configuration in the deploy root directory. 
 			Use an specific sshexec task with  failonerror="false" if link doesn't exist -->
 		<sshexec host="${host}" username="${username}" password="${password}" trust="true"
-			failonerror="false" command="rm ${atoll-config-context}/${atoll-config-context-link}"/>
+			failonerror="false" command="rm ${deploy.root}/${common.config.package.name}"/>
 		
-		<!-- Create link to atoll-is in tomcat webapps directory -->
+		<!-- Create link to to motu common configuration in the deploy root  directory -->
 		<sshexec host="${host}" username="${username}" password="${password}" trust="true"
-			failonerror="true" command="cd ${atoll-config-context}; ln -s ${deploy.root}/${contexts.remote.dir}/fr/cls/atoll/${atoll-config-context-link} ${atoll-config-context-link}"/>
+			failonerror="true" command="cd ${deploy.root}; ln -s ${deploy.root}/${common.config.remote.dir} ${common.config.package.name}"/>
 		
 	</target>
 	
