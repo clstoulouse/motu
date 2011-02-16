@@ -36,7 +36,7 @@
 		<img src="http://www.aviso.oceanobs.com/images/icones/parent.gif" width="17" height="16">
 		Metadata		
 		<img src="http://www.aviso.oceanobs.com/images/icones/parent.gif" width="17" height="16">
-		<a href="?action=productdownloadhome&service=${service.getName()}&product=${product.getProductMetaData().getProductId()}">Download</a>
+		<a href="?action=productdownloadhome&service=${service.getName()}&product=${product.getProductMetaData().getProductIdEncoded()}">Download</a>
 		<img src="http://www.aviso.oceanobs.com/images/icones/parent.gif" width="17" height="16">
 	#else
 		<a href="?action=listcatalog&service=${service.getName()}">Inventory</a>
@@ -50,7 +50,7 @@
 #macro(aviso_uk_old_printSubTitleProductDownloadHome)
 	<a href="?action=listcatalog&service=${service.getName()}">Inventory</a>
 	<img src="http://www.aviso.oceanobs.com/images/icones/parent.gif" width="17" height="16">
-	<a href="?action=listproductmetadata&service=${service.getName()}&product=${product.getProductMetaData().getProductId()}">Metadata</a>
+	<a href="?action=listproductmetadata&service=${service.getName()}&product=${product.getProductMetaData().getProductIdEncoded()}">Metadata</a>
 	<img src="http://www.aviso.oceanobs.com/images/icones/parent.gif" width="17" height="16">
 	Download
 #end

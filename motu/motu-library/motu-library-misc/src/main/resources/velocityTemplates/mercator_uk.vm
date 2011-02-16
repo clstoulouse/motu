@@ -20,7 +20,7 @@
 ## ------------------------------ mercator_uk_printSubTitleProductDownloadHome --------------------------------
 #macro(mercator_uk_printSubTitleProductDownloadHome)
 	<li>&gt; <a href="?action=listcatalog&service=${service.getNameEncoded()}">Catalog</a></li>
-	<li>&gt; <a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductId()}">Metadata</a></li>
+	<li>&gt; <a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">Metadata</a></li>
 	<li>&gt; Download</li>
 #end
 

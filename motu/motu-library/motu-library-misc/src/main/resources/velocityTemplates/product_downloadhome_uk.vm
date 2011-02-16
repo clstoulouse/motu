@@ -429,7 +429,12 @@ td.advice_noimg { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fo
 <form  method="get" name="${formName}">		
 <input type="hidden" name="action" value="productdownload" />
 <input type="hidden" name="service" value="$service.getName()" />
-<input type="hidden" name="data" value="$product.getLocationData()" />
+## #if($catalogType != "FTP")	
+##	<input type="hidden" name="data" value="$product.getLocationData()" />
+## #else
+##	<input type="hidden" name="product" value="$product.getProductIdEncoded()" />
+## #end
+<input type="hidden" name="product" value="$product.getProductIdEncoded()" />
 <input type="hidden" name="nexturl" value=" " >
 #if(($productMetaData.hasLatLonAxis()) || ($productMetaData.hasGeoXYAxis()))
 	#if($product.hasCriteriaLatLon())				

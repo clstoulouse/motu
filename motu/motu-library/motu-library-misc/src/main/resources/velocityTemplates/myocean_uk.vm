@@ -45,7 +45,7 @@
 	<a href="?action=listcatalog&service=${service.getNameEncoded()}">&gt;&nbsp;Data Product Catalogue</a>
 </li>
 <li>
-	<a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductId()}">&gt;&nbsp;Product Metadata</a>
+	<a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">&gt;&nbsp;Product Metadata</a>
 </li>
 <li>
     <a>&gt;&nbsp;Download</a>

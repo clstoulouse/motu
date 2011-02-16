@@ -37,7 +37,7 @@
 #macro(aviso_uk_printSubTitleProductDownloadHome)
 	<a href="?action=listcatalog&service=${service.getNameEncoded()}">Inventory</a>
 	$imgParent
-	<a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductId()}">Metadata</a>
+	<a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">Metadata</a>
 	$imgParent
 	Download
 #end

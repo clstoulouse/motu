@@ -38,8 +38,10 @@ import fr.cls.atoll.motu.library.misc.tds.server.Property;
 import fr.cls.atoll.motu.library.misc.tds.server.Variables;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -227,7 +229,35 @@ public class ProductMetaData {
             this.productId = productId.trim();
         }
     }
-    
+    /**
+     * Gets the product id encoded.
+     *
+     * @return the product id encoded
+     */
+    public String getProductIdEncoded() {
+        return getProductIdEncoded("UTF-8");
+    }
+
+    /**
+     * Gets the product id encoded.
+     *
+     * @param enc the enc
+     * @return the product id encoded
+     */
+    public String getProductIdEncoded(String enc) {
+        String productId = this.getProductId();
+        
+        if (Organizer.isNullOrEmpty(productId)) {
+            return "Unknown_product_Id";
+        } 
+        
+        try {
+            return URLEncoder.encode(productId, enc);
+        } catch (UnsupportedEncodingException e) {
+            return productId;
+        }
+    }
+
     /** The tds url path. */
     private String tdsUrlPath = "";
 

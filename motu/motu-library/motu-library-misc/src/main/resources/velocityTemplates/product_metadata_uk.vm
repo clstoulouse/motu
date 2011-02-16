@@ -17,7 +17,7 @@
 ##	<ul>
 		#if ($product.isProductDownloadable()) 
 			<li>
-			<a href=?action=productdownloadhome&service=${service.getNameEncoded()}&product=${productMetaData.getProductId()}>
+			<a href=?action=productdownloadhome&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
 			Downloading and extraction service
 			</a>	
 			</li>			

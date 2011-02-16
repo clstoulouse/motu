@@ -6417,7 +6417,7 @@ public class Organizer {
         Map<String, ServiceData> customServicesMap = filterService(listCatalogType);
 
         // Disable href link for ftp services
-        disableHreflink(customServicesMap, CatalogData.CatalogType.FTP);
+        //disableHreflink(customServicesMap, CatalogData.CatalogType.FTP);
 
         // adds that list of services to a VelocityContext
         try {

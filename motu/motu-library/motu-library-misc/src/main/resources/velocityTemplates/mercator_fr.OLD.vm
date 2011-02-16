@@ -19,7 +19,7 @@
 	#if ($product.isProductDownloadable()) 
 		<a href="?action=listcatalog&service=${service.getName()}">Catalogue</a>
 		| Métadonnées
-		| <a href="?action=productdownloadhome&service=${service.getName()}&product=${product.getProductMetaData().getProductId()}">Téléchargement</a>
+		| <a href="?action=productdownloadhome&service=${service.getName()}&product=${product.getProductMetaData().getProductIdEncoded()}">Téléchargement</a>
 	#else
 		<a href="?action=listcatalog&service=${service.getName()}">Catalogue</a>
 		| Métadonnées
@@ -32,7 +32,7 @@
 #macro(mercator_fr_printSubTitleProductDownloadHome)
 	<a href="?action=listcatalog&service=${service.getName()}">Catalogue</a>
 	<img src="$httpSite/charte/images/parent.gif" width="10" height="13" border="0" align="absmiddle" hspace="4"></nobr>
-	<a href="?action=listproductmetadata&service=${service.getName()}&product=${product.getProductMetaData().getProductId()}">Métadonnées</a>
+	<a href="?action=listproductmetadata&service=${service.getName()}&product=${product.getProductMetaData().getProductIdEncoded()}">Métadonnées</a>
 	<img src="$httpSite/charte/images/parent.gif" width="10" height="13" border="0" align="absmiddle" hspace="4"></nobr>
 	Téléchargement
 #end

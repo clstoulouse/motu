@@ -63,7 +63,7 @@
 <li class="mainlevel">
 	<span class="join"></span>
 	<span class="document"></span>
-	<a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductId()}" class="mainlevel">&gt;&nbsp;Product Metadata</a>
+	<a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}" class="mainlevel">&gt;&nbsp;Product Metadata</a>
 </li>
 <li class="mainlevel">
 	<span class="join"></span>

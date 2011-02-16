@@ -26,7 +26,9 @@ package fr.cls.atoll.motu.library.misc.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.RoundingMode;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -2012,6 +2014,30 @@ public class Product {
     public String getProductId() {
         if (productMetaData != null) {
             return productMetaData.getProductId();
+        } else {
+            return "Unknown_product_Id";
+        }
+    }
+
+    
+    /**
+     * Gets the product id encoded.
+     *
+     * @return the product id encoded
+     */
+    public String getProductIdEncoded() {
+        return getProductIdEncoded("UTF-8");
+    }
+
+    /**
+     * Gets the product id encoded.
+     *
+     * @param enc the enc
+     * @return the product id encoded
+     */
+    public String getProductIdEncoded(String enc) {
+        if (productMetaData != null) {
+            return productMetaData.getProductIdEncoded();
         } else {
             return "Unknown_product_Id";
         }
