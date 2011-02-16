@@ -1,4 +1,4 @@
-<project name="atoll-is-deployment" basedir="." default="deploy">
+<project name="motu-main-deployment" basedir="." default="deploy">
 	<!-- Requirements to use this Ant script 
 		===========
 		Ant 1.8.2: 
@@ -33,10 +33,8 @@
 	<property name="start.motu.default" value="start-motu"/>
 	<property name="stop.motu.default" value="stop-motu"/>
 	<property name="deploy.version.default" value="2.1.15-SNAPSHOT"/>
-<!--	<property name="deploy.root.default" value="/opt/atoll"/>-->
-	<property name="deploy.root.default" value="/home/atoll/distrib"/>
-<!--	<property name="host.default" value="misgw-qt.cls.fr"/>-->
-	<property name="host.default" value="atoll-dev.cls.fr"/>
+	<property name="deploy.root.default" value="/opt/atoll"/>
+	<property name="host.default" value="misgw-qt.cls.fr"/>
 	<property name="username.default" value=""/>
 	<property name="password.default" value=""/>
 	<property name="tomcat.dir.default" value="tomcat-motu"/>
@@ -72,7 +70,7 @@
 			casesensitive="false"/>
 		<!--		<echo>${hostprefix}</echo>-->
 		<input message="Username ? " defaultvalue="${username.default}" addproperty="username"/>
-		<input message="Password ? " defaultvalue="${username}" addproperty="password"/>
+		<input message="Password ? " defaultvalue="${password.default}" addproperty="password"/>
 		<input message="Version to deploy ? " defaultvalue="${deploy.version.default}"
 			addproperty="deploy.version"/>
 		<input message="Root directory ? " defaultvalue="${deploy.root.default}"
@@ -163,11 +161,19 @@
 		<property name="motu.remote.dir" value="${motu.web.package.name}-${deploy.version}"/>
 		<property name="config.remote.dir" value="${config.package.name}-${config.deploy.version}"/>
 		<property name="common.config.remote.dir" value="${common.config.package.name}-${deploy.version}"/>
-		
-		
+				
 		<!-- Ask the user to confirm deployment -->
-		<input message="Are you sure to deploy atoll-is [yes, no]? " defaultvalue="no"
-			addproperty="accept.deploy"/>
+		<input message="Are you sure to deploy Motu on ${host} [yes, no]? " defaultvalue="no"
+		addproperty="accept.deploy"/>
+		
+		<fail message="Deployment cancelled by user.">
+			<condition>
+				<not>
+					<equals arg1="${accept.deploy}" arg2="yes" casesensitive="true"/>
+				</not>
+			</condition>
+		</fail>
+		
 				
 	</target>
 	
