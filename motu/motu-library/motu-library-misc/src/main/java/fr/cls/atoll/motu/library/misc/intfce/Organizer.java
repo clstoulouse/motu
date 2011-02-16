@@ -572,7 +572,6 @@ public class Organizer {
         init();
     }
 
- 
     /**
      * Removes all mappings from this map (optional operation).
      * 
@@ -1469,10 +1468,10 @@ public class Organizer {
 
         return Organizer.getPropertiesInstance().getProperty(PROPS_VFS_PROVIDER);
     }
-    
+
     /**
      * Gets the vFS provider old config.
-     *
+     * 
      * @return the vFS provider old config
      * @throws MotuException the motu exception
      */
@@ -2096,7 +2095,8 @@ public class Organizer {
             geospatialCoverage.setMsg(ErrorType.OK.toString());
         } catch (Exception e) {
             geospatialCoverage.setCode(ErrorType.SYSTEM);
-            geospatialCoverage.setMsg("Error while getting geospatial coverage (N/S, E/W) from TDS configuration file: " + e.getMessage() + ". Please, check your configuration file");
+            geospatialCoverage.setMsg("Error while getting geospatial coverage (N/S, E/W) from TDS configuration file: " + e.getMessage()
+                    + ". Please, check your configuration file");
         }
 
         if (LOG.isDebugEnabled()) {
@@ -4141,7 +4141,7 @@ public class Organizer {
             throw new MotuException(String.format("ERROR in extractData - product '%s' not found", productId));
         }
 
-        String locationData = productPersistent.getUrl();
+        String locationData = getLocationData(productPersistent);
 
         Product product = extractData(serviceName,
                                       locationData,
@@ -4243,6 +4243,40 @@ public class Organizer {
         // return product;
     }
 
+    /**
+     * Gets the location data.
+     *
+     * @param productPersistent the product persistent
+     * @return the location data
+     */
+    protected String getLocationData(ProductPersistent productPersistent) {
+        return getLocationData(this.currentService, productPersistent);
+    }
+    
+    /**
+     * Gets the location data.
+     *
+     * @param service the service
+     * @param productPersistent the product persistent
+     * @return the location data
+     */
+    protected String getLocationData(ServiceData service, ProductPersistent productPersistent) {
+        String locationData = "";
+
+        if (service == null) {
+            return locationData;
+        }
+        if (productPersistent == null) {
+            return locationData;
+        }
+
+        if (service.getCatalogType() == CatalogData.CatalogType.FTP) {
+            locationData = productPersistent.getUrlMetaData();
+        } else {
+            locationData = productPersistent.getUrl();
+        }
+        return locationData;
+    }
     /**
      * Gets the amount data size.
      * 
@@ -4442,9 +4476,9 @@ public class Organizer {
         if (productPersistent == null) {
             throw new MotuException(String.format("ERROR in getAmountDataSize - product '%s' not found", productId));
         }
-
-        String locationData = productPersistent.getUrl();
-
+        
+        String locationData = getLocationData(productPersistent);
+        
         Product product = getAmountDataSize(locationData, productId, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
 
         if (LOG.isDebugEnabled()) {
@@ -5153,7 +5187,7 @@ public class Organizer {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getTimeCoverage(String, String) - exiting");
         }
-        return getTimeCoverage(productPersistent.getUrl());
+        return getTimeCoverage(getLocationData(productPersistent));
 
         //        
         //
@@ -5410,7 +5444,6 @@ public class Organizer {
 
     }
 
-
     /**
      * Gets the product metadata info.
      * 
@@ -5509,8 +5542,8 @@ public class Organizer {
                                 locationData), e);
             } catch (MotuCasBadRequestException e) {
                 throw new MotuException(String
-                                        .format("Organizer getProductMetadataInfoFromTDS(String locationData) : location data seems not to be a valid URI : '%s'",
-                                                locationData), e);
+                        .format("Organizer getProductMetadataInfoFromTDS(String locationData) : location data seems not to be a valid URI : '%s'",
+                                locationData), e);
             }
         }
 
@@ -6417,7 +6450,7 @@ public class Organizer {
         Map<String, ServiceData> customServicesMap = filterService(listCatalogType);
 
         // Disable href link for ftp services
-        //disableHreflink(customServicesMap, CatalogData.CatalogType.FTP);
+        // disableHreflink(customServicesMap, CatalogData.CatalogType.FTP);
 
         // adds that list of services to a VelocityContext
         try {

@@ -131,11 +131,17 @@
 
     <configService defaultLanguage="UK" description="SLTAC"
                     group="SLTAC" httpBaseRef="http://resources.myocean.eu"
-                    name="&myoceanUrn;cls-toulouse-fr-sltac-motu-rest" veloTemplatePrefix="myocean">
+                    name="&myoceanUrn;SLTAC2" veloTemplatePrefix="myocean">
                     <catalog name="catalogFTP.xml" type="ftp"
                                     urlSite="sftp://atoll:atoll@atoll-misgw.vlandata.cls.fr/opt/atoll/misgw-sltac/hoa/publication/inventories" />
     </configService>
 	
+    <configService defaultLanguage="UK" description="SLTAC"
+                    group="SLTAC" httpBaseRef="http://resources.myocean.eu"
+                    name="&myoceanUrn;SLTAC" veloTemplatePrefix="myocean">
+                    <catalog name="catalogFTP.xml" type="ftp"
+                                    urlSite="sftp://misgw:misgw@misgw-qt.cls.fr/opt/atoll/hoa/publication/inventories" />
+    </configService>
 	<!--===========================================================-->
 	<!--                   motu  'SLTAC' FTP with template mercator        Service                  -->
 	<!--===========================================================-->

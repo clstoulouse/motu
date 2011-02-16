@@ -1425,9 +1425,9 @@ public class ServiceData {
 //        if (productMetaData.getCoordinateAxes() == null) {
 //            return false;
 //        }
-        if (productMetaData.getParameterMetaDatas() == null) {
-            return false;
-        }
+//        if (productMetaData.getParameterMetaDatas() == null) {
+//            return false;
+//        }
 
         if (velocityEngine == null) {
             throw new MotuException("Error in writeProductDownloadHTML - velocityEngine is null");
@@ -2153,41 +2153,52 @@ public class ServiceData {
         }
     }
 
-    /**
-     * Extract data from a product related to the current service and according to variables and criteria
-     * previously defined (geographical and/or temporal and/or logical expression).
-     * 
-     * @param product instance of the product to extract.
-     * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
-     * 
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    public void extractData(Product product, Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException,
-            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException,
-            NetCdfVariableException, MotuNoVarException, NetCdfVariableNotFoundException, IOException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("extractData() - entering");
-        }
-
-        if (product == null) {
-            throw new MotuException("Error in extractData - product is null");
-        }
-
-        product.extractData(dataOutputFormat);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("extractData() - exiting");
-        }
-    }
+//    /**
+//     * Extract data from a product related to the current service and according to variables and criteria
+//     * previously defined (geographical and/or temporal and/or logical expression).
+//     * 
+//     * @param product instance of the product to extract.
+//     * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
+//     * 
+//     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
+//     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
+//     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
+//     * @throws NetCdfVariableException the net cdf variable exception
+//     * @throws MotuNotImplementedException the motu not implemented exception
+//     * @throws MotuNoVarException the motu no var exception
+//     * @throws MotuException the motu exception
+//     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
+//     * @throws MotuInvalidDateRangeException the motu invalid date range exception
+//     * @throws IOException Signals that an I/O exception has occurred.
+//     */
+//    public void extractData(Product product, Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException,
+//            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException,
+//            NetCdfVariableException, MotuNoVarException, NetCdfVariableNotFoundException, IOException {
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug("extractData() - entering");
+//        }
+//
+//        if (product == null) {
+//            throw new MotuException("Error in extractData - product is null");
+//        }
+//        
+//        if (getCatalogType() == CatalogData.CatalogType.FTP) {
+//
+//            getLocationMetaData(product);
+//            getDataFiles(product);
+//
+//            product.setMediaKey(getCatalogType().name());
+//
+//            updateFiles(product);
+//        }
+//
+//
+//        product.extractData(dataOutputFormat);
+//
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug("extractData() - exiting");
+//        }
+//    }
 
     // /**
     // * Extract data HTML.
@@ -2293,6 +2304,15 @@ public class ServiceData {
         try {
             product.clearExtractFilename();
             product.clearLastError();
+            if (getCatalogType() == CatalogData.CatalogType.FTP) {
+
+                getLocationMetaData(product);
+                getDataFiles(product);
+
+                product.setMediaKey(getCatalogType().name());
+
+                updateFiles(product);
+            }
 
             // updates variables collection to download
             updateVariables(product, listVar);
@@ -2309,7 +2329,7 @@ public class ServiceData {
                 updateCriteria(product, criteria);
             }
 
-            extractData(product, dataOutputFormat);
+            product.extractData(dataOutputFormat);
 
         } catch (Exception e) {
             product.clearExtractFilename();
@@ -2719,6 +2739,10 @@ public class ServiceData {
             getLocationMetaData(product);
         }
 
+        if (product.getLocationData().isEmpty()) {
+            getLocationData(product);
+        }
+
         Inventory inventoryOLA = Organizer.getInventoryOLA(product.getLocationMetaData());
 
         dataFiles = CatalogData.loadFtpDataFiles(inventoryOLA);
@@ -2747,6 +2771,28 @@ public class ServiceData {
 
         String locationMetaData = productPersistent.getUrlMetaData();
         product.setLocationMetaData(locationMetaData);
+    }
+    
+    /**
+     * Gets the location data.
+     *
+     * @param product the product
+     * @throws MotuException the motu exception
+     */
+    public void getLocationData(Product product) throws MotuException {
+
+        ServicePersistent servicePersistent = Organizer.getServicesPersistent(name);
+
+        if (servicePersistent == null) {
+            return;
+        }
+        ProductPersistent productPersistent = servicePersistent.getProductsPersistent(product.getProductId());
+        if (productPersistent == null) {
+            throw new MotuException(String.format("ERROR in ServiceData#getLocationData - product '%s' not found", product.getProductId()));
+        }
+
+        String locationData = productPersistent.getUrl();
+        product.setLocationData(locationData);
     }
 
 }

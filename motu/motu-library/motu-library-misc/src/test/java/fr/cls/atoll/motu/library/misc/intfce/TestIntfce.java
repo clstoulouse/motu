@@ -32,16 +32,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBElement;
 
-import junit.framework.TestCase;
-
 import org.apache.log4j.Logger;
 import org.joda.time.Interval;
-import org.junit.Test;
 
 import ucar.ma2.StructureData;
 import ucar.ma2.MAMath.MinMax;
@@ -364,7 +359,7 @@ public class TestIntfce {
         //            
         // }
         // MAMath.MinMax minMax = NetCdfReader.getMinMaxLonNormal(r1, r2, r1Values, r2Values)
-        //listServices();
+        // listServices();
         // catalogInformation();
         // try {
         // ServiceData.Language test = ServiceData.Language.valueOf("ee");
@@ -378,13 +373,13 @@ public class TestIntfce {
         // productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
-        productDownloadInfo();
+        // productDownloadInfo();
         // productExtractDataHTMLAviso();
         // productExtractDataAviso();
         // productExtractDataAvisofromProductId();
         // productInformationFromLocationData();
         // productExtractDataAviso2();
-        //productExtractDataMercator();
+        // productExtractDataMercator();
         // productExtractDataHTMLMercator();
         // productExtractDataCls();
         // productExtractDiversity();
@@ -408,22 +403,22 @@ public class TestIntfce {
         // testLoadInventoryOLA();
         // testLoadCatalogOLA();
         // Product product = productInformationFromInventory();
-        // productExtractDataFromInventory();
+        productExtractDataFromInventory();
         // productListMercator();
         // productList();
-        //testGetProductMetadataInfo();
+        // testGetProductMetadataInfo();
         // testExtractdataLon0360();
         // testExtractdataLon180();
 
-//        productExtractXYDataMercator1();
-//        productExtractXYDataMercator2();
-//        productExtractXYDataMercator3();
+        // productExtractXYDataMercator1();
+        // productExtractXYDataMercator2();
+        // productExtractXYDataMercator3();
 
-//        productExtractXYTopaz1();
-//        productExtractXYTopaz2();
-//        productExtractXYTopaz3();
-//        productExtractXYMetNo1();
-          //productExtractAcri();
+        // productExtractXYTopaz1();
+        // productExtractXYTopaz2();
+        // productExtractXYTopaz3();
+        // productExtractXYMetNo1();
+        // productExtractAcri();
 
     }
 
@@ -450,11 +445,11 @@ public class TestIntfce {
             // String serviceName = "aviso_dt";
             // String serviceName = "Mercator";
             // String serviceName = "MercatorIBI";
-            //String serviceName = "Myocean";
+            // String serviceName = "Myocean";
             String myoceanUrn = "http://purl.org/myocean/ontology/service/database#";
-            //String serviceName = myoceanUrn + "cls-toulouse-fr-sltac-motu-rest";
+            // String serviceName = myoceanUrn + "cls-toulouse-fr-sltac-motu-rest";
             String serviceName = myoceanUrn + "SL-CLS-TOULOUSE-FR-MOTU-REST";
-            
+
             // String serviceName = "Catsat";
             // String serviceName = "AvisoNRT";
             // String serviceName = "aviso_dt";
@@ -650,14 +645,14 @@ public class TestIntfce {
             // String serviceName = "dev";
             // String productId = "res_oer_g2";
             String serviceName = "mercator";
-            //String serviceName = "MetNo";
-            //String serviceName = "Topaz";
+            // String serviceName = "MetNo";
+            // String serviceName = "Topaz";
 
             // String serviceName = "cls";
             // String serviceName = "AvisoDT";
             String productId = "mercatorPsy3v2_arc_mean_best_estimate";
-            //String productId = "myocean/nat/tmipv2n-class1-be";
-            //String productId = "mersea-ipv2/arctic/tmipv2a-class1-b-be";
+            // String productId = "myocean/nat/tmipv2n-class1-be";
+            // String productId = "mersea-ipv2/arctic/tmipv2a-class1-b-be";
             // String productId = "global_sst";
             // String productId = "dt_ref_global_merged_madt_h";
 
@@ -678,22 +673,25 @@ public class TestIntfce {
     public static void productDownloadInfo() {
 
         try {
-            //String serviceName = "Myocean";
-            //String serviceName = "mercator";
-            //String serviceName = "Topaz";
+            // String serviceName = "Myocean";
+            // String serviceName = "mercator";
+            // String serviceName = "Topaz";
 
             String myoceanUrn = "http://purl.org/myocean/ontology/service/database#";
-            //String serviceName = myoceanUrn + "cls-toulouse-fr-sltac-motu-rest";
+            // String serviceName = myoceanUrn + "cls-toulouse-fr-sltac-motu-rest";
             String serviceName = myoceanUrn + "SL-CLS-TOULOUSE-FR-MOTU-REST";
-            
-//            file:///J:/dev/motu/motu-library/motu-library-misc/target/resultCatalogInfo.html?action=productdownloadhome&service=http%3A%2F%2Fpurl.org%2Fmyocean%2Fontology%2Fservice%2Fdatabase%23SL-CLS-TOULOUSE-FR-MOTU-REST&product=http://purl.org/myocean/ontology/product/database#dataset-duacs-ran-global-en-sla-l3
+
+            // file:///J:/dev/motu/motu-library/motu-library-misc/target/resultCatalogInfo.html?action=productdownloadhome&service=http%3A%2F%2Fpurl.org%2Fmyocean%2Fontology%2Fservice%2Fdatabase%23SL-CLS-TOULOUSE-FR-MOTU-REST&product=http://purl.org/myocean/ontology/product/database#dataset-duacs-ran-global-en-sla-l3
             // String serviceName = "MercatorIBI";
             // String serviceName = "avisoNRT";
             // String productId = "duacs_global_nrt_madt_merged_h";
             // String productId = "mercatorPsy2v3_ibi_mean_best_estimate";
-            //String productId = "mercatorPsy3v2_glo_mean_best_estimate";
-            //String productId = "mersea-ipv2/arctic/tmipv2a-class1-b-be";
-            String productId = "http://purl.org/myocean/ontology/product/database#dataset-duacs-ran-global-en-sla-l3";            //String productId = "mercatorPsy3v2_arc_mean_best_estimate";
+            // String productId = "mercatorPsy3v2_glo_mean_best_estimate";
+            // String productId = "mersea-ipv2/arctic/tmipv2a-class1-b-be";
+            String productId = "http://purl.org/myocean/ontology/product/database#dataset-duacs-ran-global-en-sla-l3"; // String
+                                                                                                                       // productId
+                                                                                                                       // =
+                                                                                                                       // "mercatorPsy3v2_arc_mean_best_estimate";
             FileWriter writer = new FileWriter("./target/resultProductDownloadInfo.html");
             Organizer organizer = new Organizer();
             // organizer.setCurrentLanguage("uk");
@@ -709,42 +707,47 @@ public class TestIntfce {
     }
 
     public static void productExtractDataFromInventory() {
-        //String prefix = "http://purl.org/cls/atoll/ontology/individual/atoll#";
+
+        // String prefix = "http://purl.org/cls/atoll/ontology/individual/atoll#";
         String prefix = "http://purl.org/myocean/ontology/service/database#";
         // String productId = prefix + "dataset-duacs-global-nrt-madt-merged-h";
         // String service = prefix + "motu-ftp-aviso";
-        //String service = prefix + "motu-ftp-mercator";
-        String service = prefix + "cls-toulouse-fr-sltac-motu-rest";
-        
-        //String productId = prefix + "dataset-psy3v2-pgs-arc-mercator-bestestimate";
-        String productId = prefix + "http://purl.org/myocean/ontology/product/database#dataset-psy3v2-pgs-glo-myocean-bestestimate";
- 
+        // String service = prefix + "motu-ftp-mercator";
+        // String service = prefix + "cls-toulouse-fr-sltac-motu-rest";
+        String service = "http://purl.org/myocean/ontology/service/database#SLTAC";
+
+        // String productId = prefix + "dataset-psy3v2-pgs-arc-mercator-bestestimate";
+        // String productId = prefix +
+        // "http://purl.org/myocean/ontology/product/database#dataset-psy3v2-pgs-glo-myocean-bestestimate";
+        String productId = "http://purl.org/mercator/ontology/product/database#dataset-psy3v2-pgs-glo-myocean-bestestimate";
+
         // add temporal criteria
         // first element is start date
         // second element is end date (optional)
         // if only start date is set, end date equals start date
         List<String> listTemporalCoverage = new ArrayList<String>();
-        listTemporalCoverage.add("2010-08-02");
-        listTemporalCoverage.add("2010-08-02");
-
-        ExtractionParameters extractionParameters = new ExtractionParameters(
-                service,
-                null,
-                null,
-                listTemporalCoverage,
-                null,
-                null,
-                productId,
-                Organizer.Format.NETCDF,
-                // Organizer.Format.URL,
-                null,
-                null,
-                "login",
-                true);
-
-        Product product = null;
-
+        listTemporalCoverage.add("2010-12-15");
+        listTemporalCoverage.add("2010-12-15");
         try {
+            FileWriter writer = new FileWriter("./target/resultProductData1.html");
+
+            ExtractionParameters extractionParameters = new ExtractionParameters(
+                    service,
+                    null,
+                    null,
+                    listTemporalCoverage,
+                    null,
+                    null,
+                    productId,
+                    Organizer.Format.NETCDF,
+                    // Organizer.Format.URL,
+                    null, //writer, // or null
+                    null, //Organizer.Format.HTML, // or null
+                    "login",
+                    true);
+
+            Product product = null;
+
             Organizer organizer = new Organizer();
 
             product = organizer.extractData(extractionParameters);
@@ -1390,9 +1393,9 @@ public class TestIntfce {
         // String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/" + productId;
         // String locationData = "http://rdp1-jaune.cls.fr:8880/thredds/dodsC/" + productId;
         // String locationData = "http://atoll-dev.cls.fr:43080/thredds/dodsC/" + productId;
-        //String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_arc_mean_best_estimate";
-         String locationData =
-         "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_glo_mean_best_estimate";
+        // String locationData =
+        // "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_arc_mean_best_estimate";
+        String locationData = "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_glo_mean_best_estimate";
         // String locationData =
         // "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_glo_mean_best_estimate";
         // String locationData =
@@ -1409,7 +1412,7 @@ public class TestIntfce {
         // add variable to extract
         // listVar.add("salinity");
         // listVar.add("u");
-        //listVar.add("temperature");
+        // listVar.add("temperature");
         // listVar.add("temperature");
         // listVar.add("sea_water_salinity");
         // listVar.add("sea_surface_elevation");
@@ -2662,10 +2665,10 @@ public class TestIntfce {
             // "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_med_mean_best_estimate";
             // String locationData =
             // "http://web-qt.cls.fr/mis-gateway-servlet/Motu?action=describeProduct&data=http://thredds.met.no/thredds/dodsC/topaz/myocean/nat/tmipv2n-class1-be";
-            //String locationData = "C:/Downloads/nrt_global_en_adt_vfec_20100926_20100926_20100929.nc";
+            // String locationData = "C:/Downloads/nrt_global_en_adt_vfec_20100926_20100926_20100929.nc";
             String locationData = "http://tomcat.nersc.no:8080/thredds/dodsC/topaz/mersea-ipv2/arctic/tmipv2a-class1-b-be";
-//             String locationData =
-//             "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_arc_mean_best_estimate";
+            // String locationData =
+            // "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_arc_mean_best_estimate";
             //
             // Pattern pattern = Pattern.compile(patternExpression);
             // Matcher matcher = pattern.matcher(locationData);
@@ -2683,11 +2686,10 @@ public class TestIntfce {
             //            
             Organizer organizer = new Organizer();
             FileWriter writer = new FileWriter("resultProductMetadataInfo.xml");
-//            organizer.getProductMetadataInfo(locationData, writer);
-            
+            // organizer.getProductMetadataInfo(locationData, writer);
+
             String xmlFile = "catalogs/mersea-ipv2-class1-arctic-b.xml";
             organizer.getProductMetadataInfo(locationData, xmlFile, true, writer);
-            
 
         } catch (MotuExceptionBase e) {
             // TODO Auto-generated catch block
@@ -2960,6 +2962,7 @@ public class TestIntfce {
             System.out.println(e.getMessage());
         }
     }
+
     public static void productExtractXYTopaz2() {
         String locationData = "http://tomcat.nersc.no:8080/thredds/dodsC/topaz/mersea-ipv2/arctic/tmipv2a-class1-b-be";
         // String locationData =
@@ -3029,9 +3032,9 @@ public class TestIntfce {
             System.out.println(e.getMessage());
         }
     }
-    
+
     public static void productExtractXYTopaz3() {
-                
+
         String locationData = "http://tomcat.nersc.no:8080/thredds/dodsC/topaz/reanalysis-v1/assim/arc-class1-be";
 
         // productInformationFromLocationData(locationData);
@@ -3097,8 +3100,8 @@ public class TestIntfce {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-    }    
-    
+    }
+
     public static void productExtractXYMetNo1() {
         String locationData = "http://thredds.met.no/thredds/dodsC/topaz/myocean/arctic/tmipv2a-class1-be";
 
@@ -3165,8 +3168,8 @@ public class TestIntfce {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-    }   
-    
+    }
+
     public static void productExtractAcri() {
         String locationData = "http://myocean-ftp.acri.fr:8080/thredds/dodsC/dataset-oc-acri-global-100km-chl-daily-ran";
 
@@ -3176,7 +3179,7 @@ public class TestIntfce {
         // add variable to extract
         // listVar.add("salinity");
         // listVar.add("u");
-        //listVar.add("temperature");
+        // listVar.add("temperature");
         // listVar.add("longitude");
         // listVar.add("latitude");
 
@@ -3204,8 +3207,8 @@ public class TestIntfce {
         // second element is high depth (optional)
         // if only low depth is set, high depth equals low depth value
         List<String> listDepthCoverage = new ArrayList<String>();
-//        listDepthCoverage.add("5");
-//        listDepthCoverage.add("30");
+        // listDepthCoverage.add("5");
+        // listDepthCoverage.add("30");
 
         Product product = null;
 
@@ -3233,6 +3236,6 @@ public class TestIntfce {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-    }      
-    
+    }
+
 }
