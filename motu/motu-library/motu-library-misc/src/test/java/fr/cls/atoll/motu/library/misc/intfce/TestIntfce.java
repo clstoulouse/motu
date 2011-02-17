@@ -360,7 +360,7 @@ public class TestIntfce {
         // }
         // MAMath.MinMax minMax = NetCdfReader.getMinMaxLonNormal(r1, r2, r1Values, r2Values)
         // listServices();
-        // catalogInformation();
+        catalogInformation();
         // try {
         // ServiceData.Language test = ServiceData.Language.valueOf("ee");
         // } catch (RuntimeException e) {
@@ -403,7 +403,7 @@ public class TestIntfce {
         // testLoadInventoryOLA();
         // testLoadCatalogOLA();
         // Product product = productInformationFromInventory();
-        productExtractDataFromInventory();
+        // productExtractDataFromInventory();
         // productListMercator();
         // productList();
         // testGetProductMetadataInfo();
@@ -448,7 +448,8 @@ public class TestIntfce {
             // String serviceName = "Myocean";
             String myoceanUrn = "http://purl.org/myocean/ontology/service/database#";
             // String serviceName = myoceanUrn + "cls-toulouse-fr-sltac-motu-rest";
-            String serviceName = myoceanUrn + "SL-CLS-TOULOUSE-FR-MOTU-REST";
+            //String serviceName = myoceanUrn + "SL-CLS-TOULOUSE-FR-MOTU-REST";
+            String serviceName = myoceanUrn + "SLTAC";
 
             // String serviceName = "Catsat";
             // String serviceName = "AvisoNRT";
@@ -720,9 +721,10 @@ public class TestIntfce {
         // String productId = prefix +
         // "http://purl.org/myocean/ontology/product/database#dataset-psy3v2-pgs-glo-myocean-bestestimate";
         String productId = "http://purl.org/myocean/ontology/product/database#dataset-duacs-ran-global-en-sla-l3";
+        //String productId = "http://purl.org/myocean/ontology/product/database#dataset-duacs-ran-global-e1-sla-l3";
 
         String locationData = "sftp://atoll:atoll@atoll-dev.cls.fr/home/atoll/distrib/hoa/publication/inventories/dataset-duacs-ran-global-en-sla-l3__cls-toulouse-fr-sltac-motu-rest.xml";
-
+        
         // add temporal criteria
         // first element is start date
         // second element is end date (optional)
@@ -730,17 +732,19 @@ public class TestIntfce {
         List<String> listTemporalCoverage = new ArrayList<String>();
         listTemporalCoverage.add("2009-05-31");
         listTemporalCoverage.add("2009-06-01");
+//        listTemporalCoverage.add("1995-05-15 00:00:00");
+//        listTemporalCoverage.add("1995-05-15 00:00:00");
         try {
             FileWriter writer = new FileWriter("./target/resultProductData1.html");
 
             ExtractionParameters extractionParameters = new ExtractionParameters(
                     service,
-                    null, //locationData,
+                    locationData,
                     null,
                     listTemporalCoverage,
                     null,
                     null,
-                    productId,
+                    null, //productId,
                     Organizer.Format.NETCDF,
                     // Organizer.Format.URL,
                     writer, // or null

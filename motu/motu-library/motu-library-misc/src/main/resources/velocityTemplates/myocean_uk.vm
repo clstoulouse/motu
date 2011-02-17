@@ -31,7 +31,7 @@
 	<a href="?action=listcatalog&service=${service.getNameEncoded()}">&gt;&nbsp;Data Product Catalogue</a>
 </li>
 <li>
-    <a>&gt;&nbsp;Product Metadata</a>
+    <a>&gt;&nbsp;${titleMetadata}</a>
 </li>
 
 #end
@@ -44,9 +44,11 @@
 <li>
 	<a href="?action=listcatalog&service=${service.getNameEncoded()}">&gt;&nbsp;Data Product Catalogue</a>
 </li>
+#if($chainMetadata == true)
 <li>
-	<a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">&gt;&nbsp;Product Metadata</a>
+	<a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">&gt;&nbsp;${titleMetadata}</a>
 </li>
+#end
 <li>
     <a>&gt;&nbsp;Download</a>
 </li>
@@ -75,6 +77,9 @@
 #set($templateProductMetadata = "velocityTemplates/product_metadata_uk.vm")
 #set($templateProductDownloadHome = "velocityTemplates/product_downloadhome_uk.vm")
 #set($httpSite = ${service.getHttpBaseRef()})
+#set($chainMetadata = true)
+#set($titleMetadata = "Product Metadata")
+
 
 <!-- variables pour menu Motu -->
 #set($titleMenuMotu = "Downloading and extraction service")

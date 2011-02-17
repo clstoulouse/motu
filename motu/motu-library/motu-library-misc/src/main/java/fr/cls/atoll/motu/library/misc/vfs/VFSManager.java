@@ -691,7 +691,7 @@ public class VFSManager {
      * 
      * @throws MotuExceptionBase the motu exception base
      */
-    public void copyFileToLocalFile(String user, String pwd, String scheme, String host, String fileSrc, String fileDest) throws MotuExceptionBase {
+    public void copyFileToLocalFile(String user, String pwd, String scheme, String host, String fileSrc, String fileDest) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("copyFileToLocalFile(String, String, String, String, String, String) - entering");
         }
@@ -718,7 +718,7 @@ public class VFSManager {
 
             this.copyFrom(foSrc, foDest, Selectors.SELECT_ALL);
 
-        } catch (MotuExceptionBase e) {
+        } catch (MotuException e) {
             LOG.error("copyFileToLocalFile(String, String, String, String, String, String)", e);
 
             throw e;
@@ -781,7 +781,11 @@ public class VFSManager {
             }
 
             this.copyFrom(foSrc, foDest, Selectors.SELECT_ALL);
-
+            
+        } catch (MotuException e) {
+            LOG.error("copyFileToLocalFile(String, String)", e);
+            throw e;
+            
         } catch (Exception e) {
             LOG.error("copyFileToLocalFile(String, String)", e);
 

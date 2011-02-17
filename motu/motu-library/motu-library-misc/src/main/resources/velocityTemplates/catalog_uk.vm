@@ -165,19 +165,28 @@
 ## ------------------------------------------
 #if (!$product.isProductAlongTrack()) 
 	<tr>	
-	<td>
-		<li>
-		#if($catalogType != "FTP")						
-			<a href=?action=listproductmetadata&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
-					 $productMetaData.getTitle()
-			</a>	
-		#else
-			<a href=?action=productdownloadhome&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
-					 $productMetaData.getTitle()
-			</a>	
-		#end
-		</li>	
-	</td>
+	#if($chainMetadata)						
+    	<td>
+    		<li>
+    			<a href=?action=listproductmetadata&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
+    					 $productMetaData.getTitle()
+    			</a>	
+			</li>	
+    	</td>
+	#else
+    	<td width="80%">
+    		<li>
+    			<a href=?action=productdownloadhome&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
+       					 $productMetaData.getTitle()
+    			</a>	
+    		</li>	
+    	</td>	
+    	<td>
+    			<a href=?action=listproductmetadata&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
+    					 $titleMetadata
+    			</a>	
+    	</td>
+	#end
 	<td class="producttype">
 		$Type
 	</td>
@@ -202,9 +211,11 @@
 	#set ( $printheaders = true )
 	#foreach( $product in $sameProductTypeDataset )
 		#set($productMetaData = $product.getProductMetaData())
-		#if(($printheaders == true) && ($catalogType != "FTP"))
+		#if(($printheaders == true))
 			#set($printheaders = false )			
-			#catalog_uk_printheader()			
+			#if ($catalogType != "FTP")
+				#catalog_uk_printheader()	
+			#end
 		<table width="90%" border="0" cellspacing="0" cellpadding="0"><tr>
 		#end		
 		#catalog_uk_printbody()
