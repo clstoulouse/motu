@@ -1359,6 +1359,10 @@ public class Organizer {
      */
     public static Inventory getInventoryOLA(String xmlUri) throws MotuException {
 
+        if (Organizer.isNullOrEmpty(xmlUri)) {
+            throw new MotuException("ERROR - Organizer#getInventoryOLA - Inventory  url '%s' is null or empty");
+        }
+
         Inventory inventoryOLA = null;
 
         List<String> errors = validateInventoryOLA(xmlUri);
@@ -1787,6 +1791,17 @@ public class Organizer {
             Organizer.putServicesPersistent(serviceName, servicePersistent);
         }
         return servicePersistent;
+    }
+    
+    /**
+     * Checks if is services persistent.
+     *
+     * @param key the key
+     * @return true, if checks if is services persistent
+     */
+    public static boolean isServicesPersistent(String key) {
+        String serviceName = key.toLowerCase();
+        return (Organizer.servicesPersistent.get(serviceName) != null);
     }
 
     /**

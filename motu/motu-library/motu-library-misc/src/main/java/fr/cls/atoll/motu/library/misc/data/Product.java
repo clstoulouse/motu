@@ -28,6 +28,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.RoundingMode;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -56,6 +58,7 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.geoloc.LatLonRect;
+import fr.cls.atoll.motu.library.inventory.Access;
 import fr.cls.atoll.motu.library.inventory.DepthCoverage;
 import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
 import fr.cls.atoll.motu.library.inventory.Inventory;
@@ -533,6 +536,88 @@ public class Product {
             LOG.debug("loadOpendapGlobalMetaData() - exiting");
         }
     }
+    
+    /**
+     * Load inventory meta data.
+     *
+     * @throws MotuException the motu exception
+     */
+    public void loadInventoryMetaData() throws MotuException {
+        loadInventoryMetaData(this.getLocationMetaData());
+    }
+    
+    /**
+     * Load inventory meta data.
+     *
+     * @param xmlUri the xml uri
+     * @throws MotuException the motu exception
+     */
+    public void loadInventoryMetaData(String xmlUri) throws MotuException {
+        Inventory inventoryOLA = Organizer.getInventoryOLA(xmlUri);
+        loadInventoryMetaData(inventoryOLA);
+    }
+    
+    /**
+     * Load inventory meta data.
+     *
+     * @param inventoryOLA the inventory ola
+     * @throws MotuException the motu exception
+     */
+    public void loadInventoryMetaData(Inventory inventoryOLA) throws MotuException {
+
+        if (inventoryOLA == null) {
+            return;            
+        }
+            
+        Resource resource = inventoryOLA.getResource();
+        Access access = resource.getAccess();
+
+        if (productMetaData == null) {
+            productMetaData = new ProductMetaData();
+        }
+     
+        loadInventoryGlobalMetaData(inventoryOLA);
+
+        URI accessUri = null;
+        URI accessUriTemp = null;
+        String login = access.getLogin();
+        String password = access.getPassword();
+        StringBuffer userInfo = null;
+
+        if (password == null) {
+            password = "";
+        }
+
+        if (!Organizer.isNullOrEmpty(login)) {
+            userInfo = new StringBuffer();
+            userInfo.append(login);
+            userInfo.append(":");
+            userInfo.append(password);
+        }
+
+        try {
+            accessUriTemp = access.getUrlPath();
+
+            if (userInfo != null) {
+                accessUri = new URI(accessUriTemp.getScheme(), userInfo.toString(), accessUriTemp.getHost(), accessUriTemp.getPort(), accessUriTemp
+                        .getPath(), accessUriTemp.getQuery(), accessUriTemp.getFragment());
+            } else {
+                accessUri = accessUriTemp;
+            }
+
+        } catch (URISyntaxException e) {
+            throw new MotuException(String.format("Invalid URI '%s' in inventory product '%s' at '%s.urlPath' tag.attribute", accessUri, productMetaData.getProductId(), access.getClass()
+                    .toString()), e);
+        }
+
+        setLocationData(accessUri.toString());
+
+        List<DataFile> dataFiles = CatalogData.loadFtpDataFiles(inventoryOLA);
+
+        setDataFiles(dataFiles);
+
+    }
+    
 
     /**
      * Reads product global variable metadata from a NetCDF file.

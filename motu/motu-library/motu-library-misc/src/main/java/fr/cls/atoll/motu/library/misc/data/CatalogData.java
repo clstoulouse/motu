@@ -270,11 +270,6 @@ public class CatalogData {
 
         Inventory inventoryOLA = Organizer.getInventoryOLA(xmlUri);
 
-        Resource resource = inventoryOLA.getResource();
-        Access access = resource.getAccess();
-
-        ProductMetaData productMetaData = null;
-
         String productId = inventoryOLA.getResource().getUrn().toString();
 
         boolean newProduct = true;
@@ -283,63 +278,21 @@ public class CatalogData {
 
         if (product == null) {
             product = new Product(this.casAuthentication);
-            productMetaData = new ProductMetaData();
-            productMetaData.setProductId(productId);
 
         } else {
             newProduct = false;
-            productMetaData = product.getProductMetaData();
         }
 
-        product.setProductMetaData(productMetaData);
-
+        product.loadInventoryMetaData(inventoryOLA);
+        
         product.setLocationMetaData(xmlUri);
         
+        ProductMetaData productMetaData = product.getProductMetaData();
         productMetaData.setProductType(currentProductType);
         sameProductTypeDataset = new ArrayList<Product>();
         sameProductTypeDataset.add(product);
         
         productsLoaded.add(productId);
-
-        product.loadInventoryGlobalMetaData(inventoryOLA);
-
-        URI accessUri = null;
-        URI accessUriTemp = null;
-        String login = access.getLogin();
-        String password = access.getPassword();
-        StringBuffer userInfo = null;
-
-        if (password == null) {
-            password = "";
-        }
-
-        if (!Organizer.isNullOrEmpty(login)) {
-            userInfo = new StringBuffer();
-            userInfo.append(login);
-            userInfo.append(":");
-            userInfo.append(password);
-        }
-
-        try {
-            accessUriTemp = access.getUrlPath();
-
-            if (userInfo != null) {
-                accessUri = new URI(accessUriTemp.getScheme(), userInfo.toString(), accessUriTemp.getHost(), accessUriTemp.getPort(), accessUriTemp
-                        .getPath(), accessUriTemp.getQuery(), accessUriTemp.getFragment());
-            } else {
-                accessUri = accessUriTemp;
-            }
-
-        } catch (URISyntaxException e) {
-            throw new MotuException(String.format("Invalid URI '%s' in file '%s' at '%s.urlPath' tag.attribute", accessUri, xmlUri, access.getClass()
-                    .toString()), e);
-        }
-
-        product.setLocationData(accessUri.toString());
-
-        List<DataFile> dataFiles = CatalogData.loadFtpDataFiles(inventoryOLA);
-
-        product.setDataFiles(dataFiles);
 
         if (newProduct) {
             putProducts(productMetaData.getProductId(), product);
@@ -348,7 +301,89 @@ public class CatalogData {
         return product;
 
     }
-
+    
+//    public Product loadFtpInventory(String xmlUri) throws MotuException {
+//
+//        Inventory inventoryOLA = Organizer.getInventoryOLA(xmlUri);
+//
+//        Resource resource = inventoryOLA.getResource();
+//        Access access = resource.getAccess();
+//
+//        ProductMetaData productMetaData = null;
+//
+//        String productId = inventoryOLA.getResource().getUrn().toString();
+//
+//        boolean newProduct = true;
+//
+//        Product product = getProducts(productId);
+//
+//        if (product == null) {
+//            product = new Product(this.casAuthentication);
+//            productMetaData = new ProductMetaData();
+//            productMetaData.setProductId(productId);
+//
+//        } else {
+//            newProduct = false;
+//            productMetaData = product.getProductMetaData();
+//        }
+//
+//        product.setProductMetaData(productMetaData);
+//
+//        product.setLocationMetaData(xmlUri);
+//        
+//        productMetaData.setProductType(currentProductType);
+//        sameProductTypeDataset = new ArrayList<Product>();
+//        sameProductTypeDataset.add(product);
+//        
+//        productsLoaded.add(productId);
+//
+//        product.loadInventoryGlobalMetaData(inventoryOLA);
+//
+//        URI accessUri = null;
+//        URI accessUriTemp = null;
+//        String login = access.getLogin();
+//        String password = access.getPassword();
+//        StringBuffer userInfo = null;
+//
+//        if (password == null) {
+//            password = "";
+//        }
+//
+//        if (!Organizer.isNullOrEmpty(login)) {
+//            userInfo = new StringBuffer();
+//            userInfo.append(login);
+//            userInfo.append(":");
+//            userInfo.append(password);
+//        }
+//
+//        try {
+//            accessUriTemp = access.getUrlPath();
+//
+//            if (userInfo != null) {
+//                accessUri = new URI(accessUriTemp.getScheme(), userInfo.toString(), accessUriTemp.getHost(), accessUriTemp.getPort(), accessUriTemp
+//                        .getPath(), accessUriTemp.getQuery(), accessUriTemp.getFragment());
+//            } else {
+//                accessUri = accessUriTemp;
+//            }
+//
+//        } catch (URISyntaxException e) {
+//            throw new MotuException(String.format("Invalid URI '%s' in file '%s' at '%s.urlPath' tag.attribute", accessUri, xmlUri, access.getClass()
+//                    .toString()), e);
+//        }
+//
+//        product.setLocationData(accessUri.toString());
+//
+//        List<DataFile> dataFiles = CatalogData.loadFtpDataFiles(inventoryOLA);
+//
+//        product.setDataFiles(dataFiles);
+//
+//        if (newProduct) {
+//            putProducts(productMetaData.getProductId(), product);
+//        }
+//
+//        return product;
+//
+//    }
     /**
      * Load ftp data files.
      * 

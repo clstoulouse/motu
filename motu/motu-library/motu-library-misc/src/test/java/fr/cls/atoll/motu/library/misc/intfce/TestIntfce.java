@@ -719,21 +719,23 @@ public class TestIntfce {
         // String productId = prefix + "dataset-psy3v2-pgs-arc-mercator-bestestimate";
         // String productId = prefix +
         // "http://purl.org/myocean/ontology/product/database#dataset-psy3v2-pgs-glo-myocean-bestestimate";
-        String productId = "http://purl.org/mercator/ontology/product/database#dataset-psy3v2-pgs-glo-myocean-bestestimate";
+        String productId = "http://purl.org/myocean/ontology/product/database#dataset-duacs-ran-global-en-sla-l3";
+
+        String locationData = "sftp://atoll:atoll@atoll-dev.cls.fr/home/atoll/distrib/hoa/publication/inventories/dataset-duacs-ran-global-en-sla-l3__cls-toulouse-fr-sltac-motu-rest.xml";
 
         // add temporal criteria
         // first element is start date
         // second element is end date (optional)
         // if only start date is set, end date equals start date
         List<String> listTemporalCoverage = new ArrayList<String>();
-        listTemporalCoverage.add("2010-12-15");
-        listTemporalCoverage.add("2010-12-15");
+        listTemporalCoverage.add("2009-05-31");
+        listTemporalCoverage.add("2009-06-01");
         try {
             FileWriter writer = new FileWriter("./target/resultProductData1.html");
 
             ExtractionParameters extractionParameters = new ExtractionParameters(
                     service,
-                    null,
+                    null, //locationData,
                     null,
                     listTemporalCoverage,
                     null,
@@ -741,8 +743,8 @@ public class TestIntfce {
                     productId,
                     Organizer.Format.NETCDF,
                     // Organizer.Format.URL,
-                    null, //writer, // or null
-                    null, //Organizer.Format.HTML, // or null
+                    writer, // or null
+                    Organizer.Format.HTML, // or null
                     "login",
                     true);
 
@@ -750,8 +752,12 @@ public class TestIntfce {
 
             Organizer organizer = new Organizer();
 
+            //product = organizer.getAmountDataSize(extractionParameters);
             product = organizer.extractData(extractionParameters);
 
+            writer.flush();
+            writer.close();
+            
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
             // get the url to download the output file.

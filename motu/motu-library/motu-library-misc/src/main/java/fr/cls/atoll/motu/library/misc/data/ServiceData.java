@@ -1085,8 +1085,8 @@ public class ServiceData {
                                 locationData), e);
             } catch (MotuCasBadRequestException e) {
                 throw new MotuException(String
-                                        .format("Organizer getProductInformation(String locationData) : location data seems not to be a valid URI : '%s'",
-                                                locationData), e);
+                        .format("Organizer getProductInformation(String locationData) : location data seems not to be a valid URI : '%s'",
+                                locationData), e);
             }
         }
 
@@ -1191,8 +1191,7 @@ public class ServiceData {
             product.loadOpendapMetaData();
             break;
         case FTP:
-            // String xmlUri = product.getLocationMetaData();
-            // product = catalog.loadFtpInventory(xmlUri);
+            loadFtpMetadata(product);
             break;
         default:
             throw new MotuNotImplementedException(String.format("Unimplemented catalog type %d ", getCatalogType().value()));
@@ -1203,6 +1202,23 @@ public class ServiceData {
             LOG.debug("getProductInformation() - exiting");
         }
         return product;
+    }
+
+    /**
+     * Load ftp metadata.
+     * 
+     * @param product the product
+     * @throws MotuException the motu exception
+     */
+    protected void loadFtpMetadata(Product product) throws MotuException {
+
+        // Persistent service exists: don't load metadata again
+        if (Organizer.isServicesPersistent(name)) {
+            return;
+        }
+
+        product.loadInventoryMetaData();
+
     }
 
     /**
@@ -1422,12 +1438,12 @@ public class ServiceData {
         if (productMetaData == null) {
             return false;
         }
-//        if (productMetaData.getCoordinateAxes() == null) {
-//            return false;
-//        }
-//        if (productMetaData.getParameterMetaDatas() == null) {
-//            return false;
-//        }
+        // if (productMetaData.getCoordinateAxes() == null) {
+        // return false;
+        // }
+        // if (productMetaData.getParameterMetaDatas() == null) {
+        // return false;
+        // }
 
         if (velocityEngine == null) {
             throw new MotuException("Error in writeProductDownloadHTML - velocityEngine is null");
@@ -1811,15 +1827,7 @@ public class ServiceData {
             throw new MotuException("Error in extractData - product is null");
         }
 
-        if (getCatalogType() == CatalogData.CatalogType.FTP) {
-
-            getLocationMetaData(product);
-            getDataFiles(product);
-
-            product.setMediaKey(getCatalogType().name());
-
-            updateFiles(product);
-        }
+        checkCatalogType(product);
 
         // updates variables collection to download
         updateVariables(product, listVar);
@@ -2127,15 +2135,7 @@ public class ServiceData {
             throw new MotuException("Error in extractData - product is null");
         }
 
-        if (getCatalogType() == CatalogData.CatalogType.FTP) {
-
-            getLocationMetaData(product);
-            getDataFiles(product);
-
-            product.setMediaKey(getCatalogType().name());
-
-            updateFiles(product);
-        }
+        checkCatalogType(product);
 
         // updates variables collection to download
         updateVariables(product, listVar);
@@ -2152,110 +2152,6 @@ public class ServiceData {
             LOG.debug("extractData() - exiting");
         }
     }
-
-//    /**
-//     * Extract data from a product related to the current service and according to variables and criteria
-//     * previously defined (geographical and/or temporal and/or logical expression).
-//     * 
-//     * @param product instance of the product to extract.
-//     * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
-//     * 
-//     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-//     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-//     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-//     * @throws NetCdfVariableException the net cdf variable exception
-//     * @throws MotuNotImplementedException the motu not implemented exception
-//     * @throws MotuNoVarException the motu no var exception
-//     * @throws MotuException the motu exception
-//     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-//     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-//     * @throws IOException Signals that an I/O exception has occurred.
-//     */
-//    public void extractData(Product product, Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException,
-//            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException,
-//            NetCdfVariableException, MotuNoVarException, NetCdfVariableNotFoundException, IOException {
-//        if (LOG.isDebugEnabled()) {
-//            LOG.debug("extractData() - entering");
-//        }
-//
-//        if (product == null) {
-//            throw new MotuException("Error in extractData - product is null");
-//        }
-//        
-//        if (getCatalogType() == CatalogData.CatalogType.FTP) {
-//
-//            getLocationMetaData(product);
-//            getDataFiles(product);
-//
-//            product.setMediaKey(getCatalogType().name());
-//
-//            updateFiles(product);
-//        }
-//
-//
-//        product.extractData(dataOutputFormat);
-//
-//        if (LOG.isDebugEnabled()) {
-//            LOG.debug("extractData() - exiting");
-//        }
-//    }
-
-    // /**
-    // * Extract data HTML.
-    // *
-    // * @param selectData the select data
-    // * @param listVar the list var
-    // * @param dataOutputFormat the data output format
-    // * @param locationData the location data
-    // * @param listLatLonCoverage the list lat lon coverage
-    // * @param listDepthCoverage the list depth coverage
-    // * @param listTemporalCoverage the list temporal coverage
-    // * @param out the out
-    // *
-    // * @return the product
-    // *
-    // * @throws MotuExceedingCapacityException the motu exceeding capacity
-    // exception
-    // * @throws MotuInvalidDepthRangeException the motu invalid depth range
-    // exception
-    // * @throws MotuInvalidLongitudeException the motu invalid longitude
-    // exception
-    // * @throws NetCdfVariableException the net cdf variable exception
-    // * @throws MotuInvalidLatitudeException the motu invalid latitude
-    // exception
-    // * @throws MotuNotImplementedException the motu not implemented exception
-    // * @throws MotuNoVarException the motu no var exception
-    // * @throws MotuException the motu exception
-    // * @throws MotuInvalidDepthException the motu invalid depth exception
-    // * @throws NetCdfAttributeException the net cdf attribute exception
-    // * @throws MotuInvalidDateException the motu invalid date exception
-    // * @throws MotuInvalidDateRangeException the motu invalid date range
-    // exception
-    // */
-    // public Product extractDataHTML(String locationData,
-    // List<String> listVar,
-    // List<String> listTemporalCoverage,
-    // List<String> listLatLonCoverage,
-    // List<String> listDepthCoverage,
-    // SelectData selectData,
-    // Organizer.Format dataOutputFormat,
-    // Writer out) throws MotuException, MotuInvalidDateRangeException,
-    // MotuExceedingCapacityException,
-    // MotuNotImplementedException, MotuInvalidDepthRangeException,
-    // NetCdfVariableException,
-    // NetCdfAttributeException, MotuNoVarException,
-    // MotuInvalidDepthException, MotuInvalidDateException,
-    // MotuInvalidLatitudeException,
-    // MotuInvalidLongitudeException {
-    //
-    // Product product = getProductInformationFromLocation(locationData);
-    // extractDataHTML(product, listVar, listTemporalCoverage,
-    // listLatLonCoverage, listDepthCoverage,
-    // selectData, dataOutputFormat, out);
-    //
-    // return product;
-    //
-    // }
 
     /**
      * Extract data from a product related to the current service and according to criteria (geographical
@@ -2304,15 +2200,7 @@ public class ServiceData {
         try {
             product.clearExtractFilename();
             product.clearLastError();
-            if (getCatalogType() == CatalogData.CatalogType.FTP) {
-
-                getLocationMetaData(product);
-                getDataFiles(product);
-
-                product.setMediaKey(getCatalogType().name());
-
-                updateFiles(product);
-            }
+            checkCatalogType(product);
 
             // updates variables collection to download
             updateVariables(product, listVar);
@@ -2759,6 +2647,14 @@ public class ServiceData {
      */
     public void getLocationMetaData(Product product) throws MotuException {
 
+        if (product == null) {
+            return;
+        }
+
+        if (!Organizer.isNullOrEmpty(product.getLocationMetaData())) {
+            return;
+        }
+
         ServicePersistent servicePersistent = Organizer.getServicesPersistent(name);
 
         if (servicePersistent == null) {
@@ -2772,10 +2668,10 @@ public class ServiceData {
         String locationMetaData = productPersistent.getUrlMetaData();
         product.setLocationMetaData(locationMetaData);
     }
-    
+
     /**
      * Gets the location data.
-     *
+     * 
      * @param product the product
      * @throws MotuException the motu exception
      */
@@ -2795,6 +2691,24 @@ public class ServiceData {
         product.setLocationData(locationData);
     }
 
+    /**
+     * Check catalog type.
+     * 
+     * @throws MotuException
+     * @throws MotuNotImplementedException
+     */
+    protected void checkCatalogType(Product product) throws MotuException, MotuNotImplementedException {
+
+        if (getCatalogType() == CatalogData.CatalogType.FTP) {
+
+            getLocationMetaData(product);
+            getDataFiles(product);
+
+            product.setMediaKey(getCatalogType().name());
+
+            updateFiles(product);
+        }
+    }
 }
 
 // CSON: MultipleStringLiterals
