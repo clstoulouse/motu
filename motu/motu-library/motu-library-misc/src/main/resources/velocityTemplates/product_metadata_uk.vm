@@ -24,12 +24,16 @@
 		#end
 
 		<li>
-		<a href=?action=describeProduct&data=${product.getLocationData()}&xmlfile=${service.getCatalogFileName()}>
+		#if($catalogType != "FTP")
+			<a href=?action=describeProduct&data=${product.getLocationData()}&xmlfile=${service.getCatalogFileName()}>
+		#else
+			<a href=?action=describeProduct&data=${product.getLocationMetaData()}>
+		#end
 		Dataset description
 		</a>	
 		</li>
 		
-		#if (!$product.isProductAlongTrack()) 
+		#if (!$product.isProductAlongTrack() && $showOpendapLinks)
 			<li>
 			Opendap direct access:&nbsp;&nbsp;&nbsp;
 			<a href=${product.getLocationData()}.dds>dds</a>&nbsp;&nbsp;&nbsp;
@@ -62,10 +66,16 @@
 ## -------------------------------------------- printTemporalCoverage --------------------------------
 #macro(product_metadata_uk_printTemporalCoverage)
 	<p></p>
+	
 	#if($productMetaData.hasTimeAxis())
 		<ul class="puce2">
 			<li><b>${productMetaData.getTimeAxis().getName()} start:</b>&nbsp&nbsp;$productMetaData.getTimeAxisMinValueAsString()</li>
 			<li><b>${productMetaData.getTimeAxis().getName()} end:</b>&nbsp&nbsp;$productMetaData.getTimeAxisMaxValueAsString()</li>
+		</ul>
+	#elseif($productMetaData.hasTimeCoverage())
+		<ul class="puce2">
+			<li><b>Time start:</b>&nbsp&nbsp;$productMetaData.getStartTimeCoverageAsString()</li>
+			<li><b>Time end:</b>&nbsp&nbsp;$productMetaData.getEndTimeCoverageAsString()</li>
 		</ul>
 	#else
 	<p>No temporal coverage.</p>
@@ -93,6 +103,8 @@
             #else				
 				<th>${productMetaData.getGeoYAxis().getName()}</th>			
 			#end
+		#elseif($productMetaData.hasGeoBBox())
+				<th>Latitude</th>			
 		#end
 		
 		#if($productMetaData.hasLonAxis())
@@ -103,9 +115,13 @@
             #else				
 				<th>${productMetaData.getGeoXAxis().getName()}</th>			
 			#end
+		#elseif($productMetaData.hasGeoBBox())
+				<th>Longitude</th>			
 		#end
 		#if($productMetaData.hasZAxis())
 			<th>${productMetaData.getZAxis().getName()}</th>			
+		#elseif($productMetaData.hasDepthBBox())
+				<th>Z/Depth</th>			
 		#end
 	</tr>
 		
@@ -130,6 +146,8 @@
             #else				
 				<td class ="right">$productMetaData.getGeoYAxisMinValueAsString()</td>
 			#end
+		#elseif($productMetaData.hasGeoBBox() && !$productMetaData.hasLatAxis())
+				<td class ="right">$productMetaData.getGeoBBoxLatMinAsString()</td>
 		#end
 		#if($productMetaData.hasGeoXAxis())
 			#if ($product.hasGeoXAxisWithLonEquivalence())
@@ -137,10 +155,14 @@
             #else				
 				<td class ="right">$productMetaData.getGeoXAxisMinValueAsString()</td>
 			#end
+		#elseif($productMetaData.hasGeoBBox() && !$productMetaData.hasLonAxis())
+				<td class ="right">$productMetaData.getGeoBBoxLonMinAsString()</td>
 		#end
 				
 		#if($productMetaData.hasZAxis())
 			<td class ="right">$productMetaData.getZAxisMinValueAsString()</td>
+		#elseif($productMetaData.hasDepthBBox())
+			<td class ="right">$productMetaData.getDepthMinAsString()</td>
 		#end
 	</tr>
 	<tr>
@@ -161,25 +183,29 @@
             #else				
 				<td class ="right">$productMetaData.getGeoYAxisMaxValueAsString()</td>
 			#end
+		#elseif($productMetaData.hasGeoBBox()&& !$productMetaData.hasLatAxis())
+				<td class ="right">$productMetaData.getGeoBBoxLatMaxAsString()</td>
 		#end
-		#if($productMetaData.hasGeoXAxis())
+		#if($productMetaData.hasGeoXAxis() && !$productMetaData.hasLatAxis())
 			#if ($product.hasGeoXAxisWithLonEquivalence())
 				<td class ="right">$productMetaData.getGeoXAxisMaxValueAsLonString(${product})</td>
             #else				
 				<td class ="right">$productMetaData.getGeoXAxisMaxValueAsString()</td>
 			#end
+		#elseif($productMetaData.hasGeoBBox() && !$productMetaData.hasLonAxis())
+				<td class ="right">$productMetaData.getGeoBBoxLonMaxAsString()</td>
 		#end
 		#if($productMetaData.hasZAxis())
 			<td class ="right">$productMetaData.getZAxisMaxValueAsString()</td>
+		#elseif($productMetaData.hasDepthBBox())
+			<td class ="right">$productMetaData.getDepthMaxAsString()</td>
 		#end
 	</tr>
 		
 #end
 ## -------------------------------------------- printGeoCoverage --------------------------------
 #macro(product_metadata_uk_printGeoCoverage)
-		#if ($productMetaData.getCoordinateAxes() == false)
-			<p>No geographical coverage.</p>
-		#elseif ( $productMetaData.hasGeographicalAxis() == false )
+		#if (($productMetaData.isCoordinateAxesEmpty() == false) && ($productMetaData.hasGeographicalAxis() == false) && ($productMetaData.hasGeoBBox() == false))
 			<p>No geographical coverage.</p>
 		#else		
 			<table class="encadre" width="60%" border="0" cellspacing="2" cellpadding="5">
@@ -216,7 +242,9 @@
 		<tr>
 			<th>Standard name</th>
 			<th>Unit</th>
-			<th>Dimensions</th>
+			#if($catalogType != "FTP")
+				<th>Dimensions</th>
+			#end
 		</tr>
 		<tr>
 			<td>
@@ -232,13 +260,15 @@
 				(${parameterMetadata.getUnitLong()})					
 			#end
 			</td>
+			#if($catalogType != "FTP")				
 			<td>
-			#if($parameterMetadata.hasDimensions())
-				$parameterMetadata.getDimensionsAsString()
-			#else
-				Scalar			
-			#end
+    			#if($parameterMetadata.hasDimensions())
+    				$parameterMetadata.getDimensionsAsString()
+    			#else
+    				Scalar			
+				#end
 			</td>
+			#end
 		</tr>
 	</table>
 	<p>&nbsp;</p>
