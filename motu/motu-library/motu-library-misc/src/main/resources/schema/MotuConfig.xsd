@@ -663,6 +663,16 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="downloadOnTop" type="xs:boolean"
+			default="true">
+			<xs:annotation>
+				<xs:documentation>
+					Used only Motu HTML Interface (mode REST).
+					True (default): links the dataset url (shows on the catalog dataset list) links to the download HTML page.
+					False: links the dataset url (shows on the catalog dataset list) links to the metadata HTML page.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		
 	</xs:complexType>
 

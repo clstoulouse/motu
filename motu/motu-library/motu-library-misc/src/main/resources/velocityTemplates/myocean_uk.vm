@@ -38,20 +38,15 @@
 
 ## ------------------------------ myocean_uk_printSubTitleProductDownloadHome --------------------------------
 #macro(myocean_uk_printSubTitleProductDownloadHome)
-<li>
-	<a href="?action=listservices">Access Services</a>
-</li>
-<li>
-	<a href="?action=listcatalog&service=${service.getNameEncoded()}">&gt;&nbsp;Data Product Catalogue</a>
-</li>
-#if($chainMetadata == true)
-<li>
-	<a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">&gt;&nbsp;${titleMetadata}</a>
-</li>
+<li><a href="?action=listservices">Access Services</a></li>
+<li><a href="?action=listcatalog&service=${service.getNameEncoded()}">&gt;&nbsp;Data Product Catalogue</a></li>
+
+#if($downloadOnTop == false)
+	<li><a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">&gt;&nbsp;${titleMetadata}</a></li>
 #end
-<li>
-    <a>&gt;&nbsp;Download</a>
-</li>
+
+<li><a>&gt;&nbsp;Download</a></li>
+
 #end
 
 ## -------------------------------------------- myocean_uk_printSubTitle --------------------------------
@@ -77,9 +72,11 @@
 #set($templateProductMetadata = "velocityTemplates/product_metadata_uk.vm")
 #set($templateProductDownloadHome = "velocityTemplates/product_downloadhome_uk.vm")
 #set($httpSite = ${service.getHttpBaseRef()})
-#set($chainMetadata = true)
+
 #set($titleMetadata = "Product Metadata")
 
+#set($downloadOnTop = ${service.isDownloadOnTop()})
+#set($showOpendapLinks = false)
 
 <!-- variables pour menu Motu -->
 #set($titleMenuMotu = "Downloading and extraction service")

@@ -12,7 +12,7 @@
 ## ------------------------------ mercator_fr_printSubTitleProductMetadata --------------------------------
 #macro(mercator_fr_printSubTitleProductMetadata)
 	<li>&gt; <a href="?action=listcatalog&service=${service.getNameEncoded()}">Catalogue</a></li>
-	<li>&gt; Métadonnées</li>
+	<li>&gt; $titleMetadata</li>
 
 
 #end
@@ -20,7 +20,9 @@
 ## ------------------------------ mercator_fr_printSubTitleProductDownloadHome --------------------------------
 #macro(mercator_fr_printSubTitleProductDownloadHome)
 	<li>&gt; <a href="?action=listcatalog&service=${service.getNameEncoded()}">Catalogue</a></li>
-	<li>&gt; <a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">Métadonnées</a></li>
+    #if($downloadOnTop == false)
+		<li>&gt; <a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">$titleMetadata</a></li>
+	#end
 	<li>&gt; Téléchargement</li>
 #end
 
@@ -51,6 +53,11 @@
 #set($templateProductMetadata = "velocityTemplates/product_metadata_fr.vm")
 #set($templateProductDownloadHome = "velocityTemplates/product_downloadhome_fr.vm")
 #set($httpSite = ${service.getHttpBaseRef()})
+
+#set($titleMetadata = "Métadonnées")
+
+#set($downloadOnTop = ${service.isDownloadOnTop()})
+#set($showOpendapLinks = true)
 
 <!-- variables pour menu Motu -->
 #set($titleMenuMotu = "Service de téléchargement et d'extraction")

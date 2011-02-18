@@ -276,7 +276,13 @@
 
 ## -------------------------------------------- product_downloadhome_fr_timeSelection --------------------------------
 #macro(product_downloadhome_fr_timeSelection)
-#set ($listdate = $product.getTimeAxisDataAsString())
+
+#if($catalogType != "FTP")	
+	#set ($listdate = $product.getTimeAxisDataAsString())
+#else
+	#set ($listdate = $product.getTimeCoverageFromDataFiles())
+#end
+	
 #set ($listdateSize = $listdate.size())
 #if($listdateSize > 0)
 	#set ($lastIndex = ${listdateSize} - 1)
@@ -392,6 +398,7 @@
 #set($formName = "download")
 #set($productMetaData = $product.getProductMetaData())
 #set($images_dir = "${product.getHpptServerDocumentRoot()}/atoll-motuservlet/images")
+#set ($catalogType = $service.getCatalogType().toString().toUpperCase())
 
 #product_downloadhome_fr_setXYMinMax()
 
@@ -420,7 +427,12 @@ td.advice_noimg { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fo
 <form  method="get" name="${formName}">		
 <input type="hidden" name="action" value="productdownload" />
 <input type="hidden" name="service" value="$service.getName()" />
-<input type="hidden" name="data" value="$product.getLocationData()" />
+## #if($catalogType != "FTP")	
+##	<input type="hidden" name="data" value="$product.getLocationData()" />
+## #else
+##	<input type="hidden" name="product" value="$product.getProductId()" />
+## #end
+<input type="hidden" name="product" value="$product.getProductId()" />
 <input type="hidden" name="nexturl" value=" " >
 #if(($productMetaData.hasLatLonAxis()) || ($productMetaData.hasGeoXYAxis()))
 	#if($product.hasCriteriaLatLon())				
@@ -444,9 +456,11 @@ td.advice_noimg { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fo
 
 <table width="100%" cellpadding="1" cellspacing="5" border="0">
 
-<tr><td>
-#product_downloadhome_fr_outputSelection()
-</td></tr>
+#if($catalogType != "FTP")
+    <tr><td>
+    #product_downloadhome_uk_outputSelection()
+    </td></tr>
+#end
 
 #if($productMetaData.hasLatLonAxis() || $product.hasGeoXYAxisWithLonLatEquivalence())
 	<tr><td>
@@ -454,7 +468,7 @@ td.advice_noimg { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fo
 	</td></tr>
 #end
 
-#if($productMetaData.hasTimeAxis())
+#if($productMetaData.hasTimeAxis() || ($catalogType == "FTP"))
 	<tr><td>
 	#product_downloadhome_fr_timeSelection()
 	</td></tr>
@@ -466,23 +480,25 @@ td.advice_noimg { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fo
 	</td></tr>
 #end
 </table>
+#if($catalogType != "FTP")	
+    <h2>Variable</h2>
+    #set ($listParameterMetadata = $productMetaData.getParameterMetaDatasFiltered() )
+    <table class="encadre" width="80%" border="0" cellspacing="2">
+    	<tr>
+    		<th>Extraire</th>
+    		<th>Nom</th>
+    		<th>Description</th>
+    		<th>Nom standard</th>
+    		<th>Unité</th>
+    		<th>Dimensions</th>
+    ####		<th>Quicklook</th>
+    	</tr>
+    	#foreach( $parameterMetadata in $listParameterMetadata )	
+    		#product_downloadhome_fr_printVar()
+    	#end
+    </table>
+#end
 
-<h2>Variable</h2>
-#set ($listParameterMetadata = $productMetaData.getParameterMetaDatasFiltered() )
-<table class="encadre" width="80%" border="0" cellspacing="2">
-	<tr>
-		<th>Extraire</th>
-		<th>Nom</th>
-		<th>Description</th>
-		<th>Nom standard</th>
-		<th>Unité</th>
-		<th>Dimensions</th>
-####		<th>Quicklook</th>
-	</tr>
-	#foreach( $parameterMetadata in $listParameterMetadata )	
-		#product_downloadhome_fr_printVar()
-	#end
-</table>
 <p>&nbsp;</p>
 <input onClick="updateMap()" type="submit" value="Télécharger" />
 </form>

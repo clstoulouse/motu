@@ -254,6 +254,9 @@ public class Organizer {
 
     /** The Constant SHARP_REGEXP. */
     public static final String SHARP_REGEXP = ".*#";
+    
+    /** The Constant SLASH_REGEXP. */
+    public static final String SLASH_REGEXP = ".*/";
 
     /** Number of milliseconds per hour, except when a leap second is inserted. */
     public static final long MILLISECS_PER_HOUR = 60 * Organizer.MILLISECS_PER_MINUTE;
@@ -6242,6 +6245,7 @@ public class Organizer {
             service.setCasAuthentication(confServ.getCatalog().getCasAuthentication());
             service.setVeloTemplatePrefix(confServ.getVeloTemplatePrefix());
             service.setKeepDataFilesList(confServ.getKeepDataFilesList());
+            service.setDownloadOnTop(confServ.getDownloadOnTop());
 
             putServices(service.getName().toLowerCase(), service);
         }
@@ -6844,6 +6848,23 @@ public class Organizer {
         }
         // String[] split = uri.split(SHARP_DATASET_REGEXP);
         String[] split = uri.split(SHARP_REGEXP);
+        if (split.length <= 1) {
+            return uri;
+        }
+        return split[1];
+    }
+    
+    /**
+     * Gets the id from uri.
+     *
+     * @param uri the uri
+     * @return the id from uri
+     */
+    public static String getStandardNameFromFromURI(String uri) {
+        if (Organizer.isNullOrEmpty(uri)) {
+            return uri;
+        }
+        String[] split = uri.split(SLASH_REGEXP);
         if (split.length <= 1) {
             return uri;
         }

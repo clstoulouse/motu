@@ -164,19 +164,29 @@
 ## ------------------------------------------
 #if (!$product.isProductAlongTrack()) 	
 	<tr>	
-	<td>
-		<li>
-		#if($catalogType != "FTP")						
-		    <a href=?action=listproductmetadata&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
-					 $productMetaData.getTitle()
-			</a>	
-		#else
-			<a href=?action=productdownloadhome&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
-					 $productMetaData.getTitle()
-			</a>	
-		#end
-		</li>	
-	</td>
+	#if($downloadOnTop)						
+    	<td width="80%">
+    		<li> 
+				Télécharger&nbsp;
+    			<a href=?action=productdownloadhome&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
+       					 $productMetaData.getTitle()
+    			</a>	
+    		</li>	
+    	</td>	
+    	<td>
+    			<a href=?action=listproductmetadata&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
+    					 $titleMetadata
+    			</a>	
+    	</td>
+	#else
+    	<td>
+    		<li>
+    			<a href=?action=listproductmetadata&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
+    					 $productMetaData.getTitle()
+    			</a>	
+			</li>	
+    	</td>
+	#end
 	<td class="producttype">
 		$Type
 	</td>
@@ -203,7 +213,9 @@
 		#set($productMetaData = $product.getProductMetaData())
 		#if(($printheaders == true) && ($catalogType != "FTP"))
 			#set($printheaders = false )	 		
-			#catalog_fr_printheader()			
+			#if ($catalogType != "FTP")
+				#catalog_fr_printheader()
+			#end
 		<table width="90%" border="0" cellspacing="0" cellpadding="0"><tr>
 		#end		
 		#catalog_fr_printbody()

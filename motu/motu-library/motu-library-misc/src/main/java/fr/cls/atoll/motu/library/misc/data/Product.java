@@ -1954,7 +1954,7 @@ public class Product {
 
         for (DataFile dataFile : dataFiles) {            
             // Warning : get Datetime as UTC 
-            DateTime fileStart = new DateTime(dataFile.getStartCoverageDate(), DateTimeZone.UTC);
+            DateTime fileStart = DateUtils.dateTimeToUTC(dataFile.getStartCoverageDate());
             
             if (fileStart != null) {
                 timeCoverage.add(DateUtils.DATETIME_FORMATTERS.get(DateUtils.DATETIME_PATTERN3).print(fileStart));

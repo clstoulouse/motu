@@ -29,15 +29,17 @@
 #macro(aviso_uk_printSubTitleProductMetadata)
 	<a href="?action=listcatalog&service=${service.getNameEncoded()}">Inventory</a>
 	$imgParent
-	Metadata
+	$titleMetadata
 
 #end
 
 ## ------------------------------ aviso_uk_printSubTitleProductDownloadHome --------------------------------
 #macro(aviso_uk_printSubTitleProductDownloadHome)
 	<a href="?action=listcatalog&service=${service.getNameEncoded()}">Inventory</a>
-	$imgParent
-	<a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">Metadata</a>
+    #if($downloadOnTop == false)
+    	$imgParent
+    	<a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">$titleMetadata</a>
+	#end
 	$imgParent
 	Download
 #end
@@ -69,6 +71,11 @@
 #set($templateProductDownloadHome = "velocityTemplates/product_downloadhome_uk.vm")
 #set($images_dir = "${product.getHpptServerDocumentRoot()}/atoll-motuservlet/images")
 #set ($imgParent = "<img src=${images_dir}/parent.gif width=17 height=16>")
+
+#set($titleMetadata = "Metadata")
+
+#set($downloadOnTop = ${service.isDownloadOnTop()})
+#set($showOpendapLinks = true)
 	
 <html>
 <head>
@@ -195,7 +202,7 @@
 
 <a id="content" name="content"></a>    <div id="col3">
       <div id="col3_content" class="clearfix">
-      	<div id="col3_innen" class="floatbox">
+      	<!-- <div id="col3_innen" class="floatbox"> -->
 
  
 
@@ -231,7 +238,7 @@
 <!-- Pied de page -->
 <p>&nbsp;</p>
 </div>
-      </div>
+      <!-- </div> -->
 	  <div id="ie_clearing">&nbsp;</div>
 
       <!-- Ende: IE Column Clearing -->

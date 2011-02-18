@@ -4,13 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.ReadableInterval;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISOPeriodFormat;
 import org.joda.time.format.PeriodFormatter;
+
 /**
  * 
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
@@ -19,7 +22,7 @@ import org.joda.time.format.PeriodFormatter;
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class DateUtils {
-    
+
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(DateUtils.class);
 
@@ -63,10 +66,11 @@ public class DateUtils {
         PERIOD_FORMATTERS.put(PERIOD_PATTERN_ISO_ALTERNATE_EXTENDED, ISOPeriodFormat.alternateExtended());
         PERIOD_FORMATTERS.put(PERIOD_PATTERN_ISO_ALTERNATE_EXTENDED_WITH_WEEKS, ISOPeriodFormat.alternateExtendedWithWeeks());
 
-    }    
+    }
+
     /**
      * Does a time interval contain the specified millisecond instant.
-     *
+     * 
      * @param interval the interval
      * @param millisInstant the millis instant
      * @return true, if successful
@@ -79,10 +83,10 @@ public class DateUtils {
 
     /**
      * Does a time interval contain a specified time interval.
-     *
+     * 
      * @param interval the interval to check
      * @param intervalCompareTo the interval to compare to
-     * @return true if this time ' intervalCompareTo' contains  'intervalCompareTo'
+     * @return true if this time ' intervalCompareTo' contains 'intervalCompareTo'
      */
     public static boolean contains(ReadableInterval interval, ReadableInterval intervalCompareTo) {
         if (intervalCompareTo == null) {
@@ -94,10 +98,10 @@ public class DateUtils {
         long thisEnd = interval.getEndMillis();
         return (thisStart <= otherStart && otherStart <= thisEnd && otherEnd <= thisEnd);
     }
-    
+
     /**
      * Does this time interval contain the current instant.
-     *
+     * 
      * @param interval the interval
      * @return true, if successful
      */
@@ -108,7 +112,7 @@ public class DateUtils {
     /**
      * Does a time interval intersect another time interval.
      * <p>
-     *
+     * 
      * @param interval1 the interval1
      * @param interval2 the interval2
      * @return true if the time intervals intersect
@@ -127,7 +131,7 @@ public class DateUtils {
         long otherEnd = interval2.getEndMillis();
         return (thisStart <= otherEnd && otherStart <= thisEnd);
     }
-    
+
     public static Interval intersect(ReadableInterval interval1, ReadableInterval interval2) {
         if (DateUtils.intersects(interval1, interval2) == false) {
             return null;
@@ -137,5 +141,42 @@ public class DateUtils {
         return new Interval(start, end);
     }
 
+    /**
+     * Date time to utc.
+     * 
+     * @param dateTime the date time
+     * @return the date time
+     */
+    public static DateTime dateTimeToUTC(DateTime dateTime) {
+        if (dateTime == null) {
+            return null;
+        }
+        return new DateTime(dateTime, DateTimeZone.UTC);
+    }
 
+    /**
+     * Gets the date time as utc string.
+     *
+     * @param dateTime the date time
+     * @return the date time as utc string
+     */
+    public static String getDateTimeAsUTCString(DateTime dateTime) {
+        return DateUtils.getDateTimeAsUTCString(dateTime, DateUtils.DATETIME_PATTERN3);
+    }
+
+    /**
+     * Gets the date time as utc string.
+     *
+     * @param dateTime the date time
+     * @param pattern the pattern
+     * @return the date time as utc string
+     */
+    public static String getDateTimeAsUTCString(DateTime dateTime, String pattern) {
+        String value = "";
+        if (dateTime == null) {
+            return value;
+        }
+        dateTime = DateUtils.dateTimeToUTC(dateTime);
+        return DateUtils.DATETIME_FORMATTERS.get(pattern).print(dateTime);
+    }
 }

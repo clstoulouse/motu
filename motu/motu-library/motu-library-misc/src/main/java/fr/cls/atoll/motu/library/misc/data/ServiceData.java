@@ -637,6 +637,31 @@ public class ServiceData {
         this.keepDataFilesList = keepDataFilesList;
     }
 
+    /**
+     * Used only Motu HTML Interface (mode REST).
+     *               True (default): links the dataset url (shows on the catalog dataset list) links to the download HTML page.
+     *               False: links the dataset url (shows on the catalog dataset list) links to the metadata HTML page.
+     */
+    private boolean downloadOnTop = true;
+
+    /**
+     * Checks if is download on top.
+     *
+     * @return true, if checks if is download on top
+     */
+    public boolean isDownloadOnTop() {
+        return downloadOnTop;
+    }
+
+    /**
+     * Sets the download on top.
+     *
+     * @param downloadOnTop the download on top
+     */
+    public void setDownloadOnTop(boolean downloadOnTop) {
+        this.downloadOnTop = downloadOnTop;
+    }
+
     /** Type of catalog. */
     private CatalogData.CatalogType catalogType = CatalogData.CatalogType.TDS;
 

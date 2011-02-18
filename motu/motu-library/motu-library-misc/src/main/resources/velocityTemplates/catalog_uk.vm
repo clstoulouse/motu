@@ -165,17 +165,10 @@
 ## ------------------------------------------
 #if (!$product.isProductAlongTrack()) 
 	<tr>	
-	#if($chainMetadata)						
-    	<td>
-    		<li>
-    			<a href=?action=listproductmetadata&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
-    					 $productMetaData.getTitle()
-    			</a>	
-			</li>	
-    	</td>
-	#else
+	#if($downloadOnTop)						
     	<td width="80%">
-    		<li>
+    		<li> 
+				Download&nbsp;
     			<a href=?action=productdownloadhome&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
        					 $productMetaData.getTitle()
     			</a>	
@@ -185,6 +178,14 @@
     			<a href=?action=listproductmetadata&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
     					 $titleMetadata
     			</a>	
+    	</td>
+	#else
+    	<td>
+    		<li>
+    			<a href=?action=listproductmetadata&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
+    					 $productMetaData.getTitle()
+    			</a>	
+			</li>	
     	</td>
 	#end
 	<td class="producttype">
@@ -211,7 +212,7 @@
 	#set ( $printheaders = true )
 	#foreach( $product in $sameProductTypeDataset )
 		#set($productMetaData = $product.getProductMetaData())
-		#if(($printheaders == true))
+		#if($printheaders == true)
 			#set($printheaders = false )			
 			#if ($catalogType != "FTP")
 				#catalog_uk_printheader()	

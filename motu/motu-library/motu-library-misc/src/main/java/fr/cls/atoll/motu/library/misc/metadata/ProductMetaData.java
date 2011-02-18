@@ -36,9 +36,11 @@ import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.library.misc.tds.server.Property;
 import fr.cls.atoll.motu.library.misc.tds.server.Variables;
+import fr.cls.atoll.motu.library.misc.utils.DateUtils;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -229,9 +231,10 @@ public class ProductMetaData {
             this.productId = productId.trim();
         }
     }
+
     /**
      * Gets the product id encoded.
-     *
+     * 
      * @return the product id encoded
      */
     public String getProductIdEncoded() {
@@ -240,17 +243,17 @@ public class ProductMetaData {
 
     /**
      * Gets the product id encoded.
-     *
+     * 
      * @param enc the enc
      * @return the product id encoded
      */
     public String getProductIdEncoded(String enc) {
         String productId = this.getProductId();
-        
+
         if (Organizer.isNullOrEmpty(productId)) {
             return "Unknown_product_Id";
-        } 
-        
+        }
+
         try {
             return URLEncoder.encode(productId, enc);
         } catch (UnsupportedEncodingException e) {
@@ -261,10 +264,9 @@ public class ProductMetaData {
     /** The tds url path. */
     private String tdsUrlPath = "";
 
-
     /**
      * Gets the tds url path.
-     *
+     * 
      * @return the tds url path
      */
     public String getTdsUrlPath() {
@@ -273,7 +275,7 @@ public class ProductMetaData {
 
     /**
      * Sets the tds url path.
-     *
+     * 
      * @param tdsUrlPath the new tds url path
      */
     public void setTdsUrlPath(String tdsUrlPath) {
@@ -1124,6 +1126,10 @@ public class ProductMetaData {
      * @uml.property name="coordinateAxes"
      */
     public Set<AxisType> coordinateAxesKeySet() {
+        if (this.coordinateAxesMap == null) {
+            return null;
+        }
+
         return this.coordinateAxesMap.keySet();
     }
 
@@ -1136,6 +1142,10 @@ public class ProductMetaData {
      * @uml.property name="coordinateAxes"
      */
     public Collection<CoordinateAxis> coordinateAxesValues() {
+        if (this.coordinateAxesMap == null) {
+            return null;
+        }
+
         return this.coordinateAxesMap.values();
     }
 
@@ -1150,6 +1160,10 @@ public class ProductMetaData {
      * @uml.property name="coordinateAxes"
      */
     public boolean coordinateAxesContainsKey(AxisType key) {
+        if (this.coordinateAxesMap == null) {
+            return false;
+        }
+
         return this.coordinateAxesMap.containsKey(key);
     }
 
@@ -1164,6 +1178,10 @@ public class ProductMetaData {
      * @uml.property name="coordinateAxes"
      */
     public boolean coordinateAxesContainsValue(CoordinateAxis coordinateAxes) {
+        if (this.coordinateAxesMap == null) {
+            return false;
+        }
+        
         return this.coordinateAxesMap.containsValue(coordinateAxes);
     }
 
@@ -1194,6 +1212,9 @@ public class ProductMetaData {
      * @uml.property name="coordinateAxes"
      */
     public boolean isCoordinateAxesEmpty() {
+        if (this.coordinateAxesMap == null) {
+            return false;
+        }
         return this.coordinateAxesMap.isEmpty();
     }
 
@@ -1206,6 +1227,10 @@ public class ProductMetaData {
      * @uml.property name="coordinateAxes"
      */
     public int coordinateAxesSize() {
+        if (this.coordinateAxesMap == null) {
+            return 0;
+        }
+
         return this.coordinateAxesMap.size();
     }
 
@@ -1217,6 +1242,10 @@ public class ProductMetaData {
      * @uml.property name="coordinateAxes"
      */
     public void setCoordinateAxes(Map<AxisType, CoordinateAxis> coordinateAxes) {
+        if (this.coordinateAxesMap == null) {
+            coordinateAxesMap = new HashMap<AxisType, CoordinateAxis>();
+        }
+        
         this.coordinateAxesMap = coordinateAxes;
     }
 
@@ -1232,6 +1261,10 @@ public class ProductMetaData {
      * @uml.property name="coordinateAxes"
      */
     public CoordinateAxis putCoordinateAxes(AxisType key, CoordinateAxis coordinateAxes) {
+        if (this.coordinateAxesMap == null) {
+            coordinateAxesMap = new HashMap<AxisType, CoordinateAxis>();
+        }
+
         return this.coordinateAxesMap.put(key, coordinateAxes);
     }
 
@@ -1246,6 +1279,9 @@ public class ProductMetaData {
      * @uml.property name="coordinateAxes"
      */
     public CoordinateAxis removeCoordinateAxes(AxisType key) {
+        if (this.coordinateAxesMap == null) {
+            return null;
+        }        
         return this.coordinateAxesMap.remove(key);
     }
 
@@ -1256,6 +1292,10 @@ public class ProductMetaData {
      * @uml.property name="coordinateAxes"
      */
     public void clearCoordinateAxes() {
+        if (this.coordinateAxesMap == null) {
+            return;
+        }
+        
         this.coordinateAxesMap.clear();
     }
 
@@ -1275,12 +1315,12 @@ public class ProductMetaData {
 
     /**
      * Gets the parameter meta datas filtered.
-     *
+     * 
      * @return the parameter meta datas filtered
      */
     public Map<String, ParameterMetaData> getParameterMetaDatasFiltered() {
         Map<String, ParameterMetaData> map = new HashMap<String, ParameterMetaData>();
-        Set<Entry<String, ParameterMetaData>>  entries = getParameterMetaDatas().entrySet();
+        Set<Entry<String, ParameterMetaData>> entries = getParameterMetaDatas().entrySet();
         for (Entry<String, ParameterMetaData> entry : entries) {
             ParameterMetaData parameterMetaData = entry.getValue();
             if (parameterMetaData == null) {
@@ -1288,12 +1328,12 @@ public class ProductMetaData {
             }
             if (parameterMetaData.getName().startsWith(CoordSysBuilderYXLatLon.LAT_LON_COORDINATE_SYSTEM_PREFIX)) {
                 continue;
-        
+
             }
-            
+
             map.put(entry.getKey(), parameterMetaData);
         }
-        
+
         return map;
     }
 
@@ -1440,15 +1480,15 @@ public class ProductMetaData {
 
     /**
      * Gets the parameter meta data from standard name.
-     *
+     * 
      * @param name the name
      * @return the parameter meta data from standard name
      */
     public ParameterMetaData getParameterMetaDataFromStandardName(String name) {
         ParameterMetaData parameterMetaData = null;
-        
-        Collection<ParameterMetaData>  list = parameterMetaDatasValues();
-        for (ParameterMetaData  p : list) {
+
+        Collection<ParameterMetaData> list = parameterMetaDatasValues();
+        for (ParameterMetaData p : list) {
             String standardNameValue = p.getStandardName();
             if (!Organizer.isNullOrEmpty(standardNameValue)) {
                 if (standardNameValue.equals(name)) {
@@ -1460,7 +1500,7 @@ public class ProductMetaData {
         }
         return parameterMetaData;
     }
-        
+
     /**
      * Checks for lat lon axis.
      * 
@@ -1472,7 +1512,7 @@ public class ProductMetaData {
 
     /**
      * Checks for lat lon axis2 d.
-     *
+     * 
      * @return true, if successful
      */
     public boolean hasLatLonAxis2D() {
@@ -2004,13 +2044,13 @@ public class ProductMetaData {
             if (parameterMetaData != null) {
                 break;
             }
-            
+
             parameterMetaData = getParameterMetaDataFromStandardName(name);
 
             if (parameterMetaData != null) {
                 break;
             }
-            
+
         }
         return parameterMetaData;
     }
@@ -2040,30 +2080,33 @@ public class ProductMetaData {
 
     /**
      * Find coordinate axis.
-     *
+     * 
      * @param axisName the axis name
      * @return the coordinate axis
      */
     public CoordinateAxis findCoordinateAxis(String axisName) {
+        if (this.coordinateAxesMap == null) {
+            return null;
+        }
+
         Collection<CoordinateAxis> axes = coordinateAxesMap.values();
         for (CoordinateAxis axis : axes) {
-            if (axis.getName().equalsIgnoreCase(axisName))
-            {
+            if (axis.getName().equalsIgnoreCase(axisName)) {
                 return axis;
             }
-        }        
+        }
         return null;
     }
-    
+
     /**
      * Gets the coordinate axis type.
-     *
+     * 
      * @param axisName the axis name
      * @return the coordinate axis type
      */
     public AxisType getCoordinateAxisType(String axisName) {
         CoordinateAxis axis = findCoordinateAxis(axisName);
-        if (axis == null){
+        if (axis == null) {
             return null;
         }
         return axis.getAxisType();
@@ -2703,6 +2746,37 @@ public class ProductMetaData {
     private Interval timeCoverage = null;
 
     /**
+     * Checks for time coverage.
+     * 
+     * @return true, if checks for time coverage
+     */
+    public boolean hasTimeCoverage() {
+        return (timeCoverage != null);
+    }
+
+    /**
+     * Gets the start time coverage as string.
+     *
+     * @return the start time coverage as string
+     */
+    public String getStartTimeCoverageAsString() {
+        String value = "";
+        if (timeCoverage == null) {
+            return value;
+        }
+        return DateUtils.getDateTimeAsUTCString(timeCoverage.getStart());
+    }
+    
+    public String getEndTimeCoverageAsString() {
+        String value = "";
+        if (timeCoverage == null) {
+            return value;
+        }
+        return DateUtils.getDateTimeAsUTCString(timeCoverage.getEnd());
+    }
+    
+
+    /**
      * Gets the time coverage.
      * 
      * @return the time coverage
@@ -2763,6 +2837,72 @@ public class ProductMetaData {
 
     /** The geo b box. */
     private LatLonRect geoBBox = null;
+    
+    /**
+     * Checks for geo b box.
+     *
+     * @return true, if checks for geo b box
+     */
+    public boolean hasGeoBBox() {
+        return (geoBBox != null);
+    }
+    
+    /**
+     * Gets the geo b box lon max as string.
+     *
+     * @return the geo b box lon max as string
+     */
+    public String getGeoBBoxLonMaxAsString() {
+        String value = "";
+        if (geoBBox == null) {
+            return value;
+        }
+        
+        return Double.toString(geoBBox.getLonMax());        
+    }
+    
+    /**
+     * Gets the geo b box lon min as string.
+     *
+     * @return the geo b box lon min as string
+     */
+    public String getGeoBBoxLonMinAsString() {
+        String value = "";
+        if (geoBBox == null) {
+            return value;
+        }
+        
+        return Double.toString(geoBBox.getLonMin());        
+    }
+    
+    /**
+     * Gets the geo b box lat max as string.
+     *
+     * @return the geo b box lat max as string
+     */
+    public String getGeoBBoxLatMaxAsString() {
+        String value = "";
+        if (geoBBox == null) {
+            return value;
+        }
+        
+        return Double.toString(geoBBox.getLatMax());        
+    }
+    
+    /**
+     * Gets the geo b box lat min as string.
+     *
+     * @return the geo b box lat min as string
+     */
+    public String getGeoBBoxLatMinAsString() {
+        String value = "";
+        if (geoBBox == null) {
+            return value;
+        }
+        
+        return Double.toString(geoBBox.getLatMin());        
+    }
+
 
     /**
      * Gets the geo b box.
@@ -2784,7 +2924,45 @@ public class ProductMetaData {
 
     /** The depth coverage. */
     private MinMax depthCoverage = null;
-
+    
+    /**
+     * Checks for depth coverage.
+     *
+     * @return true, if checks for depth coverage
+     */
+    public boolean hasDepthCoverage() {
+        return (depthCoverage != null);
+    }
+    
+    /**
+     * Gets the depth max as string.
+     *
+     * @return the depth max as string
+     */
+    public String getDepthMaxAsString() {
+        String value = "";
+        if (depthCoverage == null) {
+            return value;
+        }
+        
+        return Double.toString(depthCoverage.max);        
+    }
+    
+    /**
+     * Gets the depth min as string.
+     *
+     * @return the depth min as string
+     */
+    public String getDepthMinAsString() {
+        String value = "";
+        if (depthCoverage == null) {
+            return value;
+        }
+        
+        return Double.toString(depthCoverage.min);        
+    }
+    
+  
     /**
      * Gets the depth coverage.
      * 

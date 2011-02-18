@@ -360,7 +360,7 @@ public class TestIntfce {
         // }
         // MAMath.MinMax minMax = NetCdfReader.getMinMaxLonNormal(r1, r2, r1Values, r2Values)
         // listServices();
-        catalogInformation();
+        // catalogInformation();
         // try {
         // ServiceData.Language test = ServiceData.Language.valueOf("ee");
         // } catch (RuntimeException e) {
@@ -406,7 +406,7 @@ public class TestIntfce {
         // productExtractDataFromInventory();
         // productListMercator();
         // productList();
-        // testGetProductMetadataInfo();
+        testGetProductMetadataInfo();
         // testExtractdataLon0360();
         // testExtractdataLon180();
 
@@ -449,7 +449,8 @@ public class TestIntfce {
             String myoceanUrn = "http://purl.org/myocean/ontology/service/database#";
             // String serviceName = myoceanUrn + "cls-toulouse-fr-sltac-motu-rest";
             //String serviceName = myoceanUrn + "SL-CLS-TOULOUSE-FR-MOTU-REST";
-            String serviceName = myoceanUrn + "SLTAC";
+            //String serviceName = myoceanUrn + "SLTAC3";
+            String serviceName = "aviso";
 
             // String serviceName = "Catsat";
             // String serviceName = "AvisoNRT";
@@ -645,13 +646,15 @@ public class TestIntfce {
             // String productId = "duacs_regional-gomex_nrt_g2_slaext";
             // String serviceName = "dev";
             // String productId = "res_oer_g2";
-            String serviceName = "mercator";
+            //String serviceName = "http://purl.org/myocean/ontology/service/database#yourduname";
+            String serviceName = "http://purl.org/myocean/ontology/service/database#SLTAC";
             // String serviceName = "MetNo";
             // String serviceName = "Topaz";
 
             // String serviceName = "cls";
             // String serviceName = "AvisoDT";
-            String productId = "mercatorPsy3v2_arc_mean_best_estimate";
+            //String productId = "dataset-duacs-global-nrt-madt-merged-h";
+            String productId = "http://purl.org/myocean/ontology/product/database#dataset-duacs-ran-global-en-sla-l3";
             // String productId = "myocean/nat/tmipv2n-class1-be";
             // String productId = "mersea-ipv2/arctic/tmipv2a-class1-b-be";
             // String productId = "global_sst";
@@ -2676,7 +2679,8 @@ public class TestIntfce {
             // String locationData =
             // "http://web-qt.cls.fr/mis-gateway-servlet/Motu?action=describeProduct&data=http://thredds.met.no/thredds/dodsC/topaz/myocean/nat/tmipv2n-class1-be";
             // String locationData = "C:/Downloads/nrt_global_en_adt_vfec_20100926_20100926_20100929.nc";
-            String locationData = "http://tomcat.nersc.no:8080/thredds/dodsC/topaz/mersea-ipv2/arctic/tmipv2a-class1-b-be";
+            //String locationData = "http://tomcat.nersc.no:8080/thredds/dodsC/topaz/mersea-ipv2/arctic/tmipv2a-class1-b-be";
+            String locationData = "sftp://atoll:atoll@atoll-dev.cls.fr/home/atoll/distrib/hoa/publication/inventories/dataset-duacs-ran-global-en-sla-l3__cls-toulouse-fr-sltac-motu-rest.xml";
             // String locationData =
             // "http://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v2_arc_mean_best_estimate";
             //
@@ -2695,11 +2699,12 @@ public class TestIntfce {
             // }
             //            
             Organizer organizer = new Organizer();
-            FileWriter writer = new FileWriter("resultProductMetadataInfo.xml");
+            FileWriter writer = new FileWriter("./target/resultProductMetadataInfo.xml");
             // organizer.getProductMetadataInfo(locationData, writer);
 
             String xmlFile = "catalogs/mersea-ipv2-class1-arctic-b.xml";
-            organizer.getProductMetadataInfo(locationData, xmlFile, true, writer);
+            //organizer.getProductMetadataInfo(locationData, xmlFile, true, writer);
+            organizer.getProductMetadataInfo(locationData, writer);
 
         } catch (MotuExceptionBase e) {
             // TODO Auto-generated catch block

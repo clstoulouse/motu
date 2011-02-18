@@ -28,6 +28,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+
 import ucar.nc2.Dimension;
 
 /**
@@ -215,7 +217,8 @@ public class ParameterMetaData {
         if (standardName == null) {
             return;
         }
-        this.standardName = standardName;
+        
+        this.standardName = Organizer.getStandardNameFromFromURI(standardName);
     }
 
     /** The long name. */

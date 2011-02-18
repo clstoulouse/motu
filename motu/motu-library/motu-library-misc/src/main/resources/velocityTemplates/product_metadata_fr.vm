@@ -30,7 +30,7 @@
 		</a>	
 		</li>
 		
-		#if (!$product.isProductAlongTrack()) 
+		#if (!$product.isProductAlongTrack()) && ${showOpendapLinks})
 			<li>
 			Interface Opendap:&nbsp;&nbsp;&nbsp;
 			<a href=${product.getLocationData()}.dds>dds</a>&nbsp;&nbsp;&nbsp;

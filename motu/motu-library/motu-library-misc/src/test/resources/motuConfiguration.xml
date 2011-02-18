@@ -124,6 +124,22 @@
 	runGCInterval="10"
 	sftpSessionTimeOut="PT10S"
 	strictHostKeyChecking="no">
+	  <!--===========================================================-->
+    <!--                   motu-yourdu Service                  -->
+    <!--===========================================================-->
+    <configService
+        defaultLanguage="UK"
+        description="Your Dissemination Unit"
+        group="MotuYourDU"
+        httpBaseRef="http://resources.myocean.eu"
+        name="&myoceanUrn;yourduname"
+        veloTemplatePrefix="myocean"
+    >
+        <catalog
+            name="catalog.xml"
+            type="tds"
+            urlSite="http://misgw-qt.cls.fr:40080/thredds" />
+    </configService>
 	
     <!--===========================================================-->
     <!--                   motu  'SLTAC' FTP        Service                  -->
@@ -149,6 +165,19 @@
 			<catalog name="catalogFTP.xml" type="ftp"
 					urlSite="sftp://atoll:atoll@atoll-dev.cls.fr/home/atoll/distrib/hoa/publication/inventories" />
 	</configService>
+	<configService defaultLanguage="FR" description="SLTAC"
+			group="SLTAC" httpBaseRef="http://www.mercator-ocean.fr"
+			name="&myoceanUrn;SLTAC2" veloTemplatePrefix="mercator">
+			<catalog name="catalogFTP.xml" type="ftp"
+					urlSite="sftp://atoll:atoll@atoll-dev.cls.fr/home/atoll/distrib/hoa/publication/inventories" />
+	</configService>
+	<configService defaultLanguage="UK" description="SLTAC"
+			group="SLTAC3" httpBaseRef="http://www.aviso.oceanobs.com"
+			name="&myoceanUrn;SLTAC3" veloTemplatePrefix="aviso">
+			<catalog name="catalogFTP.xml" type="ftp"
+					urlSite="sftp://atoll:atoll@atoll-dev.cls.fr/home/atoll/distrib/hoa/publication/inventories" />
+	</configService>
+	
 	<!--===========================================================-->
 	<!--                   motu  'SLTAC' FTP with template mercator        Service                  -->
 	<!--===========================================================-->
