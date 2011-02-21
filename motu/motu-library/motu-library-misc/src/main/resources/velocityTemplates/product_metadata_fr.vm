@@ -12,8 +12,7 @@
 	#set ($pageSiteWeb = ${productMetaData.getPageSiteWebURL()})
 	#set ($LAS = ${productMetaData.getLASViewingServiceURL()})
 	#set ($FTP = ${productMetaData.getFTPServiceURL()})
-	#set ($bulletinSite = ${productMetaData.getBulletinSiteURL()})
-	
+	#set ($bulletinSite = ${productMetaData.getBulletinSiteURL()})	
 	<h2>Services associés</h2>
 ##	<ul>
 		#if ($product.isProductDownloadable()) 
@@ -25,12 +24,16 @@
 		#end
 
 		<li>
-		<a href=?action=describeProduct&data=${product.getLocationData()}&xmlfile=${service.getCatalogFileName()}>
+		#if($catalogType != "FTP")
+			<a href=?action=describeProduct&data=${product.getLocationData()}&xmlfile=${service.getCatalogFileName()}>
+		#else
+			<a href=?action=describeProduct&data=${product.getLocationMetaData()}>
+		#end
 		Description des données
 		</a>	
 		</li>
 		
-		#if (!$product.isProductAlongTrack()) && ${showOpendapLinks})
+		#if (!$product.isProductAlongTrack() && $showOpendapLinks && ($catalogType != "FTP"))
 			<li>
 			Interface Opendap:&nbsp;&nbsp;&nbsp;
 			<a href=${product.getLocationData()}.dds>dds</a>&nbsp;&nbsp;&nbsp;
@@ -63,11 +66,17 @@
 ## -------------------------------------------- printTemporalCoverage --------------------------------
 #macro(product_metadata_fr_printTemporalCoverage)
 	<p></p>
+	
 	#if($productMetaData.hasTimeAxis())
 		<ul class="puce2">
-			<li><b>Début (${productMetaData.getTimeAxis().getName()}):</b>&nbsp&nbsp;$productMetaData.getTimeAxisMinValueAsString()</li>
-			<li><b>Fin (${productMetaData.getTimeAxis().getName()}):</b>&nbsp&nbsp;$productMetaData.getTimeAxisMaxValueAsString()</li>
+			<li><b>Début&nbsp(${productMetaData.getTimeAxis().getName()}):</b>&nbsp&nbsp;$productMetaData.getTimeAxisMinValueAsString()</li>
+			<li><b>Fin&nbsp(${productMetaData.getTimeAxis().getName()}):</b>&nbsp&nbsp;$productMetaData.getTimeAxisMaxValueAsString()</li>
 		</ul>
+	#elseif($productMetaData.hasTimeCoverage())
+		<ul class="puce2">
+			<li><b>Début&nbsp:</b>&nbsp&nbsp;$productMetaData.getStartTimeCoverageAsString()</li>
+			<li><b>Fin&nbsp:</b>&nbsp&nbsp;$productMetaData.getEndTimeCoverageAsString()</li>
+		</ul>	
 	#else
 	<p>Aucune couverture géographique.</p>
 	#end
@@ -94,6 +103,8 @@
             #else				
 				<th>${productMetaData.getGeoYAxis().getName()}</th>			
 			#end
+		#elseif($productMetaData.hasGeoBBox())
+				<th>Latitude</th>			
 		#end
 		
 		#if($productMetaData.hasLonAxis())
@@ -104,9 +115,13 @@
             #else				
 				<th>${productMetaData.getGeoXAxis().getName()}</th>			
 			#end
+		#elseif($productMetaData.hasGeoBBox())
+				<th>Longitude</th>			
 		#end
 		#if($productMetaData.hasZAxis())
 			<th>${productMetaData.getZAxis().getName()}</th>			
+		#elseif($productMetaData.hasDepthBBox())
+				<th>Z/Depth</th>			
 		#end
 	</tr>
 		
@@ -131,6 +146,8 @@
             #else				
 				<td class ="right">$productMetaData.getGeoYAxisMinValueAsString()</td>
 			#end
+		#elseif($productMetaData.hasGeoBBox() && !$productMetaData.hasLatAxis())
+				<td class ="right">$productMetaData.getGeoBBoxLatMinAsString()</td>
 		#end
 		#if($productMetaData.hasGeoXAxis())
 			#if ($product.hasGeoXAxisWithLonEquivalence())
@@ -138,10 +155,14 @@
             #else				
 				<td class ="right">$productMetaData.getGeoXAxisMinValueAsString()</td>
 			#end
+		#elseif($productMetaData.hasGeoBBox() && !$productMetaData.hasLonAxis())
+				<td class ="right">$productMetaData.getGeoBBoxLonMinAsString()</td>
 		#end
 				
 		#if($productMetaData.hasZAxis())
 			<td class ="right">$productMetaData.getZAxisMinValueAsString()</td>
+		#elseif($productMetaData.hasDepthBBox())
+			<td class ="right">$productMetaData.getDepthMinAsString()</td>
 		#end
 	</tr>
 	<tr>
@@ -162,25 +183,29 @@
             #else				
 				<td class ="right">$productMetaData.getGeoYAxisMaxValueAsString()</td>
 			#end
+		#elseif($productMetaData.hasGeoBBox()&& !$productMetaData.hasLatAxis())
+				<td class ="right">$productMetaData.getGeoBBoxLatMaxAsString()</td>
 		#end
-		#if($productMetaData.hasGeoXAxis())
+		#if($productMetaData.hasGeoXAxis() && !$productMetaData.hasLatAxis())
 			#if ($product.hasGeoXAxisWithLonEquivalence())
 				<td class ="right">$productMetaData.getGeoXAxisMaxValueAsLonString(${product})</td>
             #else				
 				<td class ="right">$productMetaData.getGeoXAxisMaxValueAsString()</td>
 			#end
+		#elseif($productMetaData.hasGeoBBox() && !$productMetaData.hasLonAxis())
+				<td class ="right">$productMetaData.getGeoBBoxLonMaxAsString()</td>
 		#end
 		#if($productMetaData.hasZAxis())
 			<td class ="right">$productMetaData.getZAxisMaxValueAsString()</td>
+		#elseif($productMetaData.hasDepthBBox())
+			<td class ="right">$productMetaData.getDepthMaxAsString()</td>
 		#end
 	</tr>
 		
 #end
 ## -------------------------------------------- printGeoCoverage --------------------------------
 #macro(product_metadata_fr_printGeoCoverage)
-		#if ($productMetaData.getCoordinateAxes() == false)
-			<p>Pas de couverture géographique.</p>
-		#elseif ( $productMetaData.hasGeographicalAxis() == false )
+		#if (($productMetaData.isCoordinateAxesEmpty() == false) && ($productMetaData.hasGeographicalAxis() == false) && ($productMetaData.hasGeoBBox() == false))
 			<p>Pas de couverture géographique.</p>
 		#else		
 			<table class="encadre" width="60%" border="0" cellspacing="2" cellpadding="5">
@@ -217,7 +242,9 @@
 		<tr>
 			<th>Nom standard</th>
 			<th>Unité</th>
-			<th>Dimensions</th>
+			#if($catalogType != "FTP")
+				<th>Dimensions</th>
+			#end
 		</tr>
 		<tr>
 			<td>
@@ -233,6 +260,7 @@
 				(${parameterMetadata.getUnitLong()})					
 			#end
 			</td>
+			#if($catalogType != "FTP")				
 			<td>
 			#if($parameterMetadata.hasDimensions())
 				$parameterMetadata.getDimensionsAsString()
@@ -240,6 +268,7 @@
 				Scalaire			
 			#end
 			</td>
+			#end
 		</tr>
 	</table>
 	<p>&nbsp;</p>
@@ -247,6 +276,7 @@
 #end
 ## -------------------------------------------- main --------------------------------
 #set($productMetaData = $product.getProductMetaData())
+#set ($catalogType = $service.getCatalogType().toString().toUpperCase())
 
 <h1>$productMetaData.getTitle()</h1>
 

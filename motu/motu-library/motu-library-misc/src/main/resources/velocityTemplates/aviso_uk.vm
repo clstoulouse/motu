@@ -28,7 +28,7 @@
 ## ------------------------------ aviso_uk_printSubTitleProductMetadata --------------------------------
 #macro(aviso_uk_printSubTitleProductMetadata)
 	<a href="?action=listcatalog&service=${service.getNameEncoded()}">Inventory</a>
-	$imgParent
+	&gt;&nbsp;
 	$titleMetadata
 
 #end
@@ -37,10 +37,10 @@
 #macro(aviso_uk_printSubTitleProductDownloadHome)
 	<a href="?action=listcatalog&service=${service.getNameEncoded()}">Inventory</a>
     #if($downloadOnTop == false)
-    	$imgParent
+    	&gt;&nbsp;
     	<a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">$titleMetadata</a>
 	#end
-	$imgParent
+	&gt;&nbsp;
 	Download
 #end
 

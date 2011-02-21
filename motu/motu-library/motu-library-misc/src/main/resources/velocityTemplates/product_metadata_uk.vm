@@ -33,7 +33,7 @@
 		</a>	
 		</li>
 		
-		#if (!$product.isProductAlongTrack() && $showOpendapLinks)
+		#if (!$product.isProductAlongTrack() && $showOpendapLinks && ($catalogType != "FTP")) 
 			<li>
 			Opendap direct access:&nbsp;&nbsp;&nbsp;
 			<a href=${product.getLocationData()}.dds>dds</a>&nbsp;&nbsp;&nbsp;
@@ -262,11 +262,11 @@
 			</td>
 			#if($catalogType != "FTP")				
 			<td>
-    			#if($parameterMetadata.hasDimensions())
-    				$parameterMetadata.getDimensionsAsString()
-    			#else
-    				Scalar			
-				#end
+    		#if($parameterMetadata.hasDimensions())
+    			$parameterMetadata.getDimensionsAsString()
+    		#else
+    			Scalar			
+			#end
 			</td>
 			#end
 		</tr>
@@ -276,6 +276,7 @@
 #end
 ## -------------------------------------------- main --------------------------------
 #set($productMetaData = $product.getProductMetaData())
+#set ($catalogType = $service.getCatalogType().toString().toUpperCase())
 
 <h1>$productMetaData.getTitle()</h1>
 

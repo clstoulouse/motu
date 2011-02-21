@@ -50,6 +50,8 @@
 #set($templateCatalog = "catalog_uk.vm")
 #set($templateProductMetadata = "product_metadata_uk.vm")
 #set($templateProductDownloadHome = "product_downloadhome_uk.vm")
+#set($downloadOnTop = ${service.isDownloadOnTop()})
+#set($showOpendapLinks = true)
 
 <html>
 <head>
