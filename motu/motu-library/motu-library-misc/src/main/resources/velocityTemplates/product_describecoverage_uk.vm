@@ -1,52 +1,155 @@
+##----------------------------------------------------------------------------------
+## WARNING : Macro are prefixed by template file name because of the bug in Velocity when
+## there are the same macro name in different Template. 
+## In case several templates have a common macro name, 
+## the result can be amazing (among others, execution mixes up the same macro with the same name)
+##----------------------------------------------------------------------------------
+## -------------------------------------------- printTemporalCoverage --------------------------------
+#macro(product_describecoverage_uk_printTemporalCoverage)
+	#if($productMetaData.hasTimeAxis())
+	<dimension name="time" start="$productMetaData.getTimeAxisMinValueAsString()" end="$productMetaData.getTimeAxisMaxValueAsString()" /> 
+	#elseif($productMetaData.hasTimeCoverage())
+	<dimension name="time" start="$productMetaData.getStartTimeCoverageAsString()" end="$productMetaData.getEndTimeCoverageAsString()" /> 
+	#end	
+#end
+## -------------------------------------------- printGeoCoverage --------------------------------
+#macro(product_describecoverage_uk_printGeoCoverage) 	
+#set($xLabel = "lon")
+#set($yLabel = "lat")
+#set($zLabel = "z")
+#set($xmin = "")
+#set($xmax = "")
+#set($ymin = "")
+#set($ymax = "")
+#set($zmin = "")
+#set($zmax = "")
+##
+##if lat axis and geoY axis with lat equivalence, don't get lat min. value, it's to slow 
+## because in lat axis can have also time dimension.
+#if(($productMetaData.hasLatAxis()) && (!$product.hasGeoYAxisWithLatEquivalence()))
+#set($ymin = $productMetaData.getLatAxisMinValueAsString())
+#end
+##if lon axis and geoX axis with lon equivalence, don't get lon min. value, it's to slow 
+## because in lon axis can have also time dimension.
+#if(($productMetaData.hasLonAxis()) && (!$product.hasGeoXAxisWithLonEquivalence()))
+#set($xmin = $productMetaData.getLonAxisMinValueAsString())
+#end
+#if($productMetaData.hasGeoYAxis())
+#if ($product.hasGeoYAxisWithLatEquivalence())
+#set($ymin = $productMetaData.getGeoYAxisMinValueAsLatString(${product}))
+#else				
+#set($yLabel = "y")
+#set($ymin = $productMetaData.getGeoYAxisMinValueAsString())
+#end
+#elseif($productMetaData.hasGeoBBox() && !$productMetaData.hasLatAxis())
+#set($ymin = $productMetaData.getGeoBBoxLatMinAsString())
+#end
+#if($productMetaData.hasGeoXAxis())
+#if ($product.hasGeoXAxisWithLonEquivalence())
+#set($xmin = $productMetaData.getGeoXAxisMinValueAsLonString(${product}))
+#else				
+#set($xLabel = "x")
+#set($xmin = $productMetaData.getGeoXAxisMinValueAsString())
+#end
+#elseif($productMetaData.hasGeoBBox() && !$productMetaData.hasLonAxis())
+#set($xmin = $productMetaData.getGeoBBoxLonMinAsString())
+#end		
+#if($productMetaData.hasZAxis())
+#set($zmin = $productMetaData.getZAxisMinValueAsString())
+#elseif($productMetaData.hasDepthBBox())
+#set($zmin = $productMetaData.getDepthMinAsString())
+#end
+##if lat axis and geoY axis with lat equivalence, don't get lat max. value, it's to slow 
+## because in lat axis can have also time dimension.
+#if(($productMetaData.hasLatAxis()) && (!$product.hasGeoYAxisWithLatEquivalence()))
+#set($ymax = $productMetaData.getLatAxisMaxValueAsString())
+#end
+##if lon axis and geoX axis with lon equivalence, don't get lon max. value, it's to slow 
+## because in lon axis can have also time dimension.
+#if(($productMetaData.hasLonAxis()) && (!$product.hasGeoXAxisWithLonEquivalence()))
+#set($xmax = $productMetaData.getLonAxisMaxValueAsString())
+#end
+#if($productMetaData.hasGeoYAxis())
+#if ($product.hasGeoYAxisWithLatEquivalence())
+#set($ymax = $productMetaData.getGeoYAxisMaxValueAsLatString(${product}))
+#else				
+#set($yLabel = "y")
+#set($ymax = $productMetaData.getGeoYAxisMaxValueAsString())
+#end
+#elseif($productMetaData.hasGeoBBox()&& !$productMetaData.hasLatAxis())
+#set($ymax = $productMetaData.getGeoBBoxLatMaxAsString())
+#end
+#if($productMetaData.hasGeoXAxis() && !$productMetaData.hasLatAxis())
+#if ($product.hasGeoXAxisWithLonEquivalence())
+#set($xmax = $productMetaData.getGeoXAxisMaxValueAsLonString(${product}))
+#else				
+#set($xLabel = "x")
+#set($xmax = $productMetaData.getGeoXAxisMaxValueAsString())
+#end
+#elseif($productMetaData.hasGeoBBox() && !$productMetaData.hasLonAxis())
+#set($xmax = $productMetaData.getGeoBBoxLonMaxAsString())
+#end
+#if($productMetaData.hasZAxis())
+#set($zmax = $productMetaData.getZAxisMaxValueAsString())
+#elseif($productMetaData.hasDepthBBox())
+#set($zmax = $productMetaData.getDepthMaxAsString())
+#end
+#set($zDims = "")	
+	<boundingBox ${xLabel}Min="${xmin}" ${xLabel}Max="${xmax}" ${yLabel}Min="${ymin}" ${yLabel}Max="${ymax}" #if($productMetaData.hasZAxis() || $productMetaData.hasDepthBBox()) ${zLabel} Min="${zmin}" ${zLabel}Max="${zmax}") #end />
+#end
+## -------------------------------------------- printParameter --------------------------------
+#macro(product_describecoverage_uk_printParameter) 	
+		<variable name="$parameterMetadata.getName()" description="$parameterMetadata.getLabel()" #if(!$parameterMetadata.getStandardName().equals("")) standardName="$parameterMetadata.getStandardName()" #end unit="$parameterMetadata.getUnit()"
+##	#if(!$parameterMetadata.getUnitLong().equals(""))
+##	unitDescription="${parameterMetadata.getUnitLong()}"${space}						
+##	#end				
+#if (($catalogType == "FTP") || !$parameterMetadata.hasDimensions())
+		/> 
+#end
+#if($catalogType != "FTP")				
+#if($parameterMetadata.hasDimensions())
+		      <dimensions>
+#foreach($dimension in $parameterMetadata.getDimensions())
+		           <dimension>$dimension.getName()</dimension>
+#end
+			</dimensions>            
+		</variable>
+#end
+#end
+#end
+## -------------------------------------------- main --------------------------------
 ## Declare some usefull variables
 ## ------------------------------
-#set($use_java = "false")
-#set($formName = "download")
 #set($productMetaData = $product.getProductMetaData())
-#set($images_dir = "${product.getHpptServerDocumentRoot()}/atoll-motuservlet/images")
-
-
-#set ($listdepth = $product.getZAxisDataAsDouble())
-#set ($listdepthSize = $listdepth.size())
-#if($product.hasCriteriaLatLon())				
-	#set($geoCriteria = $product.getCriteriaLatLon())
-	#set($XMinSel = $geoCriteria.getLowerLeftLon())
-	#set($XMaxSel = $geoCriteria.getUpperRightLon())
-	#set($YMinSel = $geoCriteria.getLowerLeftLat())
-	#set($YMaxSel = $geoCriteria.getUpperRightLat())	
-#end
-#set ($listParameterMetadata = $productMetaData.getParameterMetaDatas() )
-#set ($listdate = $product.getTimeAxisDataAsDate())
-#set ($listdateSize = $listdate.size())
-#set ($lastdatetimeIndex = ($listdateSize - 1)) 
-#set ($lastdatetime = $listdate.get($lastdatetimeIndex))
+#set($catalogType = $service.getCatalogType().toString().toUpperCase())
+#set($space = " ")
 #set ($dateFormat = "yyyy-MM-dd'T'HH:mm:ss'.'SSSZ")
 #set ($numberFormat = "0.00")
-
+##
 ## describe coverage XML template
 ## ------------------------------
 <?xml version="1.0" encoding="UTF-8"?>
-<Dataset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="decribeDataset.xsd"
-         name="$productMetaData.getTitle()">         
-#if($product.hasCriteriaLatLon())         
-  <BoundingBox minx="${XMinSel}" maxx="${XMaxSel}" miny="${YMinSel}" maxy="${YMaxSel}"/>
+<dataset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="describeDataset.xsd"
+         name="$productMetaData.getTitle()" id="$productMetaData.getProductId()">    		 
+##--------------------  
+## Geo coverage
+##--------------------  
+#if (($productMetaData.isCoordinateAxesEmpty()) || ($productMetaData.hasGeographicalAxis()) || ($productMetaData.hasGeoBBox()))
+#product_describecoverage_uk_printGeoCoverage()
 #end
-#if( $listdepth && ! $listdepth.isEmpty() ) 
-    <Dimension name="depth" units="m" default="$listdepth.get(0)">#foreach( $depth in $listdepth )${numberTool.format($numberFormat,$depth,$enLocale)}#if($velocityCount != $listdepthSize),#end#end</Dimension>
+##--------------------  
+## Time coverage
+##--------------------  
+#product_describecoverage_uk_printTemporalCoverage()
+##--------------------  
+## Parameters/Variables
+##-------------------- 
+#set ($listParameterMetadata = $productMetaData.getParameterMetaDatasFiltered() )
+	<variables>
+#foreach( $parameterMetadata in $listParameterMetadata )	
+	#product_describecoverage_uk_printParameter()
 #end
-    <Dimension name="time" units="ISO8601" default="${dateTool.format($dateFormat,$lastdatetime)}">#foreach( $datetime in $listdate )$dateTool.format($dateFormat,${datetime})#if($velocityCount != $listdateSize),#end#end</Dimension>
-    <Variables>
-#foreach( $parameterMetadata in $listParameterMetadata )
-        <Variable name="${parameterMetadata.getName()}" standard_name="#if($parameterMetadata.getStandardName().equals(""))-#else$parameterMetadata.getStandardName()#end" long_name="$parameterMetadata.getLabel()" unit="$parameterMetadata.getUnit()">
-            <Dimensions>
-#if($parameterMetadata.hasDimensions())
-#foreach($dimension in $parameterMetadata.getDimensions())
-                <Dimension>$dimension.getName()</Dimension>
-#end
-#end                
-            </Dimensions>            
-        </Variable>
-#end
-    </Variables>
-</Dataset>
+	</variables>
+</dataset>
+	

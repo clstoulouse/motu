@@ -1291,6 +1291,49 @@ public class ServiceData {
             LOG.debug("writeProductInformationHTML() - exiting");
         }
     }
+    
+    /**
+     * Write product information xml.
+     *
+     * @param product the product
+     * @param out the out
+     * @throws MotuException the motu exception
+     */
+    public void writeProductInformationXML(Product product, Writer out) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("writeProductInformationXML(Product, Writer) - start");
+        }
+
+        if (catalog == null) {
+            throw new MotuException("Error in writeProductInformationHTML - catalog is null");
+        }
+        if (velocityEngine == null) {
+            throw new MotuException("Error in writeProductInformationHTML - velocityEngine is null");
+        }
+
+        if (product == null) {
+            throw new MotuException("Error in writeProductInformationHTML - product has not been set (is null)");
+        }
+
+        try {
+            Template template = getDescribeCoverageXMLVeloTemplate();
+            VelocityContext context = ServiceData.getPrepopulatedVelocityContext();
+            context.put("service", this);
+            context.put("product", product);
+
+            template.merge(context, out);
+
+            currentProduct = product;
+        } catch (Exception e) {
+            LOG.error("writeProductInformationXML(Product, Writer)", e);
+
+            throw new MotuException("Error in writeCatalogInformationHTML while construct velocity template", e);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("writeProductInformationXML(Product, Writer) - end");
+        }
+    }
 
     /**
      * Refreshes HTML page. Can be used to rewrite page when language is changed, for instance.

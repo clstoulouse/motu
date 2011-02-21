@@ -100,29 +100,41 @@ public class TestIntfce {
      * @param args
      */
     public static void main(String[] args) {
+//        String s = "Native Exception  Ô Type: class java.lang.NumberFormatException\n\tNative Exception Message: For input string: &quot;--40&quot;\n\nLongitude:--40";
+//        System.out.println(s);
+//        
+//        String s2 = s.replaceAll("\\p{Cntrl}|[^\\p{Print}]", "");
+//        //s2 = s.replaceAll("[^\\p{Print}]", "");
+//        //s/[^[:print:]]//g;  # Remove non printable char. from the line
+//        System.out.println(s2);
+//
+//        if (true) {
+//            return;            
+//        }
 
-        double min = 354.5;
-        double max = 364.5;
-        double max180 = LatLonPointImpl.lonNormal(max, min + 180);
-        int mult = (int) (min / 180);
-
-        double longitudeCenter = min + 180.0;
-        double data = LatLonPointImpl.lonNormal(-4.0, longitudeCenter);
-        data = LatLonPointImpl.lonNormal(min, longitudeCenter);
-        data = LatLonPointImpl.lonNormal(359.5, longitudeCenter);
-        data = LatLonPointImpl.lonNormal(max, longitudeCenter);
-
-        max = 540.0;
-        max180 = LatLonPointImpl.lonNormal(max);
-
-        data = LatLonPointImpl.lonNormal(356.0, longitudeCenter);
-        max180 = LatLonPointImpl.lonNormal(545.0);
-        data = LatLonPointImpl.lonNormal(545.0, longitudeCenter);
-        max180 = LatLonPointImpl.lonNormal(180.0);
-        max180 = LatLonPointImpl.lonNormal(-5.);
-        max180 = LatLonPointImpl.lonNormal(10.);
-
-        data = LatLonPointImpl.lonNormal(180, 180);
+//        
+//        double min = 354.5;
+//        double max = 364.5;
+//        double max180 = LatLonPointImpl.lonNormal(max, min + 180);
+//        int mult = (int) (min / 180);
+//
+//        double longitudeCenter = min + 180.0;
+//        double data = LatLonPointImpl.lonNormal(-4.0, longitudeCenter);
+//        data = LatLonPointImpl.lonNormal(min, longitudeCenter);
+//        data = LatLonPointImpl.lonNormal(359.5, longitudeCenter);
+//        data = LatLonPointImpl.lonNormal(max, longitudeCenter);
+//
+//        max = 540.0;
+//        max180 = LatLonPointImpl.lonNormal(max);
+//
+//        data = LatLonPointImpl.lonNormal(356.0, longitudeCenter);
+//        max180 = LatLonPointImpl.lonNormal(545.0);
+//        data = LatLonPointImpl.lonNormal(545.0, longitudeCenter);
+//        max180 = LatLonPointImpl.lonNormal(180.0);
+//        max180 = LatLonPointImpl.lonNormal(-5.);
+//        max180 = LatLonPointImpl.lonNormal(10.);
+//
+//        data = LatLonPointImpl.lonNormal(180, 180);
 
         // System.out.println(Organizer.getTDSCatalogBaseUrl("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/GOS-MED-L4-SST-NRTv1_aggr_time"));
         // System.out.println(Organizer.getTDSDatasetUrlPath("http://misgw-qt.cls.fr:40080/thredds/dodsC/sst_nrt_v1_aggr/GOS-MED-L4-SST-NRTv1_aggr_time"));
@@ -370,7 +382,7 @@ public class TestIntfce {
         // testLoadMotuConfig();
         // testgetMotuConfigSchema();
         //
-        // productInformation();
+        productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
         // productDownloadInfo();
@@ -406,7 +418,7 @@ public class TestIntfce {
         // productExtractDataFromInventory();
         // productListMercator();
         // productList();
-        testGetProductMetadataInfo();
+        // testGetProductMetadataInfo();
         // testExtractdataLon0360();
         // testExtractdataLon180();
 
@@ -660,10 +672,12 @@ public class TestIntfce {
             // String productId = "global_sst";
             // String productId = "dt_ref_global_merged_madt_h";
 
-            FileWriter writer = new FileWriter("./target/resultProductInfo.html");
+            //Organizer.Format outputFormat = Organizer.Format.HTML;            
+            Organizer.Format outputFormat = Organizer.Format.XML;            
+            FileWriter writer = new FileWriter("./target/resultProductInfo." + outputFormat.toString());
             Organizer organizer = new Organizer();
             organizer.setCurrentLanguage("uk");
-            organizer.getProductInformation(serviceName, productId, writer, Organizer.Format.HTML);
+            organizer.getProductInformation(serviceName, productId, writer, outputFormat);
             // Product product = organizer.getProductInformation(serviceName, productId);
             writer.flush();
             writer.close();

@@ -5052,6 +5052,9 @@ public class Organizer {
             break;
 
         case XML:
+            currentService.writeProductInformationXML(product, out);
+            break;
+            
         case ASCII:
             throw new MotuNotImplementedException(String.format("getProductInformation - Format %s not implemented", format.toString()));
             // break;
