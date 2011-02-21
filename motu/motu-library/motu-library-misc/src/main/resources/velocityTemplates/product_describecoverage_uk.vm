@@ -1,0 +1,52 @@
+## Declare some usefull variables
+## ------------------------------
+#set($use_java = "false")
+#set($formName = "download")
+#set($productMetaData = $product.getProductMetaData())
+#set($images_dir = "${product.getHpptServerDocumentRoot()}/atoll-motuservlet/images")
+
+
+#set ($listdepth = $product.getZAxisDataAsDouble())
+#set ($listdepthSize = $listdepth.size())
+#if($product.hasCriteriaLatLon())				
+	#set($geoCriteria = $product.getCriteriaLatLon())
+	#set($XMinSel = $geoCriteria.getLowerLeftLon())
+	#set($XMaxSel = $geoCriteria.getUpperRightLon())
+	#set($YMinSel = $geoCriteria.getLowerLeftLat())
+	#set($YMaxSel = $geoCriteria.getUpperRightLat())	
+#end
+#set ($listParameterMetadata = $productMetaData.getParameterMetaDatas() )
+#set ($listdate = $product.getTimeAxisDataAsDate())
+#set ($listdateSize = $listdate.size())
+#set ($lastdatetimeIndex = ($listdateSize - 1)) 
+#set ($lastdatetime = $listdate.get($lastdatetimeIndex))
+#set ($dateFormat = "yyyy-MM-dd'T'HH:mm:ss'.'SSSZ")
+#set ($numberFormat = "0.00")
+
+## describe coverage XML template
+## ------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<Dataset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="decribeDataset.xsd"
+         name="$productMetaData.getTitle()">         
+#if($product.hasCriteriaLatLon())         
+  <BoundingBox minx="${XMinSel}" maxx="${XMaxSel}" miny="${YMinSel}" maxy="${YMaxSel}"/>
+#end
+#if( $listdepth && ! $listdepth.isEmpty() ) 
+    <Dimension name="depth" units="m" default="$listdepth.get(0)">#foreach( $depth in $listdepth )${numberTool.format($numberFormat,$depth,$enLocale)}#if($velocityCount != $listdepthSize),#end#end</Dimension>
+#end
+    <Dimension name="time" units="ISO8601" default="${dateTool.format($dateFormat,$lastdatetime)}">#foreach( $datetime in $listdate )$dateTool.format($dateFormat,${datetime})#if($velocityCount != $listdateSize),#end#end</Dimension>
+    <Variables>
+#foreach( $parameterMetadata in $listParameterMetadata )
+        <Variable name="${parameterMetadata.getName()}" standard_name="#if($parameterMetadata.getStandardName().equals(""))-#else$parameterMetadata.getStandardName()#end" long_name="$parameterMetadata.getLabel()" unit="$parameterMetadata.getUnit()">
+            <Dimensions>
+#if($parameterMetadata.hasDimensions())
+#foreach($dimension in $parameterMetadata.getDimensions())
+                <Dimension>$dimension.getName()</Dimension>
+#end
+#end                
+            </Dimensions>            
+        </Variable>
+#end
+    </Variables>
+</Dataset>
