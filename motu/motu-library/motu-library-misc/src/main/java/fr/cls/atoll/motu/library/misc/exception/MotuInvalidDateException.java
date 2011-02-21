@@ -56,7 +56,7 @@ public class MotuInvalidDateException extends MotuExceptionBase {
         super("Invalid date.", cause);
         this.dateString = date;
         this.date = null;
-        notifyLogException();
+        //notifyLogException();
 
     }
 
@@ -67,7 +67,7 @@ public class MotuInvalidDateException extends MotuExceptionBase {
         super("Invalid date.");
         this.dateString = date;
         this.date = null;
-        notifyLogException();
+        //notifyLogException();
     }
 
     /**
@@ -78,7 +78,7 @@ public class MotuInvalidDateException extends MotuExceptionBase {
         super("Invalid date.", cause);
         this.dateString = "?";
         this.date = date;
-        notifyLogException();
+        //notifyLogException();
     }
 
     /**
@@ -88,7 +88,7 @@ public class MotuInvalidDateException extends MotuExceptionBase {
         super("Invalid date.");
         this.dateString = "?";
         this.date = date;
-        notifyLogException();
+        //notifyLogException();
     }
 
     /**
