@@ -103,7 +103,8 @@ public class QueueLogError {
      * @param message the message
      */
     public void setMessage(String message) {
-        this.message = message;
+        // To avoid XML processing error, remove control char. and non-printable char. from message.
+        this.message = message.replaceAll("\\p{Cntrl}|[^\\p{Print}]", "");;
     }
 
     /**
