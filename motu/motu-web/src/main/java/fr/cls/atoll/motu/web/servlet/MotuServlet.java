@@ -428,6 +428,12 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     }
 
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // TODO Auto-generated method stub
+        super.service(req, resp);
+    }
+
     /**
      * Test if a string is null or empty.
      * 
@@ -1523,6 +1529,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             return false;
         }
 
+        Organizer.Format responseFormat = getResponseFormat(request);
+        setResponseContentType(responseFormat, response);
+
+        
         String serviceName = request.getParameter(PARAM_SERVICE);
         if (MotuServlet.isNullOrEmpty(serviceName)) {
             if (LOG.isDebugEnabled()) {
@@ -1550,7 +1560,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         }
 
         setLanguageParameter(request, session, response);
-        listProductMetaData(serviceName, productId, session, response);
+        listProductMetaData(serviceName, productId, responseFormat, session, response);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionListProductMetaData() - exiting");
@@ -3034,6 +3044,47 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
         return format;
     }
+    
+    /**
+     * Gets the response format.
+     *
+     * @param request the request
+     * @return the response format
+     * @throws MotuException the motu exception
+     */
+    private Organizer.Format getResponseFormat(HttpServletRequest request) throws MotuException {
+        String dataFormat = request.getParameter(MotuRequestParametersConstant.PARAM_RESPONSE_FORMAT);
+        Organizer.Format format = Organizer.Format.HTML;
+
+        if (MotuServlet.isNullOrEmpty(dataFormat)) {
+            return format;
+        }
+
+        try {
+            format = Organizer.Format.valueOf(dataFormat.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new MotuException(String.format("Parameter '%s': invalid value '%s' - Valid values are : %s",
+                                                  MotuRequestParametersConstant.PARAM_RESPONSE_FORMAT,
+                                                  dataFormat,
+                                                  Organizer.Format.valuesToString()), e);
+        }
+
+        return format;
+    }
+    private void setResponseContentType(Organizer.Format format, HttpServletResponse response) throws MotuException {
+    
+        switch (format) {
+        case HTML:
+            response.setContentType(CONTENT_TYPE_HTML);            
+            break;
+        case XML:
+            response.setContentType(CONTENT_TYPE_XML);            
+            break;
+        default:
+            response.setContentType(CONTENT_TYPE_PLAIN);            
+            break;
+        }
+    }
 
     /**
      * Inits the authentication.
@@ -3356,7 +3407,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws IOException the IO exception
      * @throws ServletException the servlet exception
      */
-    private void listProductMetaData(String serviceName, String productId, HttpSession session, HttpServletResponse response)
+    private void listProductMetaData(String serviceName, String productId, Organizer.Format responseFormat, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("listProductMetaData() - entering");
@@ -3365,7 +3416,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         Organizer organizer = getOrganizer(session, response);
 
         try {
-            organizer.getProductInformation(serviceName, productId, response.getWriter(), Organizer.Format.HTML);
+            organizer.getProductInformation(serviceName, productId, response.getWriter(), responseFormat);
         } catch (MotuExceptionBase e) {
             LOG.error("listProductMetaData()", e);
 
