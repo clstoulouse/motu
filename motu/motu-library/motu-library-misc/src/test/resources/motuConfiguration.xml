@@ -124,6 +124,19 @@
 	runGCInterval="10"
 	sftpSessionTimeOut="PT10S"
 	strictHostKeyChecking="no">
+	
+	  <!--===========================================================-->
+    <!--                   TDS Mercator  MyOcean                --> 
+    <!--===========================================================-->
+     <configService defaultLanguage="FR" description="Ocean data"
+             group="motu-opendap-mercator-myocean"
+             httpBaseRef="http://www.mercator-ocean.fr"
+             name="&atoll;motu-opendap-mercator-myocean"
+             veloTemplatePrefix="mercator">
+             <catalog name="catalog.xml" type="tds" urlSite="http://atoll-mercator.vlandata.cls.fr:44080/thredds" />
+     </configService>
+
+	
 	  <!--===========================================================-->
     <!--                   motu-yourdu Service                  -->
     <!--===========================================================-->

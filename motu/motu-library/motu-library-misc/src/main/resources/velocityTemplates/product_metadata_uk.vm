@@ -74,8 +74,8 @@
 		</ul>
 	#elseif($productMetaData.hasTimeCoverage())
 		<ul class="puce2">
-			<li><b>Time start:</b>&nbsp&nbsp;$productMetaData.getStartTimeCoverageAsString()</li>
-			<li><b>Time end:</b>&nbsp&nbsp;$productMetaData.getEndTimeCoverageAsString()</li>
+			<li><b>Time start:</b>&nbsp&nbsp;$productMetaData.getStartTimeCoverageAsUTCString()</li>
+			<li><b>Time end:</b>&nbsp&nbsp;$productMetaData.getEndTimeCoverageAsUTCString()</li>
 		</ul>
 	#else
 	<p>No temporal coverage.</p>

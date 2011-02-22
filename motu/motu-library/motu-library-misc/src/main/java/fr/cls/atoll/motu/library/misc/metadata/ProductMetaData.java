@@ -1674,7 +1674,50 @@ public class ProductMetaData {
         MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return NetCdfReader.getDateAsGMTString(minMax.max, axis.getUnitsString());
     }
-
+    
+    /**
+     * Gets the time axis min value as utc string.
+     *
+     * @return the time axis min value as utc string
+     * @throws MotuException the motu exception
+     */
+    public String getTimeAxisMinValueAsUTCString() throws MotuException {
+        return getTimeAxisMinValueAsUTCString(DateUtils.DATETIME_PATTERN3);
+    }
+    
+    /**
+     * Gets the time axis min value as utc string.
+     *
+     * @param pattern the pattern
+     * @return the time axis min value as utc string
+     * @throws MotuException the motu exception
+     */
+    public String getTimeAxisMinValueAsUTCString(String pattern) throws MotuException {
+        Date value = getTimeAxisMinValue();
+        return DateUtils.getDateTimeAsUTCString(value, pattern);
+    }
+    
+    /**
+     * Gets the time axis max value as utc string.
+     *
+     * @return the time axis max value as utc string
+     * @throws MotuException the motu exception
+     */
+    public String getTimeAxisMaxValueAsUTCString() throws MotuException {
+        return getTimeAxisMaxValueAsUTCString(DateUtils.DATETIME_PATTERN3);
+    }
+    
+    /**
+     * Gets the time axis max value as utc string.
+     *
+     * @param pattern the pattern
+     * @return the time axis max value as utc string
+     * @throws MotuException the motu exception
+     */
+    public String getTimeAxisMaxValueAsUTCString(String pattern) throws MotuException {
+        Date value = getTimeAxisMaxValue();
+        return DateUtils.getDateTimeAsUTCString(value, pattern);
+    }
     /**
      * Checks for Z axis.
      * 
@@ -2759,22 +2802,47 @@ public class ProductMetaData {
      *
      * @return the start time coverage as string
      */
-    public String getStartTimeCoverageAsString() {
+    public String getStartTimeCoverageAsUTCString() {
+        return getStartTimeCoverageAsUTCString(DateUtils.DATETIME_PATTERN3);
+    }
+    
+    /**
+     * Gets the end time coverage as string.
+     *
+     * @return the end time coverage as string
+     */
+    public String getEndTimeCoverageAsUTCString() {
+        return getEndTimeCoverageAsUTCString(DateUtils.DATETIME_PATTERN3);
+    }
+    
+    /**
+     * Gets the start time coverage as utc string.
+     *
+     * @param pattern the pattern
+     * @return the start time coverage as utc string
+     */
+    public String getStartTimeCoverageAsUTCString(String pattern) {
         String value = "";
         if (timeCoverage == null) {
             return value;
         }
-        return DateUtils.getDateTimeAsUTCString(timeCoverage.getStart());
+        return DateUtils.getDateTimeAsUTCString(timeCoverage.getStart(), pattern);
     }
     
-    public String getEndTimeCoverageAsString() {
+    /**
+     * Gets the end time coverage as string.
+     *
+     * @param pattern the pattern
+     * @return the end time coverage as string
+     */
+    public String getEndTimeCoverageAsUTCString(String pattern) {
         String value = "";
         if (timeCoverage == null) {
             return value;
         }
-        return DateUtils.getDateTimeAsUTCString(timeCoverage.getEnd());
+        return DateUtils.getDateTimeAsUTCString(timeCoverage.getEnd(), pattern);
     }
-    
+
 
     /**
      * Gets the time coverage.

@@ -74,8 +74,8 @@
 		</ul>
 	#elseif($productMetaData.hasTimeCoverage())
 		<ul class="puce2">
-			<li><b>Début&nbsp:</b>&nbsp&nbsp;$productMetaData.getStartTimeCoverageAsString()</li>
-			<li><b>Fin&nbsp:</b>&nbsp&nbsp;$productMetaData.getEndTimeCoverageAsString()</li>
+			<li><b>Début&nbsp:</b>&nbsp&nbsp;$productMetaData.getStartTimeCoverageAsUTCString()</li>
+			<li><b>Fin&nbsp:</b>&nbsp&nbsp;$productMetaData.getEndTimeCoverageAsUTCString()</li>
 		</ul>	
 	#else
 	<p>Aucune couverture géographique.</p>

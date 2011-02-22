@@ -1,5 +1,6 @@
 package fr.cls.atoll.motu.library.misc.utils;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -153,6 +154,19 @@ public class DateUtils {
         }
         return new DateTime(dateTime, DateTimeZone.UTC);
     }
+    
+    /**
+     * Date time to utc.
+     *
+     * @param dateTime the date time
+     * @return the date time
+     */
+    public static DateTime dateTimeToUTC(Date date) {
+        if (date == null) {
+            return null;
+        }
+        return new DateTime(date.getTime(), DateTimeZone.UTC);
+    }
 
     /**
      * Gets the date time as utc string.
@@ -162,6 +176,16 @@ public class DateUtils {
      */
     public static String getDateTimeAsUTCString(DateTime dateTime) {
         return DateUtils.getDateTimeAsUTCString(dateTime, DateUtils.DATETIME_PATTERN3);
+    }
+    
+    /**
+     * Gets the date time as utc string.
+     *
+     * @param date the date
+     * @return the date time as utc string
+     */
+    public static String getDateTimeAsUTCString(Date date) {
+        return DateUtils.getDateTimeAsUTCString(date, DateUtils.DATETIME_PATTERN3);
     }
 
     /**
@@ -176,7 +200,24 @@ public class DateUtils {
         if (dateTime == null) {
             return value;
         }
-        dateTime = DateUtils.dateTimeToUTC(dateTime);
-        return DateUtils.DATETIME_FORMATTERS.get(pattern).print(dateTime);
+        DateTime dateTimeTmp = DateUtils.dateTimeToUTC(dateTime);
+        return DateUtils.DATETIME_FORMATTERS.get(pattern).print(dateTimeTmp);
     }
+    
+    /**
+     * Gets the date time as utc string.
+     *
+     * @param date the date
+     * @param pattern the pattern
+     * @return the date time as utc string
+     */
+    public static String getDateTimeAsUTCString(Date date, String pattern) {
+        String value = "";
+        if (date == null) {
+            return value;
+        }
+        DateTime dateTimeTmp = DateUtils.dateTimeToUTC(date);
+        return DateUtils.DATETIME_FORMATTERS.get(pattern).print(dateTimeTmp);
+    }
+    
 }

@@ -7,81 +7,81 @@
 ## -------------------------------------------- printTemporalCoverage --------------------------------
 #macro(product_describecoverage_uk_printTemporalCoverage)
 	#if($productMetaData.hasTimeAxis())
-	<dimension name="time" start="$productMetaData.getTimeAxisMinValueAsString()" end="$productMetaData.getTimeAxisMaxValueAsString()" /> 
+<dimension name="time" start="$productMetaData.getTimeAxisMaxValueAsUTCString(${dateFormat})" end="$productMetaData.getTimeAxisMaxValueAsUTCString(${dateFormat})" units="ISO8601" /> 
 	#elseif($productMetaData.hasTimeCoverage())
-	<dimension name="time" start="$productMetaData.getStartTimeCoverageAsString()" end="$productMetaData.getEndTimeCoverageAsString()" /> 
+<dimension name="time" start="$productMetaData.getStartTimeCoverageAsUTCString(${dateFormat})" end="$productMetaData.getEndTimeCoverageAsUTCString(${dateFormat})" units="ISO8601" /> 
 	#end	
 #end
 ## -------------------------------------------- printGeoCoverage --------------------------------
 #macro(product_describecoverage_uk_printGeoCoverage) 	
 #set($xLabel = "lon")
 #set($yLabel = "lat")
-#set($zLabel = "z")
 #set($xmin = "")
 #set($xmax = "")
 #set($ymin = "")
 #set($ymax = "")
-#set($zmin = "")
-#set($zmax = "")
 ##
 ##if lat axis and geoY axis with lat equivalence, don't get lat min. value, it's to slow 
 ## because in lat axis can have also time dimension.
 #if(($productMetaData.hasLatAxis()) && (!$product.hasGeoYAxisWithLatEquivalence()))
-#set($ymin = $productMetaData.getLatAxisMinValueAsString())
+#set($ymin = $productMetaData.getLatNormalAxisMinValue())
+#set($yunit = $productMetaData.getLatAxis().getUnitsString())
 #end
 ##if lon axis and geoX axis with lon equivalence, don't get lon min. value, it's to slow 
 ## because in lon axis can have also time dimension.
 #if(($productMetaData.hasLonAxis()) && (!$product.hasGeoXAxisWithLonEquivalence()))
-#set($xmin = $productMetaData.getLonAxisMinValueAsString())
+#set($xmin = $productMetaData.getLonNormalAxisMinValue())
+#set($xunit = $productMetaData.getLonAxis().getUnitsString())
 #end
 #if($productMetaData.hasGeoYAxis())
 #if ($product.hasGeoYAxisWithLatEquivalence())
-#set($ymin = $productMetaData.getGeoYAxisMinValueAsLatString(${product}))
+#set($ymin = $productMetaData.getGeoYAxisMinValueAsLatNormal(${product}))
+#set($yunit = $productMetaData.getGeoYAxisAsLat().getUnitsString())
 #else				
 #set($yLabel = "y")
-#set($ymin = $productMetaData.getGeoYAxisMinValueAsString())
+#set($ymin = $productMetaData.getGeoYAxisMinValue())
+#set($yunit = $productMetaData.getGeoYAxis().getUnitsString())
 #end
 #elseif($productMetaData.hasGeoBBox() && !$productMetaData.hasLatAxis())
 #set($ymin = $productMetaData.getGeoBBoxLatMinAsString())
+#set($yunit = $productMetaData.getNorthSouthUnits())
 #end
 #if($productMetaData.hasGeoXAxis())
 #if ($product.hasGeoXAxisWithLonEquivalence())
-#set($xmin = $productMetaData.getGeoXAxisMinValueAsLonString(${product}))
+#set($xmin = $productMetaData.getGeoXAxisMinValueAsLonNormal(${product}))
+#set($xunit = $productMetaData.getGeoXAxisAsLon().getUnitsString())
 #else				
 #set($xLabel = "x")
-#set($xmin = $productMetaData.getGeoXAxisMinValueAsString())
+#set($xmin = $productMetaData.getGeoXAxisMinValue())
+#set($xunit = $productMetaData.getGeoXAxis().getUnitsString())
 #end
 #elseif($productMetaData.hasGeoBBox() && !$productMetaData.hasLonAxis())
 #set($xmin = $productMetaData.getGeoBBoxLonMinAsString())
+#set($xunit = $productMetaData.getEastWestUnits())
 #end		
-#if($productMetaData.hasZAxis())
-#set($zmin = $productMetaData.getZAxisMinValueAsString())
-#elseif($productMetaData.hasDepthBBox())
-#set($zmin = $productMetaData.getDepthMinAsString())
-#end
 ##if lat axis and geoY axis with lat equivalence, don't get lat max. value, it's to slow 
 ## because in lat axis can have also time dimension.
 #if(($productMetaData.hasLatAxis()) && (!$product.hasGeoYAxisWithLatEquivalence()))
-#set($ymax = $productMetaData.getLatAxisMaxValueAsString())
+#set($ymax = $productMetaData.getLatNormalAxisMinValue())
 #end
 ##if lon axis and geoX axis with lon equivalence, don't get lon max. value, it's to slow 
 ## because in lon axis can have also time dimension.
 #if(($productMetaData.hasLonAxis()) && (!$product.hasGeoXAxisWithLonEquivalence()))
-#set($xmax = $productMetaData.getLonAxisMaxValueAsString())
+#set($xmax = $productMetaData.getLonNormalAxisMaxValue())
 #end
 #if($productMetaData.hasGeoYAxis())
 #if ($product.hasGeoYAxisWithLatEquivalence())
-#set($ymax = $productMetaData.getGeoYAxisMaxValueAsLatString(${product}))
+#set($ymax = $productMetaData.getGeoYAxisMaxValueAsLatNormal(${product}))
 #else				
 #set($yLabel = "y")
-#set($ymax = $productMetaData.getGeoYAxisMaxValueAsString())
+#set($ymax = $productMetaData.getGeoYAxisMaxValue())
 #end
 #elseif($productMetaData.hasGeoBBox()&& !$productMetaData.hasLatAxis())
 #set($ymax = $productMetaData.getGeoBBoxLatMaxAsString())
 #end
 #if($productMetaData.hasGeoXAxis() && !$productMetaData.hasLatAxis())
 #if ($product.hasGeoXAxisWithLonEquivalence())
-#set($xmax = $productMetaData.getGeoXAxisMaxValueAsLonString(${product}))
+#set($xmax = $productMetaData.getGeoXAxisMaxValueAsLonNormal(${product}))
 #else				
 #set($xLabel = "x")
 #set($xmax = $productMetaData.getGeoXAxisMaxValueAsString())
@@ -89,23 +89,50 @@
 #elseif($productMetaData.hasGeoBBox() && !$productMetaData.hasLonAxis())
 #set($xmax = $productMetaData.getGeoBBoxLonMaxAsString())
 #end
+##	<boundingBox ${xLabel}Min="${xmin}" ${xLabel}Max="${xmax}" ${yLabel}Min="${ymin}" ${yLabel}Max="${ymax}" />
+	<boundingBox>
+		<${xLabel} min="${xmin}" max="${xmax}" units="${xunit}" />
+		<${yLabel} min="${ymin}" max="${ymax}" units="${yunit}" />
+	</boundingBox>
+#end
+## -------------------------------------------- printZCoverage --------------------------------
+#macro(product_describecoverage_uk_printZCoverage) 	
+#set($zLabel = "z")
+#set($zmin = "")
+#set($zmax = "")
 #if($productMetaData.hasZAxis())
-#set($zmax = $productMetaData.getZAxisMaxValueAsString())
+#set($zmin = $productMetaData.getZAxisMinValue())
+#set($zunit = $productMetaData.getZAxis().getUnitsString())
+#elseif($productMetaData.hasDepthBBox())
+#set($zmin = $productMetaData.getDepthMinAsString())
+#set($zunit = $productMetaData.getDepthUnits())
+#end
+#if($productMetaData.hasZAxis())
+#set($zmax = $productMetaData.getZAxisMaxValue())
 #elseif($productMetaData.hasDepthBBox())
 #set($zmax = $productMetaData.getDepthMaxAsString())
 #end
 #set($zDims = "")	
-	<boundingBox ${xLabel}Min="${xmin}" ${xLabel}Max="${xmax}" ${yLabel}Min="${ymin}" ${yLabel}Max="${ymax}" #if($productMetaData.hasZAxis() || $productMetaData.hasDepthBBox()) ${zLabel} Min="${zmin}" ${zLabel}Max="${zmax}") #end />
+#if($productMetaData.hasZAxis() || $productMetaData.hasDepthBBox()) 
+<dimension name="${zLabel}" start="${zmin}" end="${zmax}" units="${zunit}"/> 
+#end
 #end
 ## -------------------------------------------- printParameter --------------------------------
 #macro(product_describecoverage_uk_printParameter) 	
-		<variable name="$parameterMetadata.getName()" description="$parameterMetadata.getLabel()" #if(!$parameterMetadata.getStandardName().equals("")) standardName="$parameterMetadata.getStandardName()" #end unit="$parameterMetadata.getUnit()"
+#if (($catalogType == "FTP") || !$parameterMetadata.hasDimensions())
+#set($endTag = "/>")
+#else
+#set($endTag = ">")
+#end
+		<variable name="$parameterMetadata.getName()" description="$parameterMetadata.getLabel()" #if(!$parameterMetadata.getStandardName().equals("")) standardName="$parameterMetadata.getStandardName()" #end units="$parameterMetadata.getUnit()" ${endTag}
 ##	#if(!$parameterMetadata.getUnitLong().equals(""))
 ##	unitDescription="${parameterMetadata.getUnitLong()}"${space}						
 ##	#end				
-#if (($catalogType == "FTP") || !$parameterMetadata.hasDimensions())
-		/> 
-#end
+## #if (($catalogType == "FTP") || !$parameterMetadata.hasDimensions())
+##		/>
+## #else
+##       >
+## #end
 #if($catalogType != "FTP")				
 #if($parameterMetadata.hasDimensions())
 		      <dimensions>
@@ -123,7 +150,7 @@
 #set($productMetaData = $product.getProductMetaData())
 #set($catalogType = $service.getCatalogType().toString().toUpperCase())
 #set($space = " ")
-#set ($dateFormat = "yyyy-MM-dd'T'HH:mm:ss'.'SSSZ")
+#set ($dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
 #set ($numberFormat = "0.00")
 ##
 ## describe coverage XML template
@@ -142,6 +169,10 @@
 ## Time coverage
 ##--------------------  
 #product_describecoverage_uk_printTemporalCoverage()
+##--------------------  
+## Z coverage
+##--------------------  
+#product_describecoverage_uk_printZCoverage() 	
 ##--------------------  
 ## Parameters/Variables
 ##-------------------- 

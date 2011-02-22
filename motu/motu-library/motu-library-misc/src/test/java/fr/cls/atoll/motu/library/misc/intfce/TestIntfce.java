@@ -658,20 +658,22 @@ public class TestIntfce {
             // String productId = "duacs_regional-gomex_nrt_g2_slaext";
             // String serviceName = "dev";
             // String productId = "res_oer_g2";
+            String serviceName = "http://purl.org/cls/atoll/ontology/individual/atoll#motu-opendap-mercator-myocean";
             //String serviceName = "http://purl.org/myocean/ontology/service/database#yourduname";
-            String serviceName = "http://purl.org/myocean/ontology/service/database#SLTAC";
+            //String serviceName = "http://purl.org/myocean/ontology/service/database#SLTAC";
             // String serviceName = "MetNo";
             // String serviceName = "Topaz";
 
             // String serviceName = "cls";
             // String serviceName = "AvisoDT";
+            String productId = "dataset-psy3v3-pgs-glo-myocean-bestestimate";
             //String productId = "dataset-duacs-global-nrt-madt-merged-h";
-            String productId = "http://purl.org/myocean/ontology/product/database#dataset-duacs-ran-global-en-sla-l3";
+            //String productId = "http://purl.org/myocean/ontology/product/database#dataset-duacs-ran-global-en-sla-l3";
             // String productId = "myocean/nat/tmipv2n-class1-be";
             // String productId = "mersea-ipv2/arctic/tmipv2a-class1-b-be";
             // String productId = "global_sst";
             // String productId = "dt_ref_global_merged_madt_h";
-
+            
             //Organizer.Format outputFormat = Organizer.Format.HTML;            
             Organizer.Format outputFormat = Organizer.Format.XML;            
             FileWriter writer = new FileWriter("./target/resultProductInfo." + outputFormat.toString());
