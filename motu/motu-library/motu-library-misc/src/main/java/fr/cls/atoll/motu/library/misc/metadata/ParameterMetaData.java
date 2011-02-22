@@ -194,6 +194,19 @@ public class ParameterMetaData {
 
     /** Internatioanl standard name. */
     private String standardName = "";
+    private String standardNameWithoutURI = "";
+
+    /**
+     * Gets the id.
+     *
+     * @return the id
+     */
+    public String getId() {
+        if (Organizer.isNullOrEmpty(this.standardName)) {
+            return getName();
+        }
+        return getStandardName(false);
+    }
 
     /**
      * Getter of the property <tt>standardName</tt>.
@@ -203,6 +216,19 @@ public class ParameterMetaData {
      * @uml.property name="standardName"
      */
     public String getStandardName() {
+        return getStandardName(true);
+    }
+
+    /**
+     * Gets the standard name.
+     * 
+     * @param withoutURI the without uri
+     * @return the standard name
+     */
+    public String getStandardName(boolean withoutURI) {
+        if (withoutURI) {
+            return this.standardNameWithoutURI;
+        }
         return this.standardName;
     }
 
@@ -217,8 +243,9 @@ public class ParameterMetaData {
         if (standardName == null) {
             return;
         }
-        
-        this.standardName = Organizer.getStandardNameFromFromURI(standardName);
+
+        this.standardName = standardName;
+        this.standardNameWithoutURI = Organizer.getStandardNameFromURI(standardName);
     }
 
     /** The long name. */

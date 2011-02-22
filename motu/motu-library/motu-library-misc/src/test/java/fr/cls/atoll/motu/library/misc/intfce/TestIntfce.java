@@ -666,8 +666,9 @@ public class TestIntfce {
 
             // String serviceName = "cls";
             // String serviceName = "AvisoDT";
-            String productId = "dataset-psy3v3-pgs-glo-myocean-bestestimate";
+            //String productId = "dataset-psy3v3-pgs-glo-myocean-bestestimate";
             //String productId = "dataset-duacs-global-nrt-madt-merged-h";
+            String productId = "dataset-psy3v2-pgs-arc-myocean-bestestimate";
             //String productId = "http://purl.org/myocean/ontology/product/database#dataset-duacs-ran-global-en-sla-l3";
             // String productId = "myocean/nat/tmipv2n-class1-be";
             // String productId = "mersea-ipv2/arctic/tmipv2a-class1-b-be";

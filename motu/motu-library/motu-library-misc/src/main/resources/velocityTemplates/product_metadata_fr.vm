@@ -186,7 +186,7 @@
 		#elseif($productMetaData.hasGeoBBox()&& !$productMetaData.hasLatAxis())
 				<td class ="right">$productMetaData.getGeoBBoxLatMaxAsString()</td>
 		#end
-		#if($productMetaData.hasGeoXAxis() && !$productMetaData.hasLatAxis())
+		#if($productMetaData.hasGeoXAxis())
 			#if ($product.hasGeoXAxisWithLonEquivalence())
 				<td class ="right">$productMetaData.getGeoXAxisMaxValueAsLonString(${product})</td>
             #else				

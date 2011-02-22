@@ -7,7 +7,7 @@
 ## -------------------------------------------- printTemporalCoverage --------------------------------
 #macro(product_describecoverage_uk_printTemporalCoverage)
 	#if($productMetaData.hasTimeAxis())
-<dimension name="time" start="$productMetaData.getTimeAxisMaxValueAsUTCString(${dateFormat})" end="$productMetaData.getTimeAxisMaxValueAsUTCString(${dateFormat})" units="ISO8601" /> 
+<dimension name="time" start="$productMetaData.getTimeAxisMinValueAsUTCString(${dateFormat})" end="$productMetaData.getTimeAxisMaxValueAsUTCString(${dateFormat})" units="ISO8601" /> 
 	#elseif($productMetaData.hasTimeCoverage())
 <dimension name="time" start="$productMetaData.getStartTimeCoverageAsUTCString(${dateFormat})" end="$productMetaData.getEndTimeCoverageAsUTCString(${dateFormat})" units="ISO8601" /> 
 	#end	
@@ -36,7 +36,7 @@
 #if($productMetaData.hasGeoYAxis())
 #if ($product.hasGeoYAxisWithLatEquivalence())
 #set($ymin = $productMetaData.getGeoYAxisMinValueAsLatNormal(${product}))
-#set($yunit = $productMetaData.getGeoYAxisAsLat().getUnitsString())
+#set($yunit = $productMetaData.getGeoYAxisAsLat(${product}).getUnitsString())
 #else				
 #set($yLabel = "y")
 #set($ymin = $productMetaData.getGeoYAxisMinValue())
@@ -49,7 +49,7 @@
 #if($productMetaData.hasGeoXAxis())
 #if ($product.hasGeoXAxisWithLonEquivalence())
 #set($xmin = $productMetaData.getGeoXAxisMinValueAsLonNormal(${product}))
-#set($xunit = $productMetaData.getGeoXAxisAsLon().getUnitsString())
+#set($xunit = $productMetaData.getGeoXAxisAsLon(${product}).getUnitsString())
 #else				
 #set($xLabel = "x")
 #set($xmin = $productMetaData.getGeoXAxisMinValue())
@@ -79,7 +79,7 @@
 #elseif($productMetaData.hasGeoBBox()&& !$productMetaData.hasLatAxis())
 #set($ymax = $productMetaData.getGeoBBoxLatMaxAsString())
 #end
-#if($productMetaData.hasGeoXAxis() && !$productMetaData.hasLatAxis())
+#if($productMetaData.hasGeoXAxis())
 #if ($product.hasGeoXAxisWithLonEquivalence())
 #set($xmax = $productMetaData.getGeoXAxisMaxValueAsLonNormal(${product}))
 #else				
@@ -91,8 +91,8 @@
 #end
 ##	<boundingBox ${xLabel}Min="${xmin}" ${xLabel}Max="${xmax}" ${yLabel}Min="${ymin}" ${yLabel}Max="${ymax}" />
 	<boundingBox>
-		<${xLabel} min="${xmin}" max="${xmax}" units="${xunit}" />
-		<${yLabel} min="${ymin}" max="${ymax}" units="${yunit}" />
+		<${xLabel} min="${xmin}" max="${xmax}" #if($${xunit}) units="${xunit}" #end />
+		<${yLabel} min="${ymin}" max="${ymax}" #if($${yunit}) units="${yunit}" #end />
 	</boundingBox>
 #end
 ## -------------------------------------------- printZCoverage --------------------------------
@@ -124,7 +124,7 @@
 #else
 #set($endTag = ">")
 #end
-		<variable name="$parameterMetadata.getName()" description="$parameterMetadata.getLabel()" #if(!$parameterMetadata.getStandardName().equals("")) standardName="$parameterMetadata.getStandardName()" #end units="$parameterMetadata.getUnit()" ${endTag}
+		<variable id="$parameterMetadata.getId()" name="$parameterMetadata.getName()" description="$parameterMetadata.getLabel()" #if(!$parameterMetadata.getStandardName().equals("")) standardName="$parameterMetadata.getStandardName()" #end units="$parameterMetadata.getUnit()" ${endTag}
 ##	#if(!$parameterMetadata.getUnitLong().equals(""))
 ##	unitDescription="${parameterMetadata.getUnitLong()}"${space}						
 ##	#end				

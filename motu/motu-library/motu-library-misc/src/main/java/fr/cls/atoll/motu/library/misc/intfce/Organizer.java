@@ -6863,7 +6863,7 @@ public class Organizer {
      * @param uri the uri
      * @return the id from uri
      */
-    public static String getStandardNameFromFromURI(String uri) {
+    public static String getStandardNameFromURI(String uri) {
         if (Organizer.isNullOrEmpty(uri)) {
             return uri;
         }
