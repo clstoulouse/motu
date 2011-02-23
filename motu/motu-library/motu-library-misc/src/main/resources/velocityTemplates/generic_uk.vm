@@ -75,7 +75,7 @@
 	function doSubmit() {}
 	</script>
 </head>
-<BODY onLoad="init()">
+<BODY onLoad="init()" onUnload="unload()">
 <a name="top"></a> 	
 			 
 <!-- subtitles -->

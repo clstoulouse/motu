@@ -148,7 +148,7 @@
 		
 </style>
 
-<body class="int" onLoad="init()">
+<body class="int" onLoad="init()" onUnload="unload()">
 
 <script language="JavaScript" type="text/javascript">
 

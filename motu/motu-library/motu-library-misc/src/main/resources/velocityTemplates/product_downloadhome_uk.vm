@@ -504,6 +504,8 @@ td.advice_noimg { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fo
 
 <p>&nbsp;</p>
 <input onClick="updateMap()" type="submit" value="Download" />
+<input onClick="openScriptCmdWin()" type="button" value="Script command" />
+<input onClick="closeScriptCmdWin()" type="button" value="Close Script command" />
 </form>
 
 

@@ -175,7 +175,7 @@
 	</script>
 </head>
 
-<BODY onLoad="init()" bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginheight="0" marginwidth="0">
+<BODY onLoad="init()" onUnload="unload()" bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginheight="0" marginwidth="0">
 
 <!-- Banniere -->
 <!-- STATUS: OK -->

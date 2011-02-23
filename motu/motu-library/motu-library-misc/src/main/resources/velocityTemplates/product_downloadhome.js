@@ -10,7 +10,7 @@ function init() {
   aMapTool.setMode('single');
   aMapTool.selectTool("xy");
   aMapTool.setRanges();
-//  setRegionRanges();
+// setRegionRanges();
   
 }
 
@@ -77,7 +77,7 @@ function Widget(form, element) {
   Assert(theFormEl);
   this.mForm = theFormEl;
   this.mElement = theFormEl.elements[element];
-  //Assert(this.mElement);
+  // Assert(this.mElement);
   if (this.mElement) {
 	  this.mElement.mObject = this;
 	  this.mCallbackList = new Array();
@@ -154,9 +154,9 @@ Widget.prototype.execCallbacks = function() {
   }
 }
 
-//Following methods needed because, in JavaScript, 'this' will refer
-//to the form element associated with the event, not the Widget
-//object
+// Following methods needed because, in JavaScript, 'this' will refer
+// to the form element associated with the event, not the Widget
+// object
 Widget.prototype.globalActionChange = function() {
   this.mObject.onChange(this.mObject);
 }
@@ -292,7 +292,7 @@ setInherit("MapTextWidget", "Widget");
 
 MapTextWidget.prototype.validate = function() {
   var str = this.mElement.value;
-  //  var index = str.search(/[^\d\s\.\-ewns]/i);
+  // var index = str.search(/[^\d\s\.\-ewns]/i);
   var index = str.search(/[\-\+]?[\d\.]+\s*[ewns]?\s*$/i);
   if (index == -1){
     this.setValue(this.mFvalue);
@@ -310,13 +310,13 @@ MapTextWidget.prototype.onBlur = function(widget) {
 MapTextWidget.prototype.setValue = function(fvalue){
   this.mFvalue = fvalue;
   this.mElement.value = fvalue;
- //Modif//
-//  if (this.mType == "lon"){
-//    this.convert_lon(fvalue);
-//  } else {
-//    this.convert_lat(fvalue);
-//  }
- //Modif//
+ // Modif//
+// if (this.mType == "lon"){
+// this.convert_lon(fvalue);
+// } else {
+// this.convert_lat(fvalue);
+// }
+ // Modif//
 }
 
 MapTextWidget.prototype.getValue = function(){
@@ -406,23 +406,23 @@ function MapWidget(formName) {
   this.miny = -90.0;
   this.maxy = 90.0;
 
-//  if("${hasGeoAxis}" == "true") {
-//	  this.minx = $XMin;
-//	  this.maxx = $XMax;
-//	  this.miny = $YMin;
-//	  this.maxy = $YMax;
-//  }
+// if("${hasGeoAxis}" == "true") {
+// this.minx = $XMin;
+// this.maxx = $XMax;
+// this.miny = $YMin;
+// this.maxy = $YMax;
+// }
 }
 
 MapWidget.prototype.onBlur = function(widget){
   var tool = this.mTool;
   var value = widget.getValue();
   // Clip to restricted region
-////////////////  if (widget.mType == "lon"){
-////////////////    value = this.clip_lon(value);
-////////////////  } else {
-////////////////    value = this.clip_lat(value);
-////////////////  }
+// ////////////// if (widget.mType == "lon"){
+// ////////////// value = this.clip_lon(value);
+// ////////////// } else {
+// ////////////// value = this.clip_lat(value);
+// ////////////// }
   widget.setValue(value);
 
   // Keep as line or point if necessary
@@ -467,7 +467,7 @@ MapWidget.prototype.clip_lat = function(y){
 }
 
 // This function was originally designed to interact with the
-// Map applet.  New code was needed to make it work with
+// Map applet. New code was needed to make it work with
 // the non-java map.
 MapWidget.prototype.positionTool = function(xlo,xhi,ylo,yhi) {
   var tool = this.mTool;
@@ -504,19 +504,19 @@ MapWidget.prototype.positionTool = function(xlo,xhi,ylo,yhi) {
     }
   }
 
-/////////////////////  xlo = this.clip_lon(xlo);
-///////////////////////  xhi = this.clip_lon(xhi);
+// /////////////////// xlo = this.clip_lon(xlo);
+// ///////////////////// xhi = this.clip_lon(xhi);
   if ("${use_java}" == "true") {
-    // This logic is pervent the cross hair values from being 
-    // added to the text boxes in the non-java case.  Only do
+    // This logic is pervent the cross hair values from being
+    // added to the text boxes in the non-java case. Only do
     // if java is on.
      if (xlo == xhi && !("Y" == tool || "PT" == tool)){
        xlo = this.minx;
        xhi = this.maxx;
      }
   }
-////////     ylo = this.clip_lat(ylo);
-////////     yhi = this.clip_lat(yhi);
+// ////// ylo = this.clip_lat(ylo);
+// ////// yhi = this.clip_lat(yhi);
   if ("${use_java}" == "true") {
      // Same as above.
      if (ylo == yhi && !("X" == tool || "PT" == tool)){
@@ -536,21 +536,21 @@ MapWidget.prototype.positionTool = function(xlo,xhi,ylo,yhi) {
 
   // In the non-java case get them from the mapstate bean from the server.
   else {
-//     this.wx[0].setValue(-180);
-//     this.wx[1].setValue(180);
-//     this.wy[0].setValue(-90);
-//     this.wy[1].setValue(90);
+// this.wx[0].setValue(-180);
+// this.wx[1].setValue(180);
+// this.wy[0].setValue(-90);
+// this.wy[1].setValue(90);
      this.wx[0].setValue(xlo);
      this.wx[1].setValue(xhi);
      this.wy[0].setValue(ylo);
      this.wy[1].setValue(yhi);
      
-//     if("${hasGeoAxis}" == "true") {
-//	     this.wx[0].setValue($XMin);
-//	     this.wx[1].setValue($XMax);
-//	     this.wy[0].setValue($YMin);
-//	     this.wy[1].setValue($YMax);
-//  	 }
+// if("${hasGeoAxis}" == "true") {
+// this.wx[0].setValue($XMin);
+// this.wx[1].setValue($XMax);
+// this.wy[0].setValue($YMin);
+// this.wy[1].setValue($YMax);
+// }
      
   }
 
@@ -624,11 +624,11 @@ MapWidget.prototype.get_y_range = function() {
 MapWidget.prototype.setToolRangeFull = function() {
    	this.positionTool(-180,180,-90,90);
 
-//     if("${hasGeoAxis}" == "true") {
-//     	this.positionTool($XMin,$XMax,$YMin,$YMax);
-//  	 } else { 
-//     	this.positionTool(-0,360,-90,90);
-//     }
+// if("${hasGeoAxis}" == "true") {
+// this.positionTool($XMin,$XMax,$YMin,$YMax);
+// } else {
+// this.positionTool(-0,360,-90,90);
+// }
     
 }
 
@@ -787,16 +787,16 @@ setInherit("RegionWidget", "Widget");
 
 RegionWidget.prototype.onChange = function() {
   var index = this.getSelected();
-//  // do this for map applet
-//  if ( "false" == "true") {
-//     aMapTool.setRegion(index);
-//  }
-//  else {
-//     // do these for non-java map version
+// // do this for map applet
+// if ( "false" == "true") {
+// aMapTool.setRegion(index);
+// }
+// else {
+// // do these for non-java map version
 
-//     this.mAction.value="changeRegion";
-//     stuffForm('constrain');
-//  }
+// this.mAction.value="changeRegion";
+// stuffForm('constrain');
+// }
 
   	var theForm = findForm();
   
@@ -825,11 +825,11 @@ var aMapTool;
 var aRegionWidget;
 
 function updateMap() {
-//   var widxlot = new MapTextWidget(this,"lon", 'region',"xlo_text");
-//   var widxhit = new MapTextWidget(this,"lon", 'region',"xhi_text");
-//   var widylot = new MapTextWidget(this,"lat", 'region',"ylo_text");
-//   var widyhit = new MapTextWidget(this,"lat", 'region',"yhi_text");
- //  document.location.href="constrain?"+widxlot.getValue()+","+widxhit.getValue()+","+widylot.getValue()+","+widyhit.getValue();
+// var widxlot = new MapTextWidget(this,"lon", 'region',"xlo_text");
+// var widxhit = new MapTextWidget(this,"lon", 'region',"xhi_text");
+// var widylot = new MapTextWidget(this,"lat", 'region',"ylo_text");
+// var widyhit = new MapTextWidget(this,"lat", 'region',"yhi_text");
+ // document.location.href="constrain?"+widxlot.getValue()+","+widxhit.getValue()+","+widylot.getValue()+","+widyhit.getValue();
   var theForm = findForm();
   theForm.x_lo.value = theForm.xlo_text.value;	
   theForm.y_lo.value = theForm.ylo_text.value;	
@@ -885,7 +885,7 @@ function getRegionRanges() {
 
 function setUseJava(newval){
   getFormElements('region').use_java.value = newval;
-  //stuffForm('constrain');
+  // stuffForm('constrain');
 }
 
 function findForm(form) {
@@ -895,3 +895,120 @@ function findForm(form) {
     return document.forms[form];
   }
 }
+var winMotuScriptCmd = null;
+
+function closeScriptCmdWin() {
+	if (winMotuScriptCmd != null) {
+		winMotuScriptCmd.close();
+		winMotuScriptCmd = null;
+	}
+}
+ function openScriptCmdWin(form) {
+  closeScriptCmdWin();
+  updateMap();
+  var theForm = findForm(form);
+  var win = window.open('','MotuScriptCmd');
+  winMotuScriptCmd = win;
+  var doc = win.document.open("text/html");
+  doc.write("<h1>Python script command line that matches the extraction:</h1>");
+
+  var x_lo = theForm.elements['x_lo'];
+  var x_hi = theForm.elements['x_hi'];
+  var y_lo = theForm.elements['y_lo'];
+  var y_hi = theForm.elements['y_hi'];
+
+  var t_lo = theForm.elements['t_lo'];
+  var t_hi = theForm.elements['t_hi'];
+
+  var z_lo = theForm.elements['z_lo'];
+  var z_hi = theForm.elements['z_hi'];
+
+  var variables = theForm.elements['variable'];
+
+  var url = new String(location.href);
+
+  var url_parts = url.split("?");
+  /* handle case where constraint is null. */
+  var motuUrl = url_parts[0];
+  doc.writeln(motuUrl);
+  var q = "";
+  var motu_client_py = "motu-client.py";
+  var isCasAuth = "${product.isCasAuthentication()}";
+  
+  var cmd =  motu_client_py;
+  
+  if (isCasAuth == "true") {
+	  cmd += " -u <i>your_username</i><i><b>(1)</b></i>";
+	  cmd += " -p <i>your_password</i><i><b>(1)</b></i>";
+  } else {
+	  cmd += " --auth-mode=none ";
+  }
+  
+  cmd += " -m " + q + motuUrl + q;
+  cmd += " -s " + q + "${service.getName()}" + q;
+  cmd += " -d " + q + "${product.getProductId()}" + q;
+  
+  cmd += " -x " + q + x_lo.value + q;
+  cmd += " -X " + q + x_hi.value + q;
+  cmd += " -y " + q + y_lo.value + q;
+  cmd += " -Y " + q + y_hi.value + q;
+
+  cmd += " -t " + q + t_lo.value + q;
+  cmd += " -T " + q + t_hi.value + q;
+  
+  if (z_lo != null) {
+	  cmd += " -z " + q + z_lo.value + q;
+  }
+  if (z_hi != null) {
+	  cmd += " -Z " + q + z_hi.value + q;
+  }
+  var nVar = 0;
+  var varOptions = "";
+  if (variables != null) {
+	  for (var variable = 0; variable < variables.length; variable++){
+		  var item = variables[variable];
+		  if (item.checked) {
+			  nVar++;
+		      varOptions += item.value + " ";		    	 
+		  }
+	  }
+	  if (nVar > 0) {
+		  cmd += " -v " + q + varOptions + q;
+	  }		  
+  }
+
+  cmd += " -o <i>your_output_directory</i><i><b>(1)</b></i>";
+  cmd += " -f <i>your_output_file_name</i><i><b>(1)</b></i>";
+
+
+  doc.write('<p>To execute your extraction through the Motu Python Client, type (copy/paste) the <font color="blue">command-line</font> below on your system command prompt (2).</p>');
+  doc.write('<p><font color="blue">');
+  doc.write(cmd);
+  doc.write('</font></p>');
+  doc.write('<p>(1) value must be replaced by yourself.</p>');
+  
+  doc.write('<p/>');
+
+  var linkMotuPython = "<a href=http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/cls/atoll/motu/client/motu-client-python target='_blank'>here</a>";
+  doc.write('<p>(2) You can download the Motu Python Client package ');
+  doc.write(linkMotuPython);
+  doc.write('.</p>');
+  
+  doc.write('<p/>');
+  doc.write('<p>Full documentation is available in the Motu Python Client package.</p>');
+  doc.write('<p>To get help on the Motu Python Client, type : \'');
+  doc.write(motu_client_py);
+  doc.write(' --help\' on your system command prompt.</p>');
+
+  doc.close();
+  win.focus();
+}
+ 
+ function unload() {
+	closeScriptCmdWin();
+ }
+ 
+
+
+ 
+
