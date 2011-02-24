@@ -3756,8 +3756,8 @@ public class Organizer {
                                   params.getResponseFormat());
         } else {
             throw new MotuInconsistencyException(String.format("ERROR in extractData: inconsistency parameters : %s", params.toString()));
-        }
-
+        }        
+        
         return product;
     }
 

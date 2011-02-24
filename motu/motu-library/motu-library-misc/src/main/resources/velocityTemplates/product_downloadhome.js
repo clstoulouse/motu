@@ -831,10 +831,19 @@ function updateMap() {
 // var widyhit = new MapTextWidget(this,"lat", 'region',"yhi_text");
  // document.location.href="constrain?"+widxlot.getValue()+","+widxhit.getValue()+","+widylot.getValue()+","+widyhit.getValue();
   var theForm = findForm();
-  theForm.x_lo.value = theForm.xlo_text.value;	
-  theForm.y_lo.value = theForm.ylo_text.value;	
-  theForm.x_hi.value = theForm.xhi_text.value;	
-  theForm.y_hi.value = theForm.yhi_text.value;	
+
+  if ((theForm.xlo_text != null) && (theForm.xlo != null)) {
+	  theForm.x_lo.value = theForm.xlo_text.value;	
+  }
+  if ((theForm.ylo_text != null) && (theForm.y_lo != null)) {
+	  theForm.y_lo.value = theForm.ylo_text.value;	
+  }
+  if ((theForm.xhi_text != null) && (theForm.x_hi != null)) {
+	  theForm.x_hi.value = theForm.xhi_text.value;	
+  }
+  if ((theForm.yhi_text != null) && (theForm.y_hi != null)) {
+	  theForm.y_hi.value = theForm.yhi_text.value;	
+  }
 }
 
 function setRegionWidget() {
@@ -928,20 +937,20 @@ function closeScriptCmdWin() {
   var url = new String(location.href);
 
   var url_parts = url.split("?");
-  /* handle case where constraint is null. */
   var motuUrl = url_parts[0];
-  doc.writeln(motuUrl);
-  var q = "";
+  var q = "'";
   var motu_client_py = "motu-client.py";
-  var isCasAuth = "${product.isCasAuthentication()}";
+  // use $$ to avoid velocity exception if $user is not a valid ref (null)
+  var isCasAuth = "$${user.isCASAuthentication()}";
+
   
   var cmd =  motu_client_py;
   
   if (isCasAuth == "true") {
-	  cmd += " -u <i>your_username</i><i><b>(1)</b></i>";
-	  cmd += " -p <i>your_password</i><i><b>(1)</b></i>";
+	  cmd += " -u " + q + "<i>your_username</i><i><b>(1)</b></i>" + q;
+	  cmd += " -p " + q + "<i>your_password</i><i><b>(1)</b></i>" + q;
   } else {
-	  cmd += " --auth-mode=none ";
+	  cmd += " --auth-mode=" + q + "none " + q;
   }
   
   cmd += " -m " + q + motuUrl + q;
@@ -977,22 +986,30 @@ function closeScriptCmdWin() {
 	  }		  
   }
 
-  cmd += " -o <i>your_output_directory</i><i><b>(1)</b></i>";
-  cmd += " -f <i>your_output_file_name</i><i><b>(1)</b></i>";
+  cmd += " -o " + q + "<i>your_output_directory</i><i><b>(1)</b></i>" + q;
+  cmd += " -f " + q + "<i>your_output_file_name</i><i><b>(1)</b></i>" + q;
+
+  cmd += " --proxy-server= " + q + "<i>your_proxy_server_url</i><b><font color='red'>:</font></b><i>your_proxy_port_number</i><i><b>(2)</b></i>" + q;
+  cmd += " --proxy-user= " + q + "<i>your_proxy_user_login</i><i><b>(3)</b></i>" + q;
+  cmd += " --proxy-pwd= " + q + "<i>your_proxy_user_password</i><i><b>(3)</b></i>" + q;
 
 
-  doc.write('<p>To execute your extraction through the Motu Python Client, type (copy/paste) the <font color="blue">command-line</font> below on your system command prompt (2).</p>');
+  doc.write('<p>To execute your extraction through the Motu Python Client, type (copy/paste) the <font color="blue">command-line</font> below on your system command prompt (4).</p>');
   doc.write('<p><font color="blue">');
   doc.write(cmd);
   doc.write('</font></p>');
-  doc.write('<p>(1) value must be replaced by yourself.</p>');
-  
+  doc.write('<p>(1) Value must be replaced by yourself.</p>');  
+  doc.write('<p/>');
+  doc.write('<p>(2) If you use an HTTP proxy, replace the value by your proxy url and port number: e.g. \'http://myproxy.org:8080\'. If you don\'t use HTTP proxy, remove this option.</p>');
+  doc.write('<p/>');
+  doc.write('<p>(3) If you use an HTTP proxy with authentication, replace the value by your login and password. If you don\'t need to authenticate to your proxy, remove these options.</p>');
   doc.write('<p/>');
 
   var linkMotuPython = "<a href=http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/cls/atoll/motu/client/motu-client-python target='_blank'>here</a>";
-  doc.write('<p>(2) You can download the Motu Python Client package ');
+  doc.write('<p>(4) You can download the Motu Python Client package ');
   doc.write(linkMotuPython);
   doc.write('.</p>');
+
   
   doc.write('<p/>');
   doc.write('<p>Full documentation is available in the Motu Python Client package.</p>');

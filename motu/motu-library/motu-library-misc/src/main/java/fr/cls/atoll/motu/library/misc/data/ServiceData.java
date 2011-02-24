@@ -25,7 +25,9 @@
 package fr.cls.atoll.motu.library.misc.data;
 
 import fr.cls.atoll.motu.library.inventory.Inventory;
+import fr.cls.atoll.motu.library.cas.UserBase;
 import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
+import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
 import fr.cls.atoll.motu.library.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
@@ -1044,6 +1046,7 @@ public class ServiceData {
             // System.out.println(velocityEngine.getProperty("file.resource.loader.path"));
             context.put("body_template", getCatalogVeloTemplateName());
             context.put("service", this);
+            context.put("user", AuthenticationHolder.getUser());
 
             template.merge(context, out);
 
@@ -1276,6 +1279,7 @@ public class ServiceData {
             context.put("body_template", getProductMetaDataInfoVeloTemplateName());
             context.put("service", this);
             context.put("product", product);
+            context.put("user", AuthenticationHolder.getUser());
 
             template.merge(context, out);
 
@@ -1528,6 +1532,8 @@ public class ServiceData {
             context.put("body_template", getProductDownloadInfoVeloTemplateName());
             context.put("service", this);
             context.put("product", product);
+            //UserBase user = AuthenticationHolder.getUser();
+            context.put("user", AuthenticationHolder.getUser());
 
             template.merge(context, out);
 
