@@ -128,6 +128,28 @@ public class UserBase {
     public void setEmail(String email) {
         this.email = email;
     }
+    
+    /** Is it an anonymous user. */
+    private boolean anonymousUser = true;
+    
+    /**
+     * Checks if is anonymous user.
+     * 
+     * @return true, if is anonymous user
+     */
+    public boolean isAnonymousUser() {
+        return anonymousUser;
+    }
+
+    /**
+     * Sets the anonymous user.
+     * 
+     * @param anonymousUser the anonymous user
+     */
+    public void setAnonymousUser(boolean anonymousUser) {
+        this.anonymousUser = anonymousUser;
+    }
+
 
     /** The login. */
     private String login = "";
