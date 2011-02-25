@@ -4,7 +4,7 @@
 ## In case several templates have a common macro name, 
 ## the result can be amazing (among others, execution mixes up the same macro with the same name)
 ##----------------------------------------------------------------------------------
-## -------------------------------------------- product_downloadhome_uk_setDatetimeMinMax --------------------------------
+## -------------------------------------------- product_downloadhome_fr_setDatetimeMinMax --------------------------------
 #macro(product_downloadhome_fr_setZMinMax)
 	#set($hasZAxis = "false")
 	#if($productMetaData.hasZAxis())	
@@ -458,7 +458,7 @@ td.advice_noimg { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fo
 
 #if($catalogType != "FTP")
     <tr><td>
-    #product_downloadhome_uk_outputSelection()
+    #product_downloadhome_fr_outputSelection()
     </td></tr>
 #end
 
