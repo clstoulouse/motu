@@ -385,10 +385,10 @@ public class TestIntfce {
         // productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
-        productDownloadInfo();
+        // productDownloadInfo();
         // productExtractDataHTMLAviso();
         // productExtractDataAviso();
-        // productExtractDataAvisofromProductId();
+         productExtractDataAvisofromProductId();
         // productInformationFromLocationData();
         // productExtractDataAviso2();
         // productExtractDataMercator();
@@ -701,7 +701,8 @@ public class TestIntfce {
             String myoceanUrn = "http://purl.org/myocean/ontology/service/database#";
             // String serviceName = myoceanUrn + "cls-toulouse-fr-sltac-motu-rest";
             //String serviceName = myoceanUrn + "SL-CLS-TOULOUSE-FR-MOTU-REST";
-            String serviceName = myoceanUrn + "SLTAC3";
+            //String serviceName = myoceanUrn + "SLTAC3";
+            String serviceName = "catsat";
             //String serviceName = "http://purl.org/myocean/ontology/service/database#yourduname";
             //String serviceName = "http://purl.org/cls/atoll/ontology/individual/atoll#motu-opendap-mercator-myocean";
 
@@ -712,13 +713,14 @@ public class TestIntfce {
             // String productId = "mercatorPsy2v3_ibi_mean_best_estimate";
             // String productId = "mercatorPsy3v2_glo_mean_best_estimate";
             // String productId = "mersea-ipv2/arctic/tmipv2a-class1-b-be";
-            String productId = "http://purl.org/myocean/ontology/product/database#dataset-duacs-ran-global-en-sla-l3"; 
-
+            //String productId = "http://purl.org/myocean/ontology/product/database#dataset-duacs-ran-global-en-sla-l3"; 
+            String productId = "dataset-mod-hyc-mooring-angola-m001-bulletin";
+            
             //String productId = "dataset-psy3v2-pgs-arc-myocean-bestestimate";
                                                                                  // "mercatorPsy3v2_arc_mean_best_estimate";
             FileWriter writer = new FileWriter("./target/resultProductDownloadInfo.html");
             Organizer organizer = new Organizer();
-            organizer.setCurrentLanguage("uk");
+            //organizer.setCurrentLanguage("uk");
             organizer.getProductDownloadInfo(serviceName, productId, writer, Organizer.Format.HTML);
             writer.flush();
             writer.close();
@@ -976,22 +978,25 @@ public class TestIntfce {
     }
 
     public static void productExtractDataAvisofromProductId() {
-        String productId = "dt_ref_global_merged_madt_h";
+        //String productId = "dt_ref_global_merged_madt_h";
+        String productId = "dataset-mod-hyc-mooring-angola-m001-bulletin";
+        //String productId = "dataset-mod-hyc-mooring-campos-m001-bulletin";
         // String locationData = "http://opendap-nrt.aviso.oceanobs.com/thredds/dodsC/" + productId;
-        String serviceName = "aviso";
+        //String serviceName = "aviso";
+        String serviceName = "catsat";
 
         List<String> listVar = new ArrayList<String>();
         // add variable to extract
         // listVar.add("Grid_0001");
-        listVar.add("sea_surface_height_above_geoid ");
+        //listVar.add("sea_surface_height_above_geoid ");
 
         // add temporal criteria
         // first element is start date
         // second element is end date (optional)
         // if only start date is set, end date equals start date
         List<String> listTemporalCoverage = new ArrayList<String>();
-        listTemporalCoverage.add("2007-05-23");
-        listTemporalCoverage.add("2007-05-23");
+        listTemporalCoverage.add("2011-02-28");
+        listTemporalCoverage.add("2011-02-28");
 
         // add Lat/Lon criteria
         // first element is low latitude

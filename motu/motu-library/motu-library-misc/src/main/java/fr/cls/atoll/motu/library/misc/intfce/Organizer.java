@@ -5849,30 +5849,6 @@ public class Organizer {
 
     }
 
-    /** The user. */
-    // private User user = null;
-    /**
-     * Getter of the property <tt>user</tt>.
-     * 
-     * @return Returns the user.
-     * 
-     * @uml.property name="user"
-     */
-    public UserBase getUser() {
-        return AuthenticationHolder.getUser();
-    }
-
-    /**
-     * Setter of the property <tt>user</tt>.
-     * 
-     * @param user The user to set.
-     * 
-     * @uml.property name="user"
-     */
-    public void setUser(User user) {
-        AuthenticationHolder.setUser(user);
-    }
-
     /**
      * Getter of the property <tt>velocityEngine</tt>.
      * 

@@ -957,13 +957,26 @@ function closeScriptCmdWin() {
   cmd += " -s " + q + "${service.getName()}" + q;
   cmd += " -d " + q + "${product.getProductId()}" + q;
   
-  cmd += " -x " + q + x_lo.value + q;
-  cmd += " -X " + q + x_hi.value + q;
-  cmd += " -y " + q + y_lo.value + q;
-  cmd += " -Y " + q + y_hi.value + q;
+  if (x_lo != null) {
+	  cmd += " -x " + q + x_lo.value + q;
+  }
+  if (x_hi != null) {
+	  cmd += " -X " + q + x_hi.value + q;
+  }
+  if (y_lo != null) {
+	  cmd += " -y " + q + y_lo.value + q;
+  }
+  if (y_hi != null) {
+	  cmd += " -Y " + q + y_hi.value + q;
+  }
+  
 
-  cmd += " -t " + q + t_lo.value + q;
-  cmd += " -T " + q + t_hi.value + q;
+  if (t_lo != null) {
+	  cmd += " -t " + q + t_lo.value + q;
+  }
+  if (t_hi != null) {
+	  cmd += " -T " + q + t_hi.value + q;
+  }
   
   if (z_lo != null) {
 	  cmd += " -z " + q + z_lo.value + q;

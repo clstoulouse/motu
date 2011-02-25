@@ -125,6 +125,19 @@
 	sftpSessionTimeOut="PT10S"
 	strictHostKeyChecking="no">
 	
+	
+	<!--===========================================================-->
+    <!--                   TDS Catsat                --> 
+    <!--===========================================================-->
+     <configService defaultLanguage="FR" description="Ocean data"
+             group="catsat"
+             httpBaseRef="http://www.cls.fr"
+             name="catsat"
+             veloTemplatePrefix="cls">
+             <catalog name="catalog.xml" type="tds" urlSite="http://catsat-data1.cls.fr:43080/thredds" />
+     </configService>
+
+	
 	<!--===========================================================-->
     <!--                   TDS Mercator  MyOcean                --> 
     <!--===========================================================-->

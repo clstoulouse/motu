@@ -353,7 +353,7 @@ public class TestThreadPools {
                 Organizer.Format.NETCDF,
                 null,
                 null,
-                "login",
+                "theUserLogin",
                 true);
 
         list.add(extractionParameters);
@@ -372,7 +372,7 @@ public class TestThreadPools {
                 Organizer.Format.NETCDF,
                 null,
                 null,
-                "login",
+                "theUserLogin",
                 true);
         list.add(extractionParameters);
         // ------------------------------------------
@@ -390,7 +390,7 @@ public class TestThreadPools {
                 Organizer.Format.NETCDF,
                 null,
                 null,
-                "login",
+                "theUserLogin",
                 true);
         list.add(extractionParameters);
 
@@ -533,8 +533,8 @@ public class TestThreadPools {
         // xstream.alias("motuQueueServerLog", QueueLogInfo.class);
         // xstream.useAttributeFor(QueueLogInfo.class, "elapseRunTime");
         // //xstream.registerConverter(new XStreamDateConverter());
-        // xml = xstream.toXML(queueLogInfo);
-        // System.out.println(queueLogInfo.toXML());
+        xml = xstream.toXML(queueLogInfo);
+        System.out.println(queueLogInfo.toXML());
         if (LOG.isInfoEnabled()) {
             LOG.info(queueLogInfo);
         }

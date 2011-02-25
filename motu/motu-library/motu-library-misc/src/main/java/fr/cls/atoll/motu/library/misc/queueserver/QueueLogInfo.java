@@ -26,6 +26,7 @@ package fr.cls.atoll.motu.library.misc.queueserver;
 
 import com.thoughtworks.xstream.XStream;
 
+import fr.cls.atoll.motu.library.cas.UserBase;
 import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
 
 import java.io.ByteArrayOutputStream;
@@ -157,6 +158,10 @@ public class QueueLogInfo {
         xStream.useAttributeFor(QueueLogPriority.class, "range");
 
         xStream.useAttributeFor(ExtractionParameters.class, "userId");
+//        xStream.useAttributeFor(ExtractionParameters.class, "user");
+//        xStream.aliasAttribute("userId", "user");
+//        xStream.registerConverter(new ExtractionParameters.UserBaseConverter());
+
         xStream.useAttributeFor(ExtractionParameters.class, "userHost");
         xStream.useAttributeFor(ExtractionParameters.class, "locationData");
         xStream.useAttributeFor(ExtractionParameters.class, "productId");
