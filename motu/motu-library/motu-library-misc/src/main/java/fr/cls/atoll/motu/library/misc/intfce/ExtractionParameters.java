@@ -24,9 +24,7 @@
  */
 package fr.cls.atoll.motu.library.misc.intfce;
 
-import fr.cls.atoll.motu.library.cas.UserBase;
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInconsistencyException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
@@ -391,37 +389,15 @@ public class ExtractionParameters implements Cloneable {
     /** The location data. */
     private String locationData = null;
 
-    // /** The user id. */
-    //private String userId = null;
-    
-    ///** The user. */
-    //private UserBase user = null;
-
-    /**
-     * Gets the user.
-     *
-     * @return the user
-     */
-    public UserBase getUser() {
-        //return user;
-        return AuthenticationHolder.getUser();
-    }
-
-    /**
-     * Sets the user.
-     *
-     * @param user the user
-     */
-    public void setUser(UserBase user) {
-        //this.user = user;
-        AuthenticationHolder.setUser(user);
-    }
+    // revert
+    /** The user id. */
+    private String userId = null;
 
     /** The user host. */
     private String userHost = null;
 
-    // /** The anonymous user. */
-    //private boolean anonymousUser = true;
+    /** The anonymous user. */
+    private boolean anonymousUser = true;
 
     /** The batch queue. */
     protected boolean batchQueue = false;
@@ -798,11 +774,9 @@ public class ExtractionParameters implements Cloneable {
         buffer.append(", locationData:");
         buffer.append((locationData == null ? "null" : locationData));
         buffer.append(", userId:");
-        //buffer.append((userId == null ? "null" : userId));
-        buffer.append((getUserId() == null ? "null" : getUserId()));
+        buffer.append((userId == null ? "null" : userId));
         buffer.append(", anonymousUser:");
-        //buffer.append(anonymousUser);
-        buffer.append(isAnonymousUser());
+        buffer.append(anonymousUser);
         buffer.append(", batchQueue:");
         buffer.append(batchQueue);
         buffer.append("]");
@@ -815,11 +789,7 @@ public class ExtractionParameters implements Cloneable {
      * @return the user id
      */
     public String getUserId() {
-        //return userId;
-        if (this.getUser() == null) {
-            return null;
-        }
-        return this.getUser().getLogin();
+        return userId;
     }
 
     /**
@@ -828,12 +798,7 @@ public class ExtractionParameters implements Cloneable {
      * @param userId the user id
      */
     public void setUserId(String userId) {
-        //this.userId = userId;
-        if (this.getUser() == null) {
-            this.setUser(new UserBase());
-        }
-        
-        this.getUser().setLogin(userId);
+        this.userId = userId;
     }
 
     /**
@@ -842,11 +807,7 @@ public class ExtractionParameters implements Cloneable {
      * @return true, if is anonymous user
      */
     public boolean isAnonymousUser() {
-        //return anonymousUser;
-        if (this.getUser() == null) {
-            return true;
-        }
-        return this.getUser().isAnonymousUser();
+        return anonymousUser;
     }
 
     /**
@@ -855,13 +816,7 @@ public class ExtractionParameters implements Cloneable {
      * @param anonymousUser the anonymous user
      */
     public void setAnonymousUser(boolean anonymousUser) {
-        //this.anonymousUser = anonymousUser;
-        if (this.getUser() == null) {
-            this.setUser(new UserBase());
-        }
-        
-        this.getUser().setAnonymousUser(anonymousUser);
-
+        this.anonymousUser = anonymousUser;
     }
 
     /**
