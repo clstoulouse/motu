@@ -940,12 +940,12 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                     continue;
                 }
                 if (lon < minx) {
-//                     if ((lon > 0)) {
-//                     System.out.print(lat);
-//                     System.out.print(" ");
-//                     System.out.print(lon);
-//                     System.out.println(" ");
-//                     }
+                    // if ((lon > 0)) {
+                    // System.out.print(lat);
+                    // System.out.print(" ");
+                    // System.out.print(lon);
+                    // System.out.println(" ");
+                    // }
 
                     double longitudeCenter = minx + 180;
                     lon = LatLonPointImpl.lonNormal(lon, longitudeCenter);
@@ -1415,14 +1415,39 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
             throw new MotuNotImplementedException("ERROR in ExtractCriteriaLatLon - findCoordElementBounded on non-numeric not implemented");
         }
 
+        boolean isAscending = false;
+        int n = (int) axis.getSize();
+        // WARNING : if the axis has just one value,
+        // we can't define if axis is ascending or descending
+        // To be true to the the Netcdf-java APIs, define axis as ascending 
+        // In this case, the edge (bound) of the axis is always [value, 0] :
+        // if the value is < 0 the egde is correct, 
+        // but if the values is > 0, the edge is wrong 
+        if (n < 2) {
+            isAscending = true;
+        } else {
+            isAscending = axis.getCoordValue(0) < axis.getCoordValue(1);
+        }
+
         if (axis.getAxisType() == AxisType.Lon) {
             if (lastIndex < 0) {
                 lastIndex = 0;
             }
             for (int x = lastIndex; x < axis.getSize(); x++) {
-                if (LatLonPointImpl.betweenLon(pos, axis.getCoordEdge(x), axis.getCoordEdge(x + 1))) {
-                    return x;
+                if (isAscending) {
+                    if (LatLonPointImpl.betweenLon(pos, axis.getCoordEdge(x), axis.getCoordEdge(x + 1))) {
+                        return x;
+                    } else if (n < 2) { // if only one value, check with the reverted the edge values 
+                        if (LatLonPointImpl.betweenLon(pos, axis.getCoordEdge(x + 1), axis.getCoordEdge(x))) {
+                            return x;
+                        }
+                    }
+                } else {
+                    if (LatLonPointImpl.betweenLon(pos, axis.getCoordEdge(x + 1), axis.getCoordEdge(x))) {
+                        return x;
+                    }
                 }
+
             }
             return -1;
         }
@@ -1430,13 +1455,16 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         if (lastIndex < 0) {
             lastIndex = (int) axis.getSize() / 2;
         }
-        int n = (int) axis.getSize();
 
-        boolean isAscending = false;
-        if (axis.getSize() < 2) {
-            isAscending = true;
-        } else {
-            isAscending = axis.getCoordValue(0) < axis.getCoordValue(1);
+        // Special case if there just one value. 
+        if (n < 2) {
+            if ((pos >= axis.getCoordEdge(0)) && (pos <= axis.getCoordEdge(1))) {
+                return 0;
+            } else if ((pos >= axis.getCoordEdge(1)) && (pos <= axis.getCoordEdge(0))) {
+                return 0;
+            } else {
+                return -1;
+            }
         }
 
         if (isAscending) {
