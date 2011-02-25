@@ -389,7 +389,6 @@ public class ExtractionParameters implements Cloneable {
     /** The location data. */
     private String locationData = null;
 
-    // revert
     /** The user id. */
     private String userId = null;
 
