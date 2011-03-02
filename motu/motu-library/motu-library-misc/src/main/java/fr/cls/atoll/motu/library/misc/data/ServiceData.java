@@ -27,6 +27,7 @@ package fr.cls.atoll.motu.library.misc.data;
 import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.cas.UserBase;
 import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
+import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
 import fr.cls.atoll.motu.library.cas.util.MotuUserHolder;
 import fr.cls.atoll.motu.library.cas.util.RestUtil;
@@ -74,6 +75,7 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.tools.generic.DateTool;
 import org.apache.velocity.tools.generic.MathTool;
 import org.apache.velocity.tools.generic.NumberTool;
+import org.jasig.cas.client.util.AssertionHolder;
 import org.joda.time.Period;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
@@ -1047,7 +1049,7 @@ public class ServiceData {
             // System.out.println(velocityEngine.getProperty("file.resource.loader.path"));
             context.put("body_template", getCatalogVeloTemplateName());
             context.put("service", this);
-            context.put("user", MotuUserHolder.getUser());
+            context.put("user", ServiceData.getUserName());
 
             template.merge(context, out);
 
@@ -1280,7 +1282,7 @@ public class ServiceData {
             context.put("body_template", getProductMetaDataInfoVeloTemplateName());
             context.put("service", this);
             context.put("product", product);
-            context.put("user", MotuUserHolder.getUser());
+            context.put("user", ServiceData.getUserName());
 
             template.merge(context, out);
 
@@ -1534,7 +1536,7 @@ public class ServiceData {
             context.put("service", this);
             context.put("product", product);
             //UserBase user = AuthenticationHolder.getUser();
-            context.put("user", MotuUserHolder.getUser());
+            context.put("user", ServiceData.getUserName());
 
             template.merge(context, out);
 
@@ -1638,6 +1640,15 @@ public class ServiceData {
         return true;
     }
 
+    /**
+     * Gets the user name.
+     *
+     * @return the user name
+     */
+    public static String getUserName() {
+        return AssertionUtils.getAttributePrincipalName(AssertionHolder.getAssertion());        
+    }
+    
     /**
      * Creates a list of {@link ExtractCriteria} objects.
      * 

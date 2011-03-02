@@ -920,6 +920,15 @@ function closeScriptCmdWin() {
   winMotuScriptCmd = win;
   var doc = win.document.open("text/html");
   doc.write("<h1>Python script command line that matches the extraction:</h1>");
+  doc.write("<p>To resquest data, you can also use the Python script. This page should help you to enter your command line from the shell of you system (Linux/Unix/windows).</p>");
+
+  var linkMotuPython = "<a href=http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/cls/atoll/motu/client/motu-client-python target='_blank'>here</a>";
+  doc.write('<p>You can download the Motu Python Client package ');
+  doc.write(linkMotuPython);
+  doc.write('.</p>');
+  
+  doc.write("<p><b>Python 2.5 or higher is required in order to execute the Motu Python script.</b>");
+  doc.write("Python can be downloaded <a href=http://www.python.org/getit/ target='_blank'>here</a>.</p>");
 
   var x_lo = theForm.elements['x_lo'];
   var x_hi = theForm.elements['x_hi'];
@@ -938,16 +947,19 @@ function closeScriptCmdWin() {
 
   var url_parts = url.split("?");
   var motuUrl = url_parts[0];
-  var q = "'";
+  var q = "";
   var motu_client_py = "motu-client.py";
   // use $$ to avoid velocity exception if $user is not a valid ref (null)
-  var isCasAuth = "$${user.isCASAuthentication()}";
+  //var isCasAuth = "$${user.isCASAuthentication()}";
+  var userName = "${user}";
 
   
-  var cmd =  motu_client_py;
+  var cmd =  'python ';
+  cmd +=  motu_client_py;
   
-  if (isCasAuth == "true") {
-	  cmd += " -u " + q + "<i>your_username</i><i><b>(1)</b></i>" + q;
+  //if (isCasAuth == "true") {
+  if (userName != "") {
+	  cmd += " -u " + q + userName + q;
 	  cmd += " -p " + q + "<i>your_password</i><i><b>(1)</b></i>" + q;
   } else {
 	  cmd += " --auth-mode=" + q + "none " + q;
@@ -1007,7 +1019,7 @@ function closeScriptCmdWin() {
   cmd += " --proxy-pwd= " + q + "<i>your_proxy_user_password</i><i><b>(3)</b></i>" + q;
 
 
-  doc.write('<p>To execute your extraction through the Motu Python Client, type (copy/paste) the <font color="blue">command-line</font> below on your system command prompt (4).</p>');
+  doc.write('<p>To execute your extraction through the Motu Python Client, type (copy/paste) the <font color="blue">command-line</font> below on your system command prompt.</p>');
   doc.write('<p><font color="blue">');
   doc.write(cmd);
   doc.write('</font></p>');
@@ -1017,18 +1029,16 @@ function closeScriptCmdWin() {
   doc.write('<p/>');
   doc.write('<p>(3) If you use an HTTP proxy with authentication, replace the value by your login and password. If you don\'t need to authenticate to your proxy, remove these options.</p>');
   doc.write('<p/>');
-
-  var linkMotuPython = "<a href=http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/cls/atoll/motu/client/motu-client-python target='_blank'>here</a>";
-  doc.write('<p>(4) You can download the Motu Python Client package ');
-  doc.write(linkMotuPython);
-  doc.write('.</p>');
-
   
   doc.write('<p/>');
   doc.write('<p>Full documentation is available in the Motu Python Client package.</p>');
   doc.write('<p>To get help on the Motu Python Client, type : \'');
   doc.write(motu_client_py);
   doc.write(' --help\' on your system command prompt.</p>');
+
+  doc.write('<p>Note that if your python bin directory is not in your path environment variable, ');
+  doc.write('the full command is:<br/><br><i>path_to_your_python_bin_directory</i>/python <i>path_to_your_motu_python_script_directory</i>/' + motu_client_py + ' <i>your_extraction_parameter_and_options</i></p>');
+  
 
   doc.close();
   win.focus();
