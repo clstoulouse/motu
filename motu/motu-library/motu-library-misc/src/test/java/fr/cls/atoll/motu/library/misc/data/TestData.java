@@ -76,7 +76,15 @@ public class TestData {
         Authenticator.setDefault(new MyAuthenticator());
 
         //testLoadCatalog();
-        testLoadOpendapMetaData();
+        //testLoadOpendapMetaData();
+        
+        double[] array = new double[] {2, 3, 5, 6, 13, 20 };
+        int minIndex = ExtractCriteria.findMinIndex(array, 0);
+        int maxIndex = ExtractCriteria.findMaxIndex(array, 4);
+        System.out.println(minIndex);
+        System.out.println(maxIndex);
+        System.out.println(array[minIndex]);
+        System.out.println(array[maxIndex]);
     }
 
     public static Catalog testLoadCatalogFromFile(String path) {

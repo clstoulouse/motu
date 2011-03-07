@@ -91,15 +91,22 @@ public abstract class ExtractCriteria {
     static public int findMinIndex(double[] array, double value) {
 
         int index = -1;
-        for (int i = 1; i < array.length; i++) {
-            if (array[i] > value) {
-                index = i - 1;
-                break;
-            } else if (array[i] == value) {
+//        for (int i = 1; i < array.length; i++) {
+//            if (array[i] > value) {
+//                index = i - 1;
+//                break;
+//            } else if (array[i] == value) {
+//                index = i;
+//                break;
+//            }
+//        }
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] >= value) {
                 index = i;
                 break;
             }
         }
+        
         if ((index == -1) && (array.length > 0)) {
             index = array.length - 1;
         }
@@ -115,11 +122,17 @@ public abstract class ExtractCriteria {
     static public int findMaxIndex(double[] array, double value) {
 
         int index = -1;
-        for (int i = array.length - 2; i >= 0; i--) {
-            if (array[i] < value) {
-                index = i + 1;
-                break;
-            } else if (array[i] == value) {
+//        for (int i = array.length - 2; i >= 0; i--) {
+//            if (array[i] < value) {
+//                index = i + 1;
+//                break;
+//            } else if (array[i] == value) {
+//                index = i;
+//                break;
+//            }
+//        }
+        for (int i = array.length - 1; i >= 0; i--) {
+            if (array[i] <= value) {
                 index = i;
                 break;
             }
