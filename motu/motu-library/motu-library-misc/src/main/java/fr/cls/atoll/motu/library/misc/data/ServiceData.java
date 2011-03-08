@@ -1103,7 +1103,7 @@ public class ServiceData {
             try {
                 URI uri = new URI(locationData);
                 if ((uri.getScheme().equalsIgnoreCase("http")) || (uri.getScheme().equalsIgnoreCase("https"))) {
-                    this.casAuthentication = RestUtil.isCasifiedUrl(locationData);
+                    this.casAuthentication = RestUtil.isCasifiedUrl(locationData, true);
                 }
 
             } catch (URISyntaxException e) {

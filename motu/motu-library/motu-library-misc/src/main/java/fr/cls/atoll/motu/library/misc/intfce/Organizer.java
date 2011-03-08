@@ -5541,7 +5541,7 @@ public class Organizer {
                 service.setCatalogFileName(catalogFileName);                
             } else {
                 service.setUrlSite(catalogBaseUrl);
-                String catName = catalogFileName.substring(catalogFileName.lastIndexOf("/"), catalogFileName.length());
+                String catName = catalogFileName.substring(catalogFileName.lastIndexOf("/") + 1 , catalogFileName.length());
                 service.setCatalogFileName(catName);                
             }            
         }
@@ -5559,7 +5559,7 @@ public class Organizer {
                 URI uri = new URI(locationData);
                 if ((uri.getScheme().equalsIgnoreCase("http")) || (uri.getScheme().equalsIgnoreCase("https"))) {
 
-                    boolean casAuthentication = RestUtil.isCasifiedUrl(locationData);
+                    boolean casAuthentication = RestUtil.isCasifiedUrl(locationData, true);
                     AuthenticationHolder.setCASAuthentication(casAuthentication);
                 }
 
