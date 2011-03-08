@@ -190,7 +190,7 @@ public class RestUtil {
                 throw e;
             }
         }
-        
+
         if (user != null) {
             user.setAuthenticationMode(authenticationMode);
             user.setCasURL(casUrl);
@@ -234,7 +234,8 @@ public class RestUtil {
      * @return the authentication mode
      * @throws MotuCasException the motu cas exception
      */
-    public static AuthenticationMode checkAuthenticationMode(URI targetService, Client client, RestUtil.HttpMethod method, UserBase user) throws MotuCasException {
+    public static AuthenticationMode checkAuthenticationMode(URI targetService, Client client, RestUtil.HttpMethod method, UserBase user)
+            throws MotuCasException {
         return checkAuthenticationMode(targetService.toString(), client, method, user);
     }
 
@@ -247,7 +248,8 @@ public class RestUtil {
      * @return the authentication mode
      * @throws MotuCasException
      */
-    public static AuthenticationMode checkAuthenticationMode(String targetService, Client client, RestUtil.HttpMethod method, UserBase user) throws MotuCasException {
+    public static AuthenticationMode checkAuthenticationMode(String targetService, Client client, RestUtil.HttpMethod method, UserBase user)
+            throws MotuCasException {
 
         AuthenticationMode authenticationMode = AuthenticationMode.NONE;
         String casUrl = null;
@@ -258,7 +260,7 @@ public class RestUtil {
 
             if (isCasified) {
                 authenticationMode = AuthenticationMode.CAS;
-            }            
+            }
         } catch (MotuCasBadRequestException e) {
 
             switch (e.getCode()) {
@@ -277,7 +279,7 @@ public class RestUtil {
             user.setAuthenticationMode(authenticationMode);
             user.setCasURL(casUrl);
         }
-        
+
         return authenticationMode;
 
     }
@@ -292,10 +294,24 @@ public class RestUtil {
      */
     public static boolean isCasifiedUrl(URI serviceURL) throws IOException, MotuCasBadRequestException {
 
-        return isCasifiedUrl(serviceURL.toString(), null);
+        return isCasifiedUrl(serviceURL.toString(), null, false);
 
     }
 
+    /**
+     * Checks if is casified url.
+     *
+     * @param serviceURL the service url
+     * @param ignoreHttp4XX the ignore http4 xx
+     * @return true, if checks if is casified url
+     * @throws IOException the IO exception
+     * @throws MotuCasBadRequestException the motu cas bad request exception
+     */
+    public static boolean isCasifiedUrl(URI serviceURL, boolean ignoreHttp4XX) throws IOException, MotuCasBadRequestException {
+
+        return isCasifiedUrl(serviceURL.toString(), null, ignoreHttp4XX);
+
+    }
     /**
      * Checks if is casified url.
      * 
@@ -306,9 +322,22 @@ public class RestUtil {
      * @throws MotuCasBadRequestException the motu cas bad request exception
      */
     public static boolean isCasifiedUrl(URI serviceURL, Proxy proxy) throws IOException, MotuCasBadRequestException {
-        return isCasifiedUrl(serviceURL.toString());
+        return isCasifiedUrl(serviceURL.toString(), proxy, false);
     }
 
+    /**
+     * Checks if is casified url.
+     *
+     * @param serviceURL the service url
+     * @param proxy the proxy
+     * @param ignoreHttp4XX the ignore http4 xx
+     * @return true, if checks if is casified url
+     * @throws IOException the IO exception
+     * @throws MotuCasBadRequestException the motu cas bad request exception
+     */
+    public static boolean isCasifiedUrl(URI serviceURL, Proxy proxy, boolean ignoreHttp4XX) throws IOException, MotuCasBadRequestException {
+        return isCasifiedUrl(serviceURL.toString(), proxy, ignoreHttp4XX);
+    }
     /**
      * Checks if is casified url.
      * 
@@ -318,7 +347,20 @@ public class RestUtil {
      * @throws MotuCasBadRequestException
      */
     public static boolean isCasifiedUrl(String serviceURL) throws IOException, MotuCasBadRequestException {
-        return isCasifiedUrl(serviceURL, null);
+        return isCasifiedUrl(serviceURL, null, false);
+    }
+
+    /**
+     * Checks if is casified url.
+     * 
+     * @param serviceURL the service url
+     * @param ignoreHttp4XX the ignore http4 xx
+     * @return true, if checks if is casified url
+     * @throws IOException the IO exception
+     * @throws MotuCasBadRequestException the motu cas bad request exception
+     */
+    public static boolean isCasifiedUrl(String serviceURL, boolean ignoreHttp4XX) throws IOException, MotuCasBadRequestException {
+        return isCasifiedUrl(serviceURL, null, ignoreHttp4XX);
     }
 
     /**
@@ -326,14 +368,36 @@ public class RestUtil {
      * 
      * @param serviceURL the service url
      * @param proxy the proxy
+     * @param ignoreHttp4XX the ignore http4 xx
      * @return true, if is casified url
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws MotuCasBadRequestException the motu cas bad request exception
      */
-    public static boolean isCasifiedUrl(String serviceURL, Proxy proxy) throws IOException, MotuCasBadRequestException {
+    public static boolean isCasifiedUrl(String serviceURL, Proxy proxy, boolean ignoreHttp4XX) throws IOException, MotuCasBadRequestException {
 
-        String casUrl = RestUtil.getRedirectUrl(serviceURL, proxy);
-        return (!AssertionUtils.isNullOrEmpty(casUrl));
+        String casUrl = null;
+        boolean isCasified = false;
+
+        try {
+            casUrl = RestUtil.getRedirectUrl(serviceURL, proxy);
+            isCasified = (!AssertionUtils.isNullOrEmpty(casUrl));
+
+        } catch (MotuCasBadRequestException e) {
+            // WARNING : An 4xx http error is not necessary an error,
+            // i.e. opening an TDS dataset url failed always with URLConnection,
+            // this is not an error here, it just used to check if openConnection returns http 302 or not.
+            // So, don't raise exception if http code is 4xx
+
+            if (ignoreHttp4XX) {
+                if (e.getCode() >= 500) {
+                    throw e;
+                }
+            } else {
+                throw e;
+            }
+        }
+
+        return isCasified;
 
     }
 
@@ -353,7 +417,7 @@ public class RestUtil {
 
     /**
      * Append path.
-     *
+     * 
      * @param prefix the prefix
      * @param suffix the suffix
      * @return the string
@@ -377,7 +441,7 @@ public class RestUtil {
 
     /**
      * Gets the cas restlet url.
-     *
+     * 
      * @param client the client
      * @param method the method
      * @param serviceURL the service url
@@ -397,22 +461,22 @@ public class RestUtil {
         if (AssertionUtils.isNullOrEmpty(casServerPrefix)) {
 
             return null;
-        }                
+        }
 
-//        StringBuffer stringBuffer = new StringBuffer();
-//        stringBuffer.append(casServerPrefix);
-//        if ((!casServerPrefix.endsWith("/")) && (!casRestUrlSuffix.startsWith("/"))) {
-//            stringBuffer.append("/");
-//        }
-//
-//        if ((casServerPrefix.endsWith("/")) && (casRestUrlSuffix.startsWith("/"))) {
-//            stringBuffer.append(casRestUrlSuffix.substring(1));
-//        } else {
-//            stringBuffer.append(casRestUrlSuffix);
-//        }
-//
-//        return stringBuffer.toString();
-        
+        // StringBuffer stringBuffer = new StringBuffer();
+        // stringBuffer.append(casServerPrefix);
+        // if ((!casServerPrefix.endsWith("/")) && (!casRestUrlSuffix.startsWith("/"))) {
+        // stringBuffer.append("/");
+        // }
+        //
+        // if ((casServerPrefix.endsWith("/")) && (casRestUrlSuffix.startsWith("/"))) {
+        // stringBuffer.append(casRestUrlSuffix.substring(1));
+        // } else {
+        // stringBuffer.append(casRestUrlSuffix);
+        // }
+        //
+        // return stringBuffer.toString();
+
         return RestUtil.appendPath(casServerPrefix, casRestUrlSuffix);
 
     }
@@ -437,19 +501,19 @@ public class RestUtil {
             return null;
         }
 
-//        StringBuffer stringBuffer = new StringBuffer();
-//        stringBuffer.append(casServerPrefix);
-//        if ((!casServerPrefix.endsWith("/")) && (!casRestUrlSuffix.startsWith("/"))) {
-//            stringBuffer.append("/");
-//        }
-//
-//        if ((casServerPrefix.endsWith("/")) && (casRestUrlSuffix.startsWith("/"))) {
-//            stringBuffer.append(casRestUrlSuffix.substring(1));
-//        } else {
-//            stringBuffer.append(casRestUrlSuffix);
-//        }
-//
-//        return stringBuffer.toString();
+        // StringBuffer stringBuffer = new StringBuffer();
+        // stringBuffer.append(casServerPrefix);
+        // if ((!casServerPrefix.endsWith("/")) && (!casRestUrlSuffix.startsWith("/"))) {
+        // stringBuffer.append("/");
+        // }
+        //
+        // if ((casServerPrefix.endsWith("/")) && (casRestUrlSuffix.startsWith("/"))) {
+        // stringBuffer.append(casRestUrlSuffix.substring(1));
+        // } else {
+        // stringBuffer.append(casRestUrlSuffix);
+        // }
+        //
+        // return stringBuffer.toString();
 
         return RestUtil.appendPath(casServerPrefix, casRestUrlSuffix);
 
@@ -508,6 +572,7 @@ public class RestUtil {
         }
         int responseCode = conn.getResponseCode();
         if (responseCode >= 400) {
+            conn.disconnect();
             throw new MotuCasBadRequestException(
                     conn,
                     responseCode,
@@ -539,7 +604,7 @@ public class RestUtil {
      * @throws MotuCasBadRequestException
      */
     public static String getRedirectUrl(String path, Client client, RestUtil.HttpMethod method) throws MotuCasBadRequestException {
-        
+
         WebResource webResource = client.resource(path);
 
         ClientResponse response = webResource.accept(MediaType.WILDCARD).method(method.toString(), ClientResponse.class);
@@ -559,7 +624,7 @@ public class RestUtil {
 
     /**
      * Extract redirect url.
-     *
+     * 
      * @param url the url
      * @param httpCode the http code
      * @return the string
@@ -567,13 +632,14 @@ public class RestUtil {
     public static String extractRedirectUrl(String url, int httpCode) {
         String redirectUrl = url;
         if (!RestUtil.isNullOrEmpty(redirectUrl) && (httpCode == 302)) {
-            redirectUrl = redirectUrl.substring(0, redirectUrl.lastIndexOf("/") + 1);
+            redirectUrl = redirectUrl.substring(0, redirectUrl.lastIndexOf("/login") + 1);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("extractRedirectUrl(String url, int httpCode) - redirectUrl=" + redirectUrl);
             }
         }
         return redirectUrl;
     }
+
     /**
      * Gets the ticket granting ticket.
      * 
