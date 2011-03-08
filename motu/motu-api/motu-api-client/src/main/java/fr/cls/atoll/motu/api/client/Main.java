@@ -414,7 +414,7 @@ public class Main {
                                                   action));
         }
 
-        boolean casAuthentication = RestUtil.isCasifiedUrl(data);
+        boolean casAuthentication = RestUtil.isCasifiedUrl(data, true);
 
         Writer writer = null;
 
