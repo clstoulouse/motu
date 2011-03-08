@@ -5520,6 +5520,9 @@ public class Organizer {
             LOG.debug("getProductMetadataInfoFromTDS(String) - entering");
         }
 
+        // WARNING : catalogFileName can be:
+        // - only the catalog file name
+        // - the complete url to the catalog file name
         String catalogBaseUrl = Organizer.getTDSCatalogBaseUrl(locationData);
         String tdsUrlPath = Organizer.getTDSDatasetUrlPath(locationData);
 
@@ -5533,7 +5536,14 @@ public class Organizer {
         if (Organizer.isNullOrEmpty(catalogFileName)) {
             service.setCatalogFileName(Organizer.TDS_CATALOG_FILENAME);
         } else {
-            service.setCatalogFileName(catalogFileName);
+            catalogBaseUrl = catalogFileName.substring(0, catalogFileName.lastIndexOf("/"));
+            if (Organizer.isNullOrEmpty(catalogBaseUrl)) {
+                service.setCatalogFileName(catalogFileName);                
+            } else {
+                service.setUrlSite(catalogBaseUrl);
+                String catName = catalogFileName.substring(catalogFileName.lastIndexOf("/"), catalogFileName.length());
+                service.setCatalogFileName(catName);                
+            }            
         }
         // Only TDS are accepted
         service.setCatalogType(CatalogData.CatalogType.TDS);

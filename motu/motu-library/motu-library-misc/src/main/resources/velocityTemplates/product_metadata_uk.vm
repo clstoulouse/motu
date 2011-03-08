@@ -25,7 +25,7 @@
 
 		<li>
 		#if($catalogType != "FTP")
-			<a href=?action=describeProduct&data=${product.getLocationData()}&xmlfile=${service.getCatalogFileName()}>
+			<a href=?action=describeProduct&data=${product.getLocationData()}&xmlfile=${service.getCatalogLocation()}>
 		#else
 			<a href=?action=describeProduct&data=${product.getLocationMetaData()}>
 		#end
