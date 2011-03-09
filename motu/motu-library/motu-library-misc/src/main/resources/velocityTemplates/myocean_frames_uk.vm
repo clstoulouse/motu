@@ -103,83 +103,13 @@
   <link href="$httpSite/templates/myocean/css/patches/patch_my_layout.css" rel="stylesheet" type="text/css" />
   <![endif]-->	
   
-######  <script type="text/javascript" src="$httpSite/templates/myocean/js/mootools.js"></script>
-######  <script type="text/javascript" src="$httpSite/templates/myocean/js/mis-gw.js"></script>
+  <script type="text/javascript" src="$httpSite/templates/myocean/js/mootools.js"></script>
+  <script type="text/javascript" src="$httpSite/templates/myocean/js/mis-gw.js"></script>
 </head>
 
 <body onLoad="init()" onUnload="unload()">
 	<a name="up" id="up"></a>
-	
-		<div class="page_margins">
-			<div class="page">
-				<div id="header">
-					<div id="logo"><a href="/"><img src="http://www.myocean.eu/css/myocean/screen/images/logo_myocean.gif" width="165" height="157" border="0" alt="MyOcean" title="MyOcean homepage" /></a></div>
-					<div id="headerText"><h1>Products and Services</h1></div>
-					<div id="aboutus">
-						<a href="http://www.myocean.eu/web/6-about-us.php">About us</a>
 
-					</div>
-					<div id="topnav">
-						
-						
-						<table width="545" cellpadding="0" cellspacing="0" border="0" class="template" id="top_prod_services">
-							<tr style="vertical-align:top;">
-								<td class="safety">									
-									<div class="ps_type"><h2>Marine<br />safety<br />&nbsp;</h2>
-										<div><a href="http://www.myocean.eu/web/19-products-and-services.php?domain=safety">&raquo; Products and services</a></div>
-
-									</div>
-								</td>
-								<td class="spacer"></td>
-								<td class="resources">
-									<div class="ps_type"><h2>Marine<br />resources<br />&nbsp;</h2>
-										<div><a href="http://www.myocean.eu/web/19-products-and-services.php?domain=resources">&raquo; Products and services</a></div>
-									</div>
-
-								</td>
-								<td class="spacer"></td>
-								<td class="environment">
-									<div class="ps_type"><h2>Coastal &amp; marine<br />environment<br />&nbsp;</h2>
-										<div><a href="http://www.myocean.eu/web/19-products-and-services.php?domain=environment">&raquo; Products and services</a></div>
-									</div>
-
-								</td>
-								<td class="spacer"></td>
-								<td class="forecast">
-									<div class="ps_type"><h2>Weather, climate<br />&amp; seasonal<br />forecasting</h2>
-										<div><a href="http://www.myocean.eu/web/19-products-and-services.php?domain=forecast">&raquo; Products and services</a></div>
-									</div>
-
-								</td>
-							</tr>
-						</table>							
-						
-					</div>
-					<div id="topright_back"></div>
-					<div id="topright">
-						
-						&nbsp;<br />
-						<div id="memberAccess"><h1><a href="#">&raquo; Member access</a></h1></div>
-
-						
-					</div>
-					<div id="contactus">
-						<a href="http://www.myocean.eu/web/21-contact-us.php">Contact us</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	
-
-	
-<div class="page_margins">
-		###	<div class="page">
-				##<div id="main">
-					
-					<div id="col">
-	
-	##--------------------------------
-	
 	<div id="col3_content" class="clearfix">
 		<div id="nav_main">
 		   <div id="ps_nav">
@@ -193,9 +123,6 @@
 			  
 	      <!-- CONTENT START -->
 	      <div id="content">
-			
-			
-			
 #set($tocLowLevel = 1)
 #set($tocHighLevel = 1)
 #set($tocAsRow = true)
@@ -203,18 +130,7 @@
 
 #parse ($body_template)
 		  </div>	
-		  </div>	
-					</div>
-<div id="footer">
-					<div id="gmes_fp7"><div>
-						<a title="More information: GMES / FP7" href="http://www.myocean.eu/web/20-gmes-fp7.php">» more</a>
-						</div></div>
-					<div id="footer_content"><div><a href="http://www.myocean.eu/web/12-site-map.php">Site map</a> | <a href="http://www.myocean.eu/web/13-all-rights-reserved.php">All rights reserved</a> | <a href="http://www.myocean.eu/web/14-faq.php">FAQ</a></div></div>
-				</div>
-### main                </div>
-### page            </div>
-</div>
-
+    </div>
 </body>
 
 </html>

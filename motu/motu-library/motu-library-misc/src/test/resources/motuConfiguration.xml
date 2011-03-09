@@ -137,6 +137,16 @@
              <catalog name="catalog.xml" type="tds" urlSite="http://catsat-data1.cls.fr:43080/thredds" />
      </configService>
 
+	<!--===========================================================-->
+    <!--                   TDS Catsat                --> 
+    <!--===========================================================-->
+     <configService defaultLanguage="UK" description="Ocean data"
+             group="catsat"
+             httpBaseRef="http://resources.myocean.eu"
+             name="catsat2"
+             veloTemplatePrefix="myocean">
+             <catalog name="catalog.xml" type="tds" urlSite="http://catsat-data1.cls.fr:43080/thredds" />
+     </configService>
 	
 	<!--===========================================================-->
     <!--                   TDS Mercator  MyOcean                --> 

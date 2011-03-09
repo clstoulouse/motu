@@ -702,7 +702,7 @@ public class TestIntfce {
             // String serviceName = myoceanUrn + "cls-toulouse-fr-sltac-motu-rest";
             //String serviceName = myoceanUrn + "SL-CLS-TOULOUSE-FR-MOTU-REST";
             //String serviceName = myoceanUrn + "SLTAC3";
-            String serviceName = "catsat";
+            String serviceName = "catsat2";
             //String serviceName = "http://purl.org/myocean/ontology/service/database#yourduname";
             //String serviceName = "http://purl.org/cls/atoll/ontology/individual/atoll#motu-opendap-mercator-myocean";
 
