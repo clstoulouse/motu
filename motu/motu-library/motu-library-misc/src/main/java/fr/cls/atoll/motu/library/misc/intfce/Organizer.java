@@ -6853,10 +6853,15 @@ public class Organizer {
         if (Organizer.isNullOrEmpty(uri)) {
             return uri;
         }
-        String[] split = uri.split(SLASH_REGEXP);
+
+        String[] split = uri.split(SHARP_REGEXP);
         if (split.length <= 1) {
-            return uri;
+            split = uri.split(SLASH_REGEXP);
+            if (split.length <= 1) {
+                return uri;
+            }
         }
+        
         return split[1];
     }
 
@@ -6870,7 +6875,10 @@ public class Organizer {
     public static String getVariableIdFromURI(String uri) {
         String[] split = uri.split(SHARP_REGEXP);
         if (split.length <= 1) {
-            return uri;
+            split = uri.split(SLASH_REGEXP);
+            if (split.length <= 1) {
+                return uri;
+            }
         }
         return split[1];
     }
