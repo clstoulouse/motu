@@ -42,10 +42,10 @@ import java.util.LinkedList;
 import org.joda.time.Interval;
 import org.joda.time.ReadableInterval;
 
+import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.misc.utils.DateUtils;
 import fr.cls.atoll.motu.library.misc.utils.Zip;
 
 /**

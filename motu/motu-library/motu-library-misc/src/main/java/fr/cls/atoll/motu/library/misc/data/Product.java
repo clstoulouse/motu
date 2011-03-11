@@ -58,6 +58,7 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.geoloc.LatLonRect;
+import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.library.inventory.Access;
 import fr.cls.atoll.motu.library.inventory.DepthCoverage;
 import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
@@ -82,7 +83,6 @@ import fr.cls.atoll.motu.library.misc.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
-import fr.cls.atoll.motu.library.misc.utils.DateUtils;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 

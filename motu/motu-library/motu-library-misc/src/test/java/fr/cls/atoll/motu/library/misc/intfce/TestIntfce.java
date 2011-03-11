@@ -385,7 +385,7 @@ public class TestIntfce {
         // productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
-        productDownloadInfo();
+        // productDownloadInfo();
         // productExtractDataHTMLAviso();
         // productExtractDataAviso();
         // productExtractDataAvisofromProductId();
@@ -429,7 +429,7 @@ public class TestIntfce {
         // productExtractXYTopaz1();
         // productExtractXYTopaz2();
         // productExtractXYTopaz3();
-        // productExtractXYMetNo1();
+        productExtractXYMetNo1();
         // productExtractAcri();
 
     }
@@ -3143,15 +3143,16 @@ public class TestIntfce {
     }
 
     public static void productExtractXYMetNo1() {
-        String locationData = "http://thredds.met.no/thredds/dodsC/topaz/myocean/arctic/tmipv2a-class1-be";
-
+        //String locationData = "http://thredds.met.no/thredds/dodsC/topaz/myocean/arctic/tmipv2a-class1-be";
+        String locationData = "http://atoll-mercator.vlandata.cls.fr:44080/thredds/dodsC/global-reanalysis-phys-001-004-a-ran-fr-glorys2-icemod";
+        
         // productInformationFromLocationData(locationData);
 
         List<String> listVar = new ArrayList<String>();
         // add variable to extract
         // listVar.add("salinity");
         // listVar.add("u");
-        listVar.add("temperature");
+        //listVar.add("temperature");
         // listVar.add("longitude");
         // listVar.add("latitude");
 
@@ -3160,8 +3161,8 @@ public class TestIntfce {
         // second element is end date (optional)
         // if only start date is set, end date equals start date
         List<String> listTemporalCoverage = new ArrayList<String>();
-        listTemporalCoverage.add("2009-12-21");
-        listTemporalCoverage.add("2009-12-22");
+        listTemporalCoverage.add("2000-12-15");
+        listTemporalCoverage.add("2000-12-15");
 
         // add Lat/Lon criteria
         // first element is low latitude
@@ -3179,8 +3180,8 @@ public class TestIntfce {
         // second element is high depth (optional)
         // if only low depth is set, high depth equals low depth value
         List<String> listDepthCoverage = new ArrayList<String>();
-        listDepthCoverage.add("5");
-        listDepthCoverage.add("30");
+        //listDepthCoverage.add("5");
+        //listDepthCoverage.add("30");
 
         Product product = null;
 

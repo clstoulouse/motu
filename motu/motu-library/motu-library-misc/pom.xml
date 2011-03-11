@@ -18,6 +18,11 @@
     <description>This package holds the miscellaneous core components of the Motu server.</description>
 
 	<dependencies>	
+		<dependency>
+			<groupId>cls.atoll.motu.library</groupId>
+			<artifactId>motu-library-converter</artifactId>
+			<version>2.1.15-SNAPSHOT</version>
+		</dependency>	
         <dependency>
             <groupId>cls.atoll.motu.api</groupId>
             <artifactId>motu-api-message</artifactId>

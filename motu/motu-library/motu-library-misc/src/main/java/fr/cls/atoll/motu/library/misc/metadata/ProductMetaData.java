@@ -24,6 +24,7 @@
  */
 package fr.cls.atoll.motu.library.misc.metadata;
 
+import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.library.misc.data.CatalogData;
 import fr.cls.atoll.motu.library.misc.data.DatasetBase;
 import fr.cls.atoll.motu.library.misc.data.Product;
@@ -36,7 +37,6 @@ import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.library.misc.tds.server.Property;
 import fr.cls.atoll.motu.library.misc.tds.server.Variables;
-import fr.cls.atoll.motu.library.misc.utils.DateUtils;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
