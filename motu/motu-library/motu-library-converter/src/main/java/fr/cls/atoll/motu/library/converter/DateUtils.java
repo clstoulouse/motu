@@ -9,11 +9,14 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
+import org.joda.time.Period;
 import org.joda.time.ReadableInterval;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISOPeriodFormat;
 import org.joda.time.format.PeriodFormatter;
+
+import fr.cls.atoll.motu.library.converter.exception.MotuConverterException;
 
 /**
  * 
@@ -154,10 +157,10 @@ public class DateUtils {
         }
         return new DateTime(dateTime, DateTimeZone.UTC);
     }
-    
+
     /**
      * Date time to utc.
-     *
+     * 
      * @param dateTime the date time
      * @return the date time
      */
@@ -170,17 +173,17 @@ public class DateUtils {
 
     /**
      * Gets the date time as utc string.
-     *
+     * 
      * @param dateTime the date time
      * @return the date time as utc string
      */
     public static String getDateTimeAsUTCString(DateTime dateTime) {
         return DateUtils.getDateTimeAsUTCString(dateTime, DateUtils.DATETIME_PATTERN3);
     }
-    
+
     /**
      * Gets the date time as utc string.
-     *
+     * 
      * @param date the date
      * @return the date time as utc string
      */
@@ -190,7 +193,7 @@ public class DateUtils {
 
     /**
      * Gets the date time as utc string.
-     *
+     * 
      * @param dateTime the date time
      * @param pattern the pattern
      * @return the date time as utc string
@@ -203,10 +206,10 @@ public class DateUtils {
         DateTime dateTimeTmp = DateUtils.dateTimeToUTC(dateTime);
         return DateUtils.DATETIME_FORMATTERS.get(pattern).print(dateTimeTmp);
     }
-    
+
     /**
      * Gets the date time as utc string.
-     *
+     * 
      * @param date the date
      * @param pattern the pattern
      * @return the date time as utc string
@@ -219,5 +222,110 @@ public class DateUtils {
         DateTime dateTimeTmp = DateUtils.dateTimeToUTC(date);
         return DateUtils.DATETIME_FORMATTERS.get(pattern).print(dateTimeTmp);
     }
-    
+
+    /**
+     * Convert a given date into a string representation.
+     * 
+     * @param dt the date to print.
+     * 
+     * @return the string representation.
+     */
+    public static String dateToString(DateTime dt) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("DateToString(DateTime) - entering");
+        }
+
+        String returnString = DateUtils.DATETIME_FORMATTERS.get(DateUtils.DATETIME_PATTERN1).print(dt);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("DateToString(DateTime) - exiting");
+        }
+        return returnString;
+    }
+
+    /**
+     * Convert a given string date representation into an instance of Joda time date.
+     * 
+     * @param s the string to convert into a date.
+     * @return a {@link DateTime} instance.
+     * @throws MotuConverterException the motu converter exception
+     */
+    public static DateTime stringToDateTime(String s) throws MotuConverterException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("StringToDateTime(String) - entering");
+        }
+
+        DateTime dateTime = null;
+
+        StringBuffer stringBuffer = new StringBuffer();
+        for (DateTimeFormatter dateTimeFormatter : DateUtils.DATETIME_FORMATTERS.values()) {
+            try {
+                dateTime = dateTimeFormatter.parseDateTime(s);
+            } catch (IllegalArgumentException e) {
+                // LOG.error("StringToDateTime(String)", e);
+
+                stringBuffer.append(e.getMessage());
+                stringBuffer.append("\n");
+            }
+
+            if (dateTime != null) {
+                break;
+            }
+        }
+
+        if (dateTime == null) {
+            throw new MotuConverterException(String.format("Cannot convert '%s' to DateTime. Format '%s' is not valid.\nAcceptable format are '%s'",
+                                                           s,
+                                                           stringBuffer.toString(),
+                                                           DateUtils.DATETIME_FORMATTERS.keySet().toString()));
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("StringToDateTime(String) - exiting");
+        }
+        return dateTime;
+    }
+
+    /**
+     * String to period.
+     * 
+     * @param s the s
+     * @return the period
+     * @throws MotuConverterException the motu converter exception
+     */
+    public static Period stringToPeriod(String s) throws MotuConverterException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("stringToPeriod(String) - entering");
+        }
+
+        Period period = null;
+
+        StringBuffer stringBuffer = new StringBuffer();
+        for (PeriodFormatter periodFormatter : DateUtils.PERIOD_FORMATTERS.values()) {
+            try {
+                period = periodFormatter.parsePeriod(s);
+            } catch (IllegalArgumentException e) {
+                // LOG.error("stringToPeriod(String)", e);
+
+                stringBuffer.append(e.getMessage());
+                stringBuffer.append("\n");
+            }
+
+            if (period != null) {
+                break;
+            }
+        }
+
+        if (period == null) {
+            throw new MotuConverterException(String.format("Cannot convert '%s' to Period. Format '%s' is not valid.\nAcceptable format are '%s'",
+                                                           s,
+                                                           stringBuffer.toString(),
+                                                           DateUtils.PERIOD_FORMATTERS.keySet().toString()));
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("stringToPeriod(String) - exiting");
+        }
+        return period;
+    }
+
 }
