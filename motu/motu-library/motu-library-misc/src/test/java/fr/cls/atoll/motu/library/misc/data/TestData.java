@@ -79,7 +79,7 @@ public class TestData {
         //testLoadOpendapMetaData();
         
         double[] array = new double[] {2, 3, 5, 6, 13, 20 };
-        int minIndex = ExtractCriteria.findMinIndex(array, 0);
+        int minIndex = ExtractCriteria.findMinIndex(array, 4);
         int maxIndex = ExtractCriteria.findMaxIndex(array, 4);
         System.out.println(minIndex);
         System.out.println(maxIndex);

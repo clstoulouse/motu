@@ -30,6 +30,7 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
+// TODO: Auto-generated Javadoc
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
 /**
@@ -46,9 +47,12 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
      */
     private static final Logger LOG = Logger.getLogger(MotuInvalidDateRangeException.class);
 
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -1L;
 
     /**
+     * The Constructor.
+     *
      * @param invalidRangeMin invalid Date range min. representation which causes the exception
      * @param invalidRangeMax invalid Date range max. representation which causes the exception
      * @param validRangeMin valid Date range min. representation
@@ -72,6 +76,8 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
     // CSON: StrictDuplicateCode
 
     /**
+     * The Constructor.
+     *
      * @param invalidRangeMin invalid Date range min. representation which causes the exception
      * @param invalidRangeMax invalid Date range max. representation which causes the exception
      * @param validRangeMin valid Date range min. representation
@@ -93,6 +99,8 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
     }
 
     /**
+     * The Constructor.
+     *
      * @param invalidRange invalid Date range representation which causes the exception
      * @param validRange valid Date range representation
      * @param cause native exception.
@@ -109,6 +117,8 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
     }
 
     /**
+     * The Constructor.
+     *
      * @param invalidRange invalid Date range representation which causes the exception
      * @param validRange valid Date range representation
      */
@@ -134,6 +144,8 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
     }
 
     /**
+     * Notify exception.
+     *
      * @return exception information.
      */
     @Override
@@ -150,6 +162,8 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
             stringBuffer.append(getValidRangeAsString());
         }
 
+        stringBuffer.append(getNearestValidValuesMessage());
+
         return stringBuffer.toString();
     }
 
@@ -159,6 +173,8 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
     final private Date[] invalidRange;
 
     /**
+     * Gets the invalid range.
+     *
      * @return the invalidRange
      */
     public Date[] getInvalidRange() {
@@ -166,6 +182,8 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
     }
 
     /**
+     * Gets the invalid range as string.
+     *
      * @return the invalidRange as a string interval representation
      */
     public String getInvalidRangeAsString() {
@@ -187,13 +205,17 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
     final private Date[] validRange;
 
     /**
+     * Gets the valid range.
+     *
      * @return the validRange
      */
     public Date[] getValidRange() {
         return this.validRange;
     }
-
+    
     /**
+     * Gets the valid range as string.
+     *
      * @return the validRange as a string interval representation
      */
     public String getValidRangeAsString() {
@@ -206,6 +228,75 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
         stringBuffer.append(",");
         stringBuffer.append(NetCdfReader.DATETIME_TO_STRING_DEFAULT.format(validRange[1]));
         stringBuffer.append("]");
+        return stringBuffer.toString();
+    }
+    
+    /** The nearest valid values. */
+    private  Date[] nearestValidValues = null;
+
+
+    /**
+     * Gets the nearest valid values.
+     *
+     * @return the nearest valid values
+     */
+    public Date[] getNearestValidValues() {
+        return nearestValidValues;
+    }
+
+    /**
+     * Sets the nearest valid values.
+     *
+     * @param min the min
+     * @param max the max
+     */
+    public void setNearestValidValues(Date min, Date max) {
+        this.nearestValidValues = new Date[2];
+        this.nearestValidValues[0] = min;
+        this.nearestValidValues[1] = max;
+    }
+
+    /**
+     * Sets the nearest valid values.
+     *
+     * @param nearestValidRange the nearest valid values
+     */
+    public void setNearestValidValues(Date[] nearestValidRange) {
+        this.nearestValidValues = nearestValidRange;
+    }
+
+    /**
+     * Gets the nearest valid values as string.
+     *
+     * @return the nearest valid values as string
+     */
+    public String getNearestValidValuesAsString() {
+        if (nearestValidValues == null) {
+            return "";
+        }
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("values <= ");
+        stringBuffer.append(NetCdfReader.DATETIME_TO_STRING_DEFAULT.format(nearestValidValues[0]));
+        stringBuffer.append(", values >= ");
+        stringBuffer.append(NetCdfReader.DATETIME_TO_STRING_DEFAULT.format(nearestValidValues[1]));
+        return stringBuffer.toString();
+    }
+    
+    /**
+     * Gets the nearest valid values message.
+     *
+     * @return the nearest valid values message
+     */
+    public String getNearestValidValuesMessage() {
+        StringBuffer stringBuffer = new StringBuffer();
+        
+        if (nearestValidValues != null) {
+            stringBuffer.append("The nearest valid range against ");
+            stringBuffer.append(getInvalidRangeAsString());
+            stringBuffer.append(" is: ");
+            stringBuffer.append(getNearestValidValuesAsString());
+        }
+
         return stringBuffer.toString();
     }
 

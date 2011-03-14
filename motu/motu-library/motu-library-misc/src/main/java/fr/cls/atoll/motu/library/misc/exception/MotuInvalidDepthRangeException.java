@@ -26,6 +26,7 @@ package fr.cls.atoll.motu.library.misc.exception;
 
 import org.apache.log4j.Logger;
 
+// TODO: Auto-generated Javadoc
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
 /**
@@ -42,9 +43,12 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
      */
     private static final Logger LOG = Logger.getLogger(MotuInvalidDepthRangeException.class);
 
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -1L;
 
     /**
+     * The Constructor.
+     *
      * @param invalidRangeMin invalid depth range min. representation which causes the exception
      * @param invalidRangeMax invalid depth range max. representation which causes the exception
      * @param validRangeMin valid depth range min. representation
@@ -68,6 +72,8 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
     // CSOFF: StrictDuplicateCode
 
     /**
+     * The Constructor.
+     *
      * @param invalidRangeMin invalid depth range min. representation which causes the exception
      * @param invalidRangeMax invalid depth range max. representation which causes the exception
      * @param validRangeMin valid depth range min. representation
@@ -89,6 +95,8 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
     }
 
     /**
+     * The Constructor.
+     *
      * @param invalidRange invalid depth range representation which causes the exception
      * @param validRange valid depth range representation
      * @param cause native exception.
@@ -105,6 +113,8 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
     }
 
     /**
+     * The Constructor.
+     *
      * @param invalidRange invalid depth range representation which causes the exception
      * @param validRange valid depth range representation
      */
@@ -130,6 +140,8 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
     }
 
     /**
+     * Notify exception.
+     *
      * @return exception information.
      */
     @Override
@@ -145,6 +157,8 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
             stringBuffer.append("Valid range is:[");
             stringBuffer.append(getValidRangeAsString());
         }
+        
+       stringBuffer.append(getNearestValidValuesMessage());
 
         return stringBuffer.toString();
     }
@@ -155,6 +169,8 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
     final private double[] invalidRange;
 
     /**
+     * Gets the invalid range.
+     *
      * @return the invalidRange
      */
     public double[] getInvalidRange() {
@@ -162,6 +178,8 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
     }
 
     /**
+     * Gets the invalid range as string.
+     *
      * @return the invalidRange as a string interval representation
      */
     public String getInvalidRangeAsString() {
@@ -180,6 +198,8 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
     final private double[] validRange;
 
     /**
+     * Gets the valid range.
+     *
      * @return the validRange
      */
     public double[] getValidRange() {
@@ -187,6 +207,8 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
     }
 
     /**
+     * Gets the valid range as string.
+     *
      * @return the validRange as a string interval representation
      */
     public String getValidRangeAsString() {
@@ -198,6 +220,75 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
         stringBuffer.append("]");
         return stringBuffer.toString();
     }
+    
+    /** The nearest valid values. */
+    private  double[] nearestValidValues = null;
+    
+    /**
+     * Gets the nearest valid values.
+     *
+     * @return the nearest valid values
+     */
+    public double[] getNearestValidValues() {
+        return nearestValidValues;
+    }
+
+    /**
+     * Sets the nearest valid values.
+     *
+     * @param min the min
+     * @param max the max
+     */
+    public void setNearestValidValues(double min, double max) {
+        this.nearestValidValues = new double[2];
+        this.nearestValidValues[0] = min;
+        this.nearestValidValues[1] = max;
+    }
+    
+    /**
+     * Sets the nearest valid values.
+     *
+     * @param nearestValidRange the nearest valid values
+     */
+    public void setNearestValidValues(double[] nearestValidRange) {
+        this.nearestValidValues = nearestValidRange;
+    }
+
+    /**
+     * Gets the nearest valid values as string.
+     *
+     * @return the nearest valid values as string
+     */
+    public String getNearestValidValuesAsString() {
+        if (nearestValidValues == null) {
+            return "";
+        }
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("values <= ");
+        stringBuffer.append(Double.toString(nearestValidValues[0]));
+        stringBuffer.append(", values >= ");
+        stringBuffer.append(Double.toString(nearestValidValues[1]));
+        return stringBuffer.toString();
+    }
+    
+    /**
+     * Gets the nearest valid values message.
+     *
+     * @return the nearest valid values message
+     */
+    public String getNearestValidValuesMessage() {
+        StringBuffer stringBuffer = new StringBuffer();
+        
+        if (nearestValidValues != null) {
+            stringBuffer.append("The nearest valid range against ");
+            stringBuffer.append(getInvalidRangeAsString());
+            stringBuffer.append(" is: ");
+            stringBuffer.append(getNearestValidValuesAsString());
+        }
+
+        return stringBuffer.toString();
+    }
+    
 
 }
 // CSON: MultipleStringLiterals

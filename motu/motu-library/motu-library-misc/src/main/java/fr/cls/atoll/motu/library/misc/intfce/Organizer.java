@@ -1109,6 +1109,8 @@ public class Organizer {
             stringBuffer.append(ex.getInvalidRangeAsString());
             stringBuffer.append(" is out of range.\nDepth must intersect the interval ");
             stringBuffer.append(ex.getValidRangeAsString());
+            stringBuffer.append(". ");
+            stringBuffer.append(ex.getNearestValidValuesMessage());
 
         } else if (e instanceof MotuInvalidDateException) {
             MotuInvalidDateException ex = (MotuInvalidDateException) e;
@@ -1121,6 +1123,8 @@ public class Organizer {
             stringBuffer.append(ex.getInvalidRangeAsString());
             stringBuffer.append(" is out of range.\nDate must intersect the interval ");
             stringBuffer.append(ex.getValidRangeAsString());
+            stringBuffer.append(". ");
+            stringBuffer.append(ex.getNearestValidValuesMessage());
 
         } else if (e instanceof MotuInvalidLatitudeException) {
             MotuInvalidLatitudeException ex = (MotuInvalidLatitudeException) e;

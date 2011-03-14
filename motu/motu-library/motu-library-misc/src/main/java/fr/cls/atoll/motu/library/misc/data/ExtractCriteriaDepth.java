@@ -25,6 +25,7 @@
 package fr.cls.atoll.motu.library.misc.data;
 
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
@@ -318,18 +319,29 @@ public class ExtractCriteriaDepth extends ExtractCriteriaGeo {
             throw new MotuInvalidDepthRangeException(from, to, minmax[0], minmax[1]);
         }
 
-        if (from == to) {
-            first = ExtractCriteria.findMaxIndex(array, from);
-            last = first;
-        } else {
-            first = ExtractCriteria.findMinIndex(array, from);
-            last = ExtractCriteria.findMaxIndex(array, to);
-        }
-
+//        if (from == to) {
+//            first = ExtractCriteria.findMaxIndex(array, from);
+//            last = first;
+//        } else {
+//            first = ExtractCriteria.findMinIndex(array, from);
+//            last = ExtractCriteria.findMaxIndex(array, to);
+//        }
+        
+        first = ExtractCriteria.findMinIndex(array, from);
+        last = ExtractCriteria.findMaxIndex(array, to);
+        
         // no index found
         if ((first == -1) || (last == -1)) {
             throw new MotuInvalidDepthRangeException(from, to, minmax[0], minmax[1]);
         }
+
+        // criteria is not a valid range.
+        if (first > last) {
+            MotuInvalidDepthRangeException motuInvalidDepthRangeException = new MotuInvalidDepthRangeException(from, to, minmax[0], minmax[1]);
+            motuInvalidDepthRangeException.setNearestValidValues(array[last],  array[first]);
+            throw motuInvalidDepthRangeException;
+        }
+
         Range range = null;
         try {
             range = new Range(first, last);

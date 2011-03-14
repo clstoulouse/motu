@@ -325,18 +325,29 @@ public class ExtractCriteriaDatetime extends fr.cls.atoll.motu.library.misc.data
             throw new MotuInvalidDateRangeException(from, to, NetCdfReader.getDate(minmax[0], udUnits), NetCdfReader.getDate(minmax[1], udUnits));
         }
 
-        if (startDate == endDate) {
-            first = ExtractCriteria.findMaxIndex(array, startDate);
-            last = first;
-        } else {
-            first = ExtractCriteria.findMinIndex(array, startDate);
-            last = ExtractCriteria.findMaxIndex(array, endDate);
-        }
+//        if (startDate == endDate) {
+//            first = ExtractCriteria.findMaxIndex(array, startDate);
+//            last = first;
+//        } else {
+//            first = ExtractCriteria.findMinIndex(array, startDate);
+//            last = ExtractCriteria.findMaxIndex(array, endDate);
+//        }
+
+        first = ExtractCriteria.findMinIndex(array, startDate);
+        last = ExtractCriteria.findMaxIndex(array, endDate);
 
         // no index found
         if ((first == -1) || (last == -1)) {
             throw new MotuInvalidDateRangeException(from, to, NetCdfReader.getDate(minmax[0], udUnits), NetCdfReader.getDate(minmax[1], udUnits));
         }
+        
+        // criteria is not a valid range.
+        if (first > last) {
+            MotuInvalidDateRangeException motuInvalidDateRangeException = new MotuInvalidDateRangeException(from, to, NetCdfReader.getDate(minmax[0], udUnits), NetCdfReader.getDate(minmax[1], udUnits));
+            motuInvalidDateRangeException.setNearestValidValues(NetCdfReader.getDate(array[last], udUnits),  NetCdfReader.getDate(array[first], udUnits));
+            throw motuInvalidDateRangeException;        
+        }
+
         Range range = null;
         try {
             range = new Range(first, last);
