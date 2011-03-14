@@ -156,10 +156,12 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
         if (invalidRange != null) {
             stringBuffer.append("\nInvalid range: ");
             stringBuffer.append(getInvalidRangeAsString());
+            stringBuffer.append(". ");
         }
         if (validRange != null) {
             stringBuffer.append("Valid range is: ");
             stringBuffer.append(getValidRangeAsString());
+            stringBuffer.append(". ");
         }
 
         stringBuffer.append(getNearestValidValuesMessage());
@@ -295,6 +297,7 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
             stringBuffer.append(getInvalidRangeAsString());
             stringBuffer.append(" is: ");
             stringBuffer.append(getNearestValidValuesAsString());
+            stringBuffer.append(". ");
         }
 
         return stringBuffer.toString();

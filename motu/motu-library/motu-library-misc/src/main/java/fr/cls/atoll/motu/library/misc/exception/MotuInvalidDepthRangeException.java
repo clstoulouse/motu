@@ -154,8 +154,9 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
             stringBuffer.append(getInvalidRangeAsString());
         }
         if (validRange != null) {
-            stringBuffer.append("Valid range is:[");
+            stringBuffer.append(" Valid range is:[");
             stringBuffer.append(getValidRangeAsString());
+            stringBuffer.append(". ");
         }
         
        stringBuffer.append(getNearestValidValuesMessage());
@@ -284,6 +285,7 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
             stringBuffer.append(getInvalidRangeAsString());
             stringBuffer.append(" is: ");
             stringBuffer.append(getNearestValidValuesAsString());
+            stringBuffer.append(". ");
         }
 
         return stringBuffer.toString();
