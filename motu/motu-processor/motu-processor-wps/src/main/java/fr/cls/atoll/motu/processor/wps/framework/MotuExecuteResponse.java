@@ -26,6 +26,7 @@ package fr.cls.atoll.motu.processor.wps.framework;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
+import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.utils.ReflectionUtils;
 import fr.cls.atoll.motu.library.misc.utils.StaticResourceBackedDynamicEnum;
@@ -612,10 +613,10 @@ public class MotuExecuteResponse {
         try {
 
             if (DateTime.class.equals(clazz)) {
-                returnedObject = WPSFactory.stringToDateTime(nativeValue);
+                returnedObject = DateUtils.stringToDateTime(nativeValue);
 
             } else if (Period.class.equals(clazz)) {
-                returnedObject = WPSFactory.stringToPeriod(nativeValue);
+                returnedObject = DateUtils.stringToPeriod(nativeValue);
             } else if (clazz.isEnum()) {
                 returnedObject = Enum.valueOf((Class) clazz, nativeValue);
             } else {

@@ -24,6 +24,8 @@
  */
 package fr.cls.atoll.motu.processor.iso19139;
 
+import fr.cls.atoll.motu.library.converter.DateUtils;
+import fr.cls.atoll.motu.library.converter.exception.MotuConverterException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.processor.wps.framework.WPSFactory;
@@ -1043,7 +1045,11 @@ public class OperationMetadata {
         final Class<?> type = parameterValue.getDescriptor().getValueClass();
 
         if (DateTime.class.equals(type)) {
-            v = WPSFactory.stringToDateTime(value);
+            try {
+                v = DateUtils.stringToDateTime(value);
+            } catch (MotuConverterException e) {
+                throw new MotuException("Error in OperationMetadata#setParameterValuewhile setting parameter value.", e);
+            }
         }
 
         if (Collection.class.equals(type)) {

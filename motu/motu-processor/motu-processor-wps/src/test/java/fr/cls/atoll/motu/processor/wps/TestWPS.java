@@ -24,6 +24,8 @@
  */
 package fr.cls.atoll.motu.processor.wps;
 
+import fr.cls.atoll.motu.library.converter.DateUtils;
+import fr.cls.atoll.motu.library.converter.exception.MotuConverterException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
@@ -946,7 +948,7 @@ public class TestWPS {
         }
     }
 
-    public static void testBuildAndRunChainWPS() {
+    public static void testBuildAndRunChainWPS() throws MotuConverterException {
         try {
             ServiceMetadata serviceMetadata = new ServiceMetadata();
             URL url = null;
@@ -1180,7 +1182,7 @@ public class TestWPS {
 
     }
 
-    public static void setExtractDataParameterValue(OperationMetadata op) throws MotuExceptionBase {
+    public static void setExtractDataParameterValue(OperationMetadata op) throws MotuExceptionBase, MotuConverterException {
         String prefix = "http://atoll.cls.fr/2009/resource/individual/atoll#";
         String productId = prefix + "dataset-mercatorPsy3v2_nat_mean_best_estimate";
         String service = prefix + "motu-opendap-mercator";
@@ -1191,7 +1193,7 @@ public class TestWPS {
         // date can be a string or a org.joda.time.DateTime
         op.setParameterValue("starttime", "2009-04-27T10:00:00");
         // op.setParameterValue("endtime", "2009-04-28");
-        op.setParameterValue("endtime", WPSFactory.stringToDateTime("2009-04-28"));
+        op.setParameterValue("endtime", DateUtils.stringToDateTime("2009-04-28"));
 
         // Variables can be a List or a string
         List<String> variables = new ArrayList<String>();
@@ -1240,8 +1242,8 @@ public class TestWPS {
         Constructor<?> ctor = null;
         try {
             Object[] values = {
-                    "it's a string", true, new BigDecimal(125489.365), WPSFactory.stringToDateTime("2007-10-05"), new DateTime(125236636),
-                    new Period(6539), WPSFactory.stringToPeriod("P5Y2M10DT15H"), new URI("http://www.w3schools.com/Schema/schema_dtypes_date.asp"),
+                    "it's a string", true, new BigDecimal(125489.365), DateUtils.stringToDateTime("2007-10-05"), new DateTime(125236636),
+                    new Period(6539), DateUtils.stringToPeriod("P5Y2M10DT15H"), new URI("http://www.w3schools.com/Schema/schema_dtypes_date.asp"),
                     125639, 4526L, 4253.635, (short) 25, 125.36f, (byte) 'a', };
 
             for (Object value : values) {
@@ -1250,10 +1252,10 @@ public class TestWPS {
                 clazz = value.getClass();
                 clazzTemp = valueString.getClass();
                 if (DateTime.class.equals(clazz)) {
-                    object = WPSFactory.stringToDateTime(valueString);
+                    object = DateUtils.stringToDateTime(valueString);
 
                 } else if (Period.class.equals(clazz)) {
-                    object = WPSFactory.stringToPeriod(valueString);
+                    object = DateUtils.stringToPeriod(valueString);
                 } else {
                     ctor = clazz.getConstructor(clazzTemp);
                     object = ctor.newInstance(valueString);
@@ -1285,7 +1287,7 @@ public class TestWPS {
         } catch (InvocationTargetException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (MotuInvalidDateException e) {
+        } catch (MotuConverterException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (URISyntaxException e) {

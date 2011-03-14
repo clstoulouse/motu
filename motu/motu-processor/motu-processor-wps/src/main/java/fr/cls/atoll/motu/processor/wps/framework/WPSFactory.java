@@ -2642,131 +2642,131 @@ public class WPSFactory {
         return inS;
     }
 
-    /**
-     * Convert a given date into a string representation.
-     * 
-     * @param dt the date to print.
-     * 
-     * @return the string representation.
-     */
-    public static String dateTimeToString(DateTime dt) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("DateTimeToString(DateTime) - entering");
-        }
+//    /**
+//     * Convert a given date into a string representation.
+//     * 
+//     * @param dt the date to print.
+//     * 
+//     * @return the string representation.
+//     */
+//    public static String dateTimeToString(DateTime dt) {
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug("DateTimeToString(DateTime) - entering");
+//        }
+//
+//        String returnString = WPSFactory.DATETIME_FORMATTERS.get(WPSFactory.DATETIME_PATTERN2).print(dt);
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug("DateTimeToString(DateTime) - exiting");
+//        }
+//        return returnString;
+//    }
 
-        String returnString = WPSFactory.DATETIME_FORMATTERS.get(WPSFactory.DATETIME_PATTERN2).print(dt);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("DateTimeToString(DateTime) - exiting");
-        }
-        return returnString;
-    }
+//    /**
+//     * Convert a given date into a string representation.
+//     * 
+//     * @param dt the date to print.
+//     * 
+//     * @return the string representation.
+//     */
+//    public static String dateToString(DateTime dt) {
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug("DateToString(DateTime) - entering");
+//        }
+//
+//        String returnString = WPSFactory.DATETIME_FORMATTERS.get(WPSFactory.DATETIME_PATTERN1).print(dt);
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug("DateToString(DateTime) - exiting");
+//        }
+//        return returnString;
+//    }
 
-    /**
-     * Convert a given date into a string representation.
-     * 
-     * @param dt the date to print.
-     * 
-     * @return the string representation.
-     */
-    public static String dateToString(DateTime dt) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("DateToString(DateTime) - entering");
-        }
+//    /**
+//     * Convert a given string date representation into an instance of Joda time date.
+//     * 
+//     * @param s the string to convert into a date.
+//     * 
+//     * @return a {@link DateTime} instance.
+//     * 
+//     * @throws MotuInvalidDateException the motu invalid date exception
+//     */
+//    public static DateTime stringToDateTime(String s) throws MotuInvalidDateException {
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug("StringToDateTime(String) - entering");
+//        }
+//
+//        DateTime dateTime = null;
+//
+//        StringBuffer stringBuffer = new StringBuffer();
+//        for (DateTimeFormatter dateTimeFormatter : WPSFactory.DATETIME_FORMATTERS.values()) {
+//            try {
+//                dateTime = dateTimeFormatter.parseDateTime(s);
+//            } catch (IllegalArgumentException e) {
+//                // LOG.error("StringToDateTime(String)", e);
+//
+//                stringBuffer.append(e.getMessage());
+//                stringBuffer.append("\n");
+//            }
+//
+//            if (dateTime != null) {
+//                break;
+//            }
+//        }
+//
+//        if (dateTime == null) {
+//            throw new MotuInvalidDateException(s, new MotuException(String.format("%s.\nAcceptable format are '%s'",
+//                                                                                  stringBuffer.toString(),
+//                                                                                  WPSFactory.DATETIME_FORMATTERS.keySet().toString())));
+//        }
+//
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug("StringToDateTime(String) - exiting");
+//        }
+//        return dateTime;
+//    }
 
-        String returnString = WPSFactory.DATETIME_FORMATTERS.get(WPSFactory.DATETIME_PATTERN1).print(dt);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("DateToString(DateTime) - exiting");
-        }
-        return returnString;
-    }
-
-    /**
-     * Convert a given string date representation into an instance of Joda time date.
-     * 
-     * @param s the string to convert into a date.
-     * 
-     * @return a {@link DateTime} instance.
-     * 
-     * @throws MotuInvalidDateException the motu invalid date exception
-     */
-    public static DateTime stringToDateTime(String s) throws MotuInvalidDateException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("StringToDateTime(String) - entering");
-        }
-
-        DateTime dateTime = null;
-
-        StringBuffer stringBuffer = new StringBuffer();
-        for (DateTimeFormatter dateTimeFormatter : WPSFactory.DATETIME_FORMATTERS.values()) {
-            try {
-                dateTime = dateTimeFormatter.parseDateTime(s);
-            } catch (IllegalArgumentException e) {
-                // LOG.error("StringToDateTime(String)", e);
-
-                stringBuffer.append(e.getMessage());
-                stringBuffer.append("\n");
-            }
-
-            if (dateTime != null) {
-                break;
-            }
-        }
-
-        if (dateTime == null) {
-            throw new MotuInvalidDateException(s, new MotuException(String.format("%s.\nAcceptable format are '%s'",
-                                                                                  stringBuffer.toString(),
-                                                                                  WPSFactory.DATETIME_FORMATTERS.keySet().toString())));
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("StringToDateTime(String) - exiting");
-        }
-        return dateTime;
-    }
-
-    /**
-     * String to period.
-     * 
-     * @param s the s
-     * 
-     * @return the period
-     * 
-     * @throws MotuInvalidDateException the motu invalid date exception
-     */
-    public static Period stringToPeriod(String s) throws MotuInvalidDateException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("stringToPeriod(String) - entering");
-        }
-
-        Period period = null;
-
-        StringBuffer stringBuffer = new StringBuffer();
-        for (PeriodFormatter periodFormatter : WPSFactory.PERIOD_FORMATTERS.values()) {
-            try {
-                period = periodFormatter.parsePeriod(s);
-            } catch (IllegalArgumentException e) {
-                // LOG.error("stringToPeriod(String)", e);
-
-                stringBuffer.append(e.getMessage());
-                stringBuffer.append("\n");
-            }
-
-            if (period != null) {
-                break;
-            }
-        }
-
-        if (period == null) {
-            throw new MotuInvalidDateException(s, new MotuException(String.format("%s.\nAcceptable format are '%s'",
-                                                                                  stringBuffer.toString(),
-                                                                                  WPSFactory.PERIOD_FORMATTERS.keySet().toString())));
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("stringToPeriod(String) - exiting");
-        }
-        return period;
-    }
+//    /**
+//     * String to period.
+//     * 
+//     * @param s the s
+//     * 
+//     * @return the period
+//     * 
+//     * @throws MotuInvalidDateException the motu invalid date exception
+//     */
+//    public static Period stringToPeriod(String s) throws MotuInvalidDateException {
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug("stringToPeriod(String) - entering");
+//        }
+//
+//        Period period = null;
+//
+//        StringBuffer stringBuffer = new StringBuffer();
+//        for (PeriodFormatter periodFormatter : WPSFactory.PERIOD_FORMATTERS.values()) {
+//            try {
+//                period = periodFormatter.parsePeriod(s);
+//            } catch (IllegalArgumentException e) {
+//                // LOG.error("stringToPeriod(String)", e);
+//
+//                stringBuffer.append(e.getMessage());
+//                stringBuffer.append("\n");
+//            }
+//
+//            if (period != null) {
+//                break;
+//            }
+//        }
+//
+//        if (period == null) {
+//            throw new MotuInvalidDateException(s, new MotuException(String.format("%s.\nAcceptable format are '%s'",
+//                                                                                  stringBuffer.toString(),
+//                                                                                  WPSFactory.PERIOD_FORMATTERS.keySet().toString())));
+//        }
+//
+//        if (LOG.isDebugEnabled()) {
+//            LOG.debug("stringToPeriod(String) - exiting");
+//        }
+//        return period;
+//    }
 
     /**
      * Post async.
