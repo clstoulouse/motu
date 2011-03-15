@@ -28,13 +28,13 @@ query_options = {
                   # Motu server
                   'motu': 'http://misgw-qo-externe.cls.fr/misgw-qo-servlet/Motu',
                   # Product & service
-                  'product_id': 'http://purl.org/myocean/ontology/product/database#LR_MOD',
-                  'service_id': 'http://purl.org/myocean/ontology/service/database#misgw-qo-file',                  
+                  'product_id': 'HR_MOD',
+                  'service_id': 'http://purl.org/myocean/ontology/service/database#misgw-qo-thr',                  
                   # Geographic extraction
-                  'latitude_max':  20.0,
-                  'latitude_min': -20.0,
-                  'longitude_max': -170,
-                  'longitude_min': 170,
+                  #'latitude_max':  75.0,
+                  #'latitude_min': 35.0,
+                  #'longitude_max': -170,
+                  #'longitude_min': 170,
                   # Temporal extraction
                   #'date_max': '2011-03-01',
                   #'date_min': '2011-03-01',
@@ -43,7 +43,7 @@ query_options = {
                   # 'depth_max': 0,
                   #'variable' : ['sea_water_salinity','sea_surface_height_above_geoid','sea_water_x_velocity','sea_water_potential_temperature'],
                   # output file
-                  'out_prefix_name': 'test_LR_MOD'
+                  'out_prefix_name': 'test_HR_MOD'
                 }
 
 class Transaction(object):
@@ -56,7 +56,7 @@ class Transaction(object):
         stopWatch.clear()
 
         initDate = datetime.date(2010, 2, 28)
-        dayStep = 7
+        dayStep = 2
         for i in range (0, 365, dayStep):
           startDate = initDate + datetime.timedelta(days=i+1)
           if ((i + dayStep) < 365):
@@ -65,7 +65,7 @@ class Transaction(object):
             endDate = initDate + datetime.timedelta(days=365)
           query_options['date_min'] = startDate.strftime("%Y-%m-%d")
           query_options['date_max'] = endDate.strftime("%Y-%m-%d")          
-
+          
           tests_common.set_output_directory(query_options, self.output_dir, self.thread_num, self.process_num, self.transaction)
        
           motu_api.execute_request(tests_common.Struct(**query_options))

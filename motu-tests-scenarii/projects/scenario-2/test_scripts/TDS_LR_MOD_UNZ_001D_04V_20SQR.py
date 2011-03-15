@@ -18,7 +18,7 @@ import tests_common
 
 query_options = {            
                   # Proxy
-                  'proxy_server': 'http://proxy-bureautique.cls.fr:8080',
+                  #'proxy_server': 'http://proxy-bureautique.cls.fr:8080',
                   # Authentication
                   'auth_mode': 'cas',
                   'user': 'opemis',
@@ -31,16 +31,16 @@ query_options = {
                   # Geographic extraction
                   'latitude_max':  10.0,
                   'latitude_min': -10.0,
-                  'longitude_max': -10,
-                  'longitude_min': 170,
+                  'longitude_max': 12,
+                  'longitude_min': -12,
                   # Temporal extraction
                   'date_max': '2011-03-01',
                   'date_min': '2011-03-01',
                   #  Vertical extraction
-                  # 'depth_min': 0,
-                  # 'depth_max': 0,
+                  'depth_min': 0,
+                  'depth_max': 50,
                   # Variable extraction
-                    'variable': ['sea_ice_thickness', 'surface_downward_heat_flux_in_sea_water', 'sea_water_salinity'],
+                    'variable': ['sea_water_potential_temperature', 'sea_water_y_velocity', 'sea_water_salinity', 'sea_water_x_velocity'],
                   # output file
                   'out_prefix_name': 'test_LR_MOD'
                 }

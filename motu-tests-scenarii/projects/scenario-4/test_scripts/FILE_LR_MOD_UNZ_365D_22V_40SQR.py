@@ -28,7 +28,7 @@ query_options = {
                   # Motu server
                   'motu': 'http://misgw-qo-externe.cls.fr/misgw-qo-servlet/Motu',
                   # Product & service
-                  'product_id': 'http://purl.org/mercator/ontology/product/database#LR_MOD',
+                  'product_id': 'http://purl.org/myocean/ontology/product/database#LR_MOD',
                   'service_id': 'http://purl.org/myocean/ontology/service/database#misgw-qo-file',                  
                   # Geographic extraction
                   'latitude_max':  20.0,

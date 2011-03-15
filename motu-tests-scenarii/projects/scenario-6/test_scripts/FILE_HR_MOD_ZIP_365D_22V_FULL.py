@@ -28,22 +28,22 @@ query_options = {
                   # Motu server
                   'motu': 'http://misgw-qo-externe.cls.fr/misgw-qo-servlet/Motu',
                   # Product & service
-                  'product_id': 'http://purl.org/myocean/ontology/product/database#LR_MOD',
+                  'product_id': 'http://purl.org/mercator/ontology/product/database#HR_MOD_ZIP',
                   'service_id': 'http://purl.org/myocean/ontology/service/database#misgw-qo-file',                  
                   # Geographic extraction
-                  'latitude_max':  20.0,
-                  'latitude_min': -20.0,
-                  'longitude_max': -170,
-                  'longitude_min': 170,
+                  #'latitude_max':  20.0,
+                  #'latitude_min': -20.0,
+                  #'longitude_max': -170,
+                  #'longitude_min': 170,
                   # Temporal extraction
                   #'date_max': '2011-03-01',
                   #'date_min': '2011-03-01',
                   #  Vertical extraction
                   # 'depth_min'; 0,
                   # 'depth_max': 0,
-                  #'variable' : ['sea_water_salinity','sea_surface_height_above_geoid','sea_water_x_velocity','sea_water_potential_temperature'],
+                  #'variable' : ['sea_surface_temperature'],
                   # output file
-                  'out_prefix_name': 'test_LR_MOD'
+                  'out_prefix_name': 'test_HR_MOD_ZIP'
                 }
 
 class Transaction(object):
@@ -56,7 +56,7 @@ class Transaction(object):
         stopWatch.clear()
 
         initDate = datetime.date(2010, 2, 28)
-        dayStep = 7
+        dayStep = 2
         for i in range (0, 365, dayStep):
           startDate = initDate + datetime.timedelta(days=i+1)
           if ((i + dayStep) < 365):

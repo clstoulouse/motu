@@ -18,7 +18,7 @@ import tests_common
 
 query_options = {            
                   # Proxy
-                  'proxy_server': 'http://proxy-bureautique.cls.fr:8080',
+                  #'proxy_server': 'http://proxy-bureautique.cls.fr:8080',
                   # Authentication
                   'auth_mode': 'cas',
                   'user': 'opemis',
@@ -31,11 +31,11 @@ query_options = {
                   # Geographic extraction
                   'latitude_max':  10.0,
                   'latitude_min': -10.0,
-                  'longitude_max': -10,
-                  'longitude_min': 170,
+                  'longitude_max': 12,
+                  'longitude_min': -12,
                   # Temporal extraction
-                  'date_max': '2011-03-01',
-                  'date_min': '2011-03-01',
+                  'date_max': '2011-02-04',
+                  'date_min': '2011-02-04',
                   #  Vertical extraction
                   # 'depth_min'; 0,
                   # 'depth_max': 0,

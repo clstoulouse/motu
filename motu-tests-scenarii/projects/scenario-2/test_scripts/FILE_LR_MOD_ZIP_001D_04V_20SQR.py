@@ -26,22 +26,23 @@ query_options = {
                   # Motu server
                   'motu': 'http://misgw-qo-externe.cls.fr/misgw-qo-servlet/Motu',
                   # Product & service
-		    'product_id': 'http://purl.org/myocean/ontology/product/database#HR_OBS',
-                  'service_id': 'http://purl.org/myocean/ontology/service/database#misgw-qo-file',                  
+		    'product_id': 'http://purl.org/myocean/ontology/product/database#LR_MOD_ZIP',
+                  'service_id': 'http://purl.org/myocean/ontology/service/database#misgw-qo-file',
                   # Geographic extraction
                   'latitude_max':  10.0,
                   'latitude_min': -10.0,
                   'longitude_max': 12,
                   'longitude_min': -12,
                   # Temporal extraction
-                  'date_max': '2011-02-04',
-                  'date_min': '2011-02-04',
+                  'date_max': '2011-03-01',
+                  'date_min': '2011-03-01',
                   #  Vertical extraction
-                  # 'depth_min'; 0,
-                  # 'depth_max': 0,
-                  
+                  'depth_min': 0,
+                  'depth_max': 50,
+                  # Variable extraction
+                  'variable': ['sea_water_potential_temperature', 'sea_water_y_velocity', 'sea_water_salinity', 'sea_water_x_velocity'],
                   # output file
-                  'out_prefix_name': 'test_HR_OBS'
+                  'out_prefix_name': 'test_LR_MOD_ZIP'
                 }
 
 class Transaction(object):
