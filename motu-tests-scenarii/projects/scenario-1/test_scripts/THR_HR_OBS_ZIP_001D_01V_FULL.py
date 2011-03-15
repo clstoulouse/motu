@@ -39,7 +39,7 @@ query_options = {
                   #  Vertical extraction
                   # 'depth_min'; 0,
                   # 'depth_max': 0,
-                  'variable' : ['sea_surface_temperature'],
+                  # 'variable' : ['sea_surface_temperature'],
                   # output file
                   'out_prefix_name': 'test_HR_OBS'
                 }

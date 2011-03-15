@@ -27,7 +27,7 @@ query_options = {
                   'motu': 'http://misgw-qo-externe.cls.fr/misgw-qo-servlet/Motu',
                   # Product & service
                   'product_id': 'LR_OBS',
-                  'service_id': 'http://purl.org/myocean/ontology/service/database#misgw-qo-zip',                  
+                  'service_id': 'http://purl.org/myocean/ontology/service/database#misgw-qo-thr',                  
                   # Geographic extraction
                   #'latitude_max':  10.0,
                   #'latitude_min': -10.0,
@@ -39,7 +39,7 @@ query_options = {
                   #  Vertical extraction
                   # 'depth_min'; 0,
                   # 'depth_max': 0,
-                  'variable' : ['sea_surface_height_above_sea_level'],
+                  # 'variable' : ['sea_surface_height_above_sea_level'],
                   # output file
                   'out_prefix_name': 'test_LR_OBS'
                 }
