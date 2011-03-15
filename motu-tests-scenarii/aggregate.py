@@ -64,7 +64,7 @@ try:
                if len(custom_metrics)>0:
                   if len(custom_counters)>0:
                      custom_values = custom_values + ','
-                  custom_value = custom_values +custom_metrics               
+                  custom_values = custom_values +custom_metrics
                   
                for couple in custom_values.split(','):
                   if ':' in couple:
