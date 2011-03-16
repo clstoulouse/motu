@@ -4,20 +4,23 @@
   <!--
     Assembly that builds a complete package of a "client", ready to use to connect to Motu.
   -->
-  <id>full</id>
+  <id>delivery</id>
   <formats>
-    <format>jar</format>
+    <format>tar.gz</format>
+	<format>zip</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <dependencySets>
     <dependencySet>
-      <unpack>true</unpack>
+      <unpack>false</unpack>
       <scope>runtime</scope>
     </dependencySet>
   </dependencySets>
   <fileSets>
     <fileSet>
-      <directory>${project.build.outputDirectory}</directory>
+      <includes>
+        <include>atoll-libraries-rest-api-$[project.version}.jar</include>
+      </includes>
     </fileSet>
   </fileSets>
   <!--   
