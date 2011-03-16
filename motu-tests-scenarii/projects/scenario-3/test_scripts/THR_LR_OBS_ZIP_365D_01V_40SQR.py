@@ -31,10 +31,10 @@ query_options = {
                   'product_id': 'LR_OBS',
                   'service_id': 'http://purl.org/myocean/ontology/service/database#misgw-qo-zip',                  
                   # Geographic extraction
-                  'latitude_max':  20.0,
-                  'latitude_min': -20.0,
-                  'longitude_max': -170,
-                  'longitude_min': 170,
+		                    'latitude_max':  23.0,
+				                      'latitude_min':  53.0,
+						                        'longitude_max': -82,
+									                  'longitude_min': -40,
                   # Temporal extraction
                   #'date_max': '2011-03-01',
                   #'date_min': '2011-03-01',

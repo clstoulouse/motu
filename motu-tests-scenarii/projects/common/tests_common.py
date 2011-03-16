@@ -42,16 +42,19 @@ def compute_custom_timers(stopWatch):
     # 4 is end
     times = stopWatch.getTimes()
     custom_timers = {}
-    
-    custom_timers['authentication'] = times[1][stop_watch.StopWatch.TIME] - times[0][stop_watch.StopWatch.TIME]
-    custom_timers['processing'] = times[2][stop_watch.StopWatch.TIME] - times[1][stop_watch.StopWatch.TIME]        
-    custom_timers['downloading'] = times[3][stop_watch.StopWatch.TIME] - times[2][stop_watch.StopWatch.TIME]
+    for key, value in times.iteritems():
+       custom_timers[key] = value
     
     return custom_timers
     
 def compute_custom_metrics(query_options):
     # compute downloaded size
     custom_metrics = {}
-    custom_metrics['ofs'] = os.stat(os.sep.join([query_options['out_dir'], query_options['out_name']])).st_size
+    file = os.sep.join([query_options['out_dir'], query_options['out_name']])
+    custom_metrics['ofs'] = os.stat(file).st_size
+    try:
+       os.path(file)
+    except (RuntimeError, TypeError, NameError):
+       pass
     return custom_metrics
    
