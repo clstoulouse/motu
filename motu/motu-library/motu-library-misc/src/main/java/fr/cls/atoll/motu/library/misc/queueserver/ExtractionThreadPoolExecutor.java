@@ -32,124 +32,61 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
 /**
- * 
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
- * 
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
+ *
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
+ * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  */
-public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
+public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements ExtractionThreadPoolExecutorMBean {
 
-    /** Logger for this class. */
+    /**
+     * Logger for this class.
+     */
     private static final Logger LOG = Logger.getLogger(ExtractionThreadPoolExecutor.class);
 
-    /** The Constant MIN_PRIORITY_VALUE. */
+    /**
+     * The Constant MIN_PRIORITY_VALUE.
+     */
     public final static int MIN_PRIORITY_VALUE = 1;
 
-    /** The Constant MAX_PRIORITY_VALUE. */
+    /**
+     * The Constant MAX_PRIORITY_VALUE.
+     */
     public final static int MAX_PRIORITY_VALUE = 2;
 
     /**
-     * The Constructor.
-     * 
-     * @param unit the unit
-     * @param corePoolSize the core pool size
-     * @param workQueue the work queue
-     * @param maximumPoolSize the maximum pool size
-     * @param keepAliveTime the keep alive time
-     * 
-     * @see {@link java.util.concurrent.ThreadPoolExecutor}
+     * The identifier of this extraction pool executor.
      */
-    public ExtractionThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
-    }
+    private final String id;
 
     /**
      * The Constructor.
-     * 
-     * @param threadFactory the thread factory
-     * @param unit the unit
-     * @param corePoolSize the core pool size
-     * @param workQueue the work queue
+     *
+     * @param id              the unique identifier of this thread executor
+     * @param unit            the unit
+     * @param corePoolSize    the core pool size
+     * @param workQueue       the work queue
      * @param maximumPoolSize the maximum pool size
-     * @param keepAliveTime the keep alive time
-     * 
+     * @param keepAliveTime   the keep alive time
      * @see {@link java.util.concurrent.ThreadPoolExecutor}
      */
-    public ExtractionThreadPoolExecutor(
-        int corePoolSize,
-        int maximumPoolSize,
-        long keepAliveTime,
-        TimeUnit unit,
-        BlockingQueue<Runnable> workQueue,
-        ThreadFactory threadFactory) {
-
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory);
-    }
-
-    /**
-     * The Constructor.
-     * 
-     * @param unit the unit
-     * @param corePoolSize the core pool size
-     * @param workQueue the work queue
-     * @param maximumPoolSize the maximum pool size
-     * @param keepAliveTime the keep alive time
-     * @param handler the handler
-     * 
-     * @see {@link java.util.concurrent.ThreadPoolExecutor}
-     */
-    public ExtractionThreadPoolExecutor(
-        int corePoolSize,
-        int maximumPoolSize,
-        long keepAliveTime,
-        TimeUnit unit,
-        BlockingQueue<Runnable> workQueue,
-        RejectedExecutionHandler handler) {
-
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, handler);
-    }
-
-    /**
-     * The Constructor.
-     * 
-     * @param threadFactory the thread factory
-     * @param unit the unit
-     * @param corePoolSize the core pool size
-     * @param workQueue the work queue
-     * @param maximumPoolSize the maximum pool size
-     * @param keepAliveTime the keep alive time
-     * @param handler the handler
-     * 
-     * @see {@link java.util.concurrent.ThreadPoolExecutor}
-     */
-    public ExtractionThreadPoolExecutor(
-        int corePoolSize,
-        int maximumPoolSize,
-        long keepAliveTime,
-        TimeUnit unit,
-        BlockingQueue<Runnable> workQueue,
-        ThreadFactory threadFactory,
-        RejectedExecutionHandler handler) {
-
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
-
+    public ExtractionThreadPoolExecutor(String id, int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
+        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, new QueueThreadFactory(id));
+        this.id = id;
     }
 
     /**
      * Check priority.
-     * 
+     *
      * @param priority the priority
-     * 
-     * @throws MotuInvalidQueuePriorityException the motu invalid queue priority exception
+     * @throws MotuInvalidQueuePriorityException
+     *          the motu invalid queue priority exception
      */
     public static void checkPriority(int priority) throws MotuInvalidQueuePriorityException {
         if ((priority < MIN_PRIORITY_VALUE) || (priority > MAX_PRIORITY_VALUE)) {
@@ -160,9 +97,8 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Checks if is higher priority.
-     * 
+     *
      * @param priority the priority
-     * 
      * @return true, if is higher priority
      */
     public static boolean isHigherPriority(int priority) {
@@ -171,30 +107,32 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Checks if is lower priority.
-     * 
+     *
      * @param priority the priority
-     * 
      * @return true, if is lower priority
      */
     public static boolean isLowerPriority(int priority) {
         return priority == ExtractionThreadPoolExecutor.MAX_PRIORITY_VALUE;
     }
 
-    /** The users. */
+    /**
+     * The users.
+     */
     private final ConcurrentMap<String, Integer> users = new ConcurrentHashMap<String, Integer>();
 
     /**
      * Gets the users.
-     * 
+     *
      * @return the users
      */
+    @Override
     public ConcurrentMap<String, Integer> getUsers() {
         return users;
     }
 
     /**
      * Users key set.
-     * 
+     *
      * @return the set< string>
      */
     public Set<String> usersKeySet() {
@@ -203,9 +141,8 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Users contains key.
-     * 
+     *
      * @param key the key
-     * 
      * @return true, if users contains key
      */
     public boolean usersContainsKey(String key) {
@@ -214,9 +151,8 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Gets the users.
-     * 
+     *
      * @param key the key
-     * 
      * @return the users
      */
     public Integer getUsers(String key) {
@@ -225,7 +161,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Checks if is users map empty.
-     * 
+     *
      * @return true, if is users map empty
      */
     public boolean isUsersMapEmpty() {
@@ -234,7 +170,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Users size.
-     * 
+     *
      * @return the int
      */
     public int usersSize() {
@@ -243,10 +179,9 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Put users.
-     * 
+     *
      * @param value the value
-     * @param key the key
-     * 
+     * @param key   the key
      * @return the integer
      */
     public Integer putUsers(String key, Integer value) {
@@ -255,10 +190,9 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Replace users.
-     * 
+     *
      * @param value the value
-     * @param key the key
-     * 
+     * @param key   the key
      * @return the integer
      */
     public Integer replaceUsers(String key, Integer value) {
@@ -267,9 +201,8 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Removes the users.
-     * 
+     *
      * @param key the key
-     * 
      * @return the integer
      */
     public Integer removeUsers(String key) {
@@ -285,9 +218,8 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Increment user.
-     * 
+     *
      * @param key the key
-     * 
      * @return the integer
      */
     public Integer incrementUser(String key) {
@@ -318,9 +250,8 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Decrement user.
-     * 
+     *
      * @param key the key
-     * 
      * @return the integer
      */
     public Integer decrementUser(String key) {
@@ -353,7 +284,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Decrement user.
-     * 
+     *
      * @param runnableExtraction the runnable extraction
      */
     public void decrementUser(RunnableExtraction runnableExtraction) {
@@ -379,7 +310,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Increment user.
-     * 
+     *
      * @param runnableExtraction the runnable extraction
      */
     public void incrementUser(RunnableExtraction runnableExtraction) {
@@ -404,21 +335,24 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     }
 
-    /** The count priority map. */
+    /**
+     * The count priority map.
+     */
     private final ConcurrentMap<Integer, Integer> priorityMap = new ConcurrentHashMap<Integer, Integer>();
 
     /**
      * Gets the priority map.
-     * 
+     *
      * @return the priority map
      */
+    @Override
     public ConcurrentMap<Integer, Integer> getPriorityMap() {
         return priorityMap;
     }
 
     /**
      * Priority map key set.
-     * 
+     *
      * @return the set< integer>
      */
     public Set<Integer> priorityMapKeySet() {
@@ -427,9 +361,8 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Psriority map contains key.
-     * 
+     *
      * @param key the key
-     * 
      * @return true, if psriority map contains key
      */
     public boolean priorityMapContainsKey(Integer key) {
@@ -438,9 +371,8 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Gets the priority map.
-     * 
+     *
      * @param key the key
-     * 
      * @return the priority map
      */
     public Integer getPriorityMap(Integer key) {
@@ -449,7 +381,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Checks if is priority map empty.
-     * 
+     *
      * @return true, if is priority map empty
      */
     public boolean isPriorityMapEmpty() {
@@ -458,7 +390,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Priority map size.
-     * 
+     *
      * @return the int
      */
     public int priorityMapSize() {
@@ -467,10 +399,9 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Put priority map.
-     * 
+     *
      * @param value the value
-     * @param key the key
-     * 
+     * @param key   the key
      * @return the integer
      */
     public Integer putPriorityMap(Integer key, Integer value) {
@@ -479,10 +410,9 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Replace priority map.
-     * 
+     *
      * @param value the value
-     * @param key the key
-     * 
+     * @param key   the key
      * @return the integer
      */
     public Integer replacePriorityMap(Integer key, Integer value) {
@@ -491,9 +421,8 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Removes the priority map.
-     * 
+     *
      * @param key the key
-     * 
      * @return the integer
      */
     public Integer removePriorityMap(Integer key) {
@@ -509,12 +438,11 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Increment priority map.
-     * 
+     *
      * @param priority the priority
-     * 
      * @return the integer
-     * 
-     * @throws MotuInvalidQueuePriorityException the motu invalid queue priority exception
+     * @throws MotuInvalidQueuePriorityException
+     *          the motu invalid queue priority exception
      */
     public synchronized Integer incrementPriorityMap(Integer priority) throws MotuInvalidQueuePriorityException {
         // check first it is not null
@@ -567,11 +495,11 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
     // return returnedValue;
     // }
     //
+
     /**
      * Adjust priority map.
-     * 
+     *
      * @param runnableExtraction the runnable extraction
-     * 
      */
     public synchronized void adjustPriorityMap(RunnableExtraction runnableExtraction) {
         if (LOG.isDebugEnabled()) {
@@ -587,9 +515,9 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
             if (lastRange == runningRange) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug(String.format("adjustPriorityMap priority %d range %d max rage %d - remove priority.",
-                                            priority.intValue(),
-                                            runningRange,
-                                            lastRange));
+                            priority.intValue(),
+                            runningRange,
+                            lastRange));
                 }
                 removePriorityMap(priority);
             }
@@ -601,10 +529,10 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Increment priority map.
-     * 
+     *
      * @param runnableExtraction the runnable extraction
-     * 
-     * @throws MotuInvalidQueuePriorityException the motu invalid queue priority exception
+     * @throws MotuInvalidQueuePriorityException
+     *          the motu invalid queue priority exception
      */
     public synchronized void incrementPriorityMap(RunnableExtraction runnableExtraction) throws MotuInvalidQueuePriorityException {
 
@@ -622,10 +550,9 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * After execute.
-     * 
+     *
      * @param t the t
      * @param r the r
-     * 
      * @see {@link java.util.concurrent.ThreadPoolExecutor}
      */
     @Override
@@ -694,10 +621,9 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * Before execute.
-     * 
+     *
      * @param t the t
      * @param r the r
-     * 
      * @see {@link java.util.concurrent.ThreadPoolExecutor}
      */
     @Override
@@ -737,4 +663,9 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
 
     }
 
+    /** @return the unique identifier of this pool executor */
+    @Override
+    public String getId() {
+        return id;
+    }
 }

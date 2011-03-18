@@ -53,7 +53,7 @@ import org.quartz.TriggerUtils;
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-public class QueueManagement implements JobListener {
+public class QueueManagement implements JobListener, QueueManagementMBean {
 
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(QueueManagement.class);
@@ -117,7 +117,7 @@ public class QueueManagement implements JobListener {
      */
     private void createThreadPoolExecutor() {
         int maxRunningThreads = this.getMaxThreads();
-        this.threadPoolExecutor = new ExtractionThreadPoolExecutor(maxRunningThreads, maxRunningThreads, 0L, TimeUnit.SECONDS, priorityBlockingQueue);
+        this.threadPoolExecutor = new ExtractionThreadPoolExecutor(this.getId(), maxRunningThreads, maxRunningThreads, 0L, TimeUnit.SECONDS, priorityBlockingQueue);
 
     }
 
@@ -126,6 +126,7 @@ public class QueueManagement implements JobListener {
      * 
      * @return the schedule job name
      */
+    @Override
     public String getScheduleJobName() {
 
         StringBuffer stringBuffer = new StringBuffer();
@@ -140,6 +141,7 @@ public class QueueManagement implements JobListener {
      * 
      * @return the schedule trigger name
      */
+    @Override
     public String getScheduleTriggerName() {
 
         StringBuffer stringBuffer = new StringBuffer();
@@ -336,7 +338,8 @@ public class QueueManagement implements JobListener {
      * 
      * @return true, if is max queue size reached
      */
-    public boolean isMaxQueueSizeReached() {
+    @Override
+    public Boolean isMaxQueueSizeReached() {
         if (LOG.isDebugEnabled()) {
             LOG.debug("isMaxQueueSizeReached() - entering");
         }
@@ -361,6 +364,7 @@ public class QueueManagement implements JobListener {
      * 
      * @return the max pool size
      */
+    @Override
     public Short getMaxPoolSize() {
         if (queueConfig.getMaxPoolSize() == null) {
             return -1;
@@ -374,12 +378,21 @@ public class QueueManagement implements JobListener {
      * 
      * @return the max threads
      */
+    @Override
     public Integer getMaxThreads() {
         if (queueConfig.getMaxThreads() == null) {
             return 1;
         } else {
             return queueConfig.getMaxThreads();
         }
+    }
+
+    /**
+     * @return the identifier of the queue.
+     */
+    @Override
+    public String getId() {
+        return queueConfig.getId();
     }
 
     /**
@@ -547,5 +560,4 @@ public class QueueManagement implements JobListener {
     public ExtractionThreadPoolExecutor getThreadPoolExecutor() {
         return threadPoolExecutor;
     }
-
 }

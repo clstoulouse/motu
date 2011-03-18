@@ -46,6 +46,8 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 
+import java.lang.management.ManagementFactory;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,6 +58,8 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.quartz.Scheduler;
 
+import javax.management.*;
+
 /**
  * 
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
@@ -64,6 +68,8 @@ import org.quartz.Scheduler;
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class QueueServerManagement {
+    // Name pattern under which managed beans get registered
+    private final static String OBJECT_NAME_PATTERN = "fr.cls:artefact=Motu,domain=QueueServer,id={0},element={1}";
 
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(QueueServerManagement.class);
@@ -147,7 +153,7 @@ public class QueueServerManagement {
     }
 
     /**
-     * Init.
+     * Initialization of the queues and registration of the MBeans.
      * 
      * @throws MotuException the motu exception
      */
@@ -166,9 +172,37 @@ public class QueueServerManagement {
 
         createQueuesManagement();
 
+        registerJmxMbeans();
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("init() - exiting");
         }
+    }
+
+    /**
+     * Registers to the MBean platform the managed beans like the queue managements and extraction thread pool executors.
+     */
+    private void registerJmxMbeans() {
+        try
+        {
+            // works well in tomcat
+            final MBeanServer platform = ManagementFactory.getPlatformMBeanServer();
+
+            for( QueueManagement queueManagement : queueManagementMap.values() ) {
+                // registers the queue management
+                ObjectName name = new ObjectName(MessageFormat.format(OBJECT_NAME_PATTERN, queueManagement.getId(), "QueueManagement"));
+                platform.registerMBean( queueManagement, name );
+
+                // registers its associated executor
+                name = new ObjectName(MessageFormat.format(OBJECT_NAME_PATTERN, queueManagement.getId(), "ThreadPoolExecutor"));
+                platform.registerMBean( queueManagement.getThreadPoolExecutor(), name );
+            }
+        }catch( Exception e ) {
+            // JMX supervision should never alters Motu behaviour, so we don't let exeption propagation
+            LOG.error("Failed to register managed beans (Motu will still continue to start)", e);
+        }
+
+
     }
 
     /**
