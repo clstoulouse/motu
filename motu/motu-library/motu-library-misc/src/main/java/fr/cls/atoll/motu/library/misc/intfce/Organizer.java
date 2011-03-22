@@ -135,6 +135,7 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
+import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
 import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
 import fr.cls.atoll.motu.library.misc.tds.server.Property;
 import fr.cls.atoll.motu.library.misc.tds.server.VariableDesc;
@@ -3052,6 +3053,23 @@ public class Organizer {
             statusModeResponse.setMsg(e2.notifyException());
         } else {
             statusModeResponse.setMsg(e.getMessage());
+        }
+        statusModeResponse.setCode(errorType);
+
+    }
+
+    /**
+     * Sets the error.
+     *
+     * @param statusModeResponse the status mode response
+     * @param errorType the error type
+     */
+    public static void setError(StatusModeResponse statusModeResponse, ErrorType errorType) {
+        statusModeResponse.setStatus(StatusModeType.ERROR);
+        if (errorType.equals(ErrorType.SHUTTING_DOWN)) {
+            statusModeResponse.setMsg(RunnableExtraction.SHUTDOWN_MSG);
+        } else {
+            statusModeResponse.setMsg(errorType.toString());
         }
         statusModeResponse.setCode(errorType);
 

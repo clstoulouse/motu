@@ -24,11 +24,6 @@
  */
 package fr.cls.atoll.motu.library.misc.queueserver;
 
-import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
@@ -47,6 +42,11 @@ import org.quartz.SchedulerFactory;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerUtils;
+
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 
 /**
  * 
@@ -487,7 +487,7 @@ public class RequestManagement implements JobListener {
     public void shutdown() throws MotuException {
 
         try {
-            Thread.sleep(500);
+            Thread.sleep(500);            
             if (LOG.isDebugEnabled()) {
                 LOG.debug("RequestManagement shutdown() - Shutdown scheduler in progress....");
             }

@@ -407,12 +407,12 @@ public class TestThreadPools {
         // testCallable()
         // testRunnable();
 
-        // TestTheadPools t = new TestTheadPools();
+        TestThreadPools t = new TestThreadPools();
         // t.testPriorityBlockingQueueProblem();
-        // t.testPriorityBlockingQueueOK();
+        t.testPriorityBlockingQueueOK();
         // t.testPriorityBlockingQueue();
 
-        testXStream();
+        // testXStream();
 
         // TestLog4J testLog4J = new TestLog4J(1, 10, null, null);
         // testLog4J.setEnded();
@@ -661,7 +661,7 @@ public class TestThreadPools {
 
         String[] input = arr3;
         for (int i = 0; i < input.length; i++) {
-            threadPoolExecutor.pause();
+            //threadPoolExecutor.pause();
             try {
                 String text = input[i];
                 // int priority = i % 2;
@@ -705,9 +705,9 @@ public class TestThreadPools {
                         threadPoolExecutor.execute(runSome);
                     }
                 } else {
-                    threadPoolExecutor.execute(runSome);
+                //    threadPoolExecutor.execute(runSome);
                 }
-                threadPoolExecutor.resume();
+                //threadPoolExecutor.resume();
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -763,6 +763,9 @@ public class TestThreadPools {
             int queueSize = q.size();
             System.out.print(" queueSize : ");
             System.out.println(queueSize);
+
+            threadPoolExecutor.pause();
+            
             threadPoolExecutor.shutdown();
             System.out.println("OKOKOKOKOKOK shutdown");
             while (!threadPoolExecutor.isTerminated()) {

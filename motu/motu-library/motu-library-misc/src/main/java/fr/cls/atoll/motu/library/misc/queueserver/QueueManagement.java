@@ -24,11 +24,8 @@
  */
 package fr.cls.atoll.motu.library.misc.queueserver;
 
-import fr.cls.atoll.motu.library.misc.configuration.QueueType;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidQueuePriorityException;
-
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -46,6 +43,11 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerUtils;
+
+import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueCapacityException;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidQueuePriorityException;
 
 /**
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
@@ -117,7 +119,13 @@ public class QueueManagement implements JobListener, QueueManagementMBean {
      */
     private void createThreadPoolExecutor() {
         int maxRunningThreads = this.getMaxThreads();
-        this.threadPoolExecutor = new ExtractionThreadPoolExecutor(this.getId(), maxRunningThreads, maxRunningThreads, 0L, TimeUnit.SECONDS, priorityBlockingQueue);
+        this.threadPoolExecutor = new ExtractionThreadPoolExecutor(
+                this.getId(),
+                maxRunningThreads,
+                maxRunningThreads,
+                0L,
+                TimeUnit.SECONDS,
+                priorityBlockingQueue);
 
     }
 
@@ -430,25 +438,78 @@ public class QueueManagement implements JobListener, QueueManagementMBean {
                     .getDescription(), threadPoolExecutor.isTerminated()));
         }
 
+        if (LOG.isInfoEnabled()) {
+            LOG.info(String.format("Queue '%s %s' (terminated=%b) is shutting down ....",
+                                   this.getName(),
+                                   this.queueConfig.getDescription(),
+                                   threadPoolExecutor.isTerminated()));
+        }
+
         try {
 
             Thread.sleep(500);
+
+            // Remove pending Runnable from the pool
+            Collection<Runnable> removedRunnableList = new ArrayList<Runnable>();
+
+            threadPoolExecutor.getQueue().drainTo(removedRunnableList);
+
+            if (LOG.isInfoEnabled()) {
+                LOG.info(String.format("Queue '%s %s' is going to remove %d pending task(s) ....",
+                                       this.getName(),
+                                       this.queueConfig.getDescription(),
+                                       removedRunnableList.size()));
+            }
+
+            shutdown(removedRunnableList);
+
             threadPoolExecutor.shutdown();
 
             while (!(threadPoolExecutor.isTerminated())) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug(String.format("QueueManagement awaitTermination - %s queue size is %d", getName(), priorityBlockingQueue.size()));
+                if (LOG.isInfoEnabled()) {
+                    LOG.info(String.format("Queue '%s %s'  await termination - queue size is %d",
+                                           this.getName(),
+                                           this.queueConfig.getDescription(),
+                                           priorityBlockingQueue.size()));
                 }
+                
                 threadPoolExecutor.awaitTermination(1, TimeUnit.SECONDS);
             }
         } catch (InterruptedException e) {
             LOG.error("shutdown()", e);
             throw new MotuException("ERROR in QueueManagement.shutdown.", e);
         }
+        
+        if (LOG.isInfoEnabled()) {
+            LOG.info(String.format("Queue '%s %s' is shutdown.",
+                                   this.getName(),
+                                   this.queueConfig.getDescription()));
+        }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug(String.format("QueueManagement shutdown() - Queue description: '%s' - Is terminated %b - exiting", this.queueConfig
                     .getDescription(), threadPoolExecutor.isTerminated()));
+        }
+    }
+
+    /**
+     * Shutdown.
+     * 
+     * @param removedRunnableList the removed runnable list
+     */
+    public void shutdown(Collection<Runnable> removedRunnableList) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("shutdown(Collection<Runnable>) - start");
+        }
+
+        for (Runnable r : removedRunnableList) {
+            if (!(r instanceof RunnableExtraction)) {
+                ((RunnableExtraction) r).shutdown();
+            }
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("shutdown(Collection<Runnable>) - end");
         }
     }
 

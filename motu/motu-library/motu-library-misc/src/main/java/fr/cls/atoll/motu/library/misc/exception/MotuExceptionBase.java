@@ -71,12 +71,14 @@ public class MotuExceptionBase extends Exception {
      * writes exception information into the log.
      */
     public void notifyLogException() {
-        LOG.warn("Exception class: " + this.getClass().getName());
-        LOG.warn(this.getMessage());
-        if (this.getCause() != null) {
-            LOG.warn("Native Exception: " + getCause().getClass());
-            LOG.warn("Native Exception Message: " + getCause().getMessage());
-            LOG.warn(getCause());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Exception class: " + this.getClass().getName());
+            LOG.debug(this.getMessage());
+            if (this.getCause() != null) {
+                LOG.debug("Native Exception: " + getCause().getClass());
+                LOG.debug("Native Exception Message: " + getCause().getMessage());
+                LOG.debug(getCause());
+            }
         }
     }
 

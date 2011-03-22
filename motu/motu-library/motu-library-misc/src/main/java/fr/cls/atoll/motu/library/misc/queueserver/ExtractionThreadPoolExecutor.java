@@ -34,6 +34,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
 
@@ -65,6 +67,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
      */
     private final String id;
 
+    
     /**
      * The Constructor.
      *
@@ -631,7 +634,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
         if (LOG.isDebugEnabled()) {
             LOG.debug("beforeExecute(Thread, Runnable) - entering");
         }
-
+        
         RunnableExtraction runnableExtraction = null;
         if (!(r instanceof RunnableExtraction)) {
             super.beforeExecute(t, r);
@@ -662,6 +665,8 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
         }
 
     }
+    
+
 
     /** @return the unique identifier of this pool executor */
     @Override

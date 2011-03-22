@@ -69,6 +69,8 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
     /** The Constant LOGQUEUE. */
     protected static final Logger LOGQUEUE = Logger.getLogger("atoll.motu.queueserver");
 
+    public static final String SHUTDOWN_MSG = "For maintenance reasons, the application is shutting down. We apologize for the inconvenience. You may repeat your query later.";
+
     /** The extraction parameters. */
     protected ExtractionParameters extractionParameters = null;
 
@@ -89,6 +91,7 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
 
     /** The status mode response. */
     protected StatusModeResponse statusModeResponse = null;
+
 
     // private QueueLogError queueLogError = null;
 
@@ -142,6 +145,32 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
         }
     }
 
+    /**
+     * Shutdown the runnable
+     */
+    public void shutdown() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("shutdown() - start");
+        }
+        if (LOG.isInfoEnabled()) {
+            LOG.info(String.format("Extraction request below is shutting down :\n",
+                                   getQueuelogInfoAsXML()));
+        }
+        
+        setError(ErrorType.SHUTTING_DOWN);        
+        
+        aborted();
+
+        if (LOG.isInfoEnabled()) {
+            LOG.info(String.format("Extraction request above is shutdown.",
+                                   getQueuelogInfoAsXML()));
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("shutdown() - end");
+        }
+    }
+    
     /**
      * Compare to.
      * 
@@ -548,47 +577,22 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
         } else {
             organizer.setCurrentProductLastError(Organizer.getFormattedError(e, null));
         }
+    }
 
-        // if (e instanceof MotuInconsistencyException) {
-        // setStatusError(e, ErrorType.INCONSISTENCY);
-        // } else if (e instanceof MotuExceedingQueueCapacityException) {
-        // setStatusError(e, ErrorType.EXCEEDING_QUEUE_CAPACITY);
-        // } else if (e instanceof MotuExceedingUserCapacityException) {
-        // setStatusError(e, ErrorType.EXCEEDING_USER_CAPACITY);
-        // } else if (e instanceof MotuInvalidQueuePriorityException) {
-        // setStatusError(e, ErrorType.INVALID_QUEUE_PRIORITY);
-        // } else if (e instanceof MotuInvalidDateException) {
-        // setStatusError(e, ErrorType.INVALID_DATE);
-        // } else if (e instanceof MotuInvalidDepthException) {
-        // setStatusError(e, ErrorType.INVALID_DEPTH);
-        // } else if (e instanceof MotuInvalidLatitudeException) {
-        // setStatusError(e, ErrorType.INVALID_LATITUDE);
-        // } else if (e instanceof MotuInvalidLongitudeException) {
-        // setStatusError(e, ErrorType.INVALID_LONGITUDE);
-        // } else if (e instanceof MotuInvalidDateRangeException) {
-        // setStatusError(e, ErrorType.INVALID_DATE_RANGE);
-        // } else if (e instanceof MotuExceedingCapacityException) {
-        // setStatusError(e, ErrorType.EXCEEDING_CAPACITY);
-        // } else if (e instanceof MotuNotImplementedException) {
-        // setStatusError(e, ErrorType.NOT_IMPLEMENTED);
-        // } else if (e instanceof MotuInvalidLatLonRangeException) {
-        // setStatusError(e, ErrorType.INVALID_LAT_LON_RANGE);
-        // } else if (e instanceof MotuInvalidDepthRangeException) {
-        // setStatusError(e, ErrorType.INVALID_DEPTH_RANGE);
-        // } else if (e instanceof NetCdfVariableException) {
-        // setStatusError(e, ErrorType.NETCDF_VARIABLE);
-        // } else if (e instanceof MotuNoVarException) {
-        // setStatusError(e, ErrorType.NO_VARIABLE);
-        // } else if (e instanceof NetCdfAttributeException) {
-        // setStatusError(e, ErrorType.NETCDF_ATTRIBUTE);
-        // } else if (e instanceof NetCdfVariableNotFoundException) {
-        // setStatusError(e, ErrorType.NETCDF_VARIABLE_NOT_FOUND);
-        // } else if (e instanceof MotuException) {
-        // setStatusError(e, ErrorType.SYSTEM);
-        // } else if (e instanceof Exception) {
-        // setStatusError(e, ErrorType.SYSTEM);
-        // }
+    /**
+     * Sets the error.
+     *
+     * @param errorType the new error
+     */
+    public void setError(ErrorType errorType) {
+        Organizer.setError(statusModeResponse, errorType);
+        queueLogInfo.setQueueLogError(new QueueLogError(statusModeResponse.getCode(), statusModeResponse.getMsg()));
 
+        if (product != null) {
+            product.setLastError(statusModeResponse.getMsg());
+        } else {
+            organizer.setCurrentProductLastError(statusModeResponse.getMsg());
+        }
     }
 
     /**
