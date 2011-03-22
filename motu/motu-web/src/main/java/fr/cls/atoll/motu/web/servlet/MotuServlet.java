@@ -45,6 +45,8 @@ import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueManagement;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
+import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
+import fr.cls.atoll.motu.library.misc.utils.ManifestManagedBean;
 import fr.cls.atoll.motu.library.misc.utils.PropertiesUtilities;
 
 import java.io.File;
@@ -79,6 +81,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.log4j.Logger;
 import org.jasig.cas.client.util.AssertionHolder;
 
+// TODO: Auto-generated Javadoc
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
 /**
@@ -209,10 +212,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
         /**
          * The Constructor.
-         * 
+         *
+         * @param statusModeResponse the status mode response
          * @param organizer the organizer
          * @param extractionParameters the extraction parameters
-         * @param statusModeResponse the status mode response
          */
         public ProductDeferedExtractNetcdfThread(StatusModeResponse statusModeResponse, Organizer organizer, ExtractionParameters extractionParameters) {
 
@@ -225,12 +228,11 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
         /**
          * The Constructor.
-         * 
-         * @param organizer the organizer
+         *
          * @param productDeferedExtractNetcdfStatusFilePathName the product defered extract netcdf status file
-         *            path name
+         * path name
+         * @param organizer the organizer
          * @param extractionParameters the extraction parameters
-         * 
          */
         public ProductDeferedExtractNetcdfThread(
             String productDeferedExtractNetcdfStatusFilePathName,
@@ -327,6 +329,90 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     }
 
+    /** The polling time. */
+    protected int pollingTime = 1000;
+
+    /**
+     * Gets the polling time.
+     *
+     * @return the polling time
+     */
+    public int getPollingTime() {
+        return pollingTime;
+    }
+
+    /**
+     * Sets the polling time.
+     *
+     * @param pollingTime the new polling time
+     */
+    public void setPollingTime(int pollingTime) {
+        this.pollingTime = pollingTime;
+    }
+
+    /** The service counter. */
+    protected volatile int serviceCounter = 0;
+
+    /**
+     * Entering service method.
+     */
+    protected synchronized void enteringServiceMethod() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("enteringServiceMethod() - start");
+        }
+
+        serviceCounter++;
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("enteringServiceMethod() - end");
+        }
+    }
+
+    /**
+     * Leaving service method.
+     */
+    protected synchronized void leavingServiceMethod() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("leavingServiceMethod() - start");
+        }
+
+        serviceCounter--;
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("leavingServiceMethod() - end");
+        }
+    }
+
+    /**
+     * Gets the service counter.
+     * 
+     * @return the service counter
+     */
+    protected synchronized int getServiceCounter() {
+        return serviceCounter;
+    }
+
+    /** The shutting down. */
+    private boolean shuttingDown = false;
+
+    /**
+     * Sets the shutting down.
+     *
+     * @param flag the shutting down
+     */
+    protected void setShuttingDown(boolean flag) {
+        shuttingDown = flag;
+    }
+
+    /**
+     * Checks if is shutting down.
+     * 
+     * @return true, if checks if is shutting down
+     */
+    protected boolean isShuttingDown() {
+        return shuttingDown;
+    }
+
     /** The Constant CONTENT_TYPE_PLAIN. */
     public static final String CONTENT_TYPE_PLAIN = "text/plain";
 
@@ -362,6 +448,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /** The Constant RESPONSE_ACTION_PING. */
     private static final String RESPONSE_ACTION_PING = "OK - response action=ping";
+
+    /** The Constant PARAM_POLLING_TIME. */
+    private static final String PARAM_POLLING_TIME = "pollingTime";
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -1L;
@@ -428,10 +517,24 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     }
 
+    /* (non-Javadoc)
+     * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // TODO Auto-generated method stub
-        super.service(req, resp);
+
+        if (isShuttingDown()) {
+            resp.sendError(400, RunnableExtraction.SHUTDOWN_MSG);
+            return;
+        }
+        
+        enteringServiceMethod();
+        
+        try {
+            super.service(req, resp);
+        } finally {
+            leavingServiceMethod();
+        }
     }
 
     /**
@@ -453,12 +556,12 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Ecriture du status d'extraction différé de produit dans un fichier XML.
-     * 
-     * @param errorType the error type
-     * @param status status à ecrire
+     *
      * @param statusModeResponse the status mode response
      * @param writer the writer
+     * @param status status à ecrire
      * @param msg message à ecrire
+     * @param errorType the error type
      */
     static private void printProductDeferedExtractNetcdfStatus(StatusModeResponse statusModeResponse,
                                                                Writer writer,
@@ -559,31 +662,64 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      */
     @Override
     public void destroy() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("destroy() - start");
+        }
+
         try {
-            Thread.sleep(500);
+            // Check to see whether there are still service methods running,
+            // and if there are, tell them to stop. */
+            if (getServiceCounter() > 0) {
+                setShuttingDown(true);
+            }
+            
+            if (LOG.isInfoEnabled()) {
+                String msg = String.format("Motu REST Servlet is shutting down - There is (are) still %d request(s) being processed", serviceCounter);
+                LOG.info(msg);
+            }
+
             if (requestManagement != null) {
                 requestManagement.shutdown();
             }
+
+            // Wait for the service methods to stop.
+            while (getServiceCounter() > 0) {
+                try {
+                    if (LOG.isInfoEnabled()) {
+                        String msg = String.format("Servlet is shutting down - There is (are) still %d request(s) being processed", serviceCounter);
+                        LOG.info(msg);
+                    }
+                    Thread.sleep(pollingTime);
+                } catch (InterruptedException e) {
+                    LOG.error("destroy()", e);
+                    // Do nothing
+                }
+            }
         } catch (MotuException e) {
+            LOG.error("destroy()", e);
             // Do nothing
-        } catch (InterruptedException e) {
-            // Do nothing
+        } finally {
+            super.destroy();
         }
 
-        super.destroy();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("destroy() - end");
+        }
     }
 
     /**
-     * {@inheritDoc}.
-     * 
+     * Inits the.
+     *
      * @param servletConfig the servlet config
-     * 
      * @throws ServletException the servlet exception
+     * {@inheritDoc}.
      */
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
 
+        ManifestManagedBean.register();
+        
         // Log initialization is done by a listener configured in web.xml.
         // LogManager.getInstance().loadConfiguration("log4j.xml");
 
@@ -606,19 +742,23 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             statusAsFile = Boolean.parseBoolean(paramValue);
         }
 
+        paramValue = getServletConfig().getInitParameter(PARAM_POLLING_TIME);
+        if (!MotuServlet.isNullOrEmpty(paramValue)) {
+            pollingTime = Integer.parseInt(paramValue);
+        }
+
         // Initialisation Queue Server
         initRequestManagement();
     }
 
     /**
      * Sets the language if PARAM_LANGUAGE parameter is in the request list of parameters.
-     * 
-     * @param response the response
-     * @param session request sesssion
+     *
      * @param request object that contains the request the client has made of the servlet.
-     * 
-     * @throws IOException the IO exception
+     * @param session request sesssion
+     * @param response the response
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     public void setLanguageParameter(HttpServletRequest request, HttpSession session, HttpServletResponse response) throws ServletException,
             IOException {
@@ -646,9 +786,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Delete file.
-     * 
-     * @param response the response
+     *
      * @param urls the urls to delete
+     * @param response the response
      */
     protected void deleteFile(List<String> urls, HttpServletResponse response) {
         if (LOG.isDebugEnabled()) {
@@ -722,15 +862,13 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Handles a GET request.
-     * 
-     * @param response object that contains the response the servlet sends to the client
+     *
      * @param request object that contains the request the client has made of the servlet.
-     * 
-     * @throws IOException the IO exception
+     * @param response object that contains the response the servlet sends to the client
      * @throws ServletException the servlet exception
-     * 
+     * @throws IOException the IO exception
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
-     *      javax.servlet.http.HttpServletResponse)
+     * javax.servlet.http.HttpServletResponse)
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -806,15 +944,13 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Handles a POST request.
-     * 
-     * @param response object that contains the response the servlet sends to the client
+     *
      * @param request object that contains the request the client has made of the servlet.
-     * 
-     * @throws IOException the IO exception
+     * @param response object that contains the response the servlet sends to the client
      * @throws ServletException the servlet exception
-     * 
+     * @throws IOException the IO exception
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
-     *      javax.servlet.http.HttpServletResponse)
+     * javax.servlet.http.HttpServletResponse)
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -823,13 +959,12 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Executes the default request.
-     * 
-     * @param response object that contains the response the servlet sends to the client
-     * @param session request sesssion
+     *
      * @param request object that contains the request the client has made of the servlet.
-     * 
-     * @throws IOException the IO exception
+     * @param session request sesssion
+     * @param response object that contains the response the servlet sends to the client
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     protected void execDefaultRequest(HttpServletRequest request, HttpSession session, HttpServletResponse response) throws ServletException,
             IOException {
@@ -909,13 +1044,12 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * Id</li>
      * <li>PARAM_ACTION = ACTION_PRODUCT_DOWNLOAD & PARAM_SERVICE = Service name & PARAM_PRODCUT = Product Id</li>
      * </ul>
-     * 
-     * @param response object that contains the response the servlet sends to the client
+     *
      * @param request object that contains the request the client has made of the servlet.
-     * 
-     * @throws IOException the IO exception
+     * @param response object that contains the response the servlet sends to the client
      * @throws ServletException the servlet exception
-     * @throws MotuException
+     * @throws IOException the IO exception
+     * @throws MotuException the motu exception
      */
     protected void execRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, MotuException {
         if (LOG.isDebugEnabled()) {
@@ -982,13 +1116,11 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     /**
      * Returns the current session associated with this request, or if the request does not have a session,
      * creates one.
-     * 
+     *
      * @param request object that contains the request the client has made of the servlet.
-     * 
      * @return the HttpSession associated with this request
-     * 
-     * @throws IOException the IO exception
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     protected HttpSession getSession(HttpServletRequest request) throws ServletException, IOException {
 
@@ -1006,15 +1138,14 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Checks if is action describe product.
-     * 
+     *
      * @param action the action
      * @param request the request
      * @param response the response
-     * 
      * @return true, if is action describe product
-     * @throws ServletException
-     * @throws IOException
-     * @throws MotuException
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws ServletException the servlet exception
+     * @throws MotuException the motu exception
      */
     private boolean isActionDescribeProduct(String action, HttpServletRequest request, HttpServletResponse response) throws IOException,
             ServletException, MotuException {
@@ -1094,15 +1225,13 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Checks if is action delete.
-     * 
-     * @param response the response
-     * @param request the request
+     *
      * @param action the action
-     * 
+     * @param request the request
+     * @param response the response
      * @return true, if is action delete
-     * 
-     * @throws IOException the IO exception
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     protected boolean isActionDelete(String action, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (!action.equalsIgnoreCase(ACTION_DELETE)) {
@@ -1117,15 +1246,13 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Checks if is action get request status.
-     * 
-     * @param response the response
-     * @param request the request
+     *
      * @param action the action
-     * 
+     * @param request the request
+     * @param response the response
      * @return true, if is action get request status
-     * 
-     * @throws IOException the IO exception
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     protected boolean isActionGetRequestStatus(String action, HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException {
@@ -1160,16 +1287,14 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Checks if is action list get size.
-     * 
-     * @param response the response
-     * @param request the request
+     *
      * @param action the action
-     * 
+     * @param request the request
+     * @param response the response
      * @return true, if is action list get size
-     * 
-     * @throws IOException the IO exception
      * @throws ServletException the servlet exception
-     * @throws MotuException
+     * @throws IOException the IO exception
+     * @throws MotuException the motu exception
      */
     protected boolean isActionGetSize(String action, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException,
             MotuException {
@@ -1236,16 +1361,14 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Checks if is action get time coverage.
-     * 
-     * @param response the response
-     * @param request the request
+     *
      * @param action the action
-     * 
+     * @param request the request
+     * @param response the response
      * @return true, if is action get time coverage
-     * 
-     * @throws IOException the IO exception
      * @throws ServletException the servlet exception
-     * @throws MotuException
+     * @throws IOException the IO exception
+     * @throws MotuException the motu exception
      */
     protected boolean isActionGetTimeCoverage(String action, HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException, MotuException {
@@ -1328,16 +1451,14 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Executes the ACTION_LIST_CATALOG if request's parameters match.
-     * 
-     * @param response object that contains the response the servlet sends to the client
-     * @param session request sesssion
-     * @param request object that contains the request the client has made of the servlet.
+     *
      * @param action action to be executed.
-     * 
+     * @param request object that contains the request the client has made of the servlet.
+     * @param session request sesssion
+     * @param response object that contains the response the servlet sends to the client
      * @return true is request is ACTION_LIST_CATALOG and have been executed, false otherwise.
-     * 
-     * @throws IOException the IO exception
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     protected boolean isActionListCatalog(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException {
@@ -1374,17 +1495,15 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Executes the ACTION_PRODUCT_DOWNLOADHOME if request's parameters match.
-     * 
-     * @param response object that contains the response the servlet sends to the client
-     * @param session request sesssion
-     * @param request object that contains the request the client has made of the servlet.
+     *
      * @param action action to be executed.
-     * 
+     * @param request object that contains the request the client has made of the servlet.
+     * @param session request sesssion
+     * @param response object that contains the response the servlet sends to the client
      * @return true is request is ACTION_PRODUCT_DOWNLOADHOME and have been executed, false otherwise.
-     * 
-     * @throws IOException the IO exception
      * @throws ServletException the servlet exception
-     * @throws MotuException
+     * @throws IOException the IO exception
+     * @throws MotuException the motu exception
      */
     protected boolean isActionListProductDownloadHome(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException, MotuException {
@@ -1419,7 +1538,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             response.sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
             return true;
         }
-         if (MotuServlet.isNullOrEmpty(productId)) {
+        if (MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("isActionListProductDownloadHome() - exiting");
             }
@@ -1438,18 +1557,16 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     /**
      * Executes the {@link MotuRequestParametersConstant#ACTION_DESCRIBE_COVERAGE} if request's parameters
      * match.
-     * 
-     * @param response object that contains the response the servlet sends to the client
-     * @param session request session
-     * @param request object that contains the request the client has made of the servlet.
+     *
      * @param action action to be executed.
-     * 
+     * @param request object that contains the request the client has made of the servlet.
+     * @param session request session
+     * @param response object that contains the response the servlet sends to the client
      * @return true is request is A{@link MotuRequestParametersConstant#ACTION_DESCRIBE_COVERAGE} and have
-     *         been executed, false otherwise.
-     * 
-     * @throws IOException the IO exception
+     * been executed, false otherwise.
      * @throws ServletException the servlet exception
-     * @throws MotuException
+     * @throws IOException the IO exception
+     * @throws MotuException the motu exception
      */
     protected boolean isActionDescribeCoverage(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException, MotuException {
@@ -1502,17 +1619,15 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Executes the ACTION_LIST_PRODUCT_METADATA if request's parameters match.
-     * 
-     * @param response object that contains the response the servlet sends to the client
-     * @param session request sesssion
-     * @param request object that contains the request the client has made of the servlet.
+     *
      * @param action action to be executed.
-     * 
+     * @param request object that contains the request the client has made of the servlet.
+     * @param session request sesssion
+     * @param response object that contains the response the servlet sends to the client
      * @return true is request is ACTION_LIST_PRODUCT_METADATA and have been executed, false otherwise.
-     * 
-     * @throws IOException the IO exception
      * @throws ServletException the servlet exception
-     * @throws MotuException
+     * @throws IOException the IO exception
+     * @throws MotuException the motu exception
      */
     protected boolean isActionListProductMetaData(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException, MotuException {
@@ -1532,7 +1647,6 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         Organizer.Format responseFormat = getResponseFormat(request);
         setResponseContentType(responseFormat, response);
 
-        
         String serviceName = request.getParameter(PARAM_SERVICE);
         if (MotuServlet.isNullOrEmpty(serviceName)) {
             if (LOG.isDebugEnabled()) {
@@ -1540,7 +1654,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             }
             return false;
         }
-        
+
         String productId = "";
         try {
             productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
@@ -1551,7 +1665,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             response.sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
             return true;
         }
-        
+
         if (MotuServlet.isNullOrEmpty(productId)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("isActionListProductMetaData() - exiting");
@@ -1570,16 +1684,14 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Executes the ACTION_LIST_SERVICES if request's parameters match.
-     * 
-     * @param response object that contains the response the servlet sends to the client
-     * @param session request sesssion
-     * @param request object that contains the request the client has made of the servlet.
+     *
      * @param action action to be executed.
-     * 
+     * @param request object that contains the request the client has made of the servlet.
+     * @param session request sesssion
+     * @param response object that contains the response the servlet sends to the client
      * @return true is request is ACTION_LIST_SERVICES and have been executed, false otherwise.
-     * 
-     * @throws IOException the IO exception
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     protected boolean isActionListServices(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException {
@@ -1608,15 +1720,13 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Executes the ACTION_PRODUCT_DOWNLOAD if request's parameters match.
-     * 
-     * @param response object that contains the response the servlet sends to the client
-     * @param request object that contains the request the client has made of the servlet.
+     *
      * @param action action to be executed.
-     * 
+     * @param request object that contains the request the client has made of the servlet.
+     * @param response object that contains the response the servlet sends to the client
      * @return true is request is ACTION_PRODUCT_DOWNLOAD and have been executed, false otherwise.
-     * 
-     * @throws IOException the IO exception
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     protected boolean isActionPing(String action, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (LOG.isDebugEnabled()) {
@@ -1642,17 +1752,15 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Checks if is action product download.
-     * 
-     * @param response the response
-     * @param session the session
-     * @param request the request
+     *
      * @param action the action
-     * 
+     * @param request the request
+     * @param session the session
+     * @param response the response
      * @return true, if is action product download
-     * 
      * @throws IOException the IO exception
      * @throws ServletException the servlet exception
-     * @throws MotuException
+     * @throws MotuException the motu exception
      */
     protected boolean isActionProductDownload(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws IOException, ServletException, MotuException {
@@ -1773,17 +1881,15 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Executes the ACTION_PRODUCT_DOWNLOAD if request's parameters match.
-     * 
-     * @param response object that contains the response the servlet sends to the client
-     * @param session request sesssion
-     * @param request object that contains the request the client has made of the servlet.
+     *
      * @param action action to be executed.
-     * 
+     * @param request object that contains the request the client has made of the servlet.
+     * @param session request sesssion
+     * @param response object that contains the response the servlet sends to the client
      * @return true is request is ACTION_PRODUCT_DOWNLOAD and have been executed, false otherwise.
-     * 
-     * @throws IOException the IO exception
      * @throws ServletException the servlet exception
-     * @throws MotuException
+     * @throws IOException the IO exception
+     * @throws MotuException the motu exception
      */
     protected boolean isActionProductDownloadNoQueueing(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException, MotuException {
@@ -1820,7 +1926,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         } catch (Exception e) {
             response.sendError(400, String.format("ERROR: %s", e.getMessage()));
         }
-        
+
         String productId = "";
         try {
             productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
@@ -1868,16 +1974,14 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Executes the ACTION_REFRESH if request's parameters match.
-     * 
-     * @param response object that contains the response the servlet sends to the client
-     * @param session request sesssion
-     * @param request object that contains the request the client has made of the servlet.
+     *
      * @param action action to be executed.
-     * 
+     * @param request object that contains the request the client has made of the servlet.
+     * @param session request sesssion
+     * @param response object that contains the response the servlet sends to the client
      * @return true is request is ACTION_REFRESH and have been executed, false otherwise.
-     * 
-     * @throws IOException the IO exception
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     protected boolean isActionRefresh(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException {
@@ -1937,13 +2041,11 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Check authorized.
-     * 
-     * @param response the response
-     * @param session the session
+     *
      * @param request the request
-     * 
+     * @param session the session
+     * @param response the response
      * @return true, if check authorized
-     * 
      * @throws ServletException the servlet exception
      */
     private boolean checkAuthorized(HttpServletRequest request, HttpSession session, HttpServletResponse response) throws ServletException {
@@ -1978,11 +2080,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Creates a new Organizer for a session.
-     * 
+     *
      * @param session session in which to create Oragnizer
-     * 
-     * @throws IOException the IO exception
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     private void createOrganizer(HttpSession session) throws ServletException, IOException {
         if (LOG.isDebugEnabled()) {
@@ -2055,10 +2156,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Debug pending request.
-     * 
+     *
      * @param stringBuffer the string buffer
-     * @param batch the batch
      * @param queueServerManagement the queue server management
+     * @param batch the batch
      */
     private void debugPendingRequest(StringBuffer stringBuffer, QueueServerManagement queueServerManagement, boolean batch) {
 
@@ -2389,12 +2490,12 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Gets the amount data size.
-     * 
-     * @param response the response
+     *
      * @param extractionParameters the extraction parameters
-     * 
-     * @throws IOException the IO exception
+     * @param response the response
+     * @return the amount data size
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     private void getAmountDataSize(ExtractionParameters extractionParameters, HttpServletResponse response) throws ServletException, IOException {
 
@@ -2430,10 +2531,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Gets the catalog type params.
-     * 
+     *
      * @param request the request
      * @return the catalog type params
-     * @throws MotuException
+     * @throws MotuException the motu exception
      */
     private List<CatalogData.CatalogType> getCatalogTypeParams(HttpServletRequest request) throws MotuException {
         if (LOG.isDebugEnabled()) {
@@ -2665,10 +2766,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Gets the login.
-     * 
-     * @param session the session
+     *
      * @param request the request
-     * 
+     * @param session the session
      * @return the login
      */
     private String getLogin(HttpServletRequest request, HttpSession session) {
@@ -2701,13 +2801,11 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Gets Organizer object form the HttpSession.
-     * 
-     * @param response the response
+     *
      * @param session that contains Organizer.
-     * 
+     * @param response the response
      * @return Organizer object.
-     * 
-     * @throws IOException
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     private Organizer getOrganizer(HttpSession session, HttpServletResponse response) throws IOException {
 
@@ -3020,10 +3118,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Gets the data format.
-     * 
+     *
      * @param request the request
      * @return the data format
-     * @throws MotuException
+     * @throws MotuException the motu exception
      */
     private Organizer.Format getDataFormat(HttpServletRequest request) throws MotuException {
         String dataFormat = request.getParameter(MotuRequestParametersConstant.PARAM_DATA_FORMAT);
@@ -3044,10 +3142,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
         return format;
     }
-    
+
     /**
      * Gets the response format.
-     *
+     * 
      * @param request the request
      * @return the response format
      * @throws MotuException the motu exception
@@ -3071,17 +3169,25 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
         return format;
     }
+
+    /**
+     * Sets the response content type.
+     *
+     * @param format the format
+     * @param response the response
+     * @throws MotuException the motu exception
+     */
     private void setResponseContentType(Organizer.Format format, HttpServletResponse response) throws MotuException {
-    
+
         switch (format) {
         case HTML:
-            response.setContentType(CONTENT_TYPE_HTML);            
+            response.setContentType(CONTENT_TYPE_HTML);
             break;
         case XML:
-            response.setContentType(CONTENT_TYPE_XML);            
+            response.setContentType(CONTENT_TYPE_XML);
             break;
         default:
-            response.setContentType(CONTENT_TYPE_PLAIN);            
+            response.setContentType(CONTENT_TYPE_PLAIN);
             break;
         }
     }
@@ -3178,11 +3284,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Initializes a new session with a new Organizer object.
-     * 
+     *
      * @param session session to initialize
-     * 
-     * @throws IOException the IO exception
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     private void initSession(HttpSession session) throws ServletException, IOException {
         if (LOG.isDebugEnabled()) {
@@ -3216,13 +3321,11 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Debug product donwload.
-     * 
-     * @param response the response
-     * @param request the request
+     *
      * @param action the action
-     * 
+     * @param request the request
+     * @param response the response
      * @return true, if is action debug
-     * 
      * @throws IOException the IO exception
      */
     private boolean isActionDebug(String action, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -3256,10 +3359,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Checks if is anonymous user.
-     * 
-     * @param userId the user id
+     *
      * @param request the request
-     * 
+     * @param userId the user id
      * @return true, if is anonymous user
      */
     private boolean isAnonymousUser(HttpServletRequest request, String userId) {
@@ -3364,13 +3466,12 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     /**
      * Lists the catalog for a service name. Informations are witten if HTML format in the writer of the
      * response.
-     * 
-     * @param response object that contains the response the servlet sends to the client
-     * @param session request sesssion
+     *
      * @param serviceName name of the service for the catalog
-     * 
-     * @throws IOException the IO exception
+     * @param session request sesssion
+     * @param response object that contains the response the servlet sends to the client
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     private void listCatalog(String serviceName, HttpSession session, HttpServletResponse response) throws ServletException, IOException {
         if (LOG.isDebugEnabled()) {
@@ -3398,17 +3499,20 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Lists metadata for a product. Informations are witten if HTML format in the writer of the response.
-     * 
-     * @param response object that contains the response the servlet sends to the client
-     * @param session request sesssion
-     * @param productId id of the product
+     *
      * @param serviceName name of the service for the product
-     * 
-     * @throws IOException the IO exception
+     * @param productId id of the product
+     * @param responseFormat the response format
+     * @param session request sesssion
+     * @param response object that contains the response the servlet sends to the client
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
-    private void listProductMetaData(String serviceName, String productId, Organizer.Format responseFormat, HttpSession session, HttpServletResponse response)
-            throws ServletException, IOException {
+    private void listProductMetaData(String serviceName,
+                                     String productId,
+                                     Organizer.Format responseFormat,
+                                     HttpSession session,
+                                     HttpServletResponse response) throws ServletException, IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("listProductMetaData() - entering");
         }
@@ -3434,12 +3538,12 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Lists the available data services (Aviso, Mercator, ....) in HTML format.
-     * 
-     * @param response object that contains the response the servlet sends to the client
+     *
+     * @param request the request
      * @param session request sesssion
-     * 
-     * @throws IOException the IO exception
+     * @param response object that contains the response the servlet sends to the client
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     private void listServices(HttpServletRequest request, HttpSession session, HttpServletResponse response) throws ServletException, IOException {
         if (LOG.isDebugEnabled()) {
@@ -3591,13 +3695,12 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Product download.
-     * 
-     * @param response the response
-     * @param session the session
-     * @param priority the priority
+     *
      * @param extractionParameters the extraction parameters
      * @param mode the mode
-     * 
+     * @param priority the priority
+     * @param session the session
+     * @param response the response
      * @throws IOException the IO exception
      */
     private void productDownload(ExtractionParameters extractionParameters,
@@ -3705,14 +3808,13 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     /**
      * Gets th product download homepage. Informations are witten if HTML format in the writer of the
      * response.
-     * 
-     * @param response object that contains the response the servlet sends to the client
-     * @param session request sesssion
-     * @param productId id of the product
+     *
      * @param serviceName name of the service for the product
-     * 
-     * @throws IOException the IO exception
+     * @param productId id of the product
+     * @param session request sesssion
+     * @param response object that contains the response the servlet sends to the client
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     private void productDownloadHome(String serviceName, String productId, HttpSession session, HttpServletResponse response)
             throws ServletException, IOException {
@@ -3742,14 +3844,13 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     /**
      * Gets the coverage description of a product. Informations are witten if XML format in the writer of the
      * response.
-     * 
-     * @param response object that contains the response the servlet sends to the client
-     * @param session request sesssion
-     * @param productId id of the product
+     *
      * @param serviceName name of the service for the product
-     * 
-     * @throws IOException the IO exception
+     * @param productId id of the product
+     * @param session request sesssion
+     * @param response object that contains the response the servlet sends to the client
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     private void describeCoverage(String serviceName, String productId, HttpSession session, HttpServletResponse response) throws ServletException,
             IOException {
@@ -3806,12 +3907,11 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Product download no queueing.
-     * 
-     * @param response the response
-     * @param session the session
+     *
      * @param extractionParameters the extraction parameters
      * @param mode the mode
-     * 
+     * @param session the session
+     * @param response the response
      * @throws IOException the IO exception
      */
     private void productDownloadNoQueueing(ExtractionParameters extractionParameters, String mode, HttpSession session, HttpServletResponse response)
@@ -3867,11 +3967,11 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Product describe product.
-     * 
+     *
      * @param locationData the location data
-     * @param tsdCatalogFileName the tsd catalog file name
+     * @param tdsCatalogFileName the tds catalog file name
+     * @param loadExtraMetadata the load extra metadata
      * @param response the response
-     * 
      * @throws ServletException the servlet exception
      * @throws IOException Signals that an I/O exception has occurred.
      */
@@ -3902,6 +4002,16 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         }
     }
 
+    /**
+     * Product describe product.
+     *
+     * @param loadExtraMetadata the load extra metadata
+     * @param serviceName the service name
+     * @param productId the product id
+     * @param response the response
+     * @throws ServletException the servlet exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     private void productDescribeProduct(boolean loadExtraMetadata, String serviceName, String productId, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -3919,12 +4029,11 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Product get time coverage.
-     * 
-     * @param response the response
+     *
      * @param locationData the location data
-     * 
-     * @throws IOException the IO exception
+     * @param response the response
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     private void productGetTimeCoverage(String locationData, HttpServletResponse response) throws ServletException, IOException {
         if (LOG.isDebugEnabled()) {
@@ -3950,13 +4059,12 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Product get time coverage.
-     * 
-     * @param response the response
+     *
      * @param serviceName the service name
      * @param productId the product id
-     * 
-     * @throws IOException the IO exception
+     * @param response the response
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     private void productGetTimeCoverage(String serviceName, String productId, HttpServletResponse response) throws ServletException, IOException {
         if (LOG.isDebugEnabled()) {
@@ -3982,12 +4090,11 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Refreshes the the output.
-     * 
-     * @param response object that contains the response the servlet sends to the client
+     *
      * @param session request sesssion
-     * 
-     * @throws IOException the IO exception
+     * @param response object that contains the response the servlet sends to the client
      * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
      */
     private void refresh(HttpSession session, HttpServletResponse response) throws ServletException, IOException {
         if (LOG.isDebugEnabled()) {
@@ -4029,16 +4136,14 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     /**
      * Gets the product id.
-     * 
+     *
+     * @param productId the product id
      * @param request the request
-     * @param session the session
      * @param response the response
-     * 
      * @return the product id
-     * 
      * @throws IOException Signals that an I/O exception has occurred.
-     * @throws ServletException
-     * @throws MotuException
+     * @throws ServletException the servlet exception
+     * @throws MotuException the motu exception
      */
     protected String getProductIdFromParamId(final String productId, HttpServletRequest request, HttpServletResponse response) throws IOException,
             ServletException, MotuException {

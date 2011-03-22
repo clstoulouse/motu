@@ -30,8 +30,12 @@ import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
+import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
 import fr.cls.atoll.motu.library.misc.utils.ConfigLoader;
+import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
 import fr.cls.atoll.motu.processor.wps.WPSRequestManagement;
+import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
+import fr.cls.atoll.motu.web.servlet.MotuServlet;
 import fr.cls.atoll.motu.web.servlet.ServletConfigAdapter;
 import fr.cls.atoll.motu.web.servlet.ServletContextAdapter;
 
@@ -70,6 +74,96 @@ public class MotuOGCFrontController extends OGCFrontController {
      * Logger for this class
      */
     private static final Logger LOG = Logger.getLogger(MotuOGCFrontController.class);
+    /**
+     * .
+     */
+    private static final long serialVersionUID = 792206014995098390L;
+  
+    /** The Constant PARAM_POLLING_TIME. */
+    private static final String PARAM_POLLING_TIME = "pollingTime";
+
+    /** The polling time. */
+    protected int pollingTime = 1000;
+
+    /**
+     * Gets the polling time.
+     *
+     * @return the polling time
+     */
+    public int getPollingTime() {
+        return pollingTime;
+    }
+
+    /**
+     * Sets the polling time.
+     *
+     * @param pollingTime the new polling time
+     */
+    public void setPollingTime(int pollingTime) {
+        this.pollingTime = pollingTime;
+    }
+    
+    /** The service counter. */
+    protected volatile int serviceCounter = 0;
+
+    /**
+     * Entering service method.
+     */
+    protected synchronized void enteringServiceMethod() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("enteringServiceMethod() - start");
+        }
+
+        serviceCounter++;
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("enteringServiceMethod() - end");
+        }
+    }
+
+    /**
+     * Leaving service method.
+     */
+    protected synchronized void leavingServiceMethod() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("leavingServiceMethod() - start");
+        }
+
+        serviceCounter--;
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("leavingServiceMethod() - end");
+        }
+    }
+    /**
+     * Gets the service counter.
+     * 
+     * @return the service counter
+     */
+    protected synchronized int getServiceCounter() {
+        return serviceCounter;
+    }
+
+    /** The shutting down. */
+    private boolean shuttingDown = false;
+
+    /**
+     * Sets the shutting down.
+     *
+     * @param flag the shutting down
+     */
+    protected void setShuttingDown(boolean flag) {
+        shuttingDown = flag;
+    }
+
+    /**
+     * Checks if is shutting down.
+     * 
+     * @return true, if checks if is shutting down
+     */
+    protected boolean isShuttingDown() {
+        return shuttingDown;
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -102,10 +196,67 @@ public class MotuOGCFrontController extends OGCFrontController {
         }
     }
 
-    /**
-     * .
-     */
-    private static final long serialVersionUID = 792206014995098390L;
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (isShuttingDown()) {
+            resp.sendError(400, RunnableExtraction.SHUTDOWN_MSG);
+            return;
+        }
+        
+        enteringServiceMethod();
+        
+        try {
+            super.service(req, resp);
+        } finally {
+            leavingServiceMethod();
+        }
+    }
+
+    @Override
+    public void destroy() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("destroy() - start");
+        }
+
+        try {
+            // Check to see whether there are still service methods running,
+            // and if there are, tell them to stop. */
+            if (getServiceCounter() > 0) {
+                setShuttingDown(true);
+            }
+            
+            if (LOG.isInfoEnabled()) {
+                String msg = String.format("Motu OGC Servlet is shutting down - There is (are) still %d request(s) being processed", serviceCounter);
+                LOG.info(msg);
+            }
+
+            if (requestManagement != null) {
+                requestManagement.shutdown();
+            }
+          // Wait for the service methods to stop.
+          while (getServiceCounter() > 0) {
+              try {
+                  if (LOG.isInfoEnabled()) {
+                      String msg = String.format("Motu OGC Servlet is shutting down - There is (are) still %d request(s) being processed", serviceCounter);
+                      LOG.info(msg);
+                  }
+                  Thread.sleep(pollingTime);
+              } catch (InterruptedException e) {
+                  LOG.error("destroy()", e);
+                  // Do nothing
+              }
+          }
+        } catch (MotuException e) {
+            LOG.error("destroy()", e);
+            // Do nothing
+        } finally {
+            super.destroy();
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("destroy() - end");
+        }
+    }
 
     /**
      * Constructeur.
@@ -125,7 +276,11 @@ public class MotuOGCFrontController extends OGCFrontController {
         super.init(wrapServletConfig(config));
 
         try {
-                        
+            String paramValue = getServletConfig().getInitParameter(PARAM_POLLING_TIME);
+            if (!WPSUtils.isNullOrEmpty(paramValue)) {
+                pollingTime = Integer.parseInt(paramValue);
+            }
+
             initProxyLogin();
             
             MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
