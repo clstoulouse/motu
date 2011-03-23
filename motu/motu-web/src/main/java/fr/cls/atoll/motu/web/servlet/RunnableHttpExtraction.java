@@ -422,10 +422,23 @@ public class RunnableHttpExtraction extends RunnableExtraction {
             }
             return;
         }
+        if (statusModeResponse == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("setAbortedModeStatus() - statusModeResponse == null - exiting");
+            }
+            return;
+        }
 
         response.setContentType(null);
         try {
-            Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());
+
+            // If error is SHUTTING_DOWN : nothing to do, it's a deferred request
+            // and the response is set in statusModeResponse and
+            // asked by the client using a request provided for that.
+
+            if (!statusModeResponse.getCode().equals(ErrorType.SHUTTING_DOWN)) {
+                Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());                
+            }
         } catch (MotuMarshallException e) {
             LOG.error("setAbortedModeStatus()", e);
             sendResponseError500(e.notifyException());
@@ -542,7 +555,7 @@ public class RunnableHttpExtraction extends RunnableExtraction {
 
         // Nothing to do, it's a deferred request
         // and the response is set in statusModeResponse and
-        // asked by the client using a request provided fot that.
+        // asked by the client using a request provided for that.
     }
 
     /**
