@@ -195,6 +195,9 @@ public class QueueLogInfo {
             xStream.useAttributeFor(QueueLogError.class, "message");
         }
 
+        // WARNING : reset the output stream before serialization
+        // otherwise the content will be duplicate if multiple calls to 'toXML' are done. 
+        outputStream.reset();
         //return xStream.toXML(this);
         xStream.toXML(this, writer);
         return outputStream.toString();

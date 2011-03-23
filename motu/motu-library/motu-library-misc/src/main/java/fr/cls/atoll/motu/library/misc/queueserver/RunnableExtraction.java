@@ -152,13 +152,14 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
         if (LOG.isDebugEnabled()) {
             LOG.debug("shutdown() - start");
         }
-        if (LOG.isInfoEnabled()) {
-            LOG.info(String.format("Extraction request below is shutting down :\n",
-                                   getQueuelogInfoAsXML()));
-        }
         
         setError(ErrorType.SHUTTING_DOWN);        
         
+        if (LOG.isInfoEnabled()) {
+            LOG.info(String.format("Extraction request below is shutting down :\n%s\n",
+                                   getQueuelogInfoAsXML()));
+        }
+
         aborted();
 
         if (LOG.isInfoEnabled()) {

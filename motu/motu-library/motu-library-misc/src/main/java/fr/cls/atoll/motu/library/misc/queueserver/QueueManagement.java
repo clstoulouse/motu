@@ -503,7 +503,7 @@ public class QueueManagement implements JobListener, QueueManagementMBean {
         }
 
         for (Runnable r : removedRunnableList) {
-            if (!(r instanceof RunnableExtraction)) {
+            if (r instanceof RunnableExtraction) {
                 ((RunnableExtraction) r).shutdown();
             }
         }

@@ -488,15 +488,18 @@ public class RequestManagement implements JobListener {
 
         try {
             Thread.sleep(500);            
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("RequestManagement shutdown() - Shutdown scheduler in progress....");
+            if (LOG.isInfoEnabled()) {
+                LOG.info("RequestManagement shutdown() - Shutdown scheduler in progress....");
             }
             if (scheduler != null) {
                 if (!scheduler.isShutdown()) {
+                    if (LOG.isInfoEnabled()) {
+                        LOG.info("RequestManagement shutdown() - scheduler is shutting down...");
+                    }
                     scheduler.shutdown(true);
                 }
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug(String.format("RequestManagement shutdown() - scheduler shutdown: %b", scheduler.isShutdown()));
+                if (LOG.isInfoEnabled()) {
+                    LOG.info(String.format("RequestManagement shutdown() - scheduler shutdown: %b", scheduler.isShutdown()));
                 }
             }
 
@@ -510,7 +513,13 @@ public class RequestManagement implements JobListener {
             Thread.sleep(500);
             if (RequestManagement.useQueueServer) {
                 if (queueServerManagement != null) {
+                    if (LOG.isInfoEnabled()) {
+                        LOG.info("RequestManagement shutdown() - queueServerManagement is shutting down...");
+                    }
                     queueServerManagement.shutdown();
+                    if (LOG.isInfoEnabled()) {
+                        LOG.info("RequestManagement shutdown() - queueServerManagement is shutdown.");
+                    }
                 }
             }
         } catch (InterruptedException e) {

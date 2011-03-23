@@ -2796,9 +2796,7 @@ public class Organizer {
                 writer.flush();
                 writer.close();
             }
-        } catch (JAXBException e) {
-            throw new MotuMarshallException("Error in Organizer - marshallStatusModeResponse", e);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new MotuMarshallException("Error in Organizer - marshallStatusModeResponse", e);
         }
     }
