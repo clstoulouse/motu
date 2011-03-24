@@ -79,12 +79,21 @@ public class MotuServletTester {
             //+ "?action=productdownload&service=http://purl.org/myocean/ontology/service/database#cls-toulouse-fr-armor-motu-rest&product=dataset-armor-3d-ran-v1-myocean&nexturl=+&x_lo=0.0&x_hi=20&y_lo=-15&y_hi=10&output=netcdf&region=0.0%2C20.0%2C-15.0%2C10.0&yhi_text=10&xlo_text=0&xhi_text=20&ylo_text=-15&t_lo_0=2009-12-16&t_lo=2009-12-16&t_hi_0=2009-12-30&t_hi=2009-12-30&z_lo_0=Surface&z_lo=Surface&z_hi_0=Surface&z_hi=Surface&variable=salinity&variable=temperature&mode=console\"";
             //+ "?action=productdownload&service=http%3A%2F%2Fpurl.org%2Fmyocean%2Fontology%2Fservice%2Fdatabase%23cls-toulouse-fr-armor-motu-rest&product=dataset-armor-3d-ran-v1-myocean&nexturl=+&x_lo=0.0&x_hi=20&y_lo=-15&y_hi=10&output=netcdf&region=0.0%2C20.0%2C-15.0%2C10.0&yhi_text=10&xlo_text=0&xhi_text=20&ylo_text=-15&t_lo_0=2009-12-16&t_lo=2009-12-16&t_hi_0=2009-12-30&t_hi=2009-12-30&z_lo_0=Surface&z_lo=Surface&z_hi_0=Surface&z_hi=Surface&variable=salinity&variable=temperature&mode=status\"";
             + "?action=productdownload&service=http%3A%2F%2Fpurl.org%2Fmyocean%2Fontology%2Fservice%2Fdatabase%23cls-toulouse-fr-armor-motu-rest&product=dataset-armor-3d-ran-v1-myocean&nexturl=+&x_lo=0.0&x_hi=20&y_lo=-15&y_hi=10&output=netcdf&region=0.0%2C20.0%2C-15.0%2C10.0&yhi_text=10&xlo_text=0&xhi_text=20&ylo_text=-15&t_lo_0=2009-04-08&t_lo=2009-04-08&t_hi_0=2009-12-30&t_hi=2009-12-30&z_lo_0=Surface&z_lo=Surface&z_hi_0=50&z_hi=50&variable=salinity&variable=temperature&mode=status\"";        
-        
+
+        String cmd2 = "c:\\temp\\wget -O c:\\temp\\test.nc \""
+            + servletUrl
+            //+ "?action=productdownload&service=http://purl.org/myocean/ontology/service/database#cls-toulouse-fr-armor-motu-rest&product=dataset-armor-3d-ran-v1-myocean&nexturl=+&x_lo=0.0&x_hi=20&y_lo=-15&y_hi=10&output=netcdf&region=0.0%2C20.0%2C-15.0%2C10.0&yhi_text=10&xlo_text=0&xhi_text=20&ylo_text=-15&t_lo_0=2009-12-16&t_lo=2009-12-16&t_hi_0=2009-12-30&t_hi=2009-12-30&z_lo_0=Surface&z_lo=Surface&z_hi_0=Surface&z_hi=Surface&variable=salinity&variable=temperature&mode=console\"";
+            //+ "?action=productdownload&service=http%3A%2F%2Fpurl.org%2Fmyocean%2Fontology%2Fservice%2Fdatabase%23cls-toulouse-fr-armor-motu-rest&product=dataset-armor-3d-ran-v1-myocean&nexturl=+&x_lo=0.0&x_hi=20&y_lo=-15&y_hi=10&output=netcdf&region=0.0%2C20.0%2C-15.0%2C10.0&yhi_text=10&xlo_text=0&xhi_text=20&ylo_text=-15&t_lo_0=2009-12-16&t_lo=2009-12-16&t_hi_0=2009-12-30&t_hi=2009-12-30&z_lo_0=Surface&z_lo=Surface&z_hi_0=Surface&z_hi=Surface&variable=salinity&variable=temperature&mode=status\"";
+            + "?action=productdownload&service=http%3A%2F%2Fpurl.org%2Fmyocean%2Fontology%2Fservice%2Fdatabase%23cls-toulouse-fr-armor-motu-rest&product=dataset-armor-3d-ran-v1-myocean&nexturl=+&x_lo=0.0&x_hi=20&y_lo=-15&y_hi=10&output=netcdf&region=0.0%2C20.0%2C-15.0%2C10.0&yhi_text=10&xlo_text=0&xhi_text=20&ylo_text=-15&t_lo_0=2009-04-08&t_lo=2009-04-08&t_hi_0=2009-12-30&t_hi=2009-12-30&z_lo_0=Surface&z_lo=Surface&z_hi_0=50&z_hi=50&variable=salinity&variable=temperature&mode=status\"";        
+
         Client client2 = motuServletTester.new Client("CLIENT 2", 1000, servletUrl, cmd);
         clients.add(client2);
 
         Client client2b = motuServletTester.new Client("CLIENT 2b", 1000, servletUrl, cmd);
         clients.add(client2b);
+        
+        Client client2c = motuServletTester.new Client("CLIENT 2c", 1000, servletUrl, cmd);
+        clients.add(client2c);
 
         for (Client c : clients) {
             c.start();
