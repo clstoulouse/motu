@@ -467,7 +467,7 @@ public class QueueManagement implements JobListener, QueueManagementMBean {
 
             while (!(threadPoolExecutor.isTerminated())) {
                 if (LOG.isInfoEnabled()) {
-                    LOG.info(String.format("Queue '%s %s'  await termination - queue size is %d",
+                    LOG.info(String.format("Queue '%s %s'  await current job termination - (current pending job number is %d)",
                                            this.getName(),
                                            this.queueConfig.getDescription(),
                                            priorityBlockingQueue.size()));
