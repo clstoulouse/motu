@@ -90,6 +90,11 @@ public class Test {
 
             System.out.println(DateUtils.intersect(d1Period, d2Period));
             System.out.println(DateUtils.intersect(d2Period, d1Period));
+            
+            
+            Double dbl = new Double(0d);
+            dbl += 5;
+            System.out.println(dbl);
 
         } catch (MotuInvalidDateException e1) {
             // TODO Auto-generated catch block

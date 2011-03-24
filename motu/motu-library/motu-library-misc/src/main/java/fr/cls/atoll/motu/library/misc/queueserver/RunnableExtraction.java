@@ -234,6 +234,8 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
         double size = product.getAmountDataSizeAsMBytes();
         this.queueLogInfo.setAmountDataSize(product.getAmountDataSizeAsMBytes());
 
+        this.queueLogInfo.addReadingTime(product.getReadingTimeAsMilliSeconds());
+
         return size;
     }
 
@@ -534,6 +536,8 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
             if (product != null) {
                 queueLogInfo.setDownloadUrlPath(product.getDownloadUrlPath());
                 queueLogInfo.setExtractLocationData(product.getExtractLocationData());
+                queueLogInfo.addReadingTime(product.getReadingTimeAsMilliSeconds());
+                queueLogInfo.addWritingTime(product.getWritingTimeAsMilliSeconds());
             }
             setEndTime();
             if (LOGQUEUE.isInfoEnabled()) {

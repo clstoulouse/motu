@@ -456,6 +456,9 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
             netCdfWriter.finish(VAR_ATTR_TO_REMOVE);
         }
 
+        this.readingTime += netCdfWriter.getReadingTime();
+        this.writingTime += netCdfWriter.getWritingTime();
+
         product.moveTempExtractFileToFinalExtractFile();
 
         if (LOG.isDebugEnabled()) {

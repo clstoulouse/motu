@@ -1059,7 +1059,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
                 throw new MotuException("Error in subsetting geo grid", e);
             }
             inputVarSubset = geoGridSubset.getVariable();
-            MAMath.MinMax minMaxSubset = NetCdfWriter.getMinMaxSkipMissingData(geoGrid, inputVarSubset);
+            MAMath.MinMax minMaxSubset = NetCdfWriter.getMinMaxSkipMissingData(geoGrid, inputVarSubset, null);
             if (minMax == null) {
                 minMax = minMaxSubset;
             }

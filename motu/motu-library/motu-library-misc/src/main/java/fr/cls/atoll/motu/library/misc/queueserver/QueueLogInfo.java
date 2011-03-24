@@ -38,10 +38,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+// TODO: Auto-generated Javadoc
 /**
- * 
- * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
- * 
+ * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites).
+ *
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
@@ -75,7 +75,13 @@ public class QueueLogInfo {
     private Date endTime = null;
 
     /** The amount data size. */
-    private double amountDataSize = 0f;
+    private double amountDataSize = 0d;
+
+    /** The reading time in milliseconds (ms). */
+    private long readingTime = 0L;
+    
+    /** The writing time in milliseconds (ms). */
+    private long writingTime = 0L;
 
     /** The queue log error. */
     private QueueLogError queueLogError = null;
@@ -94,7 +100,11 @@ public class QueueLogInfo {
 
     /** The x stream. */
     private final XStream xStream = new XStream();
+    
+    /** The output stream. */
     private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    
+    /** The writer. */
     private Writer writer = null;
     /** The encoding. */
     private String encoding = "UTF-8";
@@ -416,6 +426,60 @@ public class QueueLogInfo {
     public void setAmountDataSize(double amountDataSize) {
         this.amountDataSize = amountDataSize;
     }
+    
+    /**
+     * Gets the reading time.
+     *
+     * @return the reading time
+     */
+    public double getReadingTime() {
+        return this.readingTime;
+    }
+
+    /**
+     * Sets the reading time.
+     *
+     * @param readingTime the new reading time
+     */
+    public void setReadingTime(long readingTime) {
+        this.readingTime = readingTime;
+    }
+    
+    /**
+     * Adds the reading time.
+     *
+     * @param readingTime the reading time
+     */
+    public void addReadingTime(long readingTime) {
+        this.readingTime += readingTime;
+    }
+    
+    /**
+     * Gets the writing time.
+     *
+     * @return the writing time
+     */
+    public long getWritingTime() {
+        return writingTime;
+    }
+
+    /**
+     * Sets the writing time.
+     *
+     * @param writingTime the new writing time
+     */
+    public void setWritingTime(long writingTime) {
+        this.writingTime = writingTime;
+    }
+    
+    /**
+     * Adds the writing time.
+     *
+     * @param writingTime the writing time
+     */
+    public void addWritingTime(long writingTime) {
+        this.writingTime += writingTime;
+    }
 
     /**
      * Gets the priorities.
@@ -428,9 +492,9 @@ public class QueueLogInfo {
 
     /**
      * Adds the priority.
-     * 
-     * @param range the range
+     *
      * @param priority the priority
+     * @param range the range
      * @param date the date
      */
     public void addPriority(int priority, int range, Date date) {

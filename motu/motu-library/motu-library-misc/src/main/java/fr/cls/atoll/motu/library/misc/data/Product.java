@@ -26,11 +26,9 @@ package fr.cls.atoll.motu.library.misc.data;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.RoundingMode;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -45,7 +43,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
@@ -536,19 +533,19 @@ public class Product {
             LOG.debug("loadOpendapGlobalMetaData() - exiting");
         }
     }
-    
+
     /**
      * Load inventory meta data.
-     *
+     * 
      * @throws MotuException the motu exception
      */
     public void loadInventoryMetaData() throws MotuException {
         loadInventoryMetaData(this.getLocationMetaData());
     }
-    
+
     /**
      * Load inventory meta data.
-     *
+     * 
      * @param xmlUri the xml uri
      * @throws MotuException the motu exception
      */
@@ -556,26 +553,26 @@ public class Product {
         Inventory inventoryOLA = Organizer.getInventoryOLA(xmlUri);
         loadInventoryMetaData(inventoryOLA);
     }
-    
+
     /**
      * Load inventory meta data.
-     *
+     * 
      * @param inventoryOLA the inventory ola
      * @throws MotuException the motu exception
      */
     public void loadInventoryMetaData(Inventory inventoryOLA) throws MotuException {
 
         if (inventoryOLA == null) {
-            return;            
+            return;
         }
-            
+
         Resource resource = inventoryOLA.getResource();
         Access access = resource.getAccess();
 
         if (productMetaData == null) {
             productMetaData = new ProductMetaData();
         }
-     
+
         loadInventoryGlobalMetaData(inventoryOLA);
 
         URI accessUri = null;
@@ -606,8 +603,10 @@ public class Product {
             }
 
         } catch (URISyntaxException e) {
-            throw new MotuException(String.format("Invalid URI '%s' in inventory product '%s' at '%s.urlPath' tag.attribute", accessUri, productMetaData.getProductId(), access.getClass()
-                    .toString()), e);
+            throw new MotuException(String.format("Invalid URI '%s' in inventory product '%s' at '%s.urlPath' tag.attribute",
+                                                  accessUri,
+                                                  productMetaData.getProductId(),
+                                                  access.getClass().toString()), e);
         }
 
         setLocationData(accessUri.toString());
@@ -617,7 +616,6 @@ public class Product {
         setDataFiles(dataFiles);
 
     }
-    
 
     /**
      * Reads product global variable metadata from a NetCDF file.
@@ -1767,6 +1765,57 @@ public class Product {
     }
 
     /**
+     * Gets the reading time.
+     * 
+     * @return the reading time
+     */
+    public long getReadingTime() {
+        if (dataset == null) {
+            return -1L;
+        }
+        return dataset.getReadingTime();
+    }
+
+    public long getReadingTimeAsNanoSeconds() {
+        return getReadingTime();
+    }
+
+    public long getReadingTimeAsMicroSeconds() {
+        return getReadingTimeAsNanoSeconds() / 1000;
+    }
+
+    public long getReadingTimeAsMilliSeconds() {
+        return getReadingTimeAsMicroSeconds() / 1000;
+    }
+
+    public long getReadingTimeAsSeconds() {
+        return getReadingTimeAsMilliSeconds() / 1000;
+    }
+
+    public long getWritingTime() {
+        if (dataset == null) {
+            return -1L;
+        }
+        return dataset.getWritingTime();
+    }
+
+    public long getWritingTimeAsNanoSeconds() {
+        return getWritingTime();
+    }
+
+    public long getWritingTimeAsMicroSeconds() {
+        return getWritingTimeAsNanoSeconds() / 1000;
+    }
+
+    public long getWritingTimeAsMilliSeconds() {
+        return getWritingTimeAsMicroSeconds() / 1000;
+    }
+
+    public long getWritingTimeAsSeconds() {
+        return getWritingTimeAsMilliSeconds() / 1000;
+    }
+
+    /**
      * Extract data.
      * 
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
@@ -1952,18 +2001,18 @@ public class Product {
             return timeCoverage;
         }
 
-        for (DataFile dataFile : dataFiles) {            
-            // Warning : get Datetime as UTC 
+        for (DataFile dataFile : dataFiles) {
+            // Warning : get Datetime as UTC
             DateTime fileStart = DateUtils.dateTimeToUTC(dataFile.getStartCoverageDate());
-            
+
             if (fileStart != null) {
                 timeCoverage.add(DateUtils.DATETIME_FORMATTERS.get(DateUtils.DATETIME_PATTERN3).print(fileStart));
             }
 
         }
-        
+
         return timeCoverage;
-        
+
     }
 
     /** URL to find the product (URL Opendap , ...). */
@@ -2104,10 +2153,9 @@ public class Product {
         }
     }
 
-    
     /**
      * Gets the product id encoded.
-     *
+     * 
      * @return the product id encoded
      */
     public String getProductIdEncoded() {
@@ -2116,7 +2164,7 @@ public class Product {
 
     /**
      * Gets the product id encoded.
-     *
+     * 
      * @param enc the enc
      * @return the product id encoded
      */

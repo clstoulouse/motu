@@ -67,6 +67,7 @@ import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 
+// TODO: Auto-generated Javadoc
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
 /**
@@ -156,14 +157,25 @@ public abstract class DatasetBase {
     
 //    protected List<CoordinateAxis> listVariableLatSubset = new ArrayList<CoordinateAxis>();
 //    protected List<CoordinateAxis> listVariableLonSubset = new ArrayList<CoordinateAxis>();
-    protected List<CoordinateAxis> listVariableXSubset = null;
+    /** The list variable x subset. */
+protected List<CoordinateAxis> listVariableXSubset = null;
+    
+    /** The list variable y subset. */
     protected List<CoordinateAxis> listVariableYSubset = null;
+    
+    /** The map x range. */
     protected Map<String, Range> mapXRange = null;
+    
+    /** The map y range. */
     protected Map<String, Range> mapYRange = null;
 
+    /** The map var org ranges. */
     protected Map<String, List<Section>> mapVarOrgRanges = null;
     
+    /** The list distinct x range. */
     protected List<Range> listDistinctXRange = null;
+    
+    /** The list distinct y range. */
     protected List<Range> listDistinctYRange = null;
 
     /**
@@ -251,6 +263,40 @@ public abstract class DatasetBase {
      */
     public double getAmountDataSizeAsGBytes() {
         return getAmountDataSize() / 1024d;
+    }
+    
+    /** The reading time in nanoSeconds (ns). */
+    protected long readingTime = 0L;
+
+    /**
+     * Gets the reading time.
+     * 
+     * @return the reading time
+     */
+    public long getReadingTime() {
+        return this.readingTime;
+    }
+
+    
+    /** The writing time in nanoSeconds (ns). */
+    protected long writingTime = 0L;
+    
+    /**
+     * Gets the writing time.
+     *
+     * @return the writing time
+     */
+    public long getWritingTime() {
+        return writingTime;
+    }
+
+    /**
+     * Sets the writing time.
+     *
+     * @param writingTime the new writing time
+     */
+    public void setWritingTime(long writingTime) {
+        this.writingTime = writingTime;
     }
 
     /**
@@ -457,10 +503,9 @@ public abstract class DatasetBase {
     /**
      * Adds listCriteria into the dataset. If a criterion already exists in the dataset, it will be replaced
      * if replace is true.
-     * 
-     * @param replace if true and criteria of the same type already exists, they will be replaced
+     *
      * @param list list of criteria to be added.
-     * 
+     * @param replace if true and criteria of the same type already exists, they will be replaced
      * @throws MotuException the motu exception
      */
     public void addCriteria(List<ExtractCriteria> list, boolean replace) throws MotuException {
@@ -680,11 +725,10 @@ public abstract class DatasetBase {
     /**
      * initializes a list of global attributes ('dynamic' attributes that depend on data). Range values can be
      * Double.MAX_VALUE if no value
-     * 
+     *
      * @return a list of global attributes
-     * 
-     * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuException the motu exception
+     * @throws MotuNotImplementedException the motu not implemented exception
      */
     // CSOFF: NPathComplexity : initialization method with controls and try/catch.
     // CSOFF: ExecutableStatementCount : initialization method with controls and try/catch.
@@ -790,16 +834,16 @@ public abstract class DatasetBase {
 
     /**
      * Compute amount data size.
-     * 
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuNoVarException the motu no var exception
+     *
      * @throws MotuException the motu exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
+     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
+     * @throws MotuNotImplementedException the motu not implemented exception
+     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
+     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
+     * @throws NetCdfVariableException the net cdf variable exception
+     * @throws MotuNoVarException the motu no var exception
+     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      */
     public abstract void computeAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
@@ -809,18 +853,17 @@ public abstract class DatasetBase {
 
     /**
      * Extract data.
-     * 
+     *
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
-     * 
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuNoVarException the motu no var exception
      * @throws MotuException the motu exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
+     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
+     * @throws MotuNotImplementedException the motu not implemented exception
+     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
+     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
+     * @throws NetCdfVariableException the net cdf variable exception
+     * @throws MotuNoVarException the motu no var exception
+     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public abstract void extractData(Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException,
@@ -877,10 +920,10 @@ public abstract class DatasetBase {
 
     /**
      * Inits the get amount data.
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuNoVarException the motu no var exception
+     *
      * @throws MotuException the motu exception
+     * @throws MotuNoVarException the motu no var exception
+     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      */
     public void initGetAmountData() throws MotuException, MotuNoVarException, NetCdfVariableNotFoundException {
         if (LOG.isDebugEnabled()) {
@@ -911,10 +954,10 @@ public abstract class DatasetBase {
 
     /**
      * NetCdf extraction initialization.
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuNoVarException the motu no var exception
+     *
      * @throws MotuException the motu exception
+     * @throws MotuNoVarException the motu no var exception
+     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      */
     public void initNetCdfExtraction() throws MotuException, MotuNoVarException, NetCdfVariableNotFoundException {
         if (LOG.isDebugEnabled()) {
@@ -948,11 +991,10 @@ public abstract class DatasetBase {
 
     /**
      * Get min/max the longitude from the grid.
-     * 
+     *
      * @return Normalized Min/Max of the Longitude ranges values
-     * 
-     * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuException the motu exception
+     * @throws MotuNotImplementedException the motu not implemented exception
      */
     public MAMath.MinMax getMinMaxLonNormal() throws MotuException, MotuNotImplementedException {
 
@@ -1023,12 +1065,11 @@ public abstract class DatasetBase {
 
     /**
      * Get min/max the longitude from two ranges.
-     * 
-     * @param r2Values second Longitude range values
+     *
      * @param r1 first Longitude range
      * @param r2 second Longitude range
      * @param r1Values first Longitude range values
-     * 
+     * @param r2Values second Longitude range values
      * @return Normalized Min/Max of the Longitude ranges values
      */
     public static MinMax getMinMaxLonNormal(Range r1, Range r2, double[] r1Values, double[] r2Values) {
@@ -1054,9 +1095,9 @@ public abstract class DatasetBase {
     /**
      * Compute average from a variable. A new variable containing the result of calculation is created and
      * added to the variable's collection.
-     * 
-     * @param dimensions dimensions on which to apply average.
+     *
      * @param variable variable to compute.
+     * @param dimensions dimensions on which to apply average.
      */
     public void computeAverage(VarData variable, String dimensions) {
 
@@ -1147,11 +1188,9 @@ public abstract class DatasetBase {
 
     /**
      * Returns <tt>true</tt> if this map contains a mapping for the specified key.
-     * 
+     *
      * @param key key whose presence in this map is to be tested.
-     * 
-     * @return <tt>true</tt> if this map contains a mapping for the specified key.
-     * 
+     * @return  if this map contains a mapping for the specified key.
      * @see java.util.Map#containsKey(Object)
      * @uml.property name="variables"
      */
@@ -1161,11 +1200,9 @@ public abstract class DatasetBase {
 
     /**
      * Returns <tt>true</tt> if this map maps one or more keys to the specified value.
-     * 
+     *
      * @param value value whose presence in this map is to be tested.
-     * 
-     * @return <tt>true</tt> if this map maps one or more keys to the specified value.
-     * 
+     * @return  if this map maps one or more keys to the specified value.
      * @see java.util.Map#containsValue(Object)
      * @uml.property name="variables"
      */
@@ -1175,12 +1212,10 @@ public abstract class DatasetBase {
 
     /**
      * Returns the value to which this map maps the specified key.
-     * 
+     *
      * @param key key whose associated value is to be returned.
-     * 
-     * @return the value to which this map maps the specified key, or <tt>null</tt> if the map contains no
-     *         mapping for this key.
-     * 
+     * @return the value to which this map maps the specified key, or  if the map contains no
+     * mapping for this key.
      * @see java.util.Map#get(Object)
      * @uml.property name="variables"
      */
@@ -1190,9 +1225,8 @@ public abstract class DatasetBase {
 
     /**
      * Returns <tt>true</tt> if this map contains no key-value mappings.
-     * 
-     * @return <tt>true</tt> if this map contains no key-value mappings.
-     * 
+     *
+     * @return  if this map contains no key-value mappings.
      * @see java.util.Map#isEmpty()
      * @uml.property name="variables"
      */
@@ -1225,12 +1259,10 @@ public abstract class DatasetBase {
 
     /**
      * Associates the specified value with the specified key in this map (optional operation).
-     * 
-     * @param value value to be associated with the specified key.
+     *
      * @param key key with which the specified value is to be associated.
-     * 
-     * @return previous value associated with specified key, or <tt>null</tt>
-     * 
+     * @param value value to be associated with the specified key.
+     * @return previous value associated with specified key, or 
      * @see java.util.Map#put(Object,Object)
      * @uml.property name="variables"
      */
@@ -1240,11 +1272,9 @@ public abstract class DatasetBase {
 
     /**
      * Removes the mapping for this key from this map if it is present (optional operation).
-     * 
+     *
      * @param key key whose mapping is to be removed from the map.
-     * 
-     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for key.
-     * 
+     * @return previous value associated with specified key, or  if there was no mapping for key.
      * @see java.util.Map#remove(Object)
      * @uml.property name="variables"
      */
@@ -1281,9 +1311,8 @@ public abstract class DatasetBase {
 
     /**
      * Returns an iterator over the elements in this collection.
-     * 
-     * @return an <tt>Iterator</tt> over the elements in this collection
-     * 
+     *
+     * @return an  over the elements in this collection
      * @see java.util.Collection#iterator()
      * @uml.property name="listCriteria"
      */
@@ -1293,9 +1322,8 @@ public abstract class DatasetBase {
 
     /**
      * Returns <tt>true</tt> if this collection contains no elements.
-     * 
-     * @return <tt>true</tt> if this collection contains no elements
-     * 
+     *
+     * @return  if this collection contains no elements
      * @see java.util.Collection#isEmpty()
      * @uml.property name="listCriteria"
      */
@@ -1305,11 +1333,9 @@ public abstract class DatasetBase {
 
     /**
      * Contains criteria.
-     * 
+     *
      * @param element whose presence in this collection is to be tested.
-     * 
-     * @return Returns <tt>true</tt> if this collection contains the specified element.
-     * 
+     * @return Returns  if this collection contains the specified element.
      * @see java.util.Collection#contains(Object)
      * @uml.property name="listCriteria"
      */
@@ -1319,12 +1345,10 @@ public abstract class DatasetBase {
 
     /**
      * Contains all criteria.
-     * 
+     *
      * @param elements collection to be checked for containment in this collection.
-     * 
-     * @return Returns <tt>true</tt> if this collection contains all of the elements in the specified
-     *         collection.
-     * 
+     * @return Returns  if this collection contains all of the elements in the specified
+     * collection.
      * @see java.util.Collection#containsAll(Collection)
      * @uml.property name="listCriteria"
      */
@@ -1359,11 +1383,10 @@ public abstract class DatasetBase {
     /**
      * Returns an array containing all of the elements in this collection; the runtime type of the returned
      * array is that of the specified array.
-     * 
+     *
+     * @param <T> the generic type
      * @param criteria the array into which the elements of this collection are to be stored.
-     * 
      * @return an array containing all of the elements in this collection
-     * 
      * @see java.util.Collection#toArray(Object[])
      * @uml.property name="listCriteria"
      */
@@ -1496,22 +1519,41 @@ public abstract class DatasetBase {
 //        }
 //
 //    }
-    public static class RangeComparator implements Comparator<Range> {
-        /**
-         * Logger for this class
-         */
+    /**
+ * The Class RangeComparator.
+ */
+public static class RangeComparator implements Comparator<Range> {
+        
+        /** Logger for this class. */
         private static final Logger LOG = Logger.getLogger(RangeComparator.class);
+      
+      /** The ascending. */
       private boolean ascending = true;
 
+      /**
+       * Instantiates a new range comparator.
+       */
       public RangeComparator() {
       }
 
+      /**
+       * Instantiates a new range comparator.
+       *
+       * @param ascending the ascending
+       */
       public RangeComparator(boolean ascending) {
           this.ascending = ascending;
       }
 
 
-        /** {@inheritDoc} */
+        /**
+         * Compare.
+         *
+         * @param r1 the r1
+         * @param r2 the r2
+         * @return the int
+         * {@inheritDoc}
+         */
         @SuppressWarnings("unchecked")
         @Override
         public int compare(Range r1, Range r2) {
