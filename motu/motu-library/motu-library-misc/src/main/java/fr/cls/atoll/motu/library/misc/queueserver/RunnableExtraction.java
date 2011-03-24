@@ -69,7 +69,7 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
     /** The Constant LOGQUEUE. */
     protected static final Logger LOGQUEUE = Logger.getLogger("atoll.motu.queueserver");
 
-    public static final String SHUTDOWN_MSG = "For maintenance reasons, the application is shutting down. We apologize for the inconvenience. You may repeat your query later.";
+    public static final String SHUTDOWN_MSG = "For maintenance reasons, the application is shutting down. We apologize for the inconvenience. You may repeat your request later.";
 
     /** The extraction parameters. */
     protected ExtractionParameters extractionParameters = null;
