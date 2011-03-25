@@ -325,9 +325,9 @@ public class QueueLogInfo {
             return;
         }
         this.elapsedWaitQueueTime = this.startTime.getTime() - this.inQueueTime.getTime();
-        if (elapsedWaitQueueTime < 0) {
-            elapsedWaitQueueTime = 0L;
-        }
+//        if (elapsedWaitQueueTime < 0) {
+//            elapsedWaitQueueTime = 0L;
+//        }
     }
 
     /**
