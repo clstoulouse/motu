@@ -643,15 +643,15 @@ public class ServiceData {
     }
 
     /**
-     * Used only Motu HTML Interface (mode REST).
-     *               True (default): links the dataset url (shows on the catalog dataset list) links to the download HTML page.
-     *               False: links the dataset url (shows on the catalog dataset list) links to the metadata HTML page.
+     * Used only Motu HTML Interface (mode REST). True (default): links the dataset url (shows on the catalog
+     * dataset list) links to the download HTML page. False: links the dataset url (shows on the catalog
+     * dataset list) links to the metadata HTML page.
      */
     private boolean downloadOnTop = true;
 
     /**
      * Checks if is download on top.
-     *
+     * 
      * @return true, if checks if is download on top
      */
     public boolean isDownloadOnTop() {
@@ -660,7 +660,7 @@ public class ServiceData {
 
     /**
      * Sets the download on top.
-     *
+     * 
      * @param downloadOnTop the download on top
      */
     public void setDownloadOnTop(boolean downloadOnTop) {
@@ -1298,10 +1298,10 @@ public class ServiceData {
             LOG.debug("writeProductInformationHTML() - exiting");
         }
     }
-    
+
     /**
      * Write product information xml.
-     *
+     * 
      * @param product the product
      * @param out the out
      * @throws MotuException the motu exception
@@ -1535,7 +1535,7 @@ public class ServiceData {
             context.put("body_template", getProductDownloadInfoVeloTemplateName());
             context.put("service", this);
             context.put("product", product);
-            //UserBase user = AuthenticationHolder.getUser();
+            // UserBase user = AuthenticationHolder.getUser();
             context.put("user", ServiceData.getUserName());
 
             template.merge(context, out);
@@ -1642,13 +1642,13 @@ public class ServiceData {
 
     /**
      * Gets the user name.
-     *
+     * 
      * @return the user name
      */
     public static String getUserName() {
-        return AssertionUtils.getAttributePrincipalName(AssertionHolder.getAssertion());        
+        return AssertionUtils.getAttributePrincipalName(AssertionHolder.getAssertion());
     }
-    
+
     /**
      * Creates a list of {@link ExtractCriteria} objects.
      * 
@@ -2787,12 +2787,20 @@ public class ServiceData {
 
         if (getCatalogType() == CatalogData.CatalogType.FTP) {
 
-            getLocationMetaData(product);
-            getDataFiles(product);
+            if (product != null) {
+                long d1 = System.nanoTime();
+                getLocationMetaData(product);
+                getDataFiles(product);
+                long d2 = System.nanoTime();
 
-            product.setMediaKey(getCatalogType().name());
 
-            updateFiles(product);
+                product.setMediaKey(getCatalogType().name());
+
+                updateFiles(product);
+                // Add time here (after updateFiles), because before updateFiles
+                // dataset is not still create
+                product.addReadingTime((d2 - d1));
+            }
         }
     }
 }

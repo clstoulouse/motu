@@ -167,6 +167,8 @@ public class DatasetFtp extends DatasetBase {
         List<String> uriFiles = extractPrepare(false, false, true);
         List<String> localFiles = new ArrayList<String>();
 
+        long d1 = System.nanoTime();
+
         for (String uriFile : uriFiles) {
             URI uri = null;
             try {
@@ -182,16 +184,26 @@ public class DatasetFtp extends DatasetBase {
             stringBuffer.append(srcFilePath.getName());
 
             String fileDest = stringBuffer.toString();
-            Organizer.getVFSSystemManager().copyFileToLocalFile(uriFile, fileDest);
 
+            Organizer.getVFSSystemManager().copyFileToLocalFile(uriFile, fileDest);           
             localFiles.add(fileDest);
         }
 
+        long d2 = System.nanoTime();
+        this.copyingTime += (d2 - d1);
+
+
+        d1 = System.nanoTime();        
         Zip.zip(product.getExtractLocationDataTemp(), localFiles, false);
+        d2 = System.nanoTime();
+        this.compressingTime += (d2 - d1);
 
+        d1 = System.nanoTime();        
         Organizer.deleteDirectory(tempDownloadDir);
-
         product.moveTempExtractFileToFinalExtractFile();
+        d2 = System.nanoTime();
+        this.copyingTime += (d2 - d1);
+
 
     }
 

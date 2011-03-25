@@ -538,6 +538,8 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
                 queueLogInfo.setExtractLocationData(product.getExtractLocationData());
                 queueLogInfo.addReadingTime(product.getReadingTimeAsMilliSeconds());
                 queueLogInfo.addWritingTime(product.getWritingTimeAsMilliSeconds());
+                queueLogInfo.addCopyingTime(product.getCopyingTimeAsMilliSeconds());
+                queueLogInfo.addCompressingTime(product.getCompressingTimeAsMilliSeconds());
             }
             setEndTime();
             if (LOGQUEUE.isInfoEnabled()) {

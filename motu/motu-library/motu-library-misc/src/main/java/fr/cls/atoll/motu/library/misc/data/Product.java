@@ -81,6 +81,7 @@ import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 
+// TODO: Auto-generated Javadoc
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
 /**
@@ -108,6 +109,8 @@ public class Product {
 
     /**
      * Default constructor.
+     *
+     * @param casAuthentication the cas authentication
      */
     public Product(boolean casAuthentication) {
         this.casAuthentication = casAuthentication;
@@ -170,6 +173,9 @@ public class Product {
         return this.dataset;
     }
 
+    /**
+     * Reset dataset.
+     */
     public void resetDataset() {
         dataset = null;
     }
@@ -714,7 +720,8 @@ public class Product {
 
     /**
      * Gets the opendap variable metadata.
-     * 
+     *
+     * @return the opendap variable metadata
      * @throws MotuException the motu exception
      */
     @SuppressWarnings("unchecked")
@@ -812,10 +819,9 @@ public class Product {
 
     /**
      * a mapping for the specified variable to extract.
-     * 
+     *
      * @param varName key whose presence in this map is to be tested.
-     * 
-     * @return Returns <tt>true</tt> if this product contains a specified variable to be extracted.
+     * @return Returns  if this product contains a specified variable to be extracted.
      */
     public boolean hasVariableToBeExtracted(String varName) {
         if (dataset == null) {
@@ -830,11 +836,10 @@ public class Product {
     /**
      * Add variables to the dataset. If dataset doesn't exist, it creates it. If variable already exists in
      * the dataset, it will be replaced.
-     * 
+     *
      * @param listVar list of variables to be added.
-     * 
-     * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuException the motu exception
+     * @throws MotuNotImplementedException the motu not implemented exception
      */
     public void addVariables(List<String> listVar) throws MotuException, MotuNotImplementedException {
         if (LOG.isDebugEnabled()) {
@@ -856,11 +861,10 @@ public class Product {
      * Updates variables into the dataset. - Adds new variables - Updates the variables which already exist -
      * Remove the variables from the dataset which are not any more in the list If dataset doesn't exist, it
      * creates it.
-     * 
+     *
      * @param listVar list of variables to be updated.
-     * 
-     * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuException the motu exception
+     * @throws MotuNotImplementedException the motu not implemented exception
      */
     public void updateVariables(List<String> listVar) throws MotuException, MotuNotImplementedException {
         if (LOG.isDebugEnabled()) {
@@ -885,7 +889,8 @@ public class Product {
 
     /**
      * Update variables.
-     * 
+     *
+     * @return the variables
      * @throws MotuException the motu exception
      * @throws MotuNotImplementedException the motu not implemented exception
      */
@@ -977,11 +982,10 @@ public class Product {
      * Updates list of criteria into the dataset. - Adds new criteria - Updates the criteria which already
      * exist - Removes the criteria from the dataset which are not any more in the list If dataset doesn't
      * exist, it creates it.
-     * 
+     *
      * @param listCriteria list of criteria to be updated.
-     * 
-     * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuException the motu exception
+     * @throws MotuNotImplementedException the motu not implemented exception
      */
     public void updateCriteria(List<ExtractCriteria> listCriteria) throws MotuException, MotuNotImplementedException {
         if (LOG.isDebugEnabled()) {
@@ -1067,11 +1071,10 @@ public class Product {
 
     /**
      * Sets the select data. If dataset doesn't exist, it creates it.
-     * 
+     *
      * @param selectData to be updated.
-     * 
-     * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuException the motu exception
+     * @throws MotuNotImplementedException the motu not implemented exception
      */
     public void setSelectData(SelectData selectData) throws MotuException, MotuNotImplementedException {
         if (LOG.isDebugEnabled()) {
@@ -1091,9 +1094,9 @@ public class Product {
 
     /**
      * Creates a new dataset.
-     * 
-     * @throws MotuNotImplementedException the motu not implemented exception
+     *
      * @throws MotuException the motu exception
+     * @throws MotuNotImplementedException the motu not implemented exception
      */
     private void createDataset() throws MotuException, MotuNotImplementedException {
         if (productMetaData == null) {
@@ -1147,11 +1150,10 @@ public class Product {
 
     /**
      * Gets longitude axis data values.
-     * 
+     *
      * @return a {@link Array} constains longitude axis data values
-     * 
-     * @throws NetCdfVariableException the net cdf variable exception
      * @throws MotuException the motu exception
+     * @throws NetCdfVariableException the net cdf variable exception
      */
     public Array getLonAxisData() throws MotuException, NetCdfVariableException {
         if (LOG.isDebugEnabled()) {
@@ -1205,11 +1207,10 @@ public class Product {
 
     /**
      * Gets geoY axis data values.
-     * 
+     *
      * @return a {@link Array} constains geoY axis data values
-     * 
-     * @throws NetCdfVariableException the net cdf variable exception
      * @throws MotuException the motu exception
+     * @throws NetCdfVariableException the net cdf variable exception
      */
     public Array getGeoYAxisData() throws MotuException, NetCdfVariableException {
         if (LOG.isDebugEnabled()) {
@@ -1234,11 +1235,10 @@ public class Product {
 
     /**
      * Gets time axis data values.
-     * 
+     *
      * @return a {@link Array} constains time axis data values
-     * 
-     * @throws NetCdfVariableException the net cdf variable exception
      * @throws MotuException the motu exception
+     * @throws NetCdfVariableException the net cdf variable exception
      */
     public Array getTimeAxisData() throws MotuException, NetCdfVariableException {
         if (LOG.isDebugEnabled()) {
@@ -1266,11 +1266,10 @@ public class Product {
 
     /**
      * Gets time axis data values.
-     * 
+     *
      * @return a list constains time axis date values
-     * 
-     * @throws NetCdfVariableException the net cdf variable exception
      * @throws MotuException the motu exception if string to date conversion fails
+     * @throws NetCdfVariableException the net cdf variable exception
      */
     public List<Date> getTimeAxisDataAsDate() throws MotuException, NetCdfVariableException {
         if (LOG.isDebugEnabled()) {
@@ -1301,11 +1300,10 @@ public class Product {
 
     /**
      * Gets time axis data values.
-     * 
+     *
      * @return a list constains time axis data values
-     * 
-     * @throws NetCdfVariableException the net cdf variable exception
      * @throws MotuException the motu exception
+     * @throws NetCdfVariableException the net cdf variable exception
      */
     public List<String> getTimeAxisDataAsString() throws MotuException, NetCdfVariableException {
         if (LOG.isDebugEnabled()) {
@@ -1334,11 +1332,10 @@ public class Product {
 
     /**
      * Gets Z (depth) axis data values.
-     * 
+     *
      * @return a {@link Array} constains depth axis data values
-     * 
-     * @throws NetCdfVariableException the net cdf variable exception
      * @throws MotuException the motu exception
+     * @throws NetCdfVariableException the net cdf variable exception
      */
     public Array getZAxisData() throws MotuException, NetCdfVariableException {
         if (LOG.isDebugEnabled()) {
@@ -1364,11 +1361,10 @@ public class Product {
 
     /**
      * Gets Z (depth) axis data values.
-     * 
+     *
      * @return a list constains depth axis data values
-     * 
-     * @throws NetCdfVariableException the net cdf variable exception
      * @throws MotuException the motu exception
+     * @throws NetCdfVariableException the net cdf variable exception
      */
     public List<String> getZAxisDataAsString() throws MotuException, NetCdfVariableException {
         if (LOG.isDebugEnabled()) {
@@ -1554,13 +1550,11 @@ public class Product {
      * <p>
      * If the Variable is a member of an array of Structures, this returns only the variable's data in the
      * first Structure, so that the Array shape is the same as the Variable.
-     * 
+     *
      * @param varName variable name to search.
-     * 
      * @return a ucar.nc2.Variable variable or null if not found.
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      * @throws MotuException the motu exception
+     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      */
 
     public Variable findVariable(String varName) throws MotuException, NetCdfVariableNotFoundException {
@@ -1634,14 +1628,12 @@ public class Product {
      * <p>
      * If the Variable is a member of an array of Structures, this returns only the variable's data in the
      * first Structure, so that the Array shape is the same as the Variable.
-     * 
+     *
      * @param varName variable name.
-     * 
      * @return a ucar.ma2.Array with data for the variable.
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws NetCdfVariableException the net cdf variable exception
      * @throws MotuException the motu exception
+     * @throws NetCdfVariableException the net cdf variable exception
+     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      */
 
     public Array readVariable(String varName) throws MotuException, NetCdfVariableException, NetCdfVariableNotFoundException {
@@ -1702,16 +1694,16 @@ public class Product {
 
     /**
      * Compute amount data size.
-     * 
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuNoVarException the motu no var exception
+     *
      * @throws MotuException the motu exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
+     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
+     * @throws MotuNotImplementedException the motu not implemented exception
+     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
+     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
+     * @throws NetCdfVariableException the net cdf variable exception
+     * @throws MotuNoVarException the motu no var exception
+     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      */
     public void computeAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
@@ -1767,7 +1759,7 @@ public class Product {
     /**
      * Gets the reading time.
      * 
-     * @return the reading time
+     * @return the reading time in nanoSeconds (ns)
      */
     public long getReadingTime() {
         if (dataset == null) {
@@ -1775,60 +1767,249 @@ public class Product {
         }
         return dataset.getReadingTime();
     }
+    
+    /**
+     * Adds the reading time.
+     *
+     * @param readingTime the reading time  in nanoSeconds (ns)
+     */
+    public void addReadingTime(long readingTime) {
+        if (dataset == null) {
+            return;
+        }
+        dataset.addReadingTime(readingTime);
+    }
 
+    /**
+     * Gets the reading time as nano seconds.
+     *
+     * @return the reading time as nano seconds
+     */
     public long getReadingTimeAsNanoSeconds() {
         return getReadingTime();
     }
 
+    /**
+     * Gets the reading time as micro seconds.
+     *
+     * @return the reading time as micro seconds
+     */
     public long getReadingTimeAsMicroSeconds() {
         return getReadingTimeAsNanoSeconds() / 1000;
     }
 
+    /**
+     * Gets the reading time as milli seconds.
+     *
+     * @return the reading time as milli seconds
+     */
     public long getReadingTimeAsMilliSeconds() {
         return getReadingTimeAsMicroSeconds() / 1000;
     }
 
+    /**
+     * Gets the reading time as seconds.
+     *
+     * @return the reading time as seconds
+     */
     public long getReadingTimeAsSeconds() {
         return getReadingTimeAsMilliSeconds() / 1000;
     }
 
+    /**
+     * Gets the writing time.
+     *
+     * @return the writing time in nanoSeconds (ns)
+     */
     public long getWritingTime() {
         if (dataset == null) {
             return -1L;
         }
         return dataset.getWritingTime();
     }
+    
+    /**
+     * Adds the writing time.
+     *
+     * @param writingTime the writing time  in nanoSeconds (ns)
+     */
+    public void addWritingTime(long writingTime) {
+        if (dataset == null) {
+            return;
+        }
+        dataset.addWritingTime(writingTime);
+    }
 
+    /**
+     * Gets the writing time as nano seconds.
+     *
+     * @return the writing time as nano seconds
+     */
     public long getWritingTimeAsNanoSeconds() {
         return getWritingTime();
     }
 
+    /**
+     * Gets the writing time as micro seconds.
+     *
+     * @return the writing time as micro seconds
+     */
     public long getWritingTimeAsMicroSeconds() {
         return getWritingTimeAsNanoSeconds() / 1000;
     }
 
+    /**
+     * Gets the writing time as milli seconds.
+     *
+     * @return the writing time as milli seconds
+     */
     public long getWritingTimeAsMilliSeconds() {
         return getWritingTimeAsMicroSeconds() / 1000;
     }
 
+    /**
+     * Gets the writing time as seconds.
+     *
+     * @return the writing time as seconds
+     */
     public long getWritingTimeAsSeconds() {
         return getWritingTimeAsMilliSeconds() / 1000;
     }
 
     /**
+     * Gets the copying time.
+     *
+     * @return the copying time in nanoSeconds (ns)
+     */
+    public long getCopyingTime() {
+        if (dataset == null) {
+            return -1L;
+        }
+        return dataset.getCopyingTime();
+    }
+    
+    /**
+     * Adds the copying time.
+     *
+     * @param copyingTime the copying time  in nanoSeconds (ns)
+     */
+    public void addCopyingTime(long copyingTime) {
+        if (dataset == null) {
+            return;
+        }
+        dataset.addCopyingTime(copyingTime);
+    }
+
+
+    /**
+     * Gets the copying time as nano seconds.
+     *
+     * @return the copying time as nano seconds
+     */
+    public long getCopyingTimeAsNanoSeconds() {
+        return getCopyingTime();
+    }
+
+    /**
+     * Gets the copying time as micro seconds.
+     *
+     * @return the copying time as micro seconds
+     */
+    public long getCopyingTimeAsMicroSeconds() {
+        return getCopyingTimeAsNanoSeconds() / 1000;
+    }
+
+    /**
+     * Gets the copying time as milli seconds.
+     *
+     * @return the copying time as milli seconds
+     */
+    public long getCopyingTimeAsMilliSeconds() {
+        return getCopyingTimeAsMicroSeconds() / 1000;
+    }
+
+    /**
+     * Gets the copying time as seconds.
+     *
+     * @return the copying time as seconds
+     */
+    public long getCopyingTimeAsSeconds() {
+        return getCopyingTimeAsMilliSeconds() / 1000;
+    }
+    
+    /**
+     * Gets the compressing time.
+     *
+     * @return the compressing time in nanoSeconds (ns)
+     */
+    public long getCompressingTime() {
+        if (dataset == null) {
+            return -1L;
+        }
+        return dataset.getCompressingTime();
+    }
+    
+    /**
+     * Adds the compressing time.
+     *
+     * @param compressingTime the compressing time in nanoSeconds (ns)
+     */
+    public void addCompressingTime(long compressingTime) {
+        if (dataset == null) {
+            return;
+        }
+        dataset.addCompressingTime(compressingTime);
+    }
+
+    /**
+     * Gets the compressing time as nano seconds.
+     *
+     * @return the compressing time as nano seconds
+     */
+    public long getCompressingTimeAsNanoSeconds() {
+        return getCompressingTime();
+    }
+
+    /**
+     * Gets the compressing time as micro seconds.
+     *
+     * @return the compressing time as micro seconds
+     */
+    public long getCompressingTimeAsMicroSeconds() {
+        return getCompressingTimeAsNanoSeconds() / 1000;
+    }
+
+    /**
+     * Gets the compressing time as milli seconds.
+     *
+     * @return the compressing time as milli seconds
+     */
+    public long getCompressingTimeAsMilliSeconds() {
+        return getCompressingTimeAsMicroSeconds() / 1000;
+    }
+
+    /**
+     * Gets the compressing time as seconds.
+     *
+     * @return the compressing time as seconds
+     */
+    public long getCompressingTimeAsSeconds() {
+        return getCompressingTimeAsMilliSeconds() / 1000;
+    }
+
+    /**
      * Extract data.
-     * 
+     *
      * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
-     * 
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuNoVarException the motu no var exception
      * @throws MotuException the motu exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
+     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
+     * @throws MotuNotImplementedException the motu not implemented exception
+     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
+     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
+     * @throws NetCdfVariableException the net cdf variable exception
+     * @throws MotuNoVarException the motu no var exception
+     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public void extractData(Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
@@ -1861,13 +2042,11 @@ public class Product {
     /**
      * Gets the min. value of a variable data. First search the min. value in 'valid_min' attribute of the
      * variable, if attribute doesn't exist, calculate the min. value from variable data.
-     * 
+     *
      * @param variable whose min. value has to be calculated
-     * 
      * @return the min value of the variable data
-     * 
-     * @throws NetCdfVariableException the net cdf variable exception
      * @throws MotuException the motu exception
+     * @throws NetCdfVariableException the net cdf variable exception
      */
     public double getMinValue(Variable variable) throws MotuException, NetCdfVariableException {
         MAMath.MinMax minMax = getMinMaxValue(variable);
@@ -1877,13 +2056,11 @@ public class Product {
     /**
      * Gets the min. value of a variable data. First search the min. value in 'valid_min' attribute of the
      * variable, if attribute doesn't exist, calculate the min. value from variable data.
-     * 
+     *
      * @param variable whose min. value has to be calculated
-     * 
      * @return the min value of the variable data
-     * 
-     * @throws NetCdfVariableException the net cdf variable exception
      * @throws MotuException the motu exception
+     * @throws NetCdfVariableException the net cdf variable exception
      */
     public double getMaxValue(Variable variable) throws MotuException, NetCdfVariableException {
         MAMath.MinMax minMax = getMinMaxValue(variable);
@@ -1895,13 +2072,11 @@ public class Product {
      * Gets the min. and max. values of a variable data. First search the min. value in 'valid_min' attribute
      * and the min. value in 'valid_max' attribute of the variable, if attribute doesn't exist, calculate the
      * min. value and the max. value from variable data.
-     * 
+     *
      * @param variable whose min. and max. values have to be calculated
-     * 
      * @return the min/max value of the variable data
-     * 
-     * @throws NetCdfVariableException the net cdf variable exception
      * @throws MotuException the motu exception
+     * @throws NetCdfVariableException the net cdf variable exception
      */
     public MAMath.MinMax getMinMaxValue(Variable variable) throws MotuException, NetCdfVariableException {
         boolean attrFound = true;
@@ -1943,9 +2118,9 @@ public class Product {
 
     /**
      * Writes data contained in the variable dataset collection into an output file.
-     * 
-     * @param format output format (NetCDF, HDF5, Ascii).
+     *
      * @param output URL of the output file.
+     * @param format output format (NetCDF, HDF5, Ascii).
      */
     public void writeData(String output, String format) {
 
@@ -1993,6 +2168,11 @@ public class Product {
         this.dataFiles = dataFiles;
     }
 
+    /**
+     * Gets the time coverage from data files.
+     *
+     * @return the time coverage from data files
+     */
     public List<String> getTimeCoverageFromDataFiles() {
 
         List<String> timeCoverage = new ArrayList<String>();
@@ -2111,10 +2291,11 @@ public class Product {
     /**
      * Opens the netCdfReader objet.
      * 
+     * @return the time (in nanoseconds) taken to open the dataset
      * @throws MotuException the motu exception
      */
-    public void openNetCdfReader() throws MotuException {
-        openNetCdfReader(true);
+    public long openNetCdfReader() throws MotuException {
+        return openNetCdfReader(true);
     }
 
     /**
@@ -2122,10 +2303,11 @@ public class Product {
      * 
      * @param enhanceVar the enhance var
      * 
+     * @return the time (in nanoseconds) taken to open the dataset
      * @throws MotuException the motu exception
      */
-    public void openNetCdfReader(boolean enhanceVar) throws MotuException {
-        getNetCdfReader().open(enhanceVar);
+    public long openNetCdfReader(boolean enhanceVar) throws MotuException {
+        return getNetCdfReader().open(enhanceVar);
     }
 
     /**

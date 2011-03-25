@@ -282,7 +282,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
          */
         String locationData = product.getNetCdfReaderDataset().getLocation();
         NetCdfReader netCdfReader = new NetCdfReader(locationData, product.isCasAuthentication());
-        netCdfReader.open(false);
+        this.readingTime += netCdfReader.open(false);
 
         // GridDataset gds = new GridDataset(product.getNetCdfReaderDataset());
         GridDataset gds = new GridDataset(netCdfReader.getNetcdfDataset());

@@ -776,14 +776,14 @@ public class NetCdfReader {
 
     /**
      * Re-opens the reader.
-     * 
+     *
      * @param enhanceVar the enhance var
-     * 
+     * @return the time (in nanoseconds) taken to open the dataset
      * @throws MotuException the motu exception
      */
-    public void reOpen(boolean enhanceVar) throws MotuException {
+    public long reOpen(boolean enhanceVar) throws MotuException {
         close();
-        open(enhanceVar);
+        return open(enhanceVar);
     }
 
     /**
@@ -792,39 +792,44 @@ public class NetCdfReader {
      * @param location NetCDF file name or Opendap location data (URL) to read.
      * @param enhanceVar the enhance var
      * 
+     * @return the time (in nanoseconds) taken to open the dataset
      * @throws MotuException the motu exception
      */
-    public void open(String location, boolean enhanceVar) throws MotuException {
+    public long open(String location, boolean enhanceVar) throws MotuException {
         this.locationData = location;
-        open(enhanceVar);
+        return open(enhanceVar);
     }
 
     /**
      * Open.
      * 
+     * @return the time (in nanoseconds) taken to open the dataset
      * @throws MotuException the motu exception
      */
-    public void open() throws MotuException {
+    public long open() throws MotuException {
 
-        open(true);
+        return open(true);
     }
 
     /**
      * Opens the reader, if it is closed.
-     * 
+     *
      * @param enhanceVar the enhance var
-     * 
+     * @return the time (in nanoseconds) taken to open the dataset
      * @throws MotuException the motu exception
      */
-    public void open(boolean enhanceVar) throws MotuException {
+    public long open(boolean enhanceVar) throws MotuException {
+
+        long d1 = System.nanoTime();
+        long d2 = d1;
 
         if (this.isOpenWithEnhanceVar != enhanceVar) {
             this.isOpenWithEnhanceVar = enhanceVar;
-            reOpen(enhanceVar);
-            return;
+            return reOpen(enhanceVar);
         }
         if (!isClosed()) {
-            return;
+            d2 = System.nanoTime();
+            return (d2 - d1);
         }
 
         try {
@@ -849,6 +854,9 @@ public class NetCdfReader {
                 conv.buildCoordinateSystems(netcdfDataset);
             }
         }
+
+        d2 = System.nanoTime();
+        return (d2 - d1);        
     }
 
     /**

@@ -83,6 +83,12 @@ public class QueueLogInfo {
     /** The writing time in milliseconds (ms). */
     private long writingTime = 0L;
 
+    /** The copying time in milliseconds (ms). */
+    protected long copyingTime = 0L;
+    
+    /** The compressing time in milliseconds (ms). */
+    protected long compressingTime = 0L;
+
     /** The queue log error. */
     private QueueLogError queueLogError = null;
 
@@ -319,6 +325,9 @@ public class QueueLogInfo {
             return;
         }
         this.elapsedWaitQueueTime = this.startTime.getTime() - this.inQueueTime.getTime();
+        if (elapsedWaitQueueTime < 0) {
+            elapsedWaitQueueTime = 0L;
+        }
     }
 
     /**
@@ -430,7 +439,7 @@ public class QueueLogInfo {
     /**
      * Gets the reading time.
      *
-     * @return the reading time
+     * @return the reading time in ms
      */
     public double getReadingTime() {
         return this.readingTime;
@@ -439,7 +448,7 @@ public class QueueLogInfo {
     /**
      * Sets the reading time.
      *
-     * @param readingTime the new reading time
+     * @param readingTime the new reading time in ms.
      */
     public void setReadingTime(long readingTime) {
         this.readingTime = readingTime;
@@ -448,7 +457,7 @@ public class QueueLogInfo {
     /**
      * Adds the reading time.
      *
-     * @param readingTime the reading time
+     * @param readingTime the reading time in ms.
      */
     public void addReadingTime(long readingTime) {
         this.readingTime += readingTime;
@@ -457,7 +466,7 @@ public class QueueLogInfo {
     /**
      * Gets the writing time.
      *
-     * @return the writing time
+     * @return the writing time in ms
      */
     public long getWritingTime() {
         return writingTime;
@@ -466,7 +475,7 @@ public class QueueLogInfo {
     /**
      * Sets the writing time.
      *
-     * @param writingTime the new writing time
+     * @param writingTime the new writing time in ms.
      */
     public void setWritingTime(long writingTime) {
         this.writingTime = writingTime;
@@ -475,11 +484,68 @@ public class QueueLogInfo {
     /**
      * Adds the writing time.
      *
-     * @param writingTime the writing time
+     * @param writingTime the writing time in ms.
      */
     public void addWritingTime(long writingTime) {
         this.writingTime += writingTime;
     }
+
+    
+    
+    /**
+     * Gets the copying time.
+     *
+     * @return the copying time in ms
+     */
+    public long getCopyingTime() {
+        return copyingTime;
+    }
+
+    /**
+     * Sets the copying time.
+     *
+     * @param copyingTime the new copying time in ms
+     */
+    public void setCopyingTime(long copyingTime) {
+        this.copyingTime = copyingTime;
+    }
+
+    /**
+     * Adds the copying time.
+     *
+     * @param copyingTime the copying time in ms
+     */
+    public void addCopyingTime(long copyingTime) {
+        this.copyingTime += copyingTime;
+    }
+
+    /**
+     * Gets the compressing time.
+     *
+     * @return the compressing time in ms
+     */
+    public long getCompressingTime() {
+        return compressingTime;
+    }
+
+    /**
+     * Sets the compressing time.
+     *
+     * @param compressingTime the new compressing time in ms
+     */
+    public void setCompressingTime(long compressingTime) {
+        this.compressingTime = compressingTime;
+    }
+    
+    /**
+     * Adds the compressing time.
+     *
+     * @param compressingTime the compressing time in ms
+     */
+    public void addCompressingTime(long compressingTime) {
+        this.compressingTime = compressingTime;
+    }
+
 
     /**
      * Gets the priorities.
