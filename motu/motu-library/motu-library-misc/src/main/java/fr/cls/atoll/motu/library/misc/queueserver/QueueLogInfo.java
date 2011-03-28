@@ -24,11 +24,6 @@
  */
 package fr.cls.atoll.motu.library.misc.queueserver;
 
-import com.thoughtworks.xstream.XStream;
-
-import fr.cls.atoll.motu.library.cas.UserBase;
-import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
-
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
@@ -37,6 +32,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import com.thoughtworks.xstream.XStream;
+
+import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -76,6 +75,12 @@ public class QueueLogInfo {
 
     /** The amount data size. */
     private double amountDataSize = 0d;
+
+    /** The total io time. */
+    private long totalIOTime = 0L;
+
+    /** The preparing time. */
+    private long preparingTime = 0L;
 
     /** The reading time in milliseconds (ms). */
     private long readingTime = 0L;
@@ -265,7 +270,7 @@ public class QueueLogInfo {
         if ((endTime == null) || (startTime == null)) {
             return;
         }
-        this.elapsedRunTime = this.endTime.getTime() - this.startTime.getTime();
+        this.elapsedRunTime = (this.endTime.getTime() - this.startTime.getTime()) + this.preparingTime;
     }
 
     /**
@@ -295,7 +300,7 @@ public class QueueLogInfo {
         if ((endTime == null) || (inQueueTime == null)) {
             return;
         }
-        this.elapsedTotalTime = this.endTime.getTime() - this.inQueueTime.getTime();
+        this.elapsedTotalTime = (this.endTime.getTime() - this.inQueueTime.getTime()) +  this.preparingTime;
     }
 
     /**
@@ -325,9 +330,9 @@ public class QueueLogInfo {
             return;
         }
         this.elapsedWaitQueueTime = this.startTime.getTime() - this.inQueueTime.getTime();
-//        if (elapsedWaitQueueTime < 0) {
-//            elapsedWaitQueueTime = 0L;
-//        }
+        if (elapsedWaitQueueTime < 0) {
+            elapsedWaitQueueTime = 0L;
+        }
     }
 
     /**
@@ -348,6 +353,7 @@ public class QueueLogInfo {
         this.endTime = endTime;
         setElapsedTotalTime();
         setElapsedRunTime();
+        computeTotalIO();
     }
 
     /**
@@ -436,6 +442,40 @@ public class QueueLogInfo {
         this.amountDataSize = amountDataSize;
     }
     
+    /**
+     * Compute total io.
+     */
+    public void computeTotalIO() {
+        this.totalIOTime = this.readingTime + this.writingTime + this.copyingTime + this.compressingTime;
+    }
+    
+    /**
+     * Gets the preparing time.
+     *
+     * @return the preparing time in ms
+     */
+    public long getPreparingTime() {
+        return preparingTime;
+    }
+
+    /**
+     * Sets the preparing time.
+     *
+     * @param preparingTime the new preparing time in ms
+     */
+    public void setPreparingTime(long preparingTime) {
+        this.preparingTime = preparingTime;
+    }
+    
+    /**
+     * Adds the preparing time.
+     *
+     * @param preparingTime the preparing time in ms
+     */
+    public void addPreparingTime(long preparingTime) {
+        this.preparingTime += preparingTime;
+    }
+
     /**
      * Gets the reading time.
      *

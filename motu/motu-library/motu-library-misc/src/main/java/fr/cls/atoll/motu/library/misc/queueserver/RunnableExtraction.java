@@ -235,6 +235,7 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
         this.queueLogInfo.setAmountDataSize(product.getAmountDataSizeAsMBytes());
 
         this.queueLogInfo.addReadingTime(product.getReadingTimeAsMilliSeconds());
+        this.queueLogInfo.addPreparingTime(product.getReadingTimeAsMilliSeconds());
 
         return size;
     }

@@ -264,8 +264,8 @@ public class QueueManagement implements JobListener, QueueManagementMBean {
         setQueueGlobalInfo(runnableExtraction);
 
         try {
-            threadPoolExecutor.execute(runnableExtraction);
             setInQueue(runnableExtraction);
+            threadPoolExecutor.execute(runnableExtraction);
         } catch (RejectedExecutionException e) {
             throw new MotuException("ERROR Execute request", e);
 
