@@ -31,18 +31,29 @@
 		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-impl/2.1.10" includes="*.jar" />
 		-->
 <!--		<fileset dir="${m2repository.dir}/org/jvnet/jaxb2_commons/jaxb-xjc/2.1.10" includes="*.jar" /> -->		
-		<fileset dir="${m2repository.dir}/org/jvnet/jaxb2_commons/jaxb2-basics-jaxb-xjc/2.1.13.MR2" includes="*.jar" />
+<!--		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-xjc/2.1.13" includes="*.jar" /> -->
+		<fileset dir="${m2repository.dir}/org/jvnet/jaxb2_commons/jaxb2-basics-jaxb-xjc/2.1.13.MR3" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/org/jvnet/jaxb2_commons/jaxb2-basics-ant/0.6.1" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/org/jvnet/jaxb2_commons/jaxb2-basics\0.6.1" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/org/jvnet/jaxb2_commons/jaxb2-basics-tools\0.6.1" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/org/jvnet/jaxb2_commons/jaxb2-basics-runtime\0.6.1" includes="*.jar" />
 		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-impl/2.1.10" includes="*.jar" />
-		<fileset dir="${m2repository.dir}/com/sun/istack/istack-commons-tools/1.1" includes="*.jar" />
-		<fileset dir="${m2repository.dir}/com/sun/xml/bind/jaxb-impl/2.1.10" includes="*.jar" />
-		<fileset dir="${m2repository.dir}/com/sun/codemodel/codemodel/2.1" includes="*.jar" />
-		<fileset dir="${m2repository.dir}/com/sun/xsom/xsom/20081112" includes="*.jar" />
-		<fileset dir="${m2repository.dir}/org/kohsuke/rngom/rngom/20061207" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/com/sun/istack/istack-commons-tools/2.2.MR1" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/com/sun/codemodel/codemodel/2.3" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/com/sun/xsom/xsom/20100725" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/org/kohsuke/rngom/rngom/20100718" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/commons-logging/commons-logging/1.1.1" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/commons-lang/commons-lang/2.5" includes="*.jar" />
+		<fileset dir="${m2repository.dir}/commons-beanutils/commons-beanutils/1.8.3" includes="*.jar" />
+		
 		<!-- <pathelement location="${m2repository.dir}/javax/xml/defaultvalueplugin/1.0/defaultvalueplugin-1.0.jar"/> -->
 		<!-- <fileset dir="c:/java" includes="defaultvalueplugin.jar"/>-->
 	</path>
 
-	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask" classpathref="classpath" />
+<!--	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask" classpathref="classpath" /> -->
+<!--	<taskdef name="xjc" classname="com.sun.tools.xjc.XJC2Task" classpathref="classpath" /> -->
+	<taskdef name="xjc" classname="org.jvnet.jaxb2_commons.xjc.XJC2Task" classpathref="classpath"/> 
+	
 			
 	<!-- =================================================================== -->
 	<!-- Génération des classes JAVA en utilisant JAXB                       -->
@@ -53,7 +64,9 @@
 			<xjc  destdir="${src.dir}"  target="2.1" package="${schema.package}" binding="${schema.xjbfile}" removeOldOutput="no">
 			<schema dir="${schema.xsdpath}" includes="${schema.xsdfile}" />
 			<arg value="-extension"/>
-			<arg value="-enableIntrospection"/>				
+			<arg value="-enableIntrospection"/>		
+				<arg value="-Xinheritance"/>				
+				
 			<!--<arg value="-Xdefault-value"/>-->
 			<produces dir="${src.dir}" />
 		</xjc>

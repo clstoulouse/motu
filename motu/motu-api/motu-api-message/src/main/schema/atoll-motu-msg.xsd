@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema attributeFormDefault="unqualified"
 	elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-	jaxb:version="2.1" jaxb:extensionBindingPrefixes="xjc">
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" 
+	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
+	jaxb:version="2.1" jaxb:extensionBindingPrefixes="xjc inheritance">
 	<xsd:annotation>
 		<xsd:appinfo>
 			<jaxb:globalBindings>
@@ -10,6 +12,7 @@
 			</jaxb:globalBindings>
 		</xsd:appinfo>
 	</xsd:annotation>
+
 	<xsd:simpleType name="errorType">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -313,6 +316,9 @@
 					Réponse à une requete d'extraction en mode
 					'status'
 				</xsd:documentation>
+			<xsd:appinfo>
+				<inheritance:implements>fr.cls.atoll.motu.api.message.mxbean.StatusModeResponseMXBean</inheritance:implements>				
+			</xsd:appinfo>
 			</xsd:annotation>
 
 			<xsd:attribute name="status" type="statusModeType" />
