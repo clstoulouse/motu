@@ -107,8 +107,17 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
 
         init();
 
-        this.statusModeResponse.setUserId(extractionParameters.getUserId());
-        this.statusModeResponse.setUserHost(extractionParameters.getUserHost());
+        String userId = extractionParameters.getUserId();
+        String userHost = extractionParameters.getUserHost();
+        if (Organizer.isNullOrEmpty(userHost)) {
+            userHost = "Unknown";
+        }
+        if (Organizer.isNullOrEmpty(userId)) {
+            userId = userHost;
+        }
+
+        this.statusModeResponse.setUserId(userId);
+        this.statusModeResponse.setUserHost(userHost);
 
         this.priority = priority;
         this.range = range;

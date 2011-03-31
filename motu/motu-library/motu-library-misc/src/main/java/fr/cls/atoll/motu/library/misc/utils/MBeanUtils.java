@@ -239,16 +239,60 @@ public class MBeanUtils {
      */
     public static void registerMBean(final Object object, final String objectNameString) {
         try {
+            MBeanUtils.registerMBean(object, new ObjectName(objectNameString));
+        } catch (Exception e) {
+            // JMX supervision should never alters Motu behaviour, so we don't let exception propagation
+            LOG.error("Failed to register Model MBean (Motu will still continue to start)", e);
+        }
+    }
+
+    /**
+     * Register m bean.
+     *
+     * @param object the object
+     * @param objectName the object name
+     */
+    public static void registerMBean(final Object object, final ObjectName objectName) {
+        try {
             // works well in tomcat
             final MBeanServer platform = ManagementFactory.getPlatformMBeanServer();
-            // ObjectName name = new ObjectName(MessageFormat.format(OBJECT_NAME_PATTERN, "EndedRequests",
-            // requestId));
-            final ObjectName objectName = new ObjectName(objectNameString);
             platform.registerMBean(object, objectName);
         } catch (Exception e) {
             // JMX supervision should never alters Motu behaviour, so we don't let exception propagation
             LOG.error("Failed to register Model MBean (Motu will still continue to start)", e);
         }
     }
+
+
+    /**
+     * Unregister m bean.
+     *
+     * @param objectName the object name
+     */
+    public static void unregisterMBean(final ObjectName objectName) {
+        try {
+            // works well in tomcat
+            final MBeanServer platform = ManagementFactory.getPlatformMBeanServer();
+            platform.unregisterMBean(objectName);
+        } catch (Exception e) {
+            // JMX supervision should never alters Motu behaviour, so we don't let exception propagation
+            LOG.error("Failed to unregister Model MBean (Motu will still continue to start)", e);
+        }
+    }
+    
+    /**
+     * Unregister m bean.
+     *
+     * @param objectNameString the object name string
+     */
+    public static void unregisterMBean(final String objectNameString) {
+        try {
+            MBeanUtils.unregisterMBean(new ObjectName(objectNameString));
+        } catch (Exception e) {
+            // JMX supervision should never alters Motu behaviour, so we don't let exception propagation
+            LOG.error("Failed to unregister Model MBean (Motu will still continue to start)", e);
+        }
+    }
+    
 
 }

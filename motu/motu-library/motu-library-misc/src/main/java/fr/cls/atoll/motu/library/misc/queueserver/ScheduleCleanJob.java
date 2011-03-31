@@ -380,7 +380,7 @@ public class ScheduleCleanJob implements StatefulJob {
 
         RequestManagement requestManagement = getRequestManagement();
         if (requestManagement != null) {
-            // Unregister JmxMbeans
+            // Unregister JmxMbeans            
             requestManagement.unregisterJmxMbeansStatusModeResponse(requestIdToDelete);
         }
         requestIds.removeAll(requestIdToDelete);

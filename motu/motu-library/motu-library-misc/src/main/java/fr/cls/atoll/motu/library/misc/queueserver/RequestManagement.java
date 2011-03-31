@@ -33,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.apache.log4j.Logger;
@@ -64,7 +65,7 @@ import fr.cls.atoll.motu.library.misc.utils.MBeanUtils;
 public class RequestManagement implements JobListener, RequestManagementMBean {
 
     // Name pattern under which managed beans get registered
-    public final static String OBJECT_NAME_PATTERN = "fr.cls:artefact=Motu,domain=ResquestManagement,id={0},element={1}";
+    public final static String OBJECT_NAME_PATTERN = "fr.cls:artefact=Motu,domain=Resquests,id={0},element={1}";
 
     /** The Constant FILE_PATTERN_KEYMAP. */
     public static final String DIR_TO_SCAN_KEYMAP = "dirToScan";
@@ -664,6 +665,24 @@ public class RequestManagement implements JobListener, RequestManagementMBean {
     }
 
     /**
+     * Gets the status mode response object name.
+     * 
+     * @param statusModeResponse the status mode response
+     * @return the status mode response object name
+     */
+    public static ObjectName getStatusModeResponseObjectName(StatusModeResponse statusModeResponse) {
+        try {
+            return new ObjectName(MessageFormat.format(OBJECT_NAME_PATTERN, statusModeResponse.getUserId(), statusModeResponse.getRequestId()
+                    .toString()));
+        } catch (Exception e) {
+            // JMX supervision should never alters Motu behaviour, so we don't let exception propagation
+            LOG.error("Failed to create ObjectName for managed beans (Motu will still continue to start)", e);
+        }
+        return null;
+
+    }
+
+    /**
      * Registers to the MBean platform the managed beans like the status of the request.
      */
     public void registerJmxMbeans(StatusModeResponse statusModeResponse) {
@@ -695,45 +714,39 @@ public class RequestManagement implements JobListener, RequestManagementMBean {
         // LOG.error("Failed to register managed beans (Motu will still continue to start)", e);
         // }
 
-        try {
-            //Memory memory = new Memory();
-            // List<MemoryPoolMXBean> pools = ManagementFactory.getMemoryPoolMXBeans();
-            // for (MemoryPoolMXBean pool : pools) {
-            // memoryUsage = pool.getPeakUsage();
-            // }
+        // try {
+        // //Memory memory = new Memory();
+        // // List<MemoryPoolMXBean> pools = ManagementFactory.getMemoryPoolMXBeans();
+        // // for (MemoryPoolMXBean pool : pools) {
+        // // memoryUsage = pool.getPeakUsage();
+        // // }
+        //
+        // // MXBeanMapper mxBeanMapper = new MXBeanMapper(statusModeResponse.getClass());
+        // // MXBeanMapper mxBeanMapper = new MXBeanMapper(memoryUsage.getClass());
+        // //
+        // // registerMBean(mxBeanMapper.mxbean, MessageFormat.format(OBJECT_NAME_PATTERN, "EndedRequests",
+        // // statusModeResponse.getRequestId().toString()));
+        // MBeanUtils.registerMBean(statusModeResponse,
+        // RequestManagement.getStatusModeResponseObjectName(statusModeResponse));
+        // } catch (Exception e) {
+        // // JMX supervision should never alters Motu behaviour, so we don't let exception propagation
+        // LOG.error("Failed to register managed beans (Motu will still continue to start)", e);
+        // }
 
-            // MXBeanMapper mxBeanMapper = new MXBeanMapper(statusModeResponse.getClass());
-            // MXBeanMapper mxBeanMapper = new MXBeanMapper(memoryUsage.getClass());
-            //            
-            // registerMBean(mxBeanMapper.mxbean, MessageFormat.format(OBJECT_NAME_PATTERN, "EndedRequests",
-            // statusModeResponse.getRequestId().toString()));
-            MBeanUtils.registerMBean(statusModeResponse, MessageFormat.format(OBJECT_NAME_PATTERN, "Requests", statusModeResponse.getRequestId().toString()));
-        } catch (Exception e) {
-            // JMX supervision should never alters Motu behaviour, so we don't let exception propagation
-            LOG.error("Failed to register managed beans (Motu will still continue to start)", e);
-        }
+        MBeanUtils.registerMBean(statusModeResponse, RequestManagement.getStatusModeResponseObjectName(statusModeResponse));
+
     }
 
     /**
      * Unregisters to the MBean platform the managed beans like the status of the request.
      */
     public void unregisterJmxMbeansStatusModeResponse(List<Long> requestIdToDelete) {
-        try {
-            // works well in tomcat
-            final MBeanServer platform = ManagementFactory.getPlatformMBeanServer();
-
-            for (Long requestId : requestIdToDelete) {
-                ObjectName name = new ObjectName(MessageFormat.format(OBJECT_NAME_PATTERN, "EndedRequests", requestId.toString()));
-                platform.unregisterMBean(name);
-            }
-
-        } catch (Exception e) {
-            // JMX supervision should never alters Motu behaviour, so we don't let exception propagation
-            LOG.error("Failed to register managed beans (Motu will still continue to start)", e);
+        
+        for (Long requestId : requestIdToDelete) {
+            StatusModeResponse statusModeResponse = requestStatusMap.get(requestId);
+            MBeanUtils.unregisterMBean(RequestManagement.getStatusModeResponseObjectName(statusModeResponse));
         }
 
     }
-
-
 
 }
