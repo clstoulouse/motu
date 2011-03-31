@@ -107,6 +107,9 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
 
         init();
 
+        this.statusModeResponse.setUserId(extractionParameters.getUserId());
+        this.statusModeResponse.setUserHost(extractionParameters.getUserHost());
+
         this.priority = priority;
         this.range = range;
         this.extractionParameters = extractionParameters;
@@ -636,6 +639,14 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
     public void setInQueueTime(Date date) {
         queueLogInfo.setInQueueTime(date);
         // queueLogInfo.addPriority(priority, range, date);
+        if (statusModeResponse != null) {
+            try {
+                statusModeResponse.setDateSubmit(Organizer.dateToXMLGregorianCalendar(date));
+            } catch (MotuException e) {
+                LOG.error("Failed to set StartTime into Status Mode Response (Motu will still continue to start)", e);
+            }
+        }
+        
 
     }
 
