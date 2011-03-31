@@ -19,7 +19,8 @@
 		<dependencies.version.spring>2.5.6</dependencies.version.spring>
 		<dependencies.version.jersey>1.5</dependencies.version.jersey>
 		<dependencies.version.commons-io>1.4</dependencies.version.commons-io>
-		       		
+		<dependencies.version.jaxb2-basics-jaxb-xjc>2.1.13.MR3</dependencies.version.jaxb2-basics-jaxb-xjc>
+		       		<dependencies.version.jaxb2_commons>0.6.1</dependencies.version.jaxb2_commons>
 	</properties>
 	
 	<dependencies>
