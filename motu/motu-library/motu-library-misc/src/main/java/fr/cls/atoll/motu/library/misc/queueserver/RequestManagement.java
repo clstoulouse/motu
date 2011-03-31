@@ -707,7 +707,7 @@ public class RequestManagement implements JobListener, RequestManagementMBean {
             //            
             // registerMBean(mxBeanMapper.mxbean, MessageFormat.format(OBJECT_NAME_PATTERN, "EndedRequests",
             // statusModeResponse.getRequestId().toString()));
-            MBeanUtils.registerMBean(statusModeResponse, MessageFormat.format(OBJECT_NAME_PATTERN, "EndedRequests", statusModeResponse.getRequestId().toString()));
+            MBeanUtils.registerMBean(statusModeResponse, MessageFormat.format(OBJECT_NAME_PATTERN, "Requests", statusModeResponse.getRequestId().toString()));
         } catch (Exception e) {
             // JMX supervision should never alters Motu behaviour, so we don't let exception propagation
             LOG.error("Failed to register managed beans (Motu will still continue to start)", e);
