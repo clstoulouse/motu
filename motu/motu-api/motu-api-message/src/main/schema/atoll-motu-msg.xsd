@@ -328,6 +328,9 @@
 			<xsd:attribute name="size" type="xsd:double" />
 			<xsd:attribute name="remoteUri" type="xsd:string" />
 			<xsd:attribute name="localUri" type="xsd:string" />
+			<xsd:attribute name="dateSubmit" type="xsd:dateTime" />
+			<xsd:attribute name="userId" type="xsd:string" />
+			<xsd:attribute name="userHost" type="xsd:string" />
 		</xsd:complexType>
 	</xsd:element>
 

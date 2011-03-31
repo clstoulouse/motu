@@ -69,4 +69,36 @@ public interface StatusModeResponseMXBean {
      * 
      */
     public ErrorType getCode();
+    
+    /**
+     * Gets the value of the user property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getUserId();
+
+    /**
+     * Gets the value of the userHost property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getUserHost();
+
+    /**
+     * Gets the value of the dateSubmit property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public XMLGregorianCalendar getDateSubmit();
+
+
 }
