@@ -3,7 +3,7 @@ package fr.cls.atoll.motu.library.misc.queueserver;
 /**
  * Interface that exposes the properties and methods that are visible from JMX.
  */
-public interface QueueManagementMBean {
+public interface QueueManagementMXBean {
     String getScheduleJobName();
 
     String getScheduleTriggerName();

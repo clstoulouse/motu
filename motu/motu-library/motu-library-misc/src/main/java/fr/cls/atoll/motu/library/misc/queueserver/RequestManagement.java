@@ -24,11 +24,16 @@
  */
 package fr.cls.atoll.motu.library.misc.queueserver;
 
+import java.lang.management.ManagementFactory;
+import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import org.apache.log4j.Logger;
 import org.quartz.JobDataMap;
@@ -47,6 +52,7 @@ import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.utils.MBeanUtils;
 
 /**
  * 
@@ -55,7 +61,10 @@ import fr.cls.atoll.motu.library.misc.intfce.Organizer;
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-public class RequestManagement implements JobListener {
+public class RequestManagement implements JobListener, RequestManagementMBean {
+
+    // Name pattern under which managed beans get registered
+    public final static String OBJECT_NAME_PATTERN = "fr.cls:artefact=Motu,domain=ResquestManagement,id={0},element={1}";
 
     /** The Constant FILE_PATTERN_KEYMAP. */
     public static final String DIR_TO_SCAN_KEYMAP = "dirToScan";
@@ -171,7 +180,7 @@ public class RequestManagement implements JobListener {
             JobDetail jobDetail = new JobDetail(RequestManagement.SCHEDULE_CLEAN_JOB_NAME, Scheduler.DEFAULT_GROUP, ScheduleCleanJob.class);
 
             JobDataMap jobDataMap = new JobDataMap();
-            jobDataMap.put(getStatusModeResponseKeymap(), requestStatusMap);
+            jobDataMap.put(RequestManagement.getStatusModeResponseKeymap(), requestStatusMap);
 
             jobDataMap.put(RequestManagement.FILE_PATTERN_KEYMAP, Organizer.getMotuConfigInstance().getExtractionFilePatterns());
             jobDataMap.put(RequestManagement.DIR_TO_SCAN_KEYMAP, Organizer.getMotuConfigInstance().getExtractionPath());
@@ -316,12 +325,34 @@ public class RequestManagement implements JobListener {
     /**
      * Gets the resquest status map.
      * 
+     * @return the resquest status map
+     */
+    @Override
+    public ConcurrentMap<Long, StatusModeResponse> getResquestStatusMap() {
+        return requestStatusMap;
+    }
+
+    /**
+     * Gets the resquest status map.
+     * 
      * @param key the key
      * 
      * @return the resquest status map
      */
+    @Override
     public StatusModeResponse getResquestStatusMap(Long key) {
         return requestStatusMap.get(key);
+    }
+
+    /**
+     * Gets the resquest status map key.
+     * 
+     * @return the resquest status map key
+     */
+    @Override
+    public Set<Long> getResquestStatusMapKey() {
+
+        return requestStatusMap.keySet();
     }
 
     /**
@@ -394,20 +425,23 @@ public class RequestManagement implements JobListener {
      * @return the status mode response
      */
     public StatusModeResponse putIfAbsentRequestStatusMap(Long key, StatusModeResponse value) {
+
+        this.registerJmxMbeans(value);
+
         return requestStatusMap.putIfAbsent(key, value);
     }
 
-    /**
-     * Put resquest status map.
-     * 
-     * @param value the value
-     * @param key the key
-     * 
-     * @return the status mode response
-     */
-    public StatusModeResponse putRequestStatusMap(Long key, StatusModeResponse value) {
-        return requestStatusMap.put(key, value);
-    }
+    // /**
+    // * Put resquest status map.
+    // *
+    // * @param value the value
+    // * @param key the key
+    // *
+    // * @return the status mode response
+    // */
+    // public StatusModeResponse putRequestStatusMap(Long key, StatusModeResponse value) {
+    // return requestStatusMap.put(key, value);
+    // }
 
     /**
      * Removes the resquest status map.
@@ -420,17 +454,17 @@ public class RequestManagement implements JobListener {
         return requestStatusMap.remove(key);
     }
 
-    /**
-     * Replace resquest status map.
-     * 
-     * @param value the value
-     * @param key the key
-     * 
-     * @return the status mode response
-     */
-    public StatusModeResponse replaceRequestStatusMap(Long key, StatusModeResponse value) {
-        return requestStatusMap.replace(key, value);
-    }
+    // /**
+    // * Replace resquest status map.
+    // *
+    // * @param value the value
+    // * @param key the key
+    // *
+    // * @return the status mode response
+    // */
+    // public StatusModeResponse replaceRequestStatusMap(Long key, StatusModeResponse value) {
+    // return requestStatusMap.replace(key, value);
+    // }
 
     /**
      * Resquest status map contains key.
@@ -487,7 +521,7 @@ public class RequestManagement implements JobListener {
     public void shutdown() throws MotuException {
 
         try {
-            Thread.sleep(500);            
+            Thread.sleep(500);
             if (LOG.isInfoEnabled()) {
                 LOG.info("RequestManagement shutdown() - Shutdown scheduler in progress....");
             }
@@ -628,5 +662,78 @@ public class RequestManagement implements JobListener {
         }
 
     }
+
+    /**
+     * Registers to the MBean platform the managed beans like the status of the request.
+     */
+    public void registerJmxMbeans(StatusModeResponse statusModeResponse) {
+        // try {
+        // // works well in tomcat
+        // final MBeanServer platform = ManagementFactory.getPlatformMBeanServer();
+        // ObjectName name = new ObjectName(MessageFormat.format(OBJECT_NAME_PATTERN, "EndedRequests",
+        // statusModeResponse.getRequestId()));
+        // platform.registerMBean(statusModeResponse, name);
+        //
+        // } catch (Exception e) {
+        // // JMX supervision should never alters Motu behaviour, so we don't let exception propagation
+        // LOG.error("Failed to register managed beans (Motu will still continue to start)", e);
+        // }
+
+        // try {
+        // registerModelMBean(createRawModelMBean(statusModeResponse),
+        // MessageFormat.format(OBJECT_NAME_PATTERN, "EndedRequests",
+        // statusModeResponse.getRequestId().toString()));
+        // } catch (Exception e) {
+        // // JMX supervision should never alters Motu behaviour, so we don't let exception propagation
+        // LOG.error("Failed to register managed beans (Motu will still continue to start)", e);
+        // }
+        // try {
+        // registerModelMBean(makeModelMBean(statusModeResponse), MessageFormat.format(OBJECT_NAME_PATTERN,
+        // "EndedRequests", statusModeResponse.getRequestId().toString()));
+        // } catch (Exception e) {
+        // // JMX supervision should never alters Motu behaviour, so we don't let exception propagation
+        // LOG.error("Failed to register managed beans (Motu will still continue to start)", e);
+        // }
+
+        try {
+            //Memory memory = new Memory();
+            // List<MemoryPoolMXBean> pools = ManagementFactory.getMemoryPoolMXBeans();
+            // for (MemoryPoolMXBean pool : pools) {
+            // memoryUsage = pool.getPeakUsage();
+            // }
+
+            // MXBeanMapper mxBeanMapper = new MXBeanMapper(statusModeResponse.getClass());
+            // MXBeanMapper mxBeanMapper = new MXBeanMapper(memoryUsage.getClass());
+            //            
+            // registerMBean(mxBeanMapper.mxbean, MessageFormat.format(OBJECT_NAME_PATTERN, "EndedRequests",
+            // statusModeResponse.getRequestId().toString()));
+            MBeanUtils.registerMBean(statusModeResponse, MessageFormat.format(OBJECT_NAME_PATTERN, "EndedRequests", statusModeResponse.getRequestId().toString()));
+        } catch (Exception e) {
+            // JMX supervision should never alters Motu behaviour, so we don't let exception propagation
+            LOG.error("Failed to register managed beans (Motu will still continue to start)", e);
+        }
+    }
+
+    /**
+     * Unregisters to the MBean platform the managed beans like the status of the request.
+     */
+    public void unregisterJmxMbeansStatusModeResponse(List<Long> requestIdToDelete) {
+        try {
+            // works well in tomcat
+            final MBeanServer platform = ManagementFactory.getPlatformMBeanServer();
+
+            for (Long requestId : requestIdToDelete) {
+                ObjectName name = new ObjectName(MessageFormat.format(OBJECT_NAME_PATTERN, "EndedRequests", requestId.toString()));
+                platform.unregisterMBean(name);
+            }
+
+        } catch (Exception e) {
+            // JMX supervision should never alters Motu behaviour, so we don't let exception propagation
+            LOG.error("Failed to register managed beans (Motu will still continue to start)", e);
+        }
+
+    }
+
+
 
 }

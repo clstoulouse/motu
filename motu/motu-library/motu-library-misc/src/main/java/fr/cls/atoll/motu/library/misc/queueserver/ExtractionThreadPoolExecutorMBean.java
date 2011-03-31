@@ -3,7 +3,7 @@ package fr.cls.atoll.motu.library.misc.queueserver;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * Interface that exposes the properties and methods that are visibile from JMX.
+ * Interface that exposes the properties and methods that are visible from JMX.
  */
 public interface ExtractionThreadPoolExecutorMBean {
     ConcurrentMap<String, Integer> getUsers();

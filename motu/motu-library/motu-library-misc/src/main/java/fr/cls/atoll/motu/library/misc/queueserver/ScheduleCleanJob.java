@@ -378,6 +378,11 @@ public class ScheduleCleanJob implements StatefulJob {
             }
         }
 
+        RequestManagement requestManagement = getRequestManagement();
+        if (requestManagement != null) {
+            // Unregister JmxMbeans
+            requestManagement.unregisterJmxMbeansStatusModeResponse(requestIdToDelete);
+        }
         requestIds.removeAll(requestIdToDelete);
 
         if (LOG.isDebugEnabled()) {
@@ -530,6 +535,14 @@ public class ScheduleCleanJob implements StatefulJob {
         JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
         return (ConcurrentHashMap<Long, StatusModeResponse>) jobDataMap.get(StatusModeResponse.class.getSimpleName());
 
+    }
+    
+    private RequestManagement getRequestManagement() {
+        try {
+            return RequestManagement.getInstance();
+        } catch (MotuException e) {
+            return null;
+        }
     }
 
 }

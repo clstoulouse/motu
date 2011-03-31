@@ -402,6 +402,30 @@ public class QueueManagement implements JobListener, QueueManagementMBean {
     public String getId() {
         return queueConfig.getId();
     }
+    
+    /**
+     * @return the data threshold of the queue.
+     */
+    @Override
+    public float getDataThreshold() {
+        return queueConfig.getDataThreshold();
+    }
+
+    /**
+     * @return the batch flag of the queue
+     */
+    @Override
+    public boolean getBatch() {
+        return queueConfig.getBatch();
+    }
+
+    /**
+     * @return the low priority waiting of the queue
+     */
+    @Override
+    public short getLowPriorityWaiting() {
+        return queueConfig.getLowPriorityWaiting();
+    }
 
     /**
      * Count request user.
