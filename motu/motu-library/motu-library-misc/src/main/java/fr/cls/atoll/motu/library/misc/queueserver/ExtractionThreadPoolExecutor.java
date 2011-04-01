@@ -24,20 +24,19 @@
  */
 package fr.cls.atoll.motu.library.misc.queueserver;
 
-import fr.cls.atoll.motu.library.misc.data.Product;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidQueuePriorityException;
-
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
+
+import fr.cls.atoll.motu.library.misc.data.Product;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidQueuePriorityException;
 
 /**
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
@@ -176,6 +175,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
      *
      * @return the int
      */
+    @Override
     public int usersSize() {
         return users.size();
     }
@@ -672,5 +672,20 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
     @Override
     public String getId() {
         return id;
+    }
+
+    /**
+     * Count number requests.
+     *
+     * @return the total number of requests
+     */
+    @Override
+    public int countNumberRequests() {
+        int total = 0;
+        Collection<Integer> numRequestperUser = users.values();
+        for (Integer num : numRequestperUser) {
+            total += num;
+        }
+        return total;
     }
 }

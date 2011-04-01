@@ -31,4 +31,9 @@ public interface ExtractionThreadPoolExecutorMBean {
     boolean isTerminated();
 
     boolean isTerminating();
+
+    int usersSize();
+
+    int countNumberRequests();
+
 }
