@@ -2,6 +2,36 @@ Changelog for ${project.artifactId}
 
 This document lists all changes of the ${project.artifactId} releases.
 
+. ${project.artifactId} v2.1.15
+* Changes:
+  - Added a Web interface for generating the command lines using the scripts.
+  - Removed Opendap direct links from download web interface.
+  - File extraction services through an HTML interface is now available.
+  - Extraction from TDS dataset whose Lat/Lon dimensions depends on X and Y dimension.
+  - Shutdown Motu quietly : 
+    1) Wait for all processing requests to be executed and ended.
+    2) Remove pending requests and send an exception and/or a message.
+  - Extracted data are strictly included in the requested criteria on time and Z coveraged
+    (instead of the nearest data from the requested criteria). 
+  - Add a service that allows to manage and monitor Motu.
+
+    
+* Fixed bugs:
+  - Extraction from a TDS failed if at least one axis has only one value.
+  - From Web interface, dataset description doesn't work if TDS catalog files 
+    are in a specific directory.
+
+. ${project.artifactId} v2.1.14
+* Changes:
+  - Dataset with GeoX and GeoY dimensions and Lat/Lon variables are now downloadable.
+
+  * Fixed bugs:
+  - File extraction services sometimes doesn't return all requested data for files that
+    contain a temporal coverage greater than one day (cache refresh issue). 
+
+. ${project.artifactId} v2.1.13
+This release hasn't been published.
+
 . ${project.artifactId} v2.1.12
 * Fixed bugs:
   - Within the Motu 'download product' HTML page, the link to extract GeoX/GeoY product is not available. 
