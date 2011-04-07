@@ -67,6 +67,11 @@ public class Test {
         Authenticator.setDefault(new MyAuthenticator());
 
         try {
+            System.out.println(Byte.SIZE);
+            System.out.println(Short.SIZE);
+            System.out.println(Integer.SIZE);
+            System.out.println(Float.SIZE);
+            System.out.println(Double.SIZE);
             Date d1a = NetCdfReader.parseDate("1993-06-01");
             Date d1b = NetCdfReader.parseDate("1993-06-20");
             Date d2a = NetCdfReader.parseDate("1991-01-01");
