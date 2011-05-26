@@ -779,6 +779,15 @@ public class ServiceData {
         }
     }
 
+    public void addRelativePathToUrlSite(String relativePath) {
+        String sep = "";
+        if (!urlSite.endsWith("/")) {
+            sep = "/";
+        }
+
+        this.setUrlSite(String.format("%s%s%s", this.urlSite, sep, relativePath));
+    }
+
     /** Catalog's filename. */
     private String catalogFileName = "";
 
@@ -2792,7 +2801,6 @@ public class ServiceData {
                 getLocationMetaData(product);
                 getDataFiles(product);
                 long d2 = System.nanoTime();
-
 
                 product.setMediaKey(getCatalogType().name());
 

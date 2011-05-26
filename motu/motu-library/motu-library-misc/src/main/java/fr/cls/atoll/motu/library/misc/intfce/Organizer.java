@@ -255,7 +255,7 @@ public class Organizer {
 
     /** The Constant SHARP_REGEXP. */
     public static final String SHARP_REGEXP = ".*#";
-    
+
     /** The Constant SLASH_REGEXP. */
     public static final String SLASH_REGEXP = ".*/";
 
@@ -1800,10 +1800,10 @@ public class Organizer {
         }
         return servicePersistent;
     }
-    
+
     /**
      * Checks if is services persistent.
-     *
+     * 
      * @param key the key
      * @return true, if checks if is services persistent
      */
@@ -3058,7 +3058,7 @@ public class Organizer {
 
     /**
      * Sets the error.
-     *
+     * 
      * @param statusModeResponse the status mode response
      * @param errorType the error type
      */
@@ -3776,8 +3776,8 @@ public class Organizer {
                                   params.getResponseFormat());
         } else {
             throw new MotuInconsistencyException(String.format("ERROR in extractData: inconsistency parameters : %s", params.toString()));
-        }        
-        
+        }
+
         return product;
     }
 
@@ -4283,17 +4283,17 @@ public class Organizer {
 
     /**
      * Gets the location data.
-     *
+     * 
      * @param productPersistent the product persistent
      * @return the location data
      */
     protected String getLocationData(ProductPersistent productPersistent) {
         return getLocationData(this.currentService, productPersistent);
     }
-    
+
     /**
      * Gets the location data.
-     *
+     * 
      * @param service the service
      * @param productPersistent the product persistent
      * @return the location data
@@ -4315,6 +4315,7 @@ public class Organizer {
         }
         return locationData;
     }
+
     /**
      * Gets the amount data size.
      * 
@@ -4514,9 +4515,9 @@ public class Organizer {
         if (productPersistent == null) {
             throw new MotuException(String.format("ERROR in getAmountDataSize - product '%s' not found", productId));
         }
-        
+
         String locationData = getLocationData(productPersistent);
-        
+
         Product product = getAmountDataSize(locationData, productId, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
 
         if (LOG.isDebugEnabled()) {
@@ -5074,7 +5075,7 @@ public class Organizer {
         case XML:
             currentService.writeProductInformationXML(product, out);
             break;
-            
+
         case ASCII:
             throw new MotuNotImplementedException(String.format("getProductInformation - Format %s not implemented", format.toString()));
             // break;
@@ -5556,14 +5557,33 @@ public class Organizer {
         if (Organizer.isNullOrEmpty(catalogFileName)) {
             service.setCatalogFileName(Organizer.TDS_CATALOG_FILENAME);
         } else {
-            catalogBaseUrl = catalogFileName.substring(0, catalogFileName.lastIndexOf("/"));
-            if (Organizer.isNullOrEmpty(catalogBaseUrl)) {
-                service.setCatalogFileName(catalogFileName);                
+            String catalogBaseUrlOther = catalogFileName.substring(0, catalogFileName.lastIndexOf("/"));
+            if (Organizer.isNullOrEmpty(catalogBaseUrlOther)) {
+                service.setCatalogFileName(catalogFileName);
             } else {
-                service.setUrlSite(catalogBaseUrl);
-                String catName = catalogFileName.substring(catalogFileName.lastIndexOf("/") + 1 , catalogFileName.length());
-                service.setCatalogFileName(catName);                
-            }            
+                // WARNING : catalogFileName can contain a file with a relative path or an absolute path.
+                // If path is relative, add directories to the url computed previously (catalogBaseUrl).
+                // We assume that path is relative if the host from the URI is null or empty.
+                // Nota : This 'getProductMetadataInfoFromTDS' function is called 
+                // if the locationData's URL refers to a TDS (protocol http(s)). It is not useful to test scheme from the URI.
+                URI uri = null;
+                try {
+                    uri = new URI(catalogBaseUrlOther);
+                } catch (URISyntaxException e) {
+                    // Do Nothing
+                }
+                if (uri == null) {
+                    service.addRelativePathToUrlSite(catalogBaseUrlOther);
+                } else {
+                    if (Organizer.isNullOrEmpty(uri.getHost())) {
+                        service.addRelativePathToUrlSite(catalogBaseUrlOther);
+                    } else {
+                        service.setUrlSite(catalogBaseUrlOther);
+                    }
+                }
+                String catName = catalogFileName.substring(catalogFileName.lastIndexOf("/") + 1, catalogFileName.length());
+                service.setCatalogFileName(catName);
+            }
         }
         // Only TDS are accepted
         service.setCatalogType(CatalogData.CatalogType.TDS);
@@ -6862,10 +6882,10 @@ public class Organizer {
         }
         return split[1];
     }
-    
+
     /**
      * Gets the id from uri.
-     *
+     * 
      * @param uri the uri
      * @return the id from uri
      */
@@ -6881,7 +6901,7 @@ public class Organizer {
                 return uri;
             }
         }
-        
+
         return split[1];
     }
 
