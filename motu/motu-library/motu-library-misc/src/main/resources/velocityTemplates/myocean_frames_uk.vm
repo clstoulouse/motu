@@ -73,7 +73,7 @@
 #set($templateProductDownloadHome = "velocityTemplates/product_downloadhome_uk.vm")
 #set($httpSite = ${service.getHttpBaseRef()})
 
-#set($titleMetadata = "Product Metadata")
+#set($titleMetadata = "Dataset Metadata")
 
 #set($downloadOnTop = ${service.isDownloadOnTop()})
 #set($showOpendapLinks = false)
