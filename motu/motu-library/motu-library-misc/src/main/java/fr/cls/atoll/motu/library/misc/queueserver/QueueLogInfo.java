@@ -24,6 +24,8 @@
  */
 package fr.cls.atoll.motu.library.misc.queueserver;
 
+import org.apache.log4j.Logger;
+
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
@@ -45,6 +47,10 @@ import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class QueueLogInfo {
+    /**
+     * Logger for this class
+     */
+    private static final Logger LOG = Logger.getLogger(QueueLogInfo.class);
 
     /** The queue id. */
     private String queueId = null;
@@ -221,7 +227,14 @@ public class QueueLogInfo {
         outputStream.reset();
         //return xStream.toXML(this);
         xStream.toXML(this, writer);
-        return outputStream.toString();
+        try {
+            return outputStream.toString(encoding);
+        } catch (UnsupportedEncodingException e) {
+            LOG.error("toXML()", e);
+            e.printStackTrace(System.err);
+        }
+        return "";
+
 
     }
 
