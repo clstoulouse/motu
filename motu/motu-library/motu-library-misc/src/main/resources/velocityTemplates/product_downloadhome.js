@@ -948,6 +948,7 @@ function closeScriptCmdWin() {
   var url_parts = url.split("?");
   var motuUrl = url_parts[0];
   var q = "";
+  var qq = '"';
   var motu_client_py = "motu-client.py";
   // use $$ to avoid velocity exception if $user is not a valid ref (null)
   //var isCasAuth = "$${user.isCASAuthentication()}";
@@ -984,10 +985,10 @@ function closeScriptCmdWin() {
   
 
   if (t_lo != null) {
-	  cmd += " -t " + q + t_lo.value + q;
+	  cmd += " -t " + qq + t_lo.value + qq;
   }
   if (t_hi != null) {
-	  cmd += " -T " + q + t_hi.value + q;
+	  cmd += " -T " + qq + t_hi.value + qq;
   }
   
   if (z_lo != null) {
