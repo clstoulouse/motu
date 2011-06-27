@@ -832,7 +832,7 @@ function updateMap() {
  // document.location.href="constrain?"+widxlot.getValue()+","+widxhit.getValue()+","+widylot.getValue()+","+widyhit.getValue();
   var theForm = findForm();
 
-  if ((theForm.xlo_text != null) && (theForm.xlo != null)) {
+  if ((theForm.xlo_text != null) && (theForm.x_lo != null)) {
 	  theForm.x_lo.value = theForm.xlo_text.value;	
   }
   if ((theForm.ylo_text != null) && (theForm.y_lo != null)) {
