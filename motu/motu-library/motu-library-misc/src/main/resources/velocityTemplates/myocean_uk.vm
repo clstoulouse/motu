@@ -113,7 +113,7 @@
 		<div class="page_margins">
 			<div class="page">
 				<div id="header">
-					<div id="logo"><a href="/"><img src="http://www.myocean.eu/css/myocean/screen/images/logo_myocean.gif" width="165" height="157" border="0" alt="MyOcean" title="MyOcean homepage" /></a></div>
+					<div id="logo"><a href="http://www.myocean.eu/"><img src="http://www.myocean.eu/css/myocean/screen/images/logo_myocean.gif" width="165" height="157" border="0" alt="MyOcean" title="MyOcean homepage" /></a></div>
 					<div id="headerText"><h1>Products and Services</h1></div>
 					<div id="aboutus">
 						<a href="http://www.myocean.eu/web/6-about-us.php">About us</a>
