@@ -1003,13 +1003,14 @@ function closeScriptCmdWin() {
 	  for (var variable = 0; variable < variables.length; variable++){
 		  var item = variables[variable];
 		  if (item.checked) {
-			  nVar++;
-		      varOptions += item.value + " ";		    	 
+//			  nVar++;
+		      varOptions += " -v " + q + item.value + q + " ";		    	 
 		  }
 	  }
-	  if (nVar > 0) {
-		  cmd += " -v " + q + varOptions + q;
-	  }		  
+//	  if (nVar > 0) {
+//		  cmd += " -v " + q + varOptions + q;
+//	  }		  
+		  cmd += varOptions;
   }
 
   cmd += " -o " + q + "<i>your_output_directory</i><i><b>(1)</b></i>" + q;
