@@ -24,14 +24,38 @@
  */
 package fr.cls.atoll.motu.library.misc.data;
 
-import fr.cls.atoll.motu.library.inventory.Access;
-import fr.cls.atoll.motu.library.inventory.CatalogOLA;
-import fr.cls.atoll.motu.library.inventory.Inventory;
-import fr.cls.atoll.motu.library.inventory.Resource;
-import fr.cls.atoll.motu.library.inventory.ResourceOLA;
-import fr.cls.atoll.motu.library.inventory.ResourcesOLA;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.bind.JAXBElement;
+
+import org.apache.commons.jxpath.JXPathContext;
+import org.apache.log4j.Logger;
+
+import ucar.ma2.MAMath.MinMax;
+import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
+import fr.cls.atoll.motu.library.inventory.CatalogOLA;
+import fr.cls.atoll.motu.library.inventory.Inventory;
+import fr.cls.atoll.motu.library.inventory.ResourceOLA;
+import fr.cls.atoll.motu.library.inventory.ResourcesOLA;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
@@ -52,32 +76,6 @@ import fr.cls.atoll.motu.library.misc.tds.server.TimeCoverageType;
 import fr.cls.atoll.motu.library.misc.tds.server.Variables;
 import fr.cls.atoll.motu.library.misc.utils.ReflectionUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.bind.JAXBElement;
-
-import org.apache.commons.jxpath.JXPathContext;
-import org.apache.commons.jxpath.Pointer;
-import org.apache.log4j.Logger;
-
-import ucar.ma2.MAMath.MinMax;
-import ucar.unidata.geoloc.LatLonRect;
-
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
 /**
@@ -92,6 +90,8 @@ public class CatalogData {
 
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(CatalogData.class);
+
+    public static final String FTP_MISSING_FILE_REGEXP = "unknown.*";
 
     /**
      * Enumeration for available type of catalog.
@@ -196,6 +196,7 @@ public class CatalogData {
             LOG.debug("init() - exiting");
         }
     }
+
     public void loadFtpCatalogInit() {
 
         // Set to store product id that are in the catalog.
@@ -223,14 +224,14 @@ public class CatalogData {
      */
     public void loadFtpCatalog(String path) throws MotuException {
 
-//        // Set to store product id that are in the catalog.
-//        if (productsLoaded == null) {
-//            productsLoaded = new HashSet<String>();
-//        }
-//        productsLoaded.clear();
+        // // Set to store product id that are in the catalog.
+        // if (productsLoaded == null) {
+        // productsLoaded = new HashSet<String>();
+        // }
+        // productsLoaded.clear();
 
         loadFtpCatalogInit();
-        
+
         // Products map are not cleared, it always refresh :
         // - Products that have previously loaded are refresh
         // - Products that are newly inserted in the catalog are insert in the
@@ -284,14 +285,14 @@ public class CatalogData {
         }
 
         product.loadInventoryMetaData(inventoryOLA);
-        
+
         product.setLocationMetaData(xmlUri);
-        
+
         ProductMetaData productMetaData = product.getProductMetaData();
         productMetaData.setProductType(currentProductType);
         sameProductTypeDataset = new ArrayList<Product>();
         sameProductTypeDataset.add(product);
-        
+
         productsLoaded.add(productId);
 
         if (newProduct) {
@@ -301,89 +302,109 @@ public class CatalogData {
         return product;
 
     }
-    
-//    public Product loadFtpInventory(String xmlUri) throws MotuException {
-//
-//        Inventory inventoryOLA = Organizer.getInventoryOLA(xmlUri);
-//
-//        Resource resource = inventoryOLA.getResource();
-//        Access access = resource.getAccess();
-//
-//        ProductMetaData productMetaData = null;
-//
-//        String productId = inventoryOLA.getResource().getUrn().toString();
-//
-//        boolean newProduct = true;
-//
-//        Product product = getProducts(productId);
-//
-//        if (product == null) {
-//            product = new Product(this.casAuthentication);
-//            productMetaData = new ProductMetaData();
-//            productMetaData.setProductId(productId);
-//
-//        } else {
-//            newProduct = false;
-//            productMetaData = product.getProductMetaData();
-//        }
-//
-//        product.setProductMetaData(productMetaData);
-//
-//        product.setLocationMetaData(xmlUri);
-//        
-//        productMetaData.setProductType(currentProductType);
-//        sameProductTypeDataset = new ArrayList<Product>();
-//        sameProductTypeDataset.add(product);
-//        
-//        productsLoaded.add(productId);
-//
-//        product.loadInventoryGlobalMetaData(inventoryOLA);
-//
-//        URI accessUri = null;
-//        URI accessUriTemp = null;
-//        String login = access.getLogin();
-//        String password = access.getPassword();
-//        StringBuffer userInfo = null;
-//
-//        if (password == null) {
-//            password = "";
-//        }
-//
-//        if (!Organizer.isNullOrEmpty(login)) {
-//            userInfo = new StringBuffer();
-//            userInfo.append(login);
-//            userInfo.append(":");
-//            userInfo.append(password);
-//        }
-//
-//        try {
-//            accessUriTemp = access.getUrlPath();
-//
-//            if (userInfo != null) {
-//                accessUri = new URI(accessUriTemp.getScheme(), userInfo.toString(), accessUriTemp.getHost(), accessUriTemp.getPort(), accessUriTemp
-//                        .getPath(), accessUriTemp.getQuery(), accessUriTemp.getFragment());
-//            } else {
-//                accessUri = accessUriTemp;
-//            }
-//
-//        } catch (URISyntaxException e) {
-//            throw new MotuException(String.format("Invalid URI '%s' in file '%s' at '%s.urlPath' tag.attribute", accessUri, xmlUri, access.getClass()
-//                    .toString()), e);
-//        }
-//
-//        product.setLocationData(accessUri.toString());
-//
-//        List<DataFile> dataFiles = CatalogData.loadFtpDataFiles(inventoryOLA);
-//
-//        product.setDataFiles(dataFiles);
-//
-//        if (newProduct) {
-//            putProducts(productMetaData.getProductId(), product);
-//        }
-//
-//        return product;
-//
-//    }
+
+    // public Product loadFtpInventory(String xmlUri) throws MotuException {
+    //
+    // Inventory inventoryOLA = Organizer.getInventoryOLA(xmlUri);
+    //
+    // Resource resource = inventoryOLA.getResource();
+    // Access access = resource.getAccess();
+    //
+    // ProductMetaData productMetaData = null;
+    //
+    // String productId = inventoryOLA.getResource().getUrn().toString();
+    //
+    // boolean newProduct = true;
+    //
+    // Product product = getProducts(productId);
+    //
+    // if (product == null) {
+    // product = new Product(this.casAuthentication);
+    // productMetaData = new ProductMetaData();
+    // productMetaData.setProductId(productId);
+    //
+    // } else {
+    // newProduct = false;
+    // productMetaData = product.getProductMetaData();
+    // }
+    //
+    // product.setProductMetaData(productMetaData);
+    //
+    // product.setLocationMetaData(xmlUri);
+    //        
+    // productMetaData.setProductType(currentProductType);
+    // sameProductTypeDataset = new ArrayList<Product>();
+    // sameProductTypeDataset.add(product);
+    //        
+    // productsLoaded.add(productId);
+    //
+    // product.loadInventoryGlobalMetaData(inventoryOLA);
+    //
+    // URI accessUri = null;
+    // URI accessUriTemp = null;
+    // String login = access.getLogin();
+    // String password = access.getPassword();
+    // StringBuffer userInfo = null;
+    //
+    // if (password == null) {
+    // password = "";
+    // }
+    //
+    // if (!Organizer.isNullOrEmpty(login)) {
+    // userInfo = new StringBuffer();
+    // userInfo.append(login);
+    // userInfo.append(":");
+    // userInfo.append(password);
+    // }
+    //
+    // try {
+    // accessUriTemp = access.getUrlPath();
+    //
+    // if (userInfo != null) {
+    // accessUri = new URI(accessUriTemp.getScheme(), userInfo.toString(), accessUriTemp.getHost(),
+    // accessUriTemp.getPort(), accessUriTemp
+    // .getPath(), accessUriTemp.getQuery(), accessUriTemp.getFragment());
+    // } else {
+    // accessUri = accessUriTemp;
+    // }
+    //
+    // } catch (URISyntaxException e) {
+    // throw new MotuException(String.format("Invalid URI '%s' in file '%s' at '%s.urlPath' tag.attribute",
+    // accessUri, xmlUri, access.getClass()
+    // .toString()), e);
+    // }
+    //
+    // product.setLocationData(accessUri.toString());
+    //
+    // List<DataFile> dataFiles = CatalogData.loadFtpDataFiles(inventoryOLA);
+    //
+    // product.setDataFiles(dataFiles);
+    //
+    // if (newProduct) {
+    // putProducts(productMetaData.getProductId(), product);
+    // }
+    //
+    // return product;
+    //
+    // }
+
+    /**
+     * Match ftp missing file.
+     * 
+     * @param name the name
+     * @return the matcher
+     */
+    public static Matcher matchFTPMissingFile(String name) {
+
+        Pattern pattern = Pattern.compile(CatalogData.FTP_MISSING_FILE_REGEXP);
+        Matcher matcher = pattern.matcher(name);
+        if (!(matcher.find())) {
+            return null;
+        }
+        return matcher;
+
+    }
+
     /**
      * Load ftp data files.
      * 
@@ -401,7 +422,13 @@ public class CatalogData {
 
         for (fr.cls.atoll.motu.library.inventory.File file : inventoryOLA.getFiles().getFile()) {
             DataFile dataFile = new DataFile();
+            String fileName = file.getName();
             dataFile.setName(file.getName());
+            // Missing files are file whose name matches CatalogData.FTP_MISSING_FILE_REGEXP
+            // or weight is null
+            if (CatalogData.matchFTPMissingFile(fileName) != null) {
+                continue;
+            }
             if (file.getWeight() == null) {
                 continue;
             }
@@ -867,9 +894,9 @@ public class CatalogData {
                 continue;
             }
             catalogXml.getService().add(o);
-//            System.out.print(o.getName());
-//            System.out.print(":");
-//            System.out.println(o.getServiceType());
+            // System.out.print(o.getName());
+            // System.out.print(":");
+            // System.out.println(o.getServiceType());
         }
 
         List<JAXBElement<? extends DatasetType>> list = datasetType.getDataset();
@@ -934,7 +961,7 @@ public class CatalogData {
 
         if (dataset.getID() != null) {
             productId = dataset.getID();
-        } else {            
+        } else {
             productId = tdsUrlPath;
         }
 
@@ -1022,7 +1049,7 @@ public class CatalogData {
             throw new MotuException(String.format("Error in getUrlOpendapFromTds - No TDS service found in TDS catalog for dataset '%s' ",
                                                   datasetType.getName()));
         }
-        
+
         // search 'opendap' seruce type. If not found search 'dods' service type.
         fr.cls.atoll.motu.library.misc.tds.server.Service tdsService = findTdsService(tdsServiceName, TDS_OPENDAP_SERVICE, catalogXml.getService());
 
@@ -2060,8 +2087,8 @@ public class CatalogData {
         this.sameProductTypeDataset = sameProductTypeDataset;
     }
 
-    /** The products map. Key is product id*/
-    private Map<String, Product> productsMap =  new HashMap<String, Product>();;
+    /** The products map. Key is product id */
+    private Map<String, Product> productsMap = new HashMap<String, Product>();;
 
     /**
      * Getter of the property <tt>products</tt>.
@@ -2194,13 +2221,13 @@ public class CatalogData {
         if (key == null) {
             return null;
         }
-        
+
         if (value == null) {
             return null;
         }
-        
+
         this.productsByTdsUrlMap.put(value.getTdsUrlPath(), value);
-        
+
         return this.productsMap.put(key.trim(), value);
     }
 
@@ -2217,9 +2244,9 @@ public class CatalogData {
     public Product removeProducts(String key) {
         Product product = this.productsMap.get(key);
         if (product == null) {
-            return null; 
+            return null;
         }
-        
+
         this.productsByTdsUrlMap.clear();
         return this.productsMap.remove(key);
     }
@@ -2234,23 +2261,22 @@ public class CatalogData {
         this.productsByTdsUrlMap.clear();
         this.productsMap.clear();
     }
-    
-    /** The products map. Key is product tds url path*/
-    private Map<String, Product> productsByTdsUrlMap = new HashMap<String, Product>();;
 
+    /** The products map. Key is product tds url path */
+    private Map<String, Product> productsByTdsUrlMap = new HashMap<String, Product>();;
 
     /**
      * Gets the products by tds url map.
-     *
+     * 
      * @return the products by tds url map
      */
     public Map<String, Product> getProductsByTdsUrl() {
         return productsByTdsUrlMap;
     }
-    
+
     /**
      * Gets the products by tds url map.
-     *
+     * 
      * @param key the key
      * @return the products by tds url map
      */
@@ -2263,7 +2289,7 @@ public class CatalogData {
 
     /**
      * Sets the products by tds url map.
-     *
+     * 
      * @param productsByTdsUrlMap the products by tds url map
      */
     public void setProductsByTdsUrl(Map<String, Product> productsByTdsUrlMap) {

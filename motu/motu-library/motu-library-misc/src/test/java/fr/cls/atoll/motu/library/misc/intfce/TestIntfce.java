@@ -412,7 +412,7 @@ public class TestIntfce {
         // productExtractDataCatsat();
         // productExtractDataAvisofromExtractionParameters();
         // productExtractDataMerseaFromHttp();
-        // testLoadInventoryOLA();
+        testLoadInventoryOLA();
         // testLoadCatalogOLA();
         // Product product = productInformationFromInventory();
         // productExtractDataFromInventory();
@@ -429,8 +429,10 @@ public class TestIntfce {
         // productExtractXYTopaz1();
         // productExtractXYTopaz2();
         // productExtractXYTopaz3();
-        productExtractXYMetNo1();
+        //productExtractXYMetNo1();
         // productExtractAcri();
+        
+        // testOceanotron();
 
     }
 
@@ -1325,7 +1327,8 @@ public class TestIntfce {
     public static void testLoadInventoryOLA() {
 
         Inventory inventoryOLA = null;
-        String xmlUri = "C:/tempVFS/nrt_med_st_chlorophyll_FTP_TEST.xml";
+        //String xmlUri = "C:/tempVFS/nrt_med_st_chlorophyll_FTP_TEST.xml";
+        String xmlUri = "J:/testHOA/hoa/publication/inventories/dataset-psy2v4-pgs-med-myocean-bestestimate__mis-production-monitoring.xml";
         // String xmlUri =
         // "sftp://atoll:atoll@catsat-data1.cls.fr/home/atoll//atoll-distrib/HOA_Catsat/Interface_ATOLL/nrt_med_infrared_sst_timestamp_FTP_TEST.xml";
         try {
@@ -1396,6 +1399,13 @@ public class TestIntfce {
 
         }
 
+        
+        List<DataFile> dataFiles = CatalogData.loadFtpDataFiles(inventoryOLA);
+        for (DataFile file : dataFiles) {
+            System.out.println(file.getName());
+        }
+        
+        
         System.out.println("End testLoadInventoryOLA : \n");
     }
 
@@ -3277,6 +3287,107 @@ public class TestIntfce {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+    public static void testOceanotron() {
+        String locationData = "http://www.ifremer.fr/oceanotron/OPENDAP/INS_CORIOLIS_GLO_TS_NRT_OBS_PROFILE_LATEST";
+
+        Product product = productInformationFromLocationData(locationData);
+        NetCdfReader netCdfReader = product.getNetCdfReader();
+        NetcdfDataset ncDataset = product.getNetCdfReaderDataset();
+        ProductMetaData productMetaData = product.getProductMetaData();
+
+        // try {
+        // Variable v = netCdfReader.getVariable("ssh");
+        // //v.addAttribute(new Attribute(_Coordinate.Systems, "ProjectionCoordinateSystem
+        // LatLonCoordinateSystem"));
+        // v.addAttribute(new Attribute(_Coordinate.Systems, "LatLonCoordinateSystem"));
+        //
+        // v = netCdfReader.getVariable("latitude");
+        // v.addAttribute(new Attribute(_Coordinate.AxisType, "Lat"));
+        // v = netCdfReader.getVariable("longitude");
+        // v.addAttribute(new Attribute(_Coordinate.AxisType, "Lon"));
+        // } catch (NetCdfVariableNotFoundException e1) {
+        // e1.printStackTrace();
+        // }
+        //
+        // NetCdfCancelTask ct = new NetCdfCancelTask();
+        // CoordSysBuilderYXLatLon conv = new CoordSysBuilderYXLatLon();
+        // conv.augmentDataset(ncDataset, ct);
+        // if (ct.hasError()) {
+        // System.out.println(ct.getError());
+        // return;
+        // }
+        // conv.buildCoordinateSystems(ncDataset);
+
+        List<CoordinateSystem> listCoordinateSystems = ncDataset.getCoordinateSystems();
+
+        for (CoordinateSystem cs : listCoordinateSystems) {
+            System.out.println("Coordinate Systems");
+            System.out.print("\tName:\t");
+            System.out.print(cs.getName());
+            System.out.print("\tRankDomain:\t");
+            System.out.print(cs.getRankDomain());
+            System.out.print("\tRankRange:\t");
+            System.out.print(cs.getRankRange());
+            System.out.print("\tImplicit:\t");
+            System.out.print(cs.isImplicit());
+            System.out.print("\tGeoreferencing:\t");
+            System.out.println(cs.isGeoReferencing());
+        }
+
+        // Gets coordinate axes metadata.
+        List<CoordinateAxis> coordinateAxes = netCdfReader.getCoordinateAxes();
+
+        if (productMetaData.getCoordinateAxes() == null) {
+            productMetaData.setCoordinateAxes(new HashMap<AxisType, CoordinateAxis>());
+        }
+
+        for (Iterator<CoordinateAxis> it = coordinateAxes.iterator(); it.hasNext();) {
+            CoordinateAxis coordinateAxis = it.next();
+            AxisType axisType = coordinateAxis.getAxisType();
+            if (axisType != null) {
+                if (!(productMetaData.coordinateAxesContainsKey(axisType))) {
+                    productMetaData.putCoordinateAxes(axisType, coordinateAxis);
+                }
+                System.out.println("Coordinate Axes");
+                System.out.print("\tType:\t");
+                System.out.print(axisType.toString());
+                System.out.print("\tName and dims:\t");
+                System.out.println(coordinateAxis.getNameAndDimensions());
+            }
+        }
+
+        List<Variable> listVars = netCdfReader.getVariables();
+        for (Variable v : listVars) {
+            System.out.print("Variable name and dims: ");
+            System.out.println(v.getNameAndDimensions());
+            System.out.print("\tisCaching:\t");
+            System.out.print(v.isCaching());
+            System.out.print("\tDimensions:\t");
+            System.out.println(v.getDimensions().toString());
+
+        }
+        try {
+            // NetCdfWriter netCdfWriter = new NetCdfWriter("C:/Java/dev/atoll-motu/testMercatorArc.nc",
+            // true);
+            // List<Attribute> listAttr = netCdfReader.getAttributes();
+            //
+            // netCdfWriter.writeGlobalAttributes(listAttr);
+            // // GridDataset gds = new GridDataset(product.getNetCdfReaderDataset());
+            // // System.out.println(gds.getInfo());
+            // netCdfWriter.writeVariables(ncDataset);
+            // netCdfWriter.finish(null);
+
+            productExtractData(product);
+
+            // netCdfReader.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // testProjection2();
+        // testProjection3(product);
     }
 
 }
