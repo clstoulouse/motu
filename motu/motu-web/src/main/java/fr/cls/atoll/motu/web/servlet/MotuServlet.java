@@ -512,7 +512,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         } catch (UnknownHostException e) {
             // Do Nothing
         }
-        stringBuffer.delete(stringBuffer.length() - 2, stringBuffer.length());
+        if (stringBuffer.length() >= 2) {
+            stringBuffer.delete(stringBuffer.length() - 2, stringBuffer.length());
+        }
         return stringBuffer.toString();
 
     }
