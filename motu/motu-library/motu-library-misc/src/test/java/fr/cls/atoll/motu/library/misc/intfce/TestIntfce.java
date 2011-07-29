@@ -58,7 +58,6 @@ import ucar.nc2.ft.TrajectoryFeatureCollection;
 import ucar.nc2.ft.point.writer.CFPointObWriter;
 import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
 import ucar.unidata.geoloc.EarthLocation;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
@@ -385,7 +384,7 @@ public class TestIntfce {
         // productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
-        // productDownloadInfo();
+        productDownloadInfo();
         // productExtractDataHTMLAviso();
         // productExtractDataAviso();
         // productExtractDataAvisofromProductId();
@@ -412,7 +411,7 @@ public class TestIntfce {
         // productExtractDataCatsat();
         // productExtractDataAvisofromExtractionParameters();
         // productExtractDataMerseaFromHttp();
-        testLoadInventoryOLA();
+        // testLoadInventoryOLA();
         // testLoadCatalogOLA();
         // Product product = productInformationFromInventory();
         // productExtractDataFromInventory();
@@ -699,12 +698,11 @@ public class TestIntfce {
             // String serviceName = "Myocean";
             // String serviceName = "mercator";
             // String serviceName = "Topaz";
-
             String myoceanUrn = "http://purl.org/myocean/ontology/service/database#";
             // String serviceName = myoceanUrn + "cls-toulouse-fr-sltac-motu-rest";
             //String serviceName = myoceanUrn + "SL-CLS-TOULOUSE-FR-MOTU-REST";
             //String serviceName = myoceanUrn + "SLTAC3";
-            String serviceName = "catsat2";
+            String serviceName = myoceanUrn + "CLS-TOULOUSE-FR-MERCATOR-MOTU-REST";
             //String serviceName = "http://purl.org/myocean/ontology/service/database#yourduname";
             //String serviceName = "http://purl.org/cls/atoll/ontology/individual/atoll#motu-opendap-mercator-myocean";
 
@@ -716,7 +714,8 @@ public class TestIntfce {
             // String productId = "mercatorPsy3v2_glo_mean_best_estimate";
             // String productId = "mersea-ipv2/arctic/tmipv2a-class1-b-be";
             //String productId = "http://purl.org/myocean/ontology/product/database#dataset-duacs-ran-global-en-sla-l3"; 
-            String productId = "dataset-mod-hyc-mooring-angola-m001-bulletin";
+            //String productId = "dataset-mod-hyc-mooring-angola-m001-bulletin";
+            String productId = "dataset-psy2v3-pgs-med-myocean-bestestimate";
             
             //String productId = "dataset-psy3v2-pgs-arc-myocean-bestestimate";
                                                                                  // "mercatorPsy3v2_arc_mean_best_estimate";
