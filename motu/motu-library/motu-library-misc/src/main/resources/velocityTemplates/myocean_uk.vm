@@ -78,116 +78,89 @@
 #set($downloadOnTop = ${service.isDownloadOnTop()})
 #set($showOpendapLinks = false)
 
-<!-- variables pour menu Motu -->
+## variables pour menu Motu 
 #set($titleMenuMotu = "Downloading and extraction service")
 ###set($labelMenuMotu = "Opendap Server")
 ###set($hrefMenuMotu = "?action=listcatalog&service=Mercator&lang=uk")
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-gb" lang="en-gb" >
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <meta name="robots" content="index, follow" />
-  <meta name="keywords" content="Maritime Security, Oil Spill combat, Marine Resources management, Climate Change, Seasonal Forecast, Coastal Activities, Ice Survey, Water Quality, Pollution" />
-  <meta name="title" content="MyOcean Gateway services" />
-  <meta name="description" content="MyOcean is a project granted by the European Commission within the GMES Program. The areas of benefit are: Maritime Security, Oil Spill combat, Marine Resources management, Climate Change, Seasonal Forecast, Coastal Activities, Ice Survey and Water Quality and Pollution." />
-  <meta name="generator" content="Motu (cls-motu.sourceforge.net)" />
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<title>MyOcean Service - MyOcean</title>
+	<link rel="icon" type="image/x-icon" href="http://resources.myocean.eu/myocean_mis-gw/css/myocean/screen/images/favicon.ico" />
+	<meta name="robots" content="noindex, nofollow" />
+	<meta name="language" content="en" />
+	<meta name="copyright" content="MyOcean" />
 
-  <title>MyOcean Service - MyOcean</title>
-  
-  <link rel="stylesheet" type="text/css" href="$httpSite/templates/myocean/css/screen/content.css" media="all" />
-  <link rel="stylesheet" type="text/css" href="$httpSite/templates/myocean/css/screen/content_cc.css" media="all" />
-  <link rel="stylesheet" type="text/css" href="$httpSite/templates/myocean/css/screen/mis-gw.css" media="all" />
+	<link rel="stylesheet" href="http://resources.myocean.eu/myocean_mis-gw/css/myocean/myocean.css" type="text/css" />
+	<link rel="stylesheet" href="http://resources.myocean.eu/myocean_mis-gw/css/myocean/screen/nav_services.css" type="text/css" />
+	<!--[if lte IE 7]>
+	<link href="http://resources.myocean.eu/myocean_mis-gw/css/myocean/patches/patch_my_layout.css" rel="stylesheet" type="text/css" />
+	<![endif]-->
+	<style><!--
 
-  <!--[if lte IE 7]>
-  <link href="$httpSite/templates/myocean/css/patches/patch_my_layout.css" rel="stylesheet" type="text/css" />
-  <![endif]-->	
+	
+	
+	-->
+	</style>
+  <link rel="stylesheet" type="text/css" href="http://resources.myocean.eu/myocean_mis-gw/css/myocean/screen/content_cc.css" media="all">
+  <link rel="stylesheet" type="text/css" href="http://resources.myocean.eu/myocean_mis-gw/css/myocean/screen/mis-gw.css" media="all">
   
-######  <script type="text/javascript" src="$httpSite/templates/myocean/js/mootools.js"></script>
-######  <script type="text/javascript" src="$httpSite/templates/myocean/js/mis-gw.js"></script>
+	<script type="text/javascript" src="http://resources.myocean.eu/myocean_mis-gw/js/myocean.js"></script>
+
 </head>
 
-<body onLoad="init()" onUnload="unload()">
+<body onLoad="setWhiteBoxHeight('topLeftMenuInner',200);init();" onUnload="unload();">
 	<a name="up" id="up"></a>
 	
-		<div class="page_margins">
-			<div class="page">
-				<div id="header">
-					<div id="logo"><a href="http://www.myocean.eu/"><img src="http://www.myocean.eu/css/myocean/screen/images/logo_myocean.gif" width="165" height="157" border="0" alt="MyOcean" title="MyOcean homepage" /></a></div>
-					<div id="headerText"><h1>Products and Services</h1></div>
-					<div id="aboutus">
-						<a href="http://www.myocean.eu/web/6-about-us.php">About us</a>
+	<div class="page_margins">
+		<div class="page">
+			<div id="header">
+				<div id="logo"><a href="http://www.myocean.eu"><img src="http://resources.myocean.eu/myocean_mis-gw/css/myocean/screen/images/logo_myocean.gif"  border="0" alt="MyOcean" title="MyOcean homepage" /></a></div>
+					<div id="headerText">
 
-					</div>
-					<div id="topnav">
-						
-						
-						<table width="545" cellpadding="0" cellspacing="0" border="0" class="template" id="top_prod_services">
-							<tr style="vertical-align:top;">
-								<td class="safety">									
-									<div class="ps_type"><h2>Marine<br />safety<br />&nbsp;</h2>
-										<div><a href="http://www.myocean.eu/web/19-products-and-services.php?domain=safety">&raquo; Products and services</a></div>
+<div class="text"><h1>Products and Services</h1>
 
-									</div>
-								</td>
-								<td class="spacer"></td>
-								<td class="resources">
-									<div class="ps_type"><h2>Marine<br />resources<br />&nbsp;</h2>
-										<div><a href="http://www.myocean.eu/web/19-products-and-services.php?domain=resources">&raquo; Products and services</a></div>
-									</div>
+</div>
 
-								</td>
-								<td class="spacer"></td>
-								<td class="environment">
-									<div class="ps_type"><h2>Coastal &amp; marine<br />environment<br />&nbsp;</h2>
-										<div><a href="http://www.myocean.eu/web/19-products-and-services.php?domain=environment">&raquo; Products and services</a></div>
-									</div>
+</div>
 
-								</td>
-								<td class="spacer"></td>
-								<td class="forecast">
-									<div class="ps_type"><h2>Weather, climate<br />&amp; seasonal<br />forecasting</h2>
-										<div><a href="http://www.myocean.eu/web/19-products-and-services.php?domain=forecast">&raquo; Products and services</a></div>
-									</div>
-
-								</td>
-							</tr>
-						</table>							
-						
-					</div>
-					<div id="topright_back"></div>
-					<div id="topright">
-						
-						&nbsp;<br />
-						<div id="memberAccess"><h1><a href="#">&raquo; Member access</a></h1></div>
-
-						
-					</div>
-					<div id="contactus">
-						<a href="http://www.myocean.eu/web/21-contact-us.php">Contact us</a>
-					</div>
 				</div>
 			</div>
 		</div>
-	
+		<!-- begin: #home_top -->
+	<div id="white_background_inner"></div>
+		<div class="page_margins">
+			<div class="page">
+				<div id="main">
+					<div id="col1">
+						<!-- Top left content -->						
+						<div id="topLeftMenuInner">							
+							<div class="topLeftMenu" style="height:100px;">
+							</div> 
+						</div>
+						<div id="col1_content" class="clearfix">
+							<!-- Bottom left content -->
+							
+						</div>
 
-	
-<div class="page_margins">
-		###	<div class="page">
-				##<div id="main">
-					
-					<div id="col">
-	
-	##--------------------------------
-	
-	<div id="col3_content" class="clearfix">
-		<div id="nav_main">
+					</div>
+					<div id="col3">
+						<div id="white_background_inner_page"></div>
+						<div id="col3_content" class="clearfix">
+							<!-- Page content -->
+							
+							<div id="breadcrumb">
+								
+							</div>
+	<div id="nav_main">
 		   <div id="ps_nav">
 			  <div class="hlist">
-				<ul>
+					<ul>
 					#myocean_uk_printSubTitle()
-				</ul>
-			   </div>
+					</ul>
+				</div>
 			 </div>
 	      </div>
 			  
@@ -203,6 +176,7 @@
 
 #parse ($body_template)
 		  </div>	
+		  <div id="ie_clearing"> &nbsp; </div>
 		  </div>	
 					</div>
 <div id="footer">

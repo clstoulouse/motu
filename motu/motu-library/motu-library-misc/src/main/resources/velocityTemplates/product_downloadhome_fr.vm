@@ -208,7 +208,7 @@
 		<option value="-180,180,-90,-30" >Antarctique</option>
 	</select>
 	</font>
-   	<a href="javascript:setRegionWidget()"><img src="${images_dir}/go.gif" alt="Go" border="0"/></a>
+##   	<a href="javascript:setRegionWidget()"><img src="${images_dir}/go.gif" alt="Go" border="0"/></a>
 	</td>
 	<script language="JavaScript">
 	    aRegionWidget = new RegionWidget("${formName}", "region");
@@ -482,7 +482,7 @@ td.advice_noimg { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fo
 #if($catalogType != "FTP")	
     <h2>Variable</h2>
     #set ($listParameterMetadata = $productMetaData.getParameterMetaDatasFiltered() )
-    <table class="encadre" width="80%" border="0" cellspacing="2">
+    <table class="encadre" width="80%" border="0" cellspacing="0">
     	<tr>
     		<th>Extraire</th>
     		<th>Nom</th>

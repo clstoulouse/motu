@@ -183,7 +183,7 @@
 
 ## -------------------------------------------- product_downloadhome_uk_regionSelection --------------------------------
 #macro(product_downloadhome_uk_regionSelection)
-<table  width="50%" cellpadding="1" cellspacing="0" border="0" >
+<table  width="100%" cellpadding="1" cellspacing="0" border="0" >
 <tr>
 	<td class="advice_noimg" width="160" height="20" align="left">
 	  &nbsp;&nbsp;&nbsp;Select&nbsp;region:
@@ -208,7 +208,7 @@
 		<option value="-180,180,-90,-30" >Antarctic</option>
 	</select>
 	</font>
-   	<a href="javascript:setRegionWidget()"><img src="${images_dir}/go.gif" alt="Go" border="0"/></a>
+##   	<a href="javascript:setRegionWidget()"><img src="${images_dir}/go.gif" alt="Go" border="0"/></a>
 	</td>
 	<script language="JavaScript">
 	    aRegionWidget = new RegionWidget("${formName}", "region");
@@ -485,7 +485,7 @@ td.advice_noimg { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fo
 #if($catalogType != "FTP")	
     <h2>Variable</h2>
     #set ($listParameterMetadata = $productMetaData.getParameterMetaDatasFiltered() )
-    <table class="encadre" width="95%" border="0" cellspacing="2">
+    <table class="encadre" width="95%" border="0" cellspacing="0">
     	<tr>
     		<th>Download</th>
     		<th>Name</th>
