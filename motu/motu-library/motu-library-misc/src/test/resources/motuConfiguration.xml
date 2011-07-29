@@ -114,7 +114,7 @@
 	dataBlockSize="102400" maxSizePerFile="1024"
 	extractionPath="C:\Java\apache-tomcat-6.0.9\webapps\motu-file-extract"
 	downloadHttpUrl="http://localhost:8080/motu-file-extract"
-	httpBaseRef="http://mercator-myoceanv1.netaktiv.com"
+	httpBaseRef="http://resources.myocean.eu"
 	httpDocumentRoot="http://aviso-motu.cls.fr"
 	cleanExtractionFileInterval="60"
 	cleanRequestInterval="2"
@@ -125,7 +125,17 @@
 	sftpSessionTimeOut="PT10S"
 	strictHostKeyChecking="no">
 	
-	
+      <!--===========================================================-->
+      <!--                 motu-tds-mercator Service                 -->
+      <!--===========================================================-->
+      <configService defaultLanguage="UK" description="MFC GLO Mercator"
+              group="MERCATOR-TOULOUSE-FR" httpBaseRef="http://mercator-myoceanv1.netaktiv.com"
+              name="&myoceanUrn;CLS-TOULOUSE-FR-MERCATOR-MOTU-REST" veloTemplatePrefix="myocean">
+              <catalog name="catalog.xml" type="tds"
+                      urlSite="http://atoll-mercator.vlandata.cls.fr:44080/thredds" />
+      </configService>
+
+
 	<!--===========================================================-->
     <!--                   TDS Catsat                --> 
     <!--===========================================================-->
