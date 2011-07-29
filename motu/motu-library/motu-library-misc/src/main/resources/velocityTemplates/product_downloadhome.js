@@ -922,7 +922,8 @@ function closeScriptCmdWin() {
   doc.write("<h1>Python script command line that matches the extraction:</h1>");
   doc.write("<p>To resquest data, you can also use the Python script. This page should help you to enter your command line from the shell of you system (Linux/Unix/windows).</p>");
 
-  var linkMotuPython = "<a href=http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/cls/atoll/motu/client/motu-client-python target='_blank'>here</a>";
+  //var linkMotuPython = "<a href=http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/cls/atoll/motu/client/motu-client-python target='_blank'>here</a>";
+  var linkMotuPython = "<a href=http://sourceforge.net/projects/cls-motu/files/client/motu-client-python target='_blank'>here</a>";
   doc.write('<p>You can download the Motu Python Client package ');
   doc.write(linkMotuPython);
   doc.write('.</p>');
