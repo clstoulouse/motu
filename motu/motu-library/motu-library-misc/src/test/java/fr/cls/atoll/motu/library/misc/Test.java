@@ -107,7 +107,9 @@ public class Test {
         }
         
 
-//        getHostName("62.161.32.221, 10.1.253.25");
+        getHostName("");
+        getHostName("62.161.32.221");
+        getHostName("62.161.32.221, 10.1.253.25");
 //        // testDiskSpace();
 //        // testFileInUse();
 //        
@@ -133,7 +135,9 @@ public class Test {
         } catch (UnknownHostException e) {
             // Do Nothing
         }
-        stringBuffer.delete(stringBuffer.length() - 2, stringBuffer.length());
+        if (stringBuffer.length() >= 2) {
+            stringBuffer.delete(stringBuffer.length() - 2, stringBuffer.length());            
+        }
         System.out.print("'");
         System.out.print(stringBuffer.toString());
         System.out.println("'");
