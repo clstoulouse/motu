@@ -2,6 +2,16 @@ Changelog for ${project.artifactId}
 
 This document lists all changes of the ${project.artifactId} releases.
 
+. ${project.artifactId} v2.1.16
+* Fixed bugs:
+ - motu-api-client failed if xmlFile input parameter contains a relative path (vs an absolute path. 	
+ - Web interface: 
+   -*- on the download dataset HTML page, west longitude user input is not taken into account.
+   -*- the generated command line using the scripts is not correct 
+       for variables' parameters ('-v var1 var ...' instead of '-v var1 -v var2 ...').
+   -*- on the download dataset HTML page, geographical text boxes don't display properly.    
+ - Minors issues fixed   
+
 . ${project.artifactId} v2.1.15
 * Changes:
   - Added a Web interface for generating the command lines using the scripts.
