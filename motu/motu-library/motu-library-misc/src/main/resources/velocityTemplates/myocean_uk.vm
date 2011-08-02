@@ -88,15 +88,15 @@
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<title>MyOcean Service - MyOcean</title>
-	<link rel="icon" type="image/x-icon" href="http://resources.myocean.eu/myocean_mis-gw/css/myocean/screen/images/favicon.ico" />
+	<link rel="icon" type="image/x-icon" href="$httpSite/myocean_mis-gw/css/myocean/screen/images/favicon.ico" />
 	<meta name="robots" content="noindex, nofollow" />
 	<meta name="language" content="en" />
 	<meta name="copyright" content="MyOcean" />
 
-	<link rel="stylesheet" href="http://resources.myocean.eu/myocean_mis-gw/css/myocean/myocean.css" type="text/css" />
-	<link rel="stylesheet" href="http://resources.myocean.eu/myocean_mis-gw/css/myocean/screen/nav_services.css" type="text/css" />
+	<link rel="stylesheet" href="$httpSite/myocean_mis-gw/css/myocean/myocean.css" type="text/css" />
+	<link rel="stylesheet" href="$httpSite/myocean_mis-gw/css/myocean/screen/nav_services.css" type="text/css" />
 	<!--[if lte IE 7]>
-	<link href="http://resources.myocean.eu/myocean_mis-gw/css/myocean/patches/patch_my_layout.css" rel="stylesheet" type="text/css" />
+	<link href="$httpSite/myocean_mis-gw/css/myocean/patches/patch_my_layout.css" rel="stylesheet" type="text/css" />
 	<![endif]-->
 	<style><!--
 
@@ -104,10 +104,10 @@
 	
 	-->
 	</style>
-  <link rel="stylesheet" type="text/css" href="http://resources.myocean.eu/myocean_mis-gw/css/myocean/screen/content_cc.css" media="all">
-  <link rel="stylesheet" type="text/css" href="http://resources.myocean.eu/myocean_mis-gw/css/myocean/screen/mis-gw.css" media="all">
+  <link rel="stylesheet" type="text/css" href="$httpSite/myocean_mis-gw/css/myocean/screen/content_cc.css" media="all">
+  <link rel="stylesheet" type="text/css" href="$httpSite/myocean_mis-gw/css/myocean/screen/mis-gw.css" media="all">
   
-	<script type="text/javascript" src="http://resources.myocean.eu/myocean_mis-gw/js/myocean.js"></script>
+	<script type="text/javascript" src="$httpSite/myocean_mis-gw/js/myocean.js"></script>
 
 </head>
 
@@ -117,7 +117,7 @@
 	<div class="page_margins">
 		<div class="page">
 			<div id="header">
-				<div id="logo"><a href="http://www.myocean.eu"><img src="http://resources.myocean.eu/myocean_mis-gw/css/myocean/screen/images/logo_myocean.gif"  border="0" alt="MyOcean" title="MyOcean homepage" /></a></div>
+				<div id="logo"><a href="http://www.myocean.eu"><img src="$httpSite/myocean_mis-gw/css/myocean/screen/images/logo_myocean.gif"  border="0" alt="MyOcean" title="MyOcean homepage" /></a></div>
 					<div id="headerText">
 
 <div class="text"><h1>Products and Services</h1>
