@@ -25,6 +25,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -75,6 +76,7 @@ import fr.cls.atoll.motu.library.misc.data.Product;
 import fr.cls.atoll.motu.library.misc.data.ServiceData;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
@@ -261,7 +263,7 @@ public class TestIntfce {
 
         // System.setProperty("proxyHost", "proxy.cls.fr"); // adresse IP
         // System.setProperty("proxyPort", "8080");
-        // System.setProperty("socksProxyHost", "proxy.cls.fr");
+        // System.setjProperty("socksProxyHost", "proxy.cls.fr");
         // System.setProperty("socksProxyPort", "1080");
         // System.setProperty("java.net.useSystemProxies", "false");
 
@@ -272,6 +274,15 @@ public class TestIntfce {
             e.printStackTrace();
         }
 
+//        try {
+//            Date d = NetCdfReader.parseDate("2011-08-02 00:00:00");
+//            d = NetCdfReader.parseDate("2011-08-02T00:00:00");
+//            d = NetCdfReader.parseDate("2011-08-02X00:00:00");
+//            Date d2 = d;
+//        } catch (MotuInvalidDateException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
         // Authenticator.setDefault(new MyAuthenticator());
         // try {
         // DetectProxy();
@@ -384,7 +395,7 @@ public class TestIntfce {
         // productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
-        productDownloadInfo();
+        //productDownloadInfo();
         // productExtractDataHTMLAviso();
         // productExtractDataAviso();
         // productExtractDataAvisofromProductId();
