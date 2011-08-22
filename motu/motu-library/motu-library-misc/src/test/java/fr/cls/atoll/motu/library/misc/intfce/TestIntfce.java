@@ -441,7 +441,7 @@ public class TestIntfce {
         // productExtractXYTopaz3();
         //productExtractXYMetNo1();
         // productExtractAcri();
-        
+        productExtractXYHRMOD();        
         // testOceanotron();
 
     }
@@ -3298,6 +3298,70 @@ public class TestIntfce {
             System.out.println(e.getMessage());
         }
     }
+    
+    public static void productExtractXYHRMOD() {
+        String locationData = "http://misgw-qt.cls.fr:61080/thredds/dodsC/HR_MOD";
+        List<String> listVar = new ArrayList<String>();
+        // add variable to extract
+        // listVar.add("salinity");
+        // listVar.add("u");
+        listVar.add("temperature");
+
+        // add temporal criteria
+        // first element is start date
+        // second element is end date (optional)
+        // if only start date is set, end date equals start date
+        List<String> listTemporalCoverage = new ArrayList<String>();
+        listTemporalCoverage.add("2011-03-15");
+        listTemporalCoverage.add("2011-03-15");
+
+        // add Lat/Lon criteria
+        // first element is low latitude
+        // second element is low longitude
+        // third element is high latitude
+        // fourth element is high longitude
+        List<String> listLatLonCoverage = new ArrayList<String>();
+        listLatLonCoverage.add("40");
+        listLatLonCoverage.add("-179.905288");
+        listLatLonCoverage.add("90");
+        listLatLonCoverage.add("180");
+
+        // add depth (Z) criteria
+        // first element is low depth
+        // second element is high depth (optional)
+        // if only low depth is set, high depth equals low depth value
+        List<String> listDepthCoverage = new ArrayList<String>();
+        listDepthCoverage.add("0");
+        listDepthCoverage.add("0");
+
+        Product product = null;
+
+        try {
+            Organizer organizer = new Organizer();
+
+            product = organizer.extractData(locationData,
+                                            listVar,
+                                            listTemporalCoverage,
+                                            listLatLonCoverage,
+                                            listDepthCoverage,
+                                            null,
+                                            Organizer.Format.NETCDF);
+
+            // get the output full file name (with path)
+            String extractLocationData = product.getExtractLocationData();
+            // get the url to download the output file.
+            String urlExtractPath = product.getDownloadUrlPath();
+
+            System.out.println(String.format("Product file is stored on the server in %s", extractLocationData));
+            System.out.println(String.format("Product %s can be downloaded with http at %s", product.getProductId(), urlExtractPath));
+
+        } catch (MotuExceptionBase e) {
+            System.out.println(e.notifyException());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+    }    
     public static void testOceanotron() {
         String locationData = "http://www.ifremer.fr/oceanotron/OPENDAP/INS_CORIOLIS_GLO_TS_NRT_OBS_PROFILE_LATEST";
 
