@@ -617,8 +617,12 @@ public class RestUtil {
                                                       path,
                                                       "Error while trying to retrieve CAS url (RestUtil.getRedirectUrl(String path, Proxy proxy)");
         }
-
-        return RestUtil.extractRedirectUrl(response.getLocation().toString(), responseCode);
+        
+        String location = "";
+        if (response.getLocation() != null) {
+            location = response.getLocation().toString();
+        }
+        return RestUtil.extractRedirectUrl(location, responseCode);
 
     }
 
