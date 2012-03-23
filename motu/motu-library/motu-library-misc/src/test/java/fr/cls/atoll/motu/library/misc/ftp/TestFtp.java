@@ -276,9 +276,14 @@ public class TestFtp {
         //
 
         // testFtp();
-         testSftp();
+        // testSftp();
          // "sftp://atoll:atoll@atoll-misgw.vlandata.cls.fr/opt/atoll/misgw-sltac/hoa/publication/inventories/dataset-duacs-ran-global-en-sla-l3__cls-toulouse-fr-sltac-motu-rest.xml");
         //testVFS("atoll", "atoll", "sftp", "atoll-misgw.vlandata.cls.fr", "opt/atoll/misgw-sltac/hoa/publication/inventories/dataset-duacs-ran-global-en-sla-l3__cls-toulouse-fr-sltac-motu-rest.xml");
+        String server = "proxy-bureautique.cls.fr";
+        String user = "misgw@ftp.cmcc.it";
+        String pass = "myo2010";
+
+        testVFS(user, pass, "ftp", server, "GLOBAL_REANALYSIS_PHYS_001_004_a/global-reanalysis-phys-001-004-a-ran-it-cglors-icemod//global-reanalysis-phys-001-004-a-ran-it-cglors-icemod_20090101_20091231_20110331.nc");
         //testVFS_OLD("atoll", "atoll", "sftp", "atoll-misgw.vlandata.cls.fr", "opt/atoll/misgw-sltac/hoa/publication/inventories/dataset-duacs-ran-global-en-sla-l3__cls-toulouse-fr-sltac-motu-rest.xml");
          if (true) {
              return;
@@ -380,7 +385,11 @@ public class TestFtp {
         //fromUri= "ftp://idpopendap:ghf57sf6@ftpsedr.cls.fr/donnees/ftpsedr/DUACS/global/dt/upd/sla/e1//dt_upd_global_e1_sla_vfec_19950510_19950515_20100503.nc.gz";
         //fromUri= "ftp://idpopendap:ghf57sf6@ftpsedr.cls.fr/global/dt/upd/sla/e1//dt_upd_global_e1_sla_vfec_19950510_19950515_20100503.nc.gz";
         fromUri= "ftp://idpopendap:ghf57sf6@ftpsedr.cls.fr/global/dt/upd/sla/e1/dt_upd_global_e1_sla_vfec_19950510_19950515_20100503.nc.gz";
-                      toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.nc";
+        toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/test.nc";
+
+        fromUri= "ftp://misgw:myo2010@ftp.cmcc.it/GLOBAL_REANALYSIS_PHYS_001_004_a/global-reanalysis-phys-001-004-a-ran-it-cglors-icemod//global-reanalysis-phys-001-004-a-ran-it-cglors-icemod_20090101_20091231_20110331.nc";
+        toUri = "ftp://t:t@CLS-EARITH.pc.cls.fr/MonDossier2/testCMCC.nc";
+        
         testPush(fromUri, toUri);
         
         // URI uriTest = null;
@@ -428,13 +437,18 @@ public class TestFtp {
             String server = "proxy.cls.fr";
             String user = "anonymous@ftp.unidata.ucar.edu";
             String pass = "";
+
             server = "ftp.cls.fr";
             user = "anonymous";
             pass = "email";
 
+            server = "proxy-bureautique.cls.fr";
+            user = "misgw@ftp.cmcc.it";
+            pass = "myo2010";
+
             StaticUserAuthenticator auth = new StaticUserAuthenticator(null, user, pass);
             DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
-            FileObject fo = VFS.getManager().resolveFile("ftp://ftp.cls.fr/pub/oceano/AVISO/NRT-SLA/maps/rt/j2/h/msla_rt_j2_err_21564.nc.gz", opts);
+            FileObject fo = VFS.getManager().resolveFile("ftp://proxy-bureautique.cls.fr/GLOBAL_REANALYSIS_PHYS_001_004_a/global-reanalysis-phys-001-004-a-ran-it-cglors-icemod//global-reanalysis-phys-001-004-a-ran-it-cglors-icemod_20090101_20091231_20110331.nc", opts);
 
             FTPClient ftpClient = FtpClientFactory.createConnection(server, 21, user.toCharArray(), pass.toCharArray(), ".", opts);
         } catch (FileSystemException e) {
@@ -520,7 +534,7 @@ public class TestFtp {
             StaticUserAuthenticator auth = new StaticUserAuthenticator(null, user, pwd);
 
             fsManager.setConfiguration(ConfigLoader.getInstance().get(Organizer.getVFSProviderConfig()));
-            fsManager.setCacheStrategy(CacheStrategy.ON_CALL);
+            fsManager.setCacheStrategy(CacheStrategy.ON_RESOLVE);
             // fsManager.addProvider("moi", new DefaultLocalFileProvider());
             fsManager.init();
 
@@ -533,7 +547,8 @@ public class TestFtp {
 
             if (fscb instanceof FtpFileSystemConfigBuilder) {
                 FtpFileSystemConfigBuilder ftpFscb = (FtpFileSystemConfigBuilder) fscb;
-//                ftpFscb.setUserDirIsRoot(opts, false);
+                ftpFscb.setUserDirIsRoot(opts, true);
+                ftpFscb.setPassiveMode(opts, true);
 
             }
             if (fscb instanceof HttpFileSystemConfigBuilder) {
@@ -582,8 +597,8 @@ public class TestFtp {
             FileObject ff = fsManager.resolveFile(uri, opts);
             FileObject dest = fsManager.toFileObject(newFile);
 
-            ff.getContent().getInputStream();
-
+            //ff.getContent().getInputStream();
+            dest.copyFrom(ff, Selectors.SELECT_ALL);
             //dest.copyFrom(ff, Selectors.SELECT_ALL);
             
             //            
