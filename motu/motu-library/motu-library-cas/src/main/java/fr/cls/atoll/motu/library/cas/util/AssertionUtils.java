@@ -346,6 +346,46 @@ public class AssertionUtils {
     }
 
     /**
+     * Gets the cAS ticket.
+     *
+     * @param targetService the target service
+     * @param username the username
+     * @param password the password
+     * @param casRestUrlSuffix the cas rest url suffix
+     * @return the cAS ticket
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException the motu cas bad request exception
+     */
+    public static String getCASTicket(String targetService, String username, String password, String casRestUrlSuffix) throws IOException, MotuCasBadRequestException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getCASTicket(String, String, String, String) - entering");
+        }
+        String ticket = null;
+
+        if (AssertionUtils.isNullOrEmpty(username)) {
+            return ticket;
+        }
+        
+        String casRestUrlSuffixToUse = casRestUrlSuffix;
+
+        if (AssertionUtils.isNullOrEmpty(casRestUrlSuffixToUse)) {
+            casRestUrlSuffixToUse = RestUtil.CAS_REST_URL_SUFFIX;
+        }
+        
+        String casRestUrl = RestUtil.getCasRestletUrl(targetService, casRestUrlSuffixToUse);
+            
+    
+        ticket = RestUtil.loginToCAS(casRestUrl, username, password, targetService);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getCASTicket(String, String, String, String) - exiting");
+        }
+        return ticket;
+        
+    }
+
+    
+    /**
      * Adds the cas ticket.
      * 
      * @param targetService the target service
@@ -356,7 +396,7 @@ public class AssertionUtils {
      * @throws MotuCasException the motu cas exception
      */
     public static String addCASTicket(URI targetService, MultivaluedMap<String, String> data, UserBase user) throws IOException, MotuCasException {
-        return addCASTicket(targetService.toString(), data, user.getLogin(), user.getPwd(), user.getCasRestSuffURL());
+        return AssertionUtils.addCASTicket(targetService.toString(), data, user.getLogin(), user.getPwd(), user.getCasRestSuffURL());
     }
 
     /**

@@ -181,7 +181,7 @@ public interface MotuRequestParametersConstant {
 
     /** Service servlet parameter name. */
     final String PARAM_SERVICE = "service";
-
+    
     /**
      * Service servlet parameter id. This is an alias of {@link #PARAM_SERVICE} for the
      * {@link #ACTION_DESCRIBE_COVERAGE} action.
@@ -193,6 +193,9 @@ public interface MotuRequestParametersConstant {
 
     /** Variable servlet paremeter name. */
     final String PARAM_VARIABLE = "variable";
+
+    /** Ticket servlet parameter name. */
+    final String PARAM_TICKET = "ticket";
 
     /** The PARA m_ extr a_ metadata. */
     final String PARAM_EXTRA_METADATA = "extraMetadata";

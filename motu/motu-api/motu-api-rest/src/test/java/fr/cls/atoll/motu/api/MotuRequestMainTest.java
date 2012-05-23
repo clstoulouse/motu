@@ -24,17 +24,11 @@
  */
 package fr.cls.atoll.motu.api;
 
-import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
-import fr.cls.atoll.motu.api.message.xml.RequestSize;
-import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
-import fr.cls.atoll.motu.api.message.xml.StatusModeType;
-import fr.cls.atoll.motu.api.message.xml.TimeCoverage;
-import fr.cls.atoll.motu.api.rest.MotuRequest;
-import fr.cls.atoll.motu.api.rest.MotuRequestException;
-import fr.cls.atoll.motu.api.rest.MotuRequestParameters;
-
+import java.io.BufferedReader;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -45,6 +39,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import fr.cls.atoll.motu.api.message.AuthenticationMode;
+import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.api.message.xml.RequestSize;
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.api.message.xml.StatusModeType;
+import fr.cls.atoll.motu.api.message.xml.TimeCoverage;
+import fr.cls.atoll.motu.api.rest.MotuRequest;
+import fr.cls.atoll.motu.api.rest.MotuRequestException;
+import fr.cls.atoll.motu.api.rest.MotuRequestParameters;
 
 /**
  * Programme de test de l'API motu.
@@ -64,12 +68,14 @@ public class MotuRequestMainTest {
      */
 
     public static void main(String[] args) throws Exception {
+        System.setProperty("http.proxyHost", "proxy-bureautique.cls.fr");
+        System.setProperty("http.proxyPort", "8080");
 
         // testMode();
         // testMode2();
         // testModeStatusAsString();
         // testModeStatusAsXMLFile();
-        testModeStatusAsXML();
+        // testModeStatusAsXML();
         // testGetSize();
         // testGetSize();
         // testGetTimeCoverage();
@@ -77,6 +83,7 @@ public class MotuRequestMainTest {
         // testDeleteFile();
         // testSynchronized();
         // testUrlWithUserPwd();
+        testExtractV2();
 
     }
 
@@ -104,7 +111,101 @@ public class MotuRequestMainTest {
         }
 
     }
+    public static String prompt(String msg) {
 
+        // prompt the user
+        System.out.print(msg);
+
+        // open up standard input
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        String input = "";
+
+        // read the input from the command-line; need to use try/catch with the
+        // readLine() method
+        try {
+            input = br.readLine();
+        } catch (IOException ioe) {
+            System.out.println("IO error trying to read input!");
+            System.exit(1);
+        }
+        return input;
+
+    }
+
+    
+    public static void testExtractV2() throws Exception {
+        
+        // If a proxy is used, set properties 
+        System.setProperty("http.proxyHost", "proxy-bureautique.cls.fr");
+        System.setProperty("http.proxyPort", "8080");
+
+        MotuRequest motuRequest = new MotuRequest();
+
+        // CASified
+        motuRequest.setServletUrl("http://atoll-dev.cls.fr:30080/mis-gateway-servlet/Motu");
+        // Non CASified
+        //motuRequest.setServletUrl("http://atoll-dev.cls.fr:31080/mis-gateway-servlet/Motu");
+
+        MotuRequestParameters motuRequestParameters = new MotuRequestParameters();
+
+        String login = MotuRequestMainTest.prompt("Enter your login: ");
+        String password = MotuRequestMainTest.prompt("Enter your password: ");
+//        String login = "xxx";
+//        String password = "xxx";
+
+        // Set login, pawd, authentication parameters
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_LOGIN, login);
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PWD, password);
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_AUTHENTICATION_MODE, AuthenticationMode.CAS);
+
+        // Set action parameter, i.e 'download'
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_ACTION, MotuRequestParameters.ACTION_PRODUCT_DOWNLOAD);
+        // Set Motu service id parameter
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_SERVICE, "http://purl.org/cls/atoll/ontology/individual/atoll#motu-opendap-mercator-myocean");
+        // Set Motu product (dataset) id parameter
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PRODUCT,
+                                           "dataset-psy2v3-pgs-med-myocean-bestestimate");
+        // Set the variables to extract (no variable parameter means all variable of th dataset)
+        //motuRequestParameters.setParameter(MotuRequestParameters.PARAM_VARIABLE, "v");
+        List<String> variableList = new ArrayList<String>();
+        variableList.add("u");
+        variableList.add("v");
+        motuRequestParameters.setMultiValuedParameter(MotuRequestParameters.PARAM_VARIABLE, variableList);
+        // Set datetime coverage criteria
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_START_DATE, "2011-01-26");
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_END_DATE, "2011-01-26");
+        // Set geographical coverage criteria
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_LOW_LAT, "30");
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_LOW_LON, "-6.0");
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_HIGH_LAT, "31");
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_HIGH_LON, "1.0");
+        // Z is optional - depends on the product (dataset)
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_LOW_Z, "0");
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_HIGH_Z, "0");
+        // Set extraction mode, i.e 'console'.
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_MODE, MotuRequestParameters.PARAM_MODE_CONSOLE);
+        // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_MODE,
+        // MotuRequestParameters.PARAM_MODE_URL);
+        // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_MODE,
+        // MotuRequestParameters.PARAM_MODE_STATUS);
+
+        motuRequest.setMotuRequestParameters(motuRequestParameters);
+
+        InputStream in = motuRequest.executeV2();
+        OutputStream out = new FileOutputStream("c:\\temp\\data.nc");
+        int c;
+        int nb = 0;
+        while ((c = in.read()) >= 0) {
+            out.write(c);
+            ++nb;
+        }
+        System.out.println(nb);
+
+        in.close();
+        out.close();
+
+    }
     public static void testMode() throws Exception {
         MotuRequest motuRequest = new MotuRequest();
 

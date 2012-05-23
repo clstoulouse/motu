@@ -268,7 +268,8 @@ public class TestCASRest {
         }
 
         // http://atoll-dev.cls.fr:43080/thredds/dodsC/mercator_modified
-        String serviceURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/OpendapAuth?action=productdownload&data=http://atoll-dev.cls.fr:43080/thredds/dodsC/nrt_glo_hr_infrared_sst&x_lo=2&x_hi=3&y_lo=1&y_hi=4&t_lo=2009-12-01&t_hi=2009-12-01&variable=Grid_0001&mode=console";
+        //String serviceURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/OpendapAuth?action=productdownload&data=http://atoll-dev.cls.fr:43080/thredds/dodsC/nrt_glo_hr_infrared_sst&x_lo=2&x_hi=3&y_lo=1&y_hi=4&t_lo=2009-12-01&t_hi=2009-12-01&variable=Grid_0001&mode=console";
+        String serviceURL = "http://atoll-dev.cls.fr:30080/mis-gateway-servlet/Motu?z_lo=0&y_lo=30&t_hi=2011-01-26&mode=console&product=dataset-psy2v3-pgs-med-myocean-bestestimate&x_lo=-6.0&y_hi=31&t_lo=2011-01-26&z_hi=0&action=productdownload&service=http%3A%2F%2Fpurl.org%2Fcls%2Fatoll%2Fontology%2Findividual%2Fatoll%23motu-opendap-mercator-myocean&x_hi=1.0&variable=u&variable=v";
         String username = "xxx";
         String password = "xxx";
 

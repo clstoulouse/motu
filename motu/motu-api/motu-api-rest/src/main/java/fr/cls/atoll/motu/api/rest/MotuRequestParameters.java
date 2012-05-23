@@ -65,6 +65,16 @@ public class MotuRequestParameters implements MotuRequestParametersConstant {
     public Object getParameter(String paramName) {
         return monoValuedParamMap.get(paramName);
     }
+    
+    /**
+     * Removes the parameter.
+     *
+     * @param paramName the param name
+     * @return the object
+     */
+    public Object removeParameter(String paramName) {
+        return monoValuedParamMap.remove(paramName);
+    }
 
     /**
      * Positionne un paramètre.

@@ -20,6 +20,11 @@
             <version>1.3</version>
         </dependency>
         <dependency>
+			<groupId>cls.atoll.motu.library</groupId>
+			<artifactId>motu-library-cas</artifactId>
+			<version>2.1.18-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>cls.atoll.motu.api</groupId>
             <artifactId>motu-api-message</artifactId>
             <version>2.1.18-SNAPSHOT</version>
