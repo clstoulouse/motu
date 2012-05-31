@@ -24,7 +24,6 @@
  */
 package fr.cls.atoll.motu.api.rest;
 
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +34,8 @@ import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.net.CookieStore;
+import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
@@ -60,7 +61,6 @@ import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.cas.util.RestUtil.HttpMethod;
 
 /**
  * Helper class that allows to send a Motu request and retrieve the results.
@@ -83,6 +83,8 @@ public class MotuRequest {
     private int connectTimeout = 60000;
 
     // private static Map<String, String> requestExtraInfo = null;
+    
+    private static CookieStore cookieStore = new sun.net.www.protocol.http.InMemoryCookieStore();
 
     /**
      * The Constructor.
@@ -295,7 +297,8 @@ public class MotuRequest {
         // First set the default cookie manager.
         // Must be set before the first http request.
         // This is essential for cookie session managment with CAS authentication
-        CookieManager cm = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
+        cookieStore.removeAll();
+        CookieManager cm = new CookieManager(cookieStore, CookiePolicy.ACCEPT_ALL);
         CookieHandler.setDefault(cm);
 
         URL url = null;
@@ -323,7 +326,7 @@ public class MotuRequest {
                 // If url is CASified then a CAS ticket is added to the returned url. 
                 // If url is not CASified then the original url is returned.
                 // If login or password is null or empty, then the original url is returned.
-                targetUrl = AssertionUtils.addCASTicket(targetUrl, login, password, null);                
+                targetUrl = AssertionUtils.addCASTicket(targetUrl, login, password, null);   
             }
 
             url = new URL(targetUrl);
@@ -366,8 +369,8 @@ public class MotuRequest {
         }
         
         try {
-
             InputStream returnInputStream = urlConnection.getInputStream();
+            
             if (LOG.isDebugEnabled()) {
                 LOG.debug("executeV2() - exiting");
             }
