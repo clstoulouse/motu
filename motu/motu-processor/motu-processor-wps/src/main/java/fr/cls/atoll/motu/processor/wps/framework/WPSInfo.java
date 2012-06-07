@@ -24,6 +24,7 @@
  */
 package fr.cls.atoll.motu.processor.wps.framework;
 
+import fr.cls.atoll.motu.library.cas.UserBase;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.processor.opengis.ows110.CodeType;
@@ -64,6 +65,8 @@ public class WPSInfo {
     public WPSInfo(String url) throws MotuException {
         this.serverUrl = url;
     }
+    
+    UserBase user = null;
 
     protected String serverUrl = null;
     protected ProcessDescriptions processDescriptions = null;

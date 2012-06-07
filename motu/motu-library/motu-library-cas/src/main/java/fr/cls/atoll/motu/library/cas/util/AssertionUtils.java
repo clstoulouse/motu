@@ -145,15 +145,28 @@ public class AssertionUtils {
      * @throws MotuCasException
      * @throws MotuCasException
      */
-    public static String addCASTicket(String targetService, UserBase user) throws IOException, MotuCasException {
+    public static String addCASTicket(String targetService, UserBase user, boolean useAssertion) throws IOException, MotuCasException {
 
         if (user == null) {
-            return AssertionUtils.addCASTicket(targetService, null, null, null);
+            return AssertionUtils.addCASTicket(targetService, null, null, null, useAssertion);
         }
-        return AssertionUtils.addCASTicket(targetService, user.getLogin(), user.getPwd(), user.getCasRestSuffURL());
+        return AssertionUtils.addCASTicket(targetService, user.getLogin(), user.getPwd(), user.getCasRestSuffURL(), useAssertion);
 
     }
+    
+    /**
+     * Adds the cas ticket.
+     *
+     * @param targetService the target service
+     * @param user the user
+     * @return the string
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasException the motu cas exception
+     */
+    public static String addCASTicket(String targetService, UserBase user) throws IOException, MotuCasException {
+    	return   AssertionUtils.addCASTicket(targetService, user, true);
 
+    }
     /**
      * Adds the cas ticket.
      * 
@@ -222,41 +235,29 @@ public class AssertionUtils {
      * 
      * @throws URIException the URI exception
      */
-    public static String addCASTicket(String targetService) throws IOException, MotuCasBadRequestException {
+    public static String addCASTicket(String targetService, boolean useAssertion) throws IOException, MotuCasBadRequestException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(String) - entering");
         }
 
-        String returnString = AssertionUtils.addCASTicket(targetService, null, null, null);
+        String returnString = AssertionUtils.addCASTicket(targetService, null, null, null, useAssertion);
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(String) - exiting");
         }
         return returnString;
     }
-
+    
     /**
      * Adds the cas ticket.
-     * 
-     * @param client the client
-     * @param method the method
+     *
      * @param targetService the target service
-     * @param username the username
-     * @param password the password
-     * @param casRestUrlSuffix the cas rest url suffix
      * @return the string
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws MotuCasBadRequestException the motu cas bad request exception
      */
-    public static String addCASTicket(Client client,
-                                      RestUtil.HttpMethod method,
-                                      String targetService,
-                                      String username,
-                                      String password,
-                                      String casRestUrlSuffix) throws IOException, MotuCasBadRequestException {
-
-        return AssertionUtils.addCASTicket(client, method, targetService, username, password, casRestUrlSuffix, null);
+    public static String addCASTicket(String targetService) throws IOException, MotuCasBadRequestException {
+        return AssertionUtils.addCASTicket(targetService, true);
     }
-
     /**
      * Adds the cas ticket.
      * 
@@ -276,7 +277,60 @@ public class AssertionUtils {
                                       String username,
                                       String password,
                                       String casRestUrlSuffix,
-                                      String casUrlToUse) throws IOException, MotuCasBadRequestException {
+                                      boolean useAssertion) throws IOException, MotuCasBadRequestException {
+
+        return AssertionUtils.addCASTicket(client, method, targetService, username, password, casRestUrlSuffix, null);
+    }
+
+    /**
+     * Adds the cas ticket.
+     *
+     * @param client the client
+     * @param method the method
+     * @param targetService the target service
+     * @param username the username
+     * @param password the password
+     * @param casRestUrlSuffix the cas rest url suffix
+     * @return the string
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException the motu cas bad request exception
+     */
+    public static String addCASTicket(Client client,
+            RestUtil.HttpMethod method,
+            String targetService,
+            String username,
+            String password,
+            String casRestUrlSuffix) throws IOException, MotuCasBadRequestException {
+
+		return AssertionUtils.addCASTicket(client,
+		        method,
+		        targetService,
+		        username,
+		        password,
+		        casRestUrlSuffix,
+		        true);
+	}
+    /**
+     * Adds the cas ticket.
+     * 
+     * @param client the client
+     * @param method the method
+     * @param targetService the target service
+     * @param username the username
+     * @param password the password
+     * @param casRestUrlSuffix the cas rest url suffix
+     * @return the string
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException the motu cas bad request exception
+     */
+    public static String addCASTicket(Client client,
+                                      RestUtil.HttpMethod method,
+                                      String targetService,
+                                      String username,
+                                      String password,
+                                      String casRestUrlSuffix,
+                                      String casUrlToUse,
+                                      boolean useAssertion) throws IOException, MotuCasBadRequestException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(Client, RestUtil.HttpMethod, String, String, String, String) - start");
         }
@@ -288,7 +342,10 @@ public class AssertionUtils {
         String returnString = targetService;
         String casRestUrlSuffixToUse = casRestUrlSuffix;
 
-        Assertion assertion = AssertionHolder.getAssertion();
+        Assertion assertion = null;
+        if (useAssertion) {
+        	assertion = AssertionHolder.getAssertion();
+        }
         if (assertion != null) {
             returnString = AssertionUtils.addCASTicket(assertion, targetService);
         } else if (!AssertionUtils.isNullOrEmpty(username)) {
@@ -302,6 +359,38 @@ public class AssertionUtils {
             LOG.debug("addCASTicket(Client, RestUtil.HttpMethod, String, String, String, String) - end");
         }
         return returnString;
+    }
+    
+    /**
+     * Adds the cas ticket.
+     *
+     * @param client the client
+     * @param method the method
+     * @param targetService the target service
+     * @param username the username
+     * @param password the password
+     * @param casRestUrlSuffix the cas rest url suffix
+     * @param casUrlToUse the cas url to use
+     * @return the string
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException the motu cas bad request exception
+     */
+    public static String addCASTicket(Client client,
+            RestUtil.HttpMethod method,
+            String targetService,
+            String username,
+            String password,
+            String casRestUrlSuffix,
+            String casUrlToUse) throws IOException, MotuCasBadRequestException {
+    	   return AssertionUtils.addCASTicket(client,
+                   method,
+                   targetService,
+                   username,
+                   password,
+                   casRestUrlSuffix,
+                   casUrlToUse,
+                   true);
+
     }
 
     /**
@@ -319,7 +408,7 @@ public class AssertionUtils {
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws MotuCasBadRequestException
      */
-    public static String addCASTicket(String targetService, String username, String password, String casRestUrlSuffix) throws IOException,
+    public static String addCASTicket(String targetService, String username, String password, String casRestUrlSuffix, boolean useAssertion) throws IOException,
             MotuCasBadRequestException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(String, String, String, String) - entering");
@@ -328,7 +417,10 @@ public class AssertionUtils {
         String returnString = targetService;
         String casRestUrlSuffixToUse = casRestUrlSuffix;
 
-        Assertion assertion = AssertionHolder.getAssertion();
+        Assertion assertion = null;
+        if (useAssertion) {
+        	assertion = AssertionHolder.getAssertion();
+        }
         if (assertion != null) {
             returnString = AssertionUtils.addCASTicket(assertion, targetService);
         } else if (!AssertionUtils.isNullOrEmpty(username)) {
@@ -344,7 +436,22 @@ public class AssertionUtils {
         return returnString;
 
     }
+    
+    /**
+     * Adds the cas ticket.
+     *
+     * @param targetService the target service
+     * @param username the username
+     * @param password the password
+     * @param casRestUrlSuffix the cas rest url suffix
+     * @return the string
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException the motu cas bad request exception
+     */
+    public static String addCASTicket(String targetService, String username, String password, String casRestUrlSuffix) throws IOException, MotuCasBadRequestException {
+    	return AssertionUtils.addCASTicket(targetService, username, password, casRestUrlSuffix, true);
 
+	}
     /**
      * Gets the cAS ticket.
      *
