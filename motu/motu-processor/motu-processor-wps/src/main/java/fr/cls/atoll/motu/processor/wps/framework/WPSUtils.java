@@ -35,6 +35,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,12 +44,16 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.httpclient.params.HttpParams;
 import org.deegree.commons.utils.HttpUtils;
 import org.deegree.commons.utils.HttpUtils.Worker;
 import org.deegree.services.wps.input.LiteralInput;
@@ -194,20 +199,62 @@ public class WPSUtils {
         MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
         HttpClientCAS client = new HttpClientCAS(connectionManager);
         
+        HttpClientParams clientParams = new HttpClientParams();
+        //clientParams.setParameter("http.protocol.allow-circular-redirects", true);
+        client.setParams(clientParams);
+        
         PostMethod post = new PostMethod(url);
         post.setRequestEntity(new InputStreamRequestEntity(postBody));
         for (String key : headers.keySet()) {
             post.setRequestHeader(key, headers.get(key));
         }
 
+        
         String query = post.getQueryString();
         
+        // Check redirection
+        // DONT USE post.setFollowRedirects(true); see http://hc.apache.org/httpclient-3.x/redirects.html
+   
         int httpReturnCode = client.executeMethod(post);
 
         if (LOG.isDebugEnabled()) {
             String msg = String.format("Executing the query:\n==> http code: '%d':\n==> url: '%s'\n==> body:\n'%s'", httpReturnCode, url, query);
             LOG.debug("post(Worker<T>, String, InputStream, Map<String,String>) - end - " + msg);
         }
+        
+//        if (httpReturnCode == 302) {
+//	        
+//        	String redirectLocation = null;
+//	        Header locationHeader = post.getResponseHeader("location");
+//	        
+//	        if (locationHeader != null) {
+//	            redirectLocation = locationHeader.getValue();
+//	            if (!WPSUtils.isNullOrEmpty(redirectLocation)) {
+//		            if (LOG.isDebugEnabled()) {
+//		                String msg = String.format("Query is redirected to url: '%s'", redirectLocation);
+//		                LOG.debug("post(Worker<T>, String, InputStream, Map<String,String>) - end - " + msg);
+//		            }
+//		            post = new PostMethod(url);
+//		            post.setRequestEntity(new InputStreamRequestEntity(postBody));
+//		            for (String key : headers.keySet()) {
+//		                post.setRequestHeader(key, headers.get(key));
+//		            }
+//	
+//		            query = post.getQueryString();
+//		            
+//		            httpReturnCode = client.executeMethod(post);
+//		            
+//		            if (LOG.isDebugEnabled()) {
+//		                String msg = String.format("Executing the query:\n==> http code: '%d':\n==> url: '%s'\n==> body:\n'%s'", httpReturnCode, url, query);
+//		                LOG.debug("post(Worker<T>, String, InputStream, Map<String,String>) - end - " + msg);
+//		            }
+//
+//		            
+//	            }
+//	        	
+//	        }
+//        }
+        
 
         T returnValue = worker.work(post.getResponseBodyAsStream());
 

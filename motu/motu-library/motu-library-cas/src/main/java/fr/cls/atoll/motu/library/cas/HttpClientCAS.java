@@ -24,12 +24,6 @@
  */
 package fr.cls.atoll.motu.library.cas;
 
-import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
-import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
-import fr.cls.atoll.motu.library.cas.util.RestUtil;
-import fr.cls.atoll.motu.library.cas.util.SimpleAuthenticator;
-
 import java.io.IOException;
 import java.net.Authenticator;
 
@@ -44,6 +38,14 @@ import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.log4j.Logger;
+import org.omg.PortableServer.ServantLocatorPackage.CookieHolder;
+
+import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
+import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
+import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
+import fr.cls.atoll.motu.library.cas.util.CookieStoreHolder;
+import fr.cls.atoll.motu.library.cas.util.RestUtil;
+import fr.cls.atoll.motu.library.cas.util.SimpleAuthenticator;
 
 /**
  * 
@@ -82,7 +84,7 @@ public class HttpClientCAS extends HttpClient {
     // public ThreadLocal<Boolean> getIsCas() {
     // return isCas;
     // }
-
+    
     /**
      * Logger for this class
      */
@@ -91,24 +93,28 @@ public class HttpClientCAS extends HttpClient {
     // protected Assertion assertion;
 
     public HttpClientCAS() {
-        setProxy();
+        init();
     }
 
     public HttpClientCAS(HttpClientParams params, HttpConnectionManager httpConnectionManager) {
         super(params, httpConnectionManager);
-        setProxy();
+        init();
         
     }
 
     public HttpClientCAS(HttpClientParams params) {
         super(params);
-        setProxy();
+        init();
     }
 
     public HttpClientCAS(HttpConnectionManager httpConnectionManager) {
         super(httpConnectionManager);
-        setProxy();
-
+        init();
+    }
+    
+    private void init() {
+    	CookieStoreHolder.initCookieManager();
+        setProxy();    	
     }
     
     /**
