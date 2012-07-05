@@ -24,6 +24,9 @@
  */
 package fr.cls.atoll.motu.processor.wps;
 
+import fr.cls.atoll.motu.api.message.AuthenticationMode;
+import fr.cls.atoll.motu.library.cas.UserBase;
+import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
 import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.library.converter.exception.MotuConverterException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
@@ -269,7 +272,7 @@ public class TestWPS {
         // System.out.println(key.hashCode());
         // } catch (java.security.NoSuchAlgorithmException e) {
         // }
-        // getDescribeProcess();
+        getDescribeProcess();
 
         // testPackageAnnotation();
         // testGetFields();
@@ -408,12 +411,21 @@ public class TestWPS {
 
     public static ProcessDescriptions getDescribeProcess() {
 
-        String href = "http://localhost:8080/atoll-motuservlet/services";
+    	UserBase user = new UserBase();
+    	
+    	user.setLogin("adminweb");
+    	user.setPwd("adminweb");
+    	user.setAuthenticationMode(AuthenticationMode.CAS);
+    	
+    	AuthenticationHolder.setUser(user);
+
+        //String href = "http://localhost:8080/atoll-motuservlet/services";
+        String href = "http://atoll-dev.cls.fr:30080/mis-gateway-servlet/ogc";
         InputStream in = null;
         Map<String, String> headers = new HashMap<String, String>();
         try {
             in = Organizer.getUriAsInputStream("DescribeAll.xml");
-            in = HttpUtils.post(HttpUtils.STREAM, href, in, headers);
+            in = WPSUtils.post(HttpUtils.STREAM, href, in, headers);
             // byte b[] = new byte[1024];
             //
             // int bytesRead = 0;
@@ -569,6 +581,7 @@ public class TestWPS {
     }
 
     public static void testBuildWPS() {
+        //String serverURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/services";
         String serverURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/services";
 
         try {
@@ -628,7 +641,7 @@ public class TestWPS {
 
             WPSFactory wpsFactory = new WPSFactory();
 
-            Execute execute = wpsFactory.createExecuteProcessRequest(operationMetadata, null);
+            Execute execute = WPSFactory.createExecuteProcessRequest(operationMetadata, null);
 
             FileWriter writer = new FileWriter("WPSExecute.xml");
 

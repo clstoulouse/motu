@@ -75,8 +75,8 @@ public class TestCASRest {
      */
     private static final Logger LOG = Logger.getLogger(TestCASRest.class);
 
-    //public static final String casServerUrlPrefix = "https://atoll-dev.cls.fr:8443/cas-server-webapp-3.3.5";
-    public static final String casServerUrlPrefix = "https://mis-cas-qt.cls.fr/cas";
+    public static final String casServerUrlPrefix = "https://atoll-dev.cls.fr:8443/cas-server-webapp-3.3.5";
+    //public static final String casServerUrlPrefix = "https://mis-cas-qt.cls.fr/cas";
 
     public static void main(String... args) throws Exception {
         System.setProperty("http.proxyHost", "proxy-bureautique.cls.fr");

@@ -38,7 +38,6 @@ import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.log4j.Logger;
-import org.omg.PortableServer.ServantLocatorPackage.CookieHolder;
 
 import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
@@ -231,18 +230,28 @@ public class HttpClientCAS extends HttpClient {
         }
         return returnint;
     }
-
-    @Override
     public int executeMethod(HttpMethod method) throws IOException, HttpException {
+    	return executeMethod(method, true);
+    }
+
+    public int executeMethod(HttpMethod method, boolean addCasTicket) throws IOException, HttpException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("executeMethod(HttpMethod) - entering");
         }
 
         try {
-            addCASTicket(method);
+        	if (addCasTicket) {
+        		addCASTicket(method);
+        	}
         } catch (MotuCasException e) {
             throw new HttpException(e.notifyException(), e);
         }
+        
+//       CookieStore cookieStore = CookieStoreHolder.getCookieStore();
+//       List<HttpCookie> cookies = cookieStore.getCookies();
+//       for (HttpCookie cookie : cookies) {
+//    	   System.out.println(cookie.getValue());
+//       }
 
         int returnint = super.executeMethod(method);
         if (LOG.isDebugEnabled()) {
@@ -289,8 +298,9 @@ public class HttpClientCAS extends HttpClient {
 
         URI newURI = new URI(newURIAsString, true);
 
-        method.setURI(newURI);
-
+        //method.setURI(newURI);
+        method.setPath(newURI.getPathQuery());
+        System.out.println(newURI.getPathQuery());
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(HttpMethod) - exiting : debugHttpMethod AFTER  " + HttpClientCAS.debugHttpMethod(method));
         }

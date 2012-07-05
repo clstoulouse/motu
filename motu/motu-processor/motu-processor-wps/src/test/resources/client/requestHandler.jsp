@@ -1,6 +1,11 @@
 <%@ page language="java"
 	import="java.io.OutputStream,java.io.InputStream,java.util.Enumeration,org.apache.commons.httpclient.*,org.apache.commons.httpclient.methods.*"
-	pageEncoding="UTF-8"%><%
+	pageEncoding="UTF-8"%>
+<%@ page import="fr.cls.atoll.motu.library.cas.HttpClientCAS"%>
+<%@ page import="fr.cls.atoll.motu.library.cas.UserBase"%>
+<%@ page import="fr.cls.atoll.motu.library.cas.util.AuthenticationHolder"%>
+<%@ page import="fr.cls.atoll.motu.api.message.AuthenticationMode"%>
+    <%
 
             // PLEASE NOTE:
             //
@@ -23,8 +28,16 @@
 
             // GCAction (address of service to contact)
             String action = request.getParameter( "GCAction" );
-            HttpClient client = new HttpClient();
+            HttpClientCAS client = new HttpClientCAS();
 
+            UserBase user = new UserBase();
+	    	
+	    	user.setLogin("adminweb");
+	    	user.setPwd("adminweb");
+	    	user.setAuthenticationMode(AuthenticationMode.CAS);
+	    	
+	    	AuthenticationHolder.setUser(user);            
+            
             HttpMethodBase http = null;
 
             if ( isXML ) {

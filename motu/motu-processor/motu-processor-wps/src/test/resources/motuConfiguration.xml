@@ -106,7 +106,8 @@
 -->
 
 <motuConfig defaultService="avisoNRT" useProxy="true"
-	proxyLogin="xxx" proxyPwd="xxx" useAuthentication="false"
+	proxyLogin="" proxyPwd="" useAuthentication="false" 
+	proxyHost="proxy-bureautique.cls.fr" proxyPort="8080"
 	dataBlockSize="102400" maxSizePerFile="256"
 	extractionPath="C:\Java\apache-tomcat-6.0.9\webapps\motu-file-extract"
 	downloadHttpUrl="http://localhost:8080/motu-file-extract"
