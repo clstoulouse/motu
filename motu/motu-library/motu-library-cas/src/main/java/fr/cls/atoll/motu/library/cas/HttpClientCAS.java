@@ -192,15 +192,20 @@ public class HttpClientCAS extends HttpClient {
             LOG.debug("setProxyUser() - end");
         }
     }
-
     @Override
     public int executeMethod(HostConfiguration hostconfig, HttpMethod method, HttpState state) throws IOException, HttpException {
+    	return executeMethod(hostconfig, method, state, true);	
+    }
+
+    public int executeMethod(HostConfiguration hostconfig, HttpMethod method, HttpState state, boolean addCasTicket) throws IOException, HttpException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("executeMethod(HostConfiguration, HttpMethod, HttpState) - entering");
         }
 
         try {
-            addCASTicket(method);
+        	if (addCasTicket) {
+        		addCASTicket(method);
+        	}
         } catch (MotuCasException e) {
             throw new HttpException(e.notifyException(), e);
         }
@@ -214,19 +219,25 @@ public class HttpClientCAS extends HttpClient {
 
     @Override
     public int executeMethod(HostConfiguration hostConfiguration, HttpMethod method) throws IOException, HttpException {
+    	return executeMethod(hostConfiguration, method, true);
+    }
+    
+    public int executeMethod(HostConfiguration hostConfiguration, HttpMethod method, boolean addCasTicket) throws IOException, HttpException {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("executeMethod(HostConfiguration, HttpMethod) - entering");
+            LOG.debug("executeMethod(HostConfiguration, HttpMethod, boolean) - entering");
         }
 
         try {
-            addCASTicket(method);
+        	if (addCasTicket) {
+        		addCASTicket(method);
+        	}
         } catch (MotuCasException e) {
             throw new HttpException(e.notifyException(), e);
         }
 
         int returnint = super.executeMethod(hostConfiguration, method);
         if (LOG.isDebugEnabled()) {
-            LOG.debug("executeMethod(HostConfiguration, HttpMethod) - exiting");
+            LOG.debug("executeMethod(HostConfiguration, HttpMethod, boolean) - exiting");
         }
         return returnint;
     }
@@ -245,15 +256,10 @@ public class HttpClientCAS extends HttpClient {
         	}
         } catch (MotuCasException e) {
             throw new HttpException(e.notifyException(), e);
-        }
-        
-//       CookieStore cookieStore = CookieStoreHolder.getCookieStore();
-//       List<HttpCookie> cookies = cookieStore.getCookies();
-//       for (HttpCookie cookie : cookies) {
-//    	   System.out.println(cookie.getValue());
-//       }
+        }        
 
-        int returnint = super.executeMethod(method);
+        //int returnint = super.executeMethod(method);
+        int returnint = super.executeMethod(null, method, null);
         if (LOG.isDebugEnabled()) {
             LOG.debug("executeMethod(HttpMethod) - exiting");
         }
@@ -300,7 +306,7 @@ public class HttpClientCAS extends HttpClient {
 
         //method.setURI(newURI);
         method.setPath(newURI.getPathQuery());
-        System.out.println(newURI.getPathQuery());
+        //System.out.println(newURI.getPathQuery());
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(HttpMethod) - exiting : debugHttpMethod AFTER  " + HttpClientCAS.debugHttpMethod(method));
         }
