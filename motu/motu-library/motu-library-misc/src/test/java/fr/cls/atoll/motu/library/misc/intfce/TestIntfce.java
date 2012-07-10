@@ -58,8 +58,13 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.TrajectoryFeatureCollection;
 import ucar.nc2.ft.point.writer.CFPointObWriter;
 import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.util.DatedObject;
+import ucar.units.TimeScaleUnit;
+import ucar.units.Unit;
+import ucar.units.UnitImpl;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
 import fr.cls.atoll.motu.library.inventory.Inventory;
@@ -273,6 +278,8 @@ public class TestIntfce {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        Date d = DateUnit.getStandardDate("968457600 seconds since 1981-01-01 00:00:00" );
+        System.out.println(d.toGMTString());
 
 //        try {
 //            Date d = NetCdfReader.parseDate("2011-08-02 00:00:00");
@@ -441,7 +448,8 @@ public class TestIntfce {
         // productExtractXYTopaz3();
         //productExtractXYMetNo1();
         // productExtractAcri();
-        productExtractXYHRMOD();        
+        //productExtractXYHRMOD();     
+        //productExtractDataIfremer();
         // testOceanotron();
 
     }
@@ -2257,6 +2265,79 @@ public class TestIntfce {
 
     }
 
+    
+    public static void productExtractDataIfremer() {
+
+        // http://themismotu.cls.fr:8280/atoll-motuservlet/Catsat?action=productdownload&service=Catsat&data=http%3A%2F%2Fcatsatopendap.cls.fr%3A8080%2Fthredds%2FdodsC%2Fnrt_atl_oa_chlorophyll&nexturl=+&x_lo=-60&x_hi=20&y_lo=-15&y_hi=25&output=netcdf&region=-60.0%2C20.0%2C-15.0%2C25.0&yhi_text=25&xlo_text=-60&xhi_text=20&ylo_text=-15&t_lo_0=2008-02-09&t_lo=2008-02-09&t_hi_0=2008-02-09&t_hi=2008-02-09&variable=Grid_0001
+
+        String locationData = "http://www.ifremer.fr/thredds/dodsC/METEOFRANCE-EUR-SST_L3MONOSENSOR_NRT-OBS_ATS_NR_2P-EUR-MYOCEAN_FULL_TIME_SERIE";
+        // String productId = "mercatorPsy3v1R1v_arc_mean_20060628_R20060712.nc";
+        // String locationData = "C:/Java/dev/" + productId;
+
+        // String productId = "mercatorPsy3v1R1v_arc_mean_20060628_R20060712_1170678793644.nc";
+        // String locationData = "C:/apache-tomcat-5.5.16/webapps/motu-file-extract/" + productId;
+        List<String> listVar = new ArrayList<String>();
+        // add variable to extract
+        // listVar.add("salinity");
+        // listVar.add("temperature");
+        listVar.add("adjusted_sea_surface_temperature");
+
+        // add temporal criteria
+        // first element is start date
+        // second element is end date (optional)
+        // if only start date is set, end date equals start date
+        List<String> listTemporalCoverage = new ArrayList<String>();
+        listTemporalCoverage.add("2011-09-10");
+        listTemporalCoverage.add("2011-09-10");
+
+        // add Lat/Lon criteria
+        // first element is low latitude
+        // second element is low longitude
+        // third element is high latitude
+        // fourth element is high longitude
+        List<String> listLatLonCoverage = new ArrayList<String>();
+        listLatLonCoverage.add("40");
+        listLatLonCoverage.add("48");
+        listLatLonCoverage.add("42");
+        listLatLonCoverage.add("50");
+
+        // add depth (Z) criteria
+        // first element is low depth
+        // second element is high depth (optional)
+        // if only low depth is set, high depth equals low depth value
+        List<String> listDepthCoverage = new ArrayList<String>();
+        // listDepthCoverage.add("0");
+        // listDepthCoverage.add("1500");
+
+        Product product = null;
+
+        try {
+            Organizer organizer = new Organizer();
+
+            product = organizer.extractData(locationData,
+                                            listVar,
+                                            listTemporalCoverage,
+                                            listLatLonCoverage,
+                                            listDepthCoverage,
+                                            null,
+                                            Organizer.Format.NETCDF);
+
+            // get the output full file name (with path)
+            String extractLocationData = product.getExtractLocationData();
+            // get the url to download the output file.
+            String urlExtractPath = product.getDownloadUrlPath();
+
+            System.out.println(String.format("Product file is stored on the server in %s", extractLocationData));
+            System.out.println(String.format("Product %s can be downloaded with http at %s", product.getProductId(), urlExtractPath));
+
+        } catch (MotuExceptionBase e) {
+            System.out.println(e.notifyException());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
+    
     public static void testReadFileInJar() {
         try {
             URL url = new URL(
