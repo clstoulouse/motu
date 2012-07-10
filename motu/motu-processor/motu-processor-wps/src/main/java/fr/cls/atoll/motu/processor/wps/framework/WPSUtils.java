@@ -207,7 +207,9 @@ public class WPSUtils {
         PostMethod post = new PostMethod(url);
         post.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
 
-        post.setRequestEntity(new InputStreamRequestEntity(postBody));
+        InputStreamRequestEntity inputStreamRequestEntity = new InputStreamRequestEntity(postBody);
+        long contentLength = inputStreamRequestEntity.getContentLength();
+        post.setRequestEntity(inputStreamRequestEntity);
         for (String key : headers.keySet()) {
             post.setRequestHeader(key, headers.get(key));
         }
