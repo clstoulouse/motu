@@ -32,6 +32,8 @@ import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -55,6 +57,8 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.params.HttpParams;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.TeeInputStream;
 import org.deegree.commons.utils.HttpUtils;
 import org.deegree.commons.utils.HttpUtils.Worker;
 import org.deegree.services.wps.input.LiteralInput;
@@ -197,6 +201,16 @@ public class WPSUtils {
             LOG.debug("post(Worker<T>, String, InputStream, Map<String,String>) - start");
         }
 
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try {
+            IOUtils.copy(postBody, out);
+        } finally {
+            IOUtils.closeQuietly(out);
+        }
+
+        InputStream postBodyCloned = new ByteArrayInputStream(out.toString().getBytes());
+
         MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
         HttpClientCAS client = new HttpClientCAS(connectionManager);
         
@@ -208,7 +222,6 @@ public class WPSUtils {
         post.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
 
         InputStreamRequestEntity inputStreamRequestEntity = new InputStreamRequestEntity(postBody);
-        long contentLength = inputStreamRequestEntity.getContentLength();
         post.setRequestEntity(inputStreamRequestEntity);
         for (String key : headers.keySet()) {
             post.setRequestHeader(key, headers.get(key));
@@ -240,7 +253,7 @@ public class WPSUtils {
 		                LOG.debug("post(Worker<T>, String, InputStream, Map<String,String>) - end - " + msg);
 		            }
 		            post = new PostMethod(url);
-		            post.setRequestEntity(new InputStreamRequestEntity(postBody));
+		            post.setRequestEntity(new InputStreamRequestEntity(postBodyCloned)); // Recrire un nouveau InputStream
 		            for (String key : headers.keySet()) {
 		                post.setRequestHeader(key, headers.get(key));
 		            }
