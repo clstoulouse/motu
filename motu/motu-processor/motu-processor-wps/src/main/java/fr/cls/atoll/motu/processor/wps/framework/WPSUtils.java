@@ -24,20 +24,12 @@
  */
 package fr.cls.atoll.motu.processor.wps.framework;
 
-import org.apache.log4j.Logger;
-
-import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.library.cas.HttpClientCAS;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,7 +39,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
@@ -55,13 +46,16 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.httpclient.params.HttpParams;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.TeeInputStream;
+import org.apache.log4j.Logger;
 import org.deegree.commons.utils.HttpUtils;
 import org.deegree.commons.utils.HttpUtils.Worker;
 import org.deegree.services.wps.input.LiteralInput;
+
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.library.cas.HttpClientCAS;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 
 /**
  * <br>
@@ -234,7 +228,6 @@ public class WPSUtils {
         // DONT USE post.setFollowRedirects(true); see http://hc.apache.org/httpclient-3.x/redirects.html
    
         int httpReturnCode = client.executeMethod(post);
-        System.out.println(httpReturnCode);
         if (LOG.isDebugEnabled()) {
             String msg = String.format("Executing the query:\n==> http code: '%d':\n==> url: '%s'\n==> body:\n'%s'", httpReturnCode, url, query);
             LOG.debug("post(Worker<T>, String, InputStream, Map<String,String>) - end - " + msg);
@@ -258,10 +251,10 @@ public class WPSUtils {
 		                post.setRequestHeader(key, headers.get(key));
 		            }
 	
-		            query = post.getQueryString();
-		            
-		            httpReturnCode = client.executeMethod(post, false);
-		            
+		            clientParams.setBooleanParameter(HttpClientCAS.ADD_CAS_TICKET_PARAM, false);
+		            httpReturnCode = client.executeMethod(post);
+		            clientParams.setBooleanParameter(HttpClientCAS.ADD_CAS_TICKET_PARAM, true);
+		            		            
 		            if (LOG.isDebugEnabled()) {
 		                String msg = String.format("Executing the query:\n==> http code: '%d':\n==> url: '%s'\n==> body:\n'%s'", httpReturnCode, url, query);
 		                LOG.debug("post(Worker<T>, String, InputStream, Map<String,String>) - end - " + msg);

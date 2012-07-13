@@ -55,288 +55,331 @@ import fr.cls.atoll.motu.library.cas.util.SimpleAuthenticator;
  */
 public class HttpClientCAS extends HttpClient {
 
-    static {
-        // MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-        // HttpClientCAS httpClient = new HttpClientCAS(connectionManager);
-        //
-        // HttpClientParams clientParams = new HttpClientParams();
-        // clientParams.setParameter("http.protocol.allow-circular-redirects", true);
-        // httpClient.setParams(clientParams);
-        //
-        // DConnect2.setHttpClient(httpClient);
-        //
-        // connectionManager = new MultiThreadedHttpConnectionManager();
-        // httpClient = new HttpClientCAS(connectionManager);
-        //
-        // clientParams = new HttpClientParams();
-        // clientParams.setParameter("http.protocol.allow-circular-redirects", true);
-        // httpClient.setParams(clientParams);
-        //
-        // HTTPRandomAccessFile.setHttpClient(httpClient);
-        //
-        // DODSNetcdfFile.debugServerCall = true;
-    }
+	static {
+		// MultiThreadedHttpConnectionManager connectionManager = new
+		// MultiThreadedHttpConnectionManager();
+		// HttpClientCAS httpClient = new HttpClientCAS(connectionManager);
+		//
+		// HttpClientParams clientParams = new HttpClientParams();
+		// clientParams.setParameter("http.protocol.allow-circular-redirects",
+		// true);
+		// httpClient.setParams(clientParams);
+		//
+		// DConnect2.setHttpClient(httpClient);
+		//
+		// connectionManager = new MultiThreadedHttpConnectionManager();
+		// httpClient = new HttpClientCAS(connectionManager);
+		//
+		// clientParams = new HttpClientParams();
+		// clientParams.setParameter("http.protocol.allow-circular-redirects",
+		// true);
+		// httpClient.setParams(clientParams);
+		//
+		// HTTPRandomAccessFile.setHttpClient(httpClient);
+		//
+		// DODSNetcdfFile.debugServerCall = true;
+	}
 
-    // /** Does Service needs CAS authentication to access catalog resources and data. */
-    // protected final ThreadLocal<Boolean> isCas = new ThreadLocal<Boolean>();
-    //
-    // public ThreadLocal<Boolean> getIsCas() {
-    // return isCas;
-    // }
-    
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOG = Logger.getLogger(HttpClientCAS.class);
+	// /** Does Service needs CAS authentication to access catalog resources and
+	// data. */
+	// protected final ThreadLocal<Boolean> isCas = new ThreadLocal<Boolean>();
+	//
+	// public ThreadLocal<Boolean> getIsCas() {
+	// return isCas;
+	// }
 
-    // protected Assertion assertion;
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOG = Logger.getLogger(HttpClientCAS.class);
 
-    public HttpClientCAS() {
-        init();
-    }
+	public static final String ADD_CAS_TICKET_PARAM = "ADD_CAS_TICKET";
+	
+	// protected Assertion assertion;
 
-    public HttpClientCAS(HttpClientParams params, HttpConnectionManager httpConnectionManager) {
-        super(params, httpConnectionManager);
-        init();
-        
-    }
+	public HttpClientCAS() {
+		init();
+	}
 
-    public HttpClientCAS(HttpClientParams params) {
-        super(params);
-        init();
-    }
+	public HttpClientCAS(HttpClientParams params,
+			HttpConnectionManager httpConnectionManager) {
+		super(params, httpConnectionManager);
+		init();
 
-    public HttpClientCAS(HttpConnectionManager httpConnectionManager) {
-        super(httpConnectionManager);
-        init();
-    }
-    
-    private void init() {
-    	CookieStoreHolder.initCookieManager();
-        setProxy();    	
-    }
-    
-    /**
-     * Sets the proxy.
-     *
-     * @param httpClient the new proxy
-     */
-    public void setProxy() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("setProxy() - start");
-        }
+	}
 
-        String proxyHost = System.getProperty("proxyHost");
-        String proxyPort = System.getProperty("proxyPort");
+	public HttpClientCAS(HttpClientParams params) {
+		super(params);
+		init();
+	}
 
-        if ((!RestUtil.isNullOrEmpty(proxyHost)) && (!RestUtil.isNullOrEmpty(proxyPort))) {
-            this.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
-            this.setProxyUser();
+	public HttpClientCAS(HttpConnectionManager httpConnectionManager) {
+		super(httpConnectionManager);
+		init();
+	}
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("setProxy() - proxy parameters are set: proxyHost=" + proxyHost + " - proxyPort=" + proxyPort);
-                LOG.debug("setProxy() - end");
-            }
-            return;
-        }
-        
-        proxyHost = System.getProperty("http.proxyHost");
-        proxyPort = System.getProperty("http.proxyPort");
+	private void init() {
+		CookieStoreHolder.initCookieManager();
+		setProxy();
+	}
 
-        if ((!RestUtil.isNullOrEmpty(proxyHost)) && (!RestUtil.isNullOrEmpty(proxyPort))) {
-            this.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
-            this.setProxyUser();            
-            LOG.debug("setProxy() - proxy parameters are set: proxyHost=" + proxyHost + " - proxyPort=" + proxyPort);
-        }
+	/**
+	 * Sets the proxy.
+	 * 
+	 * @param httpClient
+	 *            the new proxy
+	 */
+	public void setProxy() {
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("setProxy() - start");
+		}
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("setProxy() - end");
-        }
-    }
-    
-    /**
-     * Sets the proxy user.
-     */
-    public void setProxyUser() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("setProxyUser() - start");
-        }
+		String proxyHost = System.getProperty("proxyHost");
+		String proxyPort = System.getProperty("proxyPort");
 
-        String proxyLogin = System.getProperty("proxyLogin");
-        String proxyPassword = System.getProperty("proxyPassword");
-        
-        if ((!RestUtil.isNullOrEmpty(proxyLogin)) && (!RestUtil.isNullOrEmpty(proxyPassword))) {
-            Authenticator.setDefault(new SimpleAuthenticator(proxyLogin, proxyPassword));
+		if ((!RestUtil.isNullOrEmpty(proxyHost))
+				&& (!RestUtil.isNullOrEmpty(proxyPort))) {
+			this.getHostConfiguration().setProxy(proxyHost,
+					Integer.parseInt(proxyPort));
+			this.setProxyUser();
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("setProxy() - proxy parameters are set: proxyLogin=" + proxyLogin + " - proxyPassword=" + proxyPassword);
-                LOG.debug("setProxyUser() - end");
-            }
-            return;
-        }
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("setProxy() - proxy parameters are set: proxyHost="
+						+ proxyHost + " - proxyPort=" + proxyPort);
+				LOG.debug("setProxy() - end");
+			}
+			return;
+		}
 
-        proxyLogin = System.getProperty("http.proxyLogin");
-        proxyPassword = System.getProperty("http.proxyPassword");
-        
-        if ((!RestUtil.isNullOrEmpty(proxyLogin)) && (!RestUtil.isNullOrEmpty(proxyPassword))) {
-            Authenticator.setDefault(new SimpleAuthenticator(proxyLogin, proxyPassword));
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("setProxy() - proxy parameters are set: proxyLogin=" + proxyLogin + " - proxyPassword=" + proxyPassword);
-                LOG.debug("setProxyUser() - end");
-            }
-        }
-        
+		proxyHost = System.getProperty("http.proxyHost");
+		proxyPort = System.getProperty("http.proxyPort");
 
+		if ((!RestUtil.isNullOrEmpty(proxyHost))
+				&& (!RestUtil.isNullOrEmpty(proxyPort))) {
+			this.getHostConfiguration().setProxy(proxyHost,
+					Integer.parseInt(proxyPort));
+			this.setProxyUser();
+			LOG.debug("setProxy() - proxy parameters are set: proxyHost="
+					+ proxyHost + " - proxyPort=" + proxyPort);
+		}
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("setProxyUser() - end");
-        }
-    }
-    @Override
-    public int executeMethod(HostConfiguration hostconfig, HttpMethod method, HttpState state) throws IOException, HttpException {
-    	return executeMethod(hostconfig, method, state, true);	
-    }
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("setProxy() - end");
+		}
+	}
 
-    public int executeMethod(HostConfiguration hostconfig, HttpMethod method, HttpState state, boolean addCasTicket) throws IOException, HttpException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("executeMethod(HostConfiguration, HttpMethod, HttpState) - entering");
-        }
+	/**
+	 * Sets the proxy user.
+	 */
+	public void setProxyUser() {
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("setProxyUser() - start");
+		}
 
-        try {
-        	if (addCasTicket) {
-        		addCASTicket(method);
-        	}
-        } catch (MotuCasException e) {
-            throw new HttpException(e.notifyException(), e);
-        }
+		String proxyLogin = System.getProperty("proxyLogin");
+		String proxyPassword = System.getProperty("proxyPassword");
 
-        int returnint = super.executeMethod(hostconfig, method, state);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("executeMethod(HostConfiguration, HttpMethod, HttpState) - exiting");
-        }
-        return returnint;
-    }
+		if ((!RestUtil.isNullOrEmpty(proxyLogin))
+				&& (!RestUtil.isNullOrEmpty(proxyPassword))) {
+			Authenticator.setDefault(new SimpleAuthenticator(proxyLogin,
+					proxyPassword));
 
-    @Override
-    public int executeMethod(HostConfiguration hostConfiguration, HttpMethod method) throws IOException, HttpException {
-    	return executeMethod(hostConfiguration, method, true);
-    }
-    
-    public int executeMethod(HostConfiguration hostConfiguration, HttpMethod method, boolean addCasTicket) throws IOException, HttpException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("executeMethod(HostConfiguration, HttpMethod, boolean) - entering");
-        }
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("setProxy() - proxy parameters are set: proxyLogin="
+						+ proxyLogin + " - proxyPassword=" + proxyPassword);
+				LOG.debug("setProxyUser() - end");
+			}
+			return;
+		}
 
-        try {
-        	if (addCasTicket) {
-        		addCASTicket(method);
-        	}
-        } catch (MotuCasException e) {
-            throw new HttpException(e.notifyException(), e);
-        }
+		proxyLogin = System.getProperty("http.proxyLogin");
+		proxyPassword = System.getProperty("http.proxyPassword");
 
-        int returnint = super.executeMethod(hostConfiguration, method);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("executeMethod(HostConfiguration, HttpMethod, boolean) - exiting");
-        }
-        return returnint;
-    }
-    public int executeMethod(HttpMethod method) throws IOException, HttpException {
-    	return executeMethod(method, true);
-    }
+		if ((!RestUtil.isNullOrEmpty(proxyLogin))
+				&& (!RestUtil.isNullOrEmpty(proxyPassword))) {
+			Authenticator.setDefault(new SimpleAuthenticator(proxyLogin,
+					proxyPassword));
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("setProxy() - proxy parameters are set: proxyLogin="
+						+ proxyLogin + " - proxyPassword=" + proxyPassword);
+				LOG.debug("setProxyUser() - end");
+			}
+		}
 
-    public int executeMethod(HttpMethod method, boolean addCasTicket) throws IOException, HttpException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("executeMethod(HttpMethod) - entering");
-        }
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("setProxyUser() - end");
+		}
+	}
 
-        try {
-        	if (addCasTicket) {
-        		addCASTicket(method);
-        	}
-        } catch (MotuCasException e) {
-            throw new HttpException(e.notifyException(), e);
-        }        
+	@Override
+	public int executeMethod(HostConfiguration hostconfig, HttpMethod method,
+			HttpState state) throws IOException, HttpException {
+		return executeMethod(hostconfig, method, state, true);
+	}
 
-        //int returnint = super.executeMethod(method);
-        int returnint = super.executeMethod(null, method, null);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("executeMethod(HttpMethod) - exiting");
-        }
-        return returnint;
-    }
+	public int executeMethod(HostConfiguration hostconfig, HttpMethod method,
+			HttpState state, boolean addCasTicket) throws IOException,
+			HttpException {
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("executeMethod(HostConfiguration, HttpMethod, HttpState) - entering");
+		}
 
-    /**
-     * Adds the cas ticket.
-     *
-     * @param method the method
-     * @throws IOException Signals that an I/O exception has occurred.
-     * @throws MotuCasException 
-     */
-    public static void addCASTicket(HttpMethod method) throws IOException, MotuCasException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("addCASTicket(HttpMethod) - entering : debugHttpMethod BEFORE  " + HttpClientCAS.debugHttpMethod(method));
-        }
+		try {
+			if (this.isAddCasTicketParams()) {
+				HttpClientCAS.addCASTicket(method);
+			}
+		} catch (MotuCasException e) {
+			throw new HttpException(e.notifyException(), e);
+		}
 
-        if (!AuthenticationHolder.isCASAuthentication()) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("addCASTicket(HttpMethod) - exiting - NO CAS AUTHENTICATION : debugHttpMethod AFTER  "
-                        + HttpClientCAS.debugHttpMethod(method));
-            }
-            return;
-        }
+		int returnint = super.executeMethod(hostconfig, method, state);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("executeMethod(HostConfiguration, HttpMethod, HttpState) - exiting");
+		}
+		return returnint;
+	}
 
-        String newURIAsString = AssertionUtils.addCASTicket(method.getURI().getEscapedURI());
-        if (!AssertionUtils.hasCASTicket(newURIAsString)) {
-            newURIAsString = AssertionUtils.addCASTicket(method.getURI().getEscapedURI(), AuthenticationHolder.getUser());
+	@Override
+	public int executeMethod(HostConfiguration hostConfiguration,
+			HttpMethod method) throws IOException, HttpException {
+		return executeMethod(hostConfiguration, method, true);
+	}
 
-            if (!AssertionUtils.hasCASTicket(newURIAsString)) {
+	public int executeMethod(HostConfiguration hostConfiguration,
+			HttpMethod method, boolean addCasTicket) throws IOException,
+			HttpException {
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("executeMethod(HostConfiguration, HttpMethod, boolean) - entering");
+		}
 
-                String login = AuthenticationHolder.getUserLogin();
-                throw new MotuCasException(
-                        String
-                                .format("Unable to access resource '%s'. This resource has been declared as CASified, but the Motu application/API can't retrieve any ticket from CAS via REST. \nFor information, current user login is:'%s'",
-                                        method.getURI().getEscapedURI(),
-                                        login));
+		try {
+			if (this.isAddCasTicketParams()) {
+				HttpClientCAS.addCASTicket(method);
+			}
+		} catch (MotuCasException e) {
+			throw new HttpException(e.notifyException(), e);
+		}
 
-            }
-        }
+		int returnint = super.executeMethod(hostConfiguration, method);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("executeMethod(HostConfiguration, HttpMethod, boolean) - exiting");
+		}
+		return returnint;
+	}
 
-        URI newURI = new URI(newURIAsString, true);
+	public int executeMethod(HttpMethod method) throws IOException,
+			HttpException {
+		return executeMethod(method, true);
+	}
 
-        //method.setURI(newURI);
-        method.setPath(newURI.getPathQuery());
-        //System.out.println(newURI.getPathQuery());
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("addCASTicket(HttpMethod) - exiting : debugHttpMethod AFTER  " + HttpClientCAS.debugHttpMethod(method));
-        }
+	public int executeMethod(HttpMethod method, boolean addCasTicket)
+			throws IOException, HttpException {
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("executeMethod(HttpMethod) - entering");
+		}
+		try {
+			if (this.isAddCasTicketParams()) {
+				HttpClientCAS.addCASTicket(method);
+			}
+		} catch (MotuCasException e) {
+			throw new HttpException(e.notifyException(), e);
+		}
 
-    }
+		// int returnint = super.executeMethod(method);
+		int returnint = super.executeMethod(null, method, null);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("executeMethod(HttpMethod) - exiting");
+		}
+		return returnint;
+	}
 
-    public static String debugHttpMethod(HttpMethod method) {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("\nName:");
-        stringBuffer.append(method.getName());
-        stringBuffer.append("\n");
-        stringBuffer.append("\nPath:");
-        stringBuffer.append(method.getPath());
-        stringBuffer.append("\n");
-        stringBuffer.append("\nQueryString:");
-        stringBuffer.append(method.getQueryString());
-        stringBuffer.append("\n");
-        stringBuffer.append("\nUri:");
-        try {
-            stringBuffer.append(method.getURI().toString());
-        } catch (URIException e) {
-            // Do nothing
-        }
-        stringBuffer.append("\n");
-        HttpMethodParams httpMethodParams = method.getParams();
-        stringBuffer.append("\nHttpMethodParams:");
-        stringBuffer.append(httpMethodParams.toString());
+	public boolean isAddCasTicketParams() {
+		
+		HttpClientParams clientParams = this.getParams();
+		if (clientParams == null) {
+			return true;
+		}
+		
+		return clientParams.getBooleanParameter(HttpClientCAS.ADD_CAS_TICKET_PARAM, true); 
+	}
 
-        return stringBuffer.toString();
+	/**
+	 * Adds the cas ticket.
+	 * 
+	 * @param method
+	 *            the method
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 * @throws MotuCasException
+	 */
+	public static void addCASTicket(HttpMethod method) throws IOException,
+			MotuCasException {
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("addCASTicket(HttpMethod) - entering : debugHttpMethod BEFORE  "
+					+ HttpClientCAS.debugHttpMethod(method));
+		}
 
-    }
+		if (!AuthenticationHolder.isCASAuthentication()) {
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("addCASTicket(HttpMethod) - exiting - NO CAS AUTHENTICATION : debugHttpMethod AFTER  "
+						+ HttpClientCAS.debugHttpMethod(method));
+			}
+			return;
+		}
+
+		String newURIAsString = AssertionUtils.addCASTicket(method.getURI()
+				.getEscapedURI());
+		if (!AssertionUtils.hasCASTicket(newURIAsString)) {
+			newURIAsString = AssertionUtils.addCASTicket(method.getURI()
+					.getEscapedURI(), AuthenticationHolder.getUser());
+
+			if (!AssertionUtils.hasCASTicket(newURIAsString)) {
+
+				String login = AuthenticationHolder.getUserLogin();
+				throw new MotuCasException(
+						String.format(
+								"Unable to access resource '%s'. This resource has been declared as CASified, but the Motu application/API can't retrieve any ticket from CAS via REST. \nFor information, current user login is:'%s'",
+								method.getURI().getEscapedURI(), login));
+
+			}
+		}
+
+		URI newURI = new URI(newURIAsString, true);
+
+		// method.setURI(newURI);
+		method.setPath(newURI.getPathQuery());
+		// System.out.println(newURI.getPathQuery());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("addCASTicket(HttpMethod) - exiting : debugHttpMethod AFTER  "
+					+ HttpClientCAS.debugHttpMethod(method));
+		}
+
+	}
+
+	public static String debugHttpMethod(HttpMethod method) {
+		StringBuffer stringBuffer = new StringBuffer();
+		stringBuffer.append("\nName:");
+		stringBuffer.append(method.getName());
+		stringBuffer.append("\n");
+		stringBuffer.append("\nPath:");
+		stringBuffer.append(method.getPath());
+		stringBuffer.append("\n");
+		stringBuffer.append("\nQueryString:");
+		stringBuffer.append(method.getQueryString());
+		stringBuffer.append("\n");
+		stringBuffer.append("\nUri:");
+		try {
+			stringBuffer.append(method.getURI().toString());
+		} catch (URIException e) {
+			// Do nothing
+		}
+		stringBuffer.append("\n");
+		HttpMethodParams httpMethodParams = method.getParams();
+		stringBuffer.append("\nHttpMethodParams:");
+		stringBuffer.append(httpMethodParams.toString());
+
+		return stringBuffer.toString();
+
+	}
 
 }
