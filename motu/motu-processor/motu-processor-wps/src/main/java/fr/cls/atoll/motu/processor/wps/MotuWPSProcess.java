@@ -27,6 +27,7 @@ package fr.cls.atoll.motu.processor.wps;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
+import fr.cls.atoll.motu.library.cas.HttpClientCAS;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidRequestIdException;
@@ -44,7 +45,9 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.httpclient.HttpClient;
 import org.apache.log4j.Logger;
+import org.deegree.commons.utils.HttpUtils;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
@@ -283,6 +286,7 @@ public abstract class MotuWPSProcess implements Processlet {
         motuWPSProcessData.setRequestId(getRequestManagement().generateRequestId());
 
         getWPSRequestManagement().putIfAbsentMotuWPSProcessData(in, motuWPSProcessData);
+        
 
     }
 

@@ -24,21 +24,6 @@
  */
 package fr.cls.atoll.motu.web.services;
 
-import fr.cls.atoll.motu.library.cas.HttpClientCAS;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
-import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
-import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
-import fr.cls.atoll.motu.library.misc.utils.ConfigLoader;
-import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
-import fr.cls.atoll.motu.processor.wps.WPSRequestManagement;
-import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
-import fr.cls.atoll.motu.web.servlet.MotuServlet;
-import fr.cls.atoll.motu.web.servlet.ServletConfigAdapter;
-import fr.cls.atoll.motu.web.servlet.ServletContextAdapter;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -51,16 +36,31 @@ import javax.naming.directory.DirContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.core.ApplicationContext;
 import org.apache.catalina.core.ApplicationContextFacade;
+import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.log4j.Logger;
 import org.deegree.commons.utils.HttpUtils;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.ProcessletException;
+
+import fr.cls.atoll.motu.library.cas.HttpClientCAS;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
+import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
+import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
+import fr.cls.atoll.motu.library.misc.utils.ConfigLoader;
+import fr.cls.atoll.motu.processor.wps.WPSRequestManagement;
+import fr.cls.atoll.motu.processor.wps.framework.WPSUtils;
+import fr.cls.atoll.motu.web.servlet.ServletConfigAdapter;
+import fr.cls.atoll.motu.web.servlet.ServletContextAdapter;
 
 /**
  * 
@@ -188,7 +188,8 @@ public class MotuOGCFrontController extends OGCFrontController {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        super.doPost(request, response);
+                        
+    	super.doPost(request, response);
         try {
             Organizer.removeVFSSystemManager();
         } catch (MotuException e) {

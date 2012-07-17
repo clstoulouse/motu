@@ -857,7 +857,65 @@ public class AssertionUtils {
         return ticket;
 
     }
+    
+    /**
+     * Adds the cas ticket from tgt.
+     *
+     * @param ticketGrantingTicket the ticket granting ticket
+     * @param targetService the target service
+     * @param casRestUrl the cas rest url
+     * @return the string
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MotuCasBadRequestException the motu cas bad request exception
+     */
+    public static String addCASTicketFromTGT(String ticketGrantingTicket, String targetService, String casRestUrl)
+            throws IOException, MotuCasBadRequestException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("addCASTicketFromTGT(String, String, String) - entering");
+        }
 
+        if (AssertionUtils.isNullOrEmpty(ticketGrantingTicket)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("addCASTicketFromTGT(String, String, String) - exiting");
+            }
+            return targetService;
+        }
+        if (AssertionUtils.isNullOrEmpty(targetService)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("addCASTicketFromTGT(String, String, String) - exiting");
+            }
+            return targetService;
+        }
+        if (AssertionUtils.isNullOrEmpty(casRestUrl)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("addCASTicketFromTGT(String, String, String) - exiting");
+            }
+            return targetService;
+        }
+        if (AssertionUtils.hasCASTicket(targetService)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("addCASTicketFromTGT(String, String, String) - exiting - URL has already a cas ticket");
+            }
+            return targetService;
+        }
+        
+        String ticket = RestUtil.loginToCASWithTGT(casRestUrl, ticketGrantingTicket, targetService);
+
+        if (AssertionUtils.isNullOrEmpty(ticket)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("addCASTicketFromTGT(String, String, String) - exiting");
+            }
+            return targetService;
+        }
+
+        String returnString = AssertionUtils.addCASTicket(ticket, targetService);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("addCASTicketFromTGT(String, String, String) - exiting");
+        }
+        return returnString;
+
+    }
+    
     /**
      * Adds the cas ticket.
      * 

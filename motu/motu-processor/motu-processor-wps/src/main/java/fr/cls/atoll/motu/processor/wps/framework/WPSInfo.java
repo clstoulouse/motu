@@ -25,6 +25,9 @@
 package fr.cls.atoll.motu.processor.wps.framework;
 
 import fr.cls.atoll.motu.library.cas.UserBase;
+import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
+import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
+import fr.cls.atoll.motu.library.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.processor.opengis.ows110.CodeType;
@@ -36,6 +39,7 @@ import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType.DataInputs;
 import fr.cls.atoll.motu.processor.wps.MotuWPSProcess;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -66,9 +70,38 @@ public class WPSInfo {
         this.serverUrl = url;
     }
     
-    UserBase user = null;
+    protected UserBase user = null;
 
-    protected String serverUrl = null;
+    public UserBase getUser() {
+		return user;
+	}
+
+	public void setUser(UserBase user) {
+		this.user = user;
+	}
+
+	protected String ticketGantingTicket = null;
+	
+	public String getTicketGantingTicket() {
+		return ticketGantingTicket;
+	}
+
+	public void setTicketGantingTicket(String ticketGantingTicket) {
+		this.ticketGantingTicket = ticketGantingTicket;
+	}
+
+
+	protected String casRestUrl = null;
+
+	public String getCasRestUrl() {
+		return casRestUrl;
+	}
+
+	public void setCasRestUrl(String casRestUrl) {
+		this.casRestUrl = casRestUrl;
+	}
+	
+	protected String serverUrl = null;
     protected ProcessDescriptions processDescriptions = null;
 
     /*
@@ -310,6 +343,39 @@ public class WPSInfo {
         String schemaLocationKey = getSchemaLocationKey();
         return WPSFactory.getSchemaLocations().get(schemaLocationKey);
     }
+
+    public void setCasRestInfo() throws MotuException {
+    	if (user == null) {
+    		user = AuthenticationHolder.getUser();
+    	}
+    	if (user == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("setCasRestInfo() - exiting - user is null - can't ask TGT");
+            }
+    		return;
+    	}
+
+    	if (serverUrl == null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("setCasRestInfo() - exiting - server url is null - can't get CAS server url");
+            }
+    		return;
+    	}
+    	
+	    try {
+			casRestUrl = RestUtil.getCasRestletUrl(serverUrl, RestUtil.CAS_REST_URL_SUFFIX);
+		} catch (IOException e) {
+			throw new MotuException("setCasRestInfo : Enable to get CAS REST url", e);
+		} catch (MotuCasBadRequestException e) {
+			throw new MotuException("setCasRestInfo : Enable to get CAS REST url", e);
+		}
+	    try {
+			ticketGantingTicket = RestUtil.getTicketGrantingTicket(casRestUrl, user.getLogin(), user.getPwd());
+		} catch (IOException e) {
+			throw new MotuException("setCasRestInfo : Enable to set TGT", e);
+		}
+	}
+
     /*
      * public String getXmlSchemaNamespace(Class<?> clazz) {
      * 

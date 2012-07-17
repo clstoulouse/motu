@@ -27,6 +27,7 @@ package fr.cls.atoll.motu.library.cas;
 import java.io.IOException;
 import java.net.Authenticator;
 
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpConnectionManager;
@@ -94,7 +95,9 @@ public class HttpClientCAS extends HttpClient {
 	private static final Logger LOG = Logger.getLogger(HttpClientCAS.class);
 
 	public static final String ADD_CAS_TICKET_PARAM = "ADD_CAS_TICKET";
-	
+	public static final String TGT_PARAM = "TGT";
+	public static final String CAS_REST_URL_PARAM = "CAS_REST_URL";
+
 	// protected Assertion assertion;
 
 	public HttpClientCAS() {
@@ -294,13 +297,14 @@ public class HttpClientCAS extends HttpClient {
 	}
 
 	public boolean isAddCasTicketParams() {
-		
+
 		HttpClientParams clientParams = this.getParams();
 		if (clientParams == null) {
 			return true;
 		}
-		
-		return clientParams.getBooleanParameter(HttpClientCAS.ADD_CAS_TICKET_PARAM, true); 
+
+		return clientParams.getBooleanParameter(
+				HttpClientCAS.ADD_CAS_TICKET_PARAM, true);
 	}
 
 	/**
@@ -317,6 +321,10 @@ public class HttpClientCAS extends HttpClient {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("addCASTicket(HttpMethod) - entering : debugHttpMethod BEFORE  "
 					+ HttpClientCAS.debugHttpMethod(method));
+		}
+
+		if (HttpClientCAS.addCASTicketFromTGT(method)) {
+			return;
 		}
 
 		if (!AuthenticationHolder.isCASAuthentication()) {
@@ -353,6 +361,64 @@ public class HttpClientCAS extends HttpClient {
 			LOG.debug("addCASTicket(HttpMethod) - exiting : debugHttpMethod AFTER  "
 					+ HttpClientCAS.debugHttpMethod(method));
 		}
+
+	}
+
+	/**
+	 * Adds the cas ticket from tgt.
+	 *
+	 * @param method the method
+	 * @return true, if successful
+	 * @throws MotuCasException the motu cas exception
+	 * @throws URIException the uRI exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static boolean addCASTicketFromTGT(HttpMethod method)
+			throws MotuCasException, URIException, IOException {
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("addCASTicketFromTGT(HttpMethod) - entering : debugHttpMethod BEFORE  "
+					+ HttpClientCAS.debugHttpMethod(method));
+		}
+
+		Header headerTgt = method.getRequestHeader(HttpClientCAS.TGT_PARAM);
+		Header headerCasRestUrl = method.getRequestHeader(HttpClientCAS.CAS_REST_URL_PARAM);
+
+		if ((headerTgt == null) || (headerCasRestUrl == null)) {
+			return false;
+		}
+		String ticketGrantingTicket = headerTgt.getValue();
+		String casRestUrl = headerCasRestUrl.getValue();
+
+		if ((RestUtil.isNullOrEmpty(ticketGrantingTicket))
+				|| (RestUtil.isNullOrEmpty(casRestUrl))) {
+			return false;
+		}
+
+		String ticket = RestUtil.loginToCASWithTGT(casRestUrl,
+				ticketGrantingTicket, method.getURI().getEscapedURI());
+
+		String newURIAsString = AssertionUtils.addCASTicket(ticket, method
+				.getURI().getEscapedURI());
+		
+		if (!AssertionUtils.hasCASTicket(newURIAsString)) {
+			throw new MotuCasException(
+					String.format(
+							"Unable to access resource '%s'. This resource has been declared as CASified, but the Motu application/API can't retrieve any ticket from CAS via REST. \nFor information, current TGT is:'%s', CAS REST url is:'%s'",
+							method.getURI().getEscapedURI(), ticketGrantingTicket, casRestUrl));
+
+		}
+
+		URI newURI = new URI(newURIAsString, true);
+
+		// method.setURI(newURI);
+		method.setPath(newURI.getPathQuery());
+		// System.out.println(newURI.getPathQuery());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("addCASTicketFromTGT(HttpMethod) - exiting : debugHttpMethod AFTER  "
+					+ HttpClientCAS.debugHttpMethod(method));
+		}
+		
+		return true;
 
 	}
 

@@ -413,8 +413,8 @@ public class TestWPS {
 
     	UserBase user = new UserBase();
     	
-    	user.setLogin("adminweb");
-    	user.setPwd("adminweb");
+    	user.setLogin("xxx");
+    	user.setPwd("xxx");
     	user.setAuthenticationMode(AuthenticationMode.CAS);
     	
     	AuthenticationHolder.setUser(user);
@@ -641,7 +641,7 @@ public class TestWPS {
 
             WPSFactory wpsFactory = new WPSFactory();
 
-            Execute execute = WPSFactory.createExecuteProcessRequest(operationMetadata, null);
+            Execute execute = WPSFactory.createExecuteProcessRequest(operationMetadata, null, false);
 
             FileWriter writer = new FileWriter("WPSExecute.xml");
 
@@ -667,7 +667,7 @@ public class TestWPS {
             operationMetadata.setInvocationName("CompressExtraction");
             operationMetadata.setParameterValueMap(dataInputValues);
 
-            execute = wpsFactory.createExecuteProcessRequest(operationMetadata, null);
+            execute = wpsFactory.createExecuteProcessRequest(operationMetadata, null, false);
 
             writer = new FileWriter("WPSExecute2.xml");
 
@@ -899,7 +899,7 @@ public class TestWPS {
             String serverURL = "http://atoll-dev.cls.fr:30080/atoll-motuservlet/services";
             WPSFactory wpsFactory = new WPSFactory();
 
-            Execute execute = wpsFactory.createExecuteProcessRequest(sourceOperations.get(0), directedSubGraph);
+            Execute execute = wpsFactory.createExecuteProcessRequest(sourceOperations.get(0), directedSubGraph, false);
 
             String wpsXml = "WPSExecuteChain.xml";
 
@@ -1107,7 +1107,7 @@ public class TestWPS {
             // -------------------------------------------------------------------------------------
 
             // Builds, executes and gets WPS response
-            MotuExecuteResponse motuExecuteResponse = WPSFactory.executeMotuWPS(directedSubGraph);
+            MotuExecuteResponse motuExecuteResponse = WPSFactory.executeMotuWPS(directedSubGraph, false);
 
             System.out.println("==>WPS process status location:");
             System.out.println(motuExecuteResponse.getStatusLocation());

@@ -71,6 +71,9 @@ import org.opengis.parameter.ParameterValue;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import fr.cls.atoll.motu.library.cas.HttpClientCAS;
+import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
+import fr.cls.atoll.motu.library.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
@@ -439,20 +442,19 @@ public class WPSFactory {
     // }
     /**
      * Creates a new WPS object.
-     * 
+     *
      * @param directedGraph the directed graph
-     * 
+     * @param casRestAuthentication the cas rest authentication
      * @return the execute
-     * 
      * @throws MotuException the motu exception
      */
-    public static Execute createExecuteProcessRequest(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph)
+    public static Execute createExecuteProcessRequest(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph, boolean casRestAuthentication)
             throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("createExecuteProcessRequest(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - entering");
         }
 
-        Execute returnExecute = createExecuteProcessRequest(directedGraph, false, false, false);
+        Execute returnExecute = createExecuteProcessRequest(directedGraph, false, false, false, casRestAuthentication);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("createExecuteProcessRequest(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - exiting");
@@ -462,23 +464,22 @@ public class WPSFactory {
 
     /**
      * Creates a new WPS object.
-     * 
+     *
      * @param operationMetadata the operation metadata
      * @param directedGraph the directed graph
-     * 
+     * @param casRestAuthentication the cas rest authentication
      * @return the execute
-     * 
      * @throws MotuException the motu exception
      */
     public static Execute createExecuteProcessRequest(OperationMetadata operationMetadata,
-                                                      DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph)
+                                                      DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph, boolean casRestAuthentication)
             throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG
                     .debug("createExecuteProcessRequest(OperationMetadata, DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - entering");
         }
 
-        Execute returnExecute = createExecuteProcessRequest(operationMetadata, directedGraph, false, false, false);
+        Execute returnExecute = createExecuteProcessRequest(operationMetadata, directedGraph, false, false, false, casRestAuthentication);
         if (LOG.isDebugEnabled()) {
             LOG.debug("createExecuteProcessRequest(OperationMetadata, DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - exiting");
         }
@@ -487,20 +488,20 @@ public class WPSFactory {
 
     /**
      * Creates a new WPS object.
-     * 
+     *
      * @param directedGraph the directed graph
      * @param storeExecuteResponse the store execute response
      * @param storeStatus the store status
      * @param lineage the lineage
-     * 
+     * @param casRestAuthentication the cas rest authentication
      * @return the execute
-     * 
      * @throws MotuException the motu exception
      */
     public static Execute createExecuteProcessRequest(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph,
                                                       boolean storeExecuteResponse,
                                                       boolean storeStatus,
-                                                      boolean lineage) throws MotuException {
+                                                      boolean lineage,
+                                                      boolean casRestAuthentication) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG
                     .debug("createExecuteProcessRequest(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>, boolean, boolean, boolean) - entering");
@@ -508,7 +509,7 @@ public class WPSFactory {
 
         OperationMetadata operationMetadata = ServiceMetadata.getSourceOperation(directedGraph);
 
-        Execute returnExecute = createExecuteProcessRequest(operationMetadata, directedGraph, storeExecuteResponse, storeStatus, lineage);
+        Execute returnExecute = createExecuteProcessRequest(operationMetadata, directedGraph, storeExecuteResponse, storeStatus, lineage, casRestAuthentication);
         if (LOG.isDebugEnabled()) {
             LOG
                     .debug("createExecuteProcessRequest(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>, boolean, boolean, boolean) - exiting");
@@ -518,24 +519,24 @@ public class WPSFactory {
 
     /**
      * Creates the execute process request.
-     * 
+     *
      * @param operationMetadata the operation metadata
      * @param directedGraph the directed graph
      * @param storeExecuteResponse indicates if the execute response document shall be stored
      * @param storeStatus indicates if the stored execute response document shall be updated to provide
-     *            ongoing reports on the status of execution
+     * ongoing reports on the status of execution
      * @param lineage the lineage indicates if the Execute operation response shall include the DataInputs and
-     *            OutputDefinitions elements
-     * 
+     * OutputDefinitions elements
+     * @param casRestAuthentication the cas rest authentication
      * @return the execute
-     * 
      * @throws MotuException the motu exception
      */
     public static Execute createExecuteProcessRequest(OperationMetadata operationMetadata,
                                                       DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph,
                                                       boolean storeExecuteResponse,
                                                       boolean storeStatus,
-                                                      boolean lineage) throws MotuException {
+                                                      boolean lineage,
+                                                      boolean casRestAuthentication) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG
                     .debug("createExecuteProcessRequest(OperationMetadata, DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - entering");
@@ -547,7 +548,9 @@ public class WPSFactory {
         Map<String, ParameterValue<?>> dataInputValues = operationMetadata.getParameterValueMap();
 
         WPSInfo wpsInfo = operationMetadata.getWpsInfo();
-
+        if (casRestAuthentication) {
+        	wpsInfo.setCasRestInfo();
+        }
         // ProcessDescriptionType processDescriptionType =
         // getWpsInfoInstance().getProcessDescription(operationMetadata.getInvocationName());
         ProcessDescriptionType processDescriptionType = wpsInfo.getProcessDescription(operationMetadata.getInvocationName());
@@ -606,7 +609,7 @@ public class WPSFactory {
                 OperationMetadata operationMetadataTarget = directedGraph.getEdgeTarget(edge);
                 directedGraph.getEdgeTarget(edge);
 
-                Execute executeChain = createExecuteProcessRequest(operationMetadataTarget, directedGraph, false, false, false);
+                Execute executeChain = createExecuteProcessRequest(operationMetadataTarget, directedGraph, false, false, false, casRestAuthentication);
 
                 int indexParamIn = WPSFactory.getEdgeParameterInIndex(edge, identifier);
 
@@ -660,7 +663,7 @@ public class WPSFactory {
 
                 executeChain.setResponseForm(responseFormType);
 
-                InputReferenceType inputReferenceType = createInputReferenceType(executeChain, operationMetadataTarget);
+                InputReferenceType inputReferenceType = createInputReferenceType(executeChain, operationMetadataTarget, wpsInfo);
 
                 inputType = createInputType(inputDescriptionType);
                 inputType.setReference(inputReferenceType);
@@ -1192,13 +1195,35 @@ public class WPSFactory {
      * 
      * @throws MotuException the motu exception
      */
-    public static InputReferenceType createInputReferenceType(Object body, OperationMetadata operationMetadata) throws MotuException {
+    public static InputReferenceType createInputReferenceType(Object body, OperationMetadata operationMetadata, WPSInfo wpsInfo) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("createInputReferenceType(Object, OperationMetadata) - entering");
+        }
+        
+        if (wpsInfo == null) {
+            throw new MotuException("WPSFactory#createInputReferenceType : WPS info is null");
         }
 
         InputReferenceType inputReferenceType = objectFactoryWPS.createInputReferenceType();
         inputReferenceType.setEncoding(WPSFactory.UTF8);
+        inputReferenceType.setMethod(WPSFactory.METHOD_POST);
+        
+        String ticketGrantingTicket = wpsInfo.getTicketGantingTicket();
+        if (!WPSUtils.isNullOrEmpty(ticketGrantingTicket)) {
+        	InputReferenceType.Header header = new InputReferenceType.Header();
+        	header.setKey(HttpClientCAS.TGT_PARAM);
+        	header.setValue(ticketGrantingTicket);
+        	inputReferenceType.getHeader().add(header);
+        }
+
+        String casRestUrl = wpsInfo.getCasRestUrl();
+        if (!WPSUtils.isNullOrEmpty(casRestUrl)) {
+        	InputReferenceType.Header header = new InputReferenceType.Header();
+        	header.setKey(HttpClientCAS.CAS_REST_URL_PARAM);
+        	header.setValue(casRestUrl);
+        	inputReferenceType.getHeader().add(header);
+        }
+
         inputReferenceType.setMethod(WPSFactory.METHOD_POST);
 
         inputReferenceType.setHref(operationMetadata.getConnectPoint(0));
@@ -1332,7 +1357,7 @@ public class WPSFactory {
         try {
             synchronized (WPSFactory.marshallerWPS) {
                 WPSFactory.marshallerWPS.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "");
-                if (!Organizer.isNullOrEmpty(schemaLocation)) {
+                if (!WPSUtils.isNullOrEmpty(schemaLocation)) {
                     WPSFactory.marshallerWPS.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaLocation);
                 }
 
@@ -1419,7 +1444,7 @@ public class WPSFactory {
         try {
             synchronized (WPSFactory.marshallerWPS) {
                 WPSFactory.marshallerWPS.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "");
-                if (!Organizer.isNullOrEmpty(schemaLocation)) {
+                if (!WPSUtils.isNullOrEmpty(schemaLocation)) {
                     WPSFactory.marshallerWPS.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaLocation);
                 }
 
@@ -2811,21 +2836,20 @@ public class WPSFactory {
 
     /**
      * Execute motu wps.
-     * 
+     *
      * @param directedGraph the directed graph
-     * 
+     * @param casRestAuthentication the cas rest authentication
      * @return the motu execute response
-     * 
      * @throws MotuException the motu exception
      * @throws MotuMarshallException the motu marshall exception
      */
-    public static MotuExecuteResponse executeMotuWPS(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph)
+    public static MotuExecuteResponse executeMotuWPS(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph, boolean casRestAuthentication)
             throws MotuException, MotuMarshallException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getExecuteWPSReponse(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - entering");
         }
 
-        InputStream wpsRespStream = WPSFactory.executeWPS(directedGraph, true, false, false);
+        InputStream wpsRespStream = WPSFactory.executeWPS(directedGraph, true, false, false, casRestAuthentication);
         MotuExecuteResponse returnMotuExecuteResponse = WPSFactory.getMotuExecuteResponse(wpsRespStream);
         if (LOG.isDebugEnabled()) {
             LOG.debug("getExecuteWPSReponse(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - exiting");
@@ -2835,21 +2859,20 @@ public class WPSFactory {
 
     /**
      * Execute wps.
-     * 
+     *
      * @param directedGraph the directed graph
-     * 
+     * @param casRestAuthentication the cas rest authentication
      * @return the input stream
-     * 
      * @throws MotuException the motu exception
      * @throws MotuMarshallException the motu marshall exception
      */
-    public static InputStream executeWPS(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph) throws MotuException,
+    public static InputStream executeWPS(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph, boolean casRestAuthentication) throws MotuException,
             MotuMarshallException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("executeWPS(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - entering");
         }
 
-        InputStream returnInputStream = WPSFactory.executeWPS(directedGraph, true, false, false);
+        InputStream returnInputStream = WPSFactory.executeWPS(directedGraph, true, false, false, casRestAuthentication);
         if (LOG.isDebugEnabled()) {
             LOG.debug("executeWPS(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>) - exiting");
         }
@@ -2858,21 +2881,21 @@ public class WPSFactory {
 
     /**
      * Execute wps.
-     * 
+     *
      * @param directedGraph the directed graph
      * @param storeExecuteResponse the store execute response
      * @param storeStatus the store status
      * @param lineage the lineage
-     * 
+     * @param casRestAuthentication the cas rest authentication
      * @return the input stream
-     * 
      * @throws MotuException the motu exception
      * @throws MotuMarshallException the motu marshall exception
      */
     public static InputStream executeWPS(DirectedGraph<OperationMetadata, OperationRelationshipEdge<String>> directedGraph,
                                          boolean storeExecuteResponse,
                                          boolean storeStatus,
-                                         boolean lineage) throws MotuException, MotuMarshallException {
+                                         boolean lineage,
+                                         boolean casRestAuthentication) throws MotuException, MotuMarshallException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("executeWPS(DirectedGraph<OperationMetadata,OperationRelationshipEdge<String>>, boolean, boolean, boolean) - entering");
         }
@@ -2884,7 +2907,7 @@ public class WPSFactory {
             return null;
         }
 
-        Execute execute = WPSFactory.createExecuteProcessRequest(directedGraph, storeExecuteResponse, storeStatus, lineage);
+        Execute execute = WPSFactory.createExecuteProcessRequest(directedGraph, storeExecuteResponse, storeStatus, lineage, casRestAuthentication);
 
         if (execute == null) {
             if (LOG.isDebugEnabled()) {
