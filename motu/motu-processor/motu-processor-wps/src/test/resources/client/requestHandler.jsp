@@ -1,9 +1,10 @@
 <%@ page language="java"
-	import="java.io.OutputStream,java.io.InputStream,java.util.Enumeration,org.apache.commons.httpclient.*,org.apache.commons.httpclient.methods.*"
-	pageEncoding="UTF-8"%>
+    import="java.io.OutputStream,java.io.InputStream,java.util.Enumeration,org.apache.commons.httpclient.*,org.apache.commons.httpclient.params.*,org.apache.commons.httpclient.methods.*, org.apache.commons.lang.*"
+    pageEncoding="UTF-8"%>
 <%@ page import="fr.cls.atoll.motu.library.cas.HttpClientCAS"%>
 <%@ page import="fr.cls.atoll.motu.library.cas.UserBase"%>
 <%@ page import="fr.cls.atoll.motu.library.cas.util.AuthenticationHolder"%>
+<%@ page import="fr.cls.atoll.motu.api.message.AuthenticationMode"%>
 <%@ page import="fr.cls.atoll.motu.api.message.AuthenticationMode"%>
     <%
 
@@ -12,7 +13,7 @@
             // Do *not* add anything (header, whitespace, etc.) in front or after the JSP
             // code in this file -- it will cause Servlet#getOutputStream() to be called more than
             // once and thus the execution will fail!!!
-	
+    
             // force character encoding to UTF-8
             request.setCharacterEncoding( "UTF-8" );
 
@@ -29,22 +30,26 @@
             // GCAction (address of service to contact)
             String action = request.getParameter( "GCAction" );
             HttpClientCAS client = new HttpClientCAS();
+            
+            HttpClientParams clientParams = new HttpClientParams();
+            //clientParams.setParameter("http.protocol.allow-circular-redirects", true);
+            client.setParams(clientParams);
 
             UserBase user = new UserBase();
-	    	
-	    	user.setLogin("adminweb");
-	    	user.setPwd("adminweb");
-	    	user.setAuthenticationMode(AuthenticationMode.CAS);
-	    	
-	    	AuthenticationHolder.setUser(user);            
+            //user.setLogin("adminweb");
+            //user.setPwd("adminweb");
+            user.setAuthenticationMode(AuthenticationMode.CAS);
+            AuthenticationHolder.setUser(user);            
             
             HttpMethodBase http = null;
-
+            StringRequestEntity requestEntityCloned = null;
+            
             if ( isXML ) {
                 http = new PostMethod( action );
                 String xml = request.getParameter( "GCXML" );
                 ( (PostMethod) http ).setRequestEntity( new StringRequestEntity( xml, "text/xml",
                                                                                  "UTF-8" ) );
+                requestEntityCloned = new StringRequestEntity( xml, "text/xml", "UTF-8" );
             } else {
                 StringBuffer sb = new StringBuffer( 200 );
                 Enumeration<?> iterator = request.getParameterNames();
@@ -69,8 +74,32 @@
                 }
             }
 
+ 
+
             try {
-                client.executeMethod( http );
+                int httpReturnCode = client.executeMethod( http );
+                
+                if (httpReturnCode == 302) {
+                    
+                    String redirectLocation = null;
+                    Header locationHeader = http.getResponseHeader("location");
+                    
+                    if (locationHeader != null) {
+                        redirectLocation = locationHeader.getValue();
+                        if (StringUtils.isNotBlank(redirectLocation)) {
+                            http = new PostMethod(action);
+                            ( (PostMethod) http ).setRequestEntity(requestEntityCloned); // Recrire un nouveau InputStream
+            
+                            clientParams.setBooleanParameter(HttpClientCAS.ADD_CAS_TICKET_PARAM, false);
+                            httpReturnCode = client.executeMethod(http);
+                            clientParams.setBooleanParameter(HttpClientCAS.ADD_CAS_TICKET_PARAM, true);
+                                                                            
+                        }
+                        
+                    }
+                }
+                        
+                
                 // HttpStatus check not needed, we want to see exceptionReports, etc
                 //if ( http.getStatusCode() == HttpStatus.SC_OK ) {  
                     if ( http.getResponseHeader( "Content-Type" ) != null ) {
