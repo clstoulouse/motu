@@ -209,7 +209,7 @@ public class WPSUtils {
         HttpClientCAS client = new HttpClientCAS(connectionManager);
         
         HttpClientParams clientParams = new HttpClientParams();
-        //clientParams.setParameter("http.protocol.allow-circular-redirects", true);
+        //clientParams.setParameter("http.protocol.allow-circular-redirects", true); //HttpClientParams.ALLOW_CIRCULAR_REDIRECTS
         client.setParams(clientParams);
         
         PostMethod post = new PostMethod(url);
@@ -234,7 +234,7 @@ public class WPSUtils {
         }
         
         if (httpReturnCode == 302) {
-	        
+	        post.releaseConnection();
         	String redirectLocation = null;
 	        Header locationHeader = post.getResponseHeader("location");
 	        
@@ -364,13 +364,19 @@ public class WPSUtils {
         MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
         HttpClientCAS client = new HttpClientCAS(connectionManager);
 
+        HttpClientParams clientParams = new HttpClientParams();
+        //clientParams.setParameter("http.protocol.allow-circular-redirects", true); //HttpClientParams.ALLOW_CIRCULAR_REDIRECTS
+        clientParams.setParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, true);
+        client.setParams(clientParams);
+
         GetMethod get = new GetMethod( url );
         for ( String key : headers.keySet() ) {
             get.setRequestHeader( key, headers.get( key ));    
         }      
         
         String query = get.getQueryString();
-
+        get.setFollowRedirects(true);
+        
         int httpReturnCode = client.executeMethod( get );
 
         if (LOG.isDebugEnabled()) {

@@ -355,7 +355,8 @@ public class HttpClientCAS extends HttpClient {
 		URI newURI = new URI(newURIAsString, true);
 
 		// method.setURI(newURI);
-		method.setPath(newURI.getPathQuery());
+		method.setPath(newURI.getPath());
+		method.setQueryString(newURI.getQuery());
 		// System.out.println(newURI.getPathQuery());
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("addCASTicket(HttpMethod) - exiting : debugHttpMethod AFTER  "
@@ -411,7 +412,8 @@ public class HttpClientCAS extends HttpClient {
 		URI newURI = new URI(newURIAsString, true);
 
 		// method.setURI(newURI);
-		method.setPath(newURI.getPathQuery());
+		method.setPath(newURI.getPath());
+		method.setQueryString(newURI.getQuery());
 		// System.out.println(newURI.getPathQuery());
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("addCASTicketFromTGT(HttpMethod) - exiting : debugHttpMethod AFTER  "

@@ -36,13 +36,11 @@ import javax.naming.directory.DirContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.core.ApplicationContext;
 import org.apache.catalina.core.ApplicationContextFacade;
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.log4j.Logger;
 import org.deegree.commons.utils.HttpUtils;
@@ -209,6 +207,11 @@ public class MotuOGCFrontController extends OGCFrontController {
         
         try {
             super.service(req, resp);
+        } catch (Throwable e) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("service() - excetion raised", e);
+            }        	
+        	throw new ServletException(e);
         } finally {
             leavingServiceMethod();
         }
