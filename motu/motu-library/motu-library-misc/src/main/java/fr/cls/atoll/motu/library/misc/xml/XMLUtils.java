@@ -31,6 +31,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -42,6 +44,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.jaxb.JAXBWriter;
 import org.w3c.dom.Document;
@@ -401,5 +404,31 @@ public class XMLUtils {
         return byteArrayInputStream;
 
     }
+
+    /**
+     * return true if the String passed in is something like XML
+     *
+     *
+     * @param inString a string that might be XML
+     * @return true of the string is XML, false otherwise
+     */
+    public static boolean isXML(String xml) {
+    	if (StringUtils.isBlank(xml)) {
+    		return false;
+    	}
+
+        boolean isXml = true;
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        final DocumentBuilder builder;
+        try {
+            builder = factory.newDocumentBuilder();
+            builder.parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+        } catch (Exception e) {
+            isXml = false;
+        } 
+        return isXml;            	
+    }
+
 
 }
