@@ -122,11 +122,13 @@
 	</reporting>
 
 	<repositories>
+    <!--
 		<repository>
 			<id>sfnet-motu-repo</id>
 			<name>SourceForge Project Repository</name>
 			<url>http://cls-motu.sourceforge.net/m2repo</url>
 		</repository>
+        -->
 		<repository>
 			<id>cls-to-ext-repo</id>
 			<name>CLS External Repository</name>
