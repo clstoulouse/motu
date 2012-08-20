@@ -418,18 +418,30 @@ public class ExtractionParameters implements Cloneable {
 
     /**
      * Sets the assertion.
-     * 
+     *
      * @param assertion the new assertion
      */
     public void setAssertion(Assertion assertion) {
+    	setAssertion(assertion, true);
+    }
+    
+    /**
+     * Sets the assertion.
+     *
+     * @param assertion the new assertion
+     * @param overrideUserId : if true, override the user by the user in the stored in the assertion.
+     */
+    public void setAssertion(Assertion assertion, boolean overrideUserId) {
         this.assertion = assertion;
-        // If assetion is not null
+        // If assertion is not null
         // --> get he user name from AttributePrincipal and set the user name
         // --> set anonymous user to false
-        String name = AssertionUtils.getAttributePrincipalName(assertion);
-        if (!Organizer.isNullOrEmpty(name)) {
-            setUserId(name);
-            setAnonymousUser(false);
+        if (overrideUserId) {
+	        String name = AssertionUtils.getAttributePrincipalName(assertion);
+	        if (!Organizer.isNullOrEmpty(name)) {
+	            setUserId(name);
+	            setAnonymousUser(false);            
+	        }
         }
     }
 

@@ -108,7 +108,7 @@ public class ProductExtraction extends MotuWPSProcess {
                 extractionParameters.setBatchQueue(isBatch(in));
 
                 // Set assertion to manage CAS.
-                extractionParameters.setAssertion(AssertionHolder.getAssertion());
+                extractionParameters.setAssertion(AssertionHolder.getAssertion(), false);
 
                 productDownload(in, extractionParameters, mode, priority);
             } catch (MotuExceptionBase e) {
