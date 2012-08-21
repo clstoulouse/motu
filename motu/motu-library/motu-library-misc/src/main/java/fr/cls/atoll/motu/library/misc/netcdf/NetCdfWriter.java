@@ -3088,7 +3088,7 @@ public class NetCdfWriter {
             vs = new VariableDS(null, var, true);
         }
 
-        if (!vs.hasMissing()) {
+        if (!vs.hasMissingValue()) {
             return MAMath.getMinMax(a);
         }
 
