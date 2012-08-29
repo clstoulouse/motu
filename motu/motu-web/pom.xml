@@ -133,12 +133,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
+                <version>2.2</version>                
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <archive>
                         <manifestEntries>
                             <!--  We keep track of the built version in the manifest. This allows to get it from the code (Product Versioning Specification) -->
-                            <Implementation-Version>${version}</Implementation-Version>
+                            <Implementation-Version>${project.version}</Implementation-Version>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -146,6 +147,7 @@
             <plugin>
                 <groupId>org.codehaus.cargo</groupId>
                 <artifactId>cargo-maven2-plugin</artifactId>
+                <version>1.2.3</version>                
                 <configuration>
                     <container>
                         <containerId>tomcat5x</containerId>
