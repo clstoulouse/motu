@@ -301,89 +301,6 @@
 			-->
 		</plugins>
 	</reporting>
-
-	<repositories>
-		<repository>
-			<id>sfnet-motu-repo</id>
-			<name>SourceForge Project Repository</name>
-			<url>http://cls-motu.sourceforge.net/m2repo</url>
-		</repository>
-		<repository>
-			<id>cls-to-ext-repo</id>
-			<name>CLS External Repository</name>
-			<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/</url>
-		</repository>
-		<repository>
-			<id>central</id>
-			<name>Maven Central Repository</name>
-			<url>http://repo2.maven.org/maven2</url>
-		</repository>
-		<repository>
-			<id>alfresco</id>
-			<name>Alfresco Repository</name>
-			<url>http://maven.alfresco.com/nexus/content/repositories/public</url>
-		</repository>
-        
-        
-<!-- https://maven.nuxeo.org/nexus/content/repositories/public/ -->
-        
-		<repository>
-			<id>maven2-repository.dev.java.net</id>
-			<name>Java.net Repository for Maven</name>
-			<url>http://download.java.net/maven/2/</url>
-		</repository>
-		<repository>
-			<id>geomatys</id>
-			<name>Constellation artifacts from Geomatys</name>
-			<url>http://maven.geomatys.com/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-        <repository>
-            <id>geotoolkit</id>
-            <name>Geotoolkit artifacts</name>
-            <url>http://maven.geotoolkit.org</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-		<repository>
-			<id>jboss</id>
-			<name>JBoss Repository</name>
-			<url>http://repository.jboss.org</url>
-		</repository>
-		<repository>
-            <id>labs-consol-snapshot</id>
-            <name>ConSol* Labs Repository (Snapshots)</name>
-            <url>http://labs.consol.de/maven/snapshots-repository</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-        <repository>
-            <id>labs-consol-release</id>
-            <name>ConSol* Labs Repository (Releases)</name>
-            <url>http://labs.consol.de/maven/repository</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-		</repository>
-	</repositories>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>Codehaus repository</id>
-			<url>https://nexus.codehaus.org/content/repositories/releases</url>
-			<!-- <url>http://repository.codehaus.org/</url>-->
-		</pluginRepository>
-	</pluginRepositories>
 	
 	<scm>
 		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-parent</connection>
@@ -468,8 +385,8 @@
 			<id>release-cls-nexus</id>
 			<distributionManagement>
 				<repository>
-					<id>cls-to-ext-repo</id>
-					<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/</url>
+					<id>repo</id>
+					<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/releases/</url>
 				</repository>
 			</distributionManagement>
 		</profile>
