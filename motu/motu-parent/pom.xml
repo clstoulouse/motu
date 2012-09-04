@@ -396,7 +396,7 @@
 			<distributionManagement>
 				<repository>
 					<id>repo</id>
-					<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/releases/</url>
+					<url>http://mvnrepo.cls.fr:8081/nexus/content/repositories/releases</url>
 				</repository>
 			</distributionManagement>
 		</profile>
