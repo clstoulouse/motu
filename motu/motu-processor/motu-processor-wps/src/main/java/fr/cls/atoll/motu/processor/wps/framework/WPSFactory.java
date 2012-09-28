@@ -1240,9 +1240,12 @@ public class WPSFactory {
         Element element = doc.createElement("NoName");
         doc.appendChild(element);
 
+
         try {
             // marshal body content the created element of the document
-            marshallerWPS.marshal(body, element);
+            synchronized (WPSFactory.marshallerWPS) {
+            	marshallerWPS.marshal(body, element);
+            }
         } catch (JAXBException e) {
             LOG.error("createInputReferenceType(Object, OperationMetadata)", e);
 
@@ -1279,7 +1282,9 @@ public class WPSFactory {
         // org.w3c.dom.Document result = pFactory.newDocumentBuild().newDocument();
         result = new DocumentImpl();
 
-        marshallerWPS.marshal(pObject, result);
+        synchronized (WPSFactory.marshallerWPS) {
+        	WPSFactory.marshallerWPS.marshal(pObject, result);
+        }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("asDOMDocument(Object, Document) - exiting");
@@ -1504,7 +1509,7 @@ public class WPSFactory {
             LOG.debug("unmarshallExecute(Source) - entering");
         }
 
-        if (WPSFactory.marshallerWPS == null) {
+        if (WPSFactory.unmarshallerWPS == null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("unmarshallExecute(Source) - exiting");
             }
@@ -1512,7 +1517,7 @@ public class WPSFactory {
         }
         Execute execute = null;
         try {
-            synchronized (WPSFactory.marshallerWPS) {
+            synchronized (WPSFactory.unmarshallerWPS) {
 
                 execute = (Execute) WPSFactory.unmarshallerWPS.unmarshal(xmlSource);
             }
@@ -1543,7 +1548,7 @@ public class WPSFactory {
             LOG.debug("unmarshallExecute(InputStream) - entering");
         }
 
-        if (WPSFactory.marshallerWPS == null) {
+        if (WPSFactory.unmarshallerWPS == null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("unmarshallExecute(InputStream) - exiting");
             }
@@ -1551,7 +1556,7 @@ public class WPSFactory {
         }
         Execute execute = null;
         try {
-            synchronized (WPSFactory.marshallerWPS) {
+            synchronized (WPSFactory.unmarshallerWPS) {
 
                 execute = (Execute) WPSFactory.unmarshallerWPS.unmarshal(xmlSource);
             }
@@ -1631,7 +1636,7 @@ public class WPSFactory {
             LOG.debug("unmarshallExecuteResponse(Source) - entering");
         }
 
-        if (WPSFactory.marshallerWPS == null) {
+        if (WPSFactory.unmarshallerWPS == null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("unmarshallExecuteResponse(Source) - exiting");
             }
@@ -1639,7 +1644,7 @@ public class WPSFactory {
         }
         ExecuteResponse executeResponse = null;
         try {
-            synchronized (WPSFactory.marshallerWPS) {
+            synchronized (WPSFactory.unmarshallerWPS) {
 
                 executeResponse = (ExecuteResponse) WPSFactory.unmarshallerWPS.unmarshal(xmlSource);
             }
@@ -1670,7 +1675,7 @@ public class WPSFactory {
             LOG.debug("unmarshallExecuteResponse(InputStream) - entering");
         }
 
-        if (WPSFactory.marshallerWPS == null) {
+        if (WPSFactory.unmarshallerWPS == null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("unmarshallExecuteResponse(InputStream) - exiting");
             }
@@ -1678,7 +1683,7 @@ public class WPSFactory {
         }
         ExecuteResponse executeResponse = null;
         try {
-            synchronized (WPSFactory.marshallerWPS) {
+            synchronized (WPSFactory.unmarshallerWPS) {
 
                 executeResponse = (ExecuteResponse) WPSFactory.unmarshallerWPS.unmarshal(xmlSource);
             }

@@ -54,6 +54,7 @@ import org.deegree.services.wps.input.LiteralInput;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.library.cas.HttpClientCAS;
+import fr.cls.atoll.motu.library.cas.util.HttpUtil;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 
@@ -205,7 +206,7 @@ public class WPSUtils {
 
         InputStream postBodyCloned = new ByteArrayInputStream(out.toString().getBytes());
 
-        MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+        MultiThreadedHttpConnectionManager connectionManager = HttpUtil.createConnectionManager();
         HttpClientCAS client = new HttpClientCAS(connectionManager);
         
         HttpClientParams clientParams = new HttpClientParams();
@@ -361,7 +362,7 @@ public class WPSUtils {
         if (LOG.isDebugEnabled()) {
             LOG.debug("get(Worker<T>, String, Map<String,String>) - start");
         }
-        MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+        MultiThreadedHttpConnectionManager connectionManager = HttpUtil.createConnectionManager();
         HttpClientCAS client = new HttpClientCAS(connectionManager);
 
         HttpClientParams clientParams = new HttpClientParams();

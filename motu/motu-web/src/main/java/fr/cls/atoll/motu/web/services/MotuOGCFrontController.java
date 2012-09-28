@@ -48,6 +48,7 @@ import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.ProcessletException;
 
 import fr.cls.atoll.motu.library.cas.HttpClientCAS;
+import fr.cls.atoll.motu.library.cas.util.HttpUtil;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
@@ -287,7 +288,7 @@ public class MotuOGCFrontController extends OGCFrontController {
 
             initProxyLogin();
             
-            MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+            MultiThreadedHttpConnectionManager connectionManager = HttpUtil.createConnectionManager();
             HttpClientCAS httpClientCAS = new HttpClientCAS(connectionManager);
 
             HttpUtils.setHttpClient(httpClientCAS);

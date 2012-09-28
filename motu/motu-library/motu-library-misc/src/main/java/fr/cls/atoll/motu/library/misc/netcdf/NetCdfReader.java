@@ -26,6 +26,7 @@ package fr.cls.atoll.motu.library.misc.netcdf;
 
 import fr.cls.atoll.motu.library.cas.HttpClientCAS;
 import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
+import fr.cls.atoll.motu.library.cas.util.HttpUtil;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;
@@ -871,7 +872,7 @@ public class NetCdfReader {
         }
 
     }
-
+     
     public void initNetcdfHttpClient() throws MotuException {
         try {
             synchronized (this) {
@@ -894,7 +895,8 @@ public class NetCdfReader {
 
                 if ((httpClientNetcdfDataset == null) && (httpClientDConnect2 == null) && (httpClientHTTPRandomAccessFile == null)) {
 
-                    MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+                    MultiThreadedHttpConnectionManager connectionManager = HttpUtil.createConnectionManager();
+
                     httpClientCAS = new HttpClientCAS(connectionManager);
 
                     HttpClientParams httpClientParams = new HttpClientParams();
@@ -903,7 +905,7 @@ public class NetCdfReader {
 
                     NetcdfDataset.setHttpClient(httpClientCAS);
 
-                    connectionManager = new MultiThreadedHttpConnectionManager();
+                    connectionManager = HttpUtil.createConnectionManager();
                     httpClientCAS = new HttpClientCAS(connectionManager);
 
                     httpClientParams = new HttpClientParams();
@@ -912,7 +914,7 @@ public class NetCdfReader {
 
                     DConnect2.setHttpClient(httpClientCAS);
 
-                    connectionManager = new MultiThreadedHttpConnectionManager();
+                    connectionManager = HttpUtil.createConnectionManager();
                     httpClientCAS = new HttpClientCAS(connectionManager);
 
                     httpClientParams = new HttpClientParams();
