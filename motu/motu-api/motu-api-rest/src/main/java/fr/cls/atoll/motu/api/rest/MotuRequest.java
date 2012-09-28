@@ -35,7 +35,6 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.net.CookieStore;
-import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
@@ -59,8 +58,11 @@ import fr.cls.atoll.motu.api.message.MotuMsgConstant;
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
+import fr.cls.atoll.motu.library.cas.UserBase;
 import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
+import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
+import fr.cls.atoll.motu.library.cas.util.RestUtil;
 
 /**
  * Helper class that allows to send a Motu request and retrieve the results.
@@ -304,7 +306,11 @@ public class MotuRequest {
         URL url = null;
 
         // Get the authentication mode parameter
-        AuthenticationMode authMode =  AuthenticationMode.fromValue((String)motuRequestParameters.getParameter(MotuRequestParametersConstant.PARAM_AUTHENTICATION_MODE));
+        String authModeString = (String)motuRequestParameters.getParameter(MotuRequestParametersConstant.PARAM_AUTHENTICATION_MODE);
+        AuthenticationMode authMode = null;
+        if (!AssertionUtils.isNullOrEmpty(authModeString)) {
+            authMode = AuthenticationMode.fromValue((String)motuRequestParameters.getParameter(MotuRequestParametersConstant.PARAM_AUTHENTICATION_MODE));
+        }
         // Authentication mode is not an extraction criteria, remove it now
         motuRequestParameters.removeParameter(MotuRequestParametersConstant.PARAM_AUTHENTICATION_MODE);         
 
@@ -319,6 +325,37 @@ public class MotuRequest {
         //String requestParams = null;
 
         String targetUrl = getRequestUrl();
+
+        // Check is authentication mode is set or not
+        // if not set, guess the authentication mode
+        
+        boolean guessAuthentication = (authMode != null) &&  (!AssertionUtils.isNullOrEmpty(login));
+
+        if (guessAuthentication) {
+            UserBase user = new UserBase();
+            
+            if (!AssertionUtils.isNullOrEmpty(login)) {
+    			user.setLogin(login);
+    			if (AssertionUtils.isNullOrEmpty(password)) {
+    				password = "";
+    			}
+    			user.setPwd(password);
+            }
+	        	
+	        try {
+	            RestUtil.checkAuthenticationMode(servletUrl, user);
+	            authMode = user.getAuthenticationMode();
+	        } catch (MotuCasException e) {
+	            String msg = String.format("Unable to check authentication mode from url '%s'. Reason is:\n %s", servletUrl, e
+	                    .notifyException());
+	            throw new MotuRequestException(msg, e);
+	        } catch (IOException e) {
+	            String msg = String.format("Unable to check authentication mode from url '%s'. Reason is:\n %s", servletUrl, e
+	                    .getMessage());
+	            throw new MotuRequestException(msg, e);
+			}
+        }
+
 
         try {
             if (authMode == AuthenticationMode.CAS) {
