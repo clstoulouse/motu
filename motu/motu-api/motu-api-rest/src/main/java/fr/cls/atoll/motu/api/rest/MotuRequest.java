@@ -329,7 +329,7 @@ public class MotuRequest {
         // Check is authentication mode is set or not
         // if not set, guess the authentication mode
         
-        boolean guessAuthentication = (authMode != null) &&  (!AssertionUtils.isNullOrEmpty(login));
+        boolean guessAuthentication = (authMode == null) &&  (!AssertionUtils.isNullOrEmpty(login));
 
         if (guessAuthentication) {
             UserBase user = new UserBase();
