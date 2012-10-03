@@ -263,7 +263,13 @@ public class HttpClientCAS extends HttpClient {
 			throw new HttpException(e.notifyException(), e);
 		}
 
-		int returnint = super.executeMethod(hostConfiguration, method);
+		int returnint = 500;
+		try {
+			returnint = super.executeMethod(hostConfiguration, method);
+		} catch (IOException e) {
+			method.releaseConnection();
+			throw e;
+		}
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("executeMethod(HostConfiguration, HttpMethod, boolean) - exiting");
 		}

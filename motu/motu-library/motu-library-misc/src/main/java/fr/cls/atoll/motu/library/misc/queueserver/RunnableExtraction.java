@@ -799,4 +799,8 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
 
     }
 
+    public String getMode() {
+        return "N/A";
+    }
+
 }

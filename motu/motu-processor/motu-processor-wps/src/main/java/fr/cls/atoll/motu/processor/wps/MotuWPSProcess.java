@@ -1032,7 +1032,7 @@ public abstract class MotuWPSProcess implements Processlet {
             value = stringBuffer.toString();
 
         } catch (Exception e) {
-            throw new MotuException(String.format("Error in MotuWPSProcess#getComplexInputValueFromBinaryStream (ComplexInput identifier:%s.",
+            throw new MotuException(String.format("Error in MotuWPSProcess#getComplexInputValueFromBinaryStream (ComplexInput identifier: %s.",
                                                   complexInput.getIdentifier()), e);
         }
 

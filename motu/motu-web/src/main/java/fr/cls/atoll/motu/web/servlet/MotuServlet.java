@@ -2273,13 +2273,13 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             stringBuffer.append("</tr>\n");
 
             for (Runnable runnable : priorityBlockingQueue) {
-                if (!(runnable instanceof RunnableHttpExtraction)) {
+                if (!(runnable instanceof RunnableExtraction)) {
                     continue;
                 }
 
                 stringBuffer.append("<tr>\n");
-                RunnableHttpExtraction runnableHttpExtraction = (RunnableHttpExtraction) runnable;
-                StatusModeResponse statusModeResponse = runnableHttpExtraction.getStatusModeResponse();
+                RunnableExtraction runnableExtraction = (RunnableExtraction) runnable;
+                StatusModeResponse statusModeResponse = runnableExtraction.getStatusModeResponse();
                 if (statusModeResponse == null) {
                     stringBuffer.append("</tr>\n");
                     continue;
@@ -2291,35 +2291,38 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 stringBuffer.append(statusModeResponse.getStatus().toString());
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("<td>\n");
-                stringBuffer.append(runnableHttpExtraction.getMode());
+                String mode = runnableExtraction.getMode();
+                if (mode != null) {
+                    stringBuffer.append(runnableExtraction.getMode());                	
+                }
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("<td>\n");
-                stringBuffer.append(Integer.toString(runnableHttpExtraction.getPriority()));
+                stringBuffer.append(Integer.toString(runnableExtraction.getPriority()));
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("<td>\n");
-                stringBuffer.append(Integer.toString(runnableHttpExtraction.getRange()));
+                stringBuffer.append(Integer.toString(runnableExtraction.getRange()));
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("<td>\n");
-                stringBuffer.append(String.format("%8.2f Mo", runnableHttpExtraction.getQueueLogInfo().getAmountDataSize()));
+                stringBuffer.append(String.format("%8.2f Mo", runnableExtraction.getQueueLogInfo().getAmountDataSize()));
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("<td>\n");
-                stringBuffer.append(runnableHttpExtraction.getExtractionParameters().getUserId());
+                stringBuffer.append(runnableExtraction.getExtractionParameters().getUserId());
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("<td>\n");
-                stringBuffer.append(runnableHttpExtraction.getExtractionParameters().isAnonymousUser());
+                stringBuffer.append(runnableExtraction.getExtractionParameters().isAnonymousUser());
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("<td>\n");
-                stringBuffer.append(runnableHttpExtraction.getExtractionParameters().getUserHost());
+                stringBuffer.append(runnableExtraction.getExtractionParameters().getUserHost());
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("<td>\n");
-                if (runnableHttpExtraction.getQueueLogInfo().getInQueueTime() != null) {
-                    stringBuffer.append(runnableHttpExtraction.getQueueLogInfo().getInQueueTime().toString());
+                if (runnableExtraction.getQueueLogInfo().getInQueueTime() != null) {
+                    stringBuffer.append(runnableExtraction.getQueueLogInfo().getInQueueTime().toString());
                 } else {
                     stringBuffer.append("Unknown");
                 }
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("<td>\n");
-                stringBuffer.append(runnableHttpExtraction.getExtractionParameters().toString());
+                stringBuffer.append(runnableExtraction.getExtractionParameters().toString());
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("</tr>\n");
             }
