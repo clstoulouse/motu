@@ -895,7 +895,11 @@ public class NetCdfReader {
 
                 if ((httpClientNetcdfDataset == null) && (httpClientDConnect2 == null) && (httpClientHTTPRandomAccessFile == null)) {
 
+                	final int SO_TIMEOUT_VALUE = 180000; // in milliseconds 
+                	
                     MultiThreadedHttpConnectionManager connectionManager = HttpUtil.createConnectionManager();
+                    // WARNING: because socket read can raise an infinite time out, set an arbitrary socket read time out
+                    connectionManager.getParams().setSoTimeout(SO_TIMEOUT_VALUE); // in milliseconds 
 
                     httpClientCAS = new HttpClientCAS(connectionManager);
 
@@ -906,6 +910,9 @@ public class NetCdfReader {
                     NetcdfDataset.setHttpClient(httpClientCAS);
 
                     connectionManager = HttpUtil.createConnectionManager();
+                    // WARNING: because socket read can raise an infinite time out, set an arbitrary socket read time out
+                    connectionManager.getParams().setSoTimeout(SO_TIMEOUT_VALUE); // in milliseconds 
+
                     httpClientCAS = new HttpClientCAS(connectionManager);
 
                     httpClientParams = new HttpClientParams();
@@ -915,6 +922,9 @@ public class NetCdfReader {
                     DConnect2.setHttpClient(httpClientCAS);
 
                     connectionManager = HttpUtil.createConnectionManager();
+                    // WARNING: because socket read can raise an infinite time out, set an arbitrary socket read time out
+                    connectionManager.getParams().setSoTimeout(SO_TIMEOUT_VALUE); // in milliseconds 
+                    
                     httpClientCAS = new HttpClientCAS(connectionManager);
 
                     httpClientParams = new HttpClientParams();
