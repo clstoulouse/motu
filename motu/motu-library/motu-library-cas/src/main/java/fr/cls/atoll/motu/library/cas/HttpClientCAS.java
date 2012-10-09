@@ -276,12 +276,7 @@ public class HttpClientCAS extends HttpClient {
 		return returnint;
 	}
 
-	public int executeMethod(HttpMethod method) throws IOException,
-			HttpException {
-		return executeMethod(method, true);
-	}
-
-	public int executeMethod(HttpMethod method, boolean addCasTicket)
+	public int executeMethod(HttpMethod method)
 			throws IOException, HttpException {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("executeMethod(HttpMethod) - entering");

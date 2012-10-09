@@ -24,6 +24,7 @@
  */
 package fr.cls.atoll.motu.processor.wps.framework;
 
+import fr.cls.atoll.motu.library.cas.HttpClientCAS;
 import fr.cls.atoll.motu.library.cas.UserBase;
 import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
 import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
@@ -33,6 +34,7 @@ import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.processor.opengis.ows110.CodeType;
 import fr.cls.atoll.motu.processor.opengis.wps100.DataType;
 import fr.cls.atoll.motu.processor.opengis.wps100.InputDescriptionType;
+import fr.cls.atoll.motu.processor.opengis.wps100.InputReferenceType;
 import fr.cls.atoll.motu.processor.opengis.wps100.OutputDataType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptionType;
 import fr.cls.atoll.motu.processor.opengis.wps100.ProcessDescriptions;
@@ -43,11 +45,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -80,14 +85,14 @@ public class WPSInfo {
 		this.user = user;
 	}
 
-	protected String ticketGantingTicket = null;
+	protected String ticketGrantingTicket = null;
 	
-	public String getTicketGantingTicket() {
-		return ticketGantingTicket;
+	public String getTicketGrantingTicket() {
+		return ticketGrantingTicket;
 	}
 
-	public void setTicketGantingTicket(String ticketGantingTicket) {
-		this.ticketGantingTicket = ticketGantingTicket;
+	public void setTicketGantingTicket(String ticketGrantingTicket) {
+		this.ticketGrantingTicket = ticketGrantingTicket;
 	}
 
 
@@ -162,8 +167,14 @@ public class WPSInfo {
         if (urlFile == null) {
             throw new MotuException(String.format("WPSInfo - Unable to find file '%s'", MotuWPSProcess.WPS_DESCRIBE_ALL_XML));
         }
-
-        InputStream in = WPSUtils.post(serverUrl, urlFile);
+                                    
+        final Map<String, String> headers = new HashMap<String, String>();        
+        if (StringUtils.isNotBlank(ticketGrantingTicket) &&  StringUtils.isNotBlank(casRestUrl)) { 
+			headers.put(HttpClientCAS.TGT_PARAM, ticketGrantingTicket);
+			headers.put(HttpClientCAS.CAS_REST_URL_PARAM, casRestUrl);
+        }
+        
+        InputStream in = WPSUtils.post(serverUrl, urlFile, headers);
         try {
             JAXBContext jc = JAXBContext.newInstance(MotuWPSProcess.WPS100_SHEMA_PACK_NAME);
             Unmarshaller unmarshaller = jc.createUnmarshaller();
@@ -370,7 +381,7 @@ public class WPSInfo {
 			throw new MotuException("setCasRestInfo : Enable to get CAS REST url", e);
 		}
 	    try {
-			ticketGantingTicket = RestUtil.getTicketGrantingTicket(casRestUrl, user.getLogin(), user.getPwd());
+			ticketGrantingTicket = RestUtil.getTicketGrantingTicket(casRestUrl, user.getLogin(), user.getPwd());
 		} catch (IOException e) {
 			throw new MotuException("setCasRestInfo : Enable to set TGT", e);
 		}

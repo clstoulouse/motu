@@ -1208,7 +1208,7 @@ public class WPSFactory {
         inputReferenceType.setEncoding(WPSFactory.UTF8);
         inputReferenceType.setMethod(WPSFactory.METHOD_POST);
         
-        String ticketGrantingTicket = wpsInfo.getTicketGantingTicket();
+        String ticketGrantingTicket = wpsInfo.getTicketGrantingTicket();
         if (!WPSUtils.isNullOrEmpty(ticketGrantingTicket)) {
         	InputReferenceType.Header header = new InputReferenceType.Header();
         	header.setKey(HttpClientCAS.TGT_PARAM);

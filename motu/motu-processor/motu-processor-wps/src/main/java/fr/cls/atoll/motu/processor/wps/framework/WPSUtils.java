@@ -112,9 +112,13 @@ public class WPSUtils {
      * @throws MotuException the motu exception
      */
     public static InputStream post(String url, URL urlFile) throws MotuException {
-        return WPSUtils.post(url, urlFile.toString());
+        return WPSUtils.post(url, urlFile, null);
     }
 
+    
+    public static InputStream post(String url, URL urlFile, Map<String, String> headers) throws MotuException {
+        return WPSUtils.post(url, urlFile.toString(), headers);
+    }
     /**
      * Post.
      * 
@@ -126,6 +130,19 @@ public class WPSUtils {
      * @throws MotuException the motu exception
      */
     public static InputStream post(String url, String xmlFile) throws MotuException {
+    	return post(url, xmlFile, null);
+    }
+    
+    /**
+     * Post.
+     *
+     * @param url the url
+     * @param xmlFile the xml file
+     * @param headers the headers
+     * @return the input stream
+     * @throws MotuException the motu exception
+     */
+    public static InputStream post(String url, String xmlFile, Map<String, String> headers) throws MotuException {
 
         if (Organizer.isNullOrEmpty(url)) {
             throw new MotuException("WPSUtils#post - Unable to process : url is null or empty.");
@@ -143,7 +160,7 @@ public class WPSUtils {
             throw new MotuException("WPSUtils#post - Unable to process : null input stream.");
         }
 
-        return WPSUtils.post(url, in);
+        return WPSUtils.post(url, in, headers);
     }
 
     /**
@@ -157,15 +174,23 @@ public class WPSUtils {
      * @throws MotuException the motu exception
      */
     public static InputStream post(String url, InputStream in) throws MotuException {
+    	return post(url, in, null);
+    }    
+    public static InputStream post(String url, InputStream in, Map<String, String> headers) throws MotuException {
 
         if (in == null) {
             throw new MotuException("WPSUtils#post - Unable to process : null input stream.");
         }
 
         InputStream is = null;
-        Map<String, String> headers = new HashMap<String, String>();
+        
+        Map<String, String> headersToUse = headers;
+        
+        if (headersToUse == null) {
+        	headersToUse = new HashMap<String, String>();
+        }
         try {
-            is = WPSUtils.post(HttpUtils.STREAM, url, in, headers);
+            is = WPSUtils.post(HttpUtils.STREAM, url, in, headersToUse);
 
         } catch (Exception e) {
             throw new MotuException("WPSUtils#post - Unable to process.", e);
