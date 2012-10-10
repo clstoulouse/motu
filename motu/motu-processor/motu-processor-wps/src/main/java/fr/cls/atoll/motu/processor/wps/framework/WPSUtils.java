@@ -360,8 +360,10 @@ public class WPSUtils {
         try {
             in = WPSUtils.get(HttpUtils.STREAM, url, headers);
 
+        } catch (MotuException e) {
+            throw new MotuException("WPSUtils#get - Unable to process url: " + url + " - Reason: " + e.notifyException());
         } catch (Exception e) {
-            throw new MotuException("WPSUtils#get - Unable to process.", e);
+            throw new MotuException("WPSUtils#get - Unable to process url: " + url + " - Reason: " + e.getMessage());
         }
 
         if (in == null) {
