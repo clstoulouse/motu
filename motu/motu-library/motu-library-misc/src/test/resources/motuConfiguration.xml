@@ -3,6 +3,7 @@
 <!ENTITY atoll "http://purl.org/cls/atoll/ontology/individual/atoll#" >
 <!ENTITY myoceanUrnOLD "http://purl.org/myocean/ontology/individual/myocean#" >
 <!ENTITY myoceanUrn "http://purl.org/myocean/ontology/service/database#" >
+<!ENTITY mercatorUrn "http://purl.org/mercator/ontology/service/database#" >
 
 ]>
 
@@ -124,6 +125,18 @@
 	runGCInterval="10"
 	sftpSessionTimeOut="PT10S"
 	strictHostKeyChecking="no">
+
+    <!--===========================================-->
+    <!--        Mercator OPENDAP MERCATOR          -->
+    <!--===========================================-->	
+    <configService defaultLanguage="FR" description="Ocean data"
+        group="motu-rest-mercator" 
+        httpBaseRef="http://www.mercator-ocean.fr"
+        name="&mercatorUrn;motu-rest-mercator" veloTemplatePrefix="mercator">
+        <catalog name="catalog.xml" type="tds"
+            urlSite="http://opendapmo.mercator-ocean.fr/thredds" /> 
+    </configService>
+	
 	
       <!--===========================================================-->
       <!--                 motu-tds-mercator Service                 -->

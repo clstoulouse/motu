@@ -6,32 +6,32 @@
 ##----------------------------------------------------------------------------------
 ## ------------------------------ mercator_uk_printSubTitleCatalog --------------------------------
 #macro(mercator_uk_printSubTitleCatalog)
-	<li>&gt; Catalog</li>
+	Catalog
 #end
 
 ## ------------------------------ mercator_uk_printSubTitleProductMetadata --------------------------------
 #macro(mercator_uk_printSubTitleProductMetadata)
-	<li>&gt; <a href="?action=listcatalog&service=${service.getNameEncoded()}">Catalog</a></li>
-	<li>&gt; $titleMetadata</li>
+	&gt; <a href="?action=listcatalog&service=${service.getNameEncoded()}">Catalog</a>
+	&gt; $titleMetadata
 
 
 #end
 
 ## ------------------------------ mercator_uk_printSubTitleProductDownloadHome --------------------------------
 #macro(mercator_uk_printSubTitleProductDownloadHome)
-	<li>&gt; <a href="?action=listcatalog&service=${service.getNameEncoded()}">Catalog</a></li>
+	&gt; <a href="?action=listcatalog&service=${service.getNameEncoded()}">Catalog</a>
     #if($downloadOnTop == false)
-		<li>&gt; <a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">$titleMetadata</a></li>
+		&gt; <a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">$titleMetadata</a>
     #end
-    <li>&gt; Download</li>
+    &gt; Download
 #end
 
 ## -------------------------------------------- mercator_uk_printSubTitle --------------------------------
 #macro(mercator_uk_printSubTitle)
-	#*
+	
 	<table width="95%" border="0" cellspacing="0"><tr>
-	<td class="parents">		
-	*#
+	<td>		
+	
 	#if($body_template.equalsIgnoreCase($templateCatalog))
 		#mercator_uk_printSubTitleCatalog()	
 	#end
@@ -41,10 +41,10 @@
 	#if($body_template.equalsIgnoreCase($templateProductDownloadHome))
 		#mercator_uk_printSubTitleProductDownloadHome()	
 	#end
-	#*	
+		
 	</td>
 	</tr></table>
-	*#
+	
 #end
 
 ## -------------------------------------------- main --------------------------------
@@ -67,27 +67,116 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
-	<title>Mercator Ocean, Operational Ocean Forecasting - Data files products</title>
 
-	<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
-	<meta name="Description" content="Mercator Ocean : operational ocean forecasting center, real-time ocean forecast up to 14 days, from surface to bottom with weekly delivered oceanic forecast bulletins">
-	<meta name="Keywords" content="operational oceanography, ocean forecasting, data assimilation, altimetry, in situ data, real time, hindcast, nowcast, forecast, oceanic forecast bulletin, validation, ocean global and regional models, ocean climate monitoring, industrial marine applications">
-	<meta name="author" content="Oréalys" />
-	<meta name="robots" content="index,follow" />
-	<link rel="stylesheet" type="text/css" href="$httpSite/tools/template/style.css" />
-	<link rel="stylesheet" type="text/css" href="$httpSite/tools/template/form.css" />
-	<link rel="stylesheet" type="text/css" href="$httpSite/tools/template/css/layout.css" />
-	<link rel="stylesheet" type="text/css" href="$httpSite/tools/template/css/modules.css" />
+<style type="text/css">
+.limitdisplay-user { display: none; }.limitdisplay-user-10 { display: inline; }.limitdisplay-user-block-10 { display: block; }</style>                                                              
+            
+<title>         Homepage - Mercator Ocean
+        </title>
 
-	<link rel="stylesheet" type="text/css" href="$httpSite/tools/template/css/slimbox.css" />
-	<link rel="stylesheet" type="text/css" media="print" href="$httpSite/tools/template/css/print.css" />
-	<script language="JavaScript" type="text/javascript" src="$httpSite/tools/template/js/mootools.v1.11.js"></script>
-	<script language="JavaScript" type="text/javascript" src="$httpSite/tools/template/js/fonctions.js"></script>
-	<script language="JavaScript" type="text/javascript" src="$httpSite/tools/template/js/slimbox.js"></script>
-	<script language="JavaScript" type="text/javascript" src="$httpSite/tools/scripts/util.js"></script>
-	<link rel="shortcut icon" type="image/x-icon" href="$httpSite/tools/template/favicon.ico" />
+    <meta name="Content-Type" content="text/html; charset=utf-8" /> <meta name="Content-language" content="en-US" />                <meta name="author" content="Mercator Ocean" />
+                    <meta name="copyright" content="Mercator Ocean" />
+                    <meta name="description" content="Mercator Ocean French Operational Oceanography centre; develops and runs operational systems able to describe, to monitor and to forecast the ocean in 3D models at any location in the world, from the deep ocean to the surface: currents, temperature, salinity, sea level, Ice Sea; 14 days ocean forecast in real time; numerical products, graphical products and expertise." />
+                    <meta name="keywords" content="altimetry,Argo,Atlantic,biogeochemistry and marine resources,bulletin,climate and seasonal forecast,CNES,CNRS,coastal environment,Coriolis,current forecast Fukushima,data assimilation,forecast,global,global ocean,GMES,hindcast,Ifremer,in situ measurements,IRD,marine currents,maritime safety,Mediterranean,MERSEA,Météo-France,MNATL,modeling,modelling,MyOcean,NEMO,nowcast,ocean forecasters,ocean forecasting,oceanic bulletin,oceanic products,oceanography,oceanography forecaster,offshore operations,OPA,operational oceanography,operational oceanography center,PAM,real time,reanalysis,routing,rower,satellites,SHOM,SST" />
+    <meta name="MSSmartTagsPreventParsing" content="TRUE" />
+<meta name="generator" content="eZ Publish" />
+    <link rel="Home" href="$httpSite/eng" title="Mercator Ocean front page" />
+<link rel="Index" href="$httpSite/eng" />
+<link rel="Top"  href="$httpSite/eng" title="           Homepage - Mercator Ocean
+        " />
+<link rel="Search" href="$httpSite/eng/content/advancedsearch" title="Search Mercator Ocean" />
+<link rel="Shortcut icon" href="$httpSite/extension/ezmercator/design/mercator/images/favicon.ico" type="image/x-icon" /><link rel="Copyright" href="$httpSite/eng/informations-generales/mentions-legales" />
+<link rel="Author" href="$httpSite/eng/informations-generales/mentions-legales" /><link rel="alternate" type="application/rss+xml" title="RSS" href="$httpSite/eng/rss/feed/news" />
 
-	<link rel="icon" type="image/png" href="$httpSite/tools/template/favicon.png" />
+
+
+<script type="text/javascript" src="$httpSite/extension/ezwebin/design/ezwebin/javascript/insertmedia.js" charset="utf-8"></script>
+
+
+<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/jquery-1.4.2.min.js"></script>
+<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/jquery-ui.min.js"></script>
+<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/slimbox2.js"></script>
+<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/ezmercator.js"></script>
+<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/google-analytics.js"></script>
+                                                                                            
+        
+<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/swfobject.js"></script>
+
+
+<script type="text/javascript">
+    var flashvars = {};
+    flashvars.xml_file = "$httpSite/eng/layout/set/xml/content/view/carousel/194";
+    var params = {};
+    params.wmode = "transparent";
+    var attributes = {};
+    attributes.id = "slider";
+    swfobject.embedSWF(
+        "$httpSite/var/ezwebin_site/storage/original/application/efd68f79b71c70b091e6ec78025e17e0", 
+        "flashmo_slider", 
+        "680", 
+        "275", 
+        "9.0.0", 
+        false,
+        flashvars, 
+        params, 
+        attributes
+    );  
+</script>
+
+
+
+<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/datepicker/jquery.datePicker.js"></script>
+<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/datepicker/date.js"></script>
+
+<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/datepicker/datepicker.js"></script>
+
+<script type="text/javascript">
+$(document).ready(
+  function() {
+    var selectors = new Array('map_day', 'map_month', 'map_year');
+
+    for ( var i = 0; i < selectors.length; i++) {
+      $('#'.concat(selectors[i])).change(function() {
+    $('#date_selector_button').click();
+      });
+    }
+  });
+</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/fr_FR/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<script type="text/javascript">
+  window.___gcfg = {lang: 'en-GB'};
+
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+      <link rel="stylesheet" type="text/css" href="$httpSite/var/ezwebin_site/cache/public/stylesheets/02a4cecbe685ababac74085a24b416b6_all.css" />
+
+
+
+<style type='text/css'>
+    @import url("$httpSite/extension/ezmercator/design/mercator/stylesheets/ezmercator.css");
+    @import url("$httpSite/extension/ezmercator/design/mercator/stylesheets/ezmercator_menu.css");
+    @import url("$httpSite/extension/ezmercator/design/mercator/stylesheets/jquery-ui.css");
+        
+        @import url("$httpSite/extension/ezmercator/design/mercator/stylesheets/datepicker.css");
+</style>
+    <style type='text/css'>
+        @import url("$httpSite/extension/ezmercator/design/mercator/stylesheets/ezmercator_frontpage.css");
+    </style>
+
+    
 </head>
 
 <style>
@@ -145,10 +234,30 @@
 		alt="";
 		border=0;
 	}
+	
+    h1 {
+        display: block;
+        font-size: 2em;
+        -webkit-margin-before: 0.67em;
+        -webkit-margin-after: 0.67em;
+        -webkit-margin-start: 0px;
+        -webkit-margin-end: 0px;
+        font-weight: bold;
+    }
+    
+    h2 {
+        display: block;
+        font-size: 1.5em;
+        -webkit-margin-before: 0.83em;
+        -webkit-margin-after: 0.83em;
+        -webkit-margin-start: 0px;
+        -webkit-margin-end: 0px;
+        font-weight: bold;
+    }    
 		
 </style>
 
-<body class="int" onLoad="init()" onUnload="unload()">
+<body id="eng-US" onLoad="init()" onUnload="unload()">
 
 <script language="JavaScript" type="text/javascript">
 
@@ -158,25 +267,20 @@
 
 
 <!-- EN-TETE -->
-	#parse("velocityTemplates/mercator/top_produits_en.html")
+#parse("velocityTemplates/mercator/top_produits_en.html")
 
 <!-- MENU -->
-	#parse("velocityTemplates/mercator/menu_produits_en.html")
+###	#parse("velocityTemplates/mercator/menu_produits_en.html")
 
 
 <!-- LANGUAGE FORM -->
-	#parse("velocityTemplates/mercator/changeLanguageForm.vm")
-	
-    <div id="droite">
-    <div id="navigation">
-    
+###	#parse("velocityTemplates/mercator/changeLanguageForm.vm")
+	    
     <ul>
-    	<li><a href="$httpSite/html/mod_actu/public/welcome_en.php3" class="home">&gt; Home</a></li>
-		<li>&gt; <a href="$httpSite/html/produits/index_en.html">Products</a></li>
+###    	<li><a href="$httpSite/html/mod_actu/public/welcome_en.php3" class="home">&gt; Home</a></li>
+###		<li>&gt; <a href="$httpSite/html/produits/index_en.html">Products</a></li>
     	#mercator_uk_printSubTitle()
     </ul>
-    </div>
-    <div id="corps">
 
 
 <!-- Corps du document -->

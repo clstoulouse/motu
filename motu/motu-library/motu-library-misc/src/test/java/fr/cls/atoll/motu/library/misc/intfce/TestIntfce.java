@@ -402,7 +402,7 @@ public class TestIntfce {
         // productInformation();
         // productInformationFromLocationData();
         // productExtractDataMersea();
-        //productDownloadInfo();
+        productDownloadInfo();
         // productExtractDataHTMLAviso();
         // productExtractDataAviso();
         // productExtractDataAvisofromProductId();
@@ -718,13 +718,15 @@ public class TestIntfce {
             // String serviceName = "mercator";
             // String serviceName = "Topaz";
             String myoceanUrn = "http://purl.org/myocean/ontology/service/database#";
+            String mercatorUrn = "http://purl.org/mercator/ontology/service/database#";
             // String serviceName = myoceanUrn + "cls-toulouse-fr-sltac-motu-rest";
             //String serviceName = myoceanUrn + "SL-CLS-TOULOUSE-FR-MOTU-REST";
             //String serviceName = myoceanUrn + "SLTAC3";
-            String serviceName = myoceanUrn + "CLS-TOULOUSE-FR-MERCATOR-MOTU-REST";
+            //String serviceName = myoceanUrn + "CLS-TOULOUSE-FR-MERCATOR-MOTU-REST";
+            String serviceName = mercatorUrn + "motu-rest-mercator";
             //String serviceName = "http://purl.org/myocean/ontology/service/database#yourduname";
             //String serviceName = "http://purl.org/cls/atoll/ontology/individual/atoll#motu-opendap-mercator-myocean";
-
+             
             // file:///J:/dev/motu/motu-library/motu-library-misc/target/resultCatalogInfo.html?action=productdownloadhome&service=http%3A%2F%2Fpurl.org%2Fmyocean%2Fontology%2Fservice%2Fdatabase%23SL-CLS-TOULOUSE-FR-MOTU-REST&product=http://purl.org/myocean/ontology/product/database#dataset-duacs-ran-global-en-sla-l3
             // String serviceName = "MercatorIBI";
             // String serviceName = "avisoNRT";
@@ -734,13 +736,14 @@ public class TestIntfce {
             // String productId = "mersea-ipv2/arctic/tmipv2a-class1-b-be";
             //String productId = "http://purl.org/myocean/ontology/product/database#dataset-duacs-ran-global-en-sla-l3"; 
             //String productId = "dataset-mod-hyc-mooring-angola-m001-bulletin";
-            String productId = "dataset-psy2v3-pgs-med-myocean-bestestimate";
+            //String productId = "dataset-psy2v3-pgs-med-myocean-bestestimate";
+            String productId = "dataset-psy3v3-natif-grids-mercator-bestestimate ";
             
             //String productId = "dataset-psy3v2-pgs-arc-myocean-bestestimate";
                                                                                  // "mercatorPsy3v2_arc_mean_best_estimate";
             FileWriter writer = new FileWriter("./target/resultProductDownloadInfo.html");
             Organizer organizer = new Organizer();
-            //organizer.setCurrentLanguage("uk");
+            organizer.setCurrentLanguage("uk");
             organizer.getProductDownloadInfo(serviceName, productId, writer, Organizer.Format.HTML);
             writer.flush();
             writer.close();
