@@ -332,6 +332,8 @@ public abstract class MotuWPSProcess implements Processlet {
             }
         }
 
+        getWPSRequestManagement().removeMotuWPSProcessData(in);
+        
         if (LOG.isDebugEnabled()) {
             LOG.debug("afterProcess(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo) - exiting");
         }

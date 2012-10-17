@@ -6,12 +6,12 @@
 ##----------------------------------------------------------------------------------
 ## ------------------------------ mercator_uk_printSubTitleCatalog --------------------------------
 #macro(mercator_uk_printSubTitleCatalog)
-	Catalog
+	Data Product Catalogue
 #end
 
 ## ------------------------------ mercator_uk_printSubTitleProductMetadata --------------------------------
 #macro(mercator_uk_printSubTitleProductMetadata)
-	&gt; <a href="?action=listcatalog&service=${service.getNameEncoded()}">Catalog</a>
+	&gt; <a href="?action=listcatalog&service=${service.getNameEncoded()}">Data Product Catalogue</a>
 	&gt; $titleMetadata
 
 
@@ -19,7 +19,7 @@
 
 ## ------------------------------ mercator_uk_printSubTitleProductDownloadHome --------------------------------
 #macro(mercator_uk_printSubTitleProductDownloadHome)
-	&gt; <a href="?action=listcatalog&service=${service.getNameEncoded()}">Catalog</a>
+	&gt; <a href="?action=listcatalog&service=${service.getNameEncoded()}">Data Product Catalogue</a>
     #if($downloadOnTop == false)
 		&gt; <a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">$titleMetadata</a>
     #end
@@ -54,7 +54,7 @@
 #set($templateProductDownloadHome = "velocityTemplates/product_downloadhome_uk.vm")
 #set($httpSite = ${service.getHttpBaseRef()})
 
-#set($titleMetadata = "Metadata")
+#set($titleMetadata = "Dataset Metadata")
 
 #set($downloadOnTop = ${service.isDownloadOnTop()})
 #set($showOpendapLinks = true)
@@ -161,12 +161,13 @@ $(document).ready(
   })();
 </script>
 
-      <link rel="stylesheet" type="text/css" href="$httpSite/var/ezwebin_site/cache/public/stylesheets/02a4cecbe685ababac74085a24b416b6_all.css" />
+##      <link rel="stylesheet" type="text/css" href="$httpSite/var/ezwebin_site/cache/public/stylesheets/02a4cecbe685ababac74085a24b416b6_all.css" />
 
 
 
 <style type='text/css'>
-    @import url("$httpSite/extension/ezmercator/design/mercator/stylesheets/ezmercator.css");
+    @import url("$httpSite/extension/ezmercator/design/mercator/stylesheets/ezmercator_motu.css");
+##    @import url("$httpSite/extension/ezmercator/design/mercator/stylesheets/ezmercator.css");
     @import url("$httpSite/extension/ezmercator/design/mercator/stylesheets/ezmercator_menu.css");
     @import url("$httpSite/extension/ezmercator/design/mercator/stylesheets/jquery-ui.css");
         
@@ -272,13 +273,10 @@ $(document).ready(
 <!-- MENU -->
 ###	#parse("velocityTemplates/mercator/menu_produits_en.html")
 
-
 <!-- LANGUAGE FORM -->
-###	#parse("velocityTemplates/mercator/changeLanguageForm.vm")
+	#parse("velocityTemplates/mercator/changeLanguageForm.vm")
 	    
     <ul>
-###    	<li><a href="$httpSite/html/mod_actu/public/welcome_en.php3" class="home">&gt; Home</a></li>
-###		<li>&gt; <a href="$httpSite/html/produits/index_en.html">Products</a></li>
     	#mercator_uk_printSubTitle()
     </ul>
 

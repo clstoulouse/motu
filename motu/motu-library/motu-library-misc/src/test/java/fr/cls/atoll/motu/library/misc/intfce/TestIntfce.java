@@ -743,7 +743,8 @@ public class TestIntfce {
                                                                                  // "mercatorPsy3v2_arc_mean_best_estimate";
             FileWriter writer = new FileWriter("./target/resultProductDownloadInfo.html");
             Organizer organizer = new Organizer();
-            organizer.setCurrentLanguage("uk");
+            //organizer.setCurrentLanguage("uk");
+            organizer.setCurrentLanguage("fr");
             organizer.getProductDownloadInfo(serviceName, productId, writer, Organizer.Format.HTML);
             writer.flush();
             writer.close();
