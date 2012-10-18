@@ -6,7 +6,7 @@
 ##----------------------------------------------------------------------------------
 ## ------------------------------ mercator_fr_printSubTitleCatalog --------------------------------
 #macro(mercator_fr_printSubTitleCatalog)
-			<li>&gt; Catalogue</li>
+			&gt; Catalogue
 #end
 
 ## ------------------------------ mercator_fr_printSubTitleProductMetadata --------------------------------
@@ -63,7 +63,7 @@
 #set($labelMenuMotu = "Serveur Opendap")
 #set($hrefMenuMotu = "?action=listcatalog&service=Mercator&lang=fr")
 
-<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr-FR" lang="fr-FR">
 
 <head>
 
@@ -73,7 +73,7 @@
 <title>         Homepage - Mercator Ocean
         </title>
 
-    <meta name="Content-Type" content="text/html; charset=utf-8" /> <meta name="Content-language" content="fr-FR" />                <meta name="author" content="Mercator Ocean" />
+    <meta name="Content-Type" content="text/html; charset=ISO-8859-1" /> <meta name="Content-language" content="fr-FR" />                <meta name="author" content="Mercator Ocean" />
     <meta name="copyright" content="Mercator Ocean" />
     <meta name="description" content="Mercator Océan centre français d'analyse et de prévision océaniques ; opérateur français de services en information océanique temps réel et différé ; analyses et prévisions en 3D de la surface au fond : courants, température, salinité, hauteur de mer, glace de mer ; prévisions en temps réel jusqu'à 14 jours ; produits numériques, produits graphiques et expertise." />    <meta name="keywords" content="altimétrie,analyses,Argo,assimilation de données,Atlantique,bulletin,bulletin courants Fukushima,bulletin océanique,centre d'océanographie opérationnelle,climat et prévisions saisonières,CNES,CNRS,Coriolis,courants marins,énergie thermique des mers,environnement côtier,GMES,Ifremer,IRD,MEDDTL Année des Outre-mer,Méditerranée,Mercator Vert,MERSEA,mesures in situ,Météo-France,MNATL,modèle biogéochimique et ressources marines,modélisation,MyOcean,NEMO,observation de la terre,océan global,océanographie opérationnelle,OPA,opérationnel,opérations en mer,ORCA,PAM,prévisionniste-océanographe,prévision océanique,prévisions,produits d'océanographie,rameurs,réanalyses,routage maritime,satellites,sécurité maritime,SHOM,SST,temps réel" />
     <meta name="MSSmartTagsPreventParsing" content="TRUE" />
@@ -159,7 +159,7 @@ $(document).ready(
   })();
 </script>
 
-      <!-- <link rel="stylesheet" type="text/css" href="/var/ezwebin_site/cache/public/stylesheets/6c2948297c7439ccc4d26537fe6ce9d2_all.css" /> -->
+##      <link rel="stylesheet" type="text/css" href="/var/ezwebin_site/cache/public/stylesheets/6c2948297c7439ccc4d26537fe6ce9d2_all.css" />
 
 
 
@@ -233,7 +233,6 @@ $(document).ready(
 		alt="";
 		border=0;
 	}
-	
     h1 {
         display: block;
         font-size: 2em;
@@ -252,10 +251,12 @@ $(document).ready(
         -webkit-margin-start: 0px;
         -webkit-margin-end: 0px;
         font-weight: bold;
-    }    	
+    }   
+
+ 	
 </style>
 
-<body class="fre-FR" onLoad="init()" onUnload="unload()">
+<body id="fre-FR" onLoad="init()" onUnload="unload()">
 
 
 <script language="JavaScript" type="text/javascript">
