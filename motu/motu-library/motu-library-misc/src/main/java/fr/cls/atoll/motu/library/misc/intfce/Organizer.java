@@ -422,7 +422,8 @@ public class Organizer {
     public static final VFSManager getVFSSystemManager() throws MotuException {
         VFSManager vfsManager = VFS_MANAGER.get();
         if (vfsManager == null) {
-            throw new MotuException("Error File System manager has not been initialized");
+        	vfsManager = new VFSManager();
+            //throw new MotuException("Error File System manager has not been initialized");
         }
         return vfsManager;
     }

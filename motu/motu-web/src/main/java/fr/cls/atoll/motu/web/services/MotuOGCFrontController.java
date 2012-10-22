@@ -190,7 +190,7 @@ public class MotuOGCFrontController extends OGCFrontController {
                         
     	super.doPost(request, response);
         try {
-            Organizer.removeVFSSystemManager();
+            Organizer.closeVFSSystemManager();
         } catch (MotuException e) {
             // Do nothing
         }

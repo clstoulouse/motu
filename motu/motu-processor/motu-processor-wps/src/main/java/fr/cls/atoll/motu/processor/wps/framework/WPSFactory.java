@@ -2945,4 +2945,12 @@ public class WPSFactory {
         return returnInputStream;
 
     }
+    
+    public static void closeVFSSystemManager() {
+    	try {
+			Organizer.closeVFSSystemManager();
+		} catch (MotuException e) {
+			LOG.error("WPSFactory#closeVFSSystemManager(): " + e.notifyException(), e);
+		}
+    }
 }
