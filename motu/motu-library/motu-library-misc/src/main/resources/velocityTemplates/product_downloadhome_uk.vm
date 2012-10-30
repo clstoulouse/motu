@@ -305,9 +305,12 @@
 		  	#set ($selected = "")			
 ##		  	#set ($selected = "selected")
 			#foreach( $date in $listdate )	
-				#if($date.equalsIgnoreCase($lastdate))
-			  		#set ($selected = "selected")
-			  	#end
+                #if($date.equalsIgnoreCase($lastdate))
+                    #set ($selected = "selected")
+                #end
+                #if($date.startsWith($lastdate))
+                    #set ($selected = "selected")
+                #end
 				<option value="${date}"  ${selected}>${date}</option>
 			#end
 			</select>

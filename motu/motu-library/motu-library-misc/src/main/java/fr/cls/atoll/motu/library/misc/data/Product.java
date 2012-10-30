@@ -33,8 +33,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -2181,12 +2183,26 @@ public class Product {
             return timeCoverage;
         }
 
+        GregorianCalendar calendar = new GregorianCalendar(NetCdfReader.GMT_TIMEZONE);
+        
         for (DataFile dataFile : dataFiles) {
             // Warning : get Datetime as UTC
             DateTime fileStart = DateUtils.dateTimeToUTC(dataFile.getStartCoverageDate());
 
+            calendar.setTime(fileStart.toDate());
+
+            int h = calendar.get(Calendar.HOUR_OF_DAY);
+            int m = calendar.get(Calendar.MINUTE);
+            int s = calendar.get(Calendar.SECOND);
+            
+            String format = DateUtils.DATETIME_PATTERN3;
+
+            if ((h == 0) && (m == 0) && (s == 0)) {
+	            format = DateUtils.DATETIME_PATTERN1;
+	        }
+
             if (fileStart != null) {
-                timeCoverage.add(DateUtils.DATETIME_FORMATTERS.get(DateUtils.DATETIME_PATTERN3).print(fileStart));
+                timeCoverage.add(DateUtils.DATETIME_FORMATTERS.get(format).print(fileStart));
             }
 
         }

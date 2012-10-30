@@ -1336,7 +1336,6 @@ public class NetCdfReader {
         if ((h == 0) && (m == 0) && (s == 0)) {
             format = DATE_FORMAT;
         }
-
         return FastDateFormat.getInstance(format, GMT_TIMEZONE).format(date);
     }
 

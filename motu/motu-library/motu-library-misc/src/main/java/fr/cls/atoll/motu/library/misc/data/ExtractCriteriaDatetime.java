@@ -357,6 +357,7 @@ public class ExtractCriteriaDatetime extends fr.cls.atoll.motu.library.misc.data
         return range;
     }
 
+    
     /**
      * @return start date as string
      * @throws MotuException
@@ -364,7 +365,7 @@ public class ExtractCriteriaDatetime extends fr.cls.atoll.motu.library.misc.data
     public String getFromAsString() throws MotuException {
         return NetCdfReader.getDateAsGMTNoZeroTimeString(from);
     }
-
+    
     /**
      * @return end date as string
      * @throws MotuException
