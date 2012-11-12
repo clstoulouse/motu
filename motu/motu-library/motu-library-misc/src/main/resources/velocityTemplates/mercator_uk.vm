@@ -6,12 +6,12 @@
 ##----------------------------------------------------------------------------------
 ## ------------------------------ mercator_uk_printSubTitleCatalog --------------------------------
 #macro(mercator_uk_printSubTitleCatalog)
-	Data Product Catalogue
+	Catalogue
 #end
 
 ## ------------------------------ mercator_uk_printSubTitleProductMetadata --------------------------------
 #macro(mercator_uk_printSubTitleProductMetadata)
-	&gt; <a href="?action=listcatalog&service=${service.getNameEncoded()}">Data Product Catalogue</a>
+	<a href="?action=listcatalog&service=${service.getNameEncoded()}">Catalogue</a>
 	&gt; $titleMetadata
 
 
@@ -19,7 +19,7 @@
 
 ## ------------------------------ mercator_uk_printSubTitleProductDownloadHome --------------------------------
 #macro(mercator_uk_printSubTitleProductDownloadHome)
-	&gt; <a href="?action=listcatalog&service=${service.getNameEncoded()}">Data Product Catalogue</a>
+	<a href="?action=listcatalog&service=${service.getNameEncoded()}">Catalogue</a>
     #if($downloadOnTop == false)
 		&gt; <a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">$titleMetadata</a>
     #end
@@ -68,116 +68,33 @@
 
 <head>
 
-<style type="text/css">
-.limitdisplay-user { display: none; }.limitdisplay-user-10 { display: inline; }.limitdisplay-user-block-10 { display: block; }</style>                                                              
-            
-<title>         Homepage - Mercator Ocean
-        </title>
+    <title>Mercator Océan, prévision océanique opérationnelle - Bulletins</title>
 
-    <meta name="Content-Type" content="text/html; charset=utf-8" /> <meta name="Content-language" content="en-US" />                <meta name="author" content="Mercator Ocean" />
-                    <meta name="copyright" content="Mercator Ocean" />
-                    <meta name="description" content="Mercator Ocean French Operational Oceanography centre; develops and runs operational systems able to describe, to monitor and to forecast the ocean in 3D models at any location in the world, from the deep ocean to the surface: currents, temperature, salinity, sea level, Ice Sea; 14 days ocean forecast in real time; numerical products, graphical products and expertise." />
-                    <meta name="keywords" content="altimetry,Argo,Atlantic,biogeochemistry and marine resources,bulletin,climate and seasonal forecast,CNES,CNRS,coastal environment,Coriolis,current forecast Fukushima,data assimilation,forecast,global,global ocean,GMES,hindcast,Ifremer,in situ measurements,IRD,marine currents,maritime safety,Mediterranean,MERSEA,Météo-France,MNATL,modeling,modelling,MyOcean,NEMO,nowcast,ocean forecasters,ocean forecasting,oceanic bulletin,oceanic products,oceanography,oceanography forecaster,offshore operations,OPA,operational oceanography,operational oceanography center,PAM,real time,reanalysis,routing,rower,satellites,SHOM,SST" />
-    <meta name="MSSmartTagsPreventParsing" content="TRUE" />
-<meta name="generator" content="eZ Publish" />
-    <link rel="Home" href="$httpSite/eng" title="Mercator Ocean front page" />
-<link rel="Index" href="$httpSite/eng" />
-<link rel="Top"  href="$httpSite/eng" title="           Homepage - Mercator Ocean
-        " />
-<link rel="Search" href="$httpSite/eng/content/advancedsearch" title="Search Mercator Ocean" />
-<link rel="Shortcut icon" href="$httpSite/extension/ezmercator/design/mercator/images/favicon.ico" type="image/x-icon" /><link rel="Copyright" href="$httpSite/eng/informations-generales/mentions-legales" />
-<link rel="Author" href="$httpSite/eng/informations-generales/mentions-legales" /><link rel="alternate" type="application/rss+xml" title="RSS" href="$httpSite/eng/rss/feed/news" />
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+    <meta name="description" content="previsions en temps reel de l'ocean jusqu'a 14 jours, oceanographie operationnelle">
+
+    <meta name="keywords" content="oceanographie operationelle, produits operationnels, description de l'ocean">
 
 
 
-<script type="text/javascript" src="$httpSite/extension/ezwebin/design/ezwebin/javascript/insertmedia.js" charset="utf-8"></script>
 
 
-<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/jquery-1.4.2.min.js"></script>
-<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/jquery-ui.min.js"></script>
-<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/slimbox2.js"></script>
-<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/ezmercator.js"></script>
-<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/google-analytics.js"></script>
-                                                                                            
-        
-<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/swfobject.js"></script>
+    <meta http-equiv="expires" content="0">
 
-
-<script type="text/javascript">
-    var flashvars = {};
-    flashvars.xml_file = "$httpSite/eng/layout/set/xml/content/view/carousel/194";
-    var params = {};
-    params.wmode = "transparent";
-    var attributes = {};
-    attributes.id = "slider";
-    swfobject.embedSWF(
-        "$httpSite/var/ezwebin_site/storage/original/application/efd68f79b71c70b091e6ec78025e17e0", 
-        "flashmo_slider", 
-        "680", 
-        "275", 
-        "9.0.0", 
-        false,
-        flashvars, 
-        params, 
-        attributes
-    );  
-</script>
+    <meta http-equiv="pragma" content="no-cache">
 
 
 
-<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/datepicker/jquery.datePicker.js"></script>
-<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/datepicker/date.js"></script>
-
-<script type='text/javascript' src="$httpSite/extension/ezmercator/design/mercator/javascript/datepicker/datepicker.js"></script>
-
-<script type="text/javascript">
-$(document).ready(
-  function() {
-    var selectors = new Array('map_day', 'map_month', 'map_year');
-
-    for ( var i = 0; i < selectors.length; i++) {
-      $('#'.concat(selectors[i])).change(function() {
-    $('#date_selector_button').click();
-      });
-    }
-  });
-</script>
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/fr_FR/all.js#xfbml=1";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-
-<script type="text/javascript">
-  window.___gcfg = {lang: 'en-GB'};
-
-  (function() {
-    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-    po.src = 'https://apis.google.com/js/plusone.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-  })();
-</script>
-
-##      <link rel="stylesheet" type="text/css" href="$httpSite/var/ezwebin_site/cache/public/stylesheets/02a4cecbe685ababac74085a24b416b6_all.css" />
 
 
+    <link rel="stylesheet" type="text/css" href="$httpSite/tools/template/v4/css/ezmercator.css">
+    <link rel="stylesheet" type="text/css" href="$httpSite/tools/template/v4/css/ezmercator_border.css">
+    <link rel="stylesheet" type="text/css" href="$httpSite/tools/template/v4/css/bulletin.css">
+    <link rel="stylesheet" type="text/css" href="$httpSite/tools/template/v4/css/ezmercator_core.css">
+    <link rel="stylesheet" type="text/css" href="$httpSite/tools/template/v4/css/ezmercator_menu.css">
 
-<style type='text/css'>
-    @import url("$httpSite/extension/ezmercator/design/mercator/stylesheets/ezmercator_motu.css");
-##    @import url("$httpSite/extension/ezmercator/design/mercator/stylesheets/ezmercator.css");
-    @import url("$httpSite/extension/ezmercator/design/mercator/stylesheets/ezmercator_menu.css");
-    @import url("$httpSite/extension/ezmercator/design/mercator/stylesheets/jquery-ui.css");
-        
-        @import url("$httpSite/extension/ezmercator/design/mercator/stylesheets/datepicker.css");
-</style>
-    <style type='text/css'>
-        @import url("$httpSite/extension/ezmercator/design/mercator/stylesheets/ezmercator_frontpage.css");
-    </style>
 
-    
 </head>
 
 <style>
@@ -236,29 +153,29 @@ $(document).ready(
 		border=0;
 	}
 	
-    h1 {
-        display: block;
-        font-size: 2em;
-        -webkit-margin-before: 0.67em;
-        -webkit-margin-after: 0.67em;
-        -webkit-margin-start: 0px;
-        -webkit-margin-end: 0px;
-        font-weight: bold;
-    }
-    
-    h2 {
-        display: block;
-        font-size: 1.5em;
-        -webkit-margin-before: 0.83em;
-        -webkit-margin-after: 0.83em;
-        -webkit-margin-start: 0px;
-        -webkit-margin-end: 0px;
-        font-weight: bold;
-    }    
+##    h1 {
+##        display: block;
+##        font-size: 2em;
+##        -webkit-margin-before: 0.67em;
+##        -webkit-margin-after: 0.67em;
+##        -webkit-margin-start: 0px;
+##        -webkit-margin-end: 0px;
+##        font-weight: bold;
+##    }
+##    
+##    h2 {
+##        display: block;
+##        font-size: 1.5em;
+##        -webkit-margin-before: 0.83em;
+##        -webkit-margin-after: 0.83em;
+##        -webkit-margin-start: 0px;
+##        -webkit-margin-end: 0px;
+##        font-weight: bold;
+##    }    
 		
 </style>
 
-<body id="eng-US" onLoad="init()" onUnload="unload()">
+<body onLoad="init()" onUnload="unload()">
 
 <script language="JavaScript" type="text/javascript">
 
@@ -276,9 +193,9 @@ $(document).ready(
 <!-- LANGUAGE FORM -->
 	#parse("velocityTemplates/mercator/changeLanguageForm.vm")
 	    
-    <ul>
+##    <ul>
     	#mercator_uk_printSubTitle()
-    </ul>
+##    </ul>
 
 
 <!-- Corps du document -->

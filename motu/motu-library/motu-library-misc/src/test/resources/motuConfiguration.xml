@@ -131,7 +131,7 @@
     <!--===========================================-->	
     <configService defaultLanguage="FR" description="Ocean data"
         group="motu-rest-mercator" 
-        httpBaseRef="http://www.mercator-ocean.fr"
+        httpBaseRef="http://bulletin.mercator-ocean.fr"
         name="&mercatorUrn;motu-rest-mercator" veloTemplatePrefix="mercator">
         <catalog name="catalog.xml" type="tds"
             urlSite="http://opendapmo.mercator-ocean.fr/thredds" /> 
