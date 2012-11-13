@@ -68,7 +68,7 @@
 
 <head>
 
-    <title>Mercator Océan, prévision océanique opérationnelle - Bulletins</title>
+    <title>Mercator Ocean, Operational Ocean Forecasting - Bulletins</title>
 
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
@@ -194,9 +194,10 @@
 	#parse("velocityTemplates/mercator/changeLanguageForm.vm")
 	    
 ##    <ul>
-    	#mercator_uk_printSubTitle()
+##    	#mercator_uk_printSubTitle()
 ##    </ul>
 
+    <a href="javascript:history.back()">Back</a>
 
 <!-- Corps du document -->
 	<a name="debut"></a>
