@@ -205,7 +205,7 @@
 	#set($tocLowLevel = 1)
 	#set($tocHighLevel = 1)
 	#set($tocAsRow = true)
-	#set($printcatalogtoc = true)
+	#set($printcatalogtoc = false)
 
 	#parse ($body_template)
 
