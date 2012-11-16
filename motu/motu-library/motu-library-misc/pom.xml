@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>cls.atoll.motu</groupId>
 		<artifactId>motu-parent</artifactId>
-		<version>2.1.21</version>
+		<version>2.1.22-SNAPSHOT</version>
 		<relativePath>../../motu-parent</relativePath>
 	</parent>
 	
     <groupId>cls.atoll.motu.library</groupId>
     <artifactId>motu-library-misc</artifactId>
-    <version>2.1.21</version>
+    <version>2.1.22-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Motu Library Misc</name>
@@ -21,22 +21,22 @@
 		<dependency>
 			<groupId>cls.atoll.motu.library</groupId>
 			<artifactId>motu-library-converter</artifactId>
-			<version>2.1.21</version>
+			<version>2.1.22-SNAPSHOT</version>
 		</dependency>	
         <dependency>
             <groupId>cls.atoll.motu.api</groupId>
             <artifactId>motu-api-message</artifactId>
-            <version>2.1.21</version>
+            <version>2.1.22-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>cls.atoll.motu.library</groupId>
             <artifactId>motu-library-inventory</artifactId>
-            <version>2.1.21</version>
+            <version>2.1.22-SNAPSHOT</version>
         </dependency>
         <dependency>
 			<groupId>cls.atoll.motu.library</groupId>
 			<artifactId>motu-library-cas</artifactId>
-			<version>2.1.21</version>
+			<version>2.1.22-SNAPSHOT</version>
         </dependency>
 		<!--     
         <dependency>
@@ -253,8 +253,8 @@
     </dependencies>
 	
 	<scm>
-		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/tags/motu-2.1.21/motu/motu-library/motu-library-misc</connection>
-		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/tags/motu-2.1.21/motu/motu-library/motu-library-misc</url>
+		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-misc</connection>
+		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-misc</url>
 	</scm>
     
 </project>
