@@ -81,8 +81,8 @@ public class TestCASRest {
     public static void main(String... args) throws Exception {
         System.setProperty("http.proxyHost", "proxy-bureautique.cls.fr");
         System.setProperty("http.proxyPort", "8080");
-        String username = "xxx";
-        String password = "xxx";
+        String username = "adminweb";
+        String password = "adminweb";
         validateFromCAS(username, password);
         // loginToCAS(username, password);
         // getRedirectUrl();
@@ -441,7 +441,7 @@ public class TestCASRest {
         // GetMethod method = new GetMethod(url );
 
         HostConfiguration hostConfiguration = new HostConfiguration();
-        hostConfiguration.setProxy("proxy.cls.fr", 8080);
+        hostConfiguration.setProxy("proxy-bureautique.cls.fr", 8080);
         client.setHostConfiguration(hostConfiguration);
 
         // Provide custom retry handler is necessary
