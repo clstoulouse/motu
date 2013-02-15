@@ -165,7 +165,7 @@
 #if (!$product.isProductAlongTrack()) 	
 	<tr>	
 	#if($downloadOnTop)						
-    	<td width="80%">
+    	<td width="50%">
     		<li> 
 				Télécharger&nbsp;
     			<a href=?action=productdownloadhome&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
@@ -178,6 +178,9 @@
     					 $titleMetadata
     			</a>	
     	</td>
+    	<td>
+    		Dernière mise à jour :&nbsp;$productMetaData.getLastUpdate()
+	    </td>    	
 	#else
     	<td>
     		<li>
@@ -186,6 +189,9 @@
     			</a>	
 			</li>	
     	</td>
+    	<td>
+    		Dernière mise à jour :&nbsp;$productMetaData.getLastUpdate()
+	    </td>
 	#end
 	<td class="producttype">
 		$Type

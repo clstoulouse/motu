@@ -607,6 +607,7 @@
 			<xsd:attribute name="id" type="xsd:string"/>
 			<xsd:attribute name="title" type="xsd:string"/>
 			<xsd:attribute name="url" type="xsd:string"/>
+			<xsd:attribute name="lastUpdate" type="xsd:string"/>
 			<xsd:attributeGroup ref="codeMsg"/>			  		  	  
 		
 		</xsd:complexType>

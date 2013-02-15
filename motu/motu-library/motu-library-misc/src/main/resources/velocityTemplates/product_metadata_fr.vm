@@ -61,6 +61,7 @@
 			<a href=${pageSiteWeb}>Informations produit</a>
 			</li>			
 		#end
+		<p></p>		
 ##	</ul>
 #end
 ## -------------------------------------------- printTemporalCoverage --------------------------------
@@ -81,6 +82,14 @@
 	<p>Aucune couverture géographique.</p>
 	#end
 		
+#end
+
+## -------------------------------------------- printLastUpdate --------------------------------
+#macro(product_metadata_uk_printLastUpdate)
+	<p></p>
+	<ul class="puce2">
+		<li><b>Date:</b>&nbsp&nbsp;$productMetaData.getLastUpdate()</li>
+	</ul>
 #end
 
 ## -------------------------------------------- printGeoCoverageTH --------------------------------
@@ -289,6 +298,9 @@
 
 <h3>Couverture temporelle</h3>
 #product_metadata_fr_printTemporalCoverage()
+
+<h3>Dernière mise à jour</h3>
+#product_metadata_uk_printLastUpdate()
 
 <h2>Métadonnées par variable</h2>
 #set ($listParameterMetadata = $productMetaData.getParameterMetaDatasFiltered() )

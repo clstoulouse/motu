@@ -2624,7 +2624,8 @@ public class Organizer {
 
         productMetadataInfo.setId(product.getProductId());
         productMetadataInfo.setTitle(productMetaData.getTitle());
-
+        productMetadataInfo.setLastUpdate(product.getProductMetaData().getLastUpdate());
+        
         productMetadataInfo.setGeospatialCoverage(Organizer.initGeospatialCoverage(productMetaData));
         productMetadataInfo.setProperties(Organizer.initProperties(productMetaData));
         productMetadataInfo.setTimeCoverage(Organizer.initTimeCoverage(productMetaData));
@@ -5689,6 +5690,9 @@ public class Organizer {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductMetadataInfoFromFile(String) - exiting");
         }
+        
+        productMetadataInfo.setLastUpdate(product.getProductMetaData().getLastUpdate().toString());
+        
         return productMetadataInfo;
     }
 

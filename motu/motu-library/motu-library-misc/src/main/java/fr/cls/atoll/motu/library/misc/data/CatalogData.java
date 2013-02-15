@@ -56,6 +56,7 @@ import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.inventory.ResourceOLA;
 import fr.cls.atoll.motu.library.inventory.ResourcesOLA;
+import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
@@ -285,11 +286,11 @@ public class CatalogData {
         }
 
         product.loadInventoryMetaData(inventoryOLA);
-
         product.setLocationMetaData(xmlUri);
 
         ProductMetaData productMetaData = product.getProductMetaData();
         productMetaData.setProductType(currentProductType);
+        productMetaData.setLastUpdate(DateUtils.getDate(inventoryOLA.getLastModificationDate().toString()));
         sameProductTypeDataset = new ArrayList<Product>();
         sameProductTypeDataset.add(product);
 
@@ -1159,7 +1160,10 @@ public class CatalogData {
 
         // Loads Property meatadata
         loadTdsMetadataProperty(datasetType, productMetaData);
-
+        
+        // Loads last date update
+        loadTdsMetadataLastDate(datasetType, productMetaData);        
+        
         product.setProductMetaData(productMetaData);
 
         // // Get Opendap (Dods) url of the dataset.
@@ -1551,7 +1555,7 @@ public class CatalogData {
      * @param productMetaData the product meta data
      * 
      * @throws MotuException the motu exception
-     */
+     */    
     private void loadTdsMetadataProperty(DatasetType datasetType, ProductMetaData productMetaData) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadTdsMetadataProperty(DatasetType, ProductMetaData) - entering");
@@ -1573,6 +1577,38 @@ public class CatalogData {
             }
             productMetaData.addListTDSMetaDataProperty((Property) objectElt);
 
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadTdsMetadataProperty(DatasetType, ProductMetaData) - exiting");
+        }
+    }    
+    
+    /**
+     * Load tds last date property (inside the metadata tag).
+     * 
+     * @param datasetType the dataset type
+     * @param productMetaData the product meta data
+     * 
+     * @throws MotuException the motu exception
+     */
+    private void loadTdsMetadataLastDate(DatasetType datasetType, ProductMetaData productMetaData) throws MotuException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("loadTdsMetadataLastDate(DatasetType, ProductMetaData) - entering");
+        }
+
+        List<Object> listProperty = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), DateTypeFormatted.class);
+
+        productMetaData.setListTDSMetaDataProperty(null);
+
+        for (Object objectElt : listProperty) {
+
+            if (!(objectElt instanceof DateTypeFormatted)) {
+                continue;
+            }
+            
+            DateTypeFormatted date = (DateTypeFormatted)objectElt;
+            productMetaData.setLastUpdate(DateUtils.getDate(date.getValue()));
         }
 
         if (LOG.isDebugEnabled()) {

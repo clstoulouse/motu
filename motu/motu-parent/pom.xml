@@ -311,7 +311,13 @@
 		</repository>
 	</repositories>
     -->
-	
+	<repositories>
+        <repository>
+            <id>cls-to-ext-repo</id>
+            <name>CLS External Repository</name>
+            <url>http://mvnrepo-ext.cls.fr/nexus/content/groups/cls-to-altamira-public/</url>
+        </repository>	
+	</repositories>
 <scm>
 		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-parent</connection>
 		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-parent</url>

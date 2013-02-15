@@ -652,6 +652,11 @@
 		<xs:attribute name="defaultLanguage" type="xs:string"
 			default="UK" />
 
+		<!-- profiles :
+			Profiles associated to a service (ex-> "group1,group2,...,groupN") ?
+		-->
+		<xs:attribute name="profiles" type="xs:string" use="optional"/>
+
 		<xs:attribute name="keepDataFilesList" type="xs:boolean"
 			default="false">
 			<xs:annotation>

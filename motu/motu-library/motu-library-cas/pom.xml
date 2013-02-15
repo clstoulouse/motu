@@ -65,8 +65,6 @@
 		   <artifactId>cas-client-core</artifactId>
 		   <version>3.1.11-PATCH-CLS</version>
 		</dependency>
-		
-		
 	</dependencies>
 	<scm>
 		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-misc</connection>

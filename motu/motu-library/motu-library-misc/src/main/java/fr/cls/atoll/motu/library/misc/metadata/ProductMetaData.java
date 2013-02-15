@@ -431,6 +431,31 @@ public class ProductMetaData {
     public void setUpdated(String updated) {
         this.updated = updated;
     }
+    
+    /** Last update of a dataset. */
+    private String lastUpdate = "Not Available";    
+    
+    /**
+     * Getter of the property <tt>lastUpdate</tt>.
+     * 
+     * @return Returns the lastUpdate.
+     * 
+     * @uml.property name="lastUpdate"
+     */
+    public String getLastUpdate() {
+        return lastUpdate;
+    }
+
+    /**
+     * Setter of the property <tt>lastUpdate</tt>.
+     * 
+     * @param lastUpdate The updated to set.
+     * 
+     * @uml.property name="lastUpdate"
+     */
+    public void setLastUpdate(String lastupdate) {
+        this.lastUpdate = lastupdate;
+    }    
 
     /** The parameter categories. */
     private Collection<ParameterCategory> parameterCategories;

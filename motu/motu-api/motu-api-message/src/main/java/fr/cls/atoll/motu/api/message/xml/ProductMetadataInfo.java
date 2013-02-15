@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="title" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="url" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="lastUpdate" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -77,6 +78,8 @@ public class ProductMetadataInfo {
     protected String title;
     @XmlAttribute(name = "url")
     protected String url;
+    @XmlAttribute(name = "lastUpdate")
+    protected String lastUpdate;    
     @XmlAttribute(name = "msg")
     protected String msg;
     @XmlAttribute(name = "code")
@@ -345,6 +348,30 @@ public class ProductMetadataInfo {
     public void setUrl(String value) {
         this.url = value;
     }
+    
+    /**
+     * Gets the value of the lastUpdate property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getLastUpdate() {
+        return lastUpdate;
+    }
+
+    /**
+     * Sets the value of the lastUpdate property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setLastUpdate(String value) {
+        this.lastUpdate = value;
+    }    
 
     /**
      * Gets the value of the msg property.

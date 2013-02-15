@@ -644,7 +644,8 @@ public class Product {
 
         productMetaData.setProductId(inventoryOLA.getResource().getUrn().toString());
         productMetaData.setTitle(Organizer.getDatasetIdFromURI(inventoryOLA.getResource().getUrn().toString()));
-
+        productMetaData.setLastUpdate(DateUtils.getDate(inventoryOLA.getLastModificationDate().toString()));
+        
         Resource resource = inventoryOLA.getResource();
 
         TimePeriod timePeriod = resource.getTimePeriod();

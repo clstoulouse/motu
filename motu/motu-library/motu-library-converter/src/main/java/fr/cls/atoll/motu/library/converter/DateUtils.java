@@ -327,5 +327,28 @@ public class DateUtils {
         }
         return period;
     }
+    
+    /**
+     * Convert a given date into a string representation (only date).
+     * 
+     * @param st the full date to print.
+     * 
+     * @return only the date (extract)
+     */
+    public static String getDate(String st) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getDate(DateTime) - entering");
+        }
+
+        if (st.contains("T")) {
+        	String[] tmp = st.split("T");
+        	return tmp[0];
+        }        
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getDate(DateTime) - exiting");
+        }
+        return st;
+    }    
 
 }
