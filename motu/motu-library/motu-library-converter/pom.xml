@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>cls.atoll.motu</groupId>
 		<artifactId>motu-parent</artifactId>
-		<version>2.1.29</version>
+		<version>2.1.30-SNAPSHOT</version>
 		<relativePath>../../motu-parent</relativePath>
 	</parent>
 	
     <groupId>cls.atoll.motu.library</groupId>
     <artifactId>motu-library-converter</artifactId>
-    <version>2.1.29</version>
+    <version>2.1.30-SNAPSHOT</version>
     <packaging>jar</packaging>
 	
     <name>Motu Library Converter</name>
@@ -56,8 +56,8 @@
     </dependencies>
 	
 	<scm>
-		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/tags/motu-2.1.29/motu/motu-library/motu-library-converter</connection>
-		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/tags/motu-2.1.29/motu/motu-library/motu-library-converter</url>
+		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-converter</connection>
+		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-converter</url>
 	</scm>
     
 </project>
