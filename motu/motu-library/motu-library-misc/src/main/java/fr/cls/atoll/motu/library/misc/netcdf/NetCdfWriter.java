@@ -3212,19 +3212,19 @@ public class NetCdfWriter {
         // this is not the first part (minMax != null)
         // Normalize longitude with first part min value (as center longitude)
         if (axis.getAxisType() == AxisType.Lon) {
-            minMaxWork.min = minMax.min;
             //double center = ((minMax.min != 0.) ? minMax.min : minMax.max);
             double center = (minMax.min + minMax.max) / 2;
+            minMaxWork.min = LatLonPointImpl.lonNormal(minMaxWork.min, center);
             minMaxWork.max = LatLonPointImpl.lonNormal(minMaxWork.max, center);
-        } else {
+        } 
 
-            if (minMax.min < minMaxWork.min) {
-                minMaxWork.min = minMax.min;
-            }
-            if (minMax.max > minMaxWork.max) {
-                minMaxWork.max = minMax.max;
-            }
+        if (minMax.min < minMaxWork.min) {
+            minMaxWork.min = minMax.min;
         }
+        if (minMax.max > minMaxWork.max) {
+            minMaxWork.max = minMax.max;
+        }
+        
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("getMinMaxSkipMissingData() - exiting");

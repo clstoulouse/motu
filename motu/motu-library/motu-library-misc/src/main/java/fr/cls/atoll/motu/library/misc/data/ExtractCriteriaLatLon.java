@@ -24,26 +24,20 @@
  */
 package fr.cls.atoll.motu.library.misc.data;
 
-import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
-import fr.cls.atoll.motu.library.misc.tds.server.SpatialRange;
-
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.measure.DecimalMeasure;
 
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
-import ucar.ma2.Range;
 import ucar.ma2.MAMath.MinMax;
+import ucar.ma2.Range;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -56,6 +50,15 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
+import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.library.misc.tds.server.SpatialRange;
 
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -631,7 +634,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
 
         CoordinateAxis xaxis = gcs.getXHorizAxis();
         CoordinateAxis yaxis = gcs.getYHorizAxis();
-
+ 
         // Warning : CoordinateAxis min/max values doesn't have regard for missing value/fill value.
         MAMath.MinMax xMinMax = NetCdfWriter.getMinMaxSkipMissingData(xaxis, null);
         MAMath.MinMax yMinMax = NetCdfWriter.getMinMaxSkipMissingData(yaxis, null);
@@ -858,6 +861,21 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         return listRanges;
     }
 
+    public static final Comparator<Range> COMPARE_BY_RANGE = new Comparator<Range>() {
+        /**
+         * Introduce a comparision between metadata type by their range.
+         * 
+         * @param o1 first metadata type  to compare
+         * @param o2 second metadata type  to compare
+         * @return the comparison result.
+         */
+        public int compare(Range o1, Range o2) {
+            final Integer r1 = o1.first();
+            final Integer r2 = o2.first();
+            return r1.compareTo(r2);
+        }
+    };
+
     /**
      * Gets a list of Index Ranges for the given lat, lon bounding box. For projection, only an approximation
      * based on lat/lon corners. Must have 2D/LatLon for x and y axis.
@@ -875,8 +893,11 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         double maxx;
         double miny;
         double maxy;
-
+        
         List<List<Range>> listRanges = new ArrayList<List<Range>>();
+
+//        SortedMap<Range, List<Double>> mapLonMinValueByLatRange = new TreeMap<Range, List<Double>>(ExtractCriteriaLatLon.COMPARE_BY_RANGE);
+//        SortedMap<Range, List<List<Range>>> mapRangeByLatRange = new TreeMap<Range, List<List<Range>>>(ExtractCriteriaLatLon.COMPARE_BY_RANGE);
 
         LatLonPointImpl llpt = rect.getLowerLeftPoint();
         LatLonPointImpl urpt = rect.getUpperRightPoint();
@@ -988,10 +1009,30 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                         // + " lon=" + lon);
                         List<Range> ranges = new ArrayList<Range>();
                         try {
-                            ranges.add(new Range(minj, maxj));
-                            ranges.add(new Range(mini, maxi));
+                        	Range rangeLat = new Range(minj, maxj);
+                        	Range rangeLon = new Range(mini, maxi);
+                            ranges.add(rangeLat);
+                            ranges.add(rangeLon);
                             listRanges.add(ranges);
-
+//                            List<List<Range>> listRangesByLat = mapRangeByLatRange.get(rangeLat);
+//                            if (listRangesByLat == null) {
+//                            	listRangesByLat = new ArrayList<List<Range>>();
+//                            	mapRangeByLatRange.put(rangeLat, listRangesByLat);
+//                            }
+//                            
+//                            listRangesByLat.add(ranges);
+//                            
+//                            List<Double> listLonMin = mapLonMinValueByLatRange.get(rangeLat);
+//                            if (listLonMin == null) {
+//                            	listLonMin = new ArrayList<Double>();
+//                            	mapLonMinValueByLatRange.put(rangeLat, listLonMin);
+//                            }
+//                            
+//                            double longitudeCenter = (latLonRect.getLonMin() + latLonRect.getLonMax()) / 2;
+//                            double lonNorm = LatLonPointImpl.lonNormal(lon, longitudeCenter);
+//
+//                            listLonMin.add(lonNorm);
+                            
                             computeLatLonMinMax(latAxis, lonAxis, minj, mini, maxj, maxi, minx, maxx);
                             // // System.out.println("-----------NEW RANGE---------------");
                             // // System.out.println(minj + " " + maxj);
@@ -1039,6 +1080,50 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                     }
                 }
             }
+            
+            if (newRanges) {
+                // System.out.println("Outside -->" + "minj=" + minj + " maxj=" + maxj + " mini=" +
+                // mini + " maxi=" + maxi + " lat=" + lat
+                // + " lon=" + lon);
+                List<Range> ranges = new ArrayList<Range>();
+                try {
+                	Range rangeLat = new Range(minj, maxj);
+                	Range rangeLon = new Range(mini, maxi);
+                    ranges.add(rangeLat);
+                    ranges.add(rangeLon);
+                    listRanges.add(ranges);
+//                    List<List<Range>> listRangesByLat = mapRangeByLatRange.get(rangeLat);
+//                    if (listRangesByLat == null) {
+//                    	listRangesByLat = new ArrayList<List<Range>>();
+//                    	mapRangeByLatRange.put(rangeLat, listRangesByLat);
+//                    }
+//                    
+//                    listRangesByLat.add(ranges);
+//                    
+//                    List<Double> listLonMin = mapLonMinValueByLatRange.get(rangeLat);
+//                    if (listLonMin == null) {
+//                    	listLonMin = new ArrayList<Double>();
+//                    	mapLonMinValueByLatRange.put(rangeLat, listLonMin);
+//                    }
+//                    
+//                    double longitudeCenter = (latLonRect.getLonMin() + latLonRect.getLonMax()) / 2;
+//                    double lonNorm = LatLonPointImpl.lonNormal(lon, longitudeCenter);
+//
+//                    listLonMin.add(lonNorm);
+                    
+                    computeLatLonMinMax(latAxis, lonAxis, minj, mini, maxj, maxi, minx, maxx);
+                    newRanges = false;
+                    mini = Integer.MAX_VALUE;
+                    minj = Integer.MAX_VALUE;
+                    maxi = -1;
+                    maxj = -1;
+
+                } catch (InvalidRangeException e) {
+                    throw new MotuException(
+                            "ERROR in ExtractCriteriaLatLon - getListRangesFromLatLonRect2D - while creating list of ranges",
+                            e);
+                }
+            }            
         }
 
         if (newRanges) {
@@ -1046,14 +1131,58 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
             // maxi=" + maxi + " lat=" + lat + " lon=" + lon);
             List<Range> ranges = new ArrayList<Range>();
             try {
-                ranges.add(new Range(minj, maxj));
-                ranges.add(new Range(mini, maxi));
+            	Range rangeLat = new Range(minj, maxj);
+            	Range rangeLon = new Range(mini, maxi);
+                ranges.add(rangeLat);
+                ranges.add(rangeLon);
                 listRanges.add(ranges);
+//                List<List<Range>> listRangesByLat = mapRangeByLatRange.get(rangeLat);
+//                if (listRangesByLat == null) {
+//                	listRangesByLat = new ArrayList<List<Range>>();
+//                	mapRangeByLatRange.put(rangeLat, listRangesByLat);
+//                }
+//                
+//                listRangesByLat.add(ranges);
+//                
+//                List<Double> listLonMin = mapLonMinValueByLatRange.get(rangeLat);
+//                if (listLonMin == null) {
+//                	listLonMin = new ArrayList<Double>();
+//                	mapLonMinValueByLatRange.put(rangeLat, listLonMin);
+//                }
+//                
+//                double longitudeCenter = (latLonRect.getLonMin() + latLonRect.getLonMax()) / 2;
+//                double lonNorm = LatLonPointImpl.lonNormal(lon, longitudeCenter);
+//
+//                listLonMin.add(lonNorm);
+                
                 computeLatLonMinMax(latAxis, lonAxis, minj, mini, maxj, maxi, minx, maxx);
             } catch (InvalidRangeException e) {
                 throw new MotuException("ERROR in ExtractCriteriaLatLon - getListRangesFromLatLonRect2D - while creating list of ranges", e);
             }
         }
+        
+//        for (Entry<Range, List<Double>> entry : mapLonMinValueByLatRange.entrySet()) {
+//        	Range latitudeRange = entry.getKey();
+//        	List<Double> longitudesMin = entry.getValue();
+//        	List<List<Range>> rangesList = mapRangeByLatRange.get(latitudeRange);
+//        	for (int i = 0 ; i < longitudesMin.size() - 1 ; i++) {
+//        		double lon1 = longitudesMin.get(i);
+//        		double lon2 = longitudesMin.get(i+1);
+//        		if (lon1 > lon2) {
+//        			List<Range> listTemp = rangesList.get(i+1);
+//        			rangesList.set(i+1, rangesList.get(i));
+//        			rangesList.set(i, listTemp);        			
+//        		}        		        		
+//        	}
+//        }
+//
+//        
+//        for (Entry<Range, List<List<Range>>> entry : mapRangeByLatRange.entrySet()) {
+//        	//Range latitudeRange = entry.getKey();
+//        	List<List<Range>> rangesList = entry.getValue();
+//        	listRanges.addAll(rangesList);
+//        }
+        
         return listRanges;
 
     }
