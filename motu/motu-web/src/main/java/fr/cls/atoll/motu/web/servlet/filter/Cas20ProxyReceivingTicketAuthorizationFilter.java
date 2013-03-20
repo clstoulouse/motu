@@ -90,7 +90,7 @@ public class Cas20ProxyReceivingTicketAuthorizationFilter implements Filter {
 			// Find the service in (MotuConfig, list of ConfigService) and check profiles from ldap attributes vs profile from MotuConfig
 			boolean match = match_ldap_vs_motu(attributes, conf, service);
 			if (!match) {
-				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+				response.sendError(HttpServletResponse.SC_FORBIDDEN); 
 				return;
 			}
 		}
