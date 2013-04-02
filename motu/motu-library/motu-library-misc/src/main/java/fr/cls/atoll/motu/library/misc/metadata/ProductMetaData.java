@@ -24,6 +24,32 @@
  */
 package fr.cls.atoll.motu.library.misc.metadata;
 
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
+
+import ucar.ma2.MAMath;
+import ucar.ma2.MAMath.MinMax;
+import ucar.nc2.Dimension;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis2D;
+import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.library.misc.data.CatalogData;
 import fr.cls.atoll.motu.library.misc.data.DatasetBase;
@@ -37,37 +63,6 @@ import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.library.misc.tds.server.Property;
 import fr.cls.atoll.motu.library.misc.tds.server.Variables;
-
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
-import org.globus.myproxy.GetParams;
-import org.joda.time.DateTime;
-import org.joda.time.Interval;
-
-import com.thoughtworks.xstream.converters.collections.MapConverter;
-
-import ucar.ma2.MAMath;
-import ucar.ma2.MAMath.MinMax;
-import ucar.nc2.Dimension;
-import ucar.nc2.Variable;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateAxis2D;
-import ucar.unidata.geoloc.LatLonRect;
 
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
