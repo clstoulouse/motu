@@ -104,6 +104,12 @@
         <filter-name>CAS Assertion Thread Local Filter</filter-name>
         <filter-class>org.jasig.cas.client.util.AssertionThreadLocalFilter</filter-class>
     </filter>
+	<filter>
+		<filter-name>CAS Authorization Filter</filter-name>
+		<filter-class>fr.cls.atoll.motu.web.servlet.filter.Cas20ProxyReceivingTicketAuthorizationFilter</filter-class>
+    </filter>
+	
+	<!-- CAS FILTER MAPPING -->
     <filter-mapping>
         <filter-name>CAS Validation Filter</filter-name>
         <url-pattern>/proxyCallback</url-pattern>
@@ -124,9 +130,11 @@
         <filter-name>CAS Assertion Thread Local Filter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    <!-- 	
-
--->
+	<filter-mapping>
+		<filter-name>CAS Authorization Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+    </filter-mapping> 
+    <!-- END CAS FILTERS -->
 
     <!-- Mapping Servlet -->
     <servlet>
@@ -177,6 +185,15 @@
         <servlet-name>Motu</servlet-name>
         <url-pattern>/OpendapAuth</url-pattern>
     </servlet-mapping>
+	
+	<error-page>
+		<error-code>404</error-code>
+		<location>/misgw-motu-404.html</location>
+	</error-page>	
+	<error-page>
+		<error-code>403</error-code>
+		<location>/misgw-motu-403.html</location>
+	</error-page>	
 
     <!-- End Mapping -->
 </web-app>
