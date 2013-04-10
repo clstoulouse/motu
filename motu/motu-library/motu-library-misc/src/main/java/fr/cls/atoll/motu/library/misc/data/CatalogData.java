@@ -289,8 +289,8 @@ public class CatalogData {
         product.setLocationMetaData(xmlUri);
 
         ProductMetaData productMetaData = product.getProductMetaData();
-        productMetaData.setProductType(currentProductType);
-        productMetaData.setLastUpdate(DateUtils.getDate(inventoryOLA.getLastModificationDate().toString()));
+        productMetaData.setProductType(currentProductType);        
+        productMetaData.setLastUpdate(DateUtils.getDateTimeAsUTCString(inventoryOLA.getLastModificationDate(), DateUtils.DATETIME_PATTERN2));
         sameProductTypeDataset = new ArrayList<Product>();
         sameProductTypeDataset.add(product);
 
@@ -1607,8 +1607,8 @@ public class CatalogData {
                 continue;
             }
             
-            DateTypeFormatted date = (DateTypeFormatted)objectElt;
-            productMetaData.setLastUpdate(DateUtils.getDate(date.getValue()));
+            DateTypeFormatted date = (DateTypeFormatted)objectElt;            
+            productMetaData.setLastUpdate(date.getValue());
         }
 
         if (LOG.isDebugEnabled()) {
