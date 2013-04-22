@@ -222,18 +222,21 @@ public class ScheduleCleanJob implements StatefulJob {
         // This filter only returns directories
         FileFilter fileFilter = new ExtractedFileToDeleteFilter(filePatterns, timeRef);
         File directoryToScan = new File(dirToScan);
-        File[] files = null;
-        files = directoryToScan.listFiles(fileFilter);
-
-        for (File fileToDelete : files) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug(String.format("cleanExtractedFile(JobExecutionContext) - Deleting file '%s' ", fileToDelete.getPath()));
-            }
-
-            boolean isDeleted = fileToDelete.delete();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug(String.format("cleanExtractedFile(JobExecutionContext) - file '%s' deleted: '%b'", fileToDelete.getPath(), isDeleted));
-            }
+        File[] files = directoryToScan.listFiles(fileFilter);
+        
+        
+        
+        if (files != null) {
+	        for (File fileToDelete : files) {
+	            if (LOG.isDebugEnabled()) {
+	                LOG.debug(String.format("cleanExtractedFile(JobExecutionContext) - Deleting file '%s' ", fileToDelete.getPath()));
+	            }
+	
+	            boolean isDeleted = fileToDelete.delete();
+	            if (LOG.isDebugEnabled()) {
+	                LOG.debug(String.format("cleanExtractedFile(JobExecutionContext) - file '%s' deleted: '%b'", fileToDelete.getPath(), isDeleted));
+	            }
+	        }
         }
 
         try {
@@ -295,20 +298,21 @@ public class ScheduleCleanJob implements StatefulJob {
         // This filter only returns directories
         FileFilter fileFilter = new ExtractedFileToDeleteFilter(filePatterns, timeRef);
         File directoryToScan = new File(System.getProperty("java.io.tmpdir"));
-        File[] files = null;
-        files = directoryToScan.listFiles(fileFilter);
+        File[] files = directoryToScan.listFiles(fileFilter);
 
-        for (File fileToDelete : files) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug(String.format("cleanTempFile(JobExecutionContext) - Deleting file '%s' ", fileToDelete.getPath()));
-            }
-
-            boolean isDeleted = fileToDelete.delete();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug(String.format("cleanTempFile(JobExecutionContext) - file '%s' deleted: '%b'", fileToDelete.getPath(), isDeleted));
-            }
+        if (files != null) {
+	        for (File fileToDelete : files) {
+	            if (LOG.isDebugEnabled()) {
+	                LOG.debug(String.format("cleanTempFile(JobExecutionContext) - Deleting file '%s' ", fileToDelete.getPath()));
+	            }
+	
+	            boolean isDeleted = fileToDelete.delete();
+	            if (LOG.isDebugEnabled()) {
+	                LOG.debug(String.format("cleanTempFile(JobExecutionContext) - file '%s' deleted: '%b'", fileToDelete.getPath(), isDeleted));
+	            }
+	        }
         }
-
+        
         try {
 
             deleteOlderFilesBeyondCacheSize(context);
@@ -449,8 +453,11 @@ public class ScheduleCleanJob implements StatefulJob {
         String filePatterns = getFilePatterns(context);
         FileFilter fileFilter = new ExtractedFileToDeleteFilter(filePatterns, null);
 
-        File[] files = null;
-        files = directoryToScan.listFiles(fileFilter);
+        File[] files = directoryToScan.listFiles(fileFilter);
+        
+        if (files == null) {
+        	return;
+        }
 
         List<File> listFiles = Arrays.asList(files);
 
