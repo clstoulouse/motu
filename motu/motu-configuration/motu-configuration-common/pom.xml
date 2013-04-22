@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>cls.atoll.motu</groupId>
 		<artifactId>motu-parent</artifactId>
-		<version>2.1.31-SNAPSHOT</version>
+		<version>2.1.31</version>
 		<relativePath>../../motu-parent</relativePath>
 	</parent>
 	
     <groupId>cls.atoll.motu.configuration</groupId>
     <artifactId>motu-configuration-common</artifactId>
-    <version>2.1.31-SNAPSHOT</version>
+    <version>2.1.31</version>
     <packaging>pom</packaging>
 
     <name>Motu Configuration Cartridge Common</name>
@@ -42,8 +42,8 @@
     </build>
 	
 	<scm>
-		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-configuration/motu-configuration-common</connection>
-		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-configuration/motu-configuration-common</url>
+		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/tags/motu-2.1.31/motu/motu-configuration/motu-configuration-common</connection>
+		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/tags/motu-2.1.31/motu/motu-configuration/motu-configuration-common</url>
 	</scm>
 	
 </project>
