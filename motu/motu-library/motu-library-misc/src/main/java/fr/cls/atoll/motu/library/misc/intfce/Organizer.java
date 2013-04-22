@@ -5751,7 +5751,7 @@ public class Organizer {
             this.currentService = service;
         }
 
-        ServiceData serviceData = getServices(serviceName);
+        ServiceData serviceData = getServices(serviceName.toLowerCase());
         if (serviceData == null) {
             throw new MotuException(String.format("Unknown service name '%s')", serviceName));
         }
