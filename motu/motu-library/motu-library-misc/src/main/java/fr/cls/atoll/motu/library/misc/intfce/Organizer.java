@@ -173,7 +173,7 @@ public class Organizer {
         /** html format. */
         HTML(1),
 
-        /** NetCdf format. */
+        /** NetCdf-3 format. */
         NETCDF(2),
 
         /** xml format. */
