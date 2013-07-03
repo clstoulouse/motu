@@ -122,8 +122,8 @@
 	</reporting>
 	
 	<scm>
-		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu</connection>
-		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu</url>
+		<connection>scm:svn:https://svn.code.sf.net/p/cls-motu/code/trunk/motu</connection>
+		<url>https://svn.code.sf.net/p/cls-motu/code/trunk/motu</url>
 	</scm>
 	
 	<issueManagement>

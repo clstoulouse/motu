@@ -45,8 +45,8 @@
     </build>
 	
 	<scm>
-		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-configuration/motu-configuration-sample</connection>
-		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-configuration/motu-configuration-sample</url>
+		<connection>scm:svn:https://svn.code.sf.net/p/cls-motu/code/trunk/motu/motu-configuration/motu-configuration-sample</connection>
+		<url>https://svn.code.sf.net/p/cls-motu/code/trunk/motu/motu-configuration/motu-configuration-sample</url>
 	</scm>
 	
 </project>

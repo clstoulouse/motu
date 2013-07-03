@@ -183,8 +183,8 @@
         </plugins>
     </build>
     <scm>
-        <connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-web</connection>
-        <url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-web</url>
+        <connection>scm:svn:https://svn.code.sf.net/p/cls-motu/code/trunk/motu/motu-web</connection>
+        <url>https://svn.code.sf.net/p/cls-motu/code/trunk/motu/motu-web</url>
     </scm>
 
     <profiles>

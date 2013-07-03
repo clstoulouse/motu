@@ -67,8 +67,8 @@
 		</dependency>
 	</dependencies>
 	<scm>
-		<connection>scm:svn:https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-misc</connection>
-		<url>https://cls-motu.svn.sourceforge.net/svnroot/cls-motu/trunk/motu/motu-library/motu-library-misc</url>
+		<connection>scm:svn:https://svn.code.sf.net/p/cls-motu/code/trunk/motu/motu-library/motu-library-misc</connection>
+		<url>https://svn.code.sf.net/p/cls-motu/code/trunk/motu/motu-library/motu-library-misc</url>
 	</scm>
     
 </project>
