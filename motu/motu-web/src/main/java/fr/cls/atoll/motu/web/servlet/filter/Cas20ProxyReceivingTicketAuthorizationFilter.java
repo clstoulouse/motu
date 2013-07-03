@@ -40,14 +40,17 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.jasig.cas.client.authentication.AttributePrincipal;
 
+import fr.cls.atoll.motu.api.message.MotuMonitoringParametersConstant;
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 
 public class Cas20ProxyReceivingTicketAuthorizationFilter implements Filter {
 
@@ -64,37 +67,66 @@ public class Cas20ProxyReceivingTicketAuthorizationFilter implements Filter {
 	public final void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain filterChain) 
 			throws IOException, ServletException {
 	
-		// Get Request
+		// Get Request,Response,Session
 		final HttpServletRequest request = (HttpServletRequest) servletRequest;
 		final HttpServletResponse response = (HttpServletResponse) servletResponse;
-		
+
 		// Get LDAP attributes from request
 		Principal p = request.getUserPrincipal();
 		AttributePrincipal principal = (AttributePrincipal)p;		
 		Map attributes = principal.getAttributes();
+				
+		// Get MOTU params
+		String service = null;
+		String defService = null;
+		MotuConfig conf = null;
+		String action = null;		
+		boolean DefaultActionIsListServices = false;
 		
-		// Get the MOTU service
-		String service = request.getParameter(MotuRequestParametersConstant.PARAM_SERVICE);
-		
-		// Authorization (only for service)
-		if (service != null) {
+		try {
+			// Get the MOTU service parameter (Get default service just in case)	
+			service = request.getParameter(MotuRequestParametersConstant.PARAM_SERVICE);
+			defService = Organizer.getMotuConfigInstance().getDefaultService();
+			
+			// Get the MOTU action parameter (and the default action)
+			action = request.getParameter(MotuRequestParametersConstant.PARAM_ACTION);			
+			DefaultActionIsListServices = Organizer.getMotuConfigInstance().getDefaultActionIsListServices();
 			
 			// Load MOTU configuration
-			MotuConfig conf = null;
-			try {
-				conf = Organizer.getMotuConfigInstance();
-			} catch (MotuException e) {
-				e.printStackTrace();
-			}			
-					
-			// Find the service in (MotuConfig, list of ConfigService) and check profiles from ldap attributes vs profile from MotuConfig
-			boolean match = match_ldap_vs_motu(attributes, conf, service);
-			if (!match) {
-				response.sendError(HttpServletResponse.SC_FORBIDDEN); 
-				return;
+			conf = Organizer.getMotuConfigInstance();
+		} catch (MotuException e) {
+			e.printStackTrace();
+		}		
+		
+		// Authorization (only for service)
+		boolean authorized = false;		
+		
+		if (service != null) {			
+			authorized = match_ldap_vs_motu(attributes, conf, service); // (1) given service check
+		}
+		else {	
+			if (action != null)	{
+				if (action.equals(MotuRequestParametersConstant.ACTION_LIST_SERVICES) || action.equals(MotuRequestParametersConstant.ACTION_PING) || action.equals(MotuMonitoringParametersConstant.ACTION_DEBUG) || action.equals(MotuRequestParametersConstant.ACTION_REFRESH)) {
+					authorized = true; // (2) public services
+				}
+				else {	
+					if (DefaultActionIsListServices) 	authorized = true;
+					else 								authorized = match_ldap_vs_motu(attributes, conf, defService); // (3) default service check
+				}
 			}
+			else {				
+				if (DefaultActionIsListServices) 	authorized = true;
+				else 								authorized = match_ldap_vs_motu(attributes, conf, defService); // (3) default service check
+			}				
+		}
+
+		// Not authorized (unauthorized/forbidden html page)
+		if (!authorized) {
+			response.sendError(HttpServletResponse.SC_FORBIDDEN); 
+			return;
 		}
 		
+		// Authorized = Everything ok
 		filterChain.doFilter(request, response);
 	}	
 	
@@ -105,9 +137,9 @@ public class Cas20ProxyReceivingTicketAuthorizationFilter implements Filter {
 	public void destroy() {
 		// TODO Auto-generated method stub
 	}
-	
+		
     /**
-     * match_ldap_vs_motu 
+     * match_ldap_vs_motu (Find the service in (MotuConfig, list of ConfigService) and check profiles from ldap attributes vs profile from MotuConfig)
      * 
      * @param attributes LDAP attributes
      * @param conf object that contains MotuConfig
