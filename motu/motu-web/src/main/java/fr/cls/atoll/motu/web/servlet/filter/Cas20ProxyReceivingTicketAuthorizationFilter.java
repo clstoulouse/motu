@@ -151,9 +151,9 @@ public class Cas20ProxyReceivingTicketAuthorizationFilter implements Filter {
 		
 		// LDAP profiles from user X
 		String profiles_ldap = "";
+		String status_ldap = "";
 		Iterator attributeNames = attributes.keySet().iterator();
-		
-		
+				
 		for (;attributeNames.hasNext();) { 
 			String attr = (String)attributeNames.next();
 			String[] attr_spl = attr.split("\""); 
@@ -161,12 +161,19 @@ public class Cas20ProxyReceivingTicketAuthorizationFilter implements Filter {
 		    			
 		    if (attr_spl[1].equals("profiles"))  { 
 		    	profiles_ldap = attr_spl[3];
-            	break; // found it
+            }	
+		    
+		    if (attr_spl[1].equals("status"))  { 
+		    	status_ldap = attr_spl[3];            	
             }		    
 		}
 		
         // Check if the user is valid (must have at least one profile)
-        if (profiles_ldap==null || profiles_ldap.isEmpty())	return false;
+        if (profiles_ldap == null || profiles_ldap.isEmpty())	return false;
+        if (status_ldap == null || status_ldap.isEmpty()) return false;
+        
+        // Check status (must be active)
+        if (!status_ldap.equals("active"))	return false;
         
         // MotuConfig profiles for service Y       
 		String profiles_conf = "";
