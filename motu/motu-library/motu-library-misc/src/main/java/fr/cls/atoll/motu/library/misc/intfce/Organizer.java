@@ -5720,15 +5720,6 @@ public class Organizer {
         setCurrentService(serviceName);
 
         CatalogData.CatalogType catalogType = currentService.getCatalogType();
-
-        if (!catalogType.equals(CatalogData.CatalogType.TDS)) {
-            String msg = String.format("Getting product description is only available for '%s' media and the service '%s' is a '%s' media",
-                                       CatalogData.CatalogType.TDS.toString(),
-                                       currentService.getName(),
-                                       catalogType.toString());
-            throw new MotuNotImplementedException(msg);
-        }
-
         CatalogData catalogData = currentService.getCatalog();
 
         boolean haveToLoadExtraMetadata = (!catalogData.isLoadTDSExtraMetadata()) && loadTDSVariableVocabulary;
@@ -5755,7 +5746,7 @@ public class Organizer {
         if (serviceData == null) {
             throw new MotuException(String.format("Unknown service name '%s')", serviceName));
         }
-
+        
         setCurrentService(serviceName);
 
         if (AuthenticationHolder.isAuthentication() && (!AuthenticationHolder.isCASAuthentication())) {
