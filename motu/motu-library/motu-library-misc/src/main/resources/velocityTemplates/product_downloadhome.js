@@ -1017,9 +1017,9 @@ function closeScriptCmdWin() {
   cmd += " -o " + q + "<i>your_output_directory</i><i><b>(1)</b></i>" + q;
   cmd += " -f " + q + "<i>your_output_file_name</i><i><b>(1)</b></i>" + q;
 
-  cmd += " --proxy-server= " + q + "<i>your_proxy_server_url</i><b><font color='red'>:</font></b><i>your_proxy_port_number</i><i><b>(2)</b></i>" + q;
-  cmd += " --proxy-user= " + q + "<i>your_proxy_user_login</i><i><b>(3)</b></i>" + q;
-  cmd += " --proxy-pwd= " + q + "<i>your_proxy_user_password</i><i><b>(3)</b></i>" + q;
+  cmd += " --proxy-server=" + q + "<i>your_proxy_server_url</i><b><font color='red'>:</font></b><i>your_proxy_port_number</i><i><b>(2)</b></i>" + q;
+  cmd += " --proxy-user=" + q + "<i>your_proxy_user_login</i><i><b>(3)</b></i>" + q;
+  cmd += " --proxy-pwd=" + q + "<i>your_proxy_user_password</i><i><b>(3)</b></i>" + q;
 
 
   doc.write('<p>To execute your extraction through the Motu Python Client, type (copy/paste) the <font color="blue">command-line</font> below on your system command prompt.</p>');
