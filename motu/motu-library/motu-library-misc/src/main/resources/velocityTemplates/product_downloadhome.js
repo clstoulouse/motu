@@ -928,7 +928,7 @@ function closeScriptCmdWin() {
   doc.write(linkMotuPython);
   doc.write('.</p>');
   
-  doc.write("<p><b>Python 2.5 or higher is required in order to execute the Motu Python script.</b>");
+  doc.write("<p><b>Python 2.7 or higher is required in order to execute the Motu Python script.</b>");
   doc.write("Python can be downloaded <a href=http://www.python.org/getit/ target='_blank'>here</a>.</p>");
 
   var x_lo = theForm.elements['x_lo'];
