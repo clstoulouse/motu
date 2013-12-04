@@ -94,12 +94,14 @@ import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
 import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
 import fr.cls.atoll.motu.library.cas.util.RestUtil;
 import fr.cls.atoll.motu.library.cas.util.SimpleAuthenticator;
+import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigFileSystemType;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.misc.data.CatalogData;
+import fr.cls.atoll.motu.library.misc.data.DataFile;
 import fr.cls.atoll.motu.library.misc.data.ExtractCriteria;
 import fr.cls.atoll.motu.library.misc.data.Product;
 import fr.cls.atoll.motu.library.misc.data.ProductPersistent;
@@ -2525,24 +2527,42 @@ public class Organizer {
             return availableTimes;
         }
 
-        StringBuffer stringBuffer = new StringBuffer();
-        List<String> list = product.getTimeAxisDataAsString();
-
-        Iterator<String> i = list.iterator();
-
-        if (i.hasNext()) {
-            for (;;) {
-                String value = i.next();
-                stringBuffer.append(value);
-                if (!i.hasNext()) {
-                    break;
-                }
-                stringBuffer.append(";");
-            }
+        StringBuffer stringBuffer = new StringBuffer();        
+        List<DataFile> df = product.getDataFiles();
+        
+        // TDS catalog
+        if (df == null) {	
+	        List<String> list = product.getTimeAxisDataAsString();
+	        Iterator<String> i = list.iterator();
+	
+	        if (i.hasNext()) {
+	            for (;;) {
+	                String value = i.next();
+	                stringBuffer.append(value);
+	                if (!i.hasNext()) {
+	                    break;
+	                }
+	                stringBuffer.append(";");
+	            }
+	        }
         }
-
+        // FTP catalog
+        else {	        
+	        Iterator<DataFile> d = df.iterator();
+	
+	        if (d.hasNext()) {
+	            for (;;) {
+	                String value = DateUtils.getDateTimeAsUTCString(d.next().getStartCoverageDate(), DateUtils.DATETIME_PATTERN2);
+	                stringBuffer.append(value);
+	                if (!d.hasNext()) {
+	                    break;
+	                }
+	                stringBuffer.append(";");
+	            }
+	        }        	
+        }
+        
         availableTimes.setValue(stringBuffer.toString());
-
         availableTimes.setCode(ErrorType.OK);
         availableTimes.setMsg(ErrorType.OK.toString());
 
@@ -2617,26 +2637,23 @@ public class Organizer {
         }
 
         ProductMetaData productMetaData = product.getProductMetaData();
-
+        
         if (productMetaData == null) {
             return productMetadataInfo;
         }
 
         productMetadataInfo.setId(product.getProductId());
         productMetadataInfo.setTitle(productMetaData.getTitle());
-        productMetadataInfo.setLastUpdate(product.getProductMetaData().getLastUpdate());
+        productMetadataInfo.setLastUpdate(productMetaData.getLastUpdate());
         
         productMetadataInfo.setGeospatialCoverage(Organizer.initGeospatialCoverage(productMetaData));
         productMetadataInfo.setProperties(Organizer.initProperties(productMetaData));
         productMetadataInfo.setTimeCoverage(Organizer.initTimeCoverage(productMetaData));
         productMetadataInfo.setVariablesVocabulary(Organizer.initVariablesVocabulary(productMetaData));
 
-        productMetadataInfo.setVariables(Organizer.initVariables(product.getProductMetaData()));
-
+        productMetadataInfo.setVariables(Organizer.initVariables(productMetaData));
         productMetadataInfo.setAvailableTimes(Organizer.initAvailableTimes(product));
-
         productMetadataInfo.setAvailableDepths(Organizer.initAvailableDepths(product));
-
         productMetadataInfo.setDataGeospatialCoverage(Organizer.initDataGeospatialCoverage(product));
 
         productMetadataInfo.setCode(ErrorType.OK);

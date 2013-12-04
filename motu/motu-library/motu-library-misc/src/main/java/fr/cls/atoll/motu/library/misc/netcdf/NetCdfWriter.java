@@ -1282,16 +1282,19 @@ public class NetCdfWriter {
                 if (var instanceof CoordinateAxis) {
                     CoordinateAxis axis = (CoordinateAxis) var;
                     processAxisAttributes(axis, originalVariables);
+                    removeValidMinMaxVarAttributes(var);	// remove valid_min/max for indeso (even dimensions)
                 }
             }
         }
+        /* Deprecated for indeso
         List<Variable> listVar = getVariables(listGeoGridSubset.get(0).getVariable().getName());
         for (Variable var : listVar) {
             if (var instanceof CoordinateAxis) {
                 continue;
             }
-            setValidMinMaxVarAttributes(var);
+            setValidMinMaxVarAttributes(var);            
         }
+        */
     }
 
     /**

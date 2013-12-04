@@ -52,6 +52,7 @@
 #set($templateProductDownloadHome = "product_downloadhome_uk.vm")
 #set($downloadOnTop = ${service.isDownloadOnTop()})
 #set($showOpendapLinks = true)
+#set($titleMetadata = "Dataset Metadata")
 
 <html>
 <head>
