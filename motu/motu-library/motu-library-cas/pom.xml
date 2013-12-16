@@ -3,13 +3,13 @@
 	<parent>
 	    <groupId>cls.atoll.motu</groupId>
 	    <artifactId>motu-parent</artifactId>
-	    <version>2.1.36-SNAPSHOT</version>	   
+	    <version>2.1.36</version>	   
 		<relativePath>../../motu-parent</relativePath>
 	</parent>
 
 	<groupId>cls.atoll.motu.library</groupId>
 	<artifactId>motu-library-cas</artifactId>
-	<version>2.1.36-SNAPSHOT</version>
+	<version>2.1.36</version>
 	<packaging>jar</packaging>
 	
     <name>Motu Library CAS</name>
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>cls.atoll.motu.api</groupId>
             <artifactId>motu-api-message</artifactId>
-            <version>2.1.36-SNAPSHOT</version>
+            <version>2.1.36</version>
         </dependency>	
 		<dependency>
 		    <groupId>log4j</groupId>
@@ -67,8 +67,8 @@
 		</dependency>
 	</dependencies>
 	<scm>
-		<connection>scm:svn:https://svn.code.sf.net/p/cls-motu/code/trunk/motu/motu-library/motu-library-misc</connection>
-		<url>https://svn.code.sf.net/p/cls-motu/code/trunk/motu/motu-library/motu-library-misc</url>
+		<connection>scm:svn:https://svn.code.sf.net/p/cls-motu/code/tags/motu-2.1.36/motu/motu-library/motu-library-misc</connection>
+		<url>https://svn.code.sf.net/p/cls-motu/code/tags/motu-2.1.36/motu/motu-library/motu-library-misc</url>
 	</scm>
     
 </project>
