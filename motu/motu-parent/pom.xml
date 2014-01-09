@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cls.atoll.motu</groupId>
 	<artifactId>motu-parent</artifactId>
-	<version>2.1.37-SNAPSHOT</version>
+	<version>2.1.37</version>
 	<packaging>pom</packaging>
 	
 	<name>Motu Parent</name>	
@@ -319,8 +319,8 @@
         </repository>	
 	</repositories>
 <scm>
-		<connection>scm:svn:https://svn.code.sf.net/p/cls-motu/code/trunk/motu/motu-parent</connection>
-		<url>https://svn.code.sf.net/p/cls-motu/code/trunk/motu/motu-parent</url>
+		<connection>scm:svn:https://svn.code.sf.net/p/cls-motu/code/tags/motu-2.1.37/motu/motu-parent</connection>
+		<url>https://svn.code.sf.net/p/cls-motu/code/tags/motu-2.1.37/motu/motu-parent</url>
 	</scm>
 	
 	<issueManagement>
