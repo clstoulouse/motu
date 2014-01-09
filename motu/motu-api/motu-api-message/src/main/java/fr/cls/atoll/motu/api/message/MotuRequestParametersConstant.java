@@ -62,6 +62,9 @@ public interface MotuRequestParametersConstant {
 
     /** Action servlet parameter value just to ping the servlet. */
     final String ACTION_PING = "ping";
+    
+    /** Action servlet parameter value to logout from Motu (invalidate cookie). */
+    final String ACTION_LOGOUT = "logout";
 
     /** Action servlet parameter value to download. */
     final String ACTION_PRODUCT_DOWNLOAD = "productdownload";

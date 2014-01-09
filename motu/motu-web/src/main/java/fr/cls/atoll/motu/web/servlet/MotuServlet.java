@@ -1076,7 +1076,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             // Nothing to do
         } else if (isActionDelete(action, request, response)) {
             // Nothing to do
-        } else {
+        } else if (isActionLogout(action, request, response)) {
+            // Nothing to do
+        }else {
 
             // -----------------------------------
             // actions with check authorization if needed, and/or with Http session
@@ -1751,6 +1753,38 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         }
         return true;
     }
+    
+    /**
+     * Executes the ACTION_LOGOUT if request's parameters match.
+     *
+     * @param action action to be executed.
+     * @param request object that contains the request the client has made of the servlet.
+     * @param response object that contains the response the servlet sends to the client
+     * @return true is request is ACTION_LOGOUT and have been executed, false otherwise.
+     * @throws ServletException the servlet exception
+     * @throws IOException the IO exception
+     */
+    protected boolean isActionLogout(String action, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("isActionLogout() - entering");
+        }
+
+        if (!action.equalsIgnoreCase(ACTION_LOGOUT)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("isActionLogout() - exiting");
+            }
+            return false;
+        }
+
+        //Invalidate session
+        request.getSession().invalidate();
+
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("isActionLogout() - exiting");
+        }
+        return true;
+    }    
 
     /**
      * Checks if is action product download.
@@ -2598,7 +2632,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         return listDepthCoverage;
     }
 
-    /**
+	/**
      * Gets the forwarded for.
      * 
      * @param request the request
