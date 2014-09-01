@@ -929,7 +929,7 @@ function closeScriptCmdWin() {
   doc.write('.</p>');
   
   doc.write("<p><b>Python 2.7 or higher is required in order to execute the Motu Python script.</b>");
-  doc.write("Python can be downloaded <a href=http://www.python.org/getit/ target='_blank'>here</a>.</p>");
+  doc.write("Python can be downloaded <a href=https://www.python.org/downloads/ target='_blank'>here</a>.</p>");
 
   var x_lo = theForm.elements['x_lo'];
   var x_hi = theForm.elements['x_hi'];

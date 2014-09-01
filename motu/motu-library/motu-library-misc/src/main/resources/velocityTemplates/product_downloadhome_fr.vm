@@ -413,15 +413,6 @@
 	
 </script>
 
-<style type="text/css">
-
-<!-- 
-td.advice { font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #003399 ; background-image: url(../images/adv_blank.gif); background-repeat: no-repeat; background-position: center left}
--->
-td.advice_noimg { font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-weight: bold; color: #000099}
-	
-</style>
-
 #product_downloadhome_fr_printError()
 
 #product_downloadhome_fr_printResult()
