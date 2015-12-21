@@ -20,7 +20,7 @@
 	<properties>
 
 		<!-- ANT git flow tag prefix - The git tag will be of the form lrit-$version -->
-		<gitflow.tagprefix>mobidrift</gitflow.tagprefix>
+		<gitflow.tagprefix>motu</gitflow.tagprefix>
 
 		<!-- Common properties -->
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
