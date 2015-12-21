@@ -1,8 +1,0 @@
-${project.name} - v. ${project.version}
-
-${project.description}
-
-The project can be found at:
-${project.url}
-
-Copyright ${project.organization.name} (${project.organization.url})

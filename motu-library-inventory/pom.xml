@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+    <parent>
+        <groupId>cls.atoll.motu</groupId>
+        <artifactId>motu-parent</artifactId>
+        <version>2.2.00-SNAPSHOT</version>
+        <relativePath>../motu-parent</relativePath>
+    </parent>
+	<artifactId>motu-library-inventory</artifactId>
+	<name>Motu Library Inventory</name>
+	<description>This package holds the inventory library of the Motu server.</description>
+	
+	<dependencies>
+		<dependency>
+			<groupId>cls.atoll.motu</groupId>
+			<artifactId>motu-library-converter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.jvnet.jaxb2_commons</groupId>
+		    <artifactId>jaxb2-basics-jaxb-xjc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jscience</groupId>
+			<artifactId>jscience</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+		</dependency>
+	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>1.3</version>
+				<configuration>
+					<!--
+						declares a configuration that allows to generate all the java
+						files in the source directory from a schema. This plugin is not
+						attached to the lifecycle but must be called by hand when
+						necessary. Note that the generated sources will override any other
+						sources. mvn jaxb:generate
+					-->
+					<outputDirectory>src/main/java</outputDirectory>
+					<packageName>fr.cls.atoll.motu.library.inventory</packageName>
+					<schemaDirectory>src/main/resources/fr/cls/atoll/motu/library/inventory</schemaDirectory>
+					<schemaFiles>Inventory.xsd,CatalogOLA.xsd</schemaFiles>
+					<bindingDirectory>src/main/resources/fr/cls/atoll/motu/library/inventory</bindingDirectory>
+					<bindingFiles>globalbinding.xjb</bindingFiles>
+					<explicitAnnotation>true</explicitAnnotation>
+					<extension>true</extension>
+					<clearOutputDir>false</clearOutputDir>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+</project>

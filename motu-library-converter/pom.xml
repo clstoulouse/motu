@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+	
+    <parent>
+        <groupId>cls.atoll.motu</groupId>
+        <artifactId>motu-parent</artifactId>
+        <version>2.2.00-SNAPSHOT</version>
+        <relativePath>../motu-parent</relativePath>
+    </parent>
+    <artifactId>motu-library-converter</artifactId>
+    <name>Motu Library Converter</name>
+    <description>This package holds the miscellaneous converters (jaxb for instance) of the Motu server.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+        </dependency>
+		<dependency>
+		    <groupId>org.jvnet.jaxb2_commons</groupId>
+		    <artifactId>jaxb2-basics-jaxb-xjc</artifactId>
+		</dependency>
+        <dependency>
+            <groupId>jscience</groupId>
+            <artifactId>jscience</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>commons-lang</groupId>
+        	<artifactId>commons-lang</artifactId>
+        </dependency>
+    </dependencies>
+	
+</project>
