@@ -87,7 +87,7 @@ public class MotuRequest {
     // private static Map<String, String> requestExtraInfo = null;
     
 //    private static CookieStore cookieStore = new sun.net.www.protocol.http.InMemoryCookieStore();
-    private static CookieStore cookieStore = new java.net.PublicInMemoryCookieStore();
+    private static CookieStore cookieStore = new cls.java.net.PublicInMemoryCookieStore();
 
     /**
      * The Constructor.

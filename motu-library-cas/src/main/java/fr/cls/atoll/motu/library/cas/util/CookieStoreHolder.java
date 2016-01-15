@@ -29,10 +29,8 @@ import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.net.CookieStore;
 
+import cls.java.net.PublicInMemoryCookieStore;
 import fr.cls.atoll.motu.library.cas.UserBase;
-
-//import sun.net.www.protocol.http.InMemoryCookieStore;
-import java.net.PublicInMemoryCookieStore;
 
 /**
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
