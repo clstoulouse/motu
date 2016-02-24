@@ -24,32 +24,6 @@
  */
 package fr.cls.atoll.motu.library.misc.data;
 
-import fr.cls.atoll.motu.library.inventory.Inventory;
-import fr.cls.atoll.motu.library.cas.UserBase;
-import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
-import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
-import fr.cls.atoll.motu.library.cas.util.MotuUserHolder;
-import fr.cls.atoll.motu.library.cas.util.RestUtil;
-import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
-import fr.cls.atoll.motu.library.misc.utils.ConfigLoader;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -76,7 +50,29 @@ import org.apache.velocity.tools.generic.DateTool;
 import org.apache.velocity.tools.generic.MathTool;
 import org.apache.velocity.tools.generic.NumberTool;
 import org.jasig.cas.client.util.AssertionHolder;
-import org.joda.time.Period;
+
+import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
+import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
+import fr.cls.atoll.motu.library.cas.util.RestUtil;
+import fr.cls.atoll.motu.library.inventory.Inventory;
+import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
+import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
+import fr.cls.atoll.motu.library.misc.utils.ConfigLoader;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -994,6 +990,7 @@ public class ServiceData {
                     productPersistent.setId(productId);
                     productPersistent.setServiceType(product.getTdsServiceType());
                     productPersistent.setUrl(product.getLocationData());
+                    productPersistent.setUrlNCSS(product.getLocationDataNCSS());
                     productPersistent.setUrlMetaData(product.getLocationMetaData());
 
                     if (isKeepDataFilesList()) {
@@ -1116,17 +1113,20 @@ public class ServiceData {
                 }
 
             } catch (URISyntaxException e) {
-                throw new MotuException(String
-                        .format("Organizer getProductInformation(String locationData) : location data seems not to be a valid URI : '%s'",
-                                locationData), e);
+                throw new MotuException(
+                        String.format("Organizer getProductInformation(String locationData) : location data seems not to be a valid URI : '%s'",
+                                      locationData),
+                        e);
             } catch (IOException e) {
-                throw new MotuException(String
-                        .format("Organizer getProductInformation(String locationData) : location data seems not to be a valid URI : '%s'",
-                                locationData), e);
+                throw new MotuException(
+                        String.format("Organizer getProductInformation(String locationData) : location data seems not to be a valid URI : '%s'",
+                                      locationData),
+                        e);
             } catch (MotuCasBadRequestException e) {
-                throw new MotuException(String
-                        .format("Organizer getProductInformation(String locationData) : location data seems not to be a valid URI : '%s'",
-                                locationData), e);
+                throw new MotuException(
+                        String.format("Organizer getProductInformation(String locationData) : location data seems not to be a valid URI : '%s'",
+                                      locationData),
+                        e);
             }
         }
 
@@ -1140,7 +1140,7 @@ public class ServiceData {
             product.setLocationData(locationData);
             product.setProductIdFromLocation();
         }
-        //        
+        //
         // try {
         // InventoryOLA inventoryOLA = Organizer.getInventoryOLA(locationData);
         // if (inventoryOLA != null) {
@@ -1677,7 +1677,7 @@ public class ServiceData {
                                           List<String> listLatLonCoverage,
                                           List<String> listDepthCoverage,
                                           List<ExtractCriteria> criteria) throws MotuInvalidDateException, MotuInvalidDepthException,
-            MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException {
+                                                  MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException {
 
         if (criteria == null) {
             throw new MotuException("Error in ServiceData createCriteriaList - criteria is null");
@@ -1734,8 +1734,8 @@ public class ServiceData {
      * @throws MotuException the motu exception
      * @throws MotuInvalidDateException the motu invalid date exception
      */
-    public static void addCriteriaTemporal(List<String> listTemporalCoverage, List<ExtractCriteria> criteria) throws MotuInvalidDateException,
-            MotuException {
+    public static void addCriteriaTemporal(List<String> listTemporalCoverage, List<ExtractCriteria> criteria)
+            throws MotuInvalidDateException, MotuException {
         if (criteria == null) {
             throw new MotuException("Error in ServiceData addCriteriaTemporal - criteria is null");
         }
@@ -1761,8 +1761,8 @@ public class ServiceData {
      * @throws MotuInvalidLatitudeException the motu invalid latitude exception
      * @throws MotuException the motu exception
      */
-    public static void addCriteriaLatLon(List<String> listLatLonCoverage, List<ExtractCriteria> criteria) throws MotuInvalidLatitudeException,
-            MotuInvalidLongitudeException, MotuException {
+    public static void addCriteriaLatLon(List<String> listLatLonCoverage, List<ExtractCriteria> criteria)
+            throws MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException {
         if (criteria == null) {
             throw new MotuException("Error in ServiceData addCriteriaLatLon - criteria is null");
         }
@@ -1784,8 +1784,8 @@ public class ServiceData {
      * @throws MotuInvalidDepthException the motu invalid depth exception
      * @throws MotuException the motu exception
      */
-    public static void addCriteriaDepth(List<String> listDepthCoverage, List<ExtractCriteria> criteria) throws MotuInvalidDepthException,
-            MotuException {
+    public static void addCriteriaDepth(List<String> listDepthCoverage, List<ExtractCriteria> criteria)
+            throws MotuInvalidDepthException, MotuException {
         if (criteria == null) {
             throw new MotuException("Error in ServiceData addCriteriaDepth - criteria is null");
         }
@@ -1882,9 +1882,10 @@ public class ServiceData {
                                       List<String> listTemporalCoverage,
                                       List<String> listLatLonCoverage,
                                       List<String> listDepthCoverage) throws MotuInvalidDateException, MotuInvalidDepthException,
-            MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
-            NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException {
+                                              MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException,
+                                              MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
+                                              MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException,
+                                              MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException {
 
         product.clearExtractFilename();
         product.clearLastError();
@@ -2027,9 +2028,10 @@ public class ServiceData {
                             List<String> listDepthCoverage,
                             SelectData selectData,
                             Organizer.Format dataOutputFormat) throws MotuInvalidDateException, MotuInvalidDepthException,
-            MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
-            NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException, IOException {
+                                    MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
+                                    MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
+                                    MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
+                                    NetCdfVariableNotFoundException, IOException {
 
         product.clearExtractFilename();
         product.clearLastError();
@@ -2220,8 +2222,8 @@ public class ServiceData {
                             List<ExtractCriteria> criteria,
                             SelectData selectData,
                             Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
-            MotuNoVarException, NetCdfVariableNotFoundException, IOException {
+                                    MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException,
+                                    NetCdfVariableException, MotuNoVarException, NetCdfVariableNotFoundException, IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("extractData() - entering");
         }
@@ -2285,8 +2287,9 @@ public class ServiceData {
                                    SelectData selectData,
                                    Organizer.Format dataOutputFormat,
                                    Writer out) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-            MotuNotImplementedException, MotuInvalidDepthRangeException, NetCdfVariableException, NetCdfAttributeException, MotuNoVarException,
-            MotuInvalidDepthException, MotuInvalidDateException, MotuInvalidLatitudeException, MotuInvalidLongitudeException {
+                                           MotuNotImplementedException, MotuInvalidDepthRangeException, NetCdfVariableException,
+                                           NetCdfAttributeException, MotuNoVarException, MotuInvalidDepthException, MotuInvalidDateException,
+                                           MotuInvalidLatitudeException, MotuInvalidLongitudeException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("extractDataHTML() - entering");
         }
@@ -2312,7 +2315,20 @@ public class ServiceData {
                 updateCriteria(product, criteria);
             }
 
-            product.extractData(dataOutputFormat);
+            // Detect NCSS/OpenDAP
+            boolean ncss = false;
+            List<ConfigService> listConfServ = Organizer.getMotuConfigInstance().getConfigService();
+            for (ConfigService confServ : listConfServ) {
+                if (confServ.getName().equalsIgnoreCase(name)) {
+                    ncss = confServ.getCatalog().getNCSS().equalsIgnoreCase("enabled");
+                }
+            }
+
+            if (ncss) {
+                product.extractNCSSData(dataOutputFormat);
+            } else {
+                product.extractData(dataOutputFormat);
+            }
 
         } catch (Exception e) {
             product.clearExtractFilename();

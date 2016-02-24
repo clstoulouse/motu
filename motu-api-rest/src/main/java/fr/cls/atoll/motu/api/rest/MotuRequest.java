@@ -61,6 +61,7 @@ import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.library.cas.UserBase;
 import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
 import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
+import fr.cls.atoll.motu.library.cas.java.PublicInMemoryCookieStore;
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.library.cas.util.RestUtil;
 
@@ -85,9 +86,9 @@ public class MotuRequest {
     private int connectTimeout = 60000;
 
     // private static Map<String, String> requestExtraInfo = null;
-    
-//    private static CookieStore cookieStore = new sun.net.www.protocol.http.InMemoryCookieStore();
-    private static CookieStore cookieStore = new java.net.PublicInMemoryCookieStore();
+
+    // private static CookieStore cookieStore = new sun.net.www.protocol.http.InMemoryCookieStore();
+    private static CookieStore cookieStore = new PublicInMemoryCookieStore();
 
     /**
      * The Constructor.
@@ -181,9 +182,10 @@ public class MotuRequest {
      * @return le flux résultat de la requête
      * 
      * @throws MotuRequestException the motu request exception
-     * @deprecated use  {@link #executeV2()}
-
+     * @deprecated use {@link #executeV2()}
+     * 
      */
+    @Deprecated
     public InputStream execute() throws MotuRequestException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("execute() - entering");
@@ -268,8 +270,9 @@ public class MotuRequest {
 
             MotuRequestException motuRequestException;
             try {
-                motuRequestException = new MotuRequestException("Request failed - errorCode: " + urlConnection.getResponseCode() + ", errorMsg: "
-                        + urlConnection.getResponseMessage(), ex);
+                motuRequestException = new MotuRequestException(
+                        "Request failed - errorCode: " + urlConnection.getResponseCode() + ", errorMsg: " + urlConnection.getResponseMessage(),
+                        ex);
             } catch (IOException e) {
                 LOG.error("execute()", e);
 
@@ -277,18 +280,17 @@ public class MotuRequest {
             }
             throw motuRequestException;
         }
-        
+
     }
 
-    
     /**
-     * Executes the request and returns  the result as a stream. 
-     * The stream contains:
-     * - the extracted netcdf file if mode is 'console'
-     * - the url the extracted netcdf file if mode is 'url' url 
-     * - the url of the XML status file if mode is 'status' (this file contains the status of the request : INPROGRESS or ERROR+error message or DONE).
+     * Executes the request and returns the result as a stream. The stream contains: - the extracted netcdf
+     * file if mode is 'console' - the url the extracted netcdf file if mode is 'url' url - the url of the XML
+     * status file if mode is 'status' (this file contains the status of the request : INPROGRESS or
+     * ERROR+error message or DONE).
      * 
-     * This function must be used 
+     * This function must be used
+     * 
      * @return the result of the request as a stream
      * 
      * @throws MotuRequestException the motu request exception
@@ -307,64 +309,61 @@ public class MotuRequest {
         URL url = null;
 
         // Get the authentication mode parameter
-        String authModeString = (String)motuRequestParameters.getParameter(MotuRequestParametersConstant.PARAM_AUTHENTICATION_MODE);
+        String authModeString = (String) motuRequestParameters.getParameter(MotuRequestParametersConstant.PARAM_AUTHENTICATION_MODE);
         AuthenticationMode authMode = null;
         if (!AssertionUtils.isNullOrEmpty(authModeString)) {
-            authMode = AuthenticationMode.fromValue((String)motuRequestParameters.getParameter(MotuRequestParametersConstant.PARAM_AUTHENTICATION_MODE));
+            authMode = AuthenticationMode
+                    .fromValue((String) motuRequestParameters.getParameter(MotuRequestParametersConstant.PARAM_AUTHENTICATION_MODE));
         }
         // Authentication mode is not an extraction criteria, remove it now
-        motuRequestParameters.removeParameter(MotuRequestParametersConstant.PARAM_AUTHENTICATION_MODE);         
-
+        motuRequestParameters.removeParameter(MotuRequestParametersConstant.PARAM_AUTHENTICATION_MODE);
 
         // Get login / password parameters,
         String login = (String) motuRequestParameters.getParameter(MotuRequestParametersConstant.PARAM_LOGIN);
         String password = (String) motuRequestParameters.getParameter(MotuRequestParametersConstant.PARAM_PWD);
         // Login/password are not extraction criteria, remove them now
-        motuRequestParameters.removeParameter(MotuRequestParametersConstant.PARAM_LOGIN);         
+        motuRequestParameters.removeParameter(MotuRequestParametersConstant.PARAM_LOGIN);
         motuRequestParameters.removeParameter(MotuRequestParametersConstant.PARAM_PWD);
-        
-        //String requestParams = null;
+
+        // String requestParams = null;
 
         String targetUrl = getRequestUrl();
 
         // Check is authentication mode is set or not
         // if not set, guess the authentication mode
-        
-        boolean guessAuthentication = (authMode == null) &&  (!AssertionUtils.isNullOrEmpty(login));
+
+        boolean guessAuthentication = (authMode == null) && (!AssertionUtils.isNullOrEmpty(login));
 
         if (guessAuthentication) {
             UserBase user = new UserBase();
-            
-            if (!AssertionUtils.isNullOrEmpty(login)) {
-    			user.setLogin(login);
-    			if (AssertionUtils.isNullOrEmpty(password)) {
-    				password = "";
-    			}
-    			user.setPwd(password);
-            }
-	        	
-	        try {
-	            RestUtil.checkAuthenticationMode(servletUrl, user);
-	            authMode = user.getAuthenticationMode();
-	        } catch (MotuCasException e) {
-	            String msg = String.format("Unable to check authentication mode from url '%s'. Reason is:\n %s", servletUrl, e
-	                    .notifyException());
-	            throw new MotuRequestException(msg, e);
-	        } catch (IOException e) {
-	            String msg = String.format("Unable to check authentication mode from url '%s'. Reason is:\n %s", servletUrl, e
-	                    .getMessage());
-	            throw new MotuRequestException(msg, e);
-			}
-        }
 
+            if (!AssertionUtils.isNullOrEmpty(login)) {
+                user.setLogin(login);
+                if (AssertionUtils.isNullOrEmpty(password)) {
+                    password = "";
+                }
+                user.setPwd(password);
+            }
+
+            try {
+                RestUtil.checkAuthenticationMode(servletUrl, user);
+                authMode = user.getAuthenticationMode();
+            } catch (MotuCasException e) {
+                String msg = String.format("Unable to check authentication mode from url '%s'. Reason is:\n %s", servletUrl, e.notifyException());
+                throw new MotuRequestException(msg, e);
+            } catch (IOException e) {
+                String msg = String.format("Unable to check authentication mode from url '%s'. Reason is:\n %s", servletUrl, e.getMessage());
+                throw new MotuRequestException(msg, e);
+            }
+        }
 
         try {
             if (authMode == AuthenticationMode.CAS) {
                 // Add CAS ticket to the query parameters
-                // If url is CASified then a CAS ticket is added to the returned url. 
+                // If url is CASified then a CAS ticket is added to the returned url.
                 // If url is not CASified then the original url is returned.
                 // If login or password is null or empty, then the original url is returned.
-                targetUrl = AssertionUtils.addCASTicket(targetUrl, login, password, null);   
+                targetUrl = AssertionUtils.addCASTicket(targetUrl, login, password, null);
             }
 
             url = new URL(targetUrl);
@@ -382,7 +381,7 @@ public class MotuRequest {
             throw new MotuRequestException("Invalid url", e);
         }
 
-        LOG.info("URL=" + targetUrl);              
+        LOG.info("URL=" + targetUrl);
 
         HttpURLConnection urlConnection = null;
 
@@ -399,16 +398,16 @@ public class MotuRequest {
                 byte[] encoding = new org.apache.commons.codec.binary.Base64().encode(stringBuffer.toString().getBytes());
                 urlConnection.setRequestProperty("Authorization", "Basic " + new String(encoding));
             }
-            
+
         } catch (IOException ex) {
             LOG.error("executeV2()", ex);
 
             throw new MotuRequestException("Request connection failed", ex);
         }
-        
+
         try {
             InputStream returnInputStream = urlConnection.getInputStream();
-            
+
             if (LOG.isDebugEnabled()) {
                 LOG.debug("executeV2() - exiting");
             }
@@ -419,8 +418,9 @@ public class MotuRequest {
 
             MotuRequestException motuRequestException;
             try {
-                motuRequestException = new MotuRequestException("Request failed - errorCode: " + urlConnection.getResponseCode() + ", errorMsg: "
-                        + urlConnection.getResponseMessage(), ex);
+                motuRequestException = new MotuRequestException(
+                        "Request failed - errorCode: " + urlConnection.getResponseCode() + ", errorMsg: " + urlConnection.getResponseMessage(),
+                        ex);
             } catch (IOException e) {
                 LOG.error("executeV2()", e);
 
@@ -430,7 +430,7 @@ public class MotuRequest {
         }
 
     }
-    
+
     /**
      * Search url user pwd.
      * 
@@ -623,8 +623,8 @@ public class MotuRequest {
         if (statusModeResponse == null) {
             return false;
         }
-        return ((statusModeResponse.getStatus().compareTo(StatusModeType.DONE) == 0) || (statusModeResponse.getStatus()
-                .compareTo(StatusModeType.ERROR) == 0));
+        return ((statusModeResponse.getStatus().compareTo(StatusModeType.DONE) == 0)
+                || (statusModeResponse.getStatus().compareTo(StatusModeType.ERROR) == 0));
     }
 
     /**
@@ -638,8 +638,8 @@ public class MotuRequest {
         if (statusModeResponse == null) {
             return false;
         }
-        return ((statusModeResponse.getStatus().compareTo(StatusModeType.PENDING) == 0) || (statusModeResponse.getStatus()
-                .compareTo(StatusModeType.INPROGRESS) == 0));
+        return ((statusModeResponse.getStatus().compareTo(StatusModeType.PENDING) == 0)
+                || (statusModeResponse.getStatus().compareTo(StatusModeType.INPROGRESS) == 0));
     }
 
     /**
@@ -735,14 +735,14 @@ public class MotuRequest {
     // */
     // public StatusModeResponse getStatusDoneOrError(MotuRequestParameters params, long requestId) throws
     // MotuRequestException {
-    //        
+    //
     // StatusModeResponse statusModeResponse = executeActionGetStatusParams(params, requestId);
     // if (!(MotuRequest.isStatusDoneOrError(statusModeResponse))) {
     // statusModeResponse = null;
     // }
     // return statusModeResponse;
     // }
-    //    
+    //
     // /**
     // * Gets the status pending or in progress.
     // *
@@ -775,7 +775,7 @@ public class MotuRequest {
     // }
     // return statusModeResponse;
     // }
-    //    
+    //
     // /**
     // * Gets the status pending.
     // *
@@ -795,7 +795,7 @@ public class MotuRequest {
     // }
     // return statusModeResponse;
     // }
-    //    
+    //
     // /**
     // * Gets the status in progess.
     // *
@@ -815,7 +815,7 @@ public class MotuRequest {
     // }
     // return statusModeResponse;
     // }
-    //    
+    //
     // /**
     // * Gets the status done.
     // *
@@ -835,7 +835,7 @@ public class MotuRequest {
     // }
     // return statusModeResponse;
     // }
-    //    
+    //
     // /**
     // * Gets the status error.
     // *

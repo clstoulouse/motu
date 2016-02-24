@@ -68,9 +68,6 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 
-import ucar.ma2.MAMath.MinMax;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.api.message.MotuMsgConstant;
 import fr.cls.atoll.motu.api.message.xml.AvailableDepths;
 import fr.cls.atoll.motu.api.message.xml.AvailableTimes;
@@ -101,17 +98,17 @@ import fr.cls.atoll.motu.library.misc.configuration.ConfigFileSystemType;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.misc.data.CatalogData;
+import fr.cls.atoll.motu.library.misc.data.CatalogData.CatalogType;
 import fr.cls.atoll.motu.library.misc.data.DataFile;
 import fr.cls.atoll.motu.library.misc.data.ExtractCriteria;
 import fr.cls.atoll.motu.library.misc.data.Product;
 import fr.cls.atoll.motu.library.misc.data.ProductPersistent;
 import fr.cls.atoll.motu.library.misc.data.SelectData;
 import fr.cls.atoll.motu.library.misc.data.ServiceData;
-import fr.cls.atoll.motu.library.misc.data.ServicePersistent;
-import fr.cls.atoll.motu.library.misc.data.VarData;
-import fr.cls.atoll.motu.library.misc.data.CatalogData.CatalogType;
 import fr.cls.atoll.motu.library.misc.data.ServiceData.HTMLPage;
 import fr.cls.atoll.motu.library.misc.data.ServiceData.Language;
+import fr.cls.atoll.motu.library.misc.data.ServicePersistent;
+import fr.cls.atoll.motu.library.misc.data.VarData;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueDataCapacityException;
@@ -149,6 +146,9 @@ import fr.cls.atoll.motu.library.misc.utils.Zip;
 import fr.cls.atoll.motu.library.misc.vfs.VFSManager;
 import fr.cls.atoll.motu.library.misc.xml.XMLErrorHandler;
 import fr.cls.atoll.motu.library.misc.xml.XMLUtils;
+import ucar.ma2.MAMath.MinMax;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.unidata.geoloc.LatLonRect;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and
 // trace log.
@@ -424,8 +424,8 @@ public class Organizer {
     public static final VFSManager getVFSSystemManager() throws MotuException {
         VFSManager vfsManager = VFS_MANAGER.get();
         if (vfsManager == null) {
-        	vfsManager = new VFSManager();
-            //throw new MotuException("Error File System manager has not been initialized");
+            vfsManager = new VFSManager();
+            // throw new MotuException("Error File System manager has not been initialized");
         }
         return vfsManager;
     }
@@ -452,7 +452,7 @@ public class Organizer {
     // private static final ThreadLocal<StandardFileSystemManager>
     // FILE_SYSTEM_MANAGER = new
     // ThreadLocal<StandardFileSystemManager>() {
-    //        
+    //
     // @Override
     // protected synchronized StandardFileSystemManager initialValue() {
     // StandardFileSystemManager standardFileSystemManager = new
@@ -477,12 +477,12 @@ public class Organizer {
     //
     // @Override
     // public void remove() {
-    //            
+    //
     // StandardFileSystemManager standardFileSystemManager = this.get();
     // if (standardFileSystemManager == null) {
     // return;
     // }
-    //                        
+    //
     // standardFileSystemManager.close();
     //
     // super.remove();
@@ -506,6 +506,7 @@ public class Organizer {
      * @return the file system manager
      * @throws MotuException
      */
+
     // public static final StandardFileSystemManager getFileSystemManager()
     // throws MotuException {
     // StandardFileSystemManager fileSystemManager = FILE_SYSTEM_MANAGER.get();
@@ -693,8 +694,8 @@ public class Organizer {
 
         ObjectFactory objectFactory = new ObjectFactory();
         StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
-        Organizer
-                .setError(statusModeResponse, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        Organizer.setError(statusModeResponse,
+                           new MotuException("If you see that message, the request has failed and the error has not been filled"));
         return statusModeResponse;
 
     }
@@ -766,8 +767,8 @@ public class Organizer {
         geospatialCoverage.setSouth(null);
         geospatialCoverage.setWest(null);
 
-        Organizer
-                .setError(geospatialCoverage, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        Organizer.setError(geospatialCoverage,
+                           new MotuException("If you see that message, the request has failed and the error has not been filled"));
         return geospatialCoverage;
 
     }
@@ -782,8 +783,8 @@ public class Organizer {
 
         DataGeospatialCoverage dataGeospatialCoverage = objectFactory.createDataGeospatialCoverage();
 
-        Organizer.setError(dataGeospatialCoverage, new MotuException(
-                "If you see that message, the request has failed and the error has not been filled"));
+        Organizer.setError(dataGeospatialCoverage,
+                           new MotuException("If you see that message, the request has failed and the error has not been filled"));
         return dataGeospatialCoverage;
 
     }
@@ -876,8 +877,8 @@ public class Organizer {
         variableVocabulary.setValue(null);
         variableVocabulary.setVocabularyName(null);
 
-        Organizer
-                .setError(variableVocabulary, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        Organizer.setError(variableVocabulary,
+                           new MotuException("If you see that message, the request has failed and the error has not been filled"));
         return variableVocabulary;
 
     }
@@ -1244,8 +1245,10 @@ public class Organizer {
                     stringBuffer.append(str);
                     stringBuffer.append("\n");
                 }
-                throw new MotuException(String.format("ERROR - Motu configuration file '%s' is not valid - See errors below:\n%s", Organizer
-                        .getMotuConfigXmlName(), stringBuffer.toString()));
+                throw new MotuException(
+                        String.format("ERROR - Motu configuration file '%s' is not valid - See errors below:\n%s",
+                                      Organizer.getMotuConfigXmlName(),
+                                      stringBuffer.toString()));
             }
 
             InputStream in = Organizer.getMotuConfigXml();
@@ -1333,8 +1336,8 @@ public class Organizer {
                 stringBuffer.append(str);
                 stringBuffer.append("\n");
             }
-            throw new MotuException(String.format("ERROR - CatalogOLA file '%s' is not valid - See errors below:\n%s", xmlUri, stringBuffer
-                    .toString()));
+            throw new MotuException(
+                    String.format("ERROR - CatalogOLA file '%s' is not valid - See errors below:\n%s", xmlUri, stringBuffer.toString()));
         }
 
         InputStream in = Organizer.getUriAsInputStream(xmlUri);
@@ -1383,8 +1386,8 @@ public class Organizer {
                 stringBuffer.append(str);
                 stringBuffer.append("\n");
             }
-            throw new MotuException(String
-                    .format("ERROR - Inventory file '%s' is not valid - See errors below:\n%s", xmlUri, stringBuffer.toString()));
+            throw new MotuException(
+                    String.format("ERROR - Inventory file '%s' is not valid - See errors below:\n%s", xmlUri, stringBuffer.toString()));
         }
 
         InputStream in = Organizer.getUriAsInputStream(xmlUri);
@@ -1964,8 +1967,9 @@ public class Organizer {
         MotuExceptionBase exceptionBase = null;
 
         if (size > maxAllowedSize) {
-            exceptionBase = new MotuExceedingCapacityException(Organizer.convertFromBytesToMegabytes(size), Organizer
-                    .convertFromBytesToMegabytes(maxAllowedSize));
+            exceptionBase = new MotuExceedingCapacityException(
+                    Organizer.convertFromBytesToMegabytes(size),
+                    Organizer.convertFromBytesToMegabytes(maxAllowedSize));
         }
 
         maxAllowedSizeToSet = maxAllowedSize;
@@ -1979,7 +1983,10 @@ public class Organizer {
                 return requestSize;
             }
             if (size > maxDataThreshold) {
-                exceptionBase = new MotuExceedingQueueDataCapacityException(Organizer.convertFromBytesToMegabytes(size), maxDataThreshold, batchQueue);
+                exceptionBase = new MotuExceedingQueueDataCapacityException(
+                        Organizer.convertFromBytesToMegabytes(size),
+                        maxDataThreshold,
+                        batchQueue);
             }
             maxAllowedSizeToSet = maxAllowedSizeToSet > maxDataThreshold ? maxDataThreshold : maxAllowedSizeToSet;
         }
@@ -1990,8 +1997,9 @@ public class Organizer {
             Organizer.setError(requestSize, exceptionBase);
         }
         if (size > maxAllowedSize) {
-            exceptionBase = new MotuExceedingCapacityException(Organizer.convertFromBytesToMegabytes(size), Organizer
-                    .convertFromBytesToMegabytes(maxAllowedSize));
+            exceptionBase = new MotuExceedingCapacityException(
+                    Organizer.convertFromBytesToMegabytes(size),
+                    Organizer.convertFromBytesToMegabytes(maxAllowedSize));
         }
 
         return requestSize;
@@ -2527,41 +2535,41 @@ public class Organizer {
             return availableTimes;
         }
 
-        StringBuffer stringBuffer = new StringBuffer();        
+        StringBuffer stringBuffer = new StringBuffer();
         List<DataFile> df = product.getDataFiles();
-        
+
         // TDS catalog
-        if (df == null) {	
-	        List<String> list = product.getTimeAxisDataAsString();
-	        Iterator<String> i = list.iterator();
-	
-	        if (i.hasNext()) {
-	            for (;;) {
-	                String value = i.next();
-	                stringBuffer.append(value);
-	                if (!i.hasNext()) {
-	                    break;
-	                }
-	                stringBuffer.append(";");
-	            }
-	        }
+        if (df == null) {
+            List<String> list = product.getTimeAxisDataAsString();
+            Iterator<String> i = list.iterator();
+
+            if (i.hasNext()) {
+                for (;;) {
+                    String value = i.next();
+                    stringBuffer.append(value);
+                    if (!i.hasNext()) {
+                        break;
+                    }
+                    stringBuffer.append(";");
+                }
+            }
         }
         // FTP catalog
-        else {	        
-	        Iterator<DataFile> d = df.iterator();
-	
-	        if (d.hasNext()) {
-	            for (;;) {
-	                String value = DateUtils.getDateTimeAsUTCString(d.next().getStartCoverageDate(), DateUtils.DATETIME_PATTERN2);
-	                stringBuffer.append(value);
-	                if (!d.hasNext()) {
-	                    break;
-	                }
-	                stringBuffer.append(";");
-	            }
-	        }        	
+        else {
+            Iterator<DataFile> d = df.iterator();
+
+            if (d.hasNext()) {
+                for (;;) {
+                    String value = DateUtils.getDateTimeAsUTCString(d.next().getStartCoverageDate(), DateUtils.DATETIME_PATTERN2);
+                    stringBuffer.append(value);
+                    if (!d.hasNext()) {
+                        break;
+                    }
+                    stringBuffer.append(";");
+                }
+            }
         }
-        
+
         availableTimes.setValue(stringBuffer.toString());
         availableTimes.setCode(ErrorType.OK);
         availableTimes.setMsg(ErrorType.OK.toString());
@@ -2637,7 +2645,7 @@ public class Organizer {
         }
 
         ProductMetaData productMetaData = product.getProductMetaData();
-        
+
         if (productMetaData == null) {
             return productMetadataInfo;
         }
@@ -2645,7 +2653,7 @@ public class Organizer {
         productMetadataInfo.setId(product.getProductId());
         productMetadataInfo.setTitle(productMetaData.getTitle());
         productMetadataInfo.setLastUpdate(productMetaData.getLastUpdate());
-        
+
         productMetadataInfo.setGeospatialCoverage(Organizer.initGeospatialCoverage(productMetaData));
         productMetadataInfo.setProperties(Organizer.initProperties(productMetaData));
         productMetadataInfo.setTimeCoverage(Organizer.initTimeCoverage(productMetaData));
@@ -3366,13 +3374,15 @@ public class Organizer {
 
         InputStream inSchema = Organizer.getMotuConfigSchema();
         if (inSchema == null) {
-            throw new MotuException(String.format("ERROR in Organiser.validateMotuConfig - Motu configuration schema ('%s') not found:", Organizer
-                    .getMotuConfigSchemaName()));
+            throw new MotuException(
+                    String.format("ERROR in Organiser.validateMotuConfig - Motu configuration schema ('%s') not found:",
+                                  Organizer.getMotuConfigSchemaName()));
         }
         InputStream inXml = Organizer.getMotuConfigXml();
         if (inXml == null) {
-            throw new MotuException(String.format("ERROR in Organiser.validateMotuConfig - Motu configuration xml ('%s') not found:", Organizer
-                    .getMotuConfigXmlName()));
+            throw new MotuException(
+                    String.format("ERROR in Organiser.validateMotuConfig - Motu configuration xml ('%s') not found:",
+                                  Organizer.getMotuConfigXmlName()));
         }
 
         XMLErrorHandler errorHandler = XMLUtils.validateXML(inSchema, inXml);
@@ -3397,8 +3407,9 @@ public class Organizer {
 
         InputStream inSchema = Organizer.getCatalogOLASchema();
         if (inSchema == null) {
-            throw new MotuException(String.format("ERROR in Organiser.validateInventoryOLA - CatalogOLA  schema ('%s') not found:", Organizer
-                    .getCatalogOLASchemaName()));
+            throw new MotuException(
+                    String.format("ERROR in Organiser.validateInventoryOLA - CatalogOLA  schema ('%s') not found:",
+                                  Organizer.getCatalogOLASchemaName()));
         }
 
         InputStream inXml = Organizer.getUriAsInputStream(xmlUri);
@@ -3429,8 +3440,9 @@ public class Organizer {
 
         InputStream inSchema = Organizer.getInventoryOLASchema();
         if (inSchema == null) {
-            throw new MotuException(String.format("ERROR in Organiser.validateInventoryOLA - InventoryOLA  schema ('%s') not found:", Organizer
-                    .getInventoryOLASchemaName()));
+            throw new MotuException(
+                    String.format("ERROR in Organiser.validateInventoryOLA - InventoryOLA  schema ('%s') not found:",
+                                  Organizer.getInventoryOLASchemaName()));
         }
 
         InputStream inXml = Organizer.getUriAsInputStream(xmlUri);
@@ -3700,6 +3712,7 @@ public class Organizer {
      * @return a configuration object.
      * @throws MotuException
      */
+
     // public MotuConfig loadConfiguration(String path) throws MotuException {
     // TLog.logger().info("Motu Configuration " + path + " initialisation ");
     //
@@ -3768,20 +3781,30 @@ public class Organizer {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public Product extractData(ExtractionParameters params) throws MotuInconsistencyException, MotuInvalidDateException, MotuInvalidDepthException,
-            MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
-            NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException, IOException {
+            MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
+            MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException,
+            NetCdfAttributeException, NetCdfVariableNotFoundException, IOException {
 
+        // Verify input parameters and raise error if necessary
         params.verifyParameters();
-
         Product product = null;
+
         // -------------------------------------------------
-        // Data extraction
+        // Data extraction OPENDAP
         // -------------------------------------------------
         if (!Organizer.isNullOrEmpty(params.getLocationData())) {
-            product = extractData(params.getServiceName(), params.getLocationData(), params.getListVar(), params.getListTemporalCoverage(), params
-                    .getListLatLonCoverage(), params.getListDepthCoverage(), null, params.getDataOutputFormat(), params.getOut(), params
-                    .getResponseFormat(), null);
+            product = extractData(params.getServiceName(),
+                                  params.getLocationData(),
+                                  null,
+                                  params.getListVar(),
+                                  params.getListTemporalCoverage(),
+                                  params.getListLatLonCoverage(),
+                                  params.getListDepthCoverage(),
+                                  null,
+                                  params.getDataOutputFormat(),
+                                  params.getOut(),
+                                  params.getResponseFormat(),
+                                  null);
         } else if (!Organizer.isNullOrEmpty(params.getServiceName()) && !Organizer.isNullOrEmpty(params.getProductId())) {
             product = extractData(params.getServiceName(),
                                   params.getListVar(),
@@ -3816,7 +3839,7 @@ public class Organizer {
      * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
      * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
+     * @throws NetCdfVariableException the netcdf variable exception
      * @throws MotuNoVarException the motu no var exception
      * @throws NetCdfAttributeException the net cdf attribute exception
      * @throws MotuInvalidDepthException the motu invalid depth exception
@@ -3836,9 +3859,10 @@ public class Organizer {
                             List<String> listDepthCoverage,
                             SelectData selectData,
                             Organizer.Format dataOutputFormat) throws MotuInvalidDateException, MotuInvalidDepthException,
-            MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
-            NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException, IOException {
+                                    MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
+                                    MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
+                                    MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
+                                    NetCdfVariableNotFoundException, IOException {
         // CSON: StrictDuplicateCode.
 
         if (this.currentService == null) {
@@ -3892,9 +3916,10 @@ public class Organizer {
                                Organizer.Format dataOutputFormat,
                                Writer out,
                                Organizer.Format responseFormat) throws MotuInvalidDateException, MotuInvalidDepthException,
-            MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
-            NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException, IOException {
+                                       MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
+                                       MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
+                                       MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
+                                       NetCdfVariableNotFoundException, IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("extractData() - entering");
         }
@@ -3981,18 +4006,21 @@ public class Organizer {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public Product extractData(String locationData,
+                               String locationDataNCSS,
                                List<String> listVar,
                                List<String> listTemporalCoverage,
                                List<String> listLatLonCoverage,
                                List<String> listDepthCoverage,
                                SelectData selectData,
                                Organizer.Format dataOutputFormat) throws MotuInvalidDateException, MotuInvalidDepthException,
-            MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
-            NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException, IOException {
+                                       MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
+                                       MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
+                                       MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
+                                       NetCdfVariableNotFoundException, IOException {
         // CSON: StrictDuplicateCode.
 
         return extractData(locationData,
+                           locationDataNCSS,
                            listVar,
                            listTemporalCoverage,
                            listLatLonCoverage,
@@ -4040,6 +4068,7 @@ public class Organizer {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public Product extractData(String locationData,
+                               String locationDataNCSS,
                                List<String> listVar,
                                List<String> listTemporalCoverage,
                                List<String> listLatLonCoverage,
@@ -4049,16 +4078,19 @@ public class Organizer {
                                Writer out,
                                Organizer.Format responseFormat,
                                String productId) throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException,
-            MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
-            MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
-            NetCdfVariableNotFoundException, IOException {
+                                       MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
+                                       MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
+                                       NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException,
+                                       IOException {
         // CSON: StrictDuplicateCode.
 
         Product product = getProductInformation(locationData);
-
+        // Update ID
         if (!Organizer.isNullOrEmpty(productId)) {
             product.setProductId(productId);
         }
+        // Update NCSS link
+        product.setLocationDataNCSS(locationDataNCSS);
 
         extractData(product, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage, selectData, dataOutputFormat, out, responseFormat);
 
@@ -4106,9 +4138,10 @@ public class Organizer {
                                String productId,
                                SelectData selectData,
                                Organizer.Format dataOutputFormat) throws MotuInvalidDateException, MotuInvalidDepthException,
-            MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
-            NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException, IOException {
+                                       MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
+                                       MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
+                                       MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
+                                       NetCdfVariableNotFoundException, IOException {
         // CSON: StrictDuplicateCode
 
         // setCurrentService(serviceName);
@@ -4179,9 +4212,10 @@ public class Organizer {
                                Organizer.Format dataOutputFormat,
                                Writer out,
                                Organizer.Format responseFormat) throws MotuInvalidDateException, MotuInvalidDepthException,
-            MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
-            NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException, IOException {
+                                       MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
+                                       MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
+                                       MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
+                                       NetCdfVariableNotFoundException, IOException {
         // CSON: StrictDuplicateCode
 
         ServicePersistent servicePersistent = null;
@@ -4199,9 +4233,11 @@ public class Organizer {
         }
 
         String locationData = getLocationData(productPersistent);
+        String locationDataNCSS = productPersistent.getUrlNCSS();
 
         Product product = extractData(serviceName,
                                       locationData,
+                                      locationDataNCSS,
                                       listVar,
                                       listTemporalCoverage,
                                       listLatLonCoverage,
@@ -4263,6 +4299,7 @@ public class Organizer {
 
     public Product extractData(String serviceName,
                                String locationData,
+                               String locationDataNCSS,
                                List<String> listVar,
                                List<String> listTemporalCoverage,
                                List<String> listLatLonCoverage,
@@ -4272,9 +4309,10 @@ public class Organizer {
                                Writer out,
                                Organizer.Format responseFormat,
                                String productId) throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException,
-            MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
-            MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
-            NetCdfVariableNotFoundException, IOException {
+                                       MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
+                                       MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
+                                       NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException,
+                                       IOException {
 
         // CSON: StrictDuplicateCode
         if (!Organizer.isNullOrEmpty(serviceName)) {
@@ -4282,6 +4320,7 @@ public class Organizer {
         }
 
         return extractData(locationData,
+                           locationDataNCSS,
                            listVar,
                            listTemporalCoverage,
                            listLatLonCoverage,
@@ -4368,11 +4407,23 @@ public class Organizer {
         Product product = null;
 
         if (!Organizer.isNullOrEmpty(params.getLocationData())) {
-            product = getAmountDataSize(params.getLocationData(), params.getListVar(), params.getListTemporalCoverage(), params
-                    .getListLatLonCoverage(), params.getListDepthCoverage(), params.getOut(), params.isBatchQueue(), null);
+            product = getAmountDataSize(params.getLocationData(),
+                                        params.getListVar(),
+                                        params.getListTemporalCoverage(),
+                                        params.getListLatLonCoverage(),
+                                        params.getListDepthCoverage(),
+                                        params.getOut(),
+                                        params.isBatchQueue(),
+                                        null);
         } else if (!Organizer.isNullOrEmpty(params.getServiceName()) && !Organizer.isNullOrEmpty(params.getProductId())) {
-            product = getAmountDataSize(params.getServiceName(), params.getListVar(), params.getListTemporalCoverage(), params
-                    .getListLatLonCoverage(), params.getListDepthCoverage(), params.getProductId(), params.getOut(), params.isBatchQueue());
+            product = getAmountDataSize(params.getServiceName(),
+                                        params.getListVar(),
+                                        params.getListTemporalCoverage(),
+                                        params.getListLatLonCoverage(),
+                                        params.getListDepthCoverage(),
+                                        params.getProductId(),
+                                        params.getOut(),
+                                        params.isBatchQueue());
         } else {
             throw new MotuInconsistencyException(String.format("ERROR in getAmountDataSize: inconsistency parameters : %s", params.toString()));
         }
@@ -4412,9 +4463,10 @@ public class Organizer {
                                      List<String> listTemporalCoverage,
                                      List<String> listLatLonCoverage,
                                      List<String> listDepthCoverage) throws MotuInvalidDateException, MotuInvalidDepthException,
-            MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
-            NetCdfVariableException, MotuNoVarException, NetCdfVariableNotFoundException {
+                                             MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException,
+                                             MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
+                                             MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException,
+                                             MotuNoVarException, NetCdfVariableNotFoundException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getAmountDataSize(String, List<String>, List<String>, List<String>, List<String>) - entering");
         }
@@ -4513,9 +4565,10 @@ public class Organizer {
                                      List<String> listLatLonCoverage,
                                      List<String> listDepthCoverage,
                                      String productId) throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException,
-            MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
-            MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
-            NetCdfVariableNotFoundException {
+                                             MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
+                                             MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
+                                             MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
+                                             NetCdfVariableNotFoundException {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("getAmountDataSize(String, List<String>, List<String>, List<String>, List<String>, String) - entering");
@@ -4584,9 +4637,10 @@ public class Organizer {
                                      String productId,
                                      Writer out,
                                      boolean batchQueue) throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException,
-            MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
-            MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
-            NetCdfVariableNotFoundException, MotuMarshallException {
+                                             MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
+                                             MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
+                                             MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
+                                             NetCdfVariableNotFoundException, MotuMarshallException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getAmountDataSize(String, List<String>, List<String>, List<String>, List<String>, String, Writer) - entering");
         }
@@ -4683,9 +4737,10 @@ public class Organizer {
                                      Writer out,
                                      boolean batchQueue,
                                      String productId) throws MotuException, MotuMarshallException, MotuInvalidDateException,
-            MotuInvalidDepthException, MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuInvalidDateRangeException,
-            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
-            NetCdfVariableException, MotuNoVarException, NetCdfVariableNotFoundException {
+                                             MotuInvalidDepthException, MotuInvalidLatitudeException, MotuInvalidLongitudeException,
+                                             MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
+                                             MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException,
+                                             MotuNoVarException, NetCdfVariableNotFoundException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getAmountDataSize(String, List<String>, List<String>, List<String>, List<String>, Writer) - entering");
         }
@@ -4769,8 +4824,8 @@ public class Organizer {
      * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuException the motu exception
      */
-    public void getAvailableServices(Writer out, Organizer.Format format, List<CatalogData.CatalogType> listCatalogType) throws MotuException,
-            MotuNotImplementedException {
+    public void getAvailableServices(Writer out, Organizer.Format format, List<CatalogData.CatalogType> listCatalogType)
+            throws MotuException, MotuNotImplementedException {
         switch (format) {
 
         case HTML:
@@ -4798,8 +4853,8 @@ public class Organizer {
      * @throws MotuException the motu exception
      * @throws NetCdfAttributeException the net cdf attribute exception
      */
-    public void getCatalogInformation(String serviceName, Writer out, Organizer.Format format) throws MotuException, MotuNotImplementedException,
-            NetCdfAttributeException {
+    public void getCatalogInformation(String serviceName, Writer out, Organizer.Format format)
+            throws MotuException, MotuNotImplementedException, NetCdfAttributeException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getCatalogInformation() - entering");
         }
@@ -4900,8 +4955,8 @@ public class Organizer {
      * @throws MotuException the motu exception
      * @throws NetCdfAttributeException the net cdf attribute exception
      */
-    public void getProductDownloadInfo(String serviceName, String productId, Writer out, Organizer.Format format) throws MotuException,
-            MotuNotImplementedException, NetCdfAttributeException {
+    public void getProductDownloadInfo(String serviceName, String productId, Writer out, Organizer.Format format)
+            throws MotuException, MotuNotImplementedException, NetCdfAttributeException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductDownloadInfo() - entering");
         }
@@ -4926,8 +4981,8 @@ public class Organizer {
      * @throws MotuException the motu exception
      * @throws NetCdfAttributeException the net cdf attribute exception
      */
-    public void getProductDownloadInfo(String productId, Writer out, Organizer.Format format) throws MotuException, MotuNotImplementedException,
-            NetCdfAttributeException {
+    public void getProductDownloadInfo(String productId, Writer out, Organizer.Format format)
+            throws MotuException, MotuNotImplementedException, NetCdfAttributeException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductDownloadInfo() - entering");
         }
@@ -5000,8 +5055,8 @@ public class Organizer {
      * @throws MotuException the motu exception
      * @throws NetCdfAttributeException the net cdf attribute exception
      */
-    public Product getProductInformation(String serviceName, String productId) throws MotuException, MotuNotImplementedException,
-            NetCdfAttributeException {
+    public Product getProductInformation(String serviceName, String productId)
+            throws MotuException, MotuNotImplementedException, NetCdfAttributeException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductInformation() - entering");
         }
@@ -5034,8 +5089,8 @@ public class Organizer {
      * @throws MotuException the motu exception
      * @throws NetCdfAttributeException the net cdf attribute exception
      */
-    public Product getProductInformation(String serviceName, String productId, Writer out, Organizer.Format format) throws MotuException,
-            MotuNotImplementedException, NetCdfAttributeException {
+    public Product getProductInformation(String serviceName, String productId, Writer out, Organizer.Format format)
+            throws MotuException, MotuNotImplementedException, NetCdfAttributeException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductInformation() - entering");
         }
@@ -5063,8 +5118,8 @@ public class Organizer {
      * @throws MotuException the motu exception
      * @throws NetCdfAttributeException the net cdf attribute exception
      */
-    public Product getProductInformation(String productId, Writer out, Organizer.Format format) throws MotuException, MotuNotImplementedException,
-            NetCdfAttributeException {
+    public Product getProductInformation(String productId, Writer out, Organizer.Format format)
+            throws MotuException, MotuNotImplementedException, NetCdfAttributeException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductInformation() - entering");
         }
@@ -5250,7 +5305,7 @@ public class Organizer {
         }
         return getTimeCoverage(getLocationData(productPersistent));
 
-        //        
+        //
         //
         // Product product = null;
         // ProductMetaData productMetaData = null;
@@ -5583,8 +5638,9 @@ public class Organizer {
                 // WARNING : catalogFileName can contain a file with a relative path or an absolute path.
                 // If path is relative, add directories to the url computed previously (catalogBaseUrl).
                 // We assume that path is relative if the host from the URI is null or empty.
-                // Nota : This 'getProductMetadataInfoFromTDS' function is called 
-                // if the locationData's URL refers to a TDS (protocol http(s)). It is not useful to test scheme from the URI.
+                // Nota : This 'getProductMetadataInfoFromTDS' function is called
+                // if the locationData's URL refers to a TDS (protocol http(s)). It is not useful to test
+                // scheme from the URI.
                 URI uri = null;
                 try {
                     uri = new URI(catalogBaseUrlOther);
@@ -5623,25 +5679,28 @@ public class Organizer {
                 }
 
             } catch (URISyntaxException e) {
-                throw new MotuException(String
-                        .format("Organizer getProductMetadataInfoFromTDS(String locationData) : location data seems not to be a valid URI : '%s'",
-                                locationData), e);
+                throw new MotuException(
+                        String.format("Organizer getProductMetadataInfoFromTDS(String locationData) : location data seems not to be a valid URI : '%s'",
+                                      locationData),
+                        e);
             } catch (IOException e) {
-                throw new MotuException(String
-                        .format("Organizer getProductMetadataInfoFromTDS(String locationData) : location data seems not to be a valid URI : '%s'",
-                                locationData), e);
+                throw new MotuException(
+                        String.format("Organizer getProductMetadataInfoFromTDS(String locationData) : location data seems not to be a valid URI : '%s'",
+                                      locationData),
+                        e);
             } catch (MotuCasBadRequestException e) {
-                throw new MotuException(String
-                        .format("Organizer getProductMetadataInfoFromTDS(String locationData) : location data seems not to be a valid URI : '%s'",
-                                locationData), e);
+                throw new MotuException(
+                        String.format("Organizer getProductMetadataInfoFromTDS(String locationData) : location data seems not to be a valid URI : '%s'",
+                                      locationData),
+                        e);
             }
         }
 
         service.setCasAuthentication(AuthenticationHolder.isCASAuthentication());
 
         if (AuthenticationHolder.isAuthentication() && (!AuthenticationHolder.isCASAuthentication())) {
-            throw new MotuNotImplementedException(String.format("Authentication mode '%s' is not yet implemented", AuthenticationHolder
-                    .getAuthenticationMode().toString()));
+            throw new MotuNotImplementedException(
+                    String.format("Authentication mode '%s' is not yet implemented", AuthenticationHolder.getAuthenticationMode().toString()));
         }
 
         service.loadCatalogInfo(loadTDSVariableVocabulary);
@@ -5707,9 +5766,9 @@ public class Organizer {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductMetadataInfoFromFile(String) - exiting");
         }
-        
+
         productMetadataInfo.setLastUpdate(product.getProductMetaData().getLastUpdate().toString());
-        
+
         return productMetadataInfo;
     }
 
@@ -5752,8 +5811,8 @@ public class Organizer {
             service.setCasAuthentication(currentService.isCasAuthentication());
 
             if (AuthenticationHolder.isAuthentication() && (!AuthenticationHolder.isCASAuthentication())) {
-                throw new MotuNotImplementedException(String.format("Authentication mode '%s' is not yet implemented", AuthenticationHolder
-                        .getAuthenticationMode().toString()));
+                throw new MotuNotImplementedException(
+                        String.format("Authentication mode '%s' is not yet implemented", AuthenticationHolder.getAuthenticationMode().toString()));
             }
             service.loadCatalogInfo(loadTDSVariableVocabulary);
             this.currentService = service;
@@ -5763,12 +5822,12 @@ public class Organizer {
         if (serviceData == null) {
             throw new MotuException(String.format("Unknown service name '%s')", serviceName));
         }
-        
+
         setCurrentService(serviceName);
 
         if (AuthenticationHolder.isAuthentication() && (!AuthenticationHolder.isCASAuthentication())) {
-            throw new MotuNotImplementedException(String.format("Authentication mode '%s' is not yet implemented", AuthenticationHolder
-                    .getAuthenticationMode().toString()));
+            throw new MotuNotImplementedException(
+                    String.format("Authentication mode '%s' is not yet implemented", AuthenticationHolder.getAuthenticationMode().toString()));
         }
 
         Product product = null;
@@ -6215,7 +6274,7 @@ public class Organizer {
     //
     // return stringBuffer.toString();
     // }
-    //    
+    //
 
     /**
      * Setter of the property <tt>services</tt>.
@@ -6573,7 +6632,8 @@ public class Organizer {
      * @throws MotuException the motu exception
      * @throws NetCdfAttributeException the net cdf attribute exception
      */
-    private void getProductDownloadInfoHTML(String productId, Writer out) throws MotuException, MotuNotImplementedException, NetCdfAttributeException {
+    private void getProductDownloadInfoHTML(String productId, Writer out)
+            throws MotuException, MotuNotImplementedException, NetCdfAttributeException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductDownloadInfoHTML() - entering");
         }
@@ -6667,6 +6727,7 @@ public class Organizer {
      * @return the file object
      * @throws MotuException
      */
+
     // public static FileObject resolveFile(final String uri) throws
     // MotuException {
     // FileObject fileObject = null;
