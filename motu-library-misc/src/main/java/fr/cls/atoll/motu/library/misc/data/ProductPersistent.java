@@ -53,6 +53,9 @@ public class ProductPersistent {
     /** The url meta data. */
     protected String urlMetaData;
 
+    /** The url NCSS (optional) */
+    protected String urlNCSS;
+
     /**
      * Gets the url meta data.
      * 
@@ -60,6 +63,24 @@ public class ProductPersistent {
      */
     public String getUrlMetaData() {
         return urlMetaData;
+    }
+
+    /**
+     * Sets the url of the NCSS service (if available)
+     * 
+     * @param urlMetaData the new url of the NCSS service (if available)
+     */
+    public void setUrlNCSS(String urlNCSS) {
+        this.urlNCSS = urlNCSS;
+    }
+
+    /**
+     * Gets the url of the NCSS service (if available)
+     * 
+     * @return the url of the NCSS service (if available)
+     */
+    public String getUrlNCSS() {
+        return urlNCSS;
     }
 
     /**

@@ -215,7 +215,7 @@ public class QueueManagement implements JobListener, QueueManagementMBean {
     // // TestSchedule.CheckPriorityJob.class);
     // jobDetail = new JobDetail(SCHEDULE_PRIORITY_JOB_NAME, Scheduler.DEFAULT_GROUP,
     // SchedulePriorityJob.class);
-    //            
+    //
     // JobDataMap jobDataMap = new JobDataMap();
     // jobDataMap.put(ExtractionThreadPoolExecutor.class.getSimpleName(), threadPoolExecutor);
     // jobDataMap.put(QueueType.class.getSimpleName(), queueConfig);
@@ -248,8 +248,8 @@ public class QueueManagement implements JobListener, QueueManagementMBean {
      * @throws MotuExceedingQueueCapacityException the motu exceeding queue capacity exception
      * @throws MotuInvalidQueuePriorityException the motu invalid queue priority exception
      */
-    public void execute(RunnableExtraction runnableExtraction) throws MotuExceedingQueueCapacityException, MotuException,
-            MotuInvalidQueuePriorityException {
+    public void execute(RunnableExtraction runnableExtraction)
+            throws MotuExceedingQueueCapacityException, MotuException, MotuInvalidQueuePriorityException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("execute(RunnableExtraction) - entering");
         }
@@ -260,7 +260,6 @@ public class QueueManagement implements JobListener, QueueManagementMBean {
         }
 
         setRequestRange(runnableExtraction);
-
         setQueueGlobalInfo(runnableExtraction);
 
         try {
@@ -402,7 +401,7 @@ public class QueueManagement implements JobListener, QueueManagementMBean {
     public String getId() {
         return queueConfig.getId();
     }
-    
+
     /**
      * @return the data threshold of the queue.
      */
@@ -458,8 +457,9 @@ public class QueueManagement implements JobListener, QueueManagementMBean {
      */
     public void shutdown() throws MotuException {
         if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format("QueueManagement shutdown() - Queue description: '%s' - Is terminated %b - entering", this.queueConfig
-                    .getDescription(), threadPoolExecutor.isTerminated()));
+            LOG.debug(String.format("QueueManagement shutdown() - Queue description: '%s' - Is terminated %b - entering",
+                                    this.queueConfig.getDescription(),
+                                    threadPoolExecutor.isTerminated()));
         }
 
         if (LOG.isInfoEnabled()) {
@@ -496,23 +496,22 @@ public class QueueManagement implements JobListener, QueueManagementMBean {
                                            this.queueConfig.getDescription(),
                                            priorityBlockingQueue.size()));
                 }
-                
+
                 threadPoolExecutor.awaitTermination(1, TimeUnit.SECONDS);
             }
         } catch (InterruptedException e) {
             LOG.error("shutdown()", e);
             throw new MotuException("ERROR in QueueManagement.shutdown.", e);
         }
-        
+
         if (LOG.isInfoEnabled()) {
-            LOG.info(String.format("Queue '%s %s' is shutdown.",
-                                   this.getName(),
-                                   this.queueConfig.getDescription()));
+            LOG.info(String.format("Queue '%s %s' is shutdown.", this.getName(), this.queueConfig.getDescription()));
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format("QueueManagement shutdown() - Queue description: '%s' - Is terminated %b - exiting", this.queueConfig
-                    .getDescription(), threadPoolExecutor.isTerminated()));
+            LOG.debug(String.format("QueueManagement shutdown() - Queue description: '%s' - Is terminated %b - exiting",
+                                    this.queueConfig.getDescription(),
+                                    threadPoolExecutor.isTerminated()));
         }
     }
 
@@ -542,6 +541,7 @@ public class QueueManagement implements JobListener, QueueManagementMBean {
      * 
      * @return the name
      */
+    @Override
     public String getName() {
         return queueConfig.getId();
     }
@@ -551,6 +551,7 @@ public class QueueManagement implements JobListener, QueueManagementMBean {
      * 
      * @param context the context
      */
+    @Override
     public void jobExecutionVetoed(JobExecutionContext context) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("QueueManagement.jobExecutionVetoed(JobExecutionContext) - entering");
@@ -566,6 +567,7 @@ public class QueueManagement implements JobListener, QueueManagementMBean {
      * 
      * @param context the context
      */
+    @Override
     public void jobToBeExecuted(JobExecutionContext context) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("QueueManagement.jobToBeExecuted(JobExecutionContext) - entering");
@@ -582,6 +584,7 @@ public class QueueManagement implements JobListener, QueueManagementMBean {
      * @param context the context
      * @param jobException the job exception
      */
+    @Override
     @SuppressWarnings("unchecked")
     public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
         if (LOG.isDebugEnabled()) {

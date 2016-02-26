@@ -715,6 +715,7 @@
 			value="sftp" /> <xs:enumeration value="gsiftp" /> </xs:restriction>
 			</xs:simpleType> </xs:attribute>
 		-->
+		<xs:attribute name="ncss" type="xs:string"></xs:attribute>
 	</xs:complexType>
 
 	<!-- ===================  -->

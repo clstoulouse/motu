@@ -42,21 +42,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
-import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.MAMath;
-import ucar.ma2.MAMath.MinMax;
-import ucar.nc2.Attribute;
-import ucar.nc2.Variable;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateAxis2D;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.library.inventory.Access;
 import fr.cls.atoll.motu.library.inventory.DepthCoverage;
@@ -81,7 +71,19 @@ import fr.cls.atoll.motu.library.misc.metadata.DocMetaData;
 import fr.cls.atoll.motu.library.misc.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfSubsetService;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
+import ucar.ma2.Array;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.MAMath;
+import ucar.ma2.MAMath.MinMax;
+import ucar.nc2.Attribute;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis2D;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.geoloc.LatLonRect;
 
 // TODO: Auto-generated Javadoc
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
@@ -456,7 +458,8 @@ public class Product {
     //
     // if (locationMetaData.equals("")) {
     // throw new
-    // MotuException("Error in loadInventoryMetaData - Unable to open XML file - url path is not set (is empty)");
+    // MotuException("Error in loadInventoryMetaData - Unable to open XML file - url path is not set (is
+    // empty)");
     // }
     // // Loads global metadata from opendap
     // loadInventoryGlobalMetaData();
@@ -604,17 +607,25 @@ public class Product {
             accessUriTemp = access.getUrlPath();
 
             if (userInfo != null) {
-                accessUri = new URI(accessUriTemp.getScheme(), userInfo.toString(), accessUriTemp.getHost(), accessUriTemp.getPort(), accessUriTemp
-                        .getPath(), accessUriTemp.getQuery(), accessUriTemp.getFragment());
+                accessUri = new URI(
+                        accessUriTemp.getScheme(),
+                        userInfo.toString(),
+                        accessUriTemp.getHost(),
+                        accessUriTemp.getPort(),
+                        accessUriTemp.getPath(),
+                        accessUriTemp.getQuery(),
+                        accessUriTemp.getFragment());
             } else {
                 accessUri = accessUriTemp;
             }
 
         } catch (URISyntaxException e) {
-            throw new MotuException(String.format("Invalid URI '%s' in inventory product '%s' at '%s.urlPath' tag.attribute",
-                                                  accessUri,
-                                                  productMetaData.getProductId(),
-                                                  access.getClass().toString()), e);
+            throw new MotuException(
+                    String.format("Invalid URI '%s' in inventory product '%s' at '%s.urlPath' tag.attribute",
+                                  accessUri,
+                                  productMetaData.getProductId(),
+                                  access.getClass().toString()),
+                    e);
         }
 
         setLocationData(accessUri.toString());
@@ -645,7 +656,7 @@ public class Product {
         productMetaData.setProductId(inventoryOLA.getResource().getUrn().toString());
         productMetaData.setTitle(Organizer.getDatasetIdFromURI(inventoryOLA.getResource().getUrn().toString()));
         productMetaData.setLastUpdate(DateUtils.getDateTimeAsUTCString(inventoryOLA.getLastModificationDate(), DateUtils.DATETIME_PATTERN2));
-        
+
         Resource resource = inventoryOLA.getResource();
 
         TimePeriod timePeriod = resource.getTimePeriod();
@@ -661,8 +672,8 @@ public class Product {
 
         DepthCoverage depthCoverage = resource.getDepthCoverage();
         if (depthCoverage != null) {
-            productMetaData.setDepthCoverage(new MinMax(depthCoverage.getMin().getValue().doubleValue(), depthCoverage.getMax().getValue()
-                    .doubleValue()));
+            productMetaData
+                    .setDepthCoverage(new MinMax(depthCoverage.getMin().getValue().doubleValue(), depthCoverage.getMax().getValue().doubleValue()));
         }
 
         // Gets variables metadata.
@@ -691,7 +702,7 @@ public class Product {
         // productMetaData.setDocumentations(new ArrayList<DocMetaData>());
         // }
         // productMetaData.clearDocumentations();
-        //        
+        //
         // DocMetaData docMetaData = new DocMetaData();
         // docMetaData.setTitle(ProductMetaData.MEDIA_KEY);
         // docMetaData.setResource(CatalogData.CatalogType.FTP.name());
@@ -824,7 +835,7 @@ public class Product {
      * a mapping for the specified variable to extract.
      *
      * @param varName key whose presence in this map is to be tested.
-     * @return Returns  if this product contains a specified variable to be extracted.
+     * @return Returns if this product contains a specified variable to be extracted.
      */
     public boolean hasVariableToBeExtracted(String varName) {
         if (dataset == null) {
@@ -1255,7 +1266,8 @@ public class Product {
         Variable variable = productMetaData.getTimeAxis();
         if (variable == null) {
             // throw new
-            // MotuException(String.format("Error in getTimeAxisData - No time axis found in this product '%s'",
+            // MotuException(String.format("Error in getTimeAxisData - No time axis found in this product
+            // '%s'",
             // this.getProductId()));
             return null;
         }
@@ -1431,7 +1443,8 @@ public class Product {
      * @throws MotuException the motu exception
      * @throws NetCdfVariableException the net cdf variable exception
      */
-    public List<String> getZAxisDataAsString(RoundingMode roundingMode, int desiredDecimalNumberDigits) throws MotuException, NetCdfVariableException {
+    public List<String> getZAxisDataAsString(RoundingMode roundingMode, int desiredDecimalNumberDigits)
+            throws MotuException, NetCdfVariableException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getZAxisDataAsString() - entering");
         }
@@ -1709,8 +1722,8 @@ public class Product {
      * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      */
     public void computeAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
-            MotuNoVarException, NetCdfVariableNotFoundException {
+            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
+            NetCdfVariableNotFoundException {
 
         if (dataset == null) {
             throw new MotuException("Error in getAmountDataSize - Nothing to get - dataset is null");
@@ -1770,11 +1783,11 @@ public class Product {
         }
         return dataset.getReadingTime();
     }
-    
+
     /**
      * Adds the reading time.
      *
-     * @param readingTime the reading time  in nanoSeconds (ns)
+     * @param readingTime the reading time in nanoSeconds (ns)
      */
     public void addReadingTime(long readingTime) {
         if (dataset == null) {
@@ -1830,11 +1843,11 @@ public class Product {
         }
         return dataset.getWritingTime();
     }
-    
+
     /**
      * Adds the writing time.
      *
-     * @param writingTime the writing time  in nanoSeconds (ns)
+     * @param writingTime the writing time in nanoSeconds (ns)
      */
     public void addWritingTime(long writingTime) {
         if (dataset == null) {
@@ -1890,11 +1903,11 @@ public class Product {
         }
         return dataset.getCopyingTime();
     }
-    
+
     /**
      * Adds the copying time.
      *
-     * @param copyingTime the copying time  in nanoSeconds (ns)
+     * @param copyingTime the copying time in nanoSeconds (ns)
      */
     public void addCopyingTime(long copyingTime) {
         if (dataset == null) {
@@ -1902,7 +1915,6 @@ public class Product {
         }
         dataset.addCopyingTime(copyingTime);
     }
-
 
     /**
      * Gets the copying time as nano seconds.
@@ -1939,7 +1951,7 @@ public class Product {
     public long getCopyingTimeAsSeconds() {
         return getCopyingTimeAsMilliSeconds() / 1000;
     }
-    
+
     /**
      * Gets the compressing time.
      *
@@ -1951,7 +1963,7 @@ public class Product {
         }
         return dataset.getCompressingTime();
     }
-    
+
     /**
      * Adds the compressing time.
      *
@@ -2016,8 +2028,8 @@ public class Product {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public void extractData(Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
-            MotuNoVarException, NetCdfVariableNotFoundException, IOException {
+            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
+            NetCdfVariableNotFoundException, IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("extractData() - entering");
         }
@@ -2031,6 +2043,39 @@ public class Product {
         if (LOG.isDebugEnabled()) {
             LOG.debug("extractData() - exiting");
         }
+    }
+
+    /**
+     * Extract NCSS data.
+     * 
+     * @param dataOutputFormat the data output format
+     * @throws MotuException
+     * @throws MotuNotImplementedException
+     */
+    public void extractNCSSData(Organizer.Format dataOutputFormat) throws MotuException, MotuNotImplementedException {
+        // Extract criteria collect
+        ExtractCriteriaDatetime time = getCriteriaDateTime();
+        ExtractCriteriaLatLon latlon = getCriteriaLatLon();
+        ExtractCriteriaDepth depth = getCriteriaDepth();
+        Set<String> var = dataset.getVariables().keySet();
+
+        // Create output NetCdf file to deliver to the user (equivalent to opendap)
+        String fname = NetCdfWriter.getUniqueNetCdfFileName(getProductId());
+        setExtractFilename(fname);
+        String dir = Organizer.getMotuConfigInstance().getExtractionPath();
+
+        // Create and initialize
+        NetCdfSubsetService ncss = new NetCdfSubsetService();
+        ncss.setGeoSubset(latlon);
+        ncss.setTimeSubset(time);
+        ncss.setDepthSubset(depth);
+        ncss.setVariablesSubset(var);
+        ncss.setOutputDir(dir);
+        ncss.setOutputFile(fname);
+        ncss.setncssURL(getLocationDataNCSS());
+
+        // Run rest query
+        ncss.RequestNCSS();
     }
 
     /**
@@ -2185,7 +2230,7 @@ public class Product {
         }
 
         GregorianCalendar calendar = new GregorianCalendar(NetCdfReader.GMT_TIMEZONE);
-        
+
         for (DataFile dataFile : dataFiles) {
             // Warning : get Datetime as UTC
             DateTime fileStart = DateUtils.dateTimeToUTC(dataFile.getStartCoverageDate());
@@ -2195,12 +2240,12 @@ public class Product {
             int h = calendar.get(Calendar.HOUR_OF_DAY);
             int m = calendar.get(Calendar.MINUTE);
             int s = calendar.get(Calendar.SECOND);
-            
+
             String format = DateUtils.DATETIME_PATTERN3;
 
             if ((h == 0) && (m == 0) && (s == 0)) {
-	            format = DateUtils.DATETIME_PATTERN1;
-	        }
+                format = DateUtils.DATETIME_PATTERN1;
+            }
 
             if (fileStart != null) {
                 timeCoverage.add(DateUtils.DATETIME_FORMATTERS.get(format).print(fileStart));
@@ -2210,6 +2255,31 @@ public class Product {
 
         return timeCoverage;
 
+    }
+
+    /** URL to find the product (URL NetcdfSubsetService NCSS , ...). */
+    private String locationDataNCSS = "";
+
+    /**
+     * Getter of the property <tt>location</tt>.
+     * 
+     * @return Returns the location.
+     * 
+     * @uml.property name="locationDataNCSS"
+     */
+    public String getLocationDataNCSS() {
+        return this.locationDataNCSS;
+    }
+
+    /**
+     * Setter of the property <tt>location</tt>.
+     * 
+     * @param locationDataNCSS The location to set.
+     * 
+     * @uml.property name="locationDataNCSS"
+     */
+    public void setLocationDataNCSS(String locationDataNCSS) {
+        this.locationDataNCSS = locationDataNCSS;
     }
 
     /** URL to find the product (URL Opendap , ...). */
@@ -2238,7 +2308,7 @@ public class Product {
     }
 
     /**
-     * URL of a XML file that describes product's metatada. If there is no XML file, product's metadata will
+     * URL of a XML file that describes product's metadata. If there is no XML file, product's metadata will
      * be loaded from netCDF file (dataset).
      */
     private String locationMetaData = "";

@@ -48,15 +48,13 @@ import javax.xml.bind.JAXBElement;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.log4j.Logger;
 
-import ucar.ma2.MAMath.MinMax;
-import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
+import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.inventory.ResourceOLA;
 import fr.cls.atoll.motu.library.inventory.ResourcesOLA;
-import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
@@ -76,6 +74,8 @@ import fr.cls.atoll.motu.library.misc.tds.server.SpatialRange;
 import fr.cls.atoll.motu.library.misc.tds.server.TimeCoverageType;
 import fr.cls.atoll.motu.library.misc.tds.server.Variables;
 import fr.cls.atoll.motu.library.misc.utils.ReflectionUtils;
+import ucar.ma2.MAMath.MinMax;
+import ucar.unidata.geoloc.LatLonRect;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -177,6 +177,9 @@ public class CatalogData {
 
     /** DODS TDS Service Type. */
     static public final String TDS_DODS_SERVICE = "dods";
+
+    /** NCSS TDS Service Type. */
+    static public final String TDS_NCSS_SERVICE = "NetcdfSubset";
 
     /**
      * Default constructor.
@@ -289,7 +292,7 @@ public class CatalogData {
         product.setLocationMetaData(xmlUri);
 
         ProductMetaData productMetaData = product.getProductMetaData();
-        productMetaData.setProductType(currentProductType);        
+        productMetaData.setProductType(currentProductType);
         productMetaData.setLastUpdate(DateUtils.getDateTimeAsUTCString(inventoryOLA.getLastModificationDate(), DateUtils.DATETIME_PATTERN2));
         sameProductTypeDataset = new ArrayList<Product>();
         sameProductTypeDataset.add(product);
@@ -332,11 +335,11 @@ public class CatalogData {
     // product.setProductMetaData(productMetaData);
     //
     // product.setLocationMetaData(xmlUri);
-    //        
+    //
     // productMetaData.setProductType(currentProductType);
     // sameProductTypeDataset = new ArrayList<Product>();
     // sameProductTypeDataset.add(product);
-    //        
+    //
     // productsLoaded.add(productId);
     //
     // product.loadInventoryGlobalMetaData(inventoryOLA);
@@ -514,7 +517,7 @@ public class CatalogData {
         // it.hasNext();) {
         // sameProductTypeDataset = it.next();
         // System.out.println(sameProductTypeDataset.size());
-        //             
+        //
         // for(int i = 0 ; i < sameProductTypeDataset.size(); i++) {
         // Product p = sameProductTypeDataset.get(i);
         // if (i == 0) {
@@ -696,7 +699,7 @@ public class CatalogData {
         // it.hasNext();) {
         // sameProductTypeDataset = it.next();
         // System.out.println(sameProductTypeDataset.size());
-        //             
+        //
         // for(int i = 0 ; i < sameProductTypeDataset.size(); i++) {
         // Product p = sameProductTypeDataset.get(i);
         // if (i == 0) {
@@ -767,7 +770,7 @@ public class CatalogData {
         // it.hasNext();) {
         // sameProductTypeDataset = it.next();
         // System.out.println(sameProductTypeDataset.size());
-        //             
+        //
         // for(int i = 0 ; i < sameProductTypeDataset.size(); i++) {
         // Product p = sameProductTypeDataset.get(i);
         // if (i == 0) {
@@ -1009,6 +1012,70 @@ public class CatalogData {
     }
 
     /**
+     * get NCSS server Url (this is optional, only OpenDAP is mandatory).
+     * 
+     * @param product the product
+     * @param catalogXml Xml TDS catalog
+     * @param datasetType dataset from which one's search url
+     * 
+     * @return Opendap Server Url.
+     * 
+     * @throws MotuException the motu exception
+     */
+    private String getUrlNCSSFromTds(DatasetType datasetType, fr.cls.atoll.motu.library.misc.tds.server.Catalog catalogXml, Product product)
+            throws MotuException {
+        String tdsServiceName = "";
+        String xmlNamespace = ReflectionUtils.getXmlSchemaNamespace(datasetType.getClass());
+        StringBuffer xPath = new StringBuffer();
+        xPath.append("//threddsMetadataGroup[name='{");
+        xPath.append(xmlNamespace);
+        xPath.append("}serviceName']/value");
+        List<Object> listServiceNameObject = CatalogData.findJaxbElementUsingJXPath(datasetType, xPath.toString());
+
+        for (Object objectElt : listServiceNameObject) {
+            if (!(objectElt instanceof String)) {
+                continue;
+            }
+            tdsServiceName = (String) objectElt;
+            break;
+        }
+
+        if (tdsServiceName.equals("")) {
+            throw new MotuException(
+                    String.format("Error in getUrlNCSSFromTds - No TDS service found in TDS catalog for dataset '%s' ", datasetType.getName()));
+        }
+
+        // Search for opendap service, dods if not found
+        fr.cls.atoll.motu.library.misc.tds.server.Service tdsService = findTdsService(tdsServiceName, TDS_NCSS_SERVICE, catalogXml.getService());
+        if (tdsService == null) {
+            return ""; // It is not a mandatory service
+        }
+
+        // Gather NCSS URLS from TDS
+        String relativeUrl = tdsService.getBase();
+        URI uri = URI.create(urlSite);
+        URI opendapUri = null;
+        try {
+            opendapUri = new URI(uri.getScheme(), uri.getAuthority(), relativeUrl, null, null);
+        } catch (URISyntaxException e) {
+            throw new MotuException(
+                    String.format("Error in getUrlNCSSFromTds - Uri creation: scheme='%s', authority='%s', path='%s'",
+                                  uri.getScheme(),
+                                  uri.getAuthority(),
+                                  relativeUrl),
+                    e);
+        }
+
+        // Store metadata in Product
+        StringBuffer locationDataNCSS = new StringBuffer();
+        locationDataNCSS.append(opendapUri.toString());
+        locationDataNCSS.append(datasetType.getUrlPath());
+        product.setLocationDataNCSS(locationDataNCSS.toString());
+
+        return opendapUri.toString();
+    }
+
+    /**
      * get Opendap (or Dods) server Url.
      * 
      * @param product the product
@@ -1021,21 +1088,13 @@ public class CatalogData {
      */
     private String getUrlOpendapFromTds(DatasetType datasetType, fr.cls.atoll.motu.library.misc.tds.server.Catalog catalogXml, Product product)
             throws MotuException {
-        // Search Opendap service for this dataset and get its url
-        // Don't use getServiceName --> deprecated - see XML Sschema InvCatalog.1.0.n.xsd
-        // String tdsServiceName = datasetType.getServiceName();
 
         String tdsServiceName = "";
-        // List<Object> listServiceNameObject =
-        // CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), XML_TAG_SERVICENAME);
         String xmlNamespace = ReflectionUtils.getXmlSchemaNamespace(datasetType.getClass());
         StringBuffer xPath = new StringBuffer();
         xPath.append("//threddsMetadataGroup[name='{");
         xPath.append(xmlNamespace);
         xPath.append("}serviceName']/value");
-
-        // List<Object> listServiceNameObject = CatalogData.findJaxbElementUsingJXPath(datasetType,
-        // "//threddsMetadataGroup[name='{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}serviceName']/value");
         List<Object> listServiceNameObject = CatalogData.findJaxbElementUsingJXPath(datasetType, xPath.toString());
 
         for (Object objectElt : listServiceNameObject) {
@@ -1047,38 +1106,43 @@ public class CatalogData {
         }
 
         if (tdsServiceName.equals("")) {
-            throw new MotuException(String.format("Error in getUrlOpendapFromTds - No TDS service found in TDS catalog for dataset '%s' ",
-                                                  datasetType.getName()));
+            throw new MotuException(
+                    String.format("Error in getUrlOpendapFromTds - No TDS service found in TDS catalog for dataset '%s' ", datasetType.getName()));
         }
 
-        // search 'opendap' seruce type. If not found search 'dods' service type.
+        // Search for opendap service, dods if not found
         fr.cls.atoll.motu.library.misc.tds.server.Service tdsService = findTdsService(tdsServiceName, TDS_OPENDAP_SERVICE, catalogXml.getService());
-
         if (tdsService == null) {
             tdsService = findTdsService(tdsServiceName, TDS_DODS_SERVICE, catalogXml.getService());
         }
 
+        // One of the two is mandatory
         if (tdsService == null) {
             throw new MotuException(
-                    String
-                            .format("Error in getUrlOpendapFromTds - TDS service '%s' found in TDS catalog for dataset '%s' has neither 'opendap' nor 'dods' service type",
-                                    tdsServiceName,
-                                    datasetType.getName()));
+                    String.format("Error in getUrlOpendapFromTds - TDS service '%s' found in TDS catalog for dataset '%s' has neither 'opendap' nor 'dods' service type",
+                                  tdsServiceName,
+                                  datasetType.getName()));
         }
+
+        // Gather URLS from TDS
         String relativeUrl = tdsService.getBase();
         URI uri = URI.create(urlSite);
         URI opendapUri = null;
         try {
             opendapUri = new URI(uri.getScheme(), uri.getAuthority(), relativeUrl, null, null);
         } catch (URISyntaxException e) {
-            throw new MotuException(String.format("Error in getUrlOpendapFromTds - Uri creation: scheme='%s', authority='%s', path='%s'", uri
-                    .getScheme(), uri.getAuthority(), relativeUrl), e);
+            throw new MotuException(
+                    String.format("Error in getUrlOpendapFromTds - Uri creation: scheme='%s', authority='%s', path='%s'",
+                                  uri.getScheme(),
+                                  uri.getAuthority(),
+                                  relativeUrl),
+                    e);
         }
 
+        // Store metadata in Product
         StringBuffer locationData = new StringBuffer();
         locationData.append(opendapUri.toString());
         locationData.append(datasetType.getUrlPath());
-
         product.setLocationData(locationData.toString());
         product.setTdsServiceType(tdsService.getServiceType().toLowerCase());
 
@@ -1093,7 +1157,8 @@ public class CatalogData {
      * 
      * @throws MotuException the motu exception
      */
-    private void initializeProductFromTds(DatasetType datasetType, fr.cls.atoll.motu.library.misc.tds.server.Catalog catalogXml) throws MotuException {
+    private void initializeProductFromTds(DatasetType datasetType, fr.cls.atoll.motu.library.misc.tds.server.Catalog catalogXml)
+            throws MotuException {
 
         if (datasetType == null) {
             throw new MotuException("Error in initializeProductFromTds - Tds dataset is null");
@@ -1160,10 +1225,10 @@ public class CatalogData {
 
         // Loads Property meatadata
         loadTdsMetadataProperty(datasetType, productMetaData);
-        
+
         // Loads last date update
-        loadTdsMetadataLastDate(datasetType, productMetaData);        
-        
+        loadTdsMetadataLastDate(datasetType, productMetaData);
+
         product.setProductMetaData(productMetaData);
 
         // // Get Opendap (Dods) url of the dataset.
@@ -1173,7 +1238,11 @@ public class CatalogData {
         //
         // product.setLocationData(locationData.toString());
 
+        // Load OPENDAP/dods url from TDS catalog
         getUrlOpendapFromTds(datasetType, catalogXml, product);
+
+        // Load NCSS service url from TDS catalog
+        getUrlNCSSFromTds(datasetType, catalogXml, product);
 
         if (newProduct) {
             putProducts(productMetaData.getProductId(), product);
@@ -1555,7 +1624,7 @@ public class CatalogData {
      * @param productMetaData the product meta data
      * 
      * @throws MotuException the motu exception
-     */    
+     */
     private void loadTdsMetadataProperty(DatasetType datasetType, ProductMetaData productMetaData) throws MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadTdsMetadataProperty(DatasetType, ProductMetaData) - entering");
@@ -1582,8 +1651,8 @@ public class CatalogData {
         if (LOG.isDebugEnabled()) {
             LOG.debug("loadTdsMetadataProperty(DatasetType, ProductMetaData) - exiting");
         }
-    }    
-    
+    }
+
     /**
      * Load tds last date property (inside the metadata tag).
      * 
@@ -1606,8 +1675,8 @@ public class CatalogData {
             if (!(objectElt instanceof DateTypeFormatted)) {
                 continue;
             }
-            
-            DateTypeFormatted date = (DateTypeFormatted)objectElt;            
+
+            DateTypeFormatted date = (DateTypeFormatted) objectElt;
             productMetaData.setLastUpdate(date.getValue());
         }
 
@@ -1687,8 +1756,7 @@ public class CatalogData {
         if (latLonRect != null) {
             productMetaData.setGeoBBox(new LatLonRect(latLonRect));
         } else {
-            LOG
-                    .info("initializeGeoAndDepthCoverage - No Lat/Lon coordinates have been set in TDS configuration file.(extractCriteriaLatLon.getLatLonRect() returns null)");
+            LOG.info("initializeGeoAndDepthCoverage - No Lat/Lon coordinates have been set in TDS configuration file.(extractCriteriaLatLon.getLatLonRect() returns null)");
         }
 
         SpatialRange spatialRangeNorthSouth = geospatialCoverage.getNorthsouth();
@@ -1696,8 +1764,7 @@ public class CatalogData {
             productMetaData.setNorthSouthResolution(CatalogData.getResolution(spatialRangeNorthSouth));
             productMetaData.setNorthSouthUnits(CatalogData.getUnits(spatialRangeNorthSouth));
         } else {
-            LOG
-                    .info("initializeGeoAndDepthCoverage - No North/South resolution has been set in TDS configuration file.(geospatialCoverage.getNorthsouth() returns null)");
+            LOG.info("initializeGeoAndDepthCoverage - No North/South resolution has been set in TDS configuration file.(geospatialCoverage.getNorthsouth() returns null)");
         }
 
         SpatialRange spatialRangeEastWest = geospatialCoverage.getEastwest();
@@ -1705,8 +1772,7 @@ public class CatalogData {
             productMetaData.setEastWestResolution(CatalogData.getResolution(spatialRangeEastWest));
             productMetaData.setEastWestUnits(CatalogData.getUnits(spatialRangeEastWest));
         } else {
-            LOG
-                    .info("initializeGeoAndDepthCoverage - No East/West resolution has been set in TDS configuration file.(geospatialCoverage.getEastwest() returns null)");
+            LOG.info("initializeGeoAndDepthCoverage - No East/West resolution has been set in TDS configuration file.(geospatialCoverage.getEastwest() returns null)");
         }
 
         // Set depth coverage
@@ -1720,8 +1786,7 @@ public class CatalogData {
             productMetaData.setDepthUnits(CatalogData.getUnits(geospatialCoverage.getUpdown()));
 
         } else {
-            LOG
-                    .info("initializeGeoAndDepthCoverage - No Up/Down  has been set in TDS configuration file.(geospatialCoverage.getUpdown() returns null)");
+            LOG.info("initializeGeoAndDepthCoverage - No Up/Down  has been set in TDS configuration file.(geospatialCoverage.getUpdown() returns null)");
         }
 
         return true;
@@ -1905,7 +1970,8 @@ public class CatalogData {
                 if (!AssertionUtils.hasCASTicket(newPath)) {
                     newPath = AssertionUtils.addCASTicket(path, AuthenticationHolder.getUser());
                     // throw new MotuException(
-                    // "Unable to load TDS configuration. TDS has been declared as CASified, but the Motu application is not. \nTo access this TDS, the Motu Application must be CASified.");
+                    // "Unable to load TDS configuration. TDS has been declared as CASified, but the Motu
+                    // application is not. \nTo access this TDS, the Motu Application must be CASified.");
                 }
             } else {
                 newPath = path;
