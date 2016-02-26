@@ -90,6 +90,7 @@ public class MotuRequest {
     // private static CookieStore cookieStore = new sun.net.www.protocol.http.InMemoryCookieStore();
     private static CookieStore cookieStore = new PublicInMemoryCookieStore();
 
+
     /**
      * The Constructor.
      */
