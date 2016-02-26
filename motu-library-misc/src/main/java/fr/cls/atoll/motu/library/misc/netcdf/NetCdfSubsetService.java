@@ -8,8 +8,6 @@ import java.util.Set;
 
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.apache.commons.io.IOUtils;
-
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -18,6 +16,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaLatLon;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
 
 /**
  * Class to handle NCSS requests
@@ -33,6 +32,9 @@ import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaLatLon;
  */
 
 public class NetCdfSubsetService {
+
+    /** Size block read in bytes from REST response */
+    public final static int BSIZE_READ = 256;
 
     /** Name of variables, separated by ',' */
     public final static String NCSS_ATTR_VARIABLES = "var";
@@ -227,8 +229,10 @@ public class NetCdfSubsetService {
 
     /**
      * REST request to NCSS subset service and redirect output to file .
+     * 
+     * @throws MotuException
      */
-    public void RequestNCSS() {
+    public void RequestNCSS() throws MotuException {
 
         // Geographical subset
         String north = String.valueOf(geoSubset.getUpperLeftLat());
@@ -280,25 +284,31 @@ public class NetCdfSubsetService {
 
             if (response.getType().toString().equals("application/x-netcdf")) {
                 InputStream is = response.getEntity(InputStream.class);
-                byte[] bytes = IOUtils.toByteArray(is);
-
-                // Write buffered response to file
                 FileOutputStream fos = new FileOutputStream(outputDir + "/" + outputFile);
-                fos.write(bytes);
-                fos.flush();
+
+                // Read/Write by chunks the REST response (avoid Heap over-usage)
+                int bytesRead = 0;
+                byte[] buff = new byte[BSIZE_READ];
+                while ((bytesRead = is.read(buff)) != -1) {
+                    fos.write(buff, 0, bytesRead);
+                }
+
+                // Close inputs/outputs
                 fos.close();
                 is.close();
             } else if (response.getType().toString().equals("text/plain")) {
                 // TDS error message handle (plain/text)
                 String msg = response.getEntity(String.class);
-                System.out.println("ERR -> " + msg);
+                throw new MotuException(msg);
             } else {
                 // Other error handling
-                System.out.println("Unkown response type -> " + response.getType().toString());
+                String msg = "Unkown response type -> " + response.getType().toString();
+                throw new MotuException(msg);
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            String msg = e.getMessage();
+            throw new MotuException(msg);
         }
     }
 }
