@@ -182,7 +182,10 @@ public class Organizer {
         XML(3),
 
         /** xml format. */
-        URL(4);
+        URL(4),
+
+        /** NetCdf-4 format. */
+        NETCDF4(5);
 
         /** The value. */
         private final int value;

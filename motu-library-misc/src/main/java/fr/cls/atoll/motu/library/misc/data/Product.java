@@ -2070,6 +2070,7 @@ public class Product {
         ncss.setTimeSubset(time);
         ncss.setDepthSubset(depth);
         ncss.setVariablesSubset(var);
+        ncss.setOutputFormat(dataOutputFormat);
         ncss.setOutputDir(dir);
         ncss.setOutputFile(fname);
         ncss.setncssURL(getLocationDataNCSS());

@@ -24,6 +24,18 @@
  */
 package fr.cls.atoll.motu.library.misc.data;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
@@ -37,22 +49,6 @@ import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
-import javolution.UtilTestSuite.MapRemove;
-
-import org.apache.log4j.Logger;
-
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
@@ -64,12 +60,10 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GeoGrid;
-import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.dt.grid.GridDataset;
 
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
@@ -118,8 +112,8 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
      */
     @Override
     public void computeAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
-            MotuNoVarException, NetCdfVariableNotFoundException {
+            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
+            NetCdfVariableNotFoundException {
 
         initGetAmountData();
 
@@ -147,7 +141,8 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
             GeoGrid geoGrid = gds.findGridByName(varData.getVarName());
             if (geoGrid == null) {
                 // throw new MotuNotImplementedException(String
-                // .format("Variable %s in not geo-referenced - Non-georeferenced data is not implemented (method: DatasetGrid.extractData)",
+                // .format("Variable %s in not geo-referenced - Non-georeferenced data is not implemented
+                // (method: DatasetGrid.extractData)",
                 // varData.getVarName()));
                 continue;
             }
@@ -218,8 +213,8 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
      */
     @Override
     public void extractData(Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
-            MotuNoVarException, NetCdfVariableNotFoundException, IOException {
+            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
+            NetCdfVariableNotFoundException, IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("extractData() - entering");
         }
@@ -232,6 +227,11 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
         case NETCDF:
             extractDataIntoNetCdf();
             break;
+
+        case NETCDF4:
+            throw new MotuNotImplementedException(
+                    String.format("extraction into %s is not implemented for OPENDAP (if you wish to enable it enable the NCSS)",
+                                  dataOutputFormat.toString()));
 
         default:
             throw new MotuNotImplementedException(String.format("extraction into %s is not implemented", dataOutputFormat.toString()));
@@ -258,8 +258,8 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
      * @throws IOException
      */
     public void extractDataIntoNetCdf() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
-            MotuNoVarException, NetCdfVariableNotFoundException, IOException {
+            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
+            NetCdfVariableNotFoundException, IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("extractDataIntoNetCdf() - entering");
         }
@@ -336,7 +336,8 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
             GeoGrid geoGrid = gds.findGridByName(varData.getVarName());
             if (geoGrid == null) {
                 // throw new MotuNotImplementedException(String
-                // .format("Variable %s in not geo-referenced - Non-georeferenced data is not implemented (method: DatasetGrid.extractData)",
+                // .format("Variable %s in not geo-referenced - Non-georeferenced data is not implemented
+                // (method: DatasetGrid.extractData)",
                 // varData.getVarName()));
                 continue;
             }
@@ -710,7 +711,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
     public static int findDimension(GeoGrid geoGrid, Dimension want) {
         List<Dimension> dims = geoGrid.getVariable().getDimensions();
         for (int i = 0; i < dims.size(); i++) {
-            Dimension d = (Dimension) dims.get(i);
+            Dimension d = dims.get(i);
             if (d.equals(want))
                 return i;
         }
@@ -787,8 +788,8 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
 
                 // No intersection : add range into the map
                 if (!(rangeRef.intersects(range))) {
-                    if (((rangeRef.last() + 1) != range.first()) && ((rangeRef.first() - 1) != range.last())) {                        
-                        continue;                        
+                    if (((rangeRef.last() + 1) != range.first()) && ((rangeRef.first() - 1) != range.last())) {
+                        continue;
                     }
                 }
 
@@ -838,17 +839,18 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
 
         if (!(axis instanceof CoordinateAxis1D)) {
             throw new MotuNotImplementedException(
-                    String
-                            .format("ERROR in DatasetGrid#subset : Process a coordinate axis with more than one dimensions is not yet implemented (axis name:'%s')",
-                                    axis.getName()));
+                    String.format("ERROR in DatasetGrid#subset : Process a coordinate axis with more than one dimensions is not yet implemented (axis name:'%s')",
+                                  axis.getName()));
         }
 
         // get the ranges list
         int rank = axis.getRank();
 
         if (rank != 1) {
-            throw new MotuNotImplementedException(String
-                    .format("ERROR - The subsetting of the coordinate axis '%s' with '%d' dimensions is not yet implemented", axis.getName(), rank));
+            throw new MotuNotImplementedException(
+                    String.format("ERROR - The subsetting of the coordinate axis '%s' with '%d' dimensions is not yet implemented",
+                                  axis.getName(),
+                                  rank));
         }
 
         Range[] ranges = new Range[rank];
@@ -869,10 +871,9 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
 
         if (!(v_section instanceof CoordinateAxis)) {
             throw new MotuException(
-                    String
-                            .format("ERROR - in DatasetGrid#subset: unexpected result after subsetting axis name '%s': new variable is not a 'CoordinateAxis' instance but a '%s'",
-                                    axis.getName(),
-                                    axis.getClass().getName()));
+                    String.format("ERROR - in DatasetGrid#subset: unexpected result after subsetting axis name '%s': new variable is not a 'CoordinateAxis' instance but a '%s'",
+                                  axis.getName(),
+                                  axis.getClass().getName()));
 
         }
         return (CoordinateAxis) v_section;
@@ -1026,15 +1027,19 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
             listYXRanges = extractCriteriaLatLon.toListRanges(cs, rangesLatValue, rangesLonValue);
 
             if (listYXRanges.size() != rangesLonValue.size()) {
-                throw new MotuException(String
-                        .format("Inconsistency between Longitude ranges list (%d items) and Longitude values list (%d items) - (%s)", listYXRanges
-                                .size(), rangesLonValue.size(), this.getClass().getName()));
+                throw new MotuException(
+                        String.format("Inconsistency between Longitude ranges list (%d items) and Longitude values list (%d items) - (%s)",
+                                      listYXRanges.size(),
+                                      rangesLonValue.size(),
+                                      this.getClass().getName()));
             }
 
             if (listYXRanges.size() != rangesLatValue.size()) {
-                throw new MotuException(String
-                        .format("Inconsistency between Latitude ranges list (%d items) and Latitude values list (%d items) - (%s)", listYXRanges
-                                .size(), rangesLatValue.size(), this.getClass().getName()));
+                throw new MotuException(
+                        String.format("Inconsistency between Latitude ranges list (%d items) and Latitude values list (%d items) - (%s)",
+                                      listYXRanges.size(),
+                                      rangesLatValue.size(),
+                                      this.getClass().getName()));
             }
 
             MAMath.MinMax minMaxLat = null;
