@@ -17,6 +17,7 @@ import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 
 /**
  * Class to handle NCSS requests
@@ -99,6 +100,7 @@ public class NetCdfSubsetService {
     protected Set<String> varSubset;
     protected String outputDir;
     protected String outputFile;
+    protected Organizer.Format outputFormat;
     protected String ncssURL;
 
     /**
@@ -153,6 +155,15 @@ public class NetCdfSubsetService {
      */
     public void setOutputFile(String in) {
         outputFile = in;
+    }
+
+    /**
+     * Setter of the output format (netcdf/netcdf4)
+     * 
+     * @return
+     */
+    public void setOutputFormat(Organizer.Format in) {
+        outputFormat = in;
     }
 
     /**
@@ -219,6 +230,15 @@ public class NetCdfSubsetService {
     }
 
     /**
+     * Getter of the output format (netcdf/netcdf4)
+     * 
+     * @return
+     */
+    public Organizer.Format getOutputFormat() {
+        return outputFormat;
+    }
+
+    /**
      * Returns the url of the NCSS subset service for 1 dataset
      * 
      * @return
@@ -247,9 +267,6 @@ public class NetCdfSubsetService {
 
         // TODO: Depth subset
 
-        // TODO: netcdf4 output select
-        String accept = "netcdf";
-
         try {
             // Setup query parameters
             MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
@@ -273,7 +290,7 @@ public class NetCdfSubsetService {
             // queryParams.add(NCSS_ATTR_VERTCOORD, vertCoord);
 
             // Output format
-            queryParams.add(NCSS_ATTR_ACCEPT, accept);
+            queryParams.add(NCSS_ATTR_ACCEPT, outputFormat.name());
 
             // Prepare client
             Client client = Client.create();
@@ -282,7 +299,7 @@ public class NetCdfSubsetService {
             // Read buffer response and detect response type
             ClientResponse response = webResource.get(ClientResponse.class);
 
-            if (response.getType().toString().equals("application/x-netcdf")) {
+            if (response.getType().toString().contains("application/x-netcdf")) {
                 InputStream is = response.getEntity(InputStream.class);
                 FileOutputStream fos = new FileOutputStream(outputDir + "/" + outputFile);
 

@@ -169,6 +169,7 @@
     <td><font size="2">
 	<select name="output" >
 	<option value="netcdf" >NetCDF</option>
+	<option value="netcdf4" >NetCDF4</option>
 ##	<option value="tsv" >Tab separated (text)</option>
 ##	<option value="csv" >Comma separated (csv)</option>
 	</select>

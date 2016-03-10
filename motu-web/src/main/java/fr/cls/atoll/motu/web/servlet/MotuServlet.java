@@ -24,36 +24,10 @@
  */
 package fr.cls.atoll.motu.web.servlet;
 
-import fr.cls.atoll.motu.api.message.MotuMonitoringParametersConstant;
-import fr.cls.atoll.motu.api.message.MotuMsgConstant;
-import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
-import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
-import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
-import fr.cls.atoll.motu.api.message.xml.StatusModeType;
-import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
-import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
-import fr.cls.atoll.motu.library.misc.configuration.QueueType;
-import fr.cls.atoll.motu.library.misc.data.CatalogData;
-import fr.cls.atoll.motu.library.misc.data.Product;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidRequestIdException;
-import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
-import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.queueserver.QueueManagement;
-import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
-import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
-import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
-import fr.cls.atoll.motu.library.misc.utils.ManifestManagedBean;
-import fr.cls.atoll.motu.library.misc.utils.PropertiesUtilities;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -80,6 +54,31 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.log4j.Logger;
 import org.jasig.cas.client.util.AssertionHolder;
+
+import fr.cls.atoll.motu.api.message.MotuMonitoringParametersConstant;
+import fr.cls.atoll.motu.api.message.MotuMsgConstant;
+import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.api.message.xml.StatusModeType;
+import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
+import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
+import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+import fr.cls.atoll.motu.library.misc.data.CatalogData;
+import fr.cls.atoll.motu.library.misc.data.Product;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidRequestIdException;
+import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
+import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.queueserver.QueueManagement;
+import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
+import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
+import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
+import fr.cls.atoll.motu.library.misc.utils.ManifestManagedBean;
+import fr.cls.atoll.motu.library.misc.utils.PropertiesUtilities;
 
 // TODO: Auto-generated Javadoc
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
@@ -217,7 +216,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
          * @param organizer the organizer
          * @param extractionParameters the extraction parameters
          */
-        public ProductDeferedExtractNetcdfThread(StatusModeResponse statusModeResponse, Organizer organizer, ExtractionParameters extractionParameters) {
+        public ProductDeferedExtractNetcdfThread(
+            StatusModeResponse statusModeResponse,
+            Organizer organizer,
+            ExtractionParameters extractionParameters) {
 
             this.statusModeResponse = statusModeResponse;
             this.productDeferedExtractNetcdfStatusFilePathName = null;
@@ -230,7 +232,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
          * The Constructor.
          *
          * @param productDeferedExtractNetcdfStatusFilePathName the product defered extract netcdf status file
-         * path name
+         *            path name
          * @param organizer the organizer
          * @param extractionParameters the extraction parameters
          */
@@ -474,6 +476,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         PROXY_HEADERS.add("HTTP_FORWARDED");
         PROXY_HEADERS.add("HTTP_CLIENT_IP");
     }
+
     /** The authentication props. */
     private Properties authenticationProps = null;
 
@@ -519,8 +522,11 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
 
     }
 
-    /* (non-Javadoc)
-     * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest,
+     * javax.servlet.http.HttpServletResponse)
      */
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -529,9 +535,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             resp.sendError(400, RunnableExtraction.SHUTDOWN_MSG);
             return;
         }
-        
+
         enteringServiceMethod();
-        
+
         try {
             super.service(req, resp);
         } finally {
@@ -674,7 +680,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             if (getServiceCounter() > 0) {
                 setShuttingDown(true);
             }
-            
+
             if (LOG.isInfoEnabled()) {
                 String msg = String.format("Motu REST Servlet is shutting down - There is (are) still %d request(s) being processed", serviceCounter);
                 LOG.info(msg);
@@ -713,15 +719,14 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * Inits the.
      *
      * @param servletConfig the servlet config
-     * @throws ServletException the servlet exception
-     * {@inheritDoc}.
+     * @throws ServletException the servlet exception {@inheritDoc}.
      */
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
 
         ManifestManagedBean.register();
-        
+
         // Log initialization is done by a listener configured in web.xml.
         // LogManager.getInstance().loadConfiguration("log4j.xml");
 
@@ -762,8 +767,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws ServletException the servlet exception
      * @throws IOException the IO exception
      */
-    public void setLanguageParameter(HttpServletRequest request, HttpSession session, HttpServletResponse response) throws ServletException,
-            IOException {
+    public void setLanguageParameter(HttpServletRequest request, HttpSession session, HttpServletResponse response)
+            throws ServletException, IOException {
 
         if (session == null) {
             return;
@@ -870,7 +875,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws ServletException the servlet exception
      * @throws IOException the IO exception
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
-     * javax.servlet.http.HttpServletResponse)
+     *      javax.servlet.http.HttpServletResponse)
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -901,7 +906,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         //
         // Map<String, String> parameters = (Map<String,
         // String>)request.getParameterMap();
-        //        
+        //
         // Set<String> keySet = parameters.keySet();
         // for(Iterator<String> it = keySet.iterator() ; it.hasNext();) {
         // System.out.println(it.next());
@@ -952,7 +957,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws ServletException the servlet exception
      * @throws IOException the IO exception
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
-     * javax.servlet.http.HttpServletResponse)
+     *      javax.servlet.http.HttpServletResponse)
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -968,8 +973,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws ServletException the servlet exception
      * @throws IOException the IO exception
      */
-    protected void execDefaultRequest(HttpServletRequest request, HttpSession session, HttpServletResponse response) throws ServletException,
-            IOException {
+    protected void execDefaultRequest(HttpServletRequest request, HttpSession session, HttpServletResponse response)
+            throws ServletException, IOException {
 
         response.setContentType(CONTENT_TYPE_HTML);
 
@@ -1044,7 +1049,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * Product Id</li>
      * <li>PARAM_ACTION = ACTION_PRODUCT_DOWNLOADHOME & PARAM_SERVICE = Service name & PARAM_PRODCUT = Product
      * Id</li>
-     * <li>PARAM_ACTION = ACTION_PRODUCT_DOWNLOAD & PARAM_SERVICE = Service name & PARAM_PRODCUT = Product Id</li>
+     * <li>PARAM_ACTION = ACTION_PRODUCT_DOWNLOAD & PARAM_SERVICE = Service name & PARAM_PRODCUT = Product Id
+     * </li>
      * </ul>
      *
      * @param request object that contains the request the client has made of the servlet.
@@ -1078,7 +1084,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             // Nothing to do
         } else if (isActionLogout(action, request, response)) {
             // Nothing to do
-        }else {
+        } else {
 
             // -----------------------------------
             // actions with check authorization if needed, and/or with Http session
@@ -1151,8 +1157,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws ServletException the servlet exception
      * @throws MotuException the motu exception
      */
-    private boolean isActionDescribeProduct(String action, HttpServletRequest request, HttpServletResponse response) throws IOException,
-            ServletException, MotuException {
+    private boolean isActionDescribeProduct(String action, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException, MotuException {
 
         if (!action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_DESCRIBE_PRODUCT)) {
             return false;
@@ -1181,9 +1187,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 LOG.info(" empty locationData and empty productId");
                 LOG.debug("isActionDescribeProduct() - exiting");
             }
-            response.sendError(400, String.format("ERROR: neither '%s' nor '%s' parameters are filled - Choose one of them",
-                                                  PARAM_DATA,
-                                                  PARAM_PRODUCT));
+            response.sendError(400,
+                               String.format("ERROR: neither '%s' nor '%s' parameters are filled - Choose one of them", PARAM_DATA, PARAM_PRODUCT));
             return true;
         }
 
@@ -1192,9 +1197,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 LOG.info(" non empty locationData and non empty productId");
                 LOG.debug("isActionDescribeProduct() - exiting");
             }
-            response.sendError(400, String.format("ERROR: '%s' and '%s' parameters are not compatible - Choose only one of them",
-                                                  PARAM_DATA,
-                                                  PARAM_PRODUCT));
+            response.sendError(400,
+                               String.format("ERROR: '%s' and '%s' parameters are not compatible - Choose only one of them",
+                                             PARAM_DATA,
+                                             PARAM_PRODUCT));
             return true;
         }
 
@@ -1203,9 +1209,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 LOG.info("empty serviceName  and non empty productId");
                 LOG.debug("isActionDescribeProduct() - exiting");
             }
-            response.sendError(400, String.format("ERROR: '%s' parameter is filled but '%s' is empty. You have to fill it.",
-                                                  PARAM_PRODUCT,
-                                                  PARAM_SERVICE));
+            response.sendError(400,
+                               String.format("ERROR: '%s' parameter is filled but '%s' is empty. You have to fill it.",
+                                             PARAM_PRODUCT,
+                                             PARAM_SERVICE));
             return true;
         }
 
@@ -1258,8 +1265,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws ServletException the servlet exception
      * @throws IOException the IO exception
      */
-    protected boolean isActionGetRequestStatus(String action, HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
+    protected boolean isActionGetRequestStatus(String action, HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
         if (!action.equalsIgnoreCase(ACTION_GET_REQUEST_STATUS)) {
             return false;
@@ -1300,8 +1307,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws IOException the IO exception
      * @throws MotuException the motu exception
      */
-    protected boolean isActionGetSize(String action, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException,
-            MotuException {
+    protected boolean isActionGetSize(String action, HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException, MotuException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionListGetSize(String, HttpServletRequest, HttpSession, HttpServletResponse) - entering");
         }
@@ -1374,8 +1381,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws IOException the IO exception
      * @throws MotuException the motu exception
      */
-    protected boolean isActionGetTimeCoverage(String action, HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException, MotuException {
+    protected boolean isActionGetTimeCoverage(String action, HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException, MotuException {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionGetTimeCoverage() - entering");
@@ -1407,9 +1414,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 LOG.info(" empty locationData and empty productId");
                 LOG.debug("isActionGetTimeCoverage() - exiting");
             }
-            response.sendError(400, String.format("ERROR: neither '%s' nor '%s' parameters are filled - Choose one of them",
-                                                  PARAM_DATA,
-                                                  PARAM_PRODUCT));
+            response.sendError(400,
+                               String.format("ERROR: neither '%s' nor '%s' parameters are filled - Choose one of them", PARAM_DATA, PARAM_PRODUCT));
             return true;
         }
 
@@ -1418,9 +1424,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 LOG.info(" non empty locationData and non empty productId");
                 LOG.debug("isActionGetTimeCoverage() - exiting");
             }
-            response.sendError(400, String.format("ERROR: '%s' and '%s' parameters are not compatible - Choose only one of them",
-                                                  PARAM_DATA,
-                                                  PARAM_PRODUCT));
+            response.sendError(400,
+                               String.format("ERROR: '%s' and '%s' parameters are not compatible - Choose only one of them",
+                                             PARAM_DATA,
+                                             PARAM_PRODUCT));
             return true;
         }
 
@@ -1429,9 +1436,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 LOG.info("empty serviceName  and non empty productId");
                 LOG.debug("isActionGetTimeCoverage() - exiting");
             }
-            response.sendError(400, String.format("ERROR: '%s' parameter is filled but '%s' is empty. You have to fill it.",
-                                                  PARAM_PRODUCT,
-                                                  PARAM_SERVICE));
+            response.sendError(400,
+                               String.format("ERROR: '%s' parameter is filled but '%s' is empty. You have to fill it.",
+                                             PARAM_PRODUCT,
+                                             PARAM_SERVICE));
             return true;
         }
 
@@ -1567,7 +1575,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @param session request session
      * @param response object that contains the response the servlet sends to the client
      * @return true is request is A{@link MotuRequestParametersConstant#ACTION_DESCRIBE_COVERAGE} and have
-     * been executed, false otherwise.
+     *         been executed, false otherwise.
      * @throws ServletException the servlet exception
      * @throws IOException the IO exception
      * @throws MotuException the motu exception
@@ -1753,7 +1761,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         }
         return true;
     }
-    
+
     /**
      * Executes the ACTION_LOGOUT if request's parameters match.
      *
@@ -1776,15 +1784,14 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
             return false;
         }
 
-        //Invalidate session
+        // Invalidate session
         request.getSession().invalidate();
-
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionLogout() - exiting");
         }
         return true;
-    }    
+    }
 
     /**
      * Checks if is action product download.
@@ -2327,7 +2334,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 stringBuffer.append("<td>\n");
                 String mode = runnableExtraction.getMode();
                 if (mode != null) {
-                    stringBuffer.append(runnableExtraction.getMode());                	
+                    stringBuffer.append(runnableExtraction.getMode());
                 }
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("<td>\n");
@@ -2588,10 +2595,12 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                     try {
                         listCatalogtype.add(CatalogData.CatalogType.valueOf(catalogType));
                     } catch (IllegalArgumentException e) {
-                        throw new MotuException(String.format("Parameter '%s': invalid value '%s' - Valid values are : %s",
-                                                              MotuRequestParametersConstant.PARAM_CATALOG_TYPE,
-                                                              catalogType,
-                                                              CatalogData.CatalogType.valuesToString()), e);
+                        throw new MotuException(
+                                String.format("Parameter '%s': invalid value '%s' - Valid values are : %s",
+                                              MotuRequestParametersConstant.PARAM_CATALOG_TYPE,
+                                              catalogType,
+                                              CatalogData.CatalogType.valuesToString()),
+                                e);
                     }
                 }
             }
@@ -2632,7 +2641,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         return listDepthCoverage;
     }
 
-	/**
+    /**
      * Gets the forwarded for.
      * 
      * @param request the request
@@ -2857,8 +2866,9 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
                 organizer = new Organizer();
             }
         } catch (MotuExceptionBase e) {
-            response.sendError(500, String.format("ERROR: - MotuServlet.getOrganizer - Unable to create a new organiser. Native Error: %s", e
-                    .notifyException()));
+            response.sendError(500,
+                               String.format("ERROR: - MotuServlet.getOrganizer - Unable to create a new organiser. Native Error: %s",
+                                             e.notifyException()));
         } catch (ServletException e) {
             response.sendError(500, String.format("ERROR: - MotuServlet.getOrganizer : %s", e.getMessage()));
         }
@@ -3097,7 +3107,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     // }
     // }
 
-    //    
+    //
     // static private void printProductDeferedExtractNetcdfStatus(StatusModeResponse statusModeResponse,
     // String outputFileName,
     // StatusModeType status,
@@ -3163,7 +3173,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws MotuException the motu exception
      */
     private Organizer.Format getDataFormat(HttpServletRequest request) throws MotuException {
-        String dataFormat = request.getParameter(MotuRequestParametersConstant.PARAM_DATA_FORMAT);
+        String dataFormat = request.getParameter(MotuRequestParametersConstant.PARAM_OUTPUT);
         Organizer.Format format = Organizer.Format.NETCDF;
 
         if (MotuServlet.isNullOrEmpty(dataFormat)) {
@@ -3173,10 +3183,12 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         try {
             format = Organizer.Format.valueOf(dataFormat.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new MotuException(String.format("Parameter '%s': invalid value '%s' - Valid values are : %s",
-                                                  MotuRequestParametersConstant.PARAM_DATA_FORMAT,
-                                                  dataFormat,
-                                                  Organizer.Format.valuesToString()), e);
+            throw new MotuException(
+                    String.format("Parameter '%s': invalid value '%s' - Valid values are : %s",
+                                  MotuRequestParametersConstant.PARAM_OUTPUT,
+                                  dataFormat,
+                                  Organizer.Format.valuesToString()),
+                    e);
         }
 
         return format;
@@ -3200,10 +3212,12 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         try {
             format = Organizer.Format.valueOf(dataFormat.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new MotuException(String.format("Parameter '%s': invalid value '%s' - Valid values are : %s",
-                                                  MotuRequestParametersConstant.PARAM_RESPONSE_FORMAT,
-                                                  dataFormat,
-                                                  Organizer.Format.valuesToString()), e);
+            throw new MotuException(
+                    String.format("Parameter '%s': invalid value '%s' - Valid values are : %s",
+                                  MotuRequestParametersConstant.PARAM_RESPONSE_FORMAT,
+                                  dataFormat,
+                                  Organizer.Format.valuesToString()),
+                    e);
         }
 
         return format;
@@ -3891,8 +3905,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws ServletException the servlet exception
      * @throws IOException the IO exception
      */
-    private void describeCoverage(String serviceName, String productId, HttpSession session, HttpServletResponse response) throws ServletException,
-            IOException {
+    private void describeCoverage(String serviceName, String productId, HttpSession session, HttpServletResponse response)
+            throws ServletException, IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("describeCoverage() - entering");
         }
@@ -4184,8 +4198,8 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
      * @throws ServletException the servlet exception
      * @throws MotuException the motu exception
      */
-    protected String getProductIdFromParamId(final String productId, HttpServletRequest request, HttpServletResponse response) throws IOException,
-            ServletException, MotuException {
+    protected String getProductIdFromParamId(final String productId, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException, MotuException {
         String serviceName = request.getParameter(PARAM_SERVICE);
 
         if ((MotuServlet.isNullOrEmpty(serviceName)) || (MotuServlet.isNullOrEmpty(productId))) {
@@ -4227,7 +4241,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     // if (paramValue.equalsIgnoreCase(PARAM_SERVICE_CLS)) {
     // return true;
     // }
-    //        
+    //
     // return false;
     // }
     /**
@@ -4243,7 +4257,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     // if (paramValue.equalsIgnoreCase(PARAM_SERVICE_AVISO_NRT)) {
     // return true;
     // }
-    //        
+    //
     // return false;
     // }
     // public static void returnFile(String filename, OutputStream out) throws FileNotFoundException,
