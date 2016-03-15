@@ -411,11 +411,11 @@
 				<xs:element maxOccurs="unbounded" minOccurs="0"
 					name="configService" type="configService">
 				</xs:element>
-				<xs:element name="queueServerConfig" type="queueServerType"
-					maxOccurs="1" minOccurs="1">
+				<xs:element name="queueServerConfig"
+					type="queueServerType" maxOccurs="1" minOccurs="1">
 				</xs:element>
-				<xs:element name="configFileSystem" minOccurs="0" maxOccurs="unbounded" 
-					type="configFileSystemType">
+				<xs:element name="configFileSystem" minOccurs="0"
+					maxOccurs="unbounded" type="configFileSystemType">
 				</xs:element>
 			</xs:sequence>
 			<!--
@@ -427,9 +427,11 @@
 				useAuthentication True if users have to be authenticated, false
 				otherwise. Default value is false.
 			-->
+			<xs:attribute name="logFormat" type="xs:string"></xs:attribute>
 			<xs:attribute name="useAuthentication" type="xs:boolean"
 				default="false" />
-			<xs:attribute name="authFilePath" type="xs:string" use="optional">
+			<xs:attribute name="authFilePath" type="xs:string"
+				use="optional">
 				<xs:annotation>
 					<xs:documentation>
 						Path to the file that contains authentication
@@ -468,7 +470,7 @@
 			<xs:attribute name="httpDocumentRoot" type="xs:string"
 				use="required" />
 
-<!-- WARNING - Within proxyOptions, only http proxy options are used - The others are declared for future developpment  -->
+			<!-- WARNING - Within proxyOptions, only http proxy options are used - The others are declared for future developpment  -->
 			<xs:attributeGroup ref="proxyOptions" />
 			<xs:attributeGroup ref="ftpOptions" />
 			<xs:attributeGroup ref="sftpOptions" />
@@ -492,8 +494,7 @@
 				<xs:annotation>
 					<xs:documentation>
 						The waiting period admitted to keep the file
-						that
-						results of an extraction data request.
+						that results of an extraction data request.
 						Value is stated in minutes.
 					</xs:documentation>
 				</xs:annotation>
@@ -517,14 +518,11 @@
 					<xs:documentation>
 						The maximum value allowed to the cache during
 						extraction. Beyond this value, the older
-						extracted files are quite
-						frequently deleted
+						extracted files are quite frequently deleted
 						until the maximum value is raised. The frequency
 						corresponds to the runCleanInterval attribute.
-						Value is stated in
-						mega-bytes (Mo). Value must
-						be positive or zero. If value is zero:
-						no
+						Value is stated in mega-bytes (Mo). Value must
+						be positive or zero. If value is zero: no
 						delete.
 					</xs:documentation>
 				</xs:annotation>
@@ -552,8 +550,7 @@
 					<xs:documentation>
 						The interval period to force run garbage
 						collector Value is stated in minutes and must
-						bue positive or zero.
-						If value is zero: no
+						bue positive or zero. If value is zero: no
 						force.
 					</xs:documentation>
 				</xs:annotation>
@@ -579,8 +576,8 @@
 				commonVeloTemplatePrefix : Common velocity template prefix name
 				(distinct from service velocity template)
 			-->
-			<xs:attribute name="commonVeloTemplatePrefix" type="xs:string"
-				default="myocean" />
+			<xs:attribute name="commonVeloTemplatePrefix"
+				type="xs:string" default="myocean" />
 
 			<!--
 				defaultLanguage: Common default language used (can be UK or FR)
@@ -601,8 +598,8 @@
 				services'. Otherwise the default request is 'list available products
 				of the default service' (see defaultService)
 			-->
-			<xs:attribute name="defaultActionIsListServices" type="xs:boolean"
-				default="false" />
+			<xs:attribute name="defaultActionIsListServices"
+				type="xs:boolean" default="false" />
 
 		</xs:complexType>
 

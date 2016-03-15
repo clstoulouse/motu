@@ -24,10 +24,10 @@
  */
 package fr.cls.atoll.motu.library.misc.queueserver;
 
-import fr.cls.atoll.motu.api.message.xml.ErrorType;
-
 import java.util.Calendar;
 import java.util.Date;
+
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 
 /**
  * 
@@ -71,6 +71,15 @@ public class QueueLogError {
     }
 
     /**
+     * Gets the error date.
+     * 
+     * @return the error date
+     */
+    public Date getDateError() {
+        return dateError;
+    }
+
+    /**
      * Sets the error code.
      * 
      * @param errorCode the error code
@@ -104,7 +113,8 @@ public class QueueLogError {
      */
     public void setMessage(String message) {
         // To avoid XML processing error, remove control char. and non-printable char. from message.
-        this.message = message.replaceAll("\\p{Cntrl}|[^\\p{Print}]", "");;
+        this.message = message.replaceAll("\\p{Cntrl}|[^\\p{Print}]", "");
+        ;
     }
 
     /**

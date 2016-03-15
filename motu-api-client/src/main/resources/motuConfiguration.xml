@@ -105,7 +105,7 @@
 	
 -->
 
-<motuConfig defaultService="" useProxy="false"
+<motuConfig defaultService="" useProxy="false" logFormat="csv"
 	useAuthentication="false"
 	dataBlockSize="102400" maxSizePerFile="256"
 	extractionPath="."

@@ -24,12 +24,12 @@
  */
 package fr.cls.atoll.motu.library.misc.log4j;
 
-import fr.cls.atoll.motu.library.misc.queueserver.QueueLogInfo;
-import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
-
 import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.xml.XMLLayout;
+
+import fr.cls.atoll.motu.library.misc.queueserver.QueueLogInfo;
+import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
 
 /**
  * 
@@ -154,17 +154,26 @@ public class MotuXMLLayout extends XMLLayout {
 
         if (event.getMessage() instanceof RunnableExtraction) {
             RunnableExtraction runnableExtraction = (RunnableExtraction) event.getMessage();
-            buf.append(runnableExtraction.getQueuelogInfoAsXML());
-            buf.append(Layout.LINE_SEP);
 
+            if (runnableExtraction.getQueueLogInfo().getLogFormat().contains(QueueLogInfo.TYPE_XML)) {
+                buf.append(runnableExtraction.getQueuelogInfoAsXML());
+            } else {
+                buf.append(runnableExtraction.getQueuelogInfoAsCSV());
+            }
+            buf.append(Layout.LINE_SEP);
             return buf.toString();
         }
 
         if (event.getMessage() instanceof QueueLogInfo) {
             QueueLogInfo queueLogInfo = (QueueLogInfo) event.getMessage();
-            buf.append(queueLogInfo.toXML());
-            buf.append(Layout.LINE_SEP);
 
+            if (queueLogInfo.getLogFormat().contains(QueueLogInfo.TYPE_XML)) {
+                buf.append(queueLogInfo.toXML());
+            } else {
+                buf.append(queueLogInfo.toCSV());
+            }
+
+            buf.append(Layout.LINE_SEP);
             return buf.toString();
         }
 
@@ -188,7 +197,7 @@ public class MotuXMLLayout extends XMLLayout {
     // /** {@inheritDoc} */
     // @Override
     // public String getHeader() {
-    //        
+    //
     // StringBuffer sbuf = new StringBuffer();
     // sbuf.append("<?xml version=\"");
     // sbuf.append(version);

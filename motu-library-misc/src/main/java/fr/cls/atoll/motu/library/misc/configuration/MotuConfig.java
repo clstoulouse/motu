@@ -5,12 +5,12 @@
 // Generated on: 2012.12.05 at 02:32:28 PM CET 
 //
 
-
 package fr.cls.atoll.motu.library.misc.configuration;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -19,14 +19,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import fr.cls.atoll.motu.library.converter.jaxb.JodaPeriodAdapter;
+
 import org.joda.time.Period;
 
+import fr.cls.atoll.motu.library.converter.jaxb.JodaPeriodAdapter;
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -97,11 +100,7 @@ import org.joda.time.Period;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "configService",
-    "queueServerConfig",
-    "configFileSystem"
-})
+@XmlType(name = "", propOrder = { "configService", "queueServerConfig", "configFileSystem" })
 @XmlRootElement(name = "motuConfig")
 public class MotuConfig {
 
@@ -111,6 +110,8 @@ public class MotuConfig {
     protected List<ConfigFileSystemType> configFileSystem;
     @XmlAttribute(name = "defaultService")
     protected String defaultService;
+    @XmlAttribute(name = "logFormat")
+    protected String logFormat;
     @XmlAttribute(name = "useAuthentication")
     protected Boolean useAuthentication;
     @XmlAttribute(name = "authFilePath")
@@ -208,21 +209,20 @@ public class MotuConfig {
      * Gets the value of the configService property.
      * 
      * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the configService property.
+     * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification
+     * you make to the returned list will be present inside the JAXB object. This is why there is not a
+     * <CODE>set</CODE> method for the configService property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getConfigService().add(newItem);
+     * getConfigService().add(newItem);
      * </pre>
      * 
      * 
      * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ConfigService }
+     * Objects of the following type(s) are allowed in the list {@link ConfigService }
      * 
      * 
      */
@@ -236,10 +236,8 @@ public class MotuConfig {
     /**
      * Gets the value of the queueServerConfig property.
      * 
-     * @return
-     *     possible object is
-     *     {@link QueueServerType }
-     *     
+     * @return possible object is {@link QueueServerType }
+     * 
      */
     public QueueServerType getQueueServerConfig() {
         return queueServerConfig;
@@ -248,10 +246,8 @@ public class MotuConfig {
     /**
      * Sets the value of the queueServerConfig property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link QueueServerType }
-     *     
+     * @param value allowed object is {@link QueueServerType }
+     * 
      */
     public void setQueueServerConfig(QueueServerType value) {
         this.queueServerConfig = value;
@@ -261,21 +257,20 @@ public class MotuConfig {
      * Gets the value of the configFileSystem property.
      * 
      * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the configFileSystem property.
+     * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification
+     * you make to the returned list will be present inside the JAXB object. This is why there is not a
+     * <CODE>set</CODE> method for the configFileSystem property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getConfigFileSystem().add(newItem);
+     * getConfigFileSystem().add(newItem);
      * </pre>
      * 
      * 
      * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ConfigFileSystemType }
+     * Objects of the following type(s) are allowed in the list {@link ConfigFileSystemType }
      * 
      * 
      */
@@ -289,10 +284,8 @@ public class MotuConfig {
     /**
      * Gets the value of the defaultService property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getDefaultService() {
         if (defaultService == null) {
@@ -303,24 +296,44 @@ public class MotuConfig {
     }
 
     /**
+     * Gets the value of the logFormat property. (default is csv)
+     * 
+     * @return possible object is {@link String }
+     * 
+     */
+    public String getLogFormat() {
+        if (logFormat == null) {
+            return "csv";
+        } else {
+            return logFormat;
+        }
+    }
+
+    /**
      * Sets the value of the defaultService property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setDefaultService(String value) {
         this.defaultService = value;
     }
 
     /**
+     * Sets the value of the logFormat property.
+     * 
+     * @param value allowed object is {@link String }
+     * 
+     */
+    public void setLogFormat(String value) {
+        this.logFormat = value;
+    }
+
+    /**
      * Gets the value of the useAuthentication property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     * @return possible object is {@link Boolean }
+     * 
      */
     public boolean getUseAuthentication() {
         if (useAuthentication == null) {
@@ -333,10 +346,8 @@ public class MotuConfig {
     /**
      * Sets the value of the useAuthentication property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     * @param value allowed object is {@link Boolean }
+     * 
      */
     public void setUseAuthentication(Boolean value) {
         this.useAuthentication = value;
@@ -345,10 +356,8 @@ public class MotuConfig {
     /**
      * Gets the value of the authFilePath property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getAuthFilePath() {
         return authFilePath;
@@ -357,10 +366,8 @@ public class MotuConfig {
     /**
      * Sets the value of the authFilePath property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setAuthFilePath(String value) {
         this.authFilePath = value;
@@ -369,10 +376,8 @@ public class MotuConfig {
     /**
      * Gets the value of the dataBlockSize property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
+     * @return possible object is {@link BigInteger }
+     * 
      */
     public BigInteger getDataBlockSize() {
         if (dataBlockSize == null) {
@@ -385,10 +390,8 @@ public class MotuConfig {
     /**
      * Sets the value of the dataBlockSize property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
+     * @param value allowed object is {@link BigInteger }
+     * 
      */
     public void setDataBlockSize(BigInteger value) {
         this.dataBlockSize = value;
@@ -397,10 +400,8 @@ public class MotuConfig {
     /**
      * Gets the value of the maxSizePerFile property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
+     * @return possible object is {@link BigInteger }
+     * 
      */
     public BigInteger getMaxSizePerFile() {
         if (maxSizePerFile == null) {
@@ -413,10 +414,8 @@ public class MotuConfig {
     /**
      * Sets the value of the maxSizePerFile property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
+     * @param value allowed object is {@link BigInteger }
+     * 
      */
     public void setMaxSizePerFile(BigInteger value) {
         this.maxSizePerFile = value;
@@ -425,10 +424,8 @@ public class MotuConfig {
     /**
      * Gets the value of the extractionPath property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getExtractionPath() {
         return extractionPath;
@@ -437,10 +434,8 @@ public class MotuConfig {
     /**
      * Sets the value of the extractionPath property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setExtractionPath(String value) {
         this.extractionPath = value;
@@ -449,10 +444,8 @@ public class MotuConfig {
     /**
      * Gets the value of the downloadHttpUrl property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getDownloadHttpUrl() {
         return downloadHttpUrl;
@@ -461,10 +454,8 @@ public class MotuConfig {
     /**
      * Sets the value of the downloadHttpUrl property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setDownloadHttpUrl(String value) {
         this.downloadHttpUrl = value;
@@ -473,10 +464,8 @@ public class MotuConfig {
     /**
      * Gets the value of the httpDocumentRoot property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getHttpDocumentRoot() {
         return httpDocumentRoot;
@@ -485,10 +474,8 @@ public class MotuConfig {
     /**
      * Sets the value of the httpDocumentRoot property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setHttpDocumentRoot(String value) {
         this.httpDocumentRoot = value;
@@ -497,14 +484,12 @@ public class MotuConfig {
     /**
      * Gets the value of the cleanRequestInterval property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     * @return possible object is {@link Integer }
+     * 
      */
     public int getCleanRequestInterval() {
         if (cleanRequestInterval == null) {
-            return  60;
+            return 60;
         } else {
             return cleanRequestInterval;
         }
@@ -513,10 +498,8 @@ public class MotuConfig {
     /**
      * Sets the value of the cleanRequestInterval property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     * @param value allowed object is {@link Integer }
+     * 
      */
     public void setCleanRequestInterval(Integer value) {
         this.cleanRequestInterval = value;
@@ -525,14 +508,12 @@ public class MotuConfig {
     /**
      * Gets the value of the cleanExtractionFileInterval property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     * @return possible object is {@link Integer }
+     * 
      */
     public int getCleanExtractionFileInterval() {
         if (cleanExtractionFileInterval == null) {
-            return  60;
+            return 60;
         } else {
             return cleanExtractionFileInterval;
         }
@@ -541,10 +522,8 @@ public class MotuConfig {
     /**
      * Sets the value of the cleanExtractionFileInterval property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     * @param value allowed object is {@link Integer }
+     * 
      */
     public void setCleanExtractionFileInterval(Integer value) {
         this.cleanExtractionFileInterval = value;
@@ -553,10 +532,8 @@ public class MotuConfig {
     /**
      * Gets the value of the extractionFilePatterns property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getExtractionFilePatterns() {
         if (extractionFilePatterns == null) {
@@ -569,10 +546,8 @@ public class MotuConfig {
     /**
      * Sets the value of the extractionFilePatterns property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setExtractionFilePatterns(String value) {
         this.extractionFilePatterns = value;
@@ -581,14 +556,12 @@ public class MotuConfig {
     /**
      * Gets the value of the extractionFileCacheSize property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     * @return possible object is {@link Integer }
+     * 
      */
     public int getExtractionFileCacheSize() {
         if (extractionFileCacheSize == null) {
-            return  0;
+            return 0;
         } else {
             return extractionFileCacheSize;
         }
@@ -597,10 +570,8 @@ public class MotuConfig {
     /**
      * Sets the value of the extractionFileCacheSize property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     * @param value allowed object is {@link Integer }
+     * 
      */
     public void setExtractionFileCacheSize(Integer value) {
         this.extractionFileCacheSize = value;
@@ -609,14 +580,12 @@ public class MotuConfig {
     /**
      * Gets the value of the runCleanInterval property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     * @return possible object is {@link Integer }
+     * 
      */
     public int getRunCleanInterval() {
         if (runCleanInterval == null) {
-            return  1;
+            return 1;
         } else {
             return runCleanInterval;
         }
@@ -625,10 +594,8 @@ public class MotuConfig {
     /**
      * Sets the value of the runCleanInterval property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     * @param value allowed object is {@link Integer }
+     * 
      */
     public void setRunCleanInterval(Integer value) {
         this.runCleanInterval = value;
@@ -637,14 +604,12 @@ public class MotuConfig {
     /**
      * Gets the value of the runGCInterval property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     * @return possible object is {@link Integer }
+     * 
      */
     public int getRunGCInterval() {
         if (runGCInterval == null) {
-            return  0;
+            return 0;
         } else {
             return runGCInterval;
         }
@@ -653,10 +618,8 @@ public class MotuConfig {
     /**
      * Sets the value of the runGCInterval property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     * @param value allowed object is {@link Integer }
+     * 
      */
     public void setRunGCInterval(Integer value) {
         this.runGCInterval = value;
@@ -665,10 +628,8 @@ public class MotuConfig {
     /**
      * Gets the value of the casRestUrlSuffix property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getCasRestUrlSuffix() {
         if (casRestUrlSuffix == null) {
@@ -681,10 +642,8 @@ public class MotuConfig {
     /**
      * Sets the value of the casRestUrlSuffix property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setCasRestUrlSuffix(String value) {
         this.casRestUrlSuffix = value;
@@ -693,10 +652,8 @@ public class MotuConfig {
     /**
      * Gets the value of the commonVeloTemplatePrefix property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getCommonVeloTemplatePrefix() {
         if (commonVeloTemplatePrefix == null) {
@@ -709,10 +666,8 @@ public class MotuConfig {
     /**
      * Sets the value of the commonVeloTemplatePrefix property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setCommonVeloTemplatePrefix(String value) {
         this.commonVeloTemplatePrefix = value;
@@ -721,10 +676,8 @@ public class MotuConfig {
     /**
      * Gets the value of the commonDefaultLanguage property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getCommonDefaultLanguage() {
         if (commonDefaultLanguage == null) {
@@ -737,10 +690,8 @@ public class MotuConfig {
     /**
      * Sets the value of the commonDefaultLanguage property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setCommonDefaultLanguage(String value) {
         this.commonDefaultLanguage = value;
@@ -749,10 +700,8 @@ public class MotuConfig {
     /**
      * Gets the value of the httpBaseRef property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getHttpBaseRef() {
         if (httpBaseRef == null) {
@@ -765,10 +714,8 @@ public class MotuConfig {
     /**
      * Sets the value of the httpBaseRef property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setHttpBaseRef(String value) {
         this.httpBaseRef = value;
@@ -777,10 +724,8 @@ public class MotuConfig {
     /**
      * Gets the value of the defaultActionIsListServices property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     * @return possible object is {@link Boolean }
+     * 
      */
     public boolean getDefaultActionIsListServices() {
         if (defaultActionIsListServices == null) {
@@ -793,10 +738,8 @@ public class MotuConfig {
     /**
      * Sets the value of the defaultActionIsListServices property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     * @param value allowed object is {@link Boolean }
+     * 
      */
     public void setDefaultActionIsListServices(Boolean value) {
         this.defaultActionIsListServices = value;
@@ -805,10 +748,8 @@ public class MotuConfig {
     /**
      * Gets the value of the sftpUserDirIsRoot property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     * @return possible object is {@link Boolean }
+     * 
      */
     public Boolean getSftpUserDirIsRoot() {
         return sftpUserDirIsRoot;
@@ -817,10 +758,8 @@ public class MotuConfig {
     /**
      * Sets the value of the sftpUserDirIsRoot property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     * @param value allowed object is {@link Boolean }
+     * 
      */
     public void setSftpUserDirIsRoot(Boolean value) {
         this.sftpUserDirIsRoot = value;
@@ -829,10 +768,8 @@ public class MotuConfig {
     /**
      * Gets the value of the sftpSessionTimeOut property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public Period getSftpSessionTimeOut() {
         if (sftpSessionTimeOut == null) {
@@ -845,10 +782,8 @@ public class MotuConfig {
     /**
      * Sets the value of the sftpSessionTimeOut property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setSftpSessionTimeOut(Period value) {
         this.sftpSessionTimeOut = value;
@@ -857,10 +792,8 @@ public class MotuConfig {
     /**
      * Gets the value of the strictHostKeyChecking property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getStrictHostKeyChecking() {
         if (strictHostKeyChecking == null) {
@@ -873,10 +806,8 @@ public class MotuConfig {
     /**
      * Sets the value of the strictHostKeyChecking property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setStrictHostKeyChecking(String value) {
         this.strictHostKeyChecking = value;
@@ -885,10 +816,8 @@ public class MotuConfig {
     /**
      * Gets the value of the ftpUserDirIsRoot property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     * @return possible object is {@link Boolean }
+     * 
      */
     public Boolean getFtpUserDirIsRoot() {
         return ftpUserDirIsRoot;
@@ -897,10 +826,8 @@ public class MotuConfig {
     /**
      * Sets the value of the ftpUserDirIsRoot property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     * @param value allowed object is {@link Boolean }
+     * 
      */
     public void setFtpUserDirIsRoot(Boolean value) {
         this.ftpUserDirIsRoot = value;
@@ -909,10 +836,8 @@ public class MotuConfig {
     /**
      * Gets the value of the ftpPassiveMode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     * @return possible object is {@link Boolean }
+     * 
      */
     public Boolean getFtpPassiveMode() {
         return ftpPassiveMode;
@@ -921,10 +846,8 @@ public class MotuConfig {
     /**
      * Sets the value of the ftpPassiveMode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     * @param value allowed object is {@link Boolean }
+     * 
      */
     public void setFtpPassiveMode(Boolean value) {
         this.ftpPassiveMode = value;
@@ -933,10 +856,8 @@ public class MotuConfig {
     /**
      * Gets the value of the ftpDataTimeOut property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public Period getFtpDataTimeOut() {
         return ftpDataTimeOut;
@@ -945,10 +866,8 @@ public class MotuConfig {
     /**
      * Sets the value of the ftpDataTimeOut property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setFtpDataTimeOut(Period value) {
         this.ftpDataTimeOut = value;
@@ -957,10 +876,8 @@ public class MotuConfig {
     /**
      * Gets the value of the useProxy property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     * @return possible object is {@link Boolean }
+     * 
      */
     public boolean getUseProxy() {
         if (useProxy == null) {
@@ -973,10 +890,8 @@ public class MotuConfig {
     /**
      * Sets the value of the useProxy property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     * @param value allowed object is {@link Boolean }
+     * 
      */
     public void setUseProxy(Boolean value) {
         this.useProxy = value;
@@ -985,10 +900,8 @@ public class MotuConfig {
     /**
      * Gets the value of the useFtpProxy property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     * @return possible object is {@link Boolean }
+     * 
      */
     public boolean getUseFtpProxy() {
         if (useFtpProxy == null) {
@@ -1001,10 +914,8 @@ public class MotuConfig {
     /**
      * Sets the value of the useFtpProxy property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     * @param value allowed object is {@link Boolean }
+     * 
      */
     public void setUseFtpProxy(Boolean value) {
         this.useFtpProxy = value;
@@ -1013,10 +924,8 @@ public class MotuConfig {
     /**
      * Gets the value of the useSftpProxy property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     * @return possible object is {@link Boolean }
+     * 
      */
     public boolean getUseSftpProxy() {
         if (useSftpProxy == null) {
@@ -1029,10 +938,8 @@ public class MotuConfig {
     /**
      * Sets the value of the useSftpProxy property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     * @param value allowed object is {@link Boolean }
+     * 
      */
     public void setUseSftpProxy(Boolean value) {
         this.useSftpProxy = value;
@@ -1041,10 +948,8 @@ public class MotuConfig {
     /**
      * Gets the value of the useSocksProxy property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     * @return possible object is {@link Boolean }
+     * 
      */
     public boolean getUseSocksProxy() {
         if (useSocksProxy == null) {
@@ -1057,10 +962,8 @@ public class MotuConfig {
     /**
      * Sets the value of the useSocksProxy property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     * @param value allowed object is {@link Boolean }
+     * 
      */
     public void setUseSocksProxy(Boolean value) {
         this.useSocksProxy = value;
@@ -1069,10 +972,8 @@ public class MotuConfig {
     /**
      * Gets the value of the sftpProxyLogin property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getSftpProxyLogin() {
         return sftpProxyLogin;
@@ -1081,10 +982,8 @@ public class MotuConfig {
     /**
      * Sets the value of the sftpProxyLogin property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setSftpProxyLogin(String value) {
         this.sftpProxyLogin = value;
@@ -1093,10 +992,8 @@ public class MotuConfig {
     /**
      * Gets the value of the sftpProxyPwd property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getSftpProxyPwd() {
         return sftpProxyPwd;
@@ -1105,10 +1002,8 @@ public class MotuConfig {
     /**
      * Sets the value of the sftpProxyPwd property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setSftpProxyPwd(String value) {
         this.sftpProxyPwd = value;
@@ -1117,10 +1012,8 @@ public class MotuConfig {
     /**
      * Gets the value of the sftpProxyHost property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getSftpProxyHost() {
         if (sftpProxyHost == null) {
@@ -1133,10 +1026,8 @@ public class MotuConfig {
     /**
      * Sets the value of the sftpProxyHost property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setSftpProxyHost(String value) {
         this.sftpProxyHost = value;
@@ -1145,10 +1036,8 @@ public class MotuConfig {
     /**
      * Gets the value of the sftpProxyPort property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getSftpProxyPort() {
         if (sftpProxyPort == null) {
@@ -1161,10 +1050,8 @@ public class MotuConfig {
     /**
      * Sets the value of the sftpProxyPort property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setSftpProxyPort(String value) {
         this.sftpProxyPort = value;
@@ -1173,10 +1060,8 @@ public class MotuConfig {
     /**
      * Gets the value of the socksProxyLogin property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getSocksProxyLogin() {
         return socksProxyLogin;
@@ -1185,10 +1070,8 @@ public class MotuConfig {
     /**
      * Sets the value of the socksProxyLogin property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setSocksProxyLogin(String value) {
         this.socksProxyLogin = value;
@@ -1197,10 +1080,8 @@ public class MotuConfig {
     /**
      * Gets the value of the socksProxyPwd property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getSocksProxyPwd() {
         return socksProxyPwd;
@@ -1209,10 +1090,8 @@ public class MotuConfig {
     /**
      * Sets the value of the socksProxyPwd property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setSocksProxyPwd(String value) {
         this.socksProxyPwd = value;
@@ -1221,10 +1100,8 @@ public class MotuConfig {
     /**
      * Gets the value of the socksProxyHost property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getSocksProxyHost() {
         if (socksProxyHost == null) {
@@ -1237,10 +1114,8 @@ public class MotuConfig {
     /**
      * Sets the value of the socksProxyHost property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setSocksProxyHost(String value) {
         this.socksProxyHost = value;
@@ -1249,10 +1124,8 @@ public class MotuConfig {
     /**
      * Gets the value of the socksProxyPort property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getSocksProxyPort() {
         if (socksProxyPort == null) {
@@ -1265,10 +1138,8 @@ public class MotuConfig {
     /**
      * Sets the value of the socksProxyPort property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setSocksProxyPort(String value) {
         this.socksProxyPort = value;
@@ -1277,10 +1148,8 @@ public class MotuConfig {
     /**
      * Gets the value of the proxyLogin property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getProxyLogin() {
         return proxyLogin;
@@ -1289,10 +1158,8 @@ public class MotuConfig {
     /**
      * Sets the value of the proxyLogin property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setProxyLogin(String value) {
         this.proxyLogin = value;
@@ -1301,10 +1168,8 @@ public class MotuConfig {
     /**
      * Gets the value of the proxyPwd property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getProxyPwd() {
         return proxyPwd;
@@ -1313,10 +1178,8 @@ public class MotuConfig {
     /**
      * Sets the value of the proxyPwd property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setProxyPwd(String value) {
         this.proxyPwd = value;
@@ -1325,10 +1188,8 @@ public class MotuConfig {
     /**
      * Gets the value of the proxyHost property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getProxyHost() {
         if (proxyHost == null) {
@@ -1341,10 +1202,8 @@ public class MotuConfig {
     /**
      * Sets the value of the proxyHost property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setProxyHost(String value) {
         this.proxyHost = value;
@@ -1353,10 +1212,8 @@ public class MotuConfig {
     /**
      * Gets the value of the proxyPort property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getProxyPort() {
         if (proxyPort == null) {
@@ -1369,10 +1226,8 @@ public class MotuConfig {
     /**
      * Sets the value of the proxyPort property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setProxyPort(String value) {
         this.proxyPort = value;
@@ -1381,10 +1236,8 @@ public class MotuConfig {
     /**
      * Gets the value of the ftpProxyLogin property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getFtpProxyLogin() {
         return ftpProxyLogin;
@@ -1393,10 +1246,8 @@ public class MotuConfig {
     /**
      * Sets the value of the ftpProxyLogin property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setFtpProxyLogin(String value) {
         this.ftpProxyLogin = value;
@@ -1405,10 +1256,8 @@ public class MotuConfig {
     /**
      * Gets the value of the ftpProxyPwd property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getFtpProxyPwd() {
         return ftpProxyPwd;
@@ -1417,10 +1266,8 @@ public class MotuConfig {
     /**
      * Sets the value of the ftpProxyPwd property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setFtpProxyPwd(String value) {
         this.ftpProxyPwd = value;
@@ -1429,10 +1276,8 @@ public class MotuConfig {
     /**
      * Gets the value of the ftpProxyHost property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getFtpProxyHost() {
         if (ftpProxyHost == null) {
@@ -1445,10 +1290,8 @@ public class MotuConfig {
     /**
      * Sets the value of the ftpProxyHost property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setFtpProxyHost(String value) {
         this.ftpProxyHost = value;
@@ -1457,10 +1300,8 @@ public class MotuConfig {
     /**
      * Gets the value of the ftpProxyPort property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getFtpProxyPort() {
         if (ftpProxyPort == null) {
@@ -1473,10 +1314,8 @@ public class MotuConfig {
     /**
      * Sets the value of the ftpProxyPort property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setFtpProxyPort(String value) {
         this.ftpProxyPort = value;

@@ -24,6 +24,13 @@
  */
 package fr.cls.atoll.motu.library.misc.queueserver;
 
+import java.util.Calendar;
+import java.util.Date;
+
+import org.apache.log4j.Logger;
+import org.jasig.cas.client.util.AssertionHolder;
+import org.jasig.cas.client.validation.Assertion;
+
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
@@ -46,13 +53,6 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-
-import java.util.Calendar;
-import java.util.Date;
-
-import org.apache.log4j.Logger;
-import org.jasig.cas.client.util.AssertionHolder;
-import org.jasig.cas.client.validation.Assertion;
 
 /**
  * 
@@ -92,7 +92,6 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
     /** The status mode response. */
     protected StatusModeResponse statusModeResponse = null;
 
-
     // private QueueLogError queueLogError = null;
 
     /**
@@ -125,6 +124,11 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
         this.organizer = organizer;
 
         this.queueLogInfo.setExtractionParameters(extractionParameters);
+        try {
+            this.queueLogInfo.setLogFormat(organizer.getMotuConfigInstance().getLogFormat());
+        } catch (MotuException e) {
+            this.queueLogInfo.setLogFormat("csv"); // Default format
+        }
     }
 
     /**
@@ -164,26 +168,24 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
         if (LOG.isDebugEnabled()) {
             LOG.debug("shutdown() - start");
         }
-        
-        setError(ErrorType.SHUTTING_DOWN);        
-        
+
+        setError(ErrorType.SHUTTING_DOWN);
+
         if (LOG.isInfoEnabled()) {
-            LOG.info(String.format("Extraction request below is shutting down :\n%s\n",
-                                   getQueuelogInfoAsXML()));
+            LOG.info(String.format("Extraction request below is shutting down :\n%s\n", getQueuelogInfoAsXML()));
         }
 
         aborted();
 
         if (LOG.isInfoEnabled()) {
-            LOG.info(String.format("Extraction request above is shutdown.",
-                                   getQueuelogInfoAsXML()));
+            LOG.info(String.format("Extraction request above is shutdown.", getQueuelogInfoAsXML()));
         }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("shutdown() - end");
         }
     }
-    
+
     /**
      * Compare to.
      * 
@@ -191,6 +193,7 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
      * 
      * @return the int
      */
+    @Override
     public int compareTo(RunnableExtraction obj) {
         // int retval = Integer.valueOf(priority).compareTo(Integer.valueOf(obj.getPriority()));
         int objPriority = obj.getPriority();
@@ -225,9 +228,9 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
      */
     public double getAmountDataSizeAsMBytes() throws MotuInconsistencyException, MotuInvalidDateException, MotuInvalidDepthException,
-            MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
-            NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException {
+            MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
+            MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException,
+            NetCdfAttributeException, NetCdfVariableNotFoundException {
 
         ExtractionParameters extractionParametersClone = null;
 
@@ -259,7 +262,7 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
     // * @param errorType the error type
     // */
     // private void setStatusError(Exception e, ErrorType errorType) {
-    //        
+    //
     // statusModeResponse.setStatus(StatusModeType.ERROR);
     // if (e instanceof MotuExceptionBase) {
     // MotuExceptionBase e2 = (MotuExceptionBase) e;
@@ -324,6 +327,16 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
     public String getQueuelogInfoAsXML() {
 
         return queueLogInfo.toXML();
+    }
+
+    /**
+     * Gets the queuelog info as CSV.
+     * 
+     * @return the queuelog info as CSV
+     */
+    public String getQueuelogInfoAsCSV() {
+
+        return queueLogInfo.toCSV();
     }
 
     /**
@@ -460,6 +473,7 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
     /**
      * Run.
      */
+    @Override
     public void run() {
 
         // try {
@@ -470,8 +484,9 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
         if (LOG.isDebugEnabled()) {
             try {
                 LOG.debug("RunnableExtraction run() - entering");
-                LOG.debug(String.format("RunnableExtraction run() : user id: '%s' - request parameters '%s'", getUserId(), getExtractionParameters()
-                        .toString()));
+                LOG.debug(String.format("RunnableExtraction run() : user id: '%s' - request parameters '%s'",
+                                        getUserId(),
+                                        getExtractionParameters().toString()));
             } catch (Exception e) {
                 // Do nothing
             }
@@ -492,10 +507,11 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
             LOG.error("RunnableExtraction.run()", e);
             MotuException motuException = null;
             try {
-                motuException = new MotuException(String
-                        .format("An error occurs during extraction (RunnableExtraction.run): user id: '%s' - request parameters '%s'",
-                                getUserId(),
-                                getExtractionParameters().toString()), e);
+                motuException = new MotuException(
+                        String.format("An error occurs during extraction (RunnableExtraction.run): user id: '%s' - request parameters '%s'",
+                                      getUserId(),
+                                      getExtractionParameters().toString()),
+                        e);
             } catch (MotuException e1) {
                 // Do Nothing
             }
@@ -507,10 +523,11 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
 
             MotuException motuException = null;
             try {
-                motuException = new MotuException(String
-                        .format("An error occurs during extraction (RunnableExtraction.run): user id: '%s' - request paramters '%s'",
-                                getUserId(),
-                                getExtractionParameters().toString()), e);
+                motuException = new MotuException(
+                        String.format("An error occurs during extraction (RunnableExtraction.run): user id: '%s' - request paramters '%s'",
+                                      getUserId(),
+                                      getExtractionParameters().toString()),
+                        e);
             } catch (MotuException e1) {
                 // Do Nothing
             }
@@ -655,7 +672,6 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
                 LOG.error("Failed to set StartTime into Status Mode Response (Motu will still continue to start)", e);
             }
         }
-        
 
     }
 
