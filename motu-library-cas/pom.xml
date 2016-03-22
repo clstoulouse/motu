@@ -4,7 +4,7 @@
     <parent>
         <groupId>cls.atoll.motu</groupId>
         <artifactId>motu-parent</artifactId>
-        <version>2.2.01-SNAPSHOT</version>
+        <version>2.2.01</version>
         <relativePath>../motu-parent</relativePath>
     </parent>
 	<artifactId>motu-library-cas</artifactId>
