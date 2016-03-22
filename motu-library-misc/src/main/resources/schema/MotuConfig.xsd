@@ -453,6 +453,12 @@
 			<xs:attribute name="maxSizePerFile" type="xs:integer"
 				default="1024" />
 			<!--
+				maxSizePerFileTDS : The number for data in Megabytes that can be
+				written and download for a Netcdf file.
+			-->
+			<xs:attribute name="maxSizePerFileTDS" type="xs:integer"
+				default="1024" />
+			<!--
 				extractionPath : The absolute path where to extract (write) files.
 			-->
 			<xs:attribute name="extractionPath" type="xs:string"

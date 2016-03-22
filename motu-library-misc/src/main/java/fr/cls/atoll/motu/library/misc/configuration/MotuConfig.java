@@ -120,6 +120,8 @@ public class MotuConfig {
     protected BigInteger dataBlockSize;
     @XmlAttribute(name = "maxSizePerFile")
     protected BigInteger maxSizePerFile;
+    @XmlAttribute(name = "maxSizePerFileTDS")
+    protected BigInteger maxSizePerFileTDS;
     @XmlAttribute(name = "extractionPath", required = true)
     protected String extractionPath;
     @XmlAttribute(name = "downloadHttpUrl", required = true)
@@ -412,6 +414,20 @@ public class MotuConfig {
     }
 
     /**
+     * Gets the value of the maxSizePerFileTDS property.
+     * 
+     * @return possible object is {@link BigInteger }
+     * 
+     */
+    public BigInteger getMaxSizePerFileTDS() {
+        if (maxSizePerFileTDS == null) {
+            return new BigInteger("1024");
+        } else {
+            return maxSizePerFileTDS;
+        }
+    }
+
+    /**
      * Sets the value of the maxSizePerFile property.
      * 
      * @param value allowed object is {@link BigInteger }
@@ -419,6 +435,16 @@ public class MotuConfig {
      */
     public void setMaxSizePerFile(BigInteger value) {
         this.maxSizePerFile = value;
+    }
+
+    /**
+     * Sets the value of the maxSizePerFileTDS property.
+     * 
+     * @param value allowed object is {@link BigInteger }
+     * 
+     */
+    public void setMaxSizePerFileTDS(BigInteger value) {
+        this.maxSizePerFileTDS = value;
     }
 
     /**
