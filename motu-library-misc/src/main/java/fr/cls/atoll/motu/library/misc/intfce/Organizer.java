@@ -100,6 +100,7 @@ import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.misc.data.CatalogData;
 import fr.cls.atoll.motu.library.misc.data.CatalogData.CatalogType;
 import fr.cls.atoll.motu.library.misc.data.DataFile;
+import fr.cls.atoll.motu.library.misc.data.DatasetFtp;
 import fr.cls.atoll.motu.library.misc.data.ExtractCriteria;
 import fr.cls.atoll.motu.library.misc.data.Product;
 import fr.cls.atoll.motu.library.misc.data.ProductPersistent;
@@ -182,7 +183,10 @@ public class Organizer {
         XML(3),
 
         /** xml format. */
-        URL(4);
+        URL(4),
+
+        /** NetCdf-4 format. */
+        NETCDF4(5);
 
         /** The value. */
         private final int value;
@@ -1938,10 +1942,11 @@ public class Organizer {
      * 
      * @param batchQueue the batch queue
      * @param size the size
+     * @param isFtp type of request
      * 
      * @return the request size
      */
-    public static RequestSize initRequestSize(double size, boolean batchQueue) {
+    public static RequestSize initRequestSize(double size, boolean batchQueue, boolean isFtp) {
 
         RequestSize requestSize = Organizer.createRequestSize();
 
@@ -1955,10 +1960,13 @@ public class Organizer {
         }
 
         double maxAllowedSizeToSet = 0d;
-
         double maxAllowedSize = 0d;
+
         try {
-            maxAllowedSize = Organizer.convertFromMegabytesToBytes(Organizer.getMotuConfigInstance().getMaxSizePerFile().doubleValue());
+            if (isFtp)
+                maxAllowedSize = Organizer.convertFromMegabytesToBytes(Organizer.getMotuConfigInstance().getMaxSizePerFile().doubleValue());
+            else
+                maxAllowedSize = Organizer.convertFromMegabytesToBytes(Organizer.getMotuConfigInstance().getMaxSizePerFileTDS().doubleValue());
         } catch (MotuException e) {
             Organizer.setError(requestSize, e);
             return requestSize;
@@ -2020,7 +2028,13 @@ public class Organizer {
             throw new MotuException("ERROR in Organizer.initRequestSize- Product is null");
         }
 
-        return Organizer.initRequestSize(product.getAmountDataSizeAsBytes(), batchQueue);
+        // Check type (TDS/FTP) --> different maximum request sizes
+        boolean isFtp = false;
+        if (product.getDataset() instanceof DatasetFtp) {
+            isFtp = true;
+        }
+
+        return Organizer.initRequestSize(product.getAmountDataSizeAsBytes(), batchQueue, isFtp);
 
     }
 
@@ -2758,7 +2772,7 @@ public class Organizer {
         }
 
         if (requestSize == null) {
-            requestSize = initRequestSize(-1d, batchQueue);
+            requestSize = initRequestSize(-1d, batchQueue, false);
         }
         try {
             synchronized (Organizer.marshallerMotuMsg) {

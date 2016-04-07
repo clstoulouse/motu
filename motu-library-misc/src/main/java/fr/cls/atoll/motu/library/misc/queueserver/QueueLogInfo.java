@@ -24,16 +24,19 @@
  */
 package fr.cls.atoll.motu.library.misc.queueserver;
 
-import org.apache.log4j.Logger;
-
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -52,11 +55,28 @@ public class QueueLogInfo {
      */
     private static final Logger LOG = Logger.getLogger(QueueLogInfo.class);
 
+    /** CSV separator */
+    private static final String CSV_SEPARATOR = ";";
+
+    /** Messages constants */
+    private static final String OK_STRING = "OK";
+    private static final String ERR_STRING = "ERR";
+
+    /** Types of format */
+    public static final String TYPE_XML = "xml";
+    public static final String TYPE_CSV = "csv";
+
+    /** Date format for log txt files */
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+
+    /** Log format (configuration) */
+    private static String logFormat = "";
+
     /** The queue id. */
-    private String queueId = null;
+    private String queueId = "";
 
     /** The queue desc. */
-    private String queueDesc = null;
+    private String queueDesc = "";
 
     /** The request id. */
     private long requestId = -1;
@@ -90,13 +110,13 @@ public class QueueLogInfo {
 
     /** The reading time in milliseconds (ms). */
     private long readingTime = 0L;
-    
+
     /** The writing time in milliseconds (ms). */
     private long writingTime = 0L;
 
     /** The copying time in milliseconds (ms). */
     protected long copyingTime = 0L;
-    
+
     /** The compressing time in milliseconds (ms). */
     protected long compressingTime = 0L;
 
@@ -110,17 +130,17 @@ public class QueueLogInfo {
     private final List<QueueLogPriority> priorities = new ArrayList<QueueLogPriority>();
 
     /** The download url path. */
-    private String downloadUrlPath = null;
+    private String downloadUrlPath = "";
 
     /** The extract location data. */
-    private String extractLocationData = null;
+    private String extractLocationData = "";
 
     /** The x stream. */
     private final XStream xStream = new XStream();
-    
+
     /** The output stream. */
     private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    
+
     /** The writer. */
     private Writer writer = null;
     /** The encoding. */
@@ -136,6 +156,15 @@ public class QueueLogInfo {
     }
 
     /**
+     * Sets the log format.
+     * 
+     * @param encoding the log format
+     */
+    public void setLogFormat(String logF) {
+        this.logFormat = logF;
+    }
+
+    /**
      * Gets the encoding.
      * 
      * @return the encoding
@@ -145,17 +174,22 @@ public class QueueLogInfo {
     }
 
     /**
+     * Gets the log Format.
+     * 
+     * @return the log format
+     */
+    public String getLogFormat() {
+        return logFormat;
+    }
+
+    /**
      * Constructor.
      */
     public QueueLogInfo() {
-        // Field[] fields = this.getClass().getDeclaredFields();
-        // for (int i = 0 ; i < fields.length ; i++) {
-        // xStream.useAttributeFor(this.getClass(), fields[i].getName());
-        // }
         try {
             writer = new OutputStreamWriter(outputStream, encoding);
         } catch (UnsupportedEncodingException e) {
-            //Do Nothing
+            // Do Nothing
         }
 
         initXStreamOptions();
@@ -185,9 +219,9 @@ public class QueueLogInfo {
         xStream.useAttributeFor(QueueLogPriority.class, "range");
 
         xStream.useAttributeFor(ExtractionParameters.class, "userId");
-//        xStream.useAttributeFor(ExtractionParameters.class, "user");
-//        xStream.aliasAttribute("userId", "user");
-//        xStream.registerConverter(new ExtractionParameters.UserBaseConverter());
+        // xStream.useAttributeFor(ExtractionParameters.class, "user");
+        // xStream.aliasAttribute("userId", "user");
+        // xStream.registerConverter(new ExtractionParameters.UserBaseConverter());
 
         xStream.useAttributeFor(ExtractionParameters.class, "userHost");
         xStream.useAttributeFor(ExtractionParameters.class, "locationData");
@@ -196,13 +230,13 @@ public class QueueLogInfo {
         xStream.useAttributeFor(ExtractionParameters.class, "temporalCoverageInDays");
 
         xStream.omitField(ExtractionParameters.class, "dataOutputFormat");
-        xStream.omitField(ExtractionParameters.class, "out");      
+        xStream.omitField(ExtractionParameters.class, "out");
         xStream.omitField(ExtractionParameters.class, "assertion");
-        
+
         xStream.omitField(this.getClass(), "outputStream");
         xStream.omitField(this.getClass(), "writer");
         xStream.omitField(this.getClass(), "encoding");
-        
+
         xStream.omitField(this.getClass(), "xStream");
 
     }
@@ -223,9 +257,9 @@ public class QueueLogInfo {
         }
 
         // WARNING : reset the output stream before serialization
-        // otherwise the content will be duplicate if multiple calls to 'toXML' are done. 
+        // otherwise the content will be duplicate if multiple calls to 'toXML' are done.
         outputStream.reset();
-        //return xStream.toXML(this);
+        // return xStream.toXML(this);
         xStream.toXML(this, writer);
         try {
             return outputStream.toString(encoding);
@@ -234,8 +268,120 @@ public class QueueLogInfo {
             e.printStackTrace(System.err);
         }
         return "";
+    }
 
+    /**
+     * To CSV.
+     * 
+     * @return the string
+     */
+    public String toCSV() {
 
+        // WARNING : reset the output stream before serialization
+        // otherwise the content will be duplicate if multiple calls to 'toCSV' are done.
+        outputStream.reset();
+
+        if (queueLogError == null) {
+            xStream.alias("motuQueueServerLog", this.getClass());
+        } else {
+            xStream.alias("motuQueueServerLogError", this.getClass());
+            xStream.useAttributeFor(QueueLogError.class, "errorCode");
+            xStream.useAttributeFor(QueueLogError.class, "message");
+        }
+
+        try {
+            // Success or Error (specific code)
+            if (queueLogError == null) {
+                outputStream.write(OK_STRING.concat(CSV_SEPARATOR).getBytes(encoding));
+            } else {
+                outputStream.write(ERR_STRING.concat(CSV_SEPARATOR).getBytes(encoding));
+                outputStream.write(queueLogError.getErrorCode().concat(CSV_SEPARATOR).getBytes(encoding));
+                outputStream.write(queueLogError.getMessage().concat(CSV_SEPARATOR).getBytes(encoding));
+                outputStream.write(DATE_FORMAT.format(queueLogError.getDateError()).concat(CSV_SEPARATOR).getBytes(encoding));
+            }
+
+            // Queue information
+            outputStream.write(queueId.concat(CSV_SEPARATOR).getBytes(encoding));
+            outputStream.write(queueDesc.concat(CSV_SEPARATOR).getBytes(encoding));
+            outputStream.write(Long.toString(requestId).concat(CSV_SEPARATOR).getBytes(encoding));
+
+            // Time information (Long)
+            outputStream.write(Long.toString(elapsedWaitQueueTime).concat(CSV_SEPARATOR).getBytes(encoding));
+            outputStream.write(Long.toString(elapsedRunTime).concat(CSV_SEPARATOR).getBytes(encoding));
+            outputStream.write(Long.toString(elapsedTotalTime).concat(CSV_SEPARATOR).getBytes(encoding));
+            outputStream.write(Long.toString(totalIOTime).concat(CSV_SEPARATOR).getBytes(encoding));
+            outputStream.write(Long.toString(preparingTime).concat(CSV_SEPARATOR).getBytes(encoding));
+            outputStream.write(Long.toString(readingTime).concat(CSV_SEPARATOR).getBytes(encoding));
+
+            // Time information (Date)
+            if (inQueueTime != null)
+                outputStream.write(DATE_FORMAT.format(inQueueTime).concat(CSV_SEPARATOR).getBytes(encoding));
+            if (startTime != null)
+                outputStream.write(DATE_FORMAT.format(startTime).concat(CSV_SEPARATOR).getBytes(encoding));
+            if (endTime != null)
+                outputStream.write(DATE_FORMAT.format(endTime).concat(CSV_SEPARATOR).getBytes(encoding));
+
+            // Size of request (bytes)
+            outputStream.write(Double.toString(amountDataSize).concat(CSV_SEPARATOR).getBytes(encoding));
+
+            // Urls and location
+            outputStream.write(downloadUrlPath.concat(CSV_SEPARATOR).getBytes(encoding));
+            outputStream.write(extractLocationData.concat(CSV_SEPARATOR).getBytes(encoding));
+
+            // Extraction parameters
+            outputStream.write(extractionParameters.getServiceName().concat(CSV_SEPARATOR).getBytes(encoding));
+            outputStream.write(Integer.toString(extractionParameters.getTemporalCoverageInDays()).concat(CSV_SEPARATOR).getBytes(encoding));
+            outputStream.write(extractionParameters.getProductId().concat(CSV_SEPARATOR).getBytes(encoding));
+            outputStream.write(extractionParameters.getUserId().concat(CSV_SEPARATOR).getBytes(encoding));
+            outputStream.write(extractionParameters.getUserHost().concat(CSV_SEPARATOR).getBytes(encoding));
+            outputStream.write(Boolean.toString(extractionParameters.isAnonymousUser()).concat(CSV_SEPARATOR).getBytes(encoding));
+            outputStream.write(Boolean.toString(extractionParameters.isBatchQueue()).concat(CSV_SEPARATOR).getBytes(encoding));
+
+            // List of variables
+            for (String v : extractionParameters.getListVar()) {
+                outputStream.write(v.concat(CSV_SEPARATOR).getBytes(encoding));
+            }
+            outputStream.write((CSV_SEPARATOR).getBytes(encoding));
+
+            // Temporal coverage
+            for (String t : extractionParameters.getListTemporalCoverage()) {
+                outputStream.write(t.concat(CSV_SEPARATOR).getBytes(encoding));
+            }
+            outputStream.write((CSV_SEPARATOR).getBytes(encoding));
+
+            // Geographical coverage
+            for (String g : extractionParameters.getListLatLonCoverage()) {
+                outputStream.write(g.concat(CSV_SEPARATOR).getBytes(encoding));
+            }
+            outputStream.write((CSV_SEPARATOR).getBytes(encoding));
+
+            // Depth coverage
+            for (String d : extractionParameters.getListDepthCoverage()) {
+                outputStream.write(d.concat(CSV_SEPARATOR).getBytes(encoding));
+            }
+            outputStream.write((CSV_SEPARATOR).getBytes(encoding));
+
+            // Priorities
+            for (QueueLogPriority p : priorities) {
+                outputStream.write(Integer.toString(p.getPriority()).concat(CSV_SEPARATOR).getBytes(encoding));
+                outputStream.write(Integer.toString(p.getRange()).concat(CSV_SEPARATOR).getBytes(encoding));
+                outputStream.write(DATE_FORMAT.format(p.getDate()).concat(CSV_SEPARATOR).getBytes(encoding));
+            }
+            outputStream.write((CSV_SEPARATOR).getBytes(encoding));
+
+            // Return CSV line to String
+            return outputStream.toString(encoding);
+
+        } catch (UnsupportedEncodingException e) {
+            LOG.error("toCSV()", e);
+            e.printStackTrace(System.err);
+        } catch (IOException e) {
+            LOG.error("toCSV()", e);
+            e.printStackTrace(System.err);
+        }
+
+        // Empty return
+        return "";
     }
 
     /**
@@ -313,7 +459,7 @@ public class QueueLogInfo {
         if ((endTime == null) || (inQueueTime == null)) {
             return;
         }
-        this.elapsedTotalTime = (this.endTime.getTime() - this.inQueueTime.getTime()) +  this.preparingTime;
+        this.elapsedTotalTime = (this.endTime.getTime() - this.inQueueTime.getTime()) + this.preparingTime;
     }
 
     /**
@@ -454,14 +600,14 @@ public class QueueLogInfo {
     public void setAmountDataSize(double amountDataSize) {
         this.amountDataSize = amountDataSize;
     }
-    
+
     /**
      * Compute total io.
      */
     public void computeTotalIO() {
         this.totalIOTime = this.readingTime + this.writingTime + this.copyingTime + this.compressingTime;
     }
-    
+
     /**
      * Gets the preparing time.
      *
@@ -479,7 +625,7 @@ public class QueueLogInfo {
     public void setPreparingTime(long preparingTime) {
         this.preparingTime = preparingTime;
     }
-    
+
     /**
      * Adds the preparing time.
      *
@@ -506,7 +652,7 @@ public class QueueLogInfo {
     public void setReadingTime(long readingTime) {
         this.readingTime = readingTime;
     }
-    
+
     /**
      * Adds the reading time.
      *
@@ -515,7 +661,7 @@ public class QueueLogInfo {
     public void addReadingTime(long readingTime) {
         this.readingTime += readingTime;
     }
-    
+
     /**
      * Gets the writing time.
      *
@@ -533,7 +679,7 @@ public class QueueLogInfo {
     public void setWritingTime(long writingTime) {
         this.writingTime = writingTime;
     }
-    
+
     /**
      * Adds the writing time.
      *
@@ -543,8 +689,6 @@ public class QueueLogInfo {
         this.writingTime += writingTime;
     }
 
-    
-    
     /**
      * Gets the copying time.
      *
@@ -589,7 +733,7 @@ public class QueueLogInfo {
     public void setCompressingTime(long compressingTime) {
         this.compressingTime = compressingTime;
     }
-    
+
     /**
      * Adds the compressing time.
      *
@@ -598,7 +742,6 @@ public class QueueLogInfo {
     public void addCompressingTime(long compressingTime) {
         this.compressingTime = compressingTime;
     }
-
 
     /**
      * Gets the priorities.
