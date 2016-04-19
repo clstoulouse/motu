@@ -1,12 +1,17 @@
 package fr.cls.atoll.motu.library.misc.netcdf;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Set;
 
 import javax.ws.rs.core.MultivaluedMap;
+
+import org.apache.commons.io.FileUtils;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -18,6 +23,8 @@ import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import ucar.ma2.Array;
+import ucar.ma2.Range;
 
 /**
  * Class to handle NCSS requests
@@ -97,11 +104,21 @@ public class NetCdfSubsetService {
     protected ExtractCriteriaDatetime timeSubset;
     protected ExtractCriteriaLatLon geoSubset;
     protected ExtractCriteriaDepth depthSubset;
+    protected Range depthRange;
+    protected Array depthAxis;
     protected Set<String> varSubset;
     protected String outputDir;
     protected String outputFile;
     protected Organizer.Format outputFormat;
     protected String ncssURL;
+
+    /** Control boolean for concatenation */
+    private boolean multipleRequest;
+
+    /** Control variables for depth concat-extraction */
+    private Path depthTempDir;
+    private String depthTempFname;
+    private double depthSelected;
 
     /**
      * Setter of the time subset setup .
@@ -128,6 +145,24 @@ public class NetCdfSubsetService {
      */
     public void setDepthSubset(ExtractCriteriaDepth in) {
         depthSubset = in;
+    }
+
+    /**
+     * Setter of the range depth subset .
+     * 
+     * @return
+     */
+    public void setDepthRange(Range in) {
+        depthRange = in;
+    }
+
+    /**
+     * Setter of the z-axis depth subset .
+     * 
+     * @return
+     */
+    public void setDepthAxis(Array in) {
+        depthAxis = in;
     }
 
     /**
@@ -203,6 +238,24 @@ public class NetCdfSubsetService {
     }
 
     /**
+     * Returns the depth axis subset setup .
+     * 
+     * @return
+     */
+    public Array getDepthAxis() {
+        return depthAxis;
+    }
+
+    /**
+     * Returns the depth subset setup .
+     * 
+     * @return
+     */
+    public Range getDepthRange() {
+        return depthRange;
+    }
+
+    /**
      * Returns the variables subset setup .
      * 
      * @return
@@ -248,11 +301,42 @@ public class NetCdfSubsetService {
     }
 
     /**
-     * REST request to NCSS subset service and redirect output to file .
+     * Make several requests to NCSS and then use CDO to concat them
+     * 
+     * @throws MotuException
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void concatDepths() throws MotuException, IOException, InterruptedException {
+        // Prepare multiple request mode
+        multipleRequest = true;
+
+        // Create folder to store intermediate files
+        depthTempDir = Files.createTempDirectory("motu_depth_concat");
+        depthTempDir.toFile().deleteOnExit();
+
+        // For every depth
+        for (int z = depthRange.first(); z <= depthRange.last(); z += depthRange.stride()) {
+            depthSelected = depthAxis.getDouble(z);
+            depthTempFname = "depth_concat_" + depthSelected;
+            unitRequestNCSS();
+        }
+
+        // Concatenate with NCO
+        String cmd = "cdo merge " + depthTempDir + "/* " + outputDir + "/" + outputFile;
+        Process p = Runtime.getRuntime().exec(cmd);
+        p.waitFor();
+
+        // Cleanup directory and intermediate files (right away once concat)
+        FileUtils.deleteDirectory(depthTempDir.toFile());
+    }
+
+    /**
+     * REST unitary request to NCSS subset service and redirect output to file .
      * 
      * @throws MotuException
      */
-    public void RequestNCSS() throws MotuException {
+    public void unitRequestNCSS() throws MotuException {
 
         // Geographical subset
         String north = String.valueOf(geoSubset.getUpperLeftLat());
@@ -264,8 +348,6 @@ public class NetCdfSubsetService {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
         String time_start = df.format(timeSubset.getFrom());
         String time_end = df.format(timeSubset.getTo());
-
-        // TODO: Depth subset
 
         try {
             // Setup query parameters
@@ -286,8 +368,16 @@ public class NetCdfSubsetService {
             queryParams.add(NCSS_ATTR_TIME_START, time_start);
             queryParams.add(NCSS_ATTR_TIME_END, time_end);
 
-            // Vertical subset
-            // queryParams.add(NCSS_ATTR_VERTCOORD, vertCoord);
+            // Multiple request
+            if (multipleRequest) {
+                queryParams.add(NCSS_ATTR_VERTCOORD, Double.toString(depthSelected));
+            } else {
+                // Single request: Vertical subset (1-level) || Default case: ALL depth levels
+                if (depthAxis != null) {
+                    if (depthRange.length() == 1)
+                        queryParams.add(NCSS_ATTR_VERTCOORD, depthSubset.getFromAsString());
+                }
+            }
 
             // Output format
             queryParams.add(NCSS_ATTR_ACCEPT, outputFormat.name());
@@ -300,8 +390,14 @@ public class NetCdfSubsetService {
             ClientResponse response = webResource.get(ClientResponse.class);
 
             if (response.getType().toString().contains("application/x-netcdf")) {
+                // Output file and directory depending on concatenation
                 InputStream is = response.getEntity(InputStream.class);
-                FileOutputStream fos = new FileOutputStream(outputDir + "/" + outputFile);
+                FileOutputStream fos;
+                if (multipleRequest) {
+                    fos = new FileOutputStream(depthTempDir + "/" + depthTempFname);
+                } else {
+                    fos = new FileOutputStream(outputDir + "/" + outputFile);
+                }
 
                 // Read/Write by chunks the REST response (avoid Heap over-usage)
                 int bytesRead = 0;
