@@ -2324,6 +2324,7 @@ public class ServiceData {
                 }
             }
 
+            // Detect NCSS or OpenDAP
             if (ncss) {
                 product.extractNCSSData(dataOutputFormat);
             } else {

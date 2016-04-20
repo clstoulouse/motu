@@ -2051,8 +2051,12 @@ public class Product {
      * @param dataOutputFormat the data output format
      * @throws MotuException
      * @throws MotuNotImplementedException
+     * @throws NetCdfVariableException
+     * @throws MotuInvalidDepthRangeException
+     * @throws InterruptedException
      */
-    public void extractNCSSData(Organizer.Format dataOutputFormat) throws MotuException, MotuNotImplementedException {
+    public void extractNCSSData(Organizer.Format dataOutputFormat) throws MotuException, MotuNotImplementedException, NetCdfVariableException,
+            MotuInvalidDepthRangeException, IOException, InterruptedException {
         // Extract criteria collect
         ExtractCriteriaDatetime time = getCriteriaDateTime();
         ExtractCriteriaLatLon latlon = getCriteriaLatLon();
@@ -2064,7 +2068,7 @@ public class Product {
         setExtractFilename(fname);
         String dir = Organizer.getMotuConfigInstance().getExtractionPath();
 
-        // Create and initialize
+        // Create and initialize selection
         NetCdfSubsetService ncss = new NetCdfSubsetService();
         ncss.setGeoSubset(latlon);
         ncss.setTimeSubset(time);
@@ -2075,8 +2079,31 @@ public class Product {
         ncss.setOutputFile(fname);
         ncss.setncssURL(getLocationDataNCSS());
 
-        // Run rest query
-        ncss.RequestNCSS();
+        // Run rest query (unitary or concat depths)
+        Array zAxisData = null;
+        if (productMetaData.hasZAxis() && isDatasetGrid()) {
+            // Z-Range selection update
+            DatasetGrid d = (DatasetGrid) dataset;
+            d.productMetadata = productMetaData;
+            d.getZRange();
+            int zlev = d.zRange.length();
+
+            // Dataset available depths
+            zAxisData = dataset.getProduct().getZAxisData();
+            long alev = zAxisData.getSize();
+
+            // Pass data to TDS-NCSS subsetter
+            ncss.setDepthAxis(zAxisData);
+            ncss.setDepthRange(d.zRange);
+
+            if (zlev == 1 || zlev == alev) {
+                ncss.unitRequestNCSS(); // 1-level or ALL levels (can be done with TDS-NCSS)
+            } else {
+                ncss.concatDepths(); // True depth Subset with CDO operators (needs concatenation)
+            }
+        } else {
+            ncss.unitRequestNCSS(); // No depth axis -> request without depths
+        }
     }
 
     /**
