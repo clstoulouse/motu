@@ -23,7 +23,7 @@
     #if($downloadOnTop == false)
 		&gt; <a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">$titleMetadata</a>
 	#end
-	&gt; Téléchargement
+	&gt; TÃ©lÃ©chargement
 #end
 
 ## -------------------------------------------- mercator_fr_printSubTitle --------------------------------
@@ -53,13 +53,13 @@
 #set($templateProductDownloadHome = "velocityTemplates/product_downloadhome_fr.vm")
 #set($httpSite = ${service.getHttpBaseRef()})
 
-#set($titleMetadata = "Métadonnées")
+#set($titleMetadata = "MÃ©tadonnÃ©es")
 
 #set($downloadOnTop = ${service.isDownloadOnTop()})
 #set($showOpendapLinks = true)
 
 <!-- variables pour menu Motu -->
-#set($titleMenuMotu = "Service de téléchargement et d'extraction")
+#set($titleMenuMotu = "Service de tÃ©lÃ©chargement et d'extraction")
 #set($labelMenuMotu = "Serveur Opendap")
 #set($hrefMenuMotu = "?action=listcatalog&service=Mercator&lang=fr")
 
@@ -67,9 +67,9 @@
 
 <head>
 
-    <title>Mercator Océan, prévision océanique opérationnelle - Bulletins</title>
+    <title>Mercator OcÃ©an, prÃ©vision ocÃ©anique opÃ©rationnelle - Bulletins</title>
 
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
     <meta name="description" content="previsions en temps reel de l'ocean jusqu'a 14 jours, oceanographie operationnelle">
 

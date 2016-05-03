@@ -7,14 +7,14 @@
 ## ------------------------------ myocean_uk_printSubTitleCatalog --------------------------------
 #macro(myocean_uk_printSubTitleListInventories)
 <li>
-    <a>Accès aux services</a>	
+    <a>Accés aux services</a>	
 </li>
 
 #end
 ## ------------------------------ myocean_uk_printSubTitleProductMetadata --------------------------------
 #macro(myocean_uk_printSubTitleCatalog)
 <li>
-	<a href="?action=listservices">Accès aux services</a>
+	<a href="?action=listservices">Accés aux services</a>
 <li>
 <li>
 	<a href="">&gt;&nbsp;Data Product Catalogue</a>
@@ -25,7 +25,7 @@
 ## ------------------------------ myocean_uk_printSubTitleProductMetadata --------------------------------
 #macro(myocean_uk_printSubTitleProductMetadata)
 <li>
-	<a href="?action=listservices" class="mainlevel">Accès aux services</a>
+	<a href="?action=listservices" class="mainlevel">Accés aux services</a>
 </li>
 <li>
 	<a href="?action=listcatalog&service=${service.getNameEncoded()}">&gt;&nbsp;Catalogue</a>
@@ -38,7 +38,7 @@
 
 ## ------------------------------ myocean_uk_printSubTitleProductDownloadHome --------------------------------
 #macro(myocean_uk_printSubTitleProductDownloadHome)
-<li><a href="?action=listservices">Accès aux services</a></li>
+<li><a href="?action=listservices">Accés aux services</a></li>
 <li><a href="?action=listcatalog&service=${service.getNameEncoded()}">&gt;&nbsp;Catalogue</a></li>
 
 #if($downloadOnTop == false)
@@ -86,7 +86,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-	<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1" />
+	<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
 	<title>Motu</title>
 	<link rel="icon" type="image/x-icon" href="$httpSite/css/myocean/screen/images/favicon.ico" />
 	<meta name="robots" content="noindex, nofollow" />
@@ -112,6 +112,11 @@ href="$httpSite/css/myocean/patches/patch_myocean.css"
 </head>
 
 <body>
+	<!-- Banniere -->
+<!-- STATUS: OK --><a name="top"></a><map name="retour">
+<area shape="rect" coords="30,30,80,100" href="http://www.cls.fr/welcome_fr.html" onmouseover="window.status='SOMMAIRE'; return true" onmouseout="window.status=''; return true">
+</map>
+
 		<!-- Body -->
 	<div class="body_header">
 		<div class="container">

@@ -117,10 +117,10 @@
 		font-weight: bold
 	}
 	</style> 
-	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-8859-1">
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=UTF-8">
 <!--	<base href="http://www.aviso.oceanobs.com">
 -->
-	<meta name="Keywords" lang="en" content="altimetry, satellite, Topex/Poseidon, topex, poseidon, Topex, Poseidon, topex-poseidon, Topex-Poseidon, Topex/Poseidon, Poséïdon, Poséidon, Jason, Jason-1, observation, ocean, data">
+	<meta name="Keywords" lang="en" content="altimetry, satellite, Topex/Poseidon, topex, poseidon, Topex, Poseidon, topex-poseidon, Topex-Poseidon, Topex/Poseidon, PosÃ©Ã¯don, PosÃ©idon, Jason, Jason-1, observation, ocean, data">
 	<meta name="Description" lang="en" content="">
 	<link rel="stylesheet" type="text/css" href="http://www.aviso.oceanobs.com/tools/jason.css">
 	<script src="http://www.aviso.oceanobs.com/tools/jason.js" type="text/javascript"></script>
@@ -217,8 +217,8 @@
 <P>&nbsp;<BR CLEAR="all"></P>		
 <P ALIGN="center">
 <MAP NAME="pied_page">
-					<AREA SHAPE="RECT" COORDS="479,0,533,18" HREF="javascript:changeLangue('fr');" title="Français">
-					<AREA SHAPE="RECT" COORDS="479,25,533,43" HREF="javascript:changeLangue('es');" title="Español">
+					<AREA SHAPE="RECT" COORDS="479,0,533,18" HREF="javascript:changeLangue('fr');" title="FranÃ§ais">
+					<AREA SHAPE="RECT" COORDS="479,25,533,43" HREF="javascript:changeLangue('es');" title="EspaÃ±ol">
 					<AREA SHAPE="RECT" COORDS="384, 0, 473, 40" HREF="javascript:ouvreCadre('http://search.jason.oceanobs.com/search_uk.html')">
 					<AREA SHAPE="RECT" COORDS="320, -3, 382, 40" HREF="http://www.aviso.oceanobs.com/html/general/guide_uk.html">
 					<AREA SHAPE="RECT" COORDS="229, 0, 318, 43" HREF="javascript:ouvreCadre('/html/general/sitemap_uk.html')">

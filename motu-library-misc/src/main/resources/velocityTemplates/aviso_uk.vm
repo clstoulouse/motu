@@ -95,7 +95,7 @@
     	color: #000099
 		}
 	</style> 
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<script type="text/javascript" src="$httpSite/avisop/js/cookies.js"></script><script type="text/javascript" src="$httpSite/avisop/efa_fontsize-en.js"></script>
 
 	<link href="$httpSite/avisop/css/layout_2col_right_vlines_avisop.css" rel="stylesheet" type="text/css" />

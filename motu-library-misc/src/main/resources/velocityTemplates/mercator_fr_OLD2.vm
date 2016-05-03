@@ -23,7 +23,7 @@
     #if($downloadOnTop == false)
 		<li>&gt; <a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">$titleMetadata</a></li>
 	#end
-	<li>&gt; Téléchargement</li>
+	<li>&gt; TÃ©lÃ©chargement</li>
 #end
 
 ## -------------------------------------------- mercator_fr_printSubTitle --------------------------------
@@ -54,13 +54,13 @@
 #set($templateProductDownloadHome = "velocityTemplates/product_downloadhome_fr.vm")
 #set($httpSite = ${service.getHttpBaseRef()})
 
-#set($titleMetadata = "Métadonnées")
+#set($titleMetadata = "MÃ©tadonnÃ©es")
 
 #set($downloadOnTop = ${service.isDownloadOnTop()})
 #set($showOpendapLinks = true)
 
 <!-- variables pour menu Motu -->
-#set($titleMenuMotu = "Service de téléchargement et d'extraction")
+#set($titleMenuMotu = "Service de tÃ©lÃ©chargement et d'extraction")
 #set($labelMenuMotu = "Serveur Opendap")
 #set($hrefMenuMotu = "?action=listcatalog&service=Mercator&lang=fr")
 
@@ -68,20 +68,20 @@
 
 <head>
 	<!--
-	<title>Mercator Océan, prévision océanique opérationnelle - $titleMenuMotu </title>
+	<title>Mercator OcÃ©an, prÃ©vision ocÃ©anique opÃ©rationnelle - $titleMenuMotu </title>
 	<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
 	<link rel="stylesheet" type="text/css" href="$httpSite/charte/styles/mercator2.css">
-    <meta name="Description" content="Mercator offre une gamme riche de produits à vocation grand public sous forme d'images sur le Web, mais aussi sous forme de fichiers numériques, à destination d'utilisateurs professionnels concernés directement par la prévision de l'état de l'océan.">
+    <meta name="Description" content="Mercator offre une gamme riche de produits Ã  vocation grand public sous forme d'images sur le Web, mais aussi sous forme de fichiers numÃ©riques, Ã  destination d'utilisateurs professionnels concernÃ©s directement par la prÃ©vision de l'Ã©tat de l'ocÃ©an.">
 	<meta name="Keywords" content="produits">
 	<script src="$httpSite/charte/scripts/util.js"></script>
 	
 	-->
 	
-	<title>Mercator Océan, prévision océanique opérationnelle - Produits et services</title>
-	<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
-	<meta name="Description" content="Mercator offre une gamme riche de produits à vocation grand public sous forme d'images sur le Web, mais aussi sous forme de fichiers numériques, à destination d'utilisateurs professionnels concernés directement par la prévision de l'état de l'océan.">
+	<title>Mercator OcÃ©an, prÃ©vision ocÃ©anique opÃ©rationnelle - Produits et services</title>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<meta name="Description" content="Mercator offre une gamme riche de produits Ã  vocation grand public sous forme d'images sur le Web, mais aussi sous forme de fichiers numÃ©riques, Ã  destination d'utilisateurs professionnels concernÃ©s directement par la prÃ©vision de l'Ã©tat de l'ocÃ©an.">
 	<meta name="Keywords" content="produits">
-	<meta name="author" content="Oréalys" />
+	<meta name="author" content="OrÃ©alys" />
 	<meta name="robots" content="index,follow" />
 	<link rel="stylesheet" type="text/css" href="$httpSite/tools/template/style.css" />
 	<link rel="stylesheet" type="text/css" href="$httpSite/tools/template/form.css" />

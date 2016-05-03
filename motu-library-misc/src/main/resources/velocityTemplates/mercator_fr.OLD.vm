@@ -13,16 +13,16 @@
 #macro(mercator_fr_printSubTitleProductMetadata)
 	<a href="?action=listcatalog&service=${service.getName()}">Catalogue</a>
 	<img src="$httpSite/charte/images/parent.gif" width="10" height="13" border="0" align="absmiddle" hspace="4"></nobr>
-	Métadonnées
+	MÃ©tadonnÃ©es
 
 #*
 	#if ($product.isProductDownloadable()) 
 		<a href="?action=listcatalog&service=${service.getName()}">Catalogue</a>
-		| Métadonnées
-		| <a href="?action=productdownloadhome&service=${service.getName()}&product=${product.getProductMetaData().getProductIdEncoded()}">Téléchargement</a>
+		| MÃ©tadonnÃ©es
+		| <a href="?action=productdownloadhome&service=${service.getName()}&product=${product.getProductMetaData().getProductIdEncoded()}">TÃ©lÃ©chargement</a>
 	#else
 		<a href="?action=listcatalog&service=${service.getName()}">Catalogue</a>
-		| Métadonnées
+		| MÃ©tadonnÃ©es
 	#end
 *#
 
@@ -32,9 +32,9 @@
 #macro(mercator_fr_printSubTitleProductDownloadHome)
 	<a href="?action=listcatalog&service=${service.getName()}">Catalogue</a>
 	<img src="$httpSite/charte/images/parent.gif" width="10" height="13" border="0" align="absmiddle" hspace="4"></nobr>
-	<a href="?action=listproductmetadata&service=${service.getName()}&product=${product.getProductMetaData().getProductIdEncoded()}">Métadonnées</a>
+	<a href="?action=listproductmetadata&service=${service.getName()}&product=${product.getProductMetaData().getProductIdEncoded()}">MÃ©tadonnÃ©es</a>
 	<img src="$httpSite/charte/images/parent.gif" width="10" height="13" border="0" align="absmiddle" hspace="4"></nobr>
-	Téléchargement
+	TÃ©lÃ©chargement
 #end
 
 ## -------------------------------------------- mercator_fr_printSubTitle --------------------------------
@@ -66,17 +66,17 @@
 #set($httpSite = ${service.getHttpBaseRef()})
 
 <!-- variables pour menu Motu -->
-#set($titleMenuMotu = "Service de téléchargement et d'extraction")
+#set($titleMenuMotu = "Service de tÃ©lÃ©chargement et d'extraction")
 #set($labelMenuMotu = "Serveur Opendap")
 #set($hrefMenuMotu = "?action=listcatalog&service=Mercator&lang=fr")
 
 <html>
 
 <head>
-	<title>Mercator Océan, prévision océanique opérationnelle - $titleMenuMotu </title>
-	<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
+	<title>Mercator OcÃ©an, prÃ©vision ocÃ©anique opÃ©rationnelle - $titleMenuMotu </title>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 	<link rel="stylesheet" type="text/css" href="$httpSite/charte/styles/mercator2.css">
-    <meta name="Description" content="Mercator offre une gamme riche de produits à vocation grand public sous forme d'images sur le Web, mais aussi sous forme de fichiers numériques, à destination d'utilisateurs professionnels concernés directement par la prévision de l'état de l'océan.">
+    <meta name="Description" content="Mercator offre une gamme riche de produits Ã  vocation grand public sous forme d'images sur le Web, mais aussi sous forme de fichiers numÃ©riques, Ã  destination d'utilisateurs professionnels concernÃ©s directement par la prÃ©vision de l'Ã©tat de l'ocÃ©an.">
 	<meta name="Keywords" content="produits">
 	<script src="$httpSite/charte/scripts/util.js"></script>
 </head>
@@ -167,18 +167,18 @@
 			#mercator_fr_printSubTitle()
         </td>
         <td align="right">
-                <a href="$httpSite/html/produits/description/acces_fr.html">Conditions d'accès |</a>
+                <a href="$httpSite/html/produits/description/acces_fr.html">Conditions d'accÃ¨s |</a>
                 <a href="$httpSite/html/produits/description/guide_tdm_fr.html">Guides |</a>
            		<a href="http://bulletin.mercator-ocean.fr">Bulletins en images |</a>
-                <a href="$httpSite/html/produits/buoc/index_fr.html" >Bulletins commentés |</a><br>
-                <a href="http://las.mercator-ocean.fr"  target="_blank" title="Produits numériques (accès autorisé)" alt="Cartes et Produits numériques(accès autorisé)">Live Access Server <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accès restreint">|</a>
+                <a href="$httpSite/html/produits/buoc/index_fr.html" >Bulletins commentÃ©s |</a><br>
+                <a href="http://las.mercator-ocean.fr"  target="_blank" title="Produits numÃ©riques (accÃ¨s autorisÃ©)" alt="Cartes et Produits numÃ©riques(accÃ¨s autorisÃ©)">Live Access Server <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accÃ¨s restreint">|</a>
 				<!-- Liens vers Motu -->
-				<a href="$hrefMenuMotu" target="_blank" title="$titleMenuMotu" alt="$titleMenuMotu">$labelMenuMotu <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accès restreint"></a>			
-                ##<a href="http://opendap.mercator-ocean.fr/thredds/dodsC/"  target="_blank" title="Produits numériques (accès autorisé)" alt="Produits numériques (accès autorisé)">Serveur Opendap <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accès restreint">|</a>
+				<a href="$hrefMenuMotu" target="_blank" title="$titleMenuMotu" alt="$titleMenuMotu">$labelMenuMotu <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accÃ¨s restreint"></a>			
+                ##<a href="http://opendap.mercator-ocean.fr/thredds/dodsC/"  target="_blank" title="Produits numÃ©riques (accÃ¨s autorisÃ©)" alt="Produits numÃ©riques (accÃ¨s autorisÃ©)">Serveur Opendap <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accÃ¨s restreint">|</a>
                 <!--
-				<a href="http://opendap.mercator-ocean.fr/data" target="_blank" title="Serveur http (accès autorisé)" alt="Serveur http (accès autorisé)">Serveur HTTP <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accès restreint"></a></a>
+				<a href="http://opendap.mercator-ocean.fr/data" target="_blank" title="Serveur http (accÃ¨s autorisÃ©)" alt="Serveur http (accÃ¨s autorisÃ©)">Serveur HTTP <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accÃ¨s restreint"></a></a>
 				-->
-				<a href="http://mercator.cnes.fr:8300/mercator.html" target="_blank" title="Produits numériques (accès autorisé)" alt="Produits numériques (accès autorisé)">Serveur Maps <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accès restreint"></a>
+				<a href="http://mercator.cnes.fr:8300/mercator.html" target="_blank" title="Produits numÃ©riques (accÃ¨s autorisÃ©)" alt="Produits numÃ©riques (accÃ¨s autorisÃ©)">Serveur Maps <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accÃ¨s restreint"></a>
         </td>
 </tr>
 <tr><td colspan="2"><img src="$httpSite/charte/images/espaceur.gif" width=1 height=1 border=0></td></tr>

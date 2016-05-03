@@ -167,7 +167,7 @@
 	#if($downloadOnTop)						
     	<td width="50%">
     		<li> 
-				Télécharger&nbsp;
+				TÃ©lÃ©charger&nbsp;
     			<a href=?action=productdownloadhome&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
        					 $productMetaData.getTitle()
     			</a>	
@@ -175,11 +175,11 @@
     	</td>	
     	<td>
     			<a href=?action=listproductmetadata&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
-    					 $titleMetadata.getTitle()
+    					 $titleMetadata
     			</a>	
     	</td>
     	<td>
-    		Dernière mise à jour :&nbsp;$productMetaData.getLastUpdate()
+    		DerniÃ¨re mise Ã  jour :&nbsp;$productMetaData.getLastUpdate()
 	    </td>    	
 	#else
     	<td>
@@ -190,7 +190,7 @@
 			</li>	
     	</td>
     	<td>
-    		Dernière mise à jour :&nbsp;$productMetaData.getLastUpdate()
+    		DerniÃ¨re mise Ã  jour :&nbsp;$productMetaData.getLastUpdate()
 	    </td>
 	#end
 	<td class="producttype">

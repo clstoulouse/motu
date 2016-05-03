@@ -13,12 +13,12 @@
 	#set ($LAS = ${productMetaData.getLASViewingServiceURL()})
 	#set ($FTP = ${productMetaData.getFTPServiceURL()})
 	#set ($bulletinSite = ${productMetaData.getBulletinSiteURL()})	
-	<h2>Services associés</h2>
+	<h2>Services associÃ©s</h2>
 ##	<ul>
 		#if ($product.isProductDownloadable()) 
 			<li>
 			<a href=?action=productdownloadhome&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
-			Service de téléchargement et d'extraction
+			Service de tÃ©lÃ©chargement et d'extraction
 			</a>	
 			</li>			
 		#end
@@ -29,7 +29,7 @@
 		#else
 			<a href=?action=describeProduct&data=${product.getLocationMetaData()}>
 		#end
-		Description des données
+		Description des donnÃ©es
 		</a>	
 		</li>
 		
@@ -53,7 +53,7 @@
 		#end
 		#if($FTP != "")
 			<li>
-			<a href=${FTP}>Téléchargement FTP</a>
+			<a href=${FTP}>TÃ©lÃ©chargement FTP</a>
 			</li>
 		#end
 		#if($pageSiteWeb != "")
@@ -70,16 +70,16 @@
 	
 	#if($productMetaData.hasTimeAxis())
 		<ul class="puce2">
-			<li><b>Début&nbsp(${productMetaData.getTimeAxis().getName()}):</b>&nbsp&nbsp;$productMetaData.getTimeAxisMinValueAsString()</li>
+			<li><b>DÃ©but&nbsp(${productMetaData.getTimeAxis().getName()}):</b>&nbsp&nbsp;$productMetaData.getTimeAxisMinValueAsString()</li>
 			<li><b>Fin&nbsp(${productMetaData.getTimeAxis().getName()}):</b>&nbsp&nbsp;$productMetaData.getTimeAxisMaxValueAsString()</li>
 		</ul>
 	#elseif($productMetaData.hasTimeCoverage())
 		<ul class="puce2">
-			<li><b>Début&nbsp:</b>&nbsp&nbsp;$productMetaData.getStartTimeCoverageAsUTCString()</li>
+			<li><b>DÃ©but&nbsp:</b>&nbsp&nbsp;$productMetaData.getStartTimeCoverageAsUTCString()</li>
 			<li><b>Fin&nbsp:</b>&nbsp&nbsp;$productMetaData.getEndTimeCoverageAsUTCString()</li>
 		</ul>	
 	#else
-	<p>Aucune couverture géographique.</p>
+	<p>Aucune couverture gÃ©ographique.</p>
 	#end
 		
 #end
@@ -215,7 +215,7 @@
 ## -------------------------------------------- printGeoCoverage --------------------------------
 #macro(product_metadata_fr_printGeoCoverage)
 		#if (($productMetaData.isCoordinateAxesEmpty() == false) && ($productMetaData.hasGeographicalAxis() == false) && ($productMetaData.hasGeoBBox() == false))
-			<p>Pas de couverture géographique.</p>
+			<p>Pas de couverture gÃ©ographique.</p>
 		#else		
 			<table class="encadre" width="60%" border="0" cellspacing="2" cellpadding="5">
 			#product_metadata_fr_printGeoCoverageTH()
@@ -250,7 +250,7 @@
 	<table class="encadre" width="80%" border="0" cellspacing="2">
 		<tr>
 			<th>Nom standard</th>
-			<th>Unité</th>
+			<th>UnitÃ©</th>
 			#if($catalogType != "FTP")
 				<th>Dimensions</th>
 			#end
@@ -291,18 +291,18 @@
 
 #product_metadata_fr_printAssociateService()
 
-<h2>Métadonnées générales</h2>
+<h2>MÃ©tadonnÃ©es gÃ©nÃ©rales</h2>
 
-<h3>Couverture géographique</h3>
+<h3>Couverture gÃ©ographique</h3>
 #product_metadata_fr_printGeoCoverage()
 
 <h3>Couverture temporelle</h3>
 #product_metadata_fr_printTemporalCoverage()
 
-<h3>Dernière mise à jour</h3>
+<h3>DerniÃ¨re mise Ã  jour</h3>
 #product_metadata_uk_printLastUpdate()
 
-<h2>Métadonnées par variable</h2>
+<h2>MÃ©tadonnÃ©es par variable</h2>
 #set ($listParameterMetadata = $productMetaData.getParameterMetaDatasFiltered() )
 <ul>
 #foreach( $parameterMetadata in $listParameterMetadata )	

@@ -74,10 +74,10 @@
 
 <head>
 	<title>Mercator Ocean, Operational Ocean Forecasting - $titleMenuMotu </title>
-	<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 	<link rel="stylesheet" type="text/css" href="$httpSite/charte/styles/mercator2.css">
     <meta name="Description" content="MERCATOR OCEAN working for Operational Oceanography. The 3D ocean forecast (temperature, salinity, current) from surface to bottom .">
-    <meta name="Keywords" content="oceanography, operational oceanography, hindcast, nowcast, forecast, data assimilation, modelling, modeling, oceanic bulletin, bulletin, oceanic products, real time, Atlantic, Mediterranean, global, satellites, altimetry, in situ measurements, Argo, Coriolis, SST, marine currents, oceanography forecaster, operational oceanography centre,CNRS, IRD, Ifremer, SHOM, Météo-France, CNES, GMES, MERSEA,OPA, MNATL,PAM">
+    <meta name="Keywords" content="oceanography, operational oceanography, hindcast, nowcast, forecast, data assimilation, modelling, modeling, oceanic bulletin, bulletin, oceanic products, real time, Atlantic, Mediterranean, global, satellites, altimetry, in situ measurements, Argo, Coriolis, SST, marine currents, oceanography forecaster, operational oceanography centre,CNRS, IRD, Ifremer, SHOM, MÃ©tÃ©o-France, CNES, GMES, MERSEA,OPA, MNATL,PAM">
 	<script src="$httpSite/charte/scripts/util.js"></script>
 </head>
 
@@ -173,14 +173,14 @@
                         <a href="$httpSite/html/produits/description/guide_tdm_en.html">Handbooks</a> |
                         <a href="http://bulletin.mercator-ocean.fr">Images bulletin</a> |
                         <a href="$httpSite/html/produits/buoc/index_en.html" >Interpreted bulletin</a> |<br>
-                        <a href="http://las.mercator-ocean.fr" target="_blank" title="Maps and digital products (authorized access)">Live Access Server</a> <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accès restreint"> |
+                        <a href="http://las.mercator-ocean.fr" target="_blank" title="Maps and digital products (authorized access)">Live Access Server</a> <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accÃ¨s restreint"> |
 						<!-- Liens vers Motu -->
-						<a href="$hrefMenuMotu" target="_blank" title="$titleMenuMotu" alt="$titleMenuMotu">$labelMenuMotu <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accès restreint"></a>			
-                        ##<a href="http://opendap.mercator-ocean.fr/thredds/dodsC/"  target="_blank" title="digital products (authorized access)">Opendap Server</a> <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accès restreint"> |
+						<a href="$hrefMenuMotu" target="_blank" title="$titleMenuMotu" alt="$titleMenuMotu">$labelMenuMotu <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accÃ¨s restreint"></a>			
+                        ##<a href="http://opendap.mercator-ocean.fr/thredds/dodsC/"  target="_blank" title="digital products (authorized access)">Opendap Server</a> <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accÃ¨s restreint"> |
                         <!--
-						<a href="http://opendap.mercator-ocean.fr/data/index_en.html" target="_blank" title="Http server (authorized access)" alt="Http server (authorized access)">HTTP Server <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accès restreint"></a>
+						<a href="http://opendap.mercator-ocean.fr/data/index_en.html" target="_blank" title="Http server (authorized access)" alt="Http server (authorized access)">HTTP Server <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accÃ¨s restreint"></a>
 						-->
-                        <a href="http://internet1-ci.cst.cnes.fr:8300/mercator_eng.html" target="_blank" title="Produits numériques (accès autorisé)" alt="Produits numériques (accès autorisé)">Maps Server <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accès restreint"></a>
+                        <a href="http://internet1-ci.cst.cnes.fr:8300/mercator_eng.html" target="_blank" title="Produits numÃ©riques (accÃ¨s autorisÃ©)" alt="Produits numÃ©riques (accÃ¨s autorisÃ©)">Maps Server <img src="$httpSite/charte/images/restreint2b.gif" width=12 height=10 border=0 title="accÃ¨s restreint"></a>
         </td>
 </tr>
 <tr><td colspan="2"><img src="$httpSite/charte/images/espaceur.gif" width=1 height=1 border=0></td></tr>

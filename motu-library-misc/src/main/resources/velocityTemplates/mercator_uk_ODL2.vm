@@ -69,10 +69,10 @@
 <head>
 	<title>Mercator Ocean, Operational Ocean Forecasting - Data files products</title>
 
-	<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 	<meta name="Description" content="Mercator Ocean : operational ocean forecasting center, real-time ocean forecast up to 14 days, from surface to bottom with weekly delivered oceanic forecast bulletins">
 	<meta name="Keywords" content="operational oceanography, ocean forecasting, data assimilation, altimetry, in situ data, real time, hindcast, nowcast, forecast, oceanic forecast bulletin, validation, ocean global and regional models, ocean climate monitoring, industrial marine applications">
-	<meta name="author" content="Oréalys" />
+	<meta name="author" content="OrÃ©alys" />
 	<meta name="robots" content="index,follow" />
 	<link rel="stylesheet" type="text/css" href="$httpSite/tools/template/style.css" />
 	<link rel="stylesheet" type="text/css" href="$httpSite/tools/template/form.css" />

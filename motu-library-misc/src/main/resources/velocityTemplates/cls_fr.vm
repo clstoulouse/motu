@@ -24,7 +24,7 @@
 #if($downloadOnTop == false)
 	<a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">&gt;&nbsp;${titleMetadata}</a>
 #end
-	&gt;&nbsp;Téléchargement
+	&gt;&nbsp;TÃ©lÃ©chargement
 #end
 
 ## -------------------------------------------- cls_fr_printSubTitle --------------------------------
@@ -56,11 +56,11 @@
 #set($httpSite = ${service.getHttpBaseRef()})
 
 <!-- variables pour menu Motu -->
-#set($titleMenuMotu = "Service de téléchargement et d'extraction")
+#set($titleMenuMotu = "Service de tÃ©lÃ©chargement et d'extraction")
 #set($labelMenuMotu = "Serveur Opendap")
 #set($hrefMenuMotu = "?action=listcatalog&service=Cls&lang=fr")
 
-#set($titleMetadata = "Métadonnées")
+#set($titleMetadata = "MÃ©tadonnÃ©es")
 
 #set($downloadOnTop = ${service.isDownloadOnTop()})
 #set($showOpendapLinks = true)
@@ -69,7 +69,7 @@
 
 <head>
 	<title>CLS : Oc&eacute;anograhie Spatiale - $titleMenuMotu </title>
-	<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 	<link rel="stylesheet" type="text/css" href=href="$httpSite/tools/style.css">
 	<meta name="Description" lang="fr" content="CLS">
 	<script src="$httpSite/tools/cls.js"></script>

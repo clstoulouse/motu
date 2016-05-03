@@ -78,7 +78,7 @@
 	#if ( ${product.hasDownloadUrlPath()})
 		<form method="post" action="${product.getDownloadUrlPath()}" name="dlform">
 			<script language="JavaScript">
-			document.write('<h3>Votre téléchargement devrait commencer sous peu.  Si ce n\'est pas le cas, cliquer sur <a href="${product.getDownloadUrlPath()}" target="_blank">${product.getExtractFilename()}</a></h3>');
+			document.write('<h3>Votre tÃ©lÃ©chargement devrait commencer sous peu.  Si ce n\'est pas le cas, cliquer sur <a href="${product.getDownloadUrlPath()}" target="_blank">${product.getExtractFilename()}</a></h3>');
 			#if ( ${product.isAutoDownloadTimeOutEnable()})
 				window.setTimeout('document.dlform.submit()', ${product.getAutoDownloadTimeOut()});
 			#end
@@ -187,7 +187,7 @@
 <table  width="50%" cellpadding="1" cellspacing="0" border="0" >
 <tr>
 	<td class="advice_noimg" width="160" height="20" align="left">
-	  &nbsp;&nbsp;&nbsp;Région&nbsp;:
+	  &nbsp;&nbsp;&nbsp;RÃ©gion&nbsp;:
 	</td>
 	<td align="left"><font size="2">
 	<select name="region" >
@@ -196,16 +196,16 @@
 		<option value="${XMinSel},${XMaxSel},${YMinSel},${YMaxSel}"  ${selected} >Last Selected Region</option>		
 		#set($selected = "")
 	#end
-		<option value="${XMin},${XMax},${YMin},${YMax}"  ${selected} >Région</option>
+		<option value="${XMin},${XMax},${YMin},${YMax}"  ${selected} >RÃ©gion</option>
 		<option value="-180,180,-90,90">Global</option>
-		<option value="20,120,-75,30" >Océan Indien</option>
+		<option value="20,120,-75,30" >OcÃ©an Indien</option>
 		<option value="-80,20,0,70" >Atlantique Nord</option>
 		<option value="-80,20,-30,30" >Atlantique Tropical</option>
 		<option value="-70,25,-75,10" >Atlantique Sud</option>
 		<option value="110,-100,0,70" >Pacifique Nord</option>
 		<option value="135,-75,-30,30" >Pacific Tropical</option>
 		<option value="150,-70,-75,0" >Pacifique Sud</option>
-		<option value="-6,36.5,30,46" >Mer Mediterranée</option>
+		<option value="-6,36.5,30,46" >Mer MediterranÃ©e</option>
 		<option value="-180,180,-90,-30" >Antarctique</option>
 	</select>
 	</font>
@@ -297,7 +297,7 @@
 <table width="100%" cellpadding="1" cellspacing="0" border="0">
 	<tr>
 		<td class=advice_noimg width="160" height="20" align="left">
-		  &nbsp;&nbsp;&nbsp;Date&nbsp;début/fin:
+		  &nbsp;&nbsp;&nbsp;Date&nbsp;dÃ©but/fin:
 		</td>
 	    <td align="left"><font size="2">
 	  		<select name="t_lo_0" >
@@ -319,7 +319,7 @@
 			widget30.setValue("${timeLowValue}");
 			widget30.mWidgets[0].setSelected("${timeLowValue}");
 			</script>		
-		       à <br/>
+		       Ã  <br/>
 		    <select name="t_hi_0" >
 			#set ($selected = "")			
 			#foreach( $date in $listdate )	
@@ -375,7 +375,7 @@
 		widget32.setValue("${depthLowValue}");
 		widget32.mWidgets[0].setSelected("${depthLowValue}");
 		</script>
-		       à <br/>
+		       Ã  <br/>
 	    <select name="z_hi_0" >
 		#set ($selected = "")			
 		#foreach( $depth in $listdepthUp )	
@@ -446,7 +446,7 @@
 -->
 
 <h1>$productMetaData.getTitle()</h1>
-<h2>Sélection</h2>
+<h2>SÃ©lection</h2>
 
 <table width="100%" cellpadding="1" cellspacing="5" border="0">
 
@@ -483,7 +483,7 @@
     		<th>Nom</th>
     		<th>Description</th>
     		<th>Nom standard</th>
-    		<th>Unité</th>
+    		<th>UnitÃ©</th>
     		<th>Dimensions</th>
     ####		<th>Quicklook</th>
     	</tr>
@@ -494,7 +494,7 @@
 #end
 
 <p>&nbsp;</p>
-<input onClick="updateMap()" type="submit" value="Télécharger" />
+<input onClick="updateMap()" type="submit" value="TÃ©lÃ©charger" />
 <input onClick="openScriptCmdWin()" type="button" value="Script" />
 </form>
 
