@@ -273,7 +273,7 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
      * Adds coordinate system to the variable of the dataset.
      * 
      * @param ds modify this dataset
-     * @param coordTransName coordinate systèem variable name
+     * @param coordTransName coordinate systÃ¨em variable name
      * @param listAxes Axes (Variables) of the new coordinate system.
      * @throws MotuNotImplementedException
      * @throws MotuException
@@ -335,7 +335,7 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
      * Adds the coordinate transform variable to the dataset.
      * 
      * @param ds modify this dataset
-     * @param coordTransName coordinate systèem variable name
+     * @param coordTransName coordinate systÃ¨em variable name
      * @param listNewAxes Axes (Variables) of the new coordinate system.
      * @param listOriginAxes Axes (Variables) of the original coordinate system.
      * @throws MotuNotImplementedException

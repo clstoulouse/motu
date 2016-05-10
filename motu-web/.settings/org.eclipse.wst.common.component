@@ -1,27 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
     <wb-module deploy-name="motu-web">
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/" source-path="/WebContent"/>
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
-        <dependent-module archiveName="motu-library-misc-2.5.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-library-misc/motu-library-misc">
+        <dependent-module archiveName="motu-api-message-2.6.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-api-message/motu-api-message">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="motu-library-converter-2.5.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-library-converter/motu-library-converter">
+        <dependent-module archiveName="motu-api-rest-2.6.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-api-rest/motu-api-rest">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="motu-library-inventory-2.5.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-library-inventory/motu-library-inventory">
+        <dependent-module archiveName="motu-library-cas-2.6.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-library-cas/motu-library-cas">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="motu-library-cas-2.5.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-library-cas/motu-library-cas">
+        <dependent-module archiveName="motu-library-misc-2.6.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-library-misc/motu-library-misc">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="motu-api-rest-2.5.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-api-rest/motu-api-rest">
+        <dependent-module archiveName="motu-library-converter-2.6.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-library-converter/motu-library-converter">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="motu-api-message-2.5.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-api-message/motu-api-message">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="motu-processor-wps-2.5.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-processor-wps/motu-processor-wps">
+        <dependent-module archiveName="motu-library-inventory-2.6.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-library-inventory/motu-library-inventory">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="context-root" value="motu-web"/>

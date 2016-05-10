@@ -884,7 +884,7 @@ public class VFSManager {
     }
 
     /**
-     * Delete directory ând all descendents of the file.
+     * Delete directory Ã¢nd all descendents of the file.
      * 
      * @param file the file
      * 

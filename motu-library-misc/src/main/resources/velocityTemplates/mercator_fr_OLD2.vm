@@ -69,7 +69,7 @@
 <head>
 	<!--
 	<title>Mercator Océan, prévision océanique opérationnelle - $titleMenuMotu </title>
-	<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 	<link rel="stylesheet" type="text/css" href="$httpSite/charte/styles/mercator2.css">
     <meta name="Description" content="Mercator offre une gamme riche de produits à vocation grand public sous forme d'images sur le Web, mais aussi sous forme de fichiers numériques, à destination d'utilisateurs professionnels concernés directement par la prévision de l'état de l'océan.">
 	<meta name="Keywords" content="produits">

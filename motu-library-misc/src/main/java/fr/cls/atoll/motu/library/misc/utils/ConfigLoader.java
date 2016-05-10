@@ -82,8 +82,8 @@ public class ConfigLoader {
                 e.printStackTrace();
             }
         }
-        // Rajout dans les paths, le contenu de la propriété systeme
-        // config.loader.path si elle a été positionnée
+        // Rajout dans les paths, le contenu de la propriÃ©tÃ© systeme
+        // config.loader.path si elle a Ã©tÃ© positionnÃ©e
         String configLoaderPath = System.getProperty("config.loader.path");
         if (configLoaderPath != null) {
             String[] paths = configLoaderPath.split(";");
@@ -94,7 +94,7 @@ public class ConfigLoader {
     }
 
     /**
-     * Ajoute un répertoire externe.
+     * Ajoute un rÃ©pertoire externe.
      * 
      * @param path
      */
@@ -110,12 +110,12 @@ public class ConfigLoader {
     }
 
     /**
-     * Recherche la resource dans les répertoires externes puis dans le classpath.
+     * Recherche la resource dans les rÃ©pertoires externes puis dans le classpath.
      * 
      * @param resourceName nom de la ressource
-     * @param loader classLoader à utiliser
-     * @return la resource trouvée
-     * @throws IOException en cas d'erreur d'accès à la resource
+     * @param loader classLoader Ã  utiliser
+     * @return la resource trouvÃ©e
+     * @throws IOException en cas d'erreur d'accÃ¨s Ã  la resource
      */
     public URL get(String resourceName, ClassLoader loader) throws IOException {
         for (Iterator it = pathList.iterator(); it.hasNext();) {
@@ -138,24 +138,24 @@ public class ConfigLoader {
     }
 
     /**
-     * Recherche la resource dans les répertoires externes puis dans le classpath.
+     * Recherche la resource dans les rÃ©pertoires externes puis dans le classpath.
      * 
      * @param resourceName nom de la ressource
-     * @return la resource trouvée
-     * @throws IOException en cas d'erreur d'accès à la resource
+     * @return la resource trouvÃ©e
+     * @throws IOException en cas d'erreur d'accÃ¨s Ã  la resource
      */
     public URL get(String resourceName) throws IOException {
         return get(resourceName, getClass().getClassLoader());
     }
 
     /**
-     * Recherche la resource dans les répertoires externes puis dans le classpath et remplace les variables
+     * Recherche la resource dans les rÃ©pertoires externes puis dans le classpath et remplace les variables
      * systemes.
      * 
      * @param resourceName nom de la ressource
-     * @param loader classLoader à utiliser
-     * @return la resource trouvée
-     * @throws IOException en cas d'erreur d'accès à la resource
+     * @param loader classLoader Ã  utiliser
+     * @return la resource trouvÃ©e
+     * @throws IOException en cas d'erreur d'accÃ¨s Ã  la resource
      */
     public InputStream getAsStream(String resourceName, ClassLoader loader) throws IOException {
         InputStream inputStream = getAsStreamWithtoutReplacingSystemVariable(resourceName, loader);
@@ -167,24 +167,24 @@ public class ConfigLoader {
     }
 
     /**
-     * Recherche la resource dans les répertoires externes puis dans le classpath et remplace les variables
+     * Recherche la resource dans les rÃ©pertoires externes puis dans le classpath et remplace les variables
      * systemes.
      * 
      * @param resourceName nom de la ressource
-     * @return la resource trouvée
-     * @throws IOException en cas d'erreur d'accès à la resource
+     * @return la resource trouvÃ©e
+     * @throws IOException en cas d'erreur d'accÃ¨s Ã  la resource
      */
     public InputStream getAsStream(String resourceName) throws IOException {
         return getAsStream(resourceName, getClass().getClassLoader());
     }
 
     /**
-     * Recherche la resource dans les répertoires externes puis dans le classpath.
+     * Recherche la resource dans les rÃ©pertoires externes puis dans le classpath.
      * 
      * @param resourceName nom de la ressource
-     * @param loader classLoader à utiliser
-     * @return la resource trouvée
-     * @throws IOException en cas d'erreur d'accès à la resource
+     * @param loader classLoader Ã  utiliser
+     * @return la resource trouvÃ©e
+     * @throws IOException en cas d'erreur d'accÃ¨s Ã  la resource
      */
     private InputStream getAsStreamWithtoutReplacingSystemVariable(String resourceName, ClassLoader loader) throws IOException {
         for (Iterator it = pathList.iterator(); it.hasNext();) {

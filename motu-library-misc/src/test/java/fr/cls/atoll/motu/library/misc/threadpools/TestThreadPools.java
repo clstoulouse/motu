@@ -493,9 +493,9 @@ public class TestThreadPools {
 
         xstream.alias("myString", String.class);
 
-        // String str = "\n⁄te_max%dfsdf€&dsf%";
+        // String str = "\n√öte_max%dfsdf√õ&dsf%";
 
-        String str = "È‡˘";
+        String str = "√©√†√π";
 
         xml = xstream.toXML(str);
         System.out.println(decl + xml);
@@ -573,7 +573,7 @@ public class TestThreadPools {
         // non trie
         // Set<QueueType> queuesConfig = queueServerManagement.queueManagementKeySet();
 
-        // triÈ
+        // tri√©
         List<QueueType> queuesConfig = requestManagement.getQueueServerManagement().getQueuesConfig();
 
         for (QueueType queue : queuesConfig) {

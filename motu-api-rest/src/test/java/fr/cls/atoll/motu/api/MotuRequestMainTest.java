@@ -63,7 +63,7 @@ public class MotuRequestMainTest {
     /**
      * Main du programme de test
      * 
-     * @param args non utilisé
+     * @param args non utilisÃ©
      * @throws Exception si une erreur se produit
      */
 

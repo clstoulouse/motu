@@ -19,10 +19,6 @@
 		</dependency>	
         <dependency>
             <groupId>cls.atoll.motu</groupId>
-            <artifactId>motu-api-message</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cls.atoll.motu</groupId>
             <artifactId>motu-library-inventory</artifactId>
         </dependency>
         <dependency>
@@ -48,6 +44,13 @@
         <dependency>
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>
+            <exclusions>
+                <exclusion>
+				    <!-- In Java 1.6 it was not included in JRE, but in Java 1.7 it is so we exclude it -->
+                    <groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.globus</groupId>
@@ -56,6 +59,13 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
+            <exclusions>
+                <exclusion>
+				    <!-- In Java 1.6 it was not included in JRE, but in Java 1.7 it is so we exclude it -->
+                    <groupId>javax.xml.stream</groupId>
+					<artifactId>stax-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -117,6 +127,13 @@
         <dependency>
             <groupId>ucar</groupId>
             <artifactId>netcdf</artifactId>
+            <exclusions>
+                <exclusion>
+				    <!-- In Java 1.6 it was not included in JRE, but in Java 1.7 it is so we exclude it -->
+                    <groupId>stax</groupId>
+					<artifactId>stax-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>commons-httpclient</groupId>
@@ -126,6 +143,10 @@
             <groupId>javax.xml</groupId>
             <artifactId>defaultvalueplugin</artifactId>
         </dependency>
-    </dependencies>
+        <dependency>
+        	<groupId>cls.atoll.motu</groupId>
+        	<artifactId>motu-api-message</artifactId>
+        </dependency>
+	</dependencies>
     
 </project>

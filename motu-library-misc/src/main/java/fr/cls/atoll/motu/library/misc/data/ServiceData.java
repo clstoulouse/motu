@@ -976,8 +976,8 @@ public class ServiceData {
         // Synchronisation pour ne pas que plusieurs threads effectue ce
         // chargement
         synchronized (Organizer.getServicesPersistentInstance()) {
-            // On teste si le service n'est pas dÈj‡ chargÈ
-            // car un autre thread a pu le faire juste avant dans cette mÈthode.
+            // On teste si le service n'est pas d√©j√† charg√©
+            // car un autre thread a pu le faire juste avant dans cette m√©thode.
 
             if (!(Organizer.servicesPersistentContainsKey(this.name))) {
                 ServicePersistent servicePersistent = Organizer.getServicesPersistent(this.name);

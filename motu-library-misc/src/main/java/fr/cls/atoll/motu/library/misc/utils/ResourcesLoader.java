@@ -43,23 +43,23 @@ import org.apache.commons.io.IOUtils;
 public class ResourcesLoader {
 
     /**
-     * Retourne l'URL de la ressource demandée en utilisant le class loader de la classe ResourceLoader. Si la
-     * ressource n'est pas trouvée dans le classpath null est retourné.
+     * Retourne l'URL de la ressource demandÃ©e en utilisant le class loader de la classe ResourceLoader. Si la
+     * ressource n'est pas trouvÃ©e dans le classpath null est retournÃ©.
      * 
-     * @param resource chemin COMPLET d'accès à la ressource (ex : fr/cls/ui/browser32.gif)
-     * @return le flux d'entrée ou null si non trouvée
+     * @param resource chemin COMPLET d'accÃ¨s Ã  la ressource (ex : fr/cls/ui/browser32.gif)
+     * @return le flux d'entrÃ©e ou null si non trouvÃ©e
      */
     public static URL get(String resource) {
         return get(ResourcesLoader.class, resource);
     }
 
     /**
-     * Retourne l'URL de la ressource demandée en utilisant le class loader de la classe spécifiée. Si la
-     * ressource n'est pas trouvée dans le classpath null est retourné.
+     * Retourne l'URL de la ressource demandÃ©e en utilisant le class loader de la classe spÃ©cifiÃ©e. Si la
+     * ressource n'est pas trouvÃ©e dans le classpath null est retournÃ©.
      * 
-     * @param source classe à utiliser
-     * @param resource chemin COMPLET d'accès à la ressource (ex : fr/cls/ui/browser32.gif)
-     * @return le flux d'entrée ou null si non trouvée
+     * @param source classe Ã  utiliser
+     * @param resource chemin COMPLET d'accÃ¨s Ã  la ressource (ex : fr/cls/ui/browser32.gif)
+     * @return le flux d'entrÃ©e ou null si non trouvÃ©e
      */
     public static URL get(Class source, String resource) {
         ClassLoader cl = source.getClassLoader();
@@ -71,12 +71,12 @@ public class ResourcesLoader {
     }
 
     /**
-     * Retourne l'URL de la ressource demandée en utilisant le class loader de la classe spécifiée. Si la
-     * ressource n'est pas trouvée dans le classpath null est retourné.
+     * Retourne l'URL de la ressource demandÃ©e en utilisant le class loader de la classe spÃ©cifiÃ©e. Si la
+     * ressource n'est pas trouvÃ©e dans le classpath null est retournÃ©.
      * 
-     * @param loader classLoader à utiliser
-     * @param resource chemin COMPLET d'accès à la ressource (ex : fr/cls/ui/browser32.gif)
-     * @return l'URL ou null si non trouvée
+     * @param loader classLoader Ã  utiliser
+     * @param resource chemin COMPLET d'accÃ¨s Ã  la ressource (ex : fr/cls/ui/browser32.gif)
+     * @return l'URL ou null si non trouvÃ©e
      */
     public static URL get(ClassLoader loader, String resource) {
         if (loader == null) {
@@ -87,23 +87,23 @@ public class ResourcesLoader {
     }
 
     /**
-     * Retourne la stream contenant la ressource demandée en utilisant le class loader de la classe
-     * ResourceLoader. Si la ressource n'est pas trouvée dans le classpath null est retourné.
+     * Retourne la stream contenant la ressource demandÃ©e en utilisant le class loader de la classe
+     * ResourceLoader. Si la ressource n'est pas trouvÃ©e dans le classpath null est retournÃ©.
      * 
-     * @param resource chemin COMPLET d'accès à la ressource (ex : fr/cls/ui/browser32.gif)
-     * @return le flux d'entrée ou null si non trouvée
+     * @param resource chemin COMPLET d'accÃ¨s Ã  la ressource (ex : fr/cls/ui/browser32.gif)
+     * @return le flux d'entrÃ©e ou null si non trouvÃ©e
      */
     public static InputStream getAsStream(String resource) {
         return getAsStream(ResourcesLoader.class, resource);
     }
 
     /**
-     * Retourne la stream contenant la ressource demandée en utilisant le class loader de la classe spécifiée.
-     * Si la ressource n'est pas trouvée dans le classpath null est retourné.
+     * Retourne la stream contenant la ressource demandÃ©e en utilisant le class loader de la classe spÃ©cifiÃ©e.
+     * Si la ressource n'est pas trouvÃ©e dans le classpath null est retournÃ©.
      * 
-     * @param source classe à utiliser
-     * @param resource chemin COMPLET d'accès à la ressource (ex : fr/cls/ui/browser32.gif)
-     * @return le flux d'entrée ou null si non trouvée
+     * @param source classe Ã  utiliser
+     * @param resource chemin COMPLET d'accÃ¨s Ã  la ressource (ex : fr/cls/ui/browser32.gif)
+     * @return le flux d'entrÃ©e ou null si non trouvÃ©e
      */
     public static InputStream getAsStream(Class source, String resource) {
         ClassLoader cl = source.getClassLoader();
@@ -115,10 +115,10 @@ public class ResourcesLoader {
     }
 
     /**
-     * Retourne un fichier properties contenant la ressource demandée. Si la ressource n'est pas trouvée dans
-     * le classpath null est retourné.
+     * Retourne un fichier properties contenant la ressource demandÃ©e. Si la ressource n'est pas trouvÃ©e dans
+     * le classpath null est retournÃ©.
      * 
-     * @param resource chemin COMPLET d'accès à la ressource (ex : fr/cls/ui/File.properties)
+     * @param resource chemin COMPLET d'accÃ¨s Ã  la ressource (ex : fr/cls/ui/File.properties)
      * @return l'objet properties
      */
     public static Properties getAsProperties(String resource) {
@@ -126,11 +126,11 @@ public class ResourcesLoader {
     }
 
     /**
-     * Retourne un fichier properties contenant la ressource demandée. Si la ressource n'est pas trouvée dans
-     * le classpath la valeur par défaut est retournée.
+     * Retourne un fichier properties contenant la ressource demandÃ©e. Si la ressource n'est pas trouvÃ©e dans
+     * le classpath la valeur par dÃ©faut est retournÃ©e.
      * 
-     * @param resource chemin COMPLET d'accès à la ressource (ex : fr/cls/ui/File.properties)
-     * @param defaultValue valeur par défaut
+     * @param resource chemin COMPLET d'accÃ¨s Ã  la ressource (ex : fr/cls/ui/File.properties)
+     * @param defaultValue valeur par dÃ©faut
      * @return l'objet properties
      */
     public static Properties getAsProperties(String resource, Properties defaultValue) {
@@ -138,11 +138,11 @@ public class ResourcesLoader {
     }
 
     /**
-     * Retourne un fichier properties contenant la ressource demandée en utilisant le class loader de la
-     * classe spécifiée. Si la ressource n'est pas trouvée dans le classpath null est retourné.
+     * Retourne un fichier properties contenant la ressource demandÃ©e en utilisant le class loader de la
+     * classe spÃ©cifiÃ©e. Si la ressource n'est pas trouvÃ©e dans le classpath null est retournÃ©.
      * 
-     * @param source classe à utiliser
-     * @param resource chemin COMPLET d'accès à la ressource (ex : fr/cls/ui/File.properties)
+     * @param source classe Ã  utiliser
+     * @param resource chemin COMPLET d'accÃ¨s Ã  la ressource (ex : fr/cls/ui/File.properties)
      * @return l'objet properties
      */
     public static Properties getAsProperties(Class source, String resource) {
@@ -150,13 +150,13 @@ public class ResourcesLoader {
     }
 
     /**
-     * Retourne un fichier properties contenant la ressource demandée en utilisant le class loader de la
-     * classe spécifiée. Si la ressource n'est pas trouvée dans le classpath la valeur par défaut est
-     * retournée.
+     * Retourne un fichier properties contenant la ressource demandÃ©e en utilisant le class loader de la
+     * classe spÃ©cifiÃ©e. Si la ressource n'est pas trouvÃ©e dans le classpath la valeur par dÃ©faut est
+     * retournÃ©e.
      * 
-     * @param source classe à utiliser
-     * @param resource chemin COMPLET d'accès à la ressource (ex : fr/cls/ui/File.properties)
-     * @param defaultValue valeur par défaut
+     * @param source classe Ã  utiliser
+     * @param resource chemin COMPLET d'accÃ¨s Ã  la ressource (ex : fr/cls/ui/File.properties)
+     * @param defaultValue valeur par dÃ©faut
      * @return l'objet properties
      */
     public static Properties getAsProperties(Class source, String resource, Properties defaultValue) {
@@ -179,12 +179,12 @@ public class ResourcesLoader {
     }
 
     /**
-     * Retourne la stream contenant la ressource demandée en utilisant le class loader spécifié. Si la
-     * ressource n'est pas trouvée dans le classpath null est retourné.
+     * Retourne la stream contenant la ressource demandÃ©e en utilisant le class loader spÃ©cifiÃ©. Si la
+     * ressource n'est pas trouvÃ©e dans le classpath null est retournÃ©.
      * 
-     * @param loader classLoader à utiliser
-     * @param resource chemin COMPLET d'accès à la ressource (ex : fr/cls/ui/browser32.gif)
-     * @return le flux d'entrée ou null si non trouvée
+     * @param loader classLoader Ã  utiliser
+     * @param resource chemin COMPLET d'accÃ¨s Ã  la ressource (ex : fr/cls/ui/browser32.gif)
+     * @return le flux d'entrÃ©e ou null si non trouvÃ©e
      */
     public static InputStream getAsStream(ClassLoader loader, String resource) {
         if (loader == null) {
@@ -195,10 +195,10 @@ public class ResourcesLoader {
     }
 
     /**
-     * Retourne la ressource demandée sous la frome d'un icon en utilisant le class loader de la classe
-     * ResourceLoader. Si l'icon n'est pas trouvé dans le classpath une exception est levée.
+     * Retourne la ressource demandÃ©e sous la frome d'un icon en utilisant le class loader de la classe
+     * ResourceLoader. Si l'icon n'est pas trouvÃ© dans le classpath une exception est levÃ©e.
      * 
-     * @param resource chemin COMPLET d'accès à la ressource (ex : fr/cls/ui/browser32.gif)
+     * @param resource chemin COMPLET d'accÃ¨s Ã  la ressource (ex : fr/cls/ui/browser32.gif)
      * @return l'icon
      */
     public static ImageIcon getAsImageIcon(String resource) {
@@ -206,11 +206,11 @@ public class ResourcesLoader {
     }
 
     /**
-     * Retourne la ressource demandée sous la frome d'un icon en utilisant le class loader de la classe
-     * spécifiée. Si l'icon n'est pas trouvé dans le classpath une exception est levée.
+     * Retourne la ressource demandÃ©e sous la frome d'un icon en utilisant le class loader de la classe
+     * spÃ©cifiÃ©e. Si l'icon n'est pas trouvÃ© dans le classpath une exception est levÃ©e.
      * 
-     * @param source classe à utiliser
-     * @param resource chemin COMPLET d'accès à la ressource (ex : fr/cls/ui/browser32.gif)
+     * @param source classe Ã  utiliser
+     * @param resource chemin COMPLET d'accÃ¨s Ã  la ressource (ex : fr/cls/ui/browser32.gif)
      * @return l'icon
      */
     public static ImageIcon getAsImageIcon(Class source, String resource) {
@@ -222,11 +222,11 @@ public class ResourcesLoader {
     }
 
     /**
-     * Retourne la ressource demandée sous la frome d'un icon en utilisant le class loader de la classe
-     * spécifiée. Si l'icon n'est pas trouvé dans le classpath une exception est levée.
+     * Retourne la ressource demandÃ©e sous la frome d'un icon en utilisant le class loader de la classe
+     * spÃ©cifiÃ©e. Si l'icon n'est pas trouvÃ© dans le classpath une exception est levÃ©e.
      * 
-     * @param loader classLoader à utiliser
-     * @param resource chemin COMPLET d'accès à la ressource (ex : fr/cls/ui/browser32.gif)
+     * @param loader classLoader Ã  utiliser
+     * @param resource chemin COMPLET d'accÃ¨s Ã  la ressource (ex : fr/cls/ui/browser32.gif)
      * @return l'icon
      */
     public static ImageIcon getAsImageIcon(ClassLoader loader, String resource) {
@@ -234,23 +234,23 @@ public class ResourcesLoader {
     }
 
     /**
-     * Retourne la ressource demandée sous la frome d'un icon en utilisant le class loader de la classe
-     * ResourceLoader. Si l'icon n'est pas trouvé dans le classpath null est retourné.
+     * Retourne la ressource demandÃ©e sous la frome d'un icon en utilisant le class loader de la classe
+     * ResourceLoader. Si l'icon n'est pas trouvÃ© dans le classpath null est retournÃ©.
      * 
-     * @param resource chemin COMPLET d'accès à la ressource (ex : fr/cls/ui/browser32.gif)
-     * @return l'icon ou null si non trouvé
+     * @param resource chemin COMPLET d'accÃ¨s Ã  la ressource (ex : fr/cls/ui/browser32.gif)
+     * @return l'icon ou null si non trouvÃ©
      */
     public static ImageIcon getAsImageIconOrNull(String resource) {
         return getAsImageIconOrNull(ResourcesLoader.class, resource);
     }
 
     /**
-     * Retourne la ressource demandée sous la frome d'un icon en utilisant le class loader de la classe
-     * spécifiée. Si l'icon n'est pas trouvé dans le classpath null est retourné.
+     * Retourne la ressource demandÃ©e sous la frome d'un icon en utilisant le class loader de la classe
+     * spÃ©cifiÃ©e. Si l'icon n'est pas trouvÃ© dans le classpath null est retournÃ©.
      * 
-     * @param source classe à utiliser
-     * @param resource chemin COMPLET d'accès à la ressource (ex : fr/cls/ui/browser32.gif)
-     * @return l'icon ou null si non trouvé
+     * @param source classe Ã  utiliser
+     * @param resource chemin COMPLET d'accÃ¨s Ã  la ressource (ex : fr/cls/ui/browser32.gif)
+     * @return l'icon ou null si non trouvÃ©
      */
     public static ImageIcon getAsImageIconOrNull(Class source, String resource) {
         URL url = get(source, resource);
@@ -258,12 +258,12 @@ public class ResourcesLoader {
     }
 
     /**
-     * Retourne la ressource demandée sous la frome d'un icon en utilisant le class loader de la classe
-     * spécifiée. Si l'icon n'est pas trouvé dans le classpath null est retourné.
+     * Retourne la ressource demandÃ©e sous la frome d'un icon en utilisant le class loader de la classe
+     * spÃ©cifiÃ©e. Si l'icon n'est pas trouvÃ© dans le classpath null est retournÃ©.
      * 
-     * @param loader classLoader à utiliser
-     * @param resource chemin COMPLET d'accès à la ressource (ex : fr/cls/ui/browser32.gif)
-     * @return l'icon ou null si non trouvé
+     * @param loader classLoader Ã  utiliser
+     * @param resource chemin COMPLET d'accÃ¨s Ã  la ressource (ex : fr/cls/ui/browser32.gif)
+     * @return l'icon ou null si non trouvÃ©
      */
     public static ImageIcon getAsImageIconOrNull(ClassLoader loader, String resource) {
         URL url = get(loader, resource);

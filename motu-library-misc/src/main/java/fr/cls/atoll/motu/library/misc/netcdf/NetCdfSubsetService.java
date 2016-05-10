@@ -33,7 +33,7 @@ import ucar.ma2.Range;
  * <br>
  * Copyright : Copyright (c) 2016 <br>
  * <br>
- * Société : CLS (Collecte Localisation Satellites)
+ * SociÃ©tÃ© : CLS (Collecte Localisation Satellites)
  * 
  * @author Joan SALA
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $

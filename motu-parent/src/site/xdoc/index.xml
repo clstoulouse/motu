@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
@@ -81,7 +81,7 @@ under the License.
 					<td>Extensible Markup Language (XML) 1.0 (Fifth Edition)</td>
 				</tr>
 			</table>
-			<p>In the near future, Motu will provide the OpenGIS® Web Coverage Service (WCS) protocol, enhanced traceability and monitoring features, 
+			<p>In the near future, Motu will provide the OpenGISÂ® Web Coverage Service (WCS) protocol, enhanced traceability and monitoring features, 
 			and the implementation of several new WPS units like Data Normalization and Data Transformation.</p>
 		</subsection>
 		
@@ -91,7 +91,7 @@ under the License.
 				<li>Netcdf library</li>
 				<li>Opendap library</li>
 				<li>Deegree as the OGC stack for WPS</li>
-				<li>Jena and Protégé API for handling ontologies</li>
+				<li>Jena and ProtÃ©gÃ© API for handling ontologies</li>
 				<li>Quartz for job scheduling</li>
 				<li>Freemarker as the main template engine</li>
 			</ul>			

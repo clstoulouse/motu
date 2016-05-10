@@ -283,11 +283,11 @@ public class RequestManagement implements JobListener, RequestManagementMBean {
      */
     public long generateRequestId() {
 
-        // Calcul d'un numéro de requête à partir du temps
+        // Calcul d'un numÃ©ro de requÃªte Ã  partir du temps
         synchronized (this) {
             long num = Calendar.getInstance().getTimeInMillis();
             if (num == lastRequestId) {
-                // Si c'est le même temps que le précédent on incrément pour en avoir un différent
+                // Si c'est le mÃªme temps que le prÃ©cÃ©dent on incrÃ©ment pour en avoir un diffÃ©rent
                 lastRequestId++;
             } else {
                 lastRequestId = num;

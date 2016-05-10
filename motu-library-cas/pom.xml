@@ -12,10 +12,6 @@
     <description>This package holds the components of CAS utilities and tools.</description>
 
 	<dependencies>
-        <dependency>
-            <groupId>cls.atoll.motu</groupId>
-            <artifactId>motu-api-message</artifactId>
-        </dependency>	
 
         <dependency>
             <groupId>commons-httpclient</groupId>
@@ -36,6 +32,10 @@
 		<dependency>
 		   <groupId>org.jasig.cas.client</groupId>
 		   <artifactId>cas-client-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cls.atoll.motu</groupId>
+			<artifactId>motu-api-message</artifactId>
 		</dependency>
 	</dependencies>
     

@@ -20,7 +20,7 @@ import fr.cls.atoll.motu.api.message.mxbean.StatusModeResponseMXBean;
 
 /**
  * 
- * 					Réponse à une requete d'extraction en mode
+ * 					RÃ©ponse Ã  une requete d'extraction en mode
  * 					'status'
  * 				
  * 

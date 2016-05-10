@@ -101,7 +101,7 @@ public class TestIntfce {
      * @param args
      */
     public static void main(String[] args) {
-        // String s = "Native Exception Ô Type: class java.lang.NumberFormatException\n\tNative Exception
+        // String s = "Native Exception Ã” Type: class java.lang.NumberFormatException\n\tNative Exception
         // Message: For input string: &quot;--40&quot;\n\nLongitude:--40";
         // System.out.println(s);
         //

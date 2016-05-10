@@ -24,6 +24,46 @@
  */
 package fr.cls.atoll.motu.web.servlet;
 
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_DELETE;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_DESCRIBE_COVERAGE;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_GET_REQUEST_STATUS;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_GET_SIZE;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_GET_TIME_COVERAGE;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LIST_CATALOG;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LIST_PRODUCT_METADATA;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LIST_SERVICES;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LOGOUT;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_PING;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_PRODUCT_DOWNLOAD;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_PRODUCT_DOWNLOADHOME;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_REFRESH;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_ACTION;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_ANONYMOUS;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_BATCH;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_DATA;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_END_DATE;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_EXTRA_METADATA;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_HIGH_LAT;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_HIGH_LON;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_HIGH_Z;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LANGUAGE;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_LAT;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_LON;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_Z;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MAX_POOL_ANONYMOUS;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MAX_POOL_AUTHENTICATE;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MODE;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MODE_CONSOLE;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MODE_STATUS;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MODE_URL;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_PRIORITY;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_PRODUCT;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_PWD;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_REQUEST_ID;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_SERVICE;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_START_DATE;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_VARIABLE;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -79,7 +119,6 @@ import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
 import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
 import fr.cls.atoll.motu.library.misc.utils.ManifestManagedBean;
 import fr.cls.atoll.motu.library.misc.utils.PropertiesUtilities;
-
 // TODO: Auto-generated Javadoc
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -91,10 +130,10 @@ import fr.cls.atoll.motu.library.misc.utils.PropertiesUtilities;
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-public class MotuServlet extends HttpServlet implements MotuRequestParametersConstant, MotuMonitoringParametersConstant {
+public class MotuServlet extends HttpServlet {
 
     /*
-     * Thread d'extraction différé de produit
+     * Thread d'extraction diffÃ©rÃ© de produit
      */
     /**
      * The Class ProductDeferedExtractNetcdfThread.
@@ -563,12 +602,12 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     }
 
     /**
-     * Ecriture du status d'extraction différé de produit dans un fichier XML.
+     * Ecriture du status d'extraction diffÃ©rÃ© de produit dans un fichier XML.
      *
      * @param statusModeResponse the status mode response
      * @param writer the writer
-     * @param status status à ecrire
-     * @param msg message à ecrire
+     * @param status status Ã  ecrire
+     * @param msg message Ã  ecrire
      * @param errorType the error type
      */
     static private void printProductDeferedExtractNetcdfStatus(StatusModeResponse statusModeResponse,
@@ -736,7 +775,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
         // Initialisation du proxy pour connection opendap
         initProxyLogin();
 
-        // Initialisation de la liste des utilisateurs autorisés
+        // Initialisation de la liste des utilisateurs autorisÃ©s
         initAuthentication();
 
         String paramValue = getServletConfig().getInitParameter(PARAM_USE_QUEUE_SERVER);
@@ -2920,7 +2959,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     }
 
     // /**
-    // * Extraction differé de produit .
+    // * Extraction differÃ© de produit .
     // *
     // * @param listVar the list var
     // * @param selectData the select data
@@ -2942,11 +2981,11 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     // List<String> listDepthCoverage,
     // SelectData selectData) throws MotuException {
     //
-    // // Calcul d'un numéro de produit deférré à partir du temps
+    // // Calcul d'un numÃ©ro de produit defÃ©rrÃ© Ã  partir du temps
     // synchronized (this) {
     // long num = System.currentTimeMillis();
     // if (num == pdsNum) {
-    // // Si c'est le même temps que le précédent on incrément pour en avoir un différent
+    // // Si c'est le mÃªme temps que le prÃ©cÃ©dent on incrÃ©ment pour en avoir un diffÃ©rent
     // pdsNum++;
     // } else {
     // pdsNum = num;
@@ -2982,7 +3021,7 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     // }
 
     // /**
-    // * Extraction differé de produit .
+    // * Extraction differÃ© de produit .
     // *
     // * @param listVar the list var
     // * @param selectData the select data
@@ -3006,11 +3045,11 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     // SelectData selectData,
     // String productId) throws MotuException {
     //
-    // // Calcul d'un numéro de produit deférré à partir du temps
+    // // Calcul d'un numÃ©ro de produit defÃ©rrÃ© Ã  partir du temps
     // synchronized (this) {
     // long num = System.currentTimeMillis();
     // if (num == pdsNum) {
-    // // Si c'est le même temps que le précédent on incrément pour en avoir un différent
+    // // Si c'est le mÃªme temps que le prÃ©cÃ©dent on incrÃ©ment pour en avoir un diffÃ©rent
     // pdsNum++;
     // } else {
     // pdsNum = num;
@@ -3088,10 +3127,10 @@ public class MotuServlet extends HttpServlet implements MotuRequestParametersCon
     }
 
     // /**
-    // * Ecriture du status d'extraction différé de produit dasn un fichier texte.
+    // * Ecriture du status d'extraction diffÃ©rÃ© de produit dasn un fichier texte.
     // *
-    // * @param status status à ecrire
-    // * @param productDeferedExtractNetcdfStatusFile fichier texte à écrire
+    // * @param status status Ã  ecrire
+    // * @param productDeferedExtractNetcdfStatusFile fichier texte Ã  Ã©crire
     // *
     // * @throws IOException the IO exception
     // *
