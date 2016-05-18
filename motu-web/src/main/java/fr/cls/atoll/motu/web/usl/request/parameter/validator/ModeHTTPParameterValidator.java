@@ -26,7 +26,7 @@ public class ModeHTTPParameterValidator extends AbstractHTTPParameterValidator<S
      * 
      */
     @Override
-    public String validate() throws InvalidHTTPParameterException {
+    public String onValidateAction() throws InvalidHTTPParameterException {
         String mode = getParameterValue();
         if (mode != null && (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_URL)
                 || mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_CONSOLE)

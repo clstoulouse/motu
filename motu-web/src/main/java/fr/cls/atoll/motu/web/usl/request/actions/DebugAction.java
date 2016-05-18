@@ -16,6 +16,7 @@ import fr.cls.atoll.motu.library.misc.queueserver.QueueManagement;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.request.queueserver.RunnableExtraction;
+import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 
 /**
  * <br>
@@ -398,6 +399,12 @@ public class DebugAction extends AbstractAction {
             return;
         }
 
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void checkHTTPParameters() throws InvalidHTTPParameterException {
+        // No parameter to check
     }
 
 }

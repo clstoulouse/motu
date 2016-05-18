@@ -45,6 +45,7 @@ import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.ProductDeferedExtractNetcdfThread;
 import fr.cls.atoll.motu.web.servlet.MotuServlet;
 import fr.cls.atoll.motu.web.servlet.RunnableHttpExtraction;
+import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ModeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.session.SessionManager;
 
@@ -104,12 +105,16 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
     public static final String ACTION_NAME = "productdownload";
 
+    private ModeHTTPParameterValidator modeHTTPParameterValidator;
+
     /**
      * 
      * @param actionName_
      */
     public DownloadProductAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         super(ACTION_NAME, request, response, session);
+
+        modeHTTPParameterValidator = new ModeHTTPParameterValidator(MotuRequestParametersConstant.PARAM_MODE, getModeFromRequest());
     }
 
     @Override
@@ -155,7 +160,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         short maxPoolAuthenticate = getMaxPoolAuthenticate();
 
         int priority = getRequestPriorityFromRequest();
-        String mode = new ModeHTTPParameterValidator(getModeFromRequest()).validate();
+        String mode = modeHTTPParameterValidator.getParameterValueValidated();
         if (mode == null) {
 
         }
@@ -590,6 +595,12 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
         return stringBuffer.toString();
 
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void checkHTTPParameters() throws InvalidHTTPParameterException {
+        modeHTTPParameterValidator.validate();
     }
 
 }

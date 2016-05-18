@@ -19,7 +19,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
  */
 public abstract class AbstractHTTPParameterValidator<T> {
 
-    private T result;
+    private T parameterValueValidated;
     private String parameterName;
     private String parameterValue;
 
@@ -41,15 +41,21 @@ public abstract class AbstractHTTPParameterValidator<T> {
      * @throws InvalidHTTPParameterException Exception thrown when an HTTP parameter is not in the boundaries
      *             of its definition
      */
-    public abstract T validate() throws InvalidHTTPParameterException;
+    public T validate() throws InvalidHTTPParameterException {
+        T parameterValueValidated = onValidateAction();
+        setParameterValueValidated(parameterValueValidated);
+        return parameterValueValidated;
+    }
+
+    protected abstract T onValidateAction() throws InvalidHTTPParameterException;
 
     /**
      * Valeur de result.
      * 
      * @return la valeur.
      */
-    public T getResult() {
-        return result;
+    public T getParameterValueValidated() {
+        return parameterValueValidated;
     }
 
     /**
@@ -57,8 +63,8 @@ public abstract class AbstractHTTPParameterValidator<T> {
      * 
      * @param result nouvelle valeur.
      */
-    public void setResult(T result) {
-        this.result = result;
+    public void setParameterValueValidated(T parameterValueValidated_) {
+        this.parameterValueValidated = parameterValueValidated_;
     }
 
     /**

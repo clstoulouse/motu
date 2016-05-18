@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
 
+import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.utils.JAXBWriter;
@@ -16,6 +17,7 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.RequestIdHTTPParameterValidator;
 
 /**
  * <br>
@@ -43,6 +45,8 @@ public class GetRequestStatusAction extends AbstractAction {
 
     public static final String ACTION_NAME = "getreqstatus";
 
+    private RequestIdHTTPParameterValidator rqtIdValidator;
+
     /**
      * Constructeur.
      * 
@@ -50,14 +54,18 @@ public class GetRequestStatusAction extends AbstractAction {
      */
     public GetRequestStatusAction(HttpServletRequest request, HttpServletResponse response) {
         super(ACTION_NAME, request, response);
+
+        rqtIdValidator = new RequestIdHTTPParameterValidator(
+                MotuRequestParametersConstant.PARAM_REQUEST_ID,
+                CommonHTTPParameters.getRequestIdFromRequest(getRequest()));
     }
 
     @Override
     public void process() throws IOException {
-        long requestId = CommonHTTPParameters.getRequestIdFromRequest(getRequest());
+        Long requestId = rqtIdValidator.getParameterValueValidated();
 
         try {
-            if (requestId != 0L) {
+            if (requestId != null) {
                 marshallStatusModeResponse(BLLManager.getInstance().getRequestManager().getResquestStatus(requestId), getResponse().getWriter());
             } else {
                 marshallStatusModeResponse(createStatusModeResponse(new MotuInvalidRequestIdException(requestId)), getResponse().getWriter());
@@ -72,6 +80,7 @@ public class GetRequestStatusAction extends AbstractAction {
     @Override
     protected void checkHTTPParameters() throws InvalidHTTPParameterException {
         // No parameter to check
+        rqtIdValidator.validate();
     }
 
     /**

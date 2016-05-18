@@ -54,14 +54,8 @@ public class CommonHTTPParameters {
      * @param request
      * @return 0 if the request id has not the good format, otherwise the request Id
      */
-    public static long getRequestIdFromRequest(HttpServletRequest request) {
-        long rqtId = -0L;
-        try {
-            rqtId = Long.parseLong(request.getParameter(PARAM_REQUEST_ID));
-        } catch (NumberFormatException e) {
-
-        }
-        return rqtId;
+    public static String getRequestIdFromRequest(HttpServletRequest request) {
+        return request.getParameter(PARAM_REQUEST_ID);
     }
 
 }

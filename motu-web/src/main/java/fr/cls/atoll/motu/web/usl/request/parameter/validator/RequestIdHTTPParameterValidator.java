@@ -23,7 +23,7 @@ public class RequestIdHTTPParameterValidator extends AbstractHTTPParameterValida
      * 
      */
     @Override
-    public Long validate() throws InvalidHTTPParameterException {
+    public Long onValidateAction() throws InvalidHTTPParameterException {
         String requestIdStr = getParameterValue();
         try {
             Long rqtId = Long.parseLong(requestIdStr);
