@@ -35,7 +35,9 @@ ${project.name} - v. ${project.version}
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
-	<!-- org.tuckey UrlRewriteFilter FILTERS : see http://urlrewritefilter.googlecode.com/svn/trunk/src/doc/manual/3.1/index.html-->
+	<!-- org.tuckey UrlRewriteFilter FILTERS : see http://urlrewritefilter.googlecode.com/svn/trunk/src/doc/manual/3.1/index.html
+	     Used for supervision
+	-->
     <filter>
         <filter-name>UrlRewriteFilter</filter-name>
         <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>

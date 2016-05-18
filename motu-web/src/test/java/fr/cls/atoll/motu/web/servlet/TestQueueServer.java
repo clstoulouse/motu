@@ -28,14 +28,14 @@ import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.rest.MotuRequest;
 import fr.cls.atoll.motu.api.rest.MotuRequestException;
 import fr.cls.atoll.motu.api.rest.MotuRequestParameters;
-import fr.cls.atoll.motu.library.misc.data.CatalogData;
-import fr.cls.atoll.motu.library.misc.data.Product;
 import fr.cls.atoll.motu.library.misc.data.ServiceData;
-import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.metadata.ParameterMetaData;
-import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.web.bll.request.ExtractionParameters;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -422,7 +422,7 @@ public class TestQueueServer {
                     // dateToExtract,
                     // null,
                     // zToExtract,
-                    // Organizer.Format.NETCDF,
+                    // OutputFormat.NETCDF,
                     // null,
                     // null,
                     // userId,
@@ -435,7 +435,7 @@ public class TestQueueServer {
                             null,
                             zToExtract,
                             productId,
-                            Organizer.Format.NETCDF,
+                            OutputFormat.NETCDF,
                             null,
                             null,
                             userId,

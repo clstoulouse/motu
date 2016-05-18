@@ -2,6 +2,10 @@ package fr.cls.atoll.motu.web.bll;
 
 import fr.cls.atoll.motu.web.bll.config.BLLConfigManager;
 import fr.cls.atoll.motu.web.bll.config.IBLLConfigManager;
+import fr.cls.atoll.motu.web.bll.request.BLLRequestManager;
+import fr.cls.atoll.motu.web.bll.request.IBLLRequestManager;
+import fr.cls.atoll.motu.web.bll.users.BLLUserManager;
+import fr.cls.atoll.motu.web.bll.users.IBLLUserManager;
 
 /**
  * <br>
@@ -18,6 +22,8 @@ public class BLLManager implements IBLLManager {
     private static IBLLManager s_instance;
 
     private IBLLConfigManager configManager;
+    private IBLLRequestManager requestManager;
+    private IBLLUserManager userManager;
 
     public static IBLLManager getInstance() {
         if (s_instance == null) {
@@ -28,6 +34,8 @@ public class BLLManager implements IBLLManager {
 
     public BLLManager() {
         configManager = new BLLConfigManager();
+        requestManager = new BLLRequestManager();
+        userManager = new BLLUserManager();
     }
 
     @Override
@@ -38,6 +46,22 @@ public class BLLManager implements IBLLManager {
     @Override
     public IBLLConfigManager getConfigManager() {
         return configManager;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public IBLLRequestManager getRequestManager() {
+        return requestManager;
+    }
+
+    /**
+     * Valeur de userManager.
+     * 
+     * @return la valeur.
+     */
+    @Override
+    public IBLLUserManager getUserManager() {
+        return userManager;
     }
 
 }

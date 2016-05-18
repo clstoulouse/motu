@@ -1,6 +1,8 @@
 package fr.cls.atoll.motu.web.bll.config;
 
+import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
 import fr.cls.atoll.motu.web.dal.DALManager;
+import fr.cls.atoll.motu.web.dal.config.IDALConfigManager;
 
 /**
  * <br>
@@ -14,10 +16,49 @@ import fr.cls.atoll.motu.web.dal.DALManager;
  */
 public class BLLConfigManager implements IBLLConfigManager {
 
+    private IDALConfigManager dalConfigManager;
+    private IBLLQueueServerConfigManager bllQueueServerConfigManager;
+
+    public BLLConfigManager() {
+        dalConfigManager = DALManager.getInstance().getConfigManager();
+        bllQueueServerConfigManager = new BLLQueueServerConfigManager();
+    }
+
     /** {@inheritDoc} */
     @Override
     public String getCasServerUrl() {
-        return DALManager.getInstance().getConfigManager().getCasServerUrl();
+        return dalConfigManager.getCasServerUrl();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isCasActivated() {
+        return dalConfigManager.isCasActivated();
+    }
+
+    /**
+     * Valeur de bllQueueServerConfig.
+     * 
+     * @return la valeur.
+     */
+    @Override
+    public IBLLQueueServerConfigManager getQueueServerConfigManager() {
+        return bllQueueServerConfigManager;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isStatusAsFile() {
+        // TODO SMA To implement, this value was read in the WEB.xml file (=> PARAM_STATUS_AS_FILE =
+        // "statusAsFile";), now we have to move it to another
+        // config file
+        return false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MotuConfig getMotuConfig() {
+        return dalConfigManager.getMotuConfig();
     }
 
 }

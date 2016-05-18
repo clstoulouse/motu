@@ -29,9 +29,6 @@ import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.net.CookieStore;
 
-import cls.java.net.PublicInMemoryCookieStore;
-import fr.cls.atoll.motu.library.cas.UserBase;
-
 //import sun.net.www.protocol.http.InMemoryCookieStore;
 
 /**
@@ -40,44 +37,59 @@ import fr.cls.atoll.motu.library.cas.UserBase;
  */
 
 public class CookieStoreHolder {
-	   /**
+    /**
      * ThreadLocal to hold the CookieStore for Threads to access.
      */
     private static final ThreadLocal<CookieStore> threadLocal = new ThreadLocal<CookieStore>();
-    
+
     public static void initCookieManager() {
-    	
-    	CookieHandler cookieHandler = CookieHandler.getDefault();
-    	
-    	if (cookieHandler == null) {
-    		CookieStore cookieStore = CookieStoreHolder.initInMemoryCookieStore();
-            CookieManager cm = new CookieManager(cookieStore, CookiePolicy.ACCEPT_ALL);
-            CookieHandler.setDefault(cm);    		
-    	} else {
-    		CookieStoreHolder.initInMemoryCookieStore();    		
-    	}
-    	
+
+        CookieHandler cookieHandler = CookieHandler.getDefault();
+
+        if (cookieHandler == null) {
+            // CookieStore cookieStore = CookieStoreHolder.initInMemoryCookieStore();
+            // CookieManager cm = new CookieManager(cookieStore, CookiePolicy.ACCEPT_ALL);
+            CookieManager cm = new CookieManager();
+            cm.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+            CookieHandler.setDefault(cm);
+        }
+        // else {
+        // CookieStoreHolder.initInMemoryCookieStore();
+        // }
+
     }
 
     public static CookieStore getCookieStore() {
         return threadLocal.get();
     }
 
-    
-    public static void setCookieStore(CookieStore cookieStore) {    	
-    	threadLocal.set(cookieStore);
+    public static void setCookieStore(CookieStore cookieStore) {
+        threadLocal.set(cookieStore);
     }
 
+    // public static CookieStore initInMemoryCookieStore() {
+    // CookieStore cookieStore = CookieStoreHolder.getCookieStore();
+    // if (cookieStore == null) {
+    // cookieStore = new PublicInMemoryCookieStore();
+    // CookieStoreHolder.setCookieStore(cookieStore);
+    // } else {
+    // cookieStore.removeAll();
+    // }
+    //
+    // return cookieStore;
+    // }
+
     public static CookieStore initInMemoryCookieStore() {
-    	CookieStore cookieStore = CookieStoreHolder.getCookieStore();
-    	if (cookieStore == null) { 
-    		cookieStore = new PublicInMemoryCookieStore(); 
-    		CookieStoreHolder.setCookieStore(cookieStore);
-    	} else {
-    		cookieStore.removeAll();
-    	}
-    	
-    	return cookieStore;
+        CookieStore cookieStore = CookieStoreHolder.getCookieStore();
+        if (cookieStore == null) {
+            CookieManager cm = new CookieManager();
+            cm.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+            CookieStoreHolder.setCookieStore(cm.getCookieStore());
+        } else {
+            cookieStore.removeAll();
+        }
+
+        return cookieStore;
     }
 
 }

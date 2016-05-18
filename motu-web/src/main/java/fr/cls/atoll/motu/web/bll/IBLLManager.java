@@ -1,6 +1,8 @@
 package fr.cls.atoll.motu.web.bll;
 
 import fr.cls.atoll.motu.web.bll.config.IBLLConfigManager;
+import fr.cls.atoll.motu.web.bll.request.IBLLRequestManager;
+import fr.cls.atoll.motu.web.bll.users.IBLLUserManager;
 
 /**
  * <br>
@@ -25,5 +27,19 @@ public interface IBLLManager {
      * @return
      */
     IBLLConfigManager getConfigManager();
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    IBLLRequestManager getRequestManager();
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    IBLLUserManager getUserManager();
 
 }

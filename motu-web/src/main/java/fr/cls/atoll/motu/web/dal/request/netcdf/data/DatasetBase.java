@@ -22,7 +22,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.library.misc.data;
+package fr.cls.atoll.motu.web.dal.request.netcdf.data;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,18 +35,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import ucar.ma2.MAMath;
-import ucar.ma2.MAMath.MinMax;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.Variable;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import fr.cls.atoll.motu.library.misc.data.ExtractCriteria;
+import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDatetime;
+import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDepth;
+import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaGeo;
+import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaLatLon;
+import fr.cls.atoll.motu.library.misc.data.SelectData;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
@@ -58,10 +55,20 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
+import ucar.ma2.MAMath;
+import ucar.ma2.MAMath.MinMax;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.unidata.geoloc.LatLonPointImpl;
 
 // TODO: Auto-generated Javadoc
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
@@ -77,7 +84,7 @@ import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 public abstract class DatasetBase {
 
     /** Logger for this class. */
-    private static final Logger LOG = Logger.getLogger(DatasetBase.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /** Contains variable attributes names to remove in output. */
     static final String[] VAR_ATTR_TO_REMOVE = new String[] { "Date_CNES_JD", "date", "_unsigned", };
@@ -149,28 +156,26 @@ public abstract class DatasetBase {
     /** Has output Z dimension. */
     protected boolean hasOutputZDimension = false;
 
-    
-    
-//    protected List<CoordinateAxis> listVariableLatSubset = new ArrayList<CoordinateAxis>();
-//    protected List<CoordinateAxis> listVariableLonSubset = new ArrayList<CoordinateAxis>();
+    // protected List<CoordinateAxis> listVariableLatSubset = new ArrayList<CoordinateAxis>();
+    // protected List<CoordinateAxis> listVariableLonSubset = new ArrayList<CoordinateAxis>();
     /** The list variable x subset. */
-protected List<CoordinateAxis> listVariableXSubset = null;
-    
+    protected List<CoordinateAxis> listVariableXSubset = null;
+
     /** The list variable y subset. */
     protected List<CoordinateAxis> listVariableYSubset = null;
-    
+
     /** The map x range. */
     protected Map<String, Range> mapXRange = null;
-    
+
     /** The map y range. */
     protected Map<String, Range> mapYRange = null;
 
     /** The map var org ranges. */
     protected Map<String, List<Section>> mapVarOrgRanges = null;
-    
+
     /** The list distinct x range. */
     protected List<Range> listDistinctXRange = null;
-    
+
     /** The list distinct y range. */
     protected List<Range> listDistinctYRange = null;
 
@@ -260,7 +265,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
     public double getAmountDataSizeAsGBytes() {
         return getAmountDataSize() / 1024d;
     }
-    
+
     /** The reading time in nanoSeconds (ns). */
     protected long readingTime = 0L;
 
@@ -272,7 +277,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
     public long getReadingTime() {
         return this.readingTime;
     }
-    
+
     /**
      * Sets the reading time.
      *
@@ -291,10 +296,9 @@ protected List<CoordinateAxis> listVariableXSubset = null;
         this.readingTime += readingTime;
     }
 
-    
     /** The writing time in nanoSeconds (ns). */
     protected long writingTime = 0L;
-    
+
     /**
      * Gets the writing time.
      *
@@ -312,7 +316,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
     public void setWritingTime(long writingTime) {
         this.writingTime = writingTime;
     }
-    
+
     /**
      * Adds the writing time.
      *
@@ -342,7 +346,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
     public void setCopyingTime(long copyingTime) {
         this.copyingTime = copyingTime;
     }
-    
+
     /**
      * Adds the copying time.
      *
@@ -381,7 +385,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
     public void addCompressingTime(long compressingTime) {
         this.compressingTime += compressingTime;
     }
-    
+
     /**
      * Adds the variables.
      * 
@@ -708,7 +712,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
         try {
             attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_TITLE);
         } catch (NetCdfAttributeNotFoundException e) {
-            //LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
+            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
 
             attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_TITLE, productMetadata.getTitle());
         }
@@ -719,7 +723,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
         try {
             attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_INSTITUTION);
         } catch (NetCdfAttributeNotFoundException e) {
-            //LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
+            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
 
             if (productMetadata.getDataProvider() != null) {
                 attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_INSTITUTION, productMetadata.getDataProvider().getName());
@@ -734,7 +738,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
         try {
             attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_REFERENCES);
         } catch (NetCdfAttributeNotFoundException e) {
-            //LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
+            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
 
             if (productMetadata.getDataProvider() != null) {
                 attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_REFERENCES, productMetadata.getDataProvider().getWebSite());
@@ -749,7 +753,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
         try {
             attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_SOURCE);
         } catch (NetCdfAttributeNotFoundException e) {
-            //LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
+            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
 
             attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_SOURCE, " ");
         }
@@ -765,7 +769,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
         try {
             attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_COMMENT);
         } catch (NetCdfAttributeNotFoundException e) {
-            //LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
+            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
 
             attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_COMMENT, productMetadata.getDescription());
         }
@@ -782,7 +786,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
         try {
             attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_EASTING);
         } catch (NetCdfAttributeNotFoundException e) {
-            //LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
+            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
 
             // Do nothing
         }
@@ -792,7 +796,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
         try {
             attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_NORTHING);
         } catch (NetCdfAttributeNotFoundException e) {
-            //LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
+            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
 
             // Do nothing
         }
@@ -929,8 +933,8 @@ protected List<CoordinateAxis> listVariableXSubset = null;
      * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      */
     public abstract void computeAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
-            MotuNoVarException, NetCdfVariableNotFoundException;
+            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
+            NetCdfVariableNotFoundException;
 
     // CSON: NPathComplexity
 
@@ -949,7 +953,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
      * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public abstract void extractData(Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException,
+    public abstract void extractData(OutputFormat dataOutputFormat) throws MotuException, MotuInvalidDateRangeException,
             MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException,
             NetCdfVariableException, MotuNoVarException, NetCdfVariableNotFoundException, IOException;
 
@@ -1093,8 +1097,8 @@ protected List<CoordinateAxis> listVariableXSubset = null;
             // no range
             return new MAMath.MinMax(Double.MAX_VALUE, Double.MAX_VALUE);
         } else {
-            throw new MotuNotImplementedException(String.format("Longitude ranges list more than 2 elements is not implemented (%s)", this.getClass()
-                    .getName()));
+            throw new MotuNotImplementedException(
+                    String.format("Longitude ranges list more than 2 elements is not implemented (%s)", this.getClass().getName()));
 
         }
     }
@@ -1139,7 +1143,8 @@ protected List<CoordinateAxis> listVariableXSubset = null;
             System.out.println(max);
             return new MAMath.MinMax(NetCdfReader.getLatNormal(min), NetCdfReader.getLatNormal(max));
             // throw new
-            // MotuNotImplementedException(String.format("Latitude ranges list with  more than 2 elements is not implemented (%s)",
+            // MotuNotImplementedException(String.format("Latitude ranges list with more than 2 elements is
+            // not implemented (%s)",
             // this
             // .getClass().getName()));
 
@@ -1273,7 +1278,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
      * Returns <tt>true</tt> if this map contains a mapping for the specified key.
      *
      * @param key key whose presence in this map is to be tested.
-     * @return  if this map contains a mapping for the specified key.
+     * @return if this map contains a mapping for the specified key.
      * @see java.util.Map#containsKey(Object)
      * @uml.property name="variables"
      */
@@ -1285,7 +1290,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
      * Returns <tt>true</tt> if this map maps one or more keys to the specified value.
      *
      * @param value value whose presence in this map is to be tested.
-     * @return  if this map maps one or more keys to the specified value.
+     * @return if this map maps one or more keys to the specified value.
      * @see java.util.Map#containsValue(Object)
      * @uml.property name="variables"
      */
@@ -1297,8 +1302,8 @@ protected List<CoordinateAxis> listVariableXSubset = null;
      * Returns the value to which this map maps the specified key.
      *
      * @param key key whose associated value is to be returned.
-     * @return the value to which this map maps the specified key, or  if the map contains no
-     * mapping for this key.
+     * @return the value to which this map maps the specified key, or if the map contains no mapping for this
+     *         key.
      * @see java.util.Map#get(Object)
      * @uml.property name="variables"
      */
@@ -1309,7 +1314,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
     /**
      * Returns <tt>true</tt> if this map contains no key-value mappings.
      *
-     * @return  if this map contains no key-value mappings.
+     * @return if this map contains no key-value mappings.
      * @see java.util.Map#isEmpty()
      * @uml.property name="variables"
      */
@@ -1345,7 +1350,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
      *
      * @param key key with which the specified value is to be associated.
      * @param value value to be associated with the specified key.
-     * @return previous value associated with specified key, or 
+     * @return previous value associated with specified key, or
      * @see java.util.Map#put(Object,Object)
      * @uml.property name="variables"
      */
@@ -1357,7 +1362,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
      * Removes the mapping for this key from this map if it is present (optional operation).
      *
      * @param key key whose mapping is to be removed from the map.
-     * @return previous value associated with specified key, or  if there was no mapping for key.
+     * @return previous value associated with specified key, or if there was no mapping for key.
      * @see java.util.Map#remove(Object)
      * @uml.property name="variables"
      */
@@ -1395,7 +1400,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
     /**
      * Returns an iterator over the elements in this collection.
      *
-     * @return an  over the elements in this collection
+     * @return an over the elements in this collection
      * @see java.util.Collection#iterator()
      * @uml.property name="listCriteria"
      */
@@ -1406,7 +1411,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
     /**
      * Returns <tt>true</tt> if this collection contains no elements.
      *
-     * @return  if this collection contains no elements
+     * @return if this collection contains no elements
      * @see java.util.Collection#isEmpty()
      * @uml.property name="listCriteria"
      */
@@ -1418,7 +1423,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
      * Contains criteria.
      *
      * @param element whose presence in this collection is to be tested.
-     * @return Returns  if this collection contains the specified element.
+     * @return Returns if this collection contains the specified element.
      * @see java.util.Collection#contains(Object)
      * @uml.property name="listCriteria"
      */
@@ -1430,8 +1435,7 @@ protected List<CoordinateAxis> listVariableXSubset = null;
      * Contains all criteria.
      *
      * @param elements collection to be checked for containment in this collection.
-     * @return Returns  if this collection contains all of the elements in the specified
-     * collection.
+     * @return Returns if this collection contains all of the elements in the specified collection.
      * @see java.util.Collection#containsAll(Collection)
      * @uml.property name="listCriteria"
      */
@@ -1562,80 +1566,75 @@ protected List<CoordinateAxis> listVariableXSubset = null;
     /** The product metadata. */
     protected ProductMetaData productMetadata = null;
 
-//    public static class RangeComparator implements Comparator<Range> {
-//        /**
-//         * Logger for this class
-//         */
-//        private static final Logger LOG = Logger.getLogger(RangeComparator.class);
-//
-//        private String property;
-//        private boolean ascending = true;
-//
-//        public RangeComparator(String property) {
-//            this.property = property;
-//        }
-//
-//        public RangeComparator(String property, boolean ascending) {
-//            this(property);
-//            this.ascending = ascending;
-//        }
-//
-//        /** {@inheritDoc} */
-//        @SuppressWarnings("unchecked")
-//        @Override
-//        public int compare(Range r1, Range r2) {
-//            try {
-//                Field field = ReflectionUtils.findField(Range.class, property);
-//                if (field != null) {
-//                    Comparable c1 = (Comparable) field.get(r1);
-//                    Comparable c2 = (Comparable) field.get(r2);
-//                    if (ascending) {
-//                        return new CompareToBuilder().append(c1, c2).toComparison();
-//                    } else {
-//                        return new CompareToBuilder().append(c2, c1).toComparison();
-//                    }
-//                }
-//            } catch (IllegalArgumentException e) {
-//            } catch (IllegalAccessException e) {
-//            }
-//            return 0;
-//        }
-//
-//    }
+    // public static class RangeComparator implements Comparator<Range> {
+    // /**
+    // * Logger for this class
+    // */
+    // private static final Logger LOG = Logger.getLogger(RangeComparator.class);
+    //
+    // private String property;
+    // private boolean ascending = true;
+    //
+    // public RangeComparator(String property) {
+    // this.property = property;
+    // }
+    //
+    // public RangeComparator(String property, boolean ascending) {
+    // this(property);
+    // this.ascending = ascending;
+    // }
+    //
+    // /** {@inheritDoc} */
+    // @SuppressWarnings("unchecked")
+    // @Override
+    // public int compare(Range r1, Range r2) {
+    // try {
+    // Field field = ReflectionUtils.findField(Range.class, property);
+    // if (field != null) {
+    // Comparable c1 = (Comparable) field.get(r1);
+    // Comparable c2 = (Comparable) field.get(r2);
+    // if (ascending) {
+    // return new CompareToBuilder().append(c1, c2).toComparison();
+    // } else {
+    // return new CompareToBuilder().append(c2, c1).toComparison();
+    // }
+    // }
+    // } catch (IllegalArgumentException e) {
+    // } catch (IllegalAccessException e) {
+    // }
+    // return 0;
+    // }
+    //
+    // }
     /**
- * The Class RangeComparator.
- */
-public static class RangeComparator implements Comparator<Range> {
-        
-        /** Logger for this class. */
-        private static final Logger LOG = Logger.getLogger(RangeComparator.class);
-      
-      /** The ascending. */
-      private boolean ascending = true;
+     * The Class RangeComparator.
+     */
+    public static class RangeComparator implements Comparator<Range> {
 
-      /**
-       * Instantiates a new range comparator.
-       */
-      public RangeComparator() {
-      }
+        /** The ascending. */
+        private boolean ascending = true;
 
-      /**
-       * Instantiates a new range comparator.
-       *
-       * @param ascending the ascending
-       */
-      public RangeComparator(boolean ascending) {
-          this.ascending = ascending;
-      }
+        /**
+         * Instantiates a new range comparator.
+         */
+        public RangeComparator() {
+        }
 
+        /**
+         * Instantiates a new range comparator.
+         *
+         * @param ascending the ascending
+         */
+        public RangeComparator(boolean ascending) {
+            this.ascending = ascending;
+        }
 
         /**
          * Compare.
          *
          * @param r1 the r1
          * @param r2 the r2
-         * @return the int
-         * {@inheritDoc}
+         * @return the int {@inheritDoc}
          */
         @SuppressWarnings("unchecked")
         @Override
@@ -1644,12 +1643,12 @@ public static class RangeComparator implements Comparator<Range> {
                 if (ascending) {
                     return 1;
                 } else {
-                    return -1;                    
+                    return -1;
                 }
             }
             if (r1.first() < r2.first()) {
                 if (ascending) {
-                    return -1;                    
+                    return -1;
                 } else {
                     return 1;
                 }

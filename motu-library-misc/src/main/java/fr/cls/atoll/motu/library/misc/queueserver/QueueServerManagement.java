@@ -45,6 +45,7 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.web.bll.request.queueserver.RunnableExtraction;
 
 import java.lang.management.ManagementFactory;
 import java.text.MessageFormat;

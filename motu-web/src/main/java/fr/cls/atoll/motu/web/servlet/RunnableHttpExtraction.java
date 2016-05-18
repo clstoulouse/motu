@@ -24,14 +24,6 @@
  */
 package fr.cls.atoll.motu.web.servlet;
 
-import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.api.rest.MotuRequestParameters;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
-import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.util.concurrent.locks.Condition;
@@ -39,7 +31,16 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.rest.MotuRequestParameters;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.web.bll.request.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.queueserver.RunnableExtraction;
 
 /**
  * 
@@ -52,10 +53,8 @@ public class RunnableHttpExtraction extends RunnableExtraction {
     /**
      * Logger for this class.
      */
-    private static final Logger LOG = Logger.getLogger(RunnableHttpExtraction.class);
+    private static final Logger LOG = LogManager.getLogger();
 
-    // final ReentrantLock lock = new ReentrantLock();
-    // final Condition requestEndedCondition = lock.newCondition();
     /** The lock. */
     private ReentrantLock lock = null;
 
@@ -67,20 +66,6 @@ public class RunnableHttpExtraction extends RunnableExtraction {
 
     /** The response. */
     private HttpServletResponse response = null;
-
-    // public boolean notEnded = true;
-
-    // public void waitFor() throws InterruptedException {
-    // try {
-    //
-    // lock.lock();
-    // while (notEnded) {
-    // requestEndedCondition.await();
-    // }
-    // } finally {
-    // lock.unlock();
-    // }
-    // }
 
     /**
      * The Constructor.
@@ -239,6 +224,7 @@ public class RunnableHttpExtraction extends RunnableExtraction {
      * 
      * @return la valeur.
      */
+    @Override
     public String getMode() {
         return mode;
     }
@@ -269,11 +255,11 @@ public class RunnableHttpExtraction extends RunnableExtraction {
 
         try {
             super.setEnded();
-            
-            if (! (statusModeResponse.getCode().equals(ErrorType.OK)) ) {
+
+            if (!(statusModeResponse.getCode().equals(ErrorType.OK))) {
                 aborted();
                 return;
-            } 
+            }
 
             if (noMode()) {
                 return;
@@ -437,7 +423,7 @@ public class RunnableHttpExtraction extends RunnableExtraction {
             // asked by the client using a request provided for that.
 
             if (!statusModeResponse.getCode().equals(ErrorType.SHUTTING_DOWN)) {
-                Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());                
+                Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());
             }
         } catch (MotuMarshallException e) {
             LOG.error("setAbortedModeStatus()", e);
@@ -531,7 +517,7 @@ public class RunnableHttpExtraction extends RunnableExtraction {
             if (statusModeResponse.getCode().equals(ErrorType.OK)) {
                 response.sendRedirect(product.getDownloadUrlPath());
             } else {
-                sendResponseError500(statusModeResponse.getMsg());   
+                sendResponseError500(statusModeResponse.getMsg());
             }
         } catch (Exception e) {
             LOG.error("setResponseModeConsole()", e);

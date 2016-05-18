@@ -22,19 +22,19 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.library.misc.queueserver;
+package fr.cls.atoll.motu.web.bll.request.queueserver;
 
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.util.AssertionHolder;
 import org.jasig.cas.client.validation.Assertion;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
-import fr.cls.atoll.motu.library.misc.data.Product;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInconsistencyException;
@@ -51,8 +51,12 @@ import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.queueserver.ExtractionThreadPoolExecutor;
+import fr.cls.atoll.motu.library.misc.queueserver.QueueLogError;
+import fr.cls.atoll.motu.library.misc.queueserver.QueueLogPriority;
+import fr.cls.atoll.motu.web.bll.request.ExtractionParameters;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
  * 
@@ -64,10 +68,10 @@ import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 public class RunnableExtraction implements Runnable, Comparable<RunnableExtraction> {
 
     /** Logger for this class. */
-    protected static final Logger LOG = Logger.getLogger(RunnableExtraction.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /** The Constant LOGQUEUE. */
-    protected static final Logger LOGQUEUE = Logger.getLogger("atoll.motu.queueserver");
+    protected static final Logger LOGQUEUE = LogManager.getLogger("atoll.motu.queueserver");
 
     public static final String SHUTDOWN_MSG = "For maintenance reasons, the application is shutting down. We apologize for the inconvenience. You may repeat your request later.";
 

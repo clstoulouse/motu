@@ -22,7 +22,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.library.misc.data;
+package fr.cls.atoll.motu.web.dal.request.netcdf.data;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +44,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import fr.cls.atoll.motu.library.converter.DateUtils;
@@ -54,6 +55,11 @@ import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
 import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.inventory.Resource;
 import fr.cls.atoll.motu.library.inventory.TimePeriod;
+import fr.cls.atoll.motu.library.misc.data.ExtractCriteria;
+import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDatetime;
+import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDepth;
+import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaLatLon;
+import fr.cls.atoll.motu.library.misc.data.SelectData;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
@@ -68,11 +74,12 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.metadata.DocMetaData;
-import fr.cls.atoll.motu.library.misc.metadata.ParameterMetaData;
-import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfSubsetService;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfSubsetService;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.MAMath;
@@ -99,7 +106,7 @@ import ucar.unidata.geoloc.LatLonRect;
 public class Product {
 
     /** Logger for this class. */
-    private static final Logger LOG = Logger.getLogger(Product.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /** Time-out in milliseconds for automatic download of the extracted file. */
     private static final int DEFAULT_AUTOMATIC_DOWNLOAD_TIMEOUT = 3000;
@@ -2027,7 +2034,7 @@ public class Product {
      * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public void extractData(Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
+    public void extractData(OutputFormat dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
             NetCdfVariableNotFoundException, IOException {
         if (LOG.isDebugEnabled()) {
@@ -2055,7 +2062,7 @@ public class Product {
      * @throws MotuInvalidDepthRangeException
      * @throws InterruptedException
      */
-    public void extractNCSSData(Organizer.Format dataOutputFormat) throws MotuException, MotuNotImplementedException, NetCdfVariableException,
+    public void extractNCSSData(OutputFormat dataOutputFormat) throws MotuException, MotuNotImplementedException, NetCdfVariableException,
             MotuInvalidDepthRangeException, IOException, InterruptedException {
         // Extract criteria collect
         ExtractCriteriaDatetime time = getCriteriaDateTime();
@@ -2111,7 +2118,7 @@ public class Product {
      * 
      * @param dataOutputFormat the data output format
      */
-    public void extractFtpData(Organizer.Format dataOutputFormat) {
+    public void extractFtpData(OutputFormat dataOutputFormat) {
 
     }
 

@@ -24,14 +24,12 @@
  */
 package fr.cls.atoll.motu.web.usl.utils.log4j;
 
-import java.io.IOException;
 import java.net.URL;
-
-import javax.xml.parsers.FactoryConfigurationError;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
 
 import fr.cls.atoll.motu.library.misc.utils.ConfigLoader;
 
@@ -61,14 +59,14 @@ public class Log4JInitializer {
             }
 
             if (url != null) {
-                DOMConfigurator.configure(url);
+                LoggerContext context = (org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false);
+                context.setConfigLocation(url.toURI());
                 Log log = LogFactory.getLog(Log4JInitializer.class);
-                log.info(configFilename + " configuration success.");
+                log.info("Log4j configuration success from file: \"" + configFilename + "\".");
             }
-        } catch (FactoryConfigurationError ex) {
-            System.err.println(configFilename + " configuration failure.");
-        } catch (IOException e) {
-            System.err.println("File \"" + configFilename + "\" not found in file system.");
+        } catch (Exception e) {
+            System.err.println("Exception while initializing Log4j from file: \"" + configFilename + "\".");
+            e.printStackTrace();
         }
 
     }

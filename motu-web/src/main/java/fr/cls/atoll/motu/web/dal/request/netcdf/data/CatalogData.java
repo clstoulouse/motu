@@ -22,7 +22,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.library.misc.data;
+package fr.cls.atoll.motu.web.dal.request.netcdf.data;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,7 +46,8 @@ import java.util.regex.Pattern;
 import javax.xml.bind.JAXBElement;
 
 import org.apache.commons.jxpath.JXPathContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
@@ -55,12 +56,11 @@ import fr.cls.atoll.motu.library.inventory.CatalogOLA;
 import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.inventory.ResourceOLA;
 import fr.cls.atoll.motu.library.inventory.ResourcesOLA;
+import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer.Format;
 import fr.cls.atoll.motu.library.misc.metadata.DocMetaData;
-import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.opendap.server.Dataset;
 import fr.cls.atoll.motu.library.misc.opendap.server.Service;
@@ -74,6 +74,8 @@ import fr.cls.atoll.motu.library.misc.tds.server.SpatialRange;
 import fr.cls.atoll.motu.library.misc.tds.server.TimeCoverageType;
 import fr.cls.atoll.motu.library.misc.tds.server.Variables;
 import fr.cls.atoll.motu.library.misc.utils.ReflectionUtils;
+import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import ucar.ma2.MAMath.MinMax;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -90,7 +92,7 @@ import ucar.unidata.geoloc.LatLonRect;
 public class CatalogData {
 
     /** Logger for this class. */
-    private static final Logger LOG = Logger.getLogger(CatalogData.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     public static final String FTP_MISSING_FILE_REGEXP = "unknown.*";
 
@@ -145,7 +147,7 @@ public class CatalogData {
          */
         public static String valuesToString() {
             StringBuffer stringBuffer = new StringBuffer();
-            for (Format c : Format.values()) {
+            for (OutputFormat c : OutputFormat.values()) {
                 stringBuffer.append(c.toString());
                 stringBuffer.append(" ");
             }

@@ -22,8 +22,22 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.library.misc.data;
+package fr.cls.atoll.motu.web.dal.request.netcdf.data;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
@@ -36,19 +50,6 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import org.apache.log4j.Logger;
-
 import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
@@ -81,7 +82,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
     /**
      * Logger for this class.
      */
-    private static final Logger LOG = Logger.getLogger(DatasetGridXYLatLon.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * 
@@ -204,8 +205,8 @@ public class DatasetGridXYLatLon extends DatasetGrid {
      */
     @Override
     public void extractDataIntoNetCdf() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
-            MotuNoVarException, NetCdfVariableNotFoundException, IOException {
+            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
+            NetCdfVariableNotFoundException, IOException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("extractDataIntoNetCdf() - entering");
         }
@@ -324,9 +325,8 @@ public class DatasetGridXYLatLon extends DatasetGrid {
             GeoGrid geoGrid = gds.findGridByName(varData.getVarName());
             if (geoGrid == null) {
                 throw new MotuNotImplementedException(
-                        String
-                                .format("Variable %s in not geo-referenced - Non-georeferenced data is not implemented (method DatasetGridYXLatLon.extractDataNetcdf)",
-                                        varData.getVarName()));
+                        String.format("Variable %s in not geo-referenced - Non-georeferenced data is not implemented (method DatasetGridYXLatLon.extractDataNetcdf)",
+                                      varData.getVarName()));
             }
             Variable inputVar = geoGrid.getVariable();
             Variable outputVar = new Variable(ncFile, null, null, inputVar.getName());
@@ -1031,9 +1031,9 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         Variable inputVar = outputVar;
         GeoGrid geoGrid = gds.findGridByName(inputVar.getName());
         if (geoGrid == null) {
-            throw new MotuNotImplementedException(String
-                    .format("Variable %s in not geo-referenced - Non-georeferenced data is not implemented (method DatasetGrid.extractData)",
-                            inputVar.getName()));
+            throw new MotuNotImplementedException(
+                    String.format("Variable %s in not geo-referenced - Non-georeferenced data is not implemented (method DatasetGrid.extractData)",
+                                  inputVar.getName()));
         }
 
         GeoGrid geoGridSubset = null;
@@ -1340,12 +1340,11 @@ public class DatasetGridXYLatLon extends DatasetGrid {
                     String idxLat = (indexLatOut == null) ? "null" : indexLatOut.toString();
                     String idxLon = (indexLonOut == null) ? "null" : indexLonOut.toString();
                     throw new MotuException(
-                            String
-                                    .format("ERROR in DatasetGridXYLatLon - fillData2D - Unable to find latitude value: %f or longitude value: %f (Latitude map index %s, Longitude map index %s",
-                                            latitudeValue,
-                                            longitudeValue,
-                                            idxLat,
-                                            idxLon));
+                            String.format("ERROR in DatasetGridXYLatLon - fillData2D - Unable to find latitude value: %f or longitude value: %f (Latitude map index %s, Longitude map index %s",
+                                          latitudeValue,
+                                          longitudeValue,
+                                          idxLat,
+                                          idxLon));
                 }
 
                 if ((indexLatOut < fromLat) || (indexLatOut > toLat) || (indexLonOut < fromLon) || (indexLonOut > toLon)) {

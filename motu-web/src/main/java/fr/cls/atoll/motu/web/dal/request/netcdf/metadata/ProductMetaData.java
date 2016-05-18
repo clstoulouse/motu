@@ -22,7 +22,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.library.misc.metadata;
+package fr.cls.atoll.motu.web.dal.request.netcdf.metadata;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -51,18 +51,23 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.library.converter.DateUtils;
-import fr.cls.atoll.motu.library.misc.data.CatalogData;
-import fr.cls.atoll.motu.library.misc.data.DatasetBase;
-import fr.cls.atoll.motu.library.misc.data.Product;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.metadata.CoordinateSystem;
+import fr.cls.atoll.motu.library.misc.metadata.DataProvider;
+import fr.cls.atoll.motu.library.misc.metadata.Delivery;
+import fr.cls.atoll.motu.library.misc.metadata.DocMetaData;
+import fr.cls.atoll.motu.library.misc.metadata.ParameterCategory;
 import fr.cls.atoll.motu.library.misc.netcdf.CoordSysBuilderYXLatLon;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.library.misc.tds.server.Property;
 import fr.cls.atoll.motu.library.misc.tds.server.Variables;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.DatasetBase;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 

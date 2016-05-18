@@ -22,7 +22,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.library.misc.data;
+package fr.cls.atoll.motu.web.dal.request.netcdf.data;
 
 import java.io.Serializable;
 import java.util.Comparator;

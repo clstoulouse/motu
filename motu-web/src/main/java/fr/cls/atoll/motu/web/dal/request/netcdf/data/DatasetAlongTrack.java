@@ -22,7 +22,10 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.library.misc.data;
+package fr.cls.atoll.motu.web.dal.request.netcdf.data;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
@@ -32,9 +35,7 @@ import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
 import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
 import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-
-import org.apache.log4j.Logger;
+import fr.cls.atoll.motu.web.common.format.OutputFormat;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -46,11 +47,11 @@ import org.apache.log4j.Logger;
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-public class DatasetAlongTrack extends fr.cls.atoll.motu.library.misc.data.DatasetBase {
+public class DatasetAlongTrack extends fr.cls.atoll.motu.web.dal.request.netcdf.data.DatasetBase {
     /**
      * Logger for this class.
      */
-    private static final Logger LOG = Logger.getLogger(DatasetAlongTrack.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * Default constructor.
@@ -82,8 +83,9 @@ public class DatasetAlongTrack extends fr.cls.atoll.motu.library.misc.data.Datas
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
      */
     @Override
-    public void computeAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException {
+    public void computeAmountDataSize()
+            throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
+            MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException {
 
         throw new MotuNotImplementedException("compute amount data from 'Along the track' dataset is not implemented");
     }
@@ -102,8 +104,9 @@ public class DatasetAlongTrack extends fr.cls.atoll.motu.library.misc.data.Datas
      * @throws MotuNoVarException
      */
     @Override
-    public void extractData(Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException {
+    public void extractData(OutputFormat dataOutputFormat)
+            throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
+            MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("extractData() - entering");
         }
@@ -140,9 +143,9 @@ public class DatasetAlongTrack extends fr.cls.atoll.motu.library.misc.data.Datas
      * TLog.logger().entering(this.getClass().getName(), "extractDataIntoNetCdf");
      * 
      * if (product == null) { throw new MotuException("Error in DatasetAlongTrack - extractDataIntoNetCdf
-     * product have not nbeen set (= null)"); } if (variablesSize() <= 0) { throw new
-     * MotuNoVarException("Variable list is empty"); } product.openNetCdfReader(); // gets ranges to be
-     * extracted double[] tRangeValue = new double[2]; Range tRange = getTimeRange(tRangeValue);
+     * product have not nbeen set (= null)"); } if (variablesSize() <= 0) { throw new MotuNoVarException(
+     * "Variable list is empty"); } product.openNetCdfReader(); // gets ranges to be extracted double[]
+     * tRangeValue = new double[2]; Range tRange = getTimeRange(tRangeValue);
      * 
      * double[] yRangeValue = new double[2]; double[] xRangeValue = new double[2]; Range[] yxRange =
      * getYXRange(yRangeValue, xRangeValue);

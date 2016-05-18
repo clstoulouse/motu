@@ -22,7 +22,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.library.misc.data;
+package fr.cls.atoll.motu.web.dal.request.netcdf.data;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,8 +34,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDatetime;
+import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDepth;
+import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
@@ -46,9 +50,10 @@ import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
@@ -76,11 +81,9 @@ import ucar.nc2.dt.grid.GridDataset;
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase {
-    /**
-     * Logger for this class.
-     */
-    private static final Logger LOG = Logger.getLogger(DatasetGrid.class);
+public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.DatasetBase {
+
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * Default constructor.
@@ -212,7 +215,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.library.misc.data.DatasetBase
      * @throws IOException
      */
     @Override
-    public void extractData(Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
+    public void extractData(OutputFormat dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
             NetCdfVariableNotFoundException, IOException {
         if (LOG.isDebugEnabled()) {

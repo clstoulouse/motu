@@ -22,7 +22,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.library.misc.queueserver;
+package fr.cls.atoll.motu.web.bll.request.queueserver;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -36,11 +36,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
 
-import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
+import fr.cls.atoll.motu.library.misc.queueserver.QueueLogError;
+import fr.cls.atoll.motu.library.misc.queueserver.QueueLogPriority;
+import fr.cls.atoll.motu.web.bll.request.ExtractionParameters;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -53,7 +56,7 @@ public class QueueLogInfo {
     /**
      * Logger for this class
      */
-    private static final Logger LOG = Logger.getLogger(QueueLogInfo.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /** CSV separator */
     private static final String CSV_SEPARATOR = ";";

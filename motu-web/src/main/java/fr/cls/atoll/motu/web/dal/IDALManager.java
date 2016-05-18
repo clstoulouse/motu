@@ -1,6 +1,9 @@
 package fr.cls.atoll.motu.web.dal;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.config.IDALConfigManager;
+import fr.cls.atoll.motu.web.dal.request.IDALRequestManager;
+import fr.cls.atoll.motu.web.dal.users.IDALUserManager;
 
 /**
  * <br>
@@ -16,8 +19,10 @@ public interface IDALManager {
 
     /**
      * .
+     * 
+     * @throws MotuException
      */
-    void init();
+    void init() throws MotuException;
 
     /**
      * .
@@ -25,5 +30,19 @@ public interface IDALManager {
      * @return
      */
     IDALConfigManager getConfigManager();
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    IDALRequestManager getRequestManager();
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    IDALUserManager getUserManager();
 
 }

@@ -1,5 +1,7 @@
 package fr.cls.atoll.motu.web.bll.config;
 
+import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
+
 /**
  * <br>
  * <br>
@@ -17,6 +19,28 @@ public interface IBLLConfigManager {
      * 
      * @return null if no cas server is used, otherwise the Cas server url
      */
-    public String getCasServerUrl();
+    String getCasServerUrl();
 
+    boolean isCasActivated();
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    IBLLQueueServerConfigManager getQueueServerConfigManager();
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    boolean isStatusAsFile();
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    MotuConfig getMotuConfig();
 }

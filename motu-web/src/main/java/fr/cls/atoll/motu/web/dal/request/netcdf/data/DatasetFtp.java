@@ -22,7 +22,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.library.misc.data;
+package fr.cls.atoll.motu.web.dal.request.netcdf.data;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,9 +35,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.joda.time.Interval;
-import org.joda.time.Period;
 
 import fr.cls.atoll.motu.library.converter.DateUtils;
+import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
@@ -48,8 +48,8 @@ import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer.Format;
 import fr.cls.atoll.motu.library.misc.utils.Zip;
+import fr.cls.atoll.motu.web.common.format.OutputFormat;
 
 /**
  * 
@@ -84,8 +84,8 @@ public class DatasetFtp extends DatasetBase {
     /** {@inheritDoc} */
     @Override
     public void computeAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
-            MotuNoVarException, NetCdfVariableNotFoundException {
+            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
+            NetCdfVariableNotFoundException {
 
         List<DataFile> dataFiles = selectDataFile();
 
@@ -95,9 +95,9 @@ public class DatasetFtp extends DatasetBase {
 
     /** {@inheritDoc} */
     @Override
-    public void extractData(Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException,
-            MotuNoVarException, NetCdfVariableNotFoundException, IOException {
+    public void extractData(OutputFormat dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
+            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
+            NetCdfVariableNotFoundException, IOException {
 
         switch (dataOutputFormat) {
         case URL:
@@ -185,25 +185,23 @@ public class DatasetFtp extends DatasetBase {
 
             String fileDest = stringBuffer.toString();
 
-            Organizer.getVFSSystemManager().copyFileToLocalFile(uriFile, fileDest);           
+            Organizer.getVFSSystemManager().copyFileToLocalFile(uriFile, fileDest);
             localFiles.add(fileDest);
         }
 
         long d2 = System.nanoTime();
         this.copyingTime += (d2 - d1);
 
-
-        d1 = System.nanoTime();        
+        d1 = System.nanoTime();
         Zip.zip(product.getExtractLocationDataTemp(), localFiles, false);
         d2 = System.nanoTime();
         this.compressingTime += (d2 - d1);
 
-        d1 = System.nanoTime();        
+        d1 = System.nanoTime();
         Organizer.deleteDirectory(tempDownloadDir);
         product.moveTempExtractFileToFinalExtractFile();
         d2 = System.nanoTime();
         this.copyingTime += (d2 - d1);
-
 
     }
 
@@ -235,11 +233,11 @@ public class DatasetFtp extends DatasetBase {
             if (fileStart.compareTo(end) > 0) {
                 break;
             }
-            
+
             Date fileEnd = dataFile.getEndCoverageDate().toDate();
-            
+
             Interval filePeriod = new Interval(fileStart.getTime(), fileEnd.getTime());
-            
+
             if (DateUtils.intersects(filePeriod, datePeriod)) {
                 selected.add(dataFile);
             }
@@ -259,7 +257,8 @@ public class DatasetFtp extends DatasetBase {
      * @throws MotuException the motu exception
      * @throws MotuExceedingCapacityException the motu exceeding capacity exception
      */
-    protected List<String> extractPrepare(boolean removeUserLogin, boolean removeUserPwd, boolean checkMaxSize) throws MotuException, MotuExceedingCapacityException {
+    protected List<String> extractPrepare(boolean removeUserLogin, boolean removeUserPwd, boolean checkMaxSize)
+            throws MotuException, MotuExceedingCapacityException {
 
         List<String> listUrls = new ArrayList<String>();
 
@@ -270,8 +269,8 @@ public class DatasetFtp extends DatasetBase {
         }
 
         if (Organizer.isNullOrEmpty(dataFiles)) {
-            throw new MotuException(String.format("No data files corresponding to the selection criteria have been found for product '%s'", product
-                    .getProductId()));
+            throw new MotuException(
+                    String.format("No data files corresponding to the selection criteria have been found for product '%s'", product.getProductId()));
         }
 
         String locationData = "";
@@ -282,21 +281,28 @@ public class DatasetFtp extends DatasetBase {
             URI uri = new URI(locationData);
 
             URI uriExtraction = null;
-            if ((! removeUserLogin ) && (! removeUserPwd )) {
+            if ((!removeUserLogin) && (!removeUserPwd)) {
                 // Don't remove login and pwd
-                uriExtraction = uri;                
+                uriExtraction = uri;
             } else if (removeUserLogin) {
                 // remove login also remove pwd
                 uriExtraction = new URI(uri.getScheme(), null, uri.getHost(), uri.getPort(), uri.getPath(), uri.getQuery(), uri.getFragment());
-            } else if (removeUserPwd){
+            } else if (removeUserPwd) {
                 // Remove only pwd
                 String theUserInfo = uri.getUserInfo();
                 if (!Organizer.isNullOrEmpty(theUserInfo)) {
                     String userInfo[] = theUserInfo.split(":");
                     if (userInfo.length >= 1) {
-                        uriExtraction = new URI(uri.getScheme(), userInfo[0], uri.getHost(), uri.getPort(), uri.getPath(), uri.getQuery(), uri.getFragment());
+                        uriExtraction = new URI(
+                                uri.getScheme(),
+                                userInfo[0],
+                                uri.getHost(),
+                                uri.getPort(),
+                                uri.getPath(),
+                                uri.getQuery(),
+                                uri.getFragment());
                     } else {
-                        uriExtraction = uri;                
+                        uriExtraction = uri;
                     }
                 }
             }

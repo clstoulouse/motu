@@ -34,9 +34,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-import fr.cls.atoll.motu.library.misc.data.Product;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidQueuePriorityException;
+import fr.cls.atoll.motu.web.bll.request.queueserver.RunnableExtraction;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)

@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.library.misc.netcdf;
+package fr.cls.atoll.motu.web.dal.request.netcdf;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,7 +22,7 @@ import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import ucar.ma2.Array;
 import ucar.ma2.Range;
 
@@ -109,7 +109,7 @@ public class NetCdfSubsetService {
     protected Set<String> varSubset;
     protected String outputDir;
     protected String outputFile;
-    protected Organizer.Format outputFormat;
+    protected OutputFormat outputFormat;
     protected String ncssURL;
 
     /** Control boolean for concatenation */
@@ -197,7 +197,7 @@ public class NetCdfSubsetService {
      * 
      * @return
      */
-    public void setOutputFormat(Organizer.Format in) {
+    public void setOutputFormat(OutputFormat in) {
         outputFormat = in;
     }
 
@@ -287,7 +287,7 @@ public class NetCdfSubsetService {
      * 
      * @return
      */
-    public Organizer.Format getOutputFormat() {
+    public OutputFormat getOutputFormat() {
         return outputFormat;
     }
 

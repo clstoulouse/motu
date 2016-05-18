@@ -26,61 +26,27 @@ package fr.cls.atoll.motu.web.servlet;
 
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_DELETE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_DESCRIBE_COVERAGE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_GET_REQUEST_STATUS;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_GET_SIZE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_GET_TIME_COVERAGE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LIST_CATALOG;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LIST_PRODUCT_METADATA;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LIST_SERVICES;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LOGOUT;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_PING;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_PRODUCT_DOWNLOAD;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_PRODUCT_DOWNLOADHOME;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_REFRESH;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_ACTION;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_ANONYMOUS;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_BATCH;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_DATA;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_END_DATE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_EXTRA_METADATA;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_HIGH_LAT;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_HIGH_LON;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_HIGH_Z;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LANGUAGE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_LAT;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_LON;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_Z;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MAX_POOL_ANONYMOUS;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MAX_POOL_AUTHENTICATE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MODE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MODE_CONSOLE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MODE_STATUS;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MODE_URL;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_PRIORITY;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_PRODUCT;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_PWD;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_REQUEST_ID;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_SERVICE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_START_DATE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_VARIABLE;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Writer;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -90,12 +56,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.log4j.Logger;
 import org.jasig.cas.client.util.AssertionHolder;
 
-import fr.cls.atoll.motu.api.message.MotuMonitoringParametersConstant;
 import fr.cls.atoll.motu.api.message.MotuMsgConstant;
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
@@ -103,24 +66,18 @@ import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
-import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
-import fr.cls.atoll.motu.library.misc.configuration.QueueType;
-import fr.cls.atoll.motu.library.misc.data.CatalogData;
-import fr.cls.atoll.motu.library.misc.data.Product;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidRequestIdException;
 import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
-import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.queueserver.QueueManagement;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
-import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
 import fr.cls.atoll.motu.library.misc.utils.ManifestManagedBean;
-import fr.cls.atoll.motu.library.misc.utils.PropertiesUtilities;
-// TODO: Auto-generated Javadoc
-// CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
+import fr.cls.atoll.motu.web.bll.request.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.queueserver.RunnableExtraction;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
+import fr.cls.atoll.motu.web.usl.USLManager;
+import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 
 /**
  * The Class MotuServlet.
@@ -135,240 +92,6 @@ public class MotuServlet extends HttpServlet {
     /*
      * Thread d'extraction différé de produit
      */
-    /**
-     * The Class ProductDeferedExtractNetcdfThread.
-     */
-    static private class ProductDeferedExtractNetcdfThread extends Thread {
-
-        /** Logger for this class. */
-        private static final Logger LOG = Logger.getLogger(ProductDeferedExtractNetcdfThread.class);
-
-        /** The extraction parameters. */
-        ExtractionParameters extractionParameters = null;
-
-        /** The status mode response. */
-        StatusModeResponse statusModeResponse = null;
-
-        /** The organizer. */
-        private Organizer organizer = null;
-
-        /** The product defered extract netcdf status file path name. */
-        private String productDeferedExtractNetcdfStatusFilePathName = null;
-
-        // /** The location data. */
-        // private String locationData;
-        //
-        // /** The list var. */
-        // private List<String> listVar;
-        //
-        // /** The list temporal coverage. */
-        // private List<String> listTemporalCoverage;
-        //
-        // /** The list lat lon coverage. */
-        // private List<String> listLatLonCoverage;
-        //
-        // /** The list depth coverage. */
-        // private List<String> listDepthCoverage;
-        //
-        // /** The select data. */
-        // private SelectData selectData;
-        //
-        // /** The service name. */
-        // private String serviceName;
-        //
-        // /** The product id. */
-        // private String productId;
-
-        // /**
-        // * The Constructor.
-        // *
-        // * @param listVar the list var
-        // * @param selectData the select data
-        // * @param organizer the organizer
-        // * @param locationData the location data
-        // * @param productDeferedExtractNetcdfStatusFilePathName the product defered extract netcdf status
-        // file
-        // * path name
-        // * @param listLatLonCoverage the list lat lon coverage
-        // * @param listDepthCoverage the list depth coverage
-        // * @param listTemporalCoverage the list temporal coverage
-        // */
-        // public ProductDeferedExtractNetcdfThread(
-        // String productDeferedExtractNetcdfStatusFilePathName,
-        // Organizer organizer,
-        // String locationData,
-        // List<String> listVar,
-        // List<String> listTemporalCoverage,
-        // List<String> listLatLonCoverage,
-        // List<String> listDepthCoverage,
-        // SelectData selectData) {
-        // this.productDeferedExtractNetcdfStatusFilePathName = productDeferedExtractNetcdfStatusFilePathName;
-        // this.organizer = organizer;
-        // this.locationData = locationData;
-        // this.listVar = listVar;
-        // this.listTemporalCoverage = listTemporalCoverage;
-        // this.listLatLonCoverage = listLatLonCoverage;
-        // this.listDepthCoverage = listDepthCoverage;
-        // this.selectData = selectData;
-        // }
-        //
-        // /**
-        // * The Constructor.
-        // *
-        // * @param listVar the list var
-        // * @param selectData the select data
-        // * @param organizer the organizer
-        // * @param productDeferedExtractNetcdfStatusFilePathName the product defered extract netcdf status
-        // file
-        // * path name
-        // * @param listLatLonCoverage the list lat lon coverage
-        // * @param listDepthCoverage the list depth coverage
-        // * @param listTemporalCoverage the list temporal coverage
-        // * @param serviceName the service name
-        // * @param productId the product id
-        // */
-        // public ProductDeferedExtractNetcdfThread(
-        // String productDeferedExtractNetcdfStatusFilePathName,
-        // Organizer organizer,
-        // String serviceName,
-        // List<String> listVar,
-        // List<String> listTemporalCoverage,
-        // List<String> listLatLonCoverage,
-        // List<String> listDepthCoverage,
-        // SelectData selectData,
-        // String productId) {
-        // this.productDeferedExtractNetcdfStatusFilePathName = productDeferedExtractNetcdfStatusFilePathName;
-        // this.organizer = organizer;
-        // this.serviceName = serviceName;
-        // this.listVar = listVar;
-        // this.listTemporalCoverage = listTemporalCoverage;
-        // this.listLatLonCoverage = listLatLonCoverage;
-        // this.listDepthCoverage = listDepthCoverage;
-        // this.selectData = selectData;
-        // this.productId = productId;
-        // }
-
-        /**
-         * The Constructor.
-         *
-         * @param statusModeResponse the status mode response
-         * @param organizer the organizer
-         * @param extractionParameters the extraction parameters
-         */
-        public ProductDeferedExtractNetcdfThread(
-            StatusModeResponse statusModeResponse,
-            Organizer organizer,
-            ExtractionParameters extractionParameters) {
-
-            this.statusModeResponse = statusModeResponse;
-            this.productDeferedExtractNetcdfStatusFilePathName = null;
-            this.organizer = organizer;
-            this.extractionParameters = extractionParameters;
-
-        }
-
-        /**
-         * The Constructor.
-         *
-         * @param productDeferedExtractNetcdfStatusFilePathName the product defered extract netcdf status file
-         *            path name
-         * @param organizer the organizer
-         * @param extractionParameters the extraction parameters
-         */
-        public ProductDeferedExtractNetcdfThread(
-            String productDeferedExtractNetcdfStatusFilePathName,
-            Organizer organizer,
-            ExtractionParameters extractionParameters) {
-
-            this.statusModeResponse = null;
-            this.productDeferedExtractNetcdfStatusFilePathName = productDeferedExtractNetcdfStatusFilePathName;
-            this.organizer = organizer;
-            this.extractionParameters = extractionParameters;
-
-        }
-
-        /**
-         * Gets the writer.
-         * 
-         * @return the writer
-         * 
-         * @throws IOException the IO exception
-         */
-        public Writer createWriter() throws IOException {
-            return new FileWriter(productDeferedExtractNetcdfStatusFilePathName);
-        }
-
-        /**
-         * Run.
-         */
-        @Override
-        public void run() {
-
-            execute();
-
-            if (productDeferedExtractNetcdfStatusFilePathName == null) {
-                return;
-            }
-            try {
-                Organizer.marshallStatusModeResponse(statusModeResponse, createWriter());
-            } catch (Exception e) {
-                try {
-                    Organizer.marshallStatusModeResponse(e, createWriter());
-                } catch (MotuMarshallException e2) {
-                    LOG.error("status writing error - " + e2.notifyException(), e2);
-                } catch (Exception e2) {
-                    LOG.error("status writing error - " + e2.getMessage(), e2);
-                }
-            }
-        }
-
-        // /**
-        // * Sets the status done.
-        // *
-        // * @param msg the msg
-        // */
-        // private void setStatusDone(String msg) {
-        // if (statusModeResponse == null) {
-        // return;
-        // }
-        // statusModeResponse.setStatus(StatusModeType.DONE);
-        // statusModeResponse.setMsg(msg);
-        // statusModeResponse.setCode(ErrorType.OK);
-        //
-        // }
-
-        /**
-         * Execute.
-         */
-        private void execute() {
-            Product product = null;
-            // String downloadUrlPath = null;
-            if (statusModeResponse == null) {
-                statusModeResponse = Organizer.createStatusModeResponse();
-
-            }
-
-            try {
-                product = organizer.extractData(extractionParameters);
-                // downloadUrlPath = product.getDownloadUrlPath();
-                // setStatusDone(downloadUrlPath);
-                Organizer.setStatusDone(statusModeResponse, product);
-            } catch (Exception e) {
-                LOG.error("execute()", e);
-                Organizer.setError(statusModeResponse, e);
-
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("execute() - exiting");
-                }
-            }
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("execute() - exiting");
-            }
-
-        }
-
-    }
 
     /** The polling time. */
     protected int pollingTime = 1000;
@@ -454,41 +177,17 @@ public class MotuServlet extends HttpServlet {
         return shuttingDown;
     }
 
-    /** The Constant CONTENT_TYPE_PLAIN. */
-    public static final String CONTENT_TYPE_PLAIN = "text/plain";
-
-    /** The Constant CONTENT_TYPE_XML. */
-    public static final String CONTENT_TYPE_XML = "text/xml";
-
-    /** The Constant CONTENT_TYPE_HTML. */
-    private static final String CONTENT_TYPE_HTML = "text/html";
-
     /** The jcontext. */
     private static JAXBContext jaxbContextMotuMsg = null;
 
     /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(MotuServlet.class);
 
-    /** The Constant MSG_IN_PROGRESS. */
-    private static final String MSG_IN_PROGRESS = "request in progress";
-
     /** The object factory. */
     private static ObjectFactory objectFactory = new ObjectFactory();
 
-    /** The Constant ORGANIZER_SESSION_ATTR. */
-    private static final String ORGANIZER_SESSION_ATTR = "organizer";
-
-    /** The Constant PARAM_STATUS_AS_FILE. */
-    private static final String PARAM_STATUS_AS_FILE = "statusAsFile";
-
     /** The Constant PARAM_USE_QUEUE_SERVER. */
     private static final String PARAM_USE_QUEUE_SERVER = "useQueueServer";
-
-    /** The Constant proxyHeaders. */
-    private static final List<String> PROXY_HEADERS = new ArrayList<String>();
-
-    /** The Constant RESPONSE_ACTION_PING. */
-    private static final String RESPONSE_ACTION_PING = "OK - response action=ping";
 
     /** The Constant PARAM_POLLING_TIME. */
     private static final String PARAM_POLLING_TIME = "pollingTime";
@@ -499,25 +198,9 @@ public class MotuServlet extends HttpServlet {
     // /** The queue server management. */
     // private QueueServerManagement queueServerManagement = null;
 
-    /** The Constant SESSION_AUTHORIZED_KEY. */
-    private static final String SESSION_AUTHORIZED_KEY = "sessionAuthorized";
-
     // /** The resquest status map. */
     // private ConcurrentMap<Long, StatusModeResponse> resquestStatusMap = new ConcurrentHashMap<Long,
     // StatusModeResponse>();
-
-    /** The Constant SESSION_AUTHORIZED_USER. */
-    private static final String SESSION_AUTHORIZED_USER = "sessionAuthorizedUser";
-
-    static {
-        PROXY_HEADERS.add("x-forwarded-for");
-        PROXY_HEADERS.add("HTTP_X_FORWARDED_FOR");
-        PROXY_HEADERS.add("HTTP_FORWARDED");
-        PROXY_HEADERS.add("HTTP_CLIENT_IP");
-    }
-
-    /** The authentication props. */
-    private Properties authenticationProps = null;
 
     /** The request management. */
     private RequestManagement requestManagement = null;
@@ -529,36 +212,6 @@ public class MotuServlet extends HttpServlet {
      * Default constructor.
      */
     public MotuServlet() {
-    }
-
-    /**
-     * Gets the ip by name.
-     * 
-     * @param ip the ip
-     * 
-     * @return the host name
-     */
-    public static String getHostName(String ip) {
-        if (MotuServlet.isNullOrEmpty(ip)) {
-            return ip;
-        }
-
-        StringBuffer stringBuffer = new StringBuffer();
-        try {
-            // if there are several ip, they can be seperate by ','.
-            String[] ipSplit = ip.split(",");
-            for (String ipString : ipSplit) {
-                stringBuffer.append(InetAddress.getByName(ipString.trim()).getHostName());
-                stringBuffer.append(", ");
-            }
-        } catch (UnknownHostException e) {
-            // Do Nothing
-        }
-        if (stringBuffer.length() >= 2) {
-            stringBuffer.delete(stringBuffer.length() - 2, stringBuffer.length());
-        }
-        return stringBuffer.toString();
-
     }
 
     /*
@@ -783,11 +436,6 @@ public class MotuServlet extends HttpServlet {
             RequestManagement.setUseQueueServer(Boolean.parseBoolean(paramValue));
         }
 
-        paramValue = getServletConfig().getInitParameter(PARAM_STATUS_AS_FILE);
-        if (!MotuServlet.isNullOrEmpty(paramValue)) {
-            statusAsFile = Boolean.parseBoolean(paramValue);
-        }
-
         paramValue = getServletConfig().getInitParameter(PARAM_POLLING_TIME);
         if (!MotuServlet.isNullOrEmpty(paramValue)) {
             pollingTime = Integer.parseInt(paramValue);
@@ -795,39 +443,6 @@ public class MotuServlet extends HttpServlet {
 
         // Initialisation Queue Server
         initRequestManagement();
-    }
-
-    /**
-     * Sets the language if PARAM_LANGUAGE parameter is in the request list of parameters.
-     *
-     * @param request object that contains the request the client has made of the servlet.
-     * @param session request sesssion
-     * @param response the response
-     * @throws ServletException the servlet exception
-     * @throws IOException the IO exception
-     */
-    public void setLanguageParameter(HttpServletRequest request, HttpSession session, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        if (session == null) {
-            return;
-        }
-
-        String language = request.getParameter(PARAM_LANGUAGE);
-
-        if (MotuServlet.isNullOrEmpty(language)) {
-            return;
-        }
-
-        Organizer organizer = getOrganizer(session, response);
-        try {
-            organizer.setCurrentLanguage(language);
-        } catch (MotuExceptionBase e) {
-            throw new ServletException(e.notifyException(), e);
-        } catch (Exception e) {
-            throw new ServletException(e);
-        }
-
     }
 
     /**
@@ -918,73 +533,19 @@ public class MotuServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        // HttpSession session = request.getSession(true);
-        // response.setContentType(CONTENT_TYPE_HTML);
-        // PrintWriter out = response.getWriter();
-        // String title = "Motu application";
-        // String heading;
-        // Integer accessCount = new Integer(0);
-        // if (session.isNew()) {
-        // Integer intervall = new Integer(session.getMaxInactiveInterval()/60);
-        // heading = "Welcome. This session will expire after " +
-        // intervall.toString() + " minutes of inactivity.";
-        // initSession(session);
-        // //listServices(session, response);
-        // } else {
-        // heading = "Welcome Back";
-        // Integer oldAccessCount =
-        // (Integer)session.getAttribute("accessCount");
-        // Organizer organizer =
-        // (Organizer)session.getAttribute(ORGANIZER_SESSION_ATTR);
-        // if (oldAccessCount != null) {
-        // accessCount =
-        // new Integer(oldAccessCount.intValue() + 1);
-        // }
-        // }
-        //
-        // Map<String, String> parameters = (Map<String,
-        // String>)request.getParameterMap();
-        //
-        // Set<String> keySet = parameters.keySet();
-        // for(Iterator<String> it = keySet.iterator() ; it.hasNext();) {
-        // System.out.println(it.next());
-        // }
-        //
-
-        // TLog.logger().info(String.format("HttpServletRequest.getContextPath(): %s",
-        // request.getContextPath()));
-        // TLog.logger().info(String.format("HttpServletRequest.getPathInfo(): %s", request.getPathInfo()));
-        // TLog.logger().info(String.format("HttpServletRequest.getPathTranslated(): %s",
-        // request.getPathTranslated()));
-        // TLog.logger().info(String.format("HttpServletRequest.getRequestURI(): %s",
-        // request.getRequestURI()));
-        // TLog.logger().info(String.format("HttpServletRequest.getRequestURL(): %s",
-        // request.getRequestURL()));
-        // TLog.logger().info(String.format("HttpServletRequest.getServletPath(): %s",
-        // request.getServletPath()));
-
-        // System.out.print("request.getContextPath():");
-        // System.out.println(request.getContextPath());
-        // System.out.print("request.getServletPath():");
-        // System.out.println(request.getServletPath());
-        // System.out.print("request.getPathInfo():");
-        // System.out.println(request.getPathInfo());
-        // System.out.print("request.getPathTranslated():");
-        // System.out.println(request.getPathTranslated());
-        // System.out.println(request.getRemoteAddr());
-        // System.out.println(request.getRemoteHost());
-        // System.out.println(request.getRemoteUser());
-        //
-        // String ipaddress = getRemoteHost(request);
+        logDebugRequestHeaders(request);
 
         try {
-            debugRequestHeaders(request);
-
-            execRequest(request, response);
-        } catch (Exception e) {
-            throw new ServletException(e);
+            USLManager.getInstance().getRequestManager().onNewRequest(request, response);
+        } catch (InvalidHTTPParameterException e) {
+            response.sendError(500, String.format("Oops, an HTTP parameter is not valid: %s", e.getMessage()));
         }
+
+        // try {
+        // execRequest(request, response);
+        // } catch (Exception e) {
+        // throw new ServletException(e);
+        // }
 
     }
 
@@ -1163,29 +724,6 @@ public class MotuServlet extends HttpServlet {
     }
 
     /**
-     * Returns the current session associated with this request, or if the request does not have a session,
-     * creates one.
-     *
-     * @param request object that contains the request the client has made of the servlet.
-     * @return the HttpSession associated with this request
-     * @throws ServletException the servlet exception
-     * @throws IOException the IO exception
-     */
-    protected HttpSession getSession(HttpServletRequest request) throws ServletException, IOException {
-
-        if (!isCreateOrGetSession(request)) {
-            return null;
-        }
-
-        HttpSession session = request.getSession(true);
-        isValid(session);
-        initSession(session);
-
-        return session;
-
-    }
-
-    /**
      * Checks if is action describe product.
      *
      * @param action the action
@@ -1295,47 +833,6 @@ public class MotuServlet extends HttpServlet {
     }
 
     /**
-     * Checks if is action get request status.
-     *
-     * @param action the action
-     * @param request the request
-     * @param response the response
-     * @return true, if is action get request status
-     * @throws ServletException the servlet exception
-     * @throws IOException the IO exception
-     */
-    protected boolean isActionGetRequestStatus(String action, HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        if (!action.equalsIgnoreCase(ACTION_GET_REQUEST_STATUS)) {
-            return false;
-        }
-
-        String requestIdAsString = request.getParameter(PARAM_REQUEST_ID);
-        long requestId = -1;
-
-        StatusModeResponse statusModeResponse = null;
-        try {
-            if (!MotuServlet.isNullOrEmpty(requestIdAsString)) {
-                requestId = Long.parseLong(requestIdAsString);
-                statusModeResponse = requestManagement.getResquestStatusMap(requestId);
-            }
-
-            response.setContentType(null);
-
-            if (statusModeResponse == null) {
-                Organizer.marshallStatusModeResponse(new MotuInvalidRequestIdException(requestId), response.getWriter());
-            } else {
-                Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());
-            }
-
-        } catch (MotuMarshallException e) {
-            response.sendError(500, String.format("ERROR: %s", e.getMessage()));
-        }
-        return true;
-    }
-
-    /**
      * Checks if is action list get size.
      *
      * @param action the action
@@ -1359,7 +856,7 @@ public class MotuServlet extends HttpServlet {
             return false;
         }
 
-        Organizer.Format dataFormat = null;
+        OutputFormat dataFormat = null;
         try {
             dataFormat = getDataFormat(request);
         } catch (MotuExceptionBase e) {
@@ -1695,7 +1192,7 @@ public class MotuServlet extends HttpServlet {
             return false;
         }
 
-        Organizer.Format responseFormat = getResponseFormat(request);
+        OutputFormat responseFormat = getResponseFormat(request);
         setResponseContentType(responseFormat, response);
 
         String serviceName = request.getParameter(PARAM_SERVICE);
@@ -1770,38 +1267,6 @@ public class MotuServlet extends HttpServlet {
     }
 
     /**
-     * Executes the ACTION_PRODUCT_DOWNLOAD if request's parameters match.
-     *
-     * @param action action to be executed.
-     * @param request object that contains the request the client has made of the servlet.
-     * @param response object that contains the response the servlet sends to the client
-     * @return true is request is ACTION_PRODUCT_DOWNLOAD and have been executed, false otherwise.
-     * @throws ServletException the servlet exception
-     * @throws IOException the IO exception
-     */
-    protected boolean isActionPing(String action, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isActionPing() - entering");
-        }
-
-        if (!action.equalsIgnoreCase(ACTION_PING)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionPing() - exiting");
-            }
-            return false;
-        }
-
-        response.setContentType(CONTENT_TYPE_PLAIN);
-        PrintWriter out = response.getWriter();
-        out.write(RESPONSE_ACTION_PING);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isActionPing() - exiting");
-        }
-        return true;
-    }
-
-    /**
      * Executes the ACTION_LOGOUT if request's parameters match.
      *
      * @param action action to be executed.
@@ -1828,228 +1293,6 @@ public class MotuServlet extends HttpServlet {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionLogout() - exiting");
-        }
-        return true;
-    }
-
-    /**
-     * Checks if is action product download.
-     *
-     * @param action the action
-     * @param request the request
-     * @param session the session
-     * @param response the response
-     * @return true, if is action product download
-     * @throws IOException the IO exception
-     * @throws ServletException the servlet exception
-     * @throws MotuException the motu exception
-     */
-    protected boolean isActionProductDownload(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
-            throws IOException, ServletException, MotuException {
-
-        response.setContentType(CONTENT_TYPE_HTML);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isActionProductDownload(String, HttpServletRequest, HttpSession, HttpServletResponse) - entering");
-        }
-
-        if (!RequestManagement.isUseQueueServer()) {
-            boolean returnboolean = isActionProductDownloadNoQueueing(action, request, session, response);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionProductDownload(String, HttpServletRequest, HttpSession, HttpServletResponse) - exiting");
-            }
-            return returnboolean;
-        }
-
-        if (!action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_PRODUCT_DOWNLOAD)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionProductDownload(String, HttpServletRequest, HttpSession, HttpServletResponse) - exiting");
-            }
-            return false;
-        }
-
-        try {
-
-            setLanguageParameter(request, session, response);
-        } catch (ServletException e) {
-            LOG.error("isActionProductDownload(String, HttpServletRequest, HttpSession, HttpServletResponse)", e);
-
-            response.sendError(500, String.format("ERROR: %s", e.getMessage()));
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionProductDownload(String, HttpServletRequest, HttpSession, HttpServletResponse) - exiting");
-            }
-            return true;
-        }
-
-        Writer out = null;
-        Organizer.Format responseFormat = null;
-
-        String mode = getMode(request);
-
-        int priority = getRequestPriority(request);
-
-        overrideMaxPoolAnonymous(request);
-        overrideMaxPoolAuthenticate(request);
-
-        String userId = getLogin(request, session);
-        boolean anonymousUser = isAnonymousUser(request, userId);
-        String userHost = getRemoteHost(request);
-
-        if (MotuServlet.isNullOrEmpty(userId)) {
-            userId = userHost;
-        }
-
-        if (RunnableHttpExtraction.noMode(mode)) {
-            out = response.getWriter();
-            responseFormat = Organizer.Format.HTML;
-        }
-
-        Organizer.Format dataFormat = null;
-        try {
-            dataFormat = getDataFormat(request);
-        } catch (MotuExceptionBase e) {
-            response.sendError(400, String.format("ERROR: %s", e.notifyException()));
-            return true;
-        } catch (Exception e) {
-            response.sendError(400, String.format("ERROR: %s", e.getMessage()));
-            return true;
-        }
-
-        String productId = "";
-        try {
-            productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
-        } catch (MotuException e) {
-            response.sendError(400, String.format("ERROR: '%s' ", e.notifyException()));
-            return true;
-        } catch (Exception e) {
-            response.sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
-            return true;
-        }
-
-        ExtractionParameters extractionParameters = new ExtractionParameters(
-                request.getParameter(MotuRequestParametersConstant.PARAM_SERVICE),
-                request.getParameter(MotuRequestParametersConstant.PARAM_DATA),
-                getVariables(request),
-                getTemporalCoverage(request),
-                getGeoCoverage(request),
-                getDepthCoverage(request),
-                productId,
-                dataFormat,
-                out,
-                responseFormat,
-                userId,
-                anonymousUser);
-
-        extractionParameters.setBatchQueue(isBatch(request));
-        extractionParameters.setUserHost(userHost);
-
-        // Set assertion to manage CAS.
-        extractionParameters.setAssertion(AssertionHolder.getAssertion());
-
-        productDownload(extractionParameters, mode, priority, session, response);
-
-        boolean noMode = RunnableHttpExtraction.noMode(mode);
-        if (!noMode) {
-            removeOrganizerSession(session);
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isActionProductDownload(String, HttpServletRequest, HttpSession, HttpServletResponse) - exiting");
-        }
-        return true;
-
-    }
-
-    /**
-     * Executes the ACTION_PRODUCT_DOWNLOAD if request's parameters match.
-     *
-     * @param action action to be executed.
-     * @param request object that contains the request the client has made of the servlet.
-     * @param session request sesssion
-     * @param response object that contains the response the servlet sends to the client
-     * @return true is request is ACTION_PRODUCT_DOWNLOAD and have been executed, false otherwise.
-     * @throws ServletException the servlet exception
-     * @throws IOException the IO exception
-     * @throws MotuException the motu exception
-     */
-    protected boolean isActionProductDownloadNoQueueing(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
-            throws ServletException, IOException, MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isActionProductDownloadNoQueueing() - entering");
-        }
-
-        if (RequestManagement.isUseQueueServer()) {
-            return false;
-        }
-
-        if (!action.equalsIgnoreCase(ACTION_PRODUCT_DOWNLOAD)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionProductDownloadNoQueueing() - exiting");
-            }
-            return false;
-        }
-
-        Writer out = null;
-        Organizer.Format responseFormat = null;
-
-        String mode = getMode(request);
-
-        if (MotuServlet.isNullOrEmpty(mode)) {
-            out = response.getWriter();
-            responseFormat = Organizer.Format.HTML;
-        }
-
-        Organizer.Format dataFormat = null;
-        try {
-            dataFormat = getDataFormat(request);
-        } catch (MotuExceptionBase e) {
-            response.sendError(400, String.format("ERROR: %s", e.notifyException()));
-        } catch (Exception e) {
-            response.sendError(400, String.format("ERROR: %s", e.getMessage()));
-        }
-
-        String productId = "";
-        try {
-            productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
-        } catch (MotuException e) {
-            response.sendError(400, String.format("ERROR: '%s' ", e.notifyException()));
-            return true;
-        } catch (Exception e) {
-            response.sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
-            return true;
-        }
-        ExtractionParameters extractionParameters = new ExtractionParameters(
-                request.getParameter(MotuRequestParametersConstant.PARAM_SERVICE),
-                request.getParameter(MotuRequestParametersConstant.PARAM_DATA),
-                getVariables(request),
-                getTemporalCoverage(request),
-                getGeoCoverage(request),
-                getDepthCoverage(request),
-                productId,
-                dataFormat,
-                out,
-                responseFormat,
-                null,
-                true);
-
-        // Set assertion to manage CAS.
-        extractionParameters.setAssertion(AssertionHolder.getAssertion());
-
-        setLanguageParameter(request, session, response);
-
-        // -------------------------------------------------
-        // Data extraction
-        // -------------------------------------------------
-        productDownloadNoQueueing(extractionParameters, mode, session, response);
-
-        boolean noMode = RunnableHttpExtraction.noMode(mode);
-        if (!noMode) {
-            removeOrganizerSession(session);
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isActionProductDownloadNoQueueing() - exiting");
         }
         return true;
     }
@@ -2099,68 +1342,6 @@ public class MotuServlet extends HttpServlet {
     }
 
     /**
-     * Checks if a session has to be created.
-     * 
-     * @param request the request
-     * 
-     * @return true, if a session has to be created, false otherwise
-     */
-    protected boolean isCreateOrGetSession(HttpServletRequest request) {
-        String action = getAction(request);
-        String mode = getMode(request);
-        boolean noMode = RunnableHttpExtraction.noMode(mode);
-
-        boolean createOk = false;
-        createOk |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_REFRESH);
-        createOk |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_LIST_SERVICES);
-        createOk |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_LIST_CATALOG);
-        createOk |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_LIST_PRODUCT_METADATA);
-        createOk |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_PRODUCT_DOWNLOADHOME);
-        createOk |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_PRODUCT_DOWNLOAD) && noMode;
-
-        return createOk;
-    }
-
-    /**
-     * Check authorized.
-     *
-     * @param request the request
-     * @param session the session
-     * @param response the response
-     * @return true, if check authorized
-     * @throws ServletException the servlet exception
-     */
-    private boolean checkAuthorized(HttpServletRequest request, HttpSession session, HttpServletResponse response) throws ServletException {
-        if (authenticationProps == null) {
-            return true;
-        }
-
-        if (session != null) {
-            if (session.getAttribute(SESSION_AUTHORIZED_KEY) != null) {
-                return true;
-            }
-        }
-        String login = getLogin(request);
-        String password = request.getParameter(PARAM_PWD);
-
-        if (!isAuthorized(login, password)) {
-            try {
-                response.sendError(401, "Authentication failure");
-            } catch (IOException e) {
-                LOG.error("response sendError failed", e);
-                throw new ServletException("response sendError failed", e);
-            }
-            return false;
-        }
-        if (session == null) {
-            session = request.getSession(true);
-        }
-        session.setAttribute(SESSION_AUTHORIZED_KEY, new Boolean(true));
-        session.setAttribute(SESSION_AUTHORIZED_USER, login);
-        return true;
-    }
-
-    /**
      * Creates a new Organizer for a session.
      *
      * @param session session in which to create Oragnizer
@@ -2191,255 +1372,11 @@ public class MotuServlet extends HttpServlet {
     }
 
     /**
-     * Debug pending request.
-     * 
-     * @param stringBuffer the string buffer
-     */
-    private void debugPendingRequest(StringBuffer stringBuffer) {
-
-        if (stringBuffer == null) {
-            return;
-        }
-
-        if (requestManagement == null) {
-            return;
-        }
-
-        stringBuffer.append("<h1 align=\"center\">\n");
-        stringBuffer.append("Pending requests\n");
-        stringBuffer.append("</h1>\n");
-
-        QueueServerManagement queueServerManagement = requestManagement.getQueueServerManagement();
-        if (queueServerManagement == null) {
-            stringBuffer.append("<p> Queue server is not active</p>");
-            return;
-        }
-        stringBuffer.append("<h2>\n");
-        stringBuffer.append("Queue server general configuration");
-        stringBuffer.append("</h2>\n");
-        stringBuffer.append("<p>\n");
-        stringBuffer.append(" Default priority: ");
-        stringBuffer.append(queueServerManagement.getDefaultPriority());
-        stringBuffer.append(" Max. data threshold non-batch: ");
-        stringBuffer.append(String.format("%8.2f Mo", queueServerManagement.getMaxDataThreshold(false)));
-        stringBuffer.append(" Max. data threshold batch: ");
-        stringBuffer.append(String.format("%8.2f Mo", queueServerManagement.getMaxDataThreshold(true)));
-        stringBuffer.append("</p>\n");
-
-        stringBuffer.append("<h2>\n");
-        stringBuffer.append("Non-Batch Queues");
-        stringBuffer.append("</h2>\n");
-        debugPendingRequest(stringBuffer, queueServerManagement, false);
-        stringBuffer.append("<h2>\n");
-        stringBuffer.append("Batch Queues");
-        stringBuffer.append("</h2>\n");
-        debugPendingRequest(stringBuffer, queueServerManagement, true);
-    }
-
-    /**
-     * Debug pending request.
-     *
-     * @param stringBuffer the string buffer
-     * @param queueServerManagement the queue server management
-     * @param batch the batch
-     */
-    private void debugPendingRequest(StringBuffer stringBuffer, QueueServerManagement queueServerManagement, boolean batch) {
-
-        if (stringBuffer == null) {
-            return;
-        }
-
-        if (queueServerManagement == null) {
-            return;
-        }
-
-        List<QueueType> queuesConfig = queueServerManagement.getQueuesConfig();
-        QueueManagement queueManagement = null;
-
-        boolean hasQueue = false;
-
-        // queues are sorted by data threshold (ascending)
-        for (QueueType queueConfig : queuesConfig) {
-            queueManagement = queueServerManagement.getQueueManagement(queueConfig);
-            if (queueManagement == null) {
-                continue;
-            }
-            if (queueConfig.getBatch() != batch) {
-                continue;
-            }
-
-            hasQueue = true;
-
-            stringBuffer.append("<h3>\n");
-            stringBuffer.append(queueConfig.getId());
-            stringBuffer.append(": ");
-            stringBuffer.append(queueConfig.getDescription());
-            stringBuffer.append("</h3>\n");
-            stringBuffer.append("<table border=\"1\">\n");
-            stringBuffer.append("<p>\n");
-            stringBuffer.append("Max. pool anonymous: ");
-            if (queueConfig.getBatch()) {
-                stringBuffer.append("unlimited");
-            } else {
-                stringBuffer.append(queueServerManagement.computeMaxPoolAnonymous(queueManagement));
-            }
-            stringBuffer.append(" Max. pool authenticate: ");
-            if (queueConfig.getBatch()) {
-                stringBuffer.append("unlimited");
-            } else {
-                stringBuffer.append(queueServerManagement.computeMaxPoolAuthenticate(queueManagement));
-            }
-            stringBuffer.append("</p>\n");
-            stringBuffer.append("<p>\n");
-            stringBuffer.append("Max. threads: ");
-            stringBuffer.append(queueConfig.getMaxThreads());
-            stringBuffer.append(" Data threshold: ");
-            stringBuffer.append(String.format("%8.2f Mo", queueConfig.getDataThreshold()));
-            stringBuffer.append(" Max. pool size: ");
-            stringBuffer.append(queueConfig.getMaxPoolSize());
-            stringBuffer.append(" Low priority waiting: ");
-            stringBuffer.append(queueConfig.getLowPriorityWaiting());
-            stringBuffer.append("</p>\n");
-            stringBuffer.append("<p>\n");
-            stringBuffer.append(" Approximate number of threads that are actively executing tasks: ");
-            stringBuffer.append(queueManagement.getThreadPoolExecutor().getActiveCount());
-            stringBuffer.append("</p>\n");
-            stringBuffer.append("<p>\n");
-            stringBuffer.append(" Approximate total number of tasks that have completed execution: ");
-            stringBuffer.append(queueManagement.getThreadPoolExecutor().getCompletedTaskCount());
-            stringBuffer.append("</p>\n");
-
-            PriorityBlockingQueue<Runnable> priorityBlockingQueue = queueManagement.getPriorityBlockingQueue();
-
-            if (priorityBlockingQueue == null) {
-                stringBuffer.append("</table>\n");
-                continue;
-            }
-
-            stringBuffer.append("<tr>\n");
-            stringBuffer.append("<th>\n");
-            stringBuffer.append("Request Id");
-            stringBuffer.append("</th>\n");
-            stringBuffer.append("<th>\n");
-            stringBuffer.append("Status");
-            stringBuffer.append("</th>\n");
-            stringBuffer.append("<th>\n");
-            stringBuffer.append("Mode");
-            stringBuffer.append("</th>\n");
-            stringBuffer.append("<th>\n");
-            stringBuffer.append("Priority");
-            stringBuffer.append("</th>\n");
-            stringBuffer.append("<th>\n");
-            stringBuffer.append("Range");
-            stringBuffer.append("</th>\n");
-            stringBuffer.append("<th>\n");
-            stringBuffer.append("Amount data size");
-            stringBuffer.append("</th>\n");
-            stringBuffer.append("<th>\n");
-            stringBuffer.append("User");
-            stringBuffer.append("</th>\n");
-            stringBuffer.append("<th>\n");
-            stringBuffer.append("Anonymous ?");
-            stringBuffer.append("</th>\n");
-            stringBuffer.append("<th>\n");
-            stringBuffer.append("User Host");
-            stringBuffer.append("</th>\n");
-            stringBuffer.append("<th>\n");
-            stringBuffer.append("In queue since");
-            stringBuffer.append("</th>\n");
-            stringBuffer.append("<th>\n");
-            stringBuffer.append("Extraction parameters");
-            stringBuffer.append("</th>\n");
-            stringBuffer.append("</tr>\n");
-
-            for (Runnable runnable : priorityBlockingQueue) {
-                if (!(runnable instanceof RunnableExtraction)) {
-                    continue;
-                }
-
-                stringBuffer.append("<tr>\n");
-                RunnableExtraction runnableExtraction = (RunnableExtraction) runnable;
-                StatusModeResponse statusModeResponse = runnableExtraction.getStatusModeResponse();
-                if (statusModeResponse == null) {
-                    stringBuffer.append("</tr>\n");
-                    continue;
-                }
-                stringBuffer.append("<td>\n");
-                stringBuffer.append(statusModeResponse.getRequestId().toString());
-                stringBuffer.append("</td>\n");
-                stringBuffer.append("<td>\n");
-                stringBuffer.append(statusModeResponse.getStatus().toString());
-                stringBuffer.append("</td>\n");
-                stringBuffer.append("<td>\n");
-                String mode = runnableExtraction.getMode();
-                if (mode != null) {
-                    stringBuffer.append(runnableExtraction.getMode());
-                }
-                stringBuffer.append("</td>\n");
-                stringBuffer.append("<td>\n");
-                stringBuffer.append(Integer.toString(runnableExtraction.getPriority()));
-                stringBuffer.append("</td>\n");
-                stringBuffer.append("<td>\n");
-                stringBuffer.append(Integer.toString(runnableExtraction.getRange()));
-                stringBuffer.append("</td>\n");
-                stringBuffer.append("<td>\n");
-                stringBuffer.append(String.format("%8.2f Mo", runnableExtraction.getQueueLogInfo().getAmountDataSize()));
-                stringBuffer.append("</td>\n");
-                stringBuffer.append("<td>\n");
-                stringBuffer.append(runnableExtraction.getExtractionParameters().getUserId());
-                stringBuffer.append("</td>\n");
-                stringBuffer.append("<td>\n");
-                stringBuffer.append(runnableExtraction.getExtractionParameters().isAnonymousUser());
-                stringBuffer.append("</td>\n");
-                stringBuffer.append("<td>\n");
-                stringBuffer.append(runnableExtraction.getExtractionParameters().getUserHost());
-                stringBuffer.append("</td>\n");
-                stringBuffer.append("<td>\n");
-                if (runnableExtraction.getQueueLogInfo().getInQueueTime() != null) {
-                    stringBuffer.append(runnableExtraction.getQueueLogInfo().getInQueueTime().toString());
-                } else {
-                    stringBuffer.append("Unknown");
-                }
-                stringBuffer.append("</td>\n");
-                stringBuffer.append("<td>\n");
-                stringBuffer.append(runnableExtraction.getExtractionParameters().toString());
-                stringBuffer.append("</td>\n");
-                stringBuffer.append("</tr>\n");
-            }
-            stringBuffer.append("</table>\n");
-        }
-        if (!hasQueue) {
-            stringBuffer.append("None");
-            return;
-        }
-
-    }
-
-    /**
-     * Debug request all status.
-     * 
-     * @param stringBuffer the string buffer
-     */
-    private void debugRequestAllStatus(StringBuffer stringBuffer) {
-        if (stringBuffer == null) {
-            return;
-        }
-        stringBuffer.append("<h1 align=\"center\">\n");
-        stringBuffer.append("Request status");
-        stringBuffer.append("</h1>\n");
-
-        for (StatusModeType statusModeType : StatusModeType.values()) {
-            debugRequestStatus(stringBuffer, statusModeType);
-
-        }
-    }
-
-    /**
      * Debug request headers.
      * 
      * @param request the request
      */
-    private void debugRequestHeaders(HttpServletRequest request) {
+    private void logDebugRequestHeaders(HttpServletRequest request) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("debugRequestHeaders(HttpServletRequest) - entering");
         }
@@ -2461,116 +1398,6 @@ public class MotuServlet extends HttpServlet {
         if (LOG.isDebugEnabled()) {
             LOG.debug("debugRequestHeaders(HttpServletRequest) - exiting");
         }
-    }
-
-    /**
-     * Debug request status.
-     * 
-     * @param stringBuffer the string buffer
-     * @param statusModeType the status mode type
-     */
-    private void debugRequestStatus(StringBuffer stringBuffer, StatusModeType statusModeType) {
-
-        if (stringBuffer == null) {
-            return;
-        }
-
-        stringBuffer.append("<h2>\n");
-        stringBuffer.append("Status: \n");
-        stringBuffer.append(statusModeType.toString());
-        stringBuffer.append("</h2>\n");
-        stringBuffer.append("<table border=\"1\">\n");
-        stringBuffer.append("<tr>\n");
-        stringBuffer.append("<th>\n");
-        stringBuffer.append("Request Id");
-        stringBuffer.append("</th>\n");
-        stringBuffer.append("<th>\n");
-        stringBuffer.append("Time");
-        stringBuffer.append("</th>\n");
-        stringBuffer.append("<th>\n");
-        stringBuffer.append("Status");
-        stringBuffer.append("</th>\n");
-        stringBuffer.append("<th>\n");
-        stringBuffer.append("Code");
-        stringBuffer.append("</th>\n");
-        stringBuffer.append("<th>\n");
-        stringBuffer.append("Message");
-        stringBuffer.append("</th>\n");
-        stringBuffer.append("<th>\n");
-        stringBuffer.append("Remote data");
-        stringBuffer.append("</th>\n");
-        stringBuffer.append("<th>\n");
-        stringBuffer.append("Local data");
-        stringBuffer.append("</th>\n");
-        stringBuffer.append("</tr>\n");
-
-        Set<Long> requestIds = requestManagement.requestStatusMapKeySet();
-
-        for (Long requestId : requestIds) {
-            StatusModeResponse statusModeResponse = requestManagement.getResquestStatusMap(requestId);
-            if (statusModeResponse.getStatus() != statusModeType) {
-                continue;
-            }
-
-            stringBuffer.append("<tr>\n");
-            stringBuffer.append("<td>\n");
-            stringBuffer.append(requestId.toString());
-            stringBuffer.append("</td>\n");
-            stringBuffer.append("<td>\n");
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(requestId);
-            stringBuffer.append(cal.getTime().toString());
-            stringBuffer.append("</td>\n");
-            stringBuffer.append("<td>\n");
-            stringBuffer.append(statusModeResponse.getStatus().toString());
-            stringBuffer.append("</td>\n");
-            stringBuffer.append("<td>\n");
-            stringBuffer.append(statusModeResponse.getCode().toString());
-            stringBuffer.append("</td>\n");
-            stringBuffer.append("<td>\n");
-            stringBuffer.append(statusModeResponse.getMsg());
-            stringBuffer.append(" - file length is : ");
-            if (statusModeResponse.getSize() != null) {
-                stringBuffer.append(statusModeResponse.getSize());
-            } else {
-                stringBuffer.append("null");
-            }
-            stringBuffer.append(" - file lastModified is : ");
-            if (statusModeResponse.getDateProc() != null) {
-                XMLGregorianCalendar lastModified = statusModeResponse.getDateProc().normalize();
-                stringBuffer.append(lastModified.toString());
-            } else {
-                stringBuffer.append("null");
-            }
-            stringBuffer.append("</td>\n");
-            stringBuffer.append("<td>\n");
-            stringBuffer.append(statusModeResponse.getRemoteUri());
-            stringBuffer.append("</td>\n");
-            stringBuffer.append("<td>\n");
-            stringBuffer.append(statusModeResponse.getLocalUri());
-            stringBuffer.append("</td>\n");
-            stringBuffer.append("</tr>\n");
-            stringBuffer.append("\n");
-        }
-        stringBuffer.append("</table>\n");
-
-    }
-
-    /**
-     * Gets the action.
-     * 
-     * @param request the request
-     * 
-     * @return the action
-     */
-    private String getAction(HttpServletRequest request) {
-        String action = request.getParameter(PARAM_ACTION);
-        if (MotuServlet.isNullOrEmpty(action)) {
-            action = ACTION_LIST_CATALOG;
-        }
-
-        return action;
-
     }
 
     /**
@@ -2655,94 +1482,6 @@ public class MotuServlet extends HttpServlet {
 
     }
 
-    /**
-     * Gets the depth coverage from the request.
-     * 
-     * @param request servlet request
-     * 
-     * @return a list of deph coverage : first depth min, then depth max
-     */
-    private List<String> getDepthCoverage(HttpServletRequest request) {
-        // -------------------------------------------------
-        // Gets Depth coverage
-        // -------------------------------------------------
-        String lowdepth = request.getParameter(PARAM_LOW_Z);
-        String highDepth = request.getParameter(PARAM_HIGH_Z);
-        List<String> listDepthCoverage = new ArrayList<String>();
-
-        if (lowdepth != null) {
-            listDepthCoverage.add(lowdepth);
-        }
-
-        if (highDepth != null) {
-            listDepthCoverage.add(highDepth);
-        }
-        return listDepthCoverage;
-    }
-
-    /**
-     * Gets the forwarded for.
-     * 
-     * @param request the request
-     * 
-     * @return the forwarded for
-     */
-    private String getForwardedFor(HttpServletRequest request) {
-
-        String forwardedFor = request.getParameter(MotuRequestParametersConstant.PARAM_FORWARDED_FOR);
-        return MotuServlet.getHostName(forwardedFor);
-
-    }
-
-    /**
-     * Gets the geographical coverage from the request.
-     * 
-     * @param request servlet request
-     * 
-     * @return a list of geographical coverage : Lat min, Lon min, Lat max, Lon max
-     */
-    private List<String> getGeoCoverage(HttpServletRequest request) {
-        String lowLat = request.getParameter(PARAM_LOW_LAT);
-        String lowLon = request.getParameter(PARAM_LOW_LON);
-        String highLat = request.getParameter(PARAM_HIGH_LAT);
-        String highLon = request.getParameter(PARAM_HIGH_LON);
-        List<String> listLatLonCoverage = new ArrayList<String>();
-
-        if (lowLat != null) {
-            listLatLonCoverage.add(lowLat);
-        } else {
-            listLatLonCoverage.add("-90");
-        }
-        if (lowLon != null) {
-            listLatLonCoverage.add(lowLon);
-        } else {
-            listLatLonCoverage.add("-180");
-        }
-        if (highLat != null) {
-            listLatLonCoverage.add(highLat);
-        } else {
-            listLatLonCoverage.add("90");
-        }
-        if (highLon != null) {
-            listLatLonCoverage.add(highLon);
-        } else {
-            listLatLonCoverage.add("180");
-        }
-        return listLatLonCoverage;
-    }
-
-    /**
-     * Gets the login.
-     * 
-     * @param request the request
-     * 
-     * @return the login
-     */
-    private String getLogin(HttpServletRequest request) {
-
-        return request.getParameter(MotuRequestParametersConstant.PARAM_LOGIN);
-    }
-
     // /**
     // * Execute product download.
     // *
@@ -2801,7 +1540,7 @@ public class MotuServlet extends HttpServlet {
     // listDepthCoverage,
     // productId,
     // null,
-    // Organizer.Format.NETCDF);
+    // OutputFormat.NETCDF);
     //
     // if (modeConsole) {
     // response.sendRedirect(product.getDownloadUrlPath());
@@ -2834,9 +1573,9 @@ public class MotuServlet extends HttpServlet {
     // listDepthCoverage,
     // productId,
     // null,
-    // Organizer.Format.NETCDF,
+    // OutputFormat.NETCDF,
     // response.getWriter(),
-    // Organizer.Format.HTML);
+    // OutputFormat.HTML);
     // }
     // } catch (MotuExceptionBase e) {
     // LOG.error("productDownload()", e);
@@ -2852,78 +1591,6 @@ public class MotuServlet extends HttpServlet {
     // }
 
     /**
-     * Gets the login.
-     *
-     * @param request the request
-     * @param session the session
-     * @return the login
-     */
-    private String getLogin(HttpServletRequest request, HttpSession session) {
-
-        String userId = getLogin(request);
-
-        if (MotuServlet.isNullOrEmpty(userId) && session != null) {
-            userId = (String) session.getAttribute(SESSION_AUTHORIZED_USER);
-        }
-        return userId;
-    }
-
-    /**
-     * Gets the mode parameter from the request.
-     * 
-     * @param request servlet request
-     * 
-     * @return how to return the result (mode=console : url file, otherwhise HTML pages)
-     */
-    private String getMode(HttpServletRequest request) {
-        // -------------------------------------------------
-        // Gets Depth coverage
-        // -------------------------------------------------
-        String mode = request.getParameter(PARAM_MODE);
-        if (mode == null) {
-            return "";
-        }
-        return mode;
-    }
-
-    /**
-     * Gets Organizer object form the HttpSession.
-     *
-     * @param session that contains Organizer.
-     * @param response the response
-     * @return Organizer object.
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    private Organizer getOrganizer(HttpSession session, HttpServletResponse response) throws IOException {
-
-        Organizer organizer = null;
-        try {
-            if (session != null) {
-                organizer = (Organizer) session.getAttribute(ORGANIZER_SESSION_ATTR);
-                isValid(organizer);
-            } else {
-                organizer = new Organizer();
-            }
-        } catch (MotuExceptionBase e) {
-            response.sendError(500,
-                               String.format("ERROR: - MotuServlet.getOrganizer - Unable to create a new organiser. Native Error: %s",
-                                             e.notifyException()));
-        } catch (ServletException e) {
-            response.sendError(500, String.format("ERROR: - MotuServlet.getOrganizer : %s", e.getMessage()));
-        }
-
-        // if (organizer.getMotuConfig().isUseProxy()) {
-        // System.setProperty("proxyHost",
-        // organizer.getMotuConfig().getProxyHost());
-        // System.setProperty("proxyPort",
-        // organizer.getMotuConfig().getProxyPort());
-        // Authenticator.setDefault(new SimpleAuthenticator("xxx",
-        // "xxx"));
-        // }
-        return organizer;
-    }
-
-    /**
      * Gets the queue server management.
      * 
      * @return the queue server management
@@ -2932,31 +1599,6 @@ public class MotuServlet extends HttpServlet {
         return requestManagement.getQueueServerManagement();
 
     };
-
-    /**
-     * Gets the remote host.
-     * 
-     * @param request the request
-     * 
-     * @return the remote host
-     */
-    private String getRemoteHost(HttpServletRequest request) {
-
-        String hostName = getForwardedFor(request);
-
-        if (MotuServlet.isNullOrEmpty(hostName)) {
-            hostName = request.getRemoteAddr();
-
-            for (String ph : PROXY_HEADERS) {
-                String v = request.getHeader(ph);
-                if (v != null) {
-                    hostName = v;
-                    break;
-                }
-            }
-        }
-        return MotuServlet.getHostName(hostName);
-    }
 
     // /**
     // * Extraction differé de produit .
@@ -3085,47 +1727,6 @@ public class MotuServlet extends HttpServlet {
     //
     // }
 
-    /**
-     * Gets the request priority.
-     * 
-     * @param request the request
-     * 
-     * @return the request priority
-     */
-    private int getRequestPriority(HttpServletRequest request) {
-
-        short priority = getQueueServerManagement().getDefaultPriority();
-
-        String priorityStr = request.getParameter(PARAM_PRIORITY);
-        if (MotuServlet.isNullOrEmpty(priorityStr)) {
-            return priority;
-        }
-
-        try {
-            priority = Short.valueOf(priorityStr);
-        } catch (NumberFormatException e) {
-            priority = getQueueServerManagement().getDefaultPriority();
-        }
-
-        return priority;
-    }
-
-    /**
-     * Gets the status file name.
-     * 
-     * @return the status file name
-     */
-    private String getStatusFileName() {
-        StringBuffer stringBuffer = new StringBuffer();
-
-        stringBuffer.append("pr_defered_");
-        stringBuffer.append(requestManagement.generateRequestId());
-        stringBuffer.append("status.xml");
-
-        return stringBuffer.toString();
-
-    }
-
     // /**
     // * Ecriture du status d'extraction différé de produit dasn un fichier texte.
     // *
@@ -3158,118 +1759,13 @@ public class MotuServlet extends HttpServlet {
     // }
 
     /**
-     * Gets the temporal coverage from the request.
-     * 
-     * @param request servlet request
-     * 
-     * @return a list of temporable coverage, first start date, and then end date (they can be empty string)
-     */
-    private List<String> getTemporalCoverage(HttpServletRequest request) {
-        String startDate = request.getParameter(PARAM_START_DATE);
-        String endDate = request.getParameter(PARAM_END_DATE);
-        List<String> listTemporalCoverage = new ArrayList<String>();
-
-        if (startDate != null) {
-            listTemporalCoverage.add(startDate);
-        }
-        if (endDate != null) {
-            listTemporalCoverage.add(endDate);
-        }
-        return listTemporalCoverage;
-    }
-
-    /**
-     * Gets the variables from the request.
-     * 
-     * @param request servlet request
-     * 
-     * @return a list of variables
-     */
-    private List<String> getVariables(HttpServletRequest request) {
-        String[] variables = request.getParameterValues(PARAM_VARIABLE);
-
-        List<String> listVar = new ArrayList<String>();
-        if (variables != null) {
-            for (String var : variables) {
-                listVar.add(var);
-            }
-        }
-        // List<String> listVar = null;
-        // if (variables != null) {
-        // if (variables.length > 0) {
-        // listVar = Arrays.asList(variables);
-        // }
-        // }
-        return listVar;
-
-    }
-
-    /**
-     * Gets the data format.
-     *
-     * @param request the request
-     * @return the data format
-     * @throws MotuException the motu exception
-     */
-    private Organizer.Format getDataFormat(HttpServletRequest request) throws MotuException {
-        String dataFormat = request.getParameter(MotuRequestParametersConstant.PARAM_OUTPUT);
-        Organizer.Format format = Organizer.Format.NETCDF;
-
-        if (MotuServlet.isNullOrEmpty(dataFormat)) {
-            return format;
-        }
-
-        try {
-            format = Organizer.Format.valueOf(dataFormat.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new MotuException(
-                    String.format("Parameter '%s': invalid value '%s' - Valid values are : %s",
-                                  MotuRequestParametersConstant.PARAM_OUTPUT,
-                                  dataFormat,
-                                  Organizer.Format.valuesToString()),
-                    e);
-        }
-
-        return format;
-    }
-
-    /**
-     * Gets the response format.
-     * 
-     * @param request the request
-     * @return the response format
-     * @throws MotuException the motu exception
-     */
-    private Organizer.Format getResponseFormat(HttpServletRequest request) throws MotuException {
-        String dataFormat = request.getParameter(MotuRequestParametersConstant.PARAM_RESPONSE_FORMAT);
-        Organizer.Format format = Organizer.Format.HTML;
-
-        if (MotuServlet.isNullOrEmpty(dataFormat)) {
-            return format;
-        }
-
-        try {
-            format = Organizer.Format.valueOf(dataFormat.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new MotuException(
-                    String.format("Parameter '%s': invalid value '%s' - Valid values are : %s",
-                                  MotuRequestParametersConstant.PARAM_RESPONSE_FORMAT,
-                                  dataFormat,
-                                  Organizer.Format.valuesToString()),
-                    e);
-        }
-
-        return format;
-    }
-
-    /**
      * Sets the response content type.
      *
      * @param format the format
      * @param response the response
      * @throws MotuException the motu exception
      */
-    private void setResponseContentType(Organizer.Format format, HttpServletResponse response) throws MotuException {
+    private void setResponseContentType(OutputFormat format, HttpServletResponse response) throws MotuException {
 
         switch (format) {
         case HTML:
@@ -3281,24 +1777,6 @@ public class MotuServlet extends HttpServlet {
         default:
             response.setContentType(CONTENT_TYPE_PLAIN);
             break;
-        }
-    }
-
-    /**
-     * Inits the authentication.
-     * 
-     * @throws ServletException the servlet exception
-     */
-    private void initAuthentication() throws ServletException {
-        try {
-            MotuConfig motuConfig = Organizer.getMotuConfigInstance();
-            if (motuConfig.getUseAuthentication()) {
-                authenticationProps = PropertiesUtilities.loadFromClasspath("motuUser.properties");
-            }
-        } catch (IOException e) {
-            throw new ServletException("Authentication initialisation failure ", e);
-        } catch (MotuException e) {
-            throw new ServletException(String.format("Authentication initialisation failure - %s", e.notifyException()), e);
         }
     }
 
@@ -3375,145 +1853,6 @@ public class MotuServlet extends HttpServlet {
     }
 
     /**
-     * Initializes a new session with a new Organizer object.
-     *
-     * @param session session to initialize
-     * @throws ServletException the servlet exception
-     * @throws IOException the IO exception
-     */
-    private void initSession(HttpSession session) throws ServletException, IOException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initSession() - entering");
-        }
-
-        Organizer organizer;
-
-        LOG.info(String.format("initSession - MaxInactiveInterval " + session.getMaxInactiveInterval()));
-
-        try {
-            if (session.isNew()) {
-                LOG.info("initSession - session is New ");
-                createOrganizer(session);
-            }
-            organizer = (Organizer) session.getAttribute(ORGANIZER_SESSION_ATTR);
-            if (organizer == null) {
-                LOG.info("initSession - session is not New but Organizer is null");
-                createOrganizer(session);
-            }
-        } catch (Exception e) {
-            LOG.error("initSession()", e);
-
-            throw new ServletException(e);
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initSession() - exiting");
-        }
-    }
-
-    /**
-     * Debug product donwload.
-     *
-     * @param action the action
-     * @param request the request
-     * @param response the response
-     * @return true, if is action debug
-     * @throws IOException the IO exception
-     */
-    private boolean isActionDebug(String action, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-        if ((!action.equalsIgnoreCase(MotuMonitoringParametersConstant.ACTION_DEBUG))
-                && (!action.equalsIgnoreCase(MotuMonitoringParametersConstant.ACTION_QUEUE_SERVER))) {
-            return false;
-        }
-
-        StringBuffer stringBuffer = new StringBuffer();
-
-        stringBuffer.append("<html>\n");
-        stringBuffer.append("<head>\n");
-        stringBuffer.append("</head>\n");
-        stringBuffer.append("<body>\n");
-
-        debugRequestAllStatus(stringBuffer);
-        debugPendingRequest(stringBuffer);
-
-        stringBuffer.append("</body>\n");
-        stringBuffer.append("<html>\n");
-
-        response.setContentType(CONTENT_TYPE_HTML);
-
-        PrintWriter out = response.getWriter();
-        out.write(stringBuffer.toString());
-
-        return true;
-
-    }
-
-    /**
-     * Checks if is anonymous user.
-     *
-     * @param request the request
-     * @param userId the user id
-     * @return true, if is anonymous user
-     */
-    private boolean isAnonymousUser(HttpServletRequest request, String userId) {
-        if (MotuServlet.isNullOrEmpty(userId)) {
-            return true;
-        }
-        boolean anonymousUser = userId.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_ANONYMOUS_USER_VALUE);
-        if (anonymousUser) {
-            return true;
-        }
-        String anonymousUserAsString = request.getParameter(PARAM_ANONYMOUS);
-        if (anonymousUserAsString == null) {
-            return false;
-        }
-        anonymousUserAsString = anonymousUserAsString.trim();
-        return anonymousUserAsString.equalsIgnoreCase("true") || anonymousUserAsString.equalsIgnoreCase("1");
-    }
-
-    /**
-     * Checks if is authorized.
-     * 
-     * @param login the login
-     * @param password the password
-     * 
-     * @return true, if is authorized
-     */
-    private boolean isAuthorized(String login, String password) {
-        if (authenticationProps == null) {
-            return true;
-        }
-        if (login == null || password == null) {
-            return false;
-        }
-        String loginPassword = authenticationProps.getProperty(login);
-        if (loginPassword == null) {
-            return false;
-        }
-        if (!password.equals(loginPassword)) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Checks if is batch.
-     * 
-     * @param request the request
-     * 
-     * @return true, if is batch
-     */
-    private boolean isBatch(HttpServletRequest request) {
-        String batchAsString = request.getParameter(PARAM_BATCH);
-        if (MotuServlet.isNullOrEmpty(batchAsString)) {
-            return false;
-        }
-        batchAsString = batchAsString.trim();
-        return batchAsString.equalsIgnoreCase("true") || batchAsString.equalsIgnoreCase("1");
-    }
-
-    /**
      * Checks if is extra metadata.
      * 
      * @param request the request
@@ -3527,32 +1866,6 @@ public class MotuServlet extends HttpServlet {
         }
         extraMetadataAsString = extraMetadataAsString.trim();
         return extraMetadataAsString.equalsIgnoreCase("true") || extraMetadataAsString.equalsIgnoreCase("1");
-    }
-
-    /**
-     * Tests if HttpSession object is valid.
-     * 
-     * @param session instance to be tested.
-     * 
-     * @throws ServletException the servlet exception
-     */
-    private void isValid(HttpSession session) throws ServletException {
-        if (session == null) {
-            throw new ServletException(new MotuException("Error - session is null"));
-        }
-    }
-
-    /**
-     * Tests if Organizer object is valid.
-     * 
-     * @param organizer instance to be tested.
-     * 
-     * @throws ServletException the servlet exception
-     */
-    private void isValid(Organizer organizer) throws ServletException {
-        if (organizer == null) {
-            throw new ServletException(new MotuException("Error - organizer is null - perhaps session has expired."));
-        }
     }
 
     /**
@@ -3573,7 +1886,7 @@ public class MotuServlet extends HttpServlet {
         Organizer organizer = getOrganizer(session, response);
 
         try {
-            organizer.getCatalogInformation(serviceName, response.getWriter(), Organizer.Format.HTML);
+            organizer.getCatalogInformation(serviceName, response.getWriter(), OutputFormat.HTML);
         } catch (MotuExceptionBase e) {
             LOG.error("listCatalog()", e);
 
@@ -3602,7 +1915,7 @@ public class MotuServlet extends HttpServlet {
      */
     private void listProductMetaData(String serviceName,
                                      String productId,
-                                     Organizer.Format responseFormat,
+                                     OutputFormat responseFormat,
                                      HttpSession session,
                                      HttpServletResponse response) throws ServletException, IOException {
         if (LOG.isDebugEnabled()) {
@@ -3647,7 +1960,7 @@ public class MotuServlet extends HttpServlet {
         try {
             List<CatalogData.CatalogType> listCatalogType = getCatalogTypeParams(request);
 
-            organizer.getAvailableServices(response.getWriter(), Organizer.Format.HTML, listCatalogType);
+            organizer.getAvailableServices(response.getWriter(), OutputFormat.HTML, listCatalogType);
         } catch (MotuExceptionBase e) {
             LOG.error("listServices()", e);
 
@@ -3660,240 +1973,6 @@ public class MotuServlet extends HttpServlet {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("listServices() - exiting");
-        }
-    }
-
-    /**
-     * Override max pool anonymous.
-     * 
-     * @param request the request
-     */
-    private void overrideMaxPoolAnonymous(HttpServletRequest request) {
-
-        short maxPoolAnonymousOverrided = -1;
-
-        String maxPoolAnonymousAsString = request.getParameter(PARAM_MAX_POOL_ANONYMOUS);
-        if (MotuServlet.isNullOrEmpty(maxPoolAnonymousAsString)) {
-            return;
-        }
-
-        try {
-            maxPoolAnonymousOverrided = Short.valueOf(maxPoolAnonymousAsString);
-            getQueueServerManagement().setMaxPoolAnonymousOverrided(maxPoolAnonymousOverrided);
-        } catch (NumberFormatException e) {
-            // Do nothing
-        }
-
-    }
-
-    /**
-     * Override max pool authenticate.
-     * 
-     * @param request the request
-     */
-    private void overrideMaxPoolAuthenticate(HttpServletRequest request) {
-
-        short maxPoolAuthOverrided = -1;
-
-        String maxPoolAuthOverridedAsString = request.getParameter(PARAM_MAX_POOL_AUTHENTICATE);
-        if (MotuServlet.isNullOrEmpty(maxPoolAuthOverridedAsString)) {
-            return;
-        }
-
-        try {
-            maxPoolAuthOverrided = Short.valueOf(maxPoolAuthOverridedAsString);
-            getQueueServerManagement().setMaxPoolAnonymousOverrided(maxPoolAuthOverrided);
-        } catch (NumberFormatException e) {
-            // Do nothing
-        }
-
-    }
-
-    /**
-     * Product defered extract netcdf.
-     * 
-     * @param organizer the organizer
-     * @param extractionParameters the extraction parameters
-     * @param mode the mode
-     * 
-     * @return the status mode response
-     * 
-     * @throws MotuException the motu exception
-     */
-    private StatusModeResponse productDeferedExtractNetcdf(Organizer organizer, ExtractionParameters extractionParameters, String mode)
-            throws MotuException {
-
-        long requestId = requestManagement.generateRequestId();
-
-        StatusModeResponse statusModeResponse = Organizer.createStatusModeResponse();
-        statusModeResponse.setCode(ErrorType.OK);
-        statusModeResponse.setStatus(StatusModeType.INPROGRESS);
-        statusModeResponse.setMsg(MSG_IN_PROGRESS);
-        statusModeResponse.setRequestId(requestId);
-
-        requestManagement.putIfAbsentRequestStatusMap(requestId, statusModeResponse);
-
-        ProductDeferedExtractNetcdfThread productDeferedExtractNetcdfThread = new ProductDeferedExtractNetcdfThread(
-                statusModeResponse,
-                organizer,
-                extractionParameters);
-
-        productDeferedExtractNetcdfThread.start();
-
-        return statusModeResponse;
-
-    }
-
-    /**
-     * Product defered extract netcdf with status as file.
-     * 
-     * @param organizer the organizer
-     * @param extractionParameters the extraction parameters
-     * @param mode the mode
-     * 
-     * @return the string
-     * 
-     * @throws MotuException the motu exception
-     */
-    private String productDeferedExtractNetcdfWithStatusAsFile(Organizer organizer, ExtractionParameters extractionParameters, String mode)
-            throws MotuException {
-
-        String productDeferedExtractNetcdfStatusFileName = getStatusFileName();
-
-        String productDeferedExtractNetcdfStatusFilePathName = Organizer.getMotuConfigInstance().getExtractionPath() + "/"
-                + productDeferedExtractNetcdfStatusFileName;
-        String productDeferedExtractNetcdfStatusUrl = Organizer.getMotuConfigInstance().getDownloadHttpUrl() + "/"
-                + productDeferedExtractNetcdfStatusFileName;
-        ProductDeferedExtractNetcdfThread productDeferedExtractNetcdfThread = null;
-
-        productDeferedExtractNetcdfThread = new ProductDeferedExtractNetcdfThread(
-                productDeferedExtractNetcdfStatusFilePathName,
-                organizer,
-                extractionParameters);
-        try {
-            MotuServlet.printProductDeferedExtractNetcdfStatus(null,
-                                                               productDeferedExtractNetcdfThread.createWriter(),
-                                                               StatusModeType.INPROGRESS,
-                                                               MSG_IN_PROGRESS,
-                                                               ErrorType.OK);
-        } catch (IOException e) {
-            throw new MotuException(e);
-        }
-        productDeferedExtractNetcdfThread.start();
-
-        return productDeferedExtractNetcdfStatusUrl;
-
-    }
-
-    /**
-     * Product download.
-     *
-     * @param extractionParameters the extraction parameters
-     * @param mode the mode
-     * @param priority the priority
-     * @param session the session
-     * @param response the response
-     * @throws IOException the IO exception
-     */
-    private void productDownload(ExtractionParameters extractionParameters,
-                                 String mode,
-                                 int priority,
-                                 HttpSession session,
-                                 HttpServletResponse response) throws IOException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse) - entering");
-        }
-
-        // boolean modeConsole = RunnableHttpExtraction.isModeConsole(mode);
-        // boolean modeUrl = RunnableHttpExtraction.isModeUrl(mode);
-        boolean modeStatus = RunnableHttpExtraction.isModeStatus(mode);
-        // boolean noMode = RunnableHttpExtraction.noMode(mode);
-
-        RunnableHttpExtraction runnableHttpExtraction = null;
-
-        StatusModeResponse statusModeResponse = null;
-
-        final ReentrantLock lock = new ReentrantLock();
-        final Condition requestEndedCondition = lock.newCondition();
-
-        // HttpServletResponse responseWork = response;
-        //
-        // if (modeStatus) {
-        // responseWork = null;
-        // }
-
-        String serviceName = extractionParameters.getServiceName();
-        Organizer organizer = getOrganizer(session, response);
-        try {
-
-            if (organizer.isGenericService() && !MotuServlet.isNullOrEmpty(serviceName)) {
-                organizer.setCurrentService(serviceName);
-            }
-        } catch (MotuException e) {
-            LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
-
-            response.sendError(400, String.format("ERROR: %s", e.notifyException()));
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse) - exiting");
-            }
-            return;
-        }
-
-        runnableHttpExtraction = new RunnableHttpExtraction(priority, organizer, extractionParameters, response, mode, requestEndedCondition, lock);
-
-        // runnableHttpExtraction.lock = lock;
-
-        long requestId = requestManagement.generateRequestId();
-
-        runnableHttpExtraction.setRequestId(requestId);
-
-        statusModeResponse = runnableHttpExtraction.getStatusModeResponse();
-
-        statusModeResponse.setRequestId(requestId);
-
-        requestManagement.putIfAbsentRequestStatusMap(requestId, statusModeResponse);
-
-        try {
-            // ------------------------------------------------------
-            lock.lock();
-            // ------------------------------------------------------
-
-            getQueueServerManagement().execute(runnableHttpExtraction);
-
-            if (modeStatus) {
-                response.setContentType(null);
-                Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());
-            } else {
-                // --------- wait for the end of the request -----------
-                requestEndedCondition.await();
-                // ------------------------------------------------------
-            }
-        } catch (MotuMarshallException e) {
-            LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
-
-            response.sendError(500, String.format("ERROR: %s", e.getMessage()));
-        } catch (MotuExceptionBase e) {
-            LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
-
-            runnableHttpExtraction.aborted();
-            // Do nothing error is in response error code
-            // response.sendError(400, String.format("ERROR: %s", e.notifyException()));
-        } catch (Exception e) {
-            LOG.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
-
-            runnableHttpExtraction.aborted();
-            // response.sendError(500, String.format("ERROR: %s", e.getMessage()));
-        } finally {
-            // ------------------------------------------------------
-            if (lock.isLocked()) {
-                lock.unlock();
-            }
-            // ------------------------------------------------------
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse) - exiting");
         }
     }
 
@@ -3916,7 +1995,7 @@ public class MotuServlet extends HttpServlet {
 
         Organizer organizer = getOrganizer(session, response);
         try {
-            organizer.getProductDownloadInfo(serviceName, productId, response.getWriter(), Organizer.Format.HTML);
+            organizer.getProductDownloadInfo(serviceName, productId, response.getWriter(), OutputFormat.HTML);
 
         } catch (MotuExceptionBase e) {
             LOG.error("productDownloadHome()", e);
@@ -3952,7 +2031,7 @@ public class MotuServlet extends HttpServlet {
 
         Organizer organizer = getOrganizer(session, response);
         try {
-            organizer.getProductDownloadInfo(serviceName, productId, response.getWriter(), Organizer.Format.XML);
+            organizer.getProductDownloadInfo(serviceName, productId, response.getWriter(), OutputFormat.XML);
 
         } catch (MotuExceptionBase e) {
             LOG.error("describeCoverage()", e);
@@ -3996,66 +2075,6 @@ public class MotuServlet extends HttpServlet {
     // }
     //
     // }
-
-    /**
-     * Product download no queueing.
-     *
-     * @param extractionParameters the extraction parameters
-     * @param mode the mode
-     * @param session the session
-     * @param response the response
-     * @throws IOException the IO exception
-     */
-    private void productDownloadNoQueueing(ExtractionParameters extractionParameters, String mode, HttpSession session, HttpServletResponse response)
-            throws IOException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("productDownload() - entering");
-        }
-        boolean modeConsole = mode.equalsIgnoreCase(PARAM_MODE_CONSOLE);
-        boolean modeUrl = mode.equalsIgnoreCase(PARAM_MODE_URL);
-        boolean modeStatus = mode.equalsIgnoreCase(PARAM_MODE_STATUS);
-
-        // boolean noMode = RunnableHttpExtraction.noMode(mode);
-
-        Organizer organizer = getOrganizer(session, response);
-
-        try {
-            if (modeStatus) {
-                if (statusAsFile) {
-                    String productDeferedExtractNetcdfStatusUrl;
-                    productDeferedExtractNetcdfStatusUrl = productDeferedExtractNetcdfWithStatusAsFile(organizer, extractionParameters, mode);
-                    response.setContentType(CONTENT_TYPE_PLAIN);
-                    PrintWriter out = response.getWriter();
-                    out.write(productDeferedExtractNetcdfStatusUrl);
-                } else {
-                    StatusModeResponse statusModeResponse = productDeferedExtractNetcdf(organizer, extractionParameters, mode);
-                    response.setContentType(null);
-                    Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());
-                }
-            } else {
-                Product product = organizer.extractData(extractionParameters);
-
-                if (modeConsole) {
-                    response.sendRedirect(product.getDownloadUrlPath());
-                }
-                if (modeUrl) {
-                    response.setContentType(CONTENT_TYPE_PLAIN);
-                    PrintWriter out = response.getWriter();
-                    out.write(product.getDownloadUrlPath());
-                }
-            }
-        } catch (MotuExceptionBase e) {
-            LOG.error("productDownload()", e);
-            response.sendError(400, String.format("ERROR: %s", e.notifyException()));
-        } catch (Exception e) {
-            LOG.error("productDownload()", e);
-            response.sendError(400, String.format("ERROR: %s", e.getMessage()));
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("productDownload() - exiting");
-        }
-    }
 
     /**
      * Product describe product.
@@ -4209,47 +2228,6 @@ public class MotuServlet extends HttpServlet {
         if (LOG.isDebugEnabled()) {
             LOG.debug("refresh() - exiting");
         }
-    }
-
-    /**
-     * Invalidate session.
-     * 
-     * @param session the session
-     */
-    private void removeOrganizerSession(HttpSession session) {
-        // To avoid to keep Organizer object in session (lot of memory allocated but
-        // unused) invalidate the session, except in 'no mode'.
-        if (session == null) {
-            return;
-        }
-        session.removeAttribute(ORGANIZER_SESSION_ATTR);
-
-    }
-
-    /**
-     * Gets the product id.
-     *
-     * @param productId the product id
-     * @param request the request
-     * @param response the response
-     * @return the product id
-     * @throws IOException Signals that an I/O exception has occurred.
-     * @throws ServletException the servlet exception
-     * @throws MotuException the motu exception
-     */
-    protected String getProductIdFromParamId(final String productId, HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException, MotuException {
-        String serviceName = request.getParameter(PARAM_SERVICE);
-
-        if ((MotuServlet.isNullOrEmpty(serviceName)) || (MotuServlet.isNullOrEmpty(productId))) {
-            return productId;
-        }
-
-        HttpSession session = getSession(request);
-
-        Organizer organizer = getOrganizer(session, response);
-
-        return organizer.getDatasetIdFromURI(productId, serviceName);
     }
 
     /**

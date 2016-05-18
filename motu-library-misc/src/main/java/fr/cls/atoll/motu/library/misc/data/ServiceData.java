@@ -41,7 +41,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -49,7 +50,9 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.tools.generic.DateTool;
 import org.apache.velocity.tools.generic.MathTool;
 import org.apache.velocity.tools.generic.NumberTool;
+import org.dom4j.io.OutputFormat;
 import org.jasig.cas.client.util.AssertionHolder;
+import org.opengis.metadata.distribution.DataFile;
 
 import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
@@ -71,8 +74,8 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.utils.ConfigLoader;
+import ucar.unidata.util.Product;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -87,7 +90,7 @@ import fr.cls.atoll.motu.library.misc.utils.ConfigLoader;
 public class ServiceData {
 
     /** Logger for this class. */
-    private static final Logger LOG = Logger.getLogger(ServiceData.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * Name of the file that contents information of how to get huge data file. With '%s' corresponding to the
@@ -1972,7 +1975,7 @@ public class ServiceData {
     // List<String> listLatLonCoverage,
     // List<String> listDepthCoverage,
     // SelectData selectData,
-    // Organizer.Format dataOutputFormat) throws MotuInvalidDateException,
+    // OutputFormat dataOutputFormat) throws MotuInvalidDateException,
     // MotuInvalidDepthException,
     // MotuInvalidLatitudeException, MotuInvalidLongitudeException,
     // MotuException,
@@ -2027,11 +2030,11 @@ public class ServiceData {
                             List<String> listLatLonCoverage,
                             List<String> listDepthCoverage,
                             SelectData selectData,
-                            Organizer.Format dataOutputFormat) throws MotuInvalidDateException, MotuInvalidDepthException,
-                                    MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-                                    MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
-                                    MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
-                                    NetCdfVariableNotFoundException, IOException {
+                            OutputFormat dataOutputFormat) throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException,
+                                    MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
+                                    MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
+                                    NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException,
+                                    IOException {
 
         product.clearExtractFilename();
         product.clearLastError();
@@ -2067,7 +2070,7 @@ public class ServiceData {
     // List<String> listVar,
     // List<ExtractCriteria> criteria,
     // SelectData selectData,
-    // Organizer.Format dataOutputFormat) throws MotuException,
+    // OutputFormat dataOutputFormat) throws MotuException,
     // NetCdfAttributeException,
     // MotuNotImplementedException,
     // NetCdfVariableException, MotuExceedingCapacityException,
@@ -2221,7 +2224,7 @@ public class ServiceData {
                             List<String> listVar,
                             List<ExtractCriteria> criteria,
                             SelectData selectData,
-                            Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
+                            OutputFormat dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
                                     MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException,
                                     NetCdfVariableException, MotuNoVarException, NetCdfVariableNotFoundException, IOException {
         if (LOG.isDebugEnabled()) {
@@ -2285,7 +2288,7 @@ public class ServiceData {
                                    List<String> listLatLonCoverage,
                                    List<String> listDepthCoverage,
                                    SelectData selectData,
-                                   Organizer.Format dataOutputFormat,
+                                   OutputFormat dataOutputFormat,
                                    Writer out) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
                                            MotuNotImplementedException, MotuInvalidDepthRangeException, NetCdfVariableException,
                                            NetCdfAttributeException, MotuNoVarException, MotuInvalidDepthException, MotuInvalidDateException,

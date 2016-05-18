@@ -1,6 +1,8 @@
 package fr.cls.atoll.motu.web.usl;
 
-import fr.cls.atoll.motu.web.usl.utils.log4j.Log4JInitializer;
+import fr.cls.atoll.motu.web.usl.request.IUSLRequestManager;
+import fr.cls.atoll.motu.web.usl.request.USLRequestManager;
+import fr.cls.atoll.motu.web.usl.user.USLUserManager;
 
 /**
  * <br>
@@ -15,6 +17,8 @@ import fr.cls.atoll.motu.web.usl.utils.log4j.Log4JInitializer;
 public class USLManager implements IUSLManager {
 
     private static IUSLManager s_instance;
+    private USLUserManager userManager;
+    private IUSLRequestManager requestManager;
 
     public static IUSLManager getInstance() {
         if (s_instance == null) {
@@ -23,15 +27,34 @@ public class USLManager implements IUSLManager {
         return s_instance;
     }
 
-    public USLManager() {
-
+    private USLManager() {
+        userManager = new USLUserManager();
+        requestManager = new USLRequestManager();
     }
 
     @Override
     public void init() {
-        // Init log4j
-        Log4JInitializer.init(null);
 
+    }
+
+    /**
+     * Valeur de userManager.
+     * 
+     * @return la valeur.
+     */
+    @Override
+    public USLUserManager getUserManager() {
+        return userManager;
+    }
+
+    /**
+     * Valeur de requestManager.
+     * 
+     * @return la valeur.
+     */
+    @Override
+    public IUSLRequestManager getRequestManager() {
+        return requestManager;
     }
 
 }

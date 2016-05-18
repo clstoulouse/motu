@@ -22,13 +22,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.library.misc.intfce;
-
-import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInconsistencyException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+package fr.cls.atoll.motu.web.bll.request;
 
 import java.io.Writer;
 import java.net.URI;
@@ -36,8 +30,18 @@ import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.validation.Assertion;
+
+import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInconsistencyException;
+import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.common.utils.TimeUtils;
 
 /**
  * 
@@ -48,8 +52,7 @@ import org.jasig.cas.client.validation.Assertion;
  */
 public class ExtractionParameters implements Cloneable {
 
-    /** Logger for this class. */
-    private static final Logger LOG = Logger.getLogger(ExtractionParameters.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * The Constructor.
@@ -69,9 +72,9 @@ public class ExtractionParameters implements Cloneable {
         List<String> listTemporalCoverage,
         List<String> listLatLonCoverage,
         List<String> listDepthCoverage,
-        Organizer.Format dataOutputFormat,
+        OutputFormat dataOutputFormat,
         Writer out,
-        Organizer.Format responseFormat) {
+        OutputFormat responseFormat) {
 
         this(
             null,
@@ -109,9 +112,9 @@ public class ExtractionParameters implements Cloneable {
         List<String> listTemporalCoverage,
         List<String> listLatLonCoverage,
         List<String> listDepthCoverage,
-        Organizer.Format dataOutputFormat,
+        OutputFormat dataOutputFormat,
         Writer out,
-        Organizer.Format responseFormat,
+        OutputFormat responseFormat,
         String userId,
         boolean anonymousUser) {
 
@@ -151,9 +154,9 @@ public class ExtractionParameters implements Cloneable {
         List<String> listTemporalCoverage,
         List<String> listLatLonCoverage,
         List<String> listDepthCoverage,
-        Organizer.Format dataOutputFormat,
+        OutputFormat dataOutputFormat,
         Writer out,
-        Organizer.Format responseFormat) {
+        OutputFormat responseFormat) {
 
         this(
             serviceName,
@@ -193,9 +196,9 @@ public class ExtractionParameters implements Cloneable {
         List<String> listTemporalCoverage,
         List<String> listLatLonCoverage,
         List<String> listDepthCoverage,
-        Organizer.Format dataOutputFormat,
+        OutputFormat dataOutputFormat,
         Writer out,
-        Organizer.Format responseFormat,
+        OutputFormat responseFormat,
         String userId,
         boolean anonymousUser) {
 
@@ -235,9 +238,9 @@ public class ExtractionParameters implements Cloneable {
         List<String> listLatLonCoverage,
         List<String> listDepthCoverage,
         String productId,
-        Organizer.Format dataOutputFormat,
+        OutputFormat dataOutputFormat,
         Writer out,
-        Organizer.Format responseFormat) {
+        OutputFormat responseFormat) {
 
         this(
             serviceName,
@@ -277,9 +280,9 @@ public class ExtractionParameters implements Cloneable {
         List<String> listLatLonCoverage,
         List<String> listDepthCoverage,
         String productId,
-        Organizer.Format dataOutputFormat,
+        OutputFormat dataOutputFormat,
         Writer out,
-        Organizer.Format responseFormat,
+        OutputFormat responseFormat,
         String userId,
         boolean anonymousUser) {
 
@@ -323,9 +326,9 @@ public class ExtractionParameters implements Cloneable {
         List<String> listLatLonCoverage,
         List<String> listDepthCoverage,
         String productId,
-        Organizer.Format dataOutputFormat,
+        OutputFormat dataOutputFormat,
         Writer out,
-        Organizer.Format responseFormat,
+        OutputFormat responseFormat,
         String userId,
         boolean anonymousUser) {
 
@@ -378,13 +381,13 @@ public class ExtractionParameters implements Cloneable {
     private String productId = null;
 
     /** The data output format. */
-    private Organizer.Format dataOutputFormat = Organizer.Format.NETCDF;
+    private OutputFormat dataOutputFormat = OutputFormat.NETCDF;
 
     /** The out. */
     private Writer out = null;
 
     /** The response format. */
-    private Organizer.Format responseFormat = Organizer.Format.HTML;
+    private OutputFormat responseFormat = OutputFormat.HTML;
 
     /** The location data. */
     private String locationData = null;
@@ -422,9 +425,9 @@ public class ExtractionParameters implements Cloneable {
      * @param assertion the new assertion
      */
     public void setAssertion(Assertion assertion) {
-    	setAssertion(assertion, true);
+        setAssertion(assertion, true);
     }
-    
+
     /**
      * Sets the assertion.
      *
@@ -437,11 +440,11 @@ public class ExtractionParameters implements Cloneable {
         // --> get he user name from AttributePrincipal and set the user name
         // --> set anonymous user to false
         if (overrideUserId) {
-	        String name = AssertionUtils.getAttributePrincipalName(assertion);
-	        if (!Organizer.isNullOrEmpty(name)) {
-	            setUserId(name);
-	            setAnonymousUser(false);            
-	        }
+            String name = AssertionUtils.getAttributePrincipalName(assertion);
+            if (!Organizer.isNullOrEmpty(name)) {
+                setUserId(name);
+                setAnonymousUser(false);
+            }
         }
     }
 
@@ -464,7 +467,7 @@ public class ExtractionParameters implements Cloneable {
      * 
      * @return the data output format
      */
-    public Organizer.Format getDataOutputFormat() {
+    public OutputFormat getDataOutputFormat() {
         return dataOutputFormat;
     }
 
@@ -473,7 +476,7 @@ public class ExtractionParameters implements Cloneable {
      * 
      * @param dataOutputFormat the data output format
      */
-    public void setDataOutputFormat(Organizer.Format dataOutputFormat) {
+    public void setDataOutputFormat(OutputFormat dataOutputFormat) {
         this.dataOutputFormat = dataOutputFormat;
     }
 
@@ -591,7 +594,7 @@ public class ExtractionParameters implements Cloneable {
         }
 
         if ((d1 != null) && (d2 != null)) {
-            temporalCoverageInDays = (int) (java.lang.Math.abs(d1.getTime() - d2.getTime()) / Organizer.MILLISECS_PER_DAY) + 1;
+            temporalCoverageInDays = (int) (java.lang.Math.abs(d1.getTime() - d2.getTime()) / TimeUtils.MILLISECS_PER_DAY) + 1;
         }
     }
 
@@ -654,7 +657,7 @@ public class ExtractionParameters implements Cloneable {
      * 
      * @return the response format
      */
-    public Organizer.Format getResponseFormat() {
+    public OutputFormat getResponseFormat() {
         return responseFormat;
     }
 
@@ -663,7 +666,7 @@ public class ExtractionParameters implements Cloneable {
      * 
      * @param responseFormat the response format
      */
-    public void setResponseFormat(Organizer.Format responseFormat) {
+    public void setResponseFormat(OutputFormat responseFormat) {
         this.responseFormat = responseFormat;
     }
 
@@ -712,46 +715,46 @@ public class ExtractionParameters implements Cloneable {
      * @throws MotuInconsistencyException the motu inconsistency exception
      */
     public void verifyParameters() throws MotuInconsistencyException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("verifyParameters() - entering");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("verifyParameters() - entering");
         }
 
         if (Organizer.isNullOrEmpty(locationData) && Organizer.isNullOrEmpty(productId)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.info(" empty locationData and empty productId");
-                LOG.debug("verifyParameters() - exiting");
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.info(" empty locationData and empty productId");
+                LOGGER.debug("verifyParameters() - exiting");
             }
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("verifyParameters() - exiting");
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("verifyParameters() - exiting");
             }
             throw new MotuInconsistencyException("ERROR: neither location data nor product id parameters are filled - Choose one of them");
         }
 
         if (!Organizer.isNullOrEmpty(locationData) && !Organizer.isNullOrEmpty(productId)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.info(" non empty locationData and non empty productId");
-                LOG.debug("verifyParameters() - exiting");
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.info(" non empty locationData and non empty productId");
+                LOGGER.debug("verifyParameters() - exiting");
             }
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("verifyParameters() - exiting");
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("verifyParameters() - exiting");
             }
             throw new MotuInconsistencyException("ERROR: location data and product id parameters are not compatible - Choose only one of them");
         }
 
         if (Organizer.isNullOrEmpty(serviceName) && !Organizer.isNullOrEmpty(productId)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.info("empty serviceName  and non empty productId");
-                LOG.debug("verifyParameters() - exiting");
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.info("empty serviceName  and non empty productId");
+                LOGGER.debug("verifyParameters() - exiting");
             }
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("verifyParameters() - exiting");
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("verifyParameters() - exiting");
             }
             throw new MotuInconsistencyException("ERROR: product id parameter is filled but service name is empty. You have to fill it.");
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("verifyParameters() - exiting");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("verifyParameters() - exiting");
         }
     }
 

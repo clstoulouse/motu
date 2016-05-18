@@ -1,5 +1,8 @@
 package fr.cls.atoll.motu.web.usl;
 
+import fr.cls.atoll.motu.web.usl.request.IUSLRequestManager;
+import fr.cls.atoll.motu.web.usl.user.USLUserManager;
+
 /**
  * <br>
  * <br>
@@ -16,5 +19,19 @@ public interface IUSLManager {
      * .
      */
     void init();
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    USLUserManager getUserManager();
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    IUSLRequestManager getRequestManager();
 
 }

@@ -1,5 +1,8 @@
 package fr.cls.atoll.motu.web.dal.config;
 
+import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
+
 /**
  * <br>
  * <br>
@@ -18,5 +21,26 @@ public interface IDALConfigManager {
      * @return
      */
     String getCasServerUrl();
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    boolean isCasActivated();
+
+    /**
+     * .
+     * 
+     * @throws MotuException
+     */
+    void init() throws MotuException;
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    MotuConfig getMotuConfig();
 
 }

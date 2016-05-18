@@ -28,8 +28,8 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.xml.XMLLayout;
 
-import fr.cls.atoll.motu.library.misc.queueserver.QueueLogInfo;
-import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
+import fr.cls.atoll.motu.web.bll.request.queueserver.QueueLogInfo;
+import fr.cls.atoll.motu.web.bll.request.queueserver.RunnableExtraction;
 
 /**
  * 

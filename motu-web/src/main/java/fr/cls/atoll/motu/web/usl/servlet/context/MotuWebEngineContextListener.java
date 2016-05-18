@@ -24,35 +24,46 @@
  */
 package fr.cls.atoll.motu.web.usl.servlet.context;
 
+import javax.management.AttributeNotFoundException;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.catalina.Container;
-import org.apache.catalina.ServerFactory;
+import org.apache.catalina.Server;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.deploy.FilterMap;
-import org.apache.log4j.LogManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.usl.USLManager;
 
 /**
- * Bootstrap listener for custom Log4J initialization in a web environment.
- * <p>
- * This listener has to be registered in <code>web.xml</code> with the following property:
- * <p>
- * <i>log4jConfigLocation</i>: Location of the log4j config file.
+ * <br>
+ * <br>
+ * Copyright : Copyright (c) 2016 <br>
+ * <br>
+ * Société : CLS (Collecte Localisation Satellites)
  * 
- * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
- * 
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
- * @author <a href="mailto:ccamel@cls.fr">Christophe Camel</a>
- * @author <a href="mailto:jcarbou@cls.fr">Jerome Carbou</a>
+ * @author Sylvain MARTY
+ * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
 public class MotuWebEngineContextListener implements ServletContextListener {
     /** Parameter specifying the location of the log4j config file */
     public static final String CONFIG_LOCATION_PARAM = "log4jConfigLocation";
+
+    /** Logger for this class. */
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * Shut down log4j, properly releasing all file locks and resetting the web app root system property.
@@ -61,65 +72,78 @@ public class MotuWebEngineContextListener implements ServletContextListener {
      */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        sce.getServletContext().log("Shutting down log4j");
-        LogManager.shutdown();
     }
 
     @Override
-    public void contextInitialized(ServletContextEvent sce) {
+    public void contextInitialized(final ServletContextEvent sce) {
+        try {
+            // Init DAL and also LOG4J
+            DALManager.getInstance().init();
+        } catch (MotuException e) {
+            LOGGER.error("Error while initializing DALManager", e);
+        }
+
+        BLLManager.getInstance().init();
+
         USLManager.getInstance().init();
 
         // Init Cas filters
         initCasServer(sce);
+
     }
 
     /**
      * .
      * 
      * @param sce
+     * @throws MalformedObjectNameException
+     * @throws ReflectionException
+     * @throws MBeanException
+     * @throws InstanceNotFoundException
+     * @throws AttributeNotFoundException
      */
-    private void initCasServer(ServletContextEvent sce) {
-        StandardEngine engine = (StandardEngine) ServerFactory.getServer().findService("Catalina").getContainer();
-        Container container = engine.findChild(engine.getDefaultHost());
-        StandardContext context = (StandardContext) container.findChild(sce.getServletContext().getContextPath());
+    private void initCasServer(final ServletContextEvent sce) {
+        // Run in a thread because (StandardEngine) server.findService("Catalina") is locked by
+        // ServletContextListener
+        Thread t = new Thread("Init CAS filters") {
 
-        // TODO read from motu config
-        if (BLLManager.getInstance().getConfigManager().getCasServerUrl() == null) {
-            disableCasAuthentication(context);
-        }
+            /** {@inheritDoc} */
+            @Override
+            public void run() {
+                try {
+                    String logCasServerInWebXML = "activated";
+                    // TODO read from motu config
+                    if (!BLLManager.getInstance().getConfigManager().isCasActivated()) {
+                        removeAllCasFilters(getStandardContext(sce));
+                        logCasServerInWebXML = "disabled";
+                    }
+                    LOGGER.info("CAS Server filters in web.xml: " + logCasServerInWebXML);
+                } catch (Exception e) {
+                    LOGGER.error("Init cas server", e);
+                }
+            }
+        };
+        t.setDaemon(true);
+        t.start();
     }
 
-    private void disableCasAuthentication(StandardContext context) {
-        FilterMap proxyCallbackCasValidationFilter = new FilterMap();
-        proxyCallbackCasValidationFilter.setFilterName("CAS Validation Filter");
-        proxyCallbackCasValidationFilter.addURLPattern("/proxyCallback");
+    private StandardContext getStandardContext(ServletContextEvent sce)
+            throws MalformedObjectNameException, AttributeNotFoundException, InstanceNotFoundException, MBeanException, ReflectionException {
+        MBeanServer mBeanServer = MBeanServerFactory.findMBeanServer(null).get(0);
+        ObjectName name = new ObjectName("Catalina", "type", "Server");
+        Server server = (Server) mBeanServer.getAttribute(name, "managedResource");
+        StandardEngine engine = (StandardEngine) server.findService("Catalina").getContainer();
+        Container container = engine.findChild(engine.getDefaultHost());
+        StandardContext context = (StandardContext) container.findChild(sce.getServletContext().getContextPath());
+        return context;
+    }
 
-        FilterMap casAuthFilter = new FilterMap();
-        casAuthFilter.setFilterName("CAS Authentication Filter");
-        casAuthFilter.addURLPattern("/*");
-
-        FilterMap casValidationFilter = new FilterMap();
-        casValidationFilter.setFilterName("CAS Validation Filter");
-        casValidationFilter.addURLPattern("/*");
-
-        FilterMap casHttpServletRequestWrapperFilter = new FilterMap();
-        casHttpServletRequestWrapperFilter.setFilterName("CAS HttpServletRequest Wrapper Filter");
-        casHttpServletRequestWrapperFilter.addURLPattern("/*");
-
-        FilterMap casAssertionThreadLocalFilter = new FilterMap();
-        casAssertionThreadLocalFilter.setFilterName("CAS Assertion Thread Local Filter");
-        casAssertionThreadLocalFilter.addURLPattern("/*");
-
-        FilterMap casAuthorizationFilter = new FilterMap();
-        casAuthorizationFilter.setFilterName("CAS Authorization Filter");
-        casAuthorizationFilter.addURLPattern("/*");
-
-        context.removeFilterMap(proxyCallbackCasValidationFilter);
-        context.removeFilterMap(casAuthFilter);
-        context.removeFilterMap(casValidationFilter);
-        context.removeFilterMap(casHttpServletRequestWrapperFilter);
-        context.removeFilterMap(casAssertionThreadLocalFilter);
-        context.removeFilterMap(casAuthorizationFilter);
+    private void removeAllCasFilters(StandardContext context) {
+        for (FilterMap fm : context.findFilterMaps()) {
+            if (fm.getFilterName().startsWith("CAS")) {
+                context.removeFilterMap(fm);
+            }
+        }
 
     }
 }
