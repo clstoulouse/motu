@@ -16,6 +16,8 @@ package fr.cls.atoll.motu.web.usl.request.parameter.exception;
 public class InvalidHTTPParameterException extends Exception {
 
     private String parameterName;
+    private String parameterValue;
+    private String parameterBoundaries;
 
     /**
      * .
@@ -27,13 +29,16 @@ public class InvalidHTTPParameterException extends Exception {
      * 
      * @param parameterName_ The HTTP parameter name set in the request
      * @param parameterValue_ The HTTP parameter value set in the request
-     * @param parameterBoundaries_ The HTTP parameter definition, example [-90; 90] or [console,url,status]
+     * @param parameterBoundaries_ The HTTP parameter definition, example [-90;90] or for an enum
+     *            [value1;value2;value3]
      */
     public InvalidHTTPParameterException(String parameterName_, String parameterValue_, String parameterBoundaries_) {
         super(
-            "Parameter " + parameterName_ + " has not a valid value: " + parameterValue_ + ". It should be in the following boundaries: "
+            "Parameter '" + parameterName_ + "' has not a valid value '" + parameterValue_ + "'. It should be in the following boundaries: "
                     + parameterBoundaries_);
         setParameterName(parameterName_);
+        setParameterValue(parameterValue_);
+        setParameterBoundaries(parameterBoundaries_);
     }
 
     /**
@@ -52,6 +57,42 @@ public class InvalidHTTPParameterException extends Exception {
      */
     public void setParameterName(String parameterName) {
         this.parameterName = parameterName;
+    }
+
+    /**
+     * Valeur de parameterValue.
+     * 
+     * @return la valeur.
+     */
+    public String getParameterValue() {
+        return parameterValue;
+    }
+
+    /**
+     * Valeur de parameterValue.
+     * 
+     * @param parameterValue nouvelle valeur.
+     */
+    public void setParameterValue(String parameterValue) {
+        this.parameterValue = parameterValue;
+    }
+
+    /**
+     * Valeur de parameterBoundaries.
+     * 
+     * @return la valeur.
+     */
+    public String getParameterBoundaries() {
+        return parameterBoundaries;
+    }
+
+    /**
+     * Valeur de parameterBoundaries.
+     * 
+     * @param parameterBoundaries nouvelle valeur.
+     */
+    public void setParameterBoundaries(String parameterBoundaries) {
+        this.parameterBoundaries = parameterBoundaries;
     }
 
 }
