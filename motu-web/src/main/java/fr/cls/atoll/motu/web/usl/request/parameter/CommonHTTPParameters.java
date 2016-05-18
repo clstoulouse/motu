@@ -13,6 +13,7 @@ import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_
 
 import javax.servlet.http.HttpServletRequest;
 
+import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 
 /**
@@ -98,6 +99,26 @@ public class CommonHTTPParameters {
      */
     public static String getDepthHighFromRequest(HttpServletRequest request) {
         return request.getParameter(PARAM_HIGH_Z);
+    }
+
+    /**
+     * .
+     * 
+     * @param request
+     * @return
+     */
+    public static String getStartDateFromRequest(HttpServletRequest request) {
+        return request.getParameter(MotuRequestParametersConstant.PARAM_START_DATE);
+    }
+
+    /**
+     * .
+     * 
+     * @param request
+     * @return
+     */
+    public static String getEndDateFromRequest(HttpServletRequest request) {
+        return request.getParameter(MotuRequestParametersConstant.PARAM_END_DATE);
     }
 
 }

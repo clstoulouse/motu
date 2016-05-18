@@ -24,6 +24,8 @@
  */
 package fr.cls.atoll.motu.web.usl.servlet.context;
 
+import java.util.TimeZone;
+
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -76,6 +78,8 @@ public class MotuWebEngineContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(final ServletContextEvent sce) {
+        setDefaultTimeZoneToGMT();
+
         try {
             // Init DAL and also LOG4J
             DALManager.getInstance().init();
@@ -90,6 +94,13 @@ public class MotuWebEngineContextListener implements ServletContextListener {
         // Init Cas filters
         initCasServer(sce);
 
+    }
+
+    /**
+     * .
+     */
+    private void setDefaultTimeZoneToGMT() {
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
     }
 
     /**

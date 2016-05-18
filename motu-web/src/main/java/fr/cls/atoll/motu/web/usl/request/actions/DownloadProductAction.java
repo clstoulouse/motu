@@ -47,6 +47,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.validator.DepthHTTPParameterV
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LatitudeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LongitudeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ModeHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.TemporalHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.session.SessionManager;
 
 /**
@@ -91,7 +92,7 @@ import fr.cls.atoll.motu.web.usl.request.session.SessionManager;
  * at regular and fair intervals (> 5 seconds) and gets an immediate response. When the status is “done”,
  * MyOcean Web Portal retrieves the url of the file to download, from the status response. Then MyOcean Web
  * Portal redirects response to this url. The Web Browser opens a binary stream of the file to download and
- * shows a dialog box ato allow the user saving it as a local file.</li>
+ * shows a dialog box to allow the user saving it as a local file.</li>
  * </ul>
  * </li>
  * </ul>
@@ -106,12 +107,17 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     public static final String ACTION_NAME = "productdownload";
 
     private ModeHTTPParameterValidator modeHTTPParameterValidator;
+
     private LatitudeHTTPParameterValidator latitudeLowHTTPParameterValidator;
     private LatitudeHTTPParameterValidator latitudeHighHTTPParameterValidator;
     private LongitudeHTTPParameterValidator longitudeLowHTTPParameterValidator;
     private LongitudeHTTPParameterValidator longitudeHighHTTPParameterValidator;
+
     private DepthHTTPParameterValidator depthLowHTTPParameterValidator;
     private DepthHTTPParameterValidator depthHighHTTPParameterValidator;
+
+    private TemporalHTTPParameterValidator startDateTemporalHTTPParameterValidator;
+    private TemporalHTTPParameterValidator endDateTemporalHighHTTPParameterValidator;
 
     /**
      * 
@@ -145,6 +151,13 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
             depthHighParameterValue = depthLowHTTPParameterValidator.getParameterValue();
         }
         depthHighHTTPParameterValidator = new DepthHTTPParameterValidator(PARAM_HIGH_Z, depthHighParameterValue);
+
+        startDateTemporalHTTPParameterValidator = new TemporalHTTPParameterValidator(
+                PARAM_START_DATE,
+                CommonHTTPParameters.getStartDateFromRequest(getRequest()));
+        endDateTemporalHighHTTPParameterValidator = new TemporalHTTPParameterValidator(
+                PARAM_END_DATE,
+                CommonHTTPParameters.getEndDateFromRequest(getRequest()));
     }
 
     @Override
@@ -360,16 +373,11 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      * @return a list of temporable coverage, first start date, and then end date (they can be empty string)
      */
     private List<String> getTemporalCoverage() {
-        String startDate = getRequest().getParameter(PARAM_START_DATE);
-        String endDate = getRequest().getParameter(PARAM_END_DATE);
+        String startDate = startDateTemporalHTTPParameterValidator.getParameterValue();
+        String endDate = startDateTemporalHTTPParameterValidator.getParameterValue();
         List<String> listTemporalCoverage = new ArrayList<String>();
-
-        if (startDate != null) {
-            listTemporalCoverage.add(startDate);
-        }
-        if (endDate != null) {
-            listTemporalCoverage.add(endDate);
-        }
+        listTemporalCoverage.add(startDate);
+        listTemporalCoverage.add(endDate);
         return listTemporalCoverage;
     }
 
@@ -610,6 +618,9 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
         depthLowHTTPParameterValidator.validate();
         depthHighHTTPParameterValidator.validate();
+
+        startDateTemporalHTTPParameterValidator.validate();
+        endDateTemporalHighHTTPParameterValidator.validate();
     }
 
 }
