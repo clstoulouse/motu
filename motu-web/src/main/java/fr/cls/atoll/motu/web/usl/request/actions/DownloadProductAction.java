@@ -2,11 +2,7 @@ package fr.cls.atoll.motu.web.usl.request.actions;
 
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_BATCH;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_END_DATE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_HIGH_LAT;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_HIGH_LON;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_HIGH_Z;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_LAT;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_LON;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_Z;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MAX_POOL_ANONYMOUS;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MAX_POOL_AUTHENTICATE;
@@ -45,7 +41,11 @@ import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.ProductDeferedExtractNetcdfThread;
 import fr.cls.atoll.motu.web.servlet.MotuServlet;
 import fr.cls.atoll.motu.web.servlet.RunnableHttpExtraction;
+import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.DepthHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.LatitudeHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.LongitudeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ModeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.session.SessionManager;
 
@@ -106,6 +106,12 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     public static final String ACTION_NAME = "productdownload";
 
     private ModeHTTPParameterValidator modeHTTPParameterValidator;
+    private LatitudeHTTPParameterValidator latitudeLowHTTPParameterValidator;
+    private LatitudeHTTPParameterValidator latitudeHighHTTPParameterValidator;
+    private LongitudeHTTPParameterValidator longitudeLowHTTPParameterValidator;
+    private LongitudeHTTPParameterValidator longitudeHighHTTPParameterValidator;
+    private DepthHTTPParameterValidator depthLowHTTPParameterValidator;
+    private DepthHTTPParameterValidator depthHighHTTPParameterValidator;
 
     /**
      * 
@@ -115,6 +121,30 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         super(ACTION_NAME, request, response, session);
 
         modeHTTPParameterValidator = new ModeHTTPParameterValidator(MotuRequestParametersConstant.PARAM_MODE, getModeFromRequest());
+
+        latitudeLowHTTPParameterValidator = new LatitudeHTTPParameterValidator(
+                MotuRequestParametersConstant.PARAM_LOW_LAT,
+                CommonHTTPParameters.getLatitudeLowFromRequest(getRequest()),
+                "-90");
+        latitudeHighHTTPParameterValidator = new LatitudeHTTPParameterValidator(
+                MotuRequestParametersConstant.PARAM_HIGH_LAT,
+                CommonHTTPParameters.getLatitudeLowFromRequest(getRequest()),
+                "90");
+        longitudeLowHTTPParameterValidator = new LongitudeHTTPParameterValidator(
+                MotuRequestParametersConstant.PARAM_LOW_LON,
+                CommonHTTPParameters.getLongitudeLowFromRequest(getRequest()),
+                "-180");
+        longitudeHighHTTPParameterValidator = new LongitudeHTTPParameterValidator(
+                MotuRequestParametersConstant.PARAM_HIGH_LON,
+                CommonHTTPParameters.getLongitudeHighFromRequest(getRequest()),
+                "180");
+
+        depthLowHTTPParameterValidator = new DepthHTTPParameterValidator(PARAM_LOW_Z, CommonHTTPParameters.getDepthLowFromRequest(getRequest()), "0");
+        String depthHighParameterValue = CommonHTTPParameters.getDepthHighFromRequest(getRequest());
+        if (StringUtils.isNullOrEmpty(depthHighParameterValue)) {
+            depthHighParameterValue = depthLowHTTPParameterValidator.getParameterValue();
+        }
+        depthHighHTTPParameterValidator = new DepthHTTPParameterValidator(PARAM_HIGH_Z, depthHighParameterValue);
     }
 
     @Override
@@ -371,20 +401,12 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      * @return a list of deph coverage : first depth min, then depth max
      */
     private List<String> getDepthCoverage() {
-        // -------------------------------------------------
-        // Gets Depth coverage
-        // -------------------------------------------------
-        String lowdepth = getRequest().getParameter(PARAM_LOW_Z);
-        String highDepth = getRequest().getParameter(PARAM_HIGH_Z);
+        String lowdepth = Double.toString(depthLowHTTPParameterValidator.getParameterValueValidated());
+        String highDepth = Double.toString(depthHighHTTPParameterValidator.getParameterValueValidated());
+
         List<String> listDepthCoverage = new ArrayList<String>();
-
-        if (lowdepth != null) {
-            listDepthCoverage.add(lowdepth);
-        }
-
-        if (highDepth != null) {
-            listDepthCoverage.add(highDepth);
-        }
+        listDepthCoverage.add(lowdepth);
+        listDepthCoverage.add(highDepth);
         return listDepthCoverage;
     }
 
@@ -396,32 +418,11 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      * @return a list of geographical coverage : Lat min, Lon min, Lat max, Lon max
      */
     private List<String> getGeoCoverage() {
-        String lowLat = getRequest().getParameter(PARAM_LOW_LAT);
-        String lowLon = getRequest().getParameter(PARAM_LOW_LON);
-        String highLat = getRequest().getParameter(PARAM_HIGH_LAT);
-        String highLon = getRequest().getParameter(PARAM_HIGH_LON);
         List<String> listLatLonCoverage = new ArrayList<String>();
-
-        if (lowLat != null) {
-            listLatLonCoverage.add(lowLat);
-        } else {
-            listLatLonCoverage.add("-90");
-        }
-        if (lowLon != null) {
-            listLatLonCoverage.add(lowLon);
-        } else {
-            listLatLonCoverage.add("-180");
-        }
-        if (highLat != null) {
-            listLatLonCoverage.add(highLat);
-        } else {
-            listLatLonCoverage.add("90");
-        }
-        if (highLon != null) {
-            listLatLonCoverage.add(highLon);
-        } else {
-            listLatLonCoverage.add("180");
-        }
+        listLatLonCoverage.add(Double.toString(latitudeLowHTTPParameterValidator.getParameterValueValidated()));
+        listLatLonCoverage.add(Double.toString(longitudeLowHTTPParameterValidator.getParameterValueValidated()));
+        listLatLonCoverage.add(Double.toString(latitudeHighHTTPParameterValidator.getParameterValueValidated()));
+        listLatLonCoverage.add(Double.toString(longitudeHighHTTPParameterValidator.getParameterValueValidated()));
         return listLatLonCoverage;
     }
 
@@ -601,6 +602,14 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     @Override
     protected void checkHTTPParameters() throws InvalidHTTPParameterException {
         modeHTTPParameterValidator.validate();
+
+        latitudeLowHTTPParameterValidator.validate();
+        latitudeHighHTTPParameterValidator.validate();
+        longitudeLowHTTPParameterValidator.validate();
+        longitudeHighHTTPParameterValidator.validate();
+
+        depthLowHTTPParameterValidator.validate();
+        depthHighHTTPParameterValidator.validate();
     }
 
 }

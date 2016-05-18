@@ -101,4 +101,13 @@ public abstract class AbstractHTTPParameterValidator<T> {
         return "";
     }
 
+    /**
+     * Valeur de parameterValue.
+     * 
+     * @param parameterValue nouvelle valeur.
+     */
+    public void setParameterValue(String parameterValue) {
+        this.parameterValue = parameterValue;
+    }
+
 }

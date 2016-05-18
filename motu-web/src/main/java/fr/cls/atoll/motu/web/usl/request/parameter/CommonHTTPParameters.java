@@ -2,6 +2,12 @@ package fr.cls.atoll.motu.web.usl.request.parameter;
 
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LIST_CATALOG;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_ACTION;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_HIGH_LAT;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_HIGH_LON;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_HIGH_Z;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_LAT;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_LON;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_Z;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MODE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_REQUEST_ID;
 
@@ -56,6 +62,42 @@ public class CommonHTTPParameters {
      */
     public static String getRequestIdFromRequest(HttpServletRequest request) {
         return request.getParameter(PARAM_REQUEST_ID);
+    }
+
+    public static String getLatitudeLowFromRequest(HttpServletRequest request) {
+        return request.getParameter(PARAM_LOW_LAT);
+    }
+
+    public static String getLatitudeHighFromRequest(HttpServletRequest request) {
+        return request.getParameter(PARAM_HIGH_LAT);
+    }
+
+    public static String getLongitudeLowFromRequest(HttpServletRequest request) {
+        return request.getParameter(PARAM_LOW_LON);
+    }
+
+    public static String getLongitudeHighFromRequest(HttpServletRequest request) {
+        return request.getParameter(PARAM_HIGH_LON);
+    }
+
+    /**
+     * .
+     * 
+     * @param request
+     * @return
+     */
+    public static String getDepthLowFromRequest(HttpServletRequest request) {
+        return request.getParameter(PARAM_LOW_Z);
+    }
+
+    /**
+     * .
+     * 
+     * @param request
+     * @return
+     */
+    public static String getDepthHighFromRequest(HttpServletRequest request) {
+        return request.getParameter(PARAM_HIGH_Z);
     }
 
 }
