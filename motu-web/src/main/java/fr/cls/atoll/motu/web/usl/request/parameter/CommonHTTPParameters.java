@@ -10,6 +10,7 @@ import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_Z;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MODE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_REQUEST_ID;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_SERVICE;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -119,6 +120,14 @@ public class CommonHTTPParameters {
      */
     public static String getEndDateFromRequest(HttpServletRequest request) {
         return request.getParameter(MotuRequestParametersConstant.PARAM_END_DATE);
+    }
+
+    public static String getServiceFromRequest(HttpServletRequest request) {
+        return request.getParameter(PARAM_SERVICE);
+    }
+
+    public static String getDataFromParameter(HttpServletRequest request) {
+        return request.getParameter(MotuRequestParametersConstant.PARAM_DATA);
     }
 
 }

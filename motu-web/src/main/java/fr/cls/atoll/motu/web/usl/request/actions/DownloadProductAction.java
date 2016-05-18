@@ -6,7 +6,6 @@ import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_Z;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MAX_POOL_ANONYMOUS;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MAX_POOL_AUTHENTICATE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_SERVICE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_START_DATE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_VARIABLE;
 
@@ -47,6 +46,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.validator.DepthHTTPParameterV
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LatitudeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LongitudeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ModeHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.TemporalHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.session.SessionManager;
 
@@ -106,6 +106,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
     public static final String ACTION_NAME = "productdownload";
 
+    private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
+
     private ModeHTTPParameterValidator modeHTTPParameterValidator;
 
     private LatitudeHTTPParameterValidator latitudeLowHTTPParameterValidator;
@@ -125,6 +127,10 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      */
     public DownloadProductAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         super(ACTION_NAME, request, response, session);
+
+        serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
+                MotuRequestParametersConstant.PARAM_SERVICE,
+                CommonHTTPParameters.getServiceFromRequest(getRequest()));
 
         modeHTTPParameterValidator = new ModeHTTPParameterValidator(MotuRequestParametersConstant.PARAM_MODE, getModeFromRequest());
 
@@ -175,7 +181,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         }
 
         ExtractionParameters extractionParameters = new ExtractionParameters(
-                getServiceFromParameter(),
+                serviceHTTPParameterValidator.getParameterValueValidated(),
                 getDataFromParameter(),
                 getVariables(),
                 getTemporalCoverage(),
@@ -334,10 +340,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         return format;
     }
 
-    private String getServiceFromParameter() {
-        return getRequest().getParameter(PARAM_SERVICE);
-    }
-
     private String getDataFromParameter() {
         return getRequest().getParameter(MotuRequestParametersConstant.PARAM_DATA);
     }
@@ -354,7 +356,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      * @throws MotuException the motu exception
      */
     protected String getProductIdFromParamId(String productId) throws IOException, ServletException, MotuException {
-        String serviceName = getServiceFromParameter();
+        String serviceName = serviceHTTPParameterValidator.getParameterValueValidated();
 
         if ((StringUtils.isNullOrEmpty(serviceName)) || (StringUtils.isNullOrEmpty(productId))) {
             return productId;
@@ -610,6 +612,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     @Override
     protected void checkHTTPParameters() throws InvalidHTTPParameterException {
         modeHTTPParameterValidator.validate();
+        serviceHTTPParameterValidator.validate();
 
         latitudeLowHTTPParameterValidator.validate();
         latitudeHighHTTPParameterValidator.validate();

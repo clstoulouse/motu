@@ -3,7 +3,6 @@ package fr.cls.atoll.motu.web.usl.request.parameter.validator;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 
 /**
@@ -22,13 +21,6 @@ public class TemporalHTTPParameterValidator extends AbstractHTTPParameterValidat
 
     public TemporalHTTPParameterValidator(String parameterName_, String parameterValue_) {
         super(parameterName_, parameterValue_);
-    }
-
-    public TemporalHTTPParameterValidator(String parameterName_, String parameterValue_, String defaultValue_) {
-        this(parameterName_, parameterValue_);
-        if (StringUtils.isNullOrEmpty(parameterValue_)) {
-            setParameterValue(defaultValue_);
-        }
     }
 
     /**
