@@ -22,15 +22,18 @@ public class InvalidHTTPParameterException extends Exception {
      */
     private static final long serialVersionUID = 1L;
 
-    public InvalidHTTPParameterException(String parameterName_, String errMsg_) {
-        super(errMsg_);
+    /**
+     * Constructeur.
+     * 
+     * @param parameterName_ The HTTP parameter name set in the request
+     * @param parameterValue_ The HTTP parameter value set in the request
+     * @param parameterBoundaries_ The HTTP parameter definition, example [-90; 90] or [console,url,status]
+     */
+    public InvalidHTTPParameterException(String parameterName_, String parameterValue_, String parameterBoundaries_) {
+        super(
+            "Parameter " + parameterName_ + " has not a valid value: " + parameterValue_ + ". It should be in the following boundaries: "
+                    + parameterBoundaries_);
         setParameterName(parameterName_);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String getMessage() {
-        return "Parameter " + getParameterName() + " is not valid: " + super.getMessage();
     }
 
     /**
