@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration debug="false"
+        xmlns:log4j="http://jakarta.apache.org/log4j/">
+        <appender class="org.apache.log4j.ConsoleAppender" name="CONSOLE">
+                <param name="Target" value="System.Out" />
+                <layout class="org.apache.log4j.PatternLayout">
+                        <param name="ConversionPattern" value="[%-5p &lt;%d{dd/MM/yyyy HH:mm:ss.SSS}&gt;, thrID: %t - %c.%M%n%m ]%n%n" />
+                </layout>
+        </appender>
+
+        <appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
+                <param name="File" value="/opt/atoll/misgw/tomcat-motu-cas/logs/localhost-log.log" />
+                <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+                <param name="Append" value="true"/>
+                <layout class="org.apache.log4j.PatternLayout">
+                        <param name="ConversionPattern" value="%d{HH:mm:ss:SSS} - %p - %C{1} - %m%n"/>
+                </layout>
+        </appender>
+
+        <appender class="org.apache.log4j.DailyRollingFileAppender" name="XMLFileInfo">
+                <param name="file" value="/opt/atoll/misgw/tomcat-motu-cas/logs/motuQSlog.xml" />
+                <param name="Append" value="true" />
+                <param name="DatePattern" value="'.'yyyy-MM" />
+                <layout class="fr.cls.atoll.motu.library.misc.log4j.MotuXMLLayout"></layout>
+                <!--
+                        <layout class="fr.cls.atoll.motu.web.servlet.TestLogXML"></layout>
+                        <layout class="org.apache.log4j.xml.XMLLayout"/>
+                -->
+        </appender>
+		
+        <appender name="catalinaOutput" class="org.apache.log4j.DailyRollingFileAppender">
+                <param name="File" value="/opt/atoll/misgw/tomcat-motu-cas/logs/catalina.out"/>
+                <param name="DatePattern" value=".yyyy-MM-dd"/>
+                <layout class="org.apache.log4j.PatternLayout">
+                <param name="ConversionPattern" value="%d{dd/MM/yyyy-HH:mm:ss}; [%t] %-5p @%M %m%n"/>
+                </layout>
+        </appender>
+		
+<!--
+		<logger name="fr.cls.atoll.motu">
+				<level value="INFO" />
+				<appender-ref ref="CONSOLE" />
+		</logger>
+		
+        <logger name="atoll.motu.queueserver">
+                <level value="INFO" />
+                <appender-ref ref="XMLFileInfo" />
+        </logger>		
+
+        <logger name="fr.cls.atoll.motu.cas.proxy">
+                <level value="INFO" />
+                <appender-ref ref="FILE" />
+        </logger>
+		
+        <logger name="fr.cls.atoll.motu.library">
+                <level value="INFO" />
+                <appender-ref ref="FILE" />
+        </logger>	
+
+        <logger name="org.apache.commons.httpclient">
+                <level value="INFO" />
+                <appender-ref ref="FILE" />
+        </logger>
+		
+        <logger name="fr.cls.atoll.motu.processor">
+                <level value="INFO" />
+                <appender-ref ref="CONSOLE" />
+        </logger>
+		
+        <logger name="org.deegree.services">
+                <level value="INFO" />
+                <appender-ref ref="CONSOLE" />
+        </logger>
+		
+        <logger name="org.apache.commons.vfs2">
+                <level value="INFO" />
+                <appender-ref ref="CONSOLE" />
+        </logger>	
+
+        <logger name="httpclient.wire">
+                <level value="INFO" />
+                <appender-ref ref="FILE" />
+        </logger>		
+
+        <logger name="org.jasig.cas">
+                <level value="ALL" />
+                <appender-ref ref="FILE" />
+        </logger>
+        <logger name="httpclient.wire.header">
+                <level value="fatal" />
+        </logger>
+
+        <logger name="httpclient.wire.content">
+                <level value="fatal" />
+        </logger>
+-->
+        <root>
+                <level value="WARN" />
+                <appender-ref ref="FILE" />
+                <appender-ref ref="CONSOLE" />
+                <appender-ref ref="catalinaOutput"/>
+        </root>
+</log4j:configuration>

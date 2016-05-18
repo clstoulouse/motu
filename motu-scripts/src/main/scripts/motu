@@ -1,0 +1,503 @@
+#!/bin/bash
+#
+# Motu main script used to:
+# start|stop|restart|status|clean|help
+# Tomcat Motu process
+# Tomcat TDS  process
+#
+
+
+cd "$(dirname "$0")"
+MOTU_INSTALL_DIR=$(pwd)
+
+MOTU_PRODUCTS_JAVA_DIR=$MOTU_INSTALL_DIR/products/jdk1.7.0_79
+MOTU_PRODUCTS_TOMCAT_DIR=$MOTU_INSTALL_DIR/products/apache-tomcat-7.0.69
+
+
+APP_NAME_MOTU=tomcat-motu
+APP_NAME_TDS=tomcat-tds
+
+TOMCAT_MOTU_DIR_NAME=tomcat-motu
+TOMCAT_TDS_DIR_NAME=tomcat-tds
+
+MOTU_PID_DIR=$MOTU_INSTALL_DIR/pid
+MOTU_LOG_DIR=$MOTU_INSTALL_DIR/log
+MOTU_CONF_DIR_NAME=config
+MOTU_CONF_DIR=$MOTU_INSTALL_DIR/$MOTU_CONF_DIR_NAME
+
+
+PROCESS_STATUS_STARTED="started"
+PROCESS_STATUS_STOPPED="stopped"
+
+###########################################
+###  COMMON 
+###########################################
+
+__setApacheTomcatCatalinaEnvVar() {
+  #For Tomcat product
+  export CATALINA_HOME=$MOTU_PRODUCTS_TOMCAT_DIR
+  
+  #For specific Tomcat instances
+  export CATALINA_BASE=$MOTU_INSTALL_DIR/$1
+  export CATALINA_PID=$MOTU_PID_DIR/$1.pid
+  export CATALINA_OUT=$MOTU_LOG_DIR/$1-catalina.out
+  export CATALINA_TMPDIR=$MOTU_INSTALL_DIR/$1/temp
+}
+
+initDirs() {
+  if [ ! -e $MOTU_PID_DIR ]; then
+    mkdir $MOTU_PID_DIR
+  fi
+
+  if [ ! -e $MOTU_LOG_DIR ]; then
+    mkdir $MOTU_LOG_DIR
+  fi
+  
+  #Motu
+  if [ ! -e $TOMCAT_MOTU_DIR_NAME ]; then
+    mkdir $TOMCAT_MOTU_DIR_NAME
+  fi 
+  
+  for dirName in conf temp; do
+    if [ ! -e $TOMCAT_MOTU_DIR_NAME/$dirName ]; then
+      mkdir -p $TOMCAT_MOTU_DIR_NAME/$dirName
+    fi
+  done 
+  
+  #TDS
+  if [ ! -e $TOMCAT_TDS_DIR_NAME ]; then
+    mkdir $TOMCAT_TDS_DIR_NAME
+  fi
+  
+  for dirName in conf temp content/thredds; do
+    if [ ! -e $TOMCAT_TDS_DIR_NAME/$dirName ]; then
+      mkdir -p $TOMCAT_TDS_DIR_NAME/$dirName
+    fi
+  done
+  
+}
+
+__initEnvVarOrig() {
+   export JAVA_OPTS_ORIG="$JAVA_OPTS"
+}
+
+__resetEnvVarOrig() {
+   export JAVA_OPTS=$JAVA_OPTS_ORIG
+   unset CATALINA_OPTS
+}
+
+
+__initApacheTomcatConfig() {
+   tomcatDirName=$1
+   #####################
+   ## conf/* except server.xml
+   #####################
+
+   if [ ! -f "$CATALINA_BASE/conf/catalina.policy" ]; then
+     cp "$CATALINA_HOME/conf/catalina.policy" "$CATALINA_BASE/conf/"
+   fi
+   if [ ! -f "$CATALINA_BASE/conf/catalina.properties" ]; then
+     cp "$CATALINA_HOME/conf/catalina.properties" "$CATALINA_BASE/conf/"
+   fi
+   if [ ! -f "$CATALINA_BASE/conf/context.xml" ]; then
+     cp "$CATALINA_HOME/conf/context.xml" "$CATALINA_BASE/conf/"
+   fi  
+   if [ ! -f "$CATALINA_BASE/conf/logging.properties" ]; then
+     cp "$CATALINA_HOME/conf/logging.properties" "$CATALINA_BASE/conf/"
+   fi
+   if [ ! -f "$CATALINA_BASE/conf/tomcat-users.xml" ]; then
+     cp "$CATALINA_HOME/conf/tomcat-users.xml" "$CATALINA_BASE/conf/"
+   fi
+   if [ ! -f "$CATALINA_BASE/conf/web.xml" ]; then
+     cp "$CATALINA_HOME/conf/web.xml" "$CATALINA_BASE/conf/"
+   fi
+   
+   #####################
+   ## conf/server.xml
+   #####################
+   motuPropertiesFilePath="$MOTU_CONF_DIR_NAME/motu.properties"
+   if [ ! -e $motuPropertiesFilePath ]; then
+     echo "Oops, motu configuration file not found: $motuPropertiesFilePath"
+     exit 10
+   fi
+   TOMCAT_PORT_HTTP=$(grep "$tomcatDirName-port-http=" $motuPropertiesFilePath | grep -v "#" | cut -d= -f2-)
+   TOMCAT_PORT_HTTPS=$(grep "$tomcatDirName-port-https=" $motuPropertiesFilePath | grep -v "#" | cut -d= -f2-)
+   TOMCAT_PORT_AJP=$(grep "$tomcatDirName-port-ajp=" $motuPropertiesFilePath | grep -v "#" | cut -d= -f2-)
+   TOMCAT_PORT_SHUTDOWN=$(grep "$tomcatDirName-port-shutdown=" $motuPropertiesFilePath | grep -v "#" | cut -d= -f2-)
+   
+   # copy server.xml to server.xml.tmp
+   serverXmlTmpFilePath="$CATALINA_BASE/conf/server.xml.tmp"
+   if [ -e $serverXmlTmpFilePath ]; then
+     rm $serverXmlTmpFilePath
+   fi
+   cp $CATALINA_HOME/conf/server.xml $serverXmlTmpFilePath
+   
+   # replace token in server.xml.tmp
+   if [ -n "$TOMCAT_PORT_SHUTDOWN" ]; then
+     sed -i -e "s/8005/$TOMCAT_PORT_SHUTDOWN/g" $serverXmlTmpFilePath
+   fi
+   if [ -n "$TOMCAT_PORT_HTTP" ]; then
+     sed -i -e "s/8080/$TOMCAT_PORT_HTTP/g" $serverXmlTmpFilePath
+   fi
+   if [ -n "$TOMCAT_PORT_HTTPS" ]; then
+     sed -i -e "s/8443/$TOMCAT_PORT_HTTPS/g" $serverXmlTmpFilePath
+   fi
+   if [ -n "$TOMCAT_PORT_AJP" ]; then
+     sed -i -e "s/8009/$TOMCAT_PORT_AJP/g" $serverXmlTmpFilePath
+   fi
+   
+   # move server.xml.tmp to server.xml
+   if [ -f $CATALINA_BASE/conf/server.xml ]; then
+     rm $CATALINA_BASE/conf/server.xml
+   fi
+   mv $serverXmlTmpFilePath $CATALINA_BASE/conf/server.xml
+}
+
+__addCatalinaOpt() {
+   if [ -n "$1" ]; then
+     if [ -n "$CATALINA_OPTS" ]; then
+        export CATALINA_OPTS="$CATALINA_OPTS $2"
+     else 
+        export CATALINA_OPTS="$2"
+     fi
+   fi
+}
+
+__initJavaConfig() {
+   tomcatDirName=$1
+   motuPropertiesFilePath="$MOTU_CONF_DIR_NAME/motu.properties"
+   if [ ! -e $motuPropertiesFilePath ]; then
+     echo "Oops, motu configuration file not found: $motuPropertiesFilePath"
+     exit 10
+   fi
+   JVM_OPTS=$(grep "$tomcatDirName-jvm-javaOpts=" $motuPropertiesFilePath | grep -v "#" | cut -d= -f2- | sed -e "s|\${MOTU_CONF_DIR}|$MOTU_CONF_DIR|g")
+   JVM_PORT_JMX=$(grep "$tomcatDirName-jvm-port-jmx=" $motuPropertiesFilePath | grep -v "#" | cut -d= -f2-)
+   JVM_ADDRESS_DEBUG=$(grep "$tomcatDirName-jvm-address-debug=" $motuPropertiesFilePath | grep -v "#" | cut -d= -f2-)
+   
+   __addCatalinaOpt "$JVM_OPTS" "$JVM_OPTS"
+   __addCatalinaOpt $JVM_PORT_JMX "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=$JVM_PORT_JMX -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+   __addCatalinaOpt "$JVM_ADDRESS_DEBUG" "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=$JVM_ADDRESS_DEBUG"
+   
+   export JAVA_OPTS=$JAVA_OPTS_ORIG
+}
+
+__initConfig() {
+   tomcatDirName=$1
+   __initApacheTomcatConfig $tomcatDirName
+   __initJavaConfig $tomcatDirName
+}
+
+__startCatalinaShell() {
+  tomcatDirName=$1
+  $CATALINA_HOME/bin/startup.sh >> $MOTU_LOG_DIR/$tomcatDirName.log 2>&1
+}
+
+
+__stopCatalinaShell() {
+  tomcatDirName=$1
+  $CATALINA_HOME/bin/shutdown.sh >> $MOTU_LOG_DIR/$tomcatDirName.log 2>&1
+}
+
+__showStatus() {
+  tomcatDirName=$1
+  status=$PROCESS_STATUS_STOPPED
+  if [ -s $MOTU_PID_DIR/$1.pid ]; then
+    status=$PROCESS_STATUS_STARTED
+  fi
+  echo "$tomcatDirName $status"
+}
+
+
+
+
+
+
+
+
+
+
+###########################################
+###  MOTU 
+###########################################
+
+__setMotuBusinessEnvVar() {
+  export JAVA_HOME=$MOTU_PRODUCTS_JAVA_DIR
+  
+  export MOTU_CONFIGURATION_COMMON="$MOTU_INSTALL_DIR/motu-configuration-common"
+  export MOTU_CONFIGURATION_CUSTOM="$MOTU_INSTALL_DIR/motu-configuration-sample-misgw"
+
+  export MOTU_CONFIGURATION_COMMON_ASSETS="$MOTU_CONFIGURATION_COMMON/assets"
+  export MOTU_CONFIGURATION_COMMON_RESOURCES="$MOTU_CONFIGURATION_COMMON/resources"
+
+  export MOTU_CONFIGURATION_CUSTOM_ASSETS="$MOTU_CONFIGURATION_CUSTOM/assets"
+  export MOTU_CONFIGURATION_CUSTOM_RESOURCES="$MOTU_CONFIGURATION_CUSTOM/resources"
+
+  export MOTU_CONFIGURATIONS_ASSETS="$MOTU_CONFIGURATION_COMMON_ASSETS;$MOTU_CONFIGURATION_CUSTOM_ASSETS"
+  export MOTU_CONFIGURATIONS_RESOURCES="$MOTU_CONFIGURATION_COMMON_RESOURCES;$MOTU_CONFIGURATION_CUSTOM_RESOURCES"
+}
+
+__setApacheTomcatMotuCatalinaEnvVar() {
+  __setApacheTomcatCatalinaEnvVar $TOMCAT_MOTU_DIR_NAME
+}
+
+__initMotuJavaOpt() {
+   tomcatDirName=$1
+   motuPropertiesFilePath="$MOTU_CONF_DIR_NAME/motu.properties"
+   if [ ! -e $motuPropertiesFilePath ]; then
+     echo "Oops, motu configuration file not found: $motuPropertiesFilePath"
+     exit 10
+   fi
+   
+   tomcatMotuUrlrewriteStatusEnabledOnHosts=$(grep "tomcat-motu-urlrewrite-statusEnabledOnHosts=" $motuPropertiesFilePath | grep -v "#" | cut -d= -f2-)
+   casActivated=$(grep "cas-activated=" $motuPropertiesFilePath | grep -v "#" | cut -d= -f2-)
+   casAuthServerName=$(grep "cas-auth-serverName=" $motuPropertiesFilePath | grep -v "#" | cut -d= -f2-)
+   casServerUrl=$(grep "cas-server-url=" $motuPropertiesFilePath | grep -v "#" | cut -d= -f2-)
+   casValidationFilterProxyCallbackUrl=$(grep "cas-validationFilter-proxyCallbackUrl=" $motuPropertiesFilePath | grep -v "#" | cut -d= -f2-)
+
+   __addCatalinaOpt "$tomcatMotuUrlrewriteStatusEnabledOnHosts" "-Dtomcat-motu-urlrewrite-statusEnabledOnHosts=$tomcatMotuUrlrewriteStatusEnabledOnHosts"
+   __addCatalinaOpt "$casActivated" "-Dcas-activated=$casActivated"
+   __addCatalinaOpt "$casAuthServerName" "-Dcas-auth-serverName=$casAuthServerName"
+   __addCatalinaOpt "$casServerUrl" "-Dcas-server-url=$casServerUrl"
+   __addCatalinaOpt "$casValidationFilterProxyCallbackUrl" "-Dcas-validationFilter-proxyCallbackUrl=$casValidationFilterProxyCallbackUrl"
+   __addCatalinaOpt "$MOTU_CONF_DIR_NAME" "-Dmotu-config-dir=$MOTU_CONF_DIR_NAME"
+
+   export JAVA_OPTS=$JAVA_OPTS_ORIG
+
+}
+
+startApacheTomcatMotu() {
+  echo "$TOMCAT_MOTU_DIR_NAME - start"
+
+  __setMotuBusinessEnvVar
+    
+  # sets the motu configuration
+  # MotuOpts="-DMOTU_CONFIGURATIONS_ASSETS=\"$MOTU_CONFIGURATIONS_ASSETS\" -DMOTU_CONFIGURATIONS_RESOURCES=\"$MOTU_CONFIGURATIONS_RESOURCES\""
+  # __addCatalinaOpt "$MotuOpts" "$MotuOpts"
+  
+  __setApacheTomcatMotuCatalinaEnvVar
+  __initConfig $TOMCAT_MOTU_DIR_NAME
+  __initMotuJavaOpt $TOMCAT_MOTU_DIR_NAME
+ 
+  # delete the context (for deploying)
+  # rm $CATALINA_BASE/conf/Catalina/localhost/mis-gateway-servlet.xml
+
+  __startCatalinaShell $TOMCAT_MOTU_DIR_NAME
+}
+
+stopApacheTomcatMotu() {
+  echo "$TOMCAT_MOTU_DIR_NAME - stop"
+
+  __setApacheTomcatMotuCatalinaEnvVar
+  
+  __stopCatalinaShell $TOMCAT_MOTU_DIR_NAME
+}
+
+showStatusApacheTomcatMotu() {
+  __showStatus $TOMCAT_MOTU_DIR_NAME
+}
+
+cleanApacheTomcatMotu() {
+  echo "$TOMCAT_MOTU_DIR_NAME - clean"
+  rm -rf $TOMCAT_MOTU_DIR_NAME/conf
+  rm -rf $TOMCAT_MOTU_DIR_NAME/content
+  rm -rf $TOMCAT_MOTU_DIR_NAME/logs
+  rm -rf $TOMCAT_MOTU_DIR_NAME/temp
+  rm -rf $TOMCAT_MOTU_DIR_NAME/work
+  rm -rf $MOTU_LOG_DIR/$TOMCAT_MOTU_DIR_NAME.log
+  rm -rf $MOTU_LOG_DIR/$TOMCAT_MOTU_DIR_NAME-catalina.out
+  rm -rf $MOTU_PID_DIR/$TOMCAT_MOTU_DIR_NAME.pid
+}
+
+
+
+
+
+
+
+
+
+
+###########################################
+###  TDS 
+###########################################
+
+__setApacheTomcatTDSCatalinaEnvVar() {
+  __setApacheTomcatCatalinaEnvVar $TOMCAT_TDS_DIR_NAME
+}
+
+startApacheTomcatTDS() {
+  echo "$TOMCAT_TDS_DIR_NAME - start"
+
+  __setApacheTomcatTDSCatalinaEnvVar
+  __initConfig $TOMCAT_TDS_DIR_NAME
+  
+  __startCatalinaShell $TOMCAT_TDS_DIR_NAME
+}
+
+stopApacheTomcatTDS() {
+  echo "$TOMCAT_TDS_DIR_NAME - stop"
+
+  __setApacheTomcatTDSCatalinaEnvVar
+  
+  __stopCatalinaShell $TOMCAT_TDS_DIR_NAME
+}
+
+showStatusApacheTomcatTDS() {
+  __showStatus $TOMCAT_TDS_DIR_NAME
+}
+
+cleanApacheTomcatTDS() {
+  echo "$TOMCAT_TDS_DIR_NAME - clean"
+  for dirName in conf logs temp webapps; do
+    rm -rf $TOMCAT_TDS_DIR_NAME/$dirName
+  done
+  rm -rf $MOTU_LOG_DIR/$TOMCAT_TDS_DIR_NAME.log
+  rm -rf $MOTU_LOG_DIR/$TOMCAT_TDS_DIR_NAME-catalina.out
+  rm -rf $MOTU_PID_DIR/$TOMCAT_TDS_DIR_NAME.pid
+}
+
+
+
+
+
+
+
+
+
+
+###########################################
+###  Actions 
+###########################################
+
+startALL() {
+  __initEnvVarOrig
+  startApacheTomcatMotu
+  
+  __resetEnvVarOrig
+  startApacheTomcatTDS
+}
+
+stopALL() {
+  __initEnvVarOrig
+  stopApacheTomcatMotu
+  
+  __resetEnvVarOrig
+  stopApacheTomcatTDS
+}
+
+onStartAction() {
+  app=$1
+  
+  if [ -z "$app" ]; then
+    #ALL
+    startALL
+  elif [ "${app^^}" = "${APP_NAME_MOTU^^}" ]; then
+    #Motu
+    startApacheTomcatMotu
+  elif [ "${app^^}" = "${APP_NAME_TDS^^}" ]; then
+    #TDS
+    startApacheTomcatTDS
+  else
+    echo "Oops, application is unknown: $app"
+    exit 10
+  fi
+}
+
+
+onStopAction() {
+  app=$1
+    
+  if [ -z "$app" ]; then
+    #ALL
+    stopALL
+  elif [ "${app^^}" = "${APP_NAME_MOTU^^}" ]; then
+    #Motu
+    stopApacheTomcatMotu
+  elif [ "${app^^}" = "${APP_NAME_TDS^^}" ]; then
+    #TDS
+    stopApacheTomcatTDS
+  else
+    echo "Oops, application is unknown: $app"
+    exit 10
+  fi
+}
+
+onRestartAction() {
+  app=$1
+    
+  onStopAction $1
+  onStartAction $1
+}
+
+onStatusAction() {
+  app=$1
+    
+  if [ -z "$app" ]; then
+    #ALL
+    showStatusApacheTomcatMotu
+    showStatusApacheTomcatTDS
+  elif [ "${app,,}" = "${APP_NAME_MOTU,,}" ]; then
+    #Motu
+    showStatusApacheTomcatMotu
+  elif [ "${app,,}" = "${APP_NAME_TDS,,}" ]; then
+    #TDS
+    showStatusApacheTomcatTDS
+  fi
+}
+
+
+onCleanAction() {
+  app=$1
+    
+  if [ -z "$app" ]; then
+    #ALL
+    cleanApacheTomcatMotu
+    cleanApacheTomcatTDS
+  elif [ "${app,,}" = "${APP_NAME_MOTU,,}" ]; then
+    #Motu
+    cleanApacheTomcatMotu
+  elif [ "${app,,}" = "${APP_NAME_TDS,,}" ]; then
+    #TDS
+    cleanApacheTomcatTDS
+  fi
+}
+
+
+
+
+
+
+
+
+
+
+###########################################
+###  MAIN 
+###########################################
+
+initDirs
+
+case "$1" in
+    start)
+      app=$2
+      onStartAction $app
+      ;;
+    stop)
+      app=$2
+      onStopAction $app
+      ;;
+    restart)
+      app=$2
+      onRestartAction $app
+      ;;
+    status)
+      app=$2
+      onStatusAction $app
+      ;;
+    clean)
+      app=$2
+      onCleanAction $app
+      ;;
+    *) echo "\nUsage: ./motu start|stop|restart|status|clean|help [all|tomcat-motu|tomcat-tds]\n"
+       ;;
+esac
