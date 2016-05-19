@@ -531,4 +531,59 @@ public abstract class AbstractAction {
 
         return format;
     }
+
+    /**
+     * Valeur de depthLowHTTPParameterValidator.
+     * 
+     * @return la valeur.
+     */
+    public DepthHTTPParameterValidator getDepthLowHTTPParameterValidator() {
+        return depthLowHTTPParameterValidator;
+    }
+
+    /**
+     * Valeur de depthHighHTTPParameterValidator.
+     * 
+     * @return la valeur.
+     */
+    public DepthHTTPParameterValidator getDepthHighHTTPParameterValidator() {
+        return depthHighHTTPParameterValidator;
+    }
+
+    /**
+     * Valeur de latitudeLowHTTPParameterValidator.
+     * 
+     * @return la valeur.
+     */
+    public LatitudeHTTPParameterValidator getLatitudeLowHTTPParameterValidator() {
+        return latitudeLowHTTPParameterValidator;
+    }
+
+    /**
+     * Valeur de latitudeHighHTTPParameterValidator.
+     * 
+     * @return la valeur.
+     */
+    public LatitudeHTTPParameterValidator getLatitudeHighHTTPParameterValidator() {
+        return latitudeHighHTTPParameterValidator;
+    }
+
+    /**
+     * Valeur de longitudeLowHTTPParameterValidator.
+     * 
+     * @return la valeur.
+     */
+    public LongitudeHTTPParameterValidator getLongitudeLowHTTPParameterValidator() {
+        return longitudeLowHTTPParameterValidator;
+    }
+
+    /**
+     * Valeur de longitudeHighHTTPParameterValidator.
+     * 
+     * @return la valeur.
+     */
+    public LongitudeHTTPParameterValidator getLongitudeHighHTTPParameterValidator() {
+        return longitudeHighHTTPParameterValidator;
+    }
+
 }

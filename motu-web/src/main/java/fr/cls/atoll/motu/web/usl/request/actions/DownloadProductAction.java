@@ -2,9 +2,7 @@ package fr.cls.atoll.motu.web.usl.request.actions;
 
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MAX_POOL_ANONYMOUS;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MAX_POOL_AUTHENTICATE;
-
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_START_DATE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_VARIABLE;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -35,6 +33,7 @@ import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.ProductDeferedExtractNetcdfThread;
 import fr.cls.atoll.motu.web.servlet.MotuServlet;
 import fr.cls.atoll.motu.web.servlet.RunnableHttpExtraction;
+import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ModeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
@@ -101,15 +100,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
     private ModeHTTPParameterValidator modeHTTPParameterValidator;
 
-
-    private LatitudeHTTPParameterValidator latitudeLowHTTPParameterValidator;
-    private LatitudeHTTPParameterValidator latitudeHighHTTPParameterValidator;
-    private LongitudeHTTPParameterValidator longitudeLowHTTPParameterValidator;
-    private LongitudeHTTPParameterValidator longitudeHighHTTPParameterValidator;
-
-    private DepthHTTPParameterValidator depthLowHTTPParameterValidator;
-    private DepthHTTPParameterValidator depthHighHTTPParameterValidator;
-
     private TemporalHTTPParameterValidator startDateTemporalHTTPParameterValidator;
     private TemporalHTTPParameterValidator endDateTemporalHighHTTPParameterValidator;
 
@@ -125,7 +115,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 CommonHTTPParameters.getServiceFromRequest(getRequest()));
 
         modeHTTPParameterValidator = new ModeHTTPParameterValidator(MotuRequestParametersConstant.PARAM_MODE, getModeFromRequest());
-
 
         startDateTemporalHTTPParameterValidator = new TemporalHTTPParameterValidator(
                 PARAM_START_DATE,
@@ -256,11 +245,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         return format;
     }
 
-
-    private String getDataFromParameter() {
-        return getRequest().getParameter(MotuRequestParametersConstant.PARAM_DATA);
-    }
-
     /**
      * Gets the product id.
      *
@@ -272,6 +256,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      * @throws ServletException the servlet exception
      * @throws MotuException the motu exception
      */
+    @Override
     protected String getProductIdFromParamId(String productId) throws IOException, ServletException, MotuException {
         String serviceName = serviceHTTPParameterValidator.getParameterValueValidated();
 
@@ -282,92 +267,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         Organizer organizer = getOrganizer();
 
         return organizer.getDatasetIdFromURI(productId, serviceName);
-    }
-
-    /**
-
-     * Gets the temporal coverage from the request.
-     * 
-     * @param request servlet request
-     * 
-     * @return a list of temporable coverage, first start date, and then end date (they can be empty string)
-     */
-    private List<String> getTemporalCoverage() {
-        String startDate = startDateTemporalHTTPParameterValidator.getParameterValue();
-        String endDate = startDateTemporalHTTPParameterValidator.getParameterValue();
-        List<String> listTemporalCoverage = new ArrayList<String>();
-        listTemporalCoverage.add(startDate);
-        listTemporalCoverage.add(endDate);
-        return listTemporalCoverage;
-    }
-
-    /**
-     * Gets the variables from the request.
-     * 
-     * @param request servlet request
-     * 
-     * @return a list of variables
-     */
-    private List<String> getVariables() {
-        String[] variables = getRequest().getParameterValues(PARAM_VARIABLE);
-
-        List<String> listVar = new ArrayList<String>();
-        if (variables != null) {
-            for (String var : variables) {
-                listVar.add(var);
-            }
-        }
-        return listVar;
-
-    }
-
-    /**
-     * Gets the depth coverage from the request.
-     * 
-     * @param request servlet request
-     * 
-     * @return a list of deph coverage : first depth min, then depth max
-     */
-    private List<String> getDepthCoverage() {
-        String lowdepth = Double.toString(depthLowHTTPParameterValidator.getParameterValueValidated());
-        String highDepth = Double.toString(depthHighHTTPParameterValidator.getParameterValueValidated());
-
-        List<String> listDepthCoverage = new ArrayList<String>();
-        listDepthCoverage.add(lowdepth);
-        listDepthCoverage.add(highDepth);
-        return listDepthCoverage;
-    }
-
-    /**
-     * Gets the geographical coverage from the request.
-     * 
-     * @param request servlet request
-     * 
-     * @return a list of geographical coverage : Lat min, Lon min, Lat max, Lon max
-     */
-    private List<String> getGeoCoverage() {
-        List<String> listLatLonCoverage = new ArrayList<String>();
-        listLatLonCoverage.add(Double.toString(latitudeLowHTTPParameterValidator.getParameterValueValidated()));
-        listLatLonCoverage.add(Double.toString(longitudeLowHTTPParameterValidator.getParameterValueValidated()));
-        listLatLonCoverage.add(Double.toString(latitudeHighHTTPParameterValidator.getParameterValueValidated()));
-        listLatLonCoverage.add(Double.toString(longitudeHighHTTPParameterValidator.getParameterValueValidated()));
-        return listLatLonCoverage;
-    }
-
-    private String getBatchParameter() {
-        return getRequest().getParameter(PARAM_BATCH);
-    }
-
-    /**
-     * Checks if is batch.
-     * 
-     * @param request the request
-     * 
-     * @return true, if is batch
-     */
-    private boolean isBatch() {
-        String batchAsString = getBatchParameter();
-        return batchAsString != null && (batchAsString.trim().equalsIgnoreCase("true") || batchAsString.trim().equalsIgnoreCase("1"));
     }
 
     /**
@@ -531,13 +430,13 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         modeHTTPParameterValidator.validate();
         serviceHTTPParameterValidator.validate();
 
-        latitudeLowHTTPParameterValidator.validate();
-        latitudeHighHTTPParameterValidator.validate();
-        longitudeLowHTTPParameterValidator.validate();
-        longitudeHighHTTPParameterValidator.validate();
+        getLatitudeLowHTTPParameterValidator().validate();
+        getLatitudeHighHTTPParameterValidator().validate();
+        getLongitudeLowHTTPParameterValidator().validate();
+        getLongitudeHighHTTPParameterValidator().validate();
 
-        depthLowHTTPParameterValidator.validate();
-        depthHighHTTPParameterValidator.validate();
+        getDepthLowHTTPParameterValidator().validate();
+        getDepthHighHTTPParameterValidator().validate();
 
         startDateTemporalHTTPParameterValidator.validate();
         endDateTemporalHighHTTPParameterValidator.validate();
