@@ -35,9 +35,6 @@ public class LongitudeHTTPParameterValidator extends AbstractHTTPParameterValida
         String longitudeStr = getParameterValue();
         try {
             Double longitude = Double.parseDouble(longitudeStr);
-            if (longitude < -180 || longitude > 180) {
-                throw new InvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
-            }
             return longitude;
         } catch (Exception e) {
             throw new InvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
@@ -46,6 +43,6 @@ public class LongitudeHTTPParameterValidator extends AbstractHTTPParameterValida
 
     @Override
     protected String getParameterBoundaries() {
-        return "[-180;180]";
+        return "[-∞;∞]";
     }
 }

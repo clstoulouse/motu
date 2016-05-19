@@ -7,7 +7,6 @@ import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MAX_POOL_ANONYMOUS;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MAX_POOL_AUTHENTICATE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_START_DATE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_VARIABLE;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -182,8 +181,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 serviceHTTPParameterValidator.getParameterValueValidated(),
-                getDataFromParameter(),
-                getVariables(),
+                CommonHTTPParameters.getDataFromParameter(getRequest()),
+                CommonHTTPParameters.getVariablesAsListFromParameter(getRequest()),
                 getTemporalCoverage(),
                 getGeoCoverage(),
                 getDepthCoverage(),
@@ -340,10 +339,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         return format;
     }
 
-    private String getDataFromParameter() {
-        return getRequest().getParameter(MotuRequestParametersConstant.PARAM_DATA);
-    }
-
     /**
      * Gets the product id.
      *
@@ -376,31 +371,11 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      */
     private List<String> getTemporalCoverage() {
         String startDate = startDateTemporalHTTPParameterValidator.getParameterValue();
-        String endDate = startDateTemporalHTTPParameterValidator.getParameterValue();
+        String endDate = endDateTemporalHighHTTPParameterValidator.getParameterValue();
         List<String> listTemporalCoverage = new ArrayList<String>();
         listTemporalCoverage.add(startDate);
         listTemporalCoverage.add(endDate);
         return listTemporalCoverage;
-    }
-
-    /**
-     * Gets the variables from the request.
-     * 
-     * @param request servlet request
-     * 
-     * @return a list of variables
-     */
-    private List<String> getVariables() {
-        String[] variables = getRequest().getParameterValues(PARAM_VARIABLE);
-
-        List<String> listVar = new ArrayList<String>();
-        if (variables != null) {
-            for (String var : variables) {
-                listVar.add(var);
-            }
-        }
-        return listVar;
-
     }
 
     /**

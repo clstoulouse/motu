@@ -11,6 +11,11 @@ import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MODE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_REQUEST_ID;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_SERVICE;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_VARIABLE;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -128,6 +133,20 @@ public class CommonHTTPParameters {
 
     public static String getDataFromParameter(HttpServletRequest request) {
         return request.getParameter(MotuRequestParametersConstant.PARAM_DATA);
+    }
+
+    public static String[] getVariablesFromParameter(HttpServletRequest request) {
+        return request.getParameterValues(PARAM_VARIABLE);
+    }
+
+    public static List<String> getVariablesAsListFromParameter(HttpServletRequest request) {
+        String[] variables = CommonHTTPParameters.getVariablesFromParameter(request);
+
+        List<String> listVar = new ArrayList<String>();
+        if (variables != null) {
+            listVar = Arrays.asList(variables);
+        }
+        return listVar;
     }
 
 }
