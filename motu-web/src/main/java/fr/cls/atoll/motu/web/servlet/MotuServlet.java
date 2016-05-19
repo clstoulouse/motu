@@ -26,7 +26,6 @@ package fr.cls.atoll.motu.web.servlet;
 
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_DELETE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_DESCRIBE_COVERAGE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_GET_SIZE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_GET_TIME_COVERAGE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LIST_CATALOG;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LIST_PRODUCT_METADATA;
@@ -845,16 +844,18 @@ public class MotuServlet extends HttpServlet {
      */
     protected boolean isActionGetSize(String action, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isActionListGetSize(String, HttpServletRequest, HttpSession, HttpServletResponse) - entering");
-        }
-
-        if (!action.equalsIgnoreCase(ACTION_GET_SIZE)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionListGetSize(String, HttpServletRequest, HttpSession, HttpServletResponse) - exiting");
-            }
-            return false;
-        }
+        // if (LOG.isDebugEnabled()) {
+        // LOG.debug("isActionListGetSize(String, HttpServletRequest, HttpSession, HttpServletResponse) -
+        // entering");
+        // }
+        //
+        // if (!action.equalsIgnoreCase(ACTION_GET_SIZE)) {
+        // if (LOG.isDebugEnabled()) {
+        // LOG.debug("isActionListGetSize(String, HttpServletRequest, HttpSession, HttpServletResponse) -
+        // exiting");
+        // }
+        // return false;
+        // }
 
         OutputFormat dataFormat = null;
         try {

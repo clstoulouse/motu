@@ -27,6 +27,7 @@ package fr.cls.atoll.motu.web.bll.request;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -53,6 +54,81 @@ import fr.cls.atoll.motu.web.common.utils.TimeUtils;
 public class ExtractionParameters implements Cloneable {
 
     private static final Logger LOGGER = LogManager.getLogger();
+
+    public ExtractionParameters(
+        String serviceName,
+        String locationData,
+        List<String> listVar,
+        String startDateTemporalCoverage_,
+        String endDateTemporalCoverage_,
+        double x_lo_,
+        double x_hi_,
+        double y_lo_,
+        double y_hi_,
+        double z_lo_,
+        double z_hi_,
+        String productId,
+        String userId,
+        boolean anonymousUser) {
+        this(
+            serviceName,
+            locationData,
+            listVar,
+            getTemporalCoverage(startDateTemporalCoverage_, endDateTemporalCoverage_),
+            getGeoCoverage(x_lo_, x_hi_, y_lo_, y_hi_),
+            getDepthCoverage(z_lo_, z_hi_),
+            productId,
+            null,
+            null,
+            null,
+            userId,
+            anonymousUser);
+
+    }
+
+    /**
+     * Gets the temporal coverage from the request.
+     * 
+     * @param request servlet request
+     * 
+     * @return a list of temporable coverage, first start date, and then end date (they can be empty string)
+     */
+    private static List<String> getTemporalCoverage(String startDate, String endDate) {
+        List<String> listTemporalCoverage = new ArrayList<String>();
+        listTemporalCoverage.add(startDate);
+        listTemporalCoverage.add(endDate);
+        return listTemporalCoverage;
+    }
+
+    /**
+     * Gets the geographical coverage from the request.
+     * 
+     * @param request servlet request
+     * 
+     * @return a list of geographical coverage : Lat min, Lon min, Lat max, Lon max
+     */
+    private static List<String> getGeoCoverage(double x_lo_, double x_hi_, double y_lo_, double y_hi_) {
+        List<String> listLatLonCoverage = new ArrayList<String>();
+        listLatLonCoverage.add(Double.toString(y_lo_));
+        listLatLonCoverage.add(Double.toString(x_lo_));
+        listLatLonCoverage.add(Double.toString(y_hi_));
+        listLatLonCoverage.add(Double.toString(y_hi_));
+        return listLatLonCoverage;
+    }
+
+    /**
+     * Gets the depth coverage from the request.
+     * 
+     * @param request servlet request
+     * 
+     * @return a list of deph coverage : first depth min, then depth max
+     */
+    protected static List<String> getDepthCoverage(double lowdepth, double highDepth) {
+        List<String> listDepthCoverage = new ArrayList<String>();
+        listDepthCoverage.add(Double.toString(lowdepth));
+        listDepthCoverage.add(Double.toString(highDepth));
+        return listDepthCoverage;
+    }
 
     /**
      * The Constructor.

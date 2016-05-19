@@ -183,13 +183,20 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 serviceHTTPParameterValidator.getParameterValueValidated(),
                 CommonHTTPParameters.getDataFromParameter(getRequest()),
                 CommonHTTPParameters.getVariablesAsListFromParameter(getRequest()),
-                getTemporalCoverage(),
-                getGeoCoverage(),
-                getDepthCoverage(),
+
+                startDateTemporalHTTPParameterValidator.getParameterValue(),
+                endDateTemporalHighHTTPParameterValidator.getParameterValue(),
+
+                longitudeLowHTTPParameterValidator.getParameterValueValidated(),
+                longitudeHighHTTPParameterValidator.getParameterValueValidated(),
+                latitudeLowHTTPParameterValidator.getParameterValueValidated(),
+                latitudeHighHTTPParameterValidator.getParameterValueValidated(),
+
+                depthLowHTTPParameterValidator.getParameterValueValidated(),
+                depthHighHTTPParameterValidator.getParameterValueValidated(),
+
                 getProductId(),
-                getOutputFormat(),
-                out,
-                responseFormat,
+
                 getLoginOrUserHostname(),
                 isAnAnonymousUser());
         extractionParameters.setBatchQueue(isBatch());
@@ -221,6 +228,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         }
     }
 
+    @Override
     private OutputFormat getOutputFormat() throws IOException {
         OutputFormat dataFormat = null;
         try {
@@ -233,6 +241,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         return dataFormat;
     }
 
+    @Override
     private String getProductId() throws IOException {
         String productId = null;
         try {
@@ -289,6 +298,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      * @return the data format
      * @throws MotuException the motu exception
      */
+    @Override
     private OutputFormat getDataFormatFromParameter() throws MotuException {
         String dataFormat = getRequest().getParameter(MotuRequestParametersConstant.PARAM_OUTPUT);
         OutputFormat format;
@@ -350,6 +360,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      * @throws ServletException the servlet exception
      * @throws MotuException the motu exception
      */
+    @Override
     protected String getProductIdFromParamId(String productId) throws IOException, ServletException, MotuException {
         String serviceName = serviceHTTPParameterValidator.getParameterValueValidated();
 
@@ -360,22 +371,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         Organizer organizer = getOrganizer();
 
         return organizer.getDatasetIdFromURI(productId, serviceName);
-    }
-
-    /**
-     * Gets the temporal coverage from the request.
-     * 
-     * @param request servlet request
-     * 
-     * @return a list of temporable coverage, first start date, and then end date (they can be empty string)
-     */
-    private List<String> getTemporalCoverage() {
-        String startDate = startDateTemporalHTTPParameterValidator.getParameterValue();
-        String endDate = endDateTemporalHighHTTPParameterValidator.getParameterValue();
-        List<String> listTemporalCoverage = new ArrayList<String>();
-        listTemporalCoverage.add(startDate);
-        listTemporalCoverage.add(endDate);
-        return listTemporalCoverage;
     }
 
     /**
@@ -422,6 +417,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      * 
      * @return true, if is batch
      */
+    @Override
     private boolean isBatch() {
         String batchAsString = getBatchParameter();
         return batchAsString != null && (batchAsString.trim().equalsIgnoreCase("true") || batchAsString.trim().equalsIgnoreCase("1"));

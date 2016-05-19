@@ -1,9 +1,12 @@
 package fr.cls.atoll.motu.web.usl.request.actions;
 
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_ANONYMOUS;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_BATCH;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_END_DATE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LANGUAGE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_PRIORITY;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_PWD;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_START_DATE;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,6 +25,8 @@ import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
@@ -315,4 +320,122 @@ public abstract class AbstractAction {
             throw new ServletException(new MotuException("Error - organizer is null - perhaps session has expired."));
         }
     }
+
+    protected String getDataFromParameter() {
+        return getRequest().getParameter(MotuRequestParametersConstant.PARAM_DATA);
+    }
+
+    /**
+     * Gets the temporal coverage from the request.
+     * 
+     * @param request servlet request
+     * 
+     * @return a list of temporable coverage, first start date, and then end date (they can be empty string)
+     */
+    protected List<String> getTemporalCoverage() {
+        String startDate = getRequest().getParameter(PARAM_START_DATE);
+        String endDate = getRequest().getParameter(PARAM_END_DATE);
+        List<String> listTemporalCoverage = new ArrayList<String>();
+
+        if (startDate != null) {
+            listTemporalCoverage.add(startDate);
+        }
+        if (endDate != null) {
+            listTemporalCoverage.add(endDate);
+        }
+        return listTemporalCoverage;
+    }
+
+    protected String getProductId() throws IOException {
+        String productId = null;
+        try {
+            productId = getProductIdFromParamId(getRequest().getParameter(MotuRequestParametersConstant.PARAM_PRODUCT));
+        } catch (MotuException e) {
+            getResponse().sendError(400, String.format("ERROR: '%s' ", e.notifyException()));
+        } catch (Exception e) {
+            getResponse().sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
+        }
+        return productId;
+
+    }
+
+    /**
+     * Gets the product id.
+     *
+     * @param productId the product id
+     * @param request the request
+     * @param response the response
+     * @return the product id
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws ServletException the servlet exception
+     * @throws MotuException the motu exception
+     */
+    protected String getProductIdFromParamId(String productId) throws IOException, ServletException, MotuException {
+        String serviceName = CommonHTTPParameters.getServiceFromRequest(getRequest());
+
+        if ((StringUtils.isNullOrEmpty(serviceName)) || (StringUtils.isNullOrEmpty(productId))) {
+            return productId;
+        }
+
+        Organizer organizer = getOrganizer();
+
+        return organizer.getDatasetIdFromURI(productId, serviceName);
+    }
+
+    protected OutputFormat getOutputFormat() throws IOException {
+        OutputFormat dataFormat = null;
+        try {
+            dataFormat = getDataFormatFromParameter();
+        } catch (MotuExceptionBase e) {
+            getResponse().sendError(400, String.format("ERROR: %s", e.notifyException()));
+        } catch (Exception e) {
+            getResponse().sendError(400, String.format("ERROR: %s", e.getMessage()));
+        }
+        return dataFormat;
+    }
+
+    /**
+     * Checks if is batch.
+     * 
+     * @param request the request
+     * 
+     * @return true, if is batch
+     */
+    protected boolean isBatch() {
+        String batchAsString = getBatchParameter();
+        return batchAsString != null && (batchAsString.trim().equalsIgnoreCase("true") || batchAsString.trim().equalsIgnoreCase("1"));
+    }
+
+    private String getBatchParameter() {
+        return getRequest().getParameter(PARAM_BATCH);
+    }
+
+    /**
+     * Gets the data format.
+     *
+     * @param request the request
+     * @return the data format
+     * @throws MotuException the motu exception
+     */
+    protected OutputFormat getDataFormatFromParameter() throws MotuException {
+        String dataFormat = getRequest().getParameter(MotuRequestParametersConstant.PARAM_OUTPUT);
+        OutputFormat format;
+        if (StringUtils.isNullOrEmpty(dataFormat)) {
+            return OutputFormat.getDefault();
+        }
+
+        try {
+            format = OutputFormat.valueOf(dataFormat.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new MotuException(
+                    String.format("Parameter '%s': invalid value '%s' - Valid values are : %s",
+                                  MotuRequestParametersConstant.PARAM_OUTPUT,
+                                  dataFormat,
+                                  OutputFormat.valuesToString()),
+                    e);
+        }
+
+        return format;
+    }
+
 }
