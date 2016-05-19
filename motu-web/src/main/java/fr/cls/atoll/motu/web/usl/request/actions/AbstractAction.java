@@ -37,6 +37,8 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.DepthHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LatitudeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LongitudeHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.TemporalHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.session.SessionManager;
 
 /**
@@ -74,6 +76,10 @@ public abstract class AbstractAction {
     private LongitudeHTTPParameterValidator longitudeLowHTTPParameterValidator;
     private LongitudeHTTPParameterValidator longitudeHighHTTPParameterValidator;
 
+    private TemporalHTTPParameterValidator startDateTemporalHTTPParameterValidator;
+    private TemporalHTTPParameterValidator endDateTemporalHighHTTPParameterValidator;
+    private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
+
     public AbstractAction(String actionName_, HttpServletRequest request_, HttpServletResponse response_) {
         this(actionName_, request_, response_, null);
     }
@@ -83,6 +89,10 @@ public abstract class AbstractAction {
         request = request_;
         response = response_;
         session = session_;
+
+        serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
+                MotuRequestParametersConstant.PARAM_SERVICE,
+                CommonHTTPParameters.getServiceFromRequest(getRequest()));
 
         latitudeLowHTTPParameterValidator = new LatitudeHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_LOW_LAT,
@@ -107,6 +117,13 @@ public abstract class AbstractAction {
             depthHighParameterValue = depthLowHTTPParameterValidator.getParameterValue();
         }
         depthHighHTTPParameterValidator = new DepthHTTPParameterValidator(PARAM_HIGH_Z, depthHighParameterValue);
+
+        startDateTemporalHTTPParameterValidator = new TemporalHTTPParameterValidator(
+                PARAM_START_DATE,
+                CommonHTTPParameters.getStartDateFromRequest(getRequest()));
+        endDateTemporalHighHTTPParameterValidator = new TemporalHTTPParameterValidator(
+                PARAM_END_DATE,
+                CommonHTTPParameters.getEndDateFromRequest(getRequest()));
     }
 
     public void doAction() throws IOException, InvalidHTTPParameterException {
@@ -584,6 +601,33 @@ public abstract class AbstractAction {
      */
     public LongitudeHTTPParameterValidator getLongitudeHighHTTPParameterValidator() {
         return longitudeHighHTTPParameterValidator;
+    }
+
+    /**
+     * Valeur de startDateTemporalHTTPParameterValidator.
+     * 
+     * @return la valeur.
+     */
+    public TemporalHTTPParameterValidator getStartDateTemporalHTTPParameterValidator() {
+        return startDateTemporalHTTPParameterValidator;
+    }
+
+    /**
+     * Valeur de endDateTemporalHighHTTPParameterValidator.
+     * 
+     * @return la valeur.
+     */
+    public TemporalHTTPParameterValidator getEndDateTemporalHighHTTPParameterValidator() {
+        return endDateTemporalHighHTTPParameterValidator;
+    }
+
+    /**
+     * Valeur de serviceHTTPParameterValidator.
+     * 
+     * @return la valeur.
+     */
+    public ServiceHTTPParameterValidator getServiceHTTPParameterValidator() {
+        return serviceHTTPParameterValidator;
     }
 
 }

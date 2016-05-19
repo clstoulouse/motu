@@ -2,7 +2,6 @@ package fr.cls.atoll.motu.web.usl.request.actions;
 
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MAX_POOL_ANONYMOUS;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MAX_POOL_AUTHENTICATE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_START_DATE;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -33,11 +32,8 @@ import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.ProductDeferedExtractNetcdfThread;
 import fr.cls.atoll.motu.web.servlet.MotuServlet;
 import fr.cls.atoll.motu.web.servlet.RunnableHttpExtraction;
-import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ModeHTTPParameterValidator;
-import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
-import fr.cls.atoll.motu.web.usl.request.parameter.validator.TemporalHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.session.SessionManager;
 
 /**
@@ -96,12 +92,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
     public static final String ACTION_NAME = "productdownload";
 
-    private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
-
     private ModeHTTPParameterValidator modeHTTPParameterValidator;
-
-    private TemporalHTTPParameterValidator startDateTemporalHTTPParameterValidator;
-    private TemporalHTTPParameterValidator endDateTemporalHighHTTPParameterValidator;
 
     /**
      * 
@@ -110,18 +101,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     public DownloadProductAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         super(ACTION_NAME, request, response, session);
 
-        serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
-                MotuRequestParametersConstant.PARAM_SERVICE,
-                CommonHTTPParameters.getServiceFromRequest(getRequest()));
-
         modeHTTPParameterValidator = new ModeHTTPParameterValidator(MotuRequestParametersConstant.PARAM_MODE, getModeFromRequest());
-
-        startDateTemporalHTTPParameterValidator = new TemporalHTTPParameterValidator(
-                PARAM_START_DATE,
-                CommonHTTPParameters.getStartDateFromRequest(getRequest()));
-        endDateTemporalHighHTTPParameterValidator = new TemporalHTTPParameterValidator(
-                PARAM_END_DATE,
-                CommonHTTPParameters.getEndDateFromRequest(getRequest()));
     }
 
     @Override
@@ -139,7 +119,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         }
 
         ExtractionParameters extractionParameters = new ExtractionParameters(
-                serviceHTTPParameterValidator.getParameterValueValidated(),
+                getServiceHTTPParameterValidator().getParameterValueValidated(),
                 getDataFromParameter(),
                 getVariables(),
                 getTemporalCoverage(),
@@ -428,7 +408,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     @Override
     protected void checkHTTPParameters() throws InvalidHTTPParameterException {
         modeHTTPParameterValidator.validate();
-        serviceHTTPParameterValidator.validate();
+        getServiceHTTPParameterValidator().validate();
 
         getLatitudeLowHTTPParameterValidator().validate();
         getLatitudeHighHTTPParameterValidator().validate();
@@ -438,7 +418,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         getDepthLowHTTPParameterValidator().validate();
         getDepthHighHTTPParameterValidator().validate();
 
-        startDateTemporalHTTPParameterValidator.validate();
-        endDateTemporalHighHTTPParameterValidator.validate();
+        getStartDateTemporalHTTPParameterValidator().validate();
+        getEndDateTemporalHighHTTPParameterValidator().validate();
     }
 }

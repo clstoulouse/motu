@@ -62,13 +62,6 @@ public class GetSizeAction extends AbstractAction {
 
     /** {@inheritDoc} */
     @Override
-    protected void checkHTTPParameters() throws InvalidHTTPParameterException {
-        // TODO Auto-generated method stub
-
-    }
-
-    /** {@inheritDoc} */
-    @Override
     protected void process() throws IOException {
         retrieveSize();
     }
@@ -104,13 +97,20 @@ public class GetSizeAction extends AbstractAction {
         return extractionParameters;
     }
 
+    /** {@inheritDoc} */
+    @Override
     protected void checkHTTPParameters() throws InvalidHTTPParameterException {
-        latitudeLowHTTPParameterValidator.validate();
-        latitudeHighHTTPParameterValidator.validate();
-        longitudeLowHTTPParameterValidator.validate();
-        longitudeHighHTTPParameterValidator.validate();
+        getServiceHTTPParameterValidator().validate();
 
-        depthLowHTTPParameterValidator.validate();
-        depthHighHTTPParameterValidator.validate();
+        getLatitudeLowHTTPParameterValidator().validate();
+        getLatitudeHighHTTPParameterValidator().validate();
+        getLongitudeLowHTTPParameterValidator().validate();
+        getLongitudeHighHTTPParameterValidator().validate();
+
+        getDepthLowHTTPParameterValidator().validate();
+        getDepthHighHTTPParameterValidator().validate();
+
+        getStartDateTemporalHTTPParameterValidator().validate();
+        getEndDateTemporalHighHTTPParameterValidator().validate();
     }
 }
