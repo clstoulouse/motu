@@ -84,4 +84,10 @@ public class BLLRequestManager implements IBLLRequestManager {
         statusModeResponse.setRequestId(requestId);
         return statusModeResponse;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public double processProductDataSize(ExtractionParameters extractionParameters) {
+        return DALManager.getInstance().getRequestManager().processProductDataSizeRequest(extractionParameters);
+    }
 }

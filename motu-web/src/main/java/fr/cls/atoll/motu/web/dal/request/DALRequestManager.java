@@ -32,4 +32,12 @@ public class DALRequestManager implements IDALRequestManager {
     public void processRequest(StatusModeResponse statusModeResponse, ExtractionParameters extractionParameters) {
         new ProductDeferedExtractNetcdfThread(statusModeResponse, extractionParameters).start();
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public double processProductDataSizeRequest(ExtractionParameters extractionParameters) {
+        // TODO PLAC Impl the code of the product data size
+        return 0;
+    }
+
 }
