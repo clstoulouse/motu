@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuMsgConstant;
+import fr.cls.atoll.motu.api.message.xml.RequestSize;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 
 /**
@@ -79,6 +80,17 @@ public class JAXBWriter {
      */
     public synchronized void write(StatusModeResponse statusModeResponse, Writer writer) throws JAXBException {
         marshallerMotuMsg.marshal(statusModeResponse, writer);
+    }
+
+    /**
+     * .
+     * 
+     * @param requestSize
+     * @param writer
+     * @throws JAXBException
+     */
+    public synchronized void write(RequestSize requestSize, Writer writer) throws JAXBException {
+        marshallerMotuMsg.marshal(requestSize, writer);
     }
 
 }

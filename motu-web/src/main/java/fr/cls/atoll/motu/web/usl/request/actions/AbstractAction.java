@@ -254,7 +254,7 @@ public abstract class AbstractAction {
      * @return Organizer object.
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    private Organizer getOrganizer() throws IOException {
+    protected Organizer getOrganizer() throws IOException {
 
         Organizer organizer = null;
         try {

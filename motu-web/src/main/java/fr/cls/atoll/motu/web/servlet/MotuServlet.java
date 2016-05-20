@@ -56,8 +56,6 @@ import javax.servlet.http.HttpSession;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
-import org.jasig.cas.client.util.AssertionHolder;
-
 import fr.cls.atoll.motu.api.message.MotuMsgConstant;
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
@@ -857,47 +855,49 @@ public class MotuServlet extends HttpServlet {
         // return false;
         // }
 
-        OutputFormat dataFormat = null;
-        try {
-            dataFormat = getDataFormat(request);
-        } catch (MotuExceptionBase e) {
-            response.sendError(400, String.format("ERROR: %s", e.notifyException()));
-            return true;
-        } catch (Exception e) {
-            response.sendError(400, String.format("ERROR: %s", e.getMessage()));
-            return true;
-        }
-        String productId = "";
-        try {
-            productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
-        } catch (MotuException e) {
-            response.sendError(400, String.format("ERROR: '%s' ", e.notifyException()));
-            return true;
-        } catch (Exception e) {
-            response.sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
-            return true;
-        }
+        // OutputFormat dataFormat = null;
+        // try {
+        // dataFormat = getDataFormat(request);
+        // } catch (MotuExceptionBase e) {
+        // response.sendError(400, String.format("ERROR: %s", e.notifyException()));
+        // return true;
+        // } catch (Exception e) {
+        // response.sendError(400, String.format("ERROR: %s", e.getMessage()));
+        // return true;
+        // }
+        // String productId = "";
+        // try {
+        // productId =
+        // getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request,
+        // response);
+        // } catch (MotuException e) {
+        // response.sendError(400, String.format("ERROR: '%s' ", e.notifyException()));
+        // return true;
+        // } catch (Exception e) {
+        // response.sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
+        // return true;
+        // }
+        //
+        // ExtractionParameters extractionParameters = new ExtractionParameters(
+        // request.getParameter(MotuRequestParametersConstant.PARAM_SERVICE),
+        // request.getParameter(MotuRequestParametersConstant.PARAM_DATA),
+        // getVariables(request),
+        // getTemporalCoverage(request),
+        // getGeoCoverage(request),
+        // getDepthCoverage(request),
+        // productId,
+        // dataFormat,
+        // response.getWriter(),
+        // null,
+        // null,
+        // true);
+        //
+        // extractionParameters.setBatchQueue(isBatch(request));
+        //
+        // // Set assertion to manage CAS.
+        // extractionParameters.setAssertion(AssertionHolder.getAssertion());
 
-        ExtractionParameters extractionParameters = new ExtractionParameters(
-                request.getParameter(MotuRequestParametersConstant.PARAM_SERVICE),
-                request.getParameter(MotuRequestParametersConstant.PARAM_DATA),
-                getVariables(request),
-                getTemporalCoverage(request),
-                getGeoCoverage(request),
-                getDepthCoverage(request),
-                productId,
-                dataFormat,
-                response.getWriter(),
-                null,
-                null,
-                true);
-
-        extractionParameters.setBatchQueue(isBatch(request));
-
-        // Set assertion to manage CAS.
-        extractionParameters.setAssertion(AssertionHolder.getAssertion());
-
-        response.setContentType(null);
+        // response.setContentType(null);
 
         getAmountDataSize(extractionParameters, response);
 
