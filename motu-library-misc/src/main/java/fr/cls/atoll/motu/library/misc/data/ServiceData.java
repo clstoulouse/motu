@@ -219,64 +219,6 @@ public class ServiceData {
     /** Default language. */
     public static final Language DEFAULT_LANGUAGE = Language.UK;
 
-    // /**
-    // * Emumeration for available param can be used with servlet.
-    // *
-    // * @param PARAM_ACTION action parameter.
-    // * @param PARAM_LOGIN login parameter.
-    // * @param PARAM_PWD password parameter.
-    // * @param PARAM_SERVICE service parameter.
-    // * @param PARAM_PRODUCT product parameter.
-    // */
-    // public enum ParamServlet {
-    // ACTION ("action"),
-    // LOGIN ("login"),
-    // PWD ("pwd"),
-    // SERVICE ("service"),
-    // PRODUCT ("product");
-    // /**
-    // * Contructor.
-    // * @param id id of enum
-    // */
-    // private ParamServlet(String id) {this.id = id;}
-    // /**
-    // * id of enum.
-    // */
-    // private String id;
-    // /**
-    // * @return id of enum
-    // */
-    // public String getId(){ return id;}
-    // };
-    // /**
-    // * Emumeration for available action value can be used with action servlet
-    // prameter.
-    // *
-    // * @param LIST_CATALOG list a catalog.
-    // * @param LIST_PRODUCT_METADATA list product's metadata.
-    // * @param PRODUCT_DOWNLOADHOME get product download home inforamtions.
-    // * @param PRODUCT_DOWNLOAD download a product.
-    // */
-    // public enum ActionServlet {
-    // LIST_CATALOG ("listcatalog"),
-    // LIST_PRODUCT_METADATA ("listproductmetadata"),
-    // PRODUCT_DOWNLOADHOME ("productdownloadhome"),
-    // PRODUCT_DOWNLOAD ("productdownload");
-    // /**
-    // * Contructor.
-    // * @param id id of enum
-    // */
-    // private ActionServlet(String id) {this.id = id;}
-    // /**
-    // * id of enum.
-    // */
-    // private String id;
-    // /**
-    // * @return id of enum
-    // */
-    // public String getId(){ return id;}
-    // };
-
     /** The disable href link. */
     private boolean disableHrefLink = false;
 
