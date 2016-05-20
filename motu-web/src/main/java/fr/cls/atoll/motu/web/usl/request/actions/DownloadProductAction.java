@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,11 +24,9 @@ import org.jasig.cas.client.util.AssertionHolder;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.request.ExtractionParameters;
@@ -45,6 +41,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.validator.DepthHTTPParameterV
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LatitudeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LongitudeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ModeHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.PriorityHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.TemporalHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.session.SessionManager;
@@ -120,6 +117,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     private TemporalHTTPParameterValidator startDateTemporalHTTPParameterValidator;
     private TemporalHTTPParameterValidator endDateTemporalHighHTTPParameterValidator;
 
+    private PriorityHTTPParameterValidator priorityHTTPParameterValidator;
+
     /**
      * 
      * @param actionName_
@@ -163,6 +162,11 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         endDateTemporalHighHTTPParameterValidator = new TemporalHTTPParameterValidator(
                 PARAM_END_DATE,
                 CommonHTTPParameters.getEndDateFromRequest(getRequest()));
+
+        priorityHTTPParameterValidator = new PriorityHTTPParameterValidator(
+                MotuRequestParametersConstant.PARAM_PRIORITY,
+                CommonHTTPParameters.getPriorityFromRequest(getRequest()),
+                Short.toString(BLLManager.getInstance().getConfigManager().getQueueServerConfigManager().getRequestDefaultPriority()));
     }
 
     @Override
@@ -214,7 +218,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         short maxPoolAnonymous = getMaxPoolAnonymous();
         short maxPoolAuthenticate = getMaxPoolAuthenticate();
 
-        int priority = getRequestPriorityFromRequest();
+        int priority = priorityHTTPParameterValidator.getParameterValueValidated();
         String mode = modeHTTPParameterValidator.getParameterValueValidated();
         if (mode == null) {
 
@@ -424,105 +428,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     }
 
     /**
-     * Product download.
-     *
-     * @param extractionParameters the extraction parameters
-     * @param mode the mode
-     * @param priority the priority
-     * @param session the session
-     * @param response the response
-     * @throws IOException the IO exception
-     */
-    private void productDownload(ExtractionParameters extractionParameters, String mode, int priority) throws IOException {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse) - entering");
-        }
-
-        boolean modeStatus = RunnableHttpExtraction.isModeStatus(mode);
-
-        RunnableHttpExtraction runnableHttpExtraction = null;
-        StatusModeResponse statusModeResponse = null;
-
-        final ReentrantLock lock = new ReentrantLock();
-        final Condition requestEndedCondition = lock.newCondition();
-
-        String serviceName = extractionParameters.getServiceName();
-        Organizer organizer = getOrganizer(getSession(), getResponse());
-        try {
-
-            if (organizer.isGenericService() && !StringUtils.isNullOrEmpty(serviceName)) {
-                organizer.setCurrentService(serviceName);
-            }
-        } catch (MotuException e) {
-            LOGGER.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
-
-            getResponse().sendError(400, String.format("ERROR: %s", e.notifyException()));
-
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse) - exiting");
-            }
-            return;
-        }
-
-        runnableHttpExtraction = new RunnableHttpExtraction(
-                priority,
-                organizer,
-                extractionParameters,
-                getResponse(),
-                mode,
-                requestEndedCondition,
-                lock);
-
-        long requestId = requestManagement.generateRequestId();
-        runnableHttpExtraction.setRequestId(requestId);
-        statusModeResponse = runnableHttpExtraction.getStatusModeResponse();
-        statusModeResponse.setRequestId(requestId);
-        requestManagement.putIfAbsentRequestStatusMap(requestId, statusModeResponse);
-
-        try {
-            // ------------------------------------------------------
-            lock.lock();
-            // ------------------------------------------------------
-
-            getQueueServerManagement().execute(runnableHttpExtraction);
-
-            if (modeStatus) {
-                getResponse().setContentType(null);
-                Organizer.marshallStatusModeResponse(statusModeResponse, response.getWriter());
-            } else {
-                // --------- wait for the end of the request -----------
-                requestEndedCondition.await();
-                // ------------------------------------------------------
-            }
-        } catch (MotuMarshallException e) {
-            LOGGER.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
-
-            getResponse().sendError(500, String.format("ERROR: %s", e.getMessage()));
-        } catch (MotuExceptionBase e) {
-            LOGGER.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
-
-            runnableHttpExtraction.aborted();
-            // Do nothing error is in response error code
-            // response.sendError(400, String.format("ERROR: %s", e.notifyException()));
-        } catch (Exception e) {
-            LOGGER.error("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse)", e);
-
-            runnableHttpExtraction.aborted();
-            // response.sendError(500, String.format("ERROR: %s", e.getMessage()));
-        } finally {
-            // ------------------------------------------------------
-            if (lock.isLocked()) {
-                lock.unlock();
-            }
-            // ------------------------------------------------------
-        }
-
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("productDownload(ExtractionParameters, String, int, HttpSession, HttpServletResponse) - exiting");
-        }
-    }
-
-    /**
      * Product defered extract netcdf with status as file.
      * 
      * @param organizer the organizer
@@ -595,6 +500,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
         startDateTemporalHTTPParameterValidator.validate();
         endDateTemporalHighHTTPParameterValidator.validate();
+
+        priorityHTTPParameterValidator.validate();
     }
 
 }

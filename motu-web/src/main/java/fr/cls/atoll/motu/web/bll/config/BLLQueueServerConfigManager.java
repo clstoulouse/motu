@@ -16,7 +16,7 @@ import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 public class BLLQueueServerConfigManager implements IBLLQueueServerConfigManager {
 
     @Override
-    public int getRequestDefaultPriority() {
+    public short getRequestDefaultPriority() {
         // TODO SMA => ask to DAL this parameter and do not treat exception here
         try {
             return Organizer.getMotuConfigInstance().getQueueServerConfig().getDefaultPriority();

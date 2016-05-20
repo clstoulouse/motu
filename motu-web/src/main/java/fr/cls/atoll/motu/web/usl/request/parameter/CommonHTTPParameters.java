@@ -9,6 +9,7 @@ import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_LON;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_Z;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MODE;
+import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_PRIORITY;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_REQUEST_ID;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_SERVICE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_VARIABLE;
@@ -147,6 +148,16 @@ public class CommonHTTPParameters {
             listVar = Arrays.asList(variables);
         }
         return listVar;
+    }
+
+    /**
+     * .
+     * 
+     * @param request
+     * @return
+     */
+    public static String getPriorityFromRequest(HttpServletRequest request) {
+        return request.getParameter(PARAM_PRIORITY);
     }
 
 }

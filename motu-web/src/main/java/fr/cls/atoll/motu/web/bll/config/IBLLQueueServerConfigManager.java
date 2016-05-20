@@ -17,6 +17,6 @@ public interface IBLLQueueServerConfigManager {
      * 
      * @return
      */
-    int getRequestDefaultPriority();
+    short getRequestDefaultPriority();
 
 }

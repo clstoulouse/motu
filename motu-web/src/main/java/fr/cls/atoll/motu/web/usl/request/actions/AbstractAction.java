@@ -4,7 +4,6 @@ import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_BATCH;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_END_DATE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LANGUAGE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_PRIORITY;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_PWD;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_START_DATE;
 
@@ -24,7 +23,6 @@ import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
@@ -146,24 +144,6 @@ public abstract class AbstractAction {
      */
     public String getModeFromRequest() {
         return CommonHTTPParameters.getModeFromRequest(getRequest());
-    }
-
-    /**
-     * Gets the request priority.
-     * 
-     * @param request the request
-     * 
-     * @return the request priority
-     */
-    public int getRequestPriorityFromRequest() {
-        String priorityStr = getRequest().getParameter(PARAM_PRIORITY);
-        int priority;
-        try {
-            priority = Integer.valueOf(priorityStr);
-        } catch (Exception e) {
-            priority = BLLManager.getInstance().getConfigManager().getQueueServerConfigManager().getRequestDefaultPriority();
-        }
-        return priority;
     }
 
     /**
