@@ -9,7 +9,6 @@ import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_START_DATE;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -177,15 +176,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         downloadProduct();
     }
 
-    private ExtractionParameters createExtractionParameters(String mode) throws IOException {
-        Writer out = null;
-        OutputFormat responseFormat = null;
-
-        if (mode == null || mode.trim().length() <= 0) {
-            out = getResponse().getWriter();
-            responseFormat = OutputFormat.HTML;
-        }
-
+    private ExtractionParameters createExtractionParameters() throws IOException {
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 serviceHTTPParameterValidator.getParameterValueValidated(),
                 CommonHTTPParameters.getDataFromParameter(getRequest()),
@@ -223,8 +214,20 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
         int priority = priorityHTTPParameterValidator.getParameterValueValidated();
         String mode = modeHTTPParameterValidator.getParameterValueValidated();
-        if (mode == null) {
 
+        if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_STATUS)) {
+            // Asynchronous mode
+            long rqtId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(createExtractionParameters());
+
+        } else {
+            long rqtId = BLLManager.getInstance().getRequestManager().download(createExtractionParameters());
+
+            // Synchronous mode
+            if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_CONSOLE)) {
+
+            } else { // Default mode MotuRequestParametersConstant.PARAM_MODE_URL
+
+            }
         }
 
         productDownload(createExtractionParameters(mode), mode, priority);

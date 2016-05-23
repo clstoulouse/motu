@@ -415,7 +415,6 @@ public class GetSizeAction extends AbstractAction {
         }
 
         return initRequestSize(product.getAmountDataSizeAsBytes(), batchQueue, isFtp);
-
     }
 
     /**

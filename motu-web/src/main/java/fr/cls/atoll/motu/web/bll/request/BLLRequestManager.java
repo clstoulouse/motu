@@ -87,4 +87,20 @@ public class BLLRequestManager implements IBLLRequestManager {
     private void download(ExtractionParameters createExtractionParameters, long requestId) {
 
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public double processProductDataSize(ExtractionParameters extractionParameters) {
+        // TODO PLA Produt myProduct = DALManager.getInstance().getProductManager().getProduct(extract)
+        // double size = DALManager.getInstance().getProductManager().getSize(product);
+        // boolean isFTP = DALManager.getInstance().getProductManager().isFTP(product);
+        // if(isFTP){
+        // double max = BLLManager.getInstance().getBLLConfigManager().getMaxAllowedFTP();
+        // else{
+        // double max = BLLManager.getInstance().getBLLConfigManager().getMaxAllowedNotFTP();
+        // }
+        // InfoSize myInfoSize = new InfoSize(size, max);
+        // return myInfoSize;
+        return DALManager.getInstance().getRequestManager().processProductDataSizeRequest(extractionParameters);
+    }
 }

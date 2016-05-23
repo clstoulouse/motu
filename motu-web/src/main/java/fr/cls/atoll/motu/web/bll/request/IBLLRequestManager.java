@@ -48,6 +48,13 @@ public interface IBLLRequestManager {
     StatusModeResponse processRequest(ExtractionParameters extractionParameters);
 
     /**
+     * This method retrieve the size of the data of a product.
+     * 
+     * @param extractionParameters This is the parameters which identify the data of the targeted product.
+     * @return The size of the product into KiloByte
+     */
+    double processProductDataSize(ExtractionParameters extractionParameters);
+    /**
      * .
      * 
      * @param createExtractionParameters
@@ -64,4 +71,11 @@ public interface IBLLRequestManager {
      */
     long downloadAsynchonously(ExtractionParameters createExtractionParameters);
 
+    /**
+     * This method retrieve the size of the data of a product.
+     * 
+     * @param extractionParameters This is the parameters which identify the data of the targeted product.
+     * @return The size of the product into KiloByte
+     */
+    double processProductDataSize(ExtractionParameters extractionParameters);
 }
