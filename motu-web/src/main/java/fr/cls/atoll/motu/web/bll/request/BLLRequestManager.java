@@ -9,6 +9,7 @@ import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
+import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.dal.DALManager;
 
 /**
@@ -28,11 +29,10 @@ import fr.cls.atoll.motu.web.dal.DALManager;
  */
 public class BLLRequestManager implements IBLLRequestManager {
 
-    private Map<Long, StatusModeResponse> requestIdList;
-    private long lastRequestId;
+    private Map<Long, RequestDownloadStatus> requestIdList;
 
     public BLLRequestManager() {
-        requestIdList = new HashMap<Long, StatusModeResponse>();
+        requestIdList = new HashMap<Long, RequestDownloadStatus>();
         // TODO SMA This class should take code from RequestManagement.getInstance();
     }
 
@@ -48,31 +48,8 @@ public class BLLRequestManager implements IBLLRequestManager {
 
     /** {@inheritDoc} */
     @Override
-    public StatusModeResponse getResquestStatus(Long requestId_) {
+    public RequestDownloadStatus getResquestStatus(Long requestId_) {
         return requestIdList.get(requestId_);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public synchronized long getNewRequestId() {
-        long newRqtId = System.currentTimeMillis();
-        if (newRqtId == lastRequestId) {
-            lastRequestId++;
-        } else {
-            lastRequestId = newRqtId;
-        }
-        return lastRequestId;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public StatusModeResponse processRequest(ExtractionParameters extractionParameters) {
-        long requestId = getNewRequestId();
-        StatusModeResponse statusModeResponse = createStatusModeResponse(requestId);
-        requestIdList.put(requestId, statusModeResponse);
-
-        DALManager.getInstance().getRequestManager().processRequest(statusModeResponse, extractionParameters);
-        return statusModeResponse;
     }
 
     private StatusModeResponse createStatusModeResponse(long requestId) {
@@ -83,5 +60,31 @@ public class BLLRequestManager implements IBLLRequestManager {
         statusModeResponse.setMsg("request in progress");
         statusModeResponse.setRequestId(requestId);
         return statusModeResponse;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long download(ExtractionParameters createExtractionParameters) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long downloadAsynchonously(ExtractionParameters extractionParameters) {
+        long requestId = getNewRequestId();
+
+        RequestDownloadStatus requestDownloadStatus = new RequestDownloadStatus(
+                requestId,
+                extractionParameters.getUserId(),
+                extractionParameters.getUserHost());
+        requestIdList.put(requestId, requestDownloadStatus);
+
+        DALManager.getInstance().getRequestManager().processRequest(statusModeResponse, extractionParameters);
+        return requestId;
+    }
+
+    private void download(ExtractionParameters createExtractionParameters, long requestId) {
+
     }
 }

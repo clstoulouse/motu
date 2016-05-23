@@ -1,6 +1,7 @@
 package fr.cls.atoll.motu.web.usl.request.parameter.validator;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 
 /**
@@ -19,6 +20,13 @@ public class ModeHTTPParameterValidator extends AbstractHTTPParameterValidator<S
 
     public ModeHTTPParameterValidator(String parameterName_, String parameterValue_) {
         super(parameterName_, parameterValue_);
+    }
+
+    public ModeHTTPParameterValidator(String parameterName_, String parameterValue_, String defaultValue_) {
+        super(parameterName_, parameterValue_);
+        if (StringUtils.isNullOrEmpty(parameterValue_)) {
+            setParameterValue(defaultValue_);
+        }
     }
 
     /**

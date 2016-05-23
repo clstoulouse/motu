@@ -3,6 +3,7 @@ package fr.cls.atoll.motu.web.bll.request;
 import java.util.List;
 
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 
 /**
  * <br>
@@ -29,7 +30,7 @@ public interface IBLLRequestManager {
      * @param requestId
      * @return
      */
-    StatusModeResponse getResquestStatus(Long requestId_);
+    RequestDownloadStatus getResquestStatus(Long requestId_);
 
     /**
      * .
@@ -45,5 +46,22 @@ public interface IBLLRequestManager {
      * @return
      */
     StatusModeResponse processRequest(ExtractionParameters extractionParameters);
+
+    /**
+     * .
+     * 
+     * @param createExtractionParameters
+     * @param b
+     * @return
+     */
+    long download(ExtractionParameters createExtractionParameters);
+
+    /**
+     * .
+     * 
+     * @param createExtractionParameters
+     * @return
+     */
+    long downloadAsynchonously(ExtractionParameters createExtractionParameters);
 
 }

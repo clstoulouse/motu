@@ -130,7 +130,10 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 MotuRequestParametersConstant.PARAM_SERVICE,
                 CommonHTTPParameters.getServiceFromRequest(getRequest()));
 
-        modeHTTPParameterValidator = new ModeHTTPParameterValidator(MotuRequestParametersConstant.PARAM_MODE, getModeFromRequest());
+        modeHTTPParameterValidator = new ModeHTTPParameterValidator(
+                MotuRequestParametersConstant.PARAM_MODE,
+                getModeFromRequest(),
+                MotuRequestParametersConstant.PARAM_MODE_URL);
 
         latitudeLowHTTPParameterValidator = new LatitudeHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_LOW_LAT,
