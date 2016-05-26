@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentMap;
  * Interface that exposes the properties and methods that are visible from JMX.
  */
 public interface ExtractionThreadPoolExecutorMBean {
-    ConcurrentMap<String, Integer> getUsers();
+    ConcurrentMap<String, Integer> getUsersRequestNumberMap();
 
     ConcurrentMap<Integer, Integer> getPriorityMap();
 

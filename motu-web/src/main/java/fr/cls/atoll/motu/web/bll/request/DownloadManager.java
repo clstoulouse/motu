@@ -13,6 +13,7 @@ import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.servlet.RunnableHttpExtraction;
 

@@ -25,6 +25,9 @@ public class RequestDownloadStatus {
     private long startProcessingDateTime;
     private long endProcessingDateTime;
 
+    private long sizeInBits;
+    private String downloadUrlPath;
+
     private Exception runningException;
 
     /**
@@ -184,6 +187,33 @@ public class RequestDownloadStatus {
      */
     public void setRunningException(Exception runningException) {
         this.runningException = runningException;
+    }
+
+    /**
+     * Valeur de sizeInBits.
+     * 
+     * @return la valeur.
+     */
+    public long getSizeInBits() {
+        return sizeInBits;
+    }
+
+    /**
+     * Valeur de sizeInBits.
+     * 
+     * @param sizeInBits nouvelle valeur.
+     */
+    public void setSizeInBits(long sizeInBits) {
+        this.sizeInBits = sizeInBits;
+    }
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    public String getDownloadUrlPath() {
+        return downloadUrlPath;
     }
 
 }

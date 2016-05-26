@@ -5,11 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
-import fr.cls.atoll.motu.api.message.xml.StatusModeType;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceedingUserCapacityException;
+import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.web.dal.DALManager;
 
 /**
@@ -29,10 +34,17 @@ import fr.cls.atoll.motu.web.dal.DALManager;
  */
 public class BLLRequestManager implements IBLLRequestManager {
 
+    /** Logger for this class. */
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    private IRequestIdManager requestIdManager;
     private Map<Long, RequestDownloadStatus> requestIdList;
+    private QueueServerManagement queueServerManagement;
 
     public BLLRequestManager() {
+        requestIdManager = new RequestIdManager();
         requestIdList = new HashMap<Long, RequestDownloadStatus>();
+        queueServerManagement = new QueueServerManagement();
         // TODO SMA This class should take code from RequestManagement.getInstance();
     }
 
@@ -52,40 +64,76 @@ public class BLLRequestManager implements IBLLRequestManager {
         return requestIdList.get(requestId_);
     }
 
-    private StatusModeResponse createStatusModeResponse(long requestId) {
-        ObjectFactory objectFactory = new ObjectFactory();
-        StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
-        statusModeResponse.setCode(ErrorType.OK);
-        statusModeResponse.setStatus(StatusModeType.INPROGRESS);
-        statusModeResponse.setMsg("request in progress");
-        statusModeResponse.setRequestId(requestId);
-        return statusModeResponse;
-    }
-
     /** {@inheritDoc} */
     @Override
-    public long download(ExtractionParameters createExtractionParameters) {
-        // TODO Auto-generated method stub
-        return 0;
+    public ProductResult download(ExtractionParameters extractionParameters) {
+        long requestId = download(false, extractionParameters);
+
+        ProductResult p = new ProductResult();
+        // TODO SMA set product fileName
+        p.setProductFileName(null);
+        return p;
     }
 
     /** {@inheritDoc} */
     @Override
     public long downloadAsynchonously(ExtractionParameters extractionParameters) {
-        long requestId = getNewRequestId();
-
-        RequestDownloadStatus requestDownloadStatus = new RequestDownloadStatus(
-                requestId,
-                extractionParameters.getUserId(),
-                extractionParameters.getUserHost());
-        requestIdList.put(requestId, requestDownloadStatus);
-
-        DALManager.getInstance().getRequestManager().processRequest(statusModeResponse, extractionParameters);
+        long requestId = download(true, extractionParameters);
         return requestId;
     }
 
-    private void download(ExtractionParameters createExtractionParameters, long requestId) {
+    private long download(boolean isAsynchronous, final ExtractionParameters extractionParameters) {
+        final long requestId = initRequest(extractionParameters.getUserId(), extractionParameters.getUserHost()).getRequestId();
 
+        Thread t = new Thread("download isAsynchRqt=" + Boolean.toString(isAsynchronous) + " - " + requestId) {
+
+            /** {@inheritDoc} */
+            @Override
+            public void run() {
+                download(extractionParameters, requestId);
+            }
+
+        };
+        t.setDaemon(true);
+        t.start();
+        if (!isAsynchronous) {
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                LOGGER.error(e);
+            }
+        }
+
+        return requestId;
+    }
+
+    private RequestDownloadStatus initRequest(String userId, String userHost) {
+        final long requestId = getNewRequestId();
+        RequestDownloadStatus requestDownloadStatus = new RequestDownloadStatus(requestId, userId, userHost);
+        requestIdList.put(requestId, requestDownloadStatus);
+        return requestDownloadStatus;
+    }
+
+    public void checkNumberOfRunningRequestForUser(String userId_) throws MotuExceedingUserCapacityException {
+        if (queueServerManagement.isNumberOfRequestTooHighForUser(userId_)) {
+            throw new MotuExceedingUserCapacityException(
+                    userId_,
+                    userId_ == null,
+                    userId_ == null ? BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig().getMaxPoolAnonymous()
+                            : BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig().getMaxPoolAuth());
+        }
+    }
+
+    private void download(ExtractionParameters extractionParameters, long requestId) throws MotuExceedingUserCapacityException {
+        RequestDownloadStatus requestDownloadStatus = requestIdList.get(requestId);
+
+        // If too much request for this user, throws MotuExceedingUserCapacityException
+        checkNumberOfRunningRequestForUser(extractionParameters.getUserId());
+
+        // TODO SMA The request download is delegated to a download request manager
+        queueServerManagement.execute(extractionParameters);
+
+        DALManager.getInstance().getRequestManager().processRequest(requestDownloadStatus, extractionParameters);
     }
 
     /** {@inheritDoc} */
@@ -103,4 +151,18 @@ public class BLLRequestManager implements IBLLRequestManager {
         // return myInfoSize;
         return DALManager.getInstance().getRequestManager().processProductDataSizeRequest(extractionParameters);
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getNewRequestId() {
+        return requestIdManager.getNewRequestId();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public StatusModeResponse processRequest(ExtractionParameters extractionParameters) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

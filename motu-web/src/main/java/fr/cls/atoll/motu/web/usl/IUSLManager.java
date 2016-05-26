@@ -1,5 +1,6 @@
 package fr.cls.atoll.motu.web.usl;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.web.usl.request.IUSLRequestManager;
 import fr.cls.atoll.motu.web.usl.user.USLUserManager;
 
@@ -17,8 +18,10 @@ public interface IUSLManager {
 
     /**
      * .
+     * 
+     * @throws Exception
      */
-    void init();
+    void init() throws MotuException;
 
     /**
      * .

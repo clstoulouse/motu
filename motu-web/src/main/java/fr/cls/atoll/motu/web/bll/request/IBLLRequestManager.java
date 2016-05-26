@@ -3,6 +3,8 @@ package fr.cls.atoll.motu.web.bll.request;
 import java.util.List;
 
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 
 /**
@@ -48,20 +50,13 @@ public interface IBLLRequestManager {
     StatusModeResponse processRequest(ExtractionParameters extractionParameters);
 
     /**
-     * This method retrieve the size of the data of a product.
-     * 
-     * @param extractionParameters This is the parameters which identify the data of the targeted product.
-     * @return The size of the product into KiloByte
-     */
-    double processProductDataSize(ExtractionParameters extractionParameters);
-    /**
      * .
      * 
      * @param createExtractionParameters
      * @param b
      * @return
      */
-    long download(ExtractionParameters createExtractionParameters);
+    ProductResult download(ExtractionParameters createExtractionParameters);
 
     /**
      * .
@@ -78,4 +73,13 @@ public interface IBLLRequestManager {
      * @return The size of the product into KiloByte
      */
     double processProductDataSize(ExtractionParameters extractionParameters);
+
+    /**
+     * .
+     * 
+     * @param extractionParameters
+     * @return
+     */
+    double getAmountDataSizeAsMBytes(ExtractionParameters extractionParameters);
+
 }

@@ -116,6 +116,10 @@ public interface MotuRequestParametersConstant {
 
     final String PARAM_CATALOG_TYPE = "catalogtype";
 
+    final String PARAM_CATALOG_TYPE_OPENDAP = "opendap";
+    final String PARAM_CATALOG_TYPE_TDS = "tds";
+    final String PARAM_CATALOG_TYPE_FTP = "ftp";
+
     /** End date servlet paremeter name. */
     final String PARAM_END_DATE = "t_hi";
 

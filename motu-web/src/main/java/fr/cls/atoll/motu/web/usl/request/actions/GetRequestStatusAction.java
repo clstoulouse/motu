@@ -11,6 +11,7 @@ import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.utils.JAXBWriter;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidRequestIdException;
 import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
 import fr.cls.atoll.motu.web.bll.BLLManager;
@@ -18,6 +19,7 @@ import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.RequestIdHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
 
 /**
  * <br>
@@ -61,18 +63,24 @@ public class GetRequestStatusAction extends AbstractAction {
     }
 
     @Override
-    public void process() throws IOException {
+    public void process() throws MotuException {
         Long requestId = rqtIdValidator.getParameterValueValidated();
 
         try {
             if (requestId != null) {
-                marshallStatusModeResponse(BLLManager.getInstance().getRequestManager().getResquestStatus(requestId), getResponse().getWriter());
+                marshallStatusModeResponse(XMLConverter
+                        .convertStatusModeResponse(BLLManager.getInstance().getRequestManager().getResquestStatus(requestId)),
+                                           getResponse().getWriter());
             } else {
-                marshallStatusModeResponse(createStatusModeResponse(new MotuInvalidRequestIdException(requestId)), getResponse().getWriter());
+                marshallStatusModeResponse(createStatusModeResponse(new MotuInvalidRequestIdException(-1L)), getResponse().getWriter());
             }
 
         } catch (Exception e) {
-            getResponse().sendError(500, String.format("ERROR: %s", e.getMessage()));
+            try {
+                getResponse().sendError(500, String.format("ERROR: %s", e.getMessage()));
+            } catch (IOException e1) {
+                throw new MotuException("Error while writing response", e1);
+            }
         }
     }
 

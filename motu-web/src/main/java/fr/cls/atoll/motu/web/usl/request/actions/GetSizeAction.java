@@ -47,7 +47,7 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
-import fr.cls.atoll.motu.web.bll.request.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DatasetFtp;
@@ -158,12 +158,16 @@ public class GetSizeAction extends AbstractAction {
      * @throws ServletException
      */
     @Override
-    protected void process() throws IOException {
+    protected void process() throws MotuException {
         retrieveSize();
     }
 
-    private void retrieveSize() throws IOException, ServletException, JAXBException {
-        getAmountDataSize(createExtractionParameters(), getResponse());
+    private void retrieveSize() throws MotuException {
+        try {
+            getAmountDataSize(createExtractionParameters(), getResponse());
+        } catch (ServletException | IOException | JAXBException e) {
+            throw new MotuException("Error while computing getAmountDataSize", e);
+        }
     }
 
     private ExtractionParameters createExtractionParameters() throws IOException {
@@ -193,7 +197,6 @@ public class GetSizeAction extends AbstractAction {
 
                 getLoginOrUserHostname(),
                 isAnAnonymousUser());
-        extractionParameters.setBatchQueue(isBatch());
 
         // Set assertion to manage CAS.
         extractionParameters.setAssertion(AssertionHolder.getAssertion());

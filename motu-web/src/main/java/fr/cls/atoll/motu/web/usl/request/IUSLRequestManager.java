@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 
 /**
@@ -26,7 +27,8 @@ public interface IUSLRequestManager {
      * @param response
      * @throws IOException
      * @throws InvalidHTTPParameterException
+     * @throws MotuException
      */
-    void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws IOException, InvalidHTTPParameterException;
+    void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws InvalidHTTPParameterException, MotuException;
 
 }

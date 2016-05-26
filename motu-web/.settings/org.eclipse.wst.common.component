@@ -4,6 +4,7 @@
         <wb-resource deploy-path="/" source-path="/WebContent"/>
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
         <dependent-module archiveName="motu-api-message-2.6.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-api-message/motu-api-message">
             <dependency-type>uses</dependency-type>
         </dependent-module>

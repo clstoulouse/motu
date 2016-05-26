@@ -43,4 +43,11 @@ public interface IBLLConfigManager {
      * @return
      */
     MotuConfig getMotuConfig();
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    String getProductDownloadHttpUrl();
 }

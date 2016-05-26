@@ -61,4 +61,10 @@ public class BLLConfigManager implements IBLLConfigManager {
         return dalConfigManager.getMotuConfig();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public String getProductDownloadHttpUrl() {
+        return dalConfigManager.getMotuConfig().getDownloadHttpUrl();
+    }
+
 }

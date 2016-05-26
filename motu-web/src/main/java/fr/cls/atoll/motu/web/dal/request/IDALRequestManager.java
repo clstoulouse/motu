@@ -2,7 +2,7 @@ package fr.cls.atoll.motu.web.dal.request;
 
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.request.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 
 /**
  * <br>

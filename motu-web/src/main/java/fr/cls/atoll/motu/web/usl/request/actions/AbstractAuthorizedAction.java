@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.session.SessionManager;
 
 /**
@@ -47,7 +48,7 @@ public abstract class AbstractAuthorizedAction extends AbstractAction {
             return true;
         }
         String login = getLoginFromRequest();
-        String password = getPasswordFromRequest();
+        String password = CommonHTTPParameters.getPasswordFromRequest(getRequest());
         if (login == null || password == null) {
             return false;
         }

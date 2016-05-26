@@ -1,12 +1,5 @@
 package fr.cls.atoll.motu.web.usl.request.actions;
 
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_ANONYMOUS;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_BATCH;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_END_DATE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LANGUAGE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_PWD;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_START_DATE;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +62,7 @@ public abstract class AbstractAction {
         session = session_;
     }
 
-    public void doAction() throws IOException, InvalidHTTPParameterException {
+    public void doAction() throws MotuException, InvalidHTTPParameterException {
         onActionStarts();
         if (isAuthorized()) {
             checkHTTPParameters();
@@ -92,7 +85,7 @@ public abstract class AbstractAction {
         return true;
     }
 
-    protected abstract void process() throws IOException;
+    protected abstract void process() throws MotuException;
 
     protected void onActionStarts() {
         if (LOGGER.isDebugEnabled()) {
@@ -133,10 +126,6 @@ public abstract class AbstractAction {
         return request;
     }
 
-    public String getLanguageFromRequest() {
-        return getRequest().getParameter(PARAM_LANGUAGE);
-    }
-
     /**
      * .
      * 
@@ -162,10 +151,6 @@ public abstract class AbstractAction {
         return userId;
     }
 
-    public String getPasswordFromRequest() {
-        return request.getParameter(PARAM_PWD);
-    }
-
     public String getLoginOrUserHostname() {
         String userLoginOrHostName = getLoginFromRequest();
         if (userLoginOrHostName == null || userLoginOrHostName.trim().length() <= 0) {
@@ -175,12 +160,8 @@ public abstract class AbstractAction {
         return userLoginOrHostName;
     }
 
-    public String getAnonymousParameterFromRequest() {
-        return getRequest().getParameter(PARAM_ANONYMOUS);
-    }
-
     private boolean isAnonymousParameter() {
-        String anonymousUserAsString = getAnonymousParameterFromRequest();
+        String anonymousUserAsString = CommonHTTPParameters.getAnonymousParameterFromRequest(getRequest());
         return anonymousUserAsString != null && (anonymousUserAsString.equalsIgnoreCase("true") || anonymousUserAsString.equalsIgnoreCase("1"));
     }
 
@@ -313,8 +294,8 @@ public abstract class AbstractAction {
      * @return a list of temporable coverage, first start date, and then end date (they can be empty string)
      */
     protected List<String> getTemporalCoverage() {
-        String startDate = getRequest().getParameter(PARAM_START_DATE);
-        String endDate = getRequest().getParameter(PARAM_END_DATE);
+        String startDate = CommonHTTPParameters.getStartDateFromRequest(getRequest());
+        String endDate = CommonHTTPParameters.getEndDateFromRequest(getRequest());
         List<String> listTemporalCoverage = new ArrayList<String>();
 
         if (startDate != null) {
@@ -372,22 +353,6 @@ public abstract class AbstractAction {
             getResponse().sendError(400, String.format("ERROR: %s", e.getMessage()));
         }
         return dataFormat;
-    }
-
-    /**
-     * Checks if is batch.
-     * 
-     * @param request the request
-     * 
-     * @return true, if is batch
-     */
-    protected boolean isBatch() {
-        String batchAsString = getBatchParameter();
-        return batchAsString != null && (batchAsString.trim().equalsIgnoreCase("true") || batchAsString.trim().equalsIgnoreCase("1"));
-    }
-
-    private String getBatchParameter() {
-        return getRequest().getParameter(PARAM_BATCH);
     }
 
     /**

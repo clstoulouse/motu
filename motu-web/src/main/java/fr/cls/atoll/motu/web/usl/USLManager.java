@@ -1,7 +1,9 @@
 package fr.cls.atoll.motu.web.usl;
 
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.web.usl.request.IUSLRequestManager;
 import fr.cls.atoll.motu.web.usl.request.USLRequestManager;
+import fr.cls.atoll.motu.web.usl.response.velocity.VelocityTemplateManager;
 import fr.cls.atoll.motu.web.usl.user.USLUserManager;
 
 /**
@@ -33,8 +35,12 @@ public class USLManager implements IUSLManager {
     }
 
     @Override
-    public void init() {
-
+    public void init() throws MotuException {
+        try {
+            VelocityTemplateManager.getInstance().init();
+        } catch (Exception e) {
+            throw new MotuException("Error while initializing velocity template", e);
+        }
     }
 
     /**

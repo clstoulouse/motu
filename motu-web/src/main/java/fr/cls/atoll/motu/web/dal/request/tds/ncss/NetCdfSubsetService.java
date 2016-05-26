@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.web.dal.request.netcdf;
+package fr.cls.atoll.motu.web.dal.request.tds.ncss;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

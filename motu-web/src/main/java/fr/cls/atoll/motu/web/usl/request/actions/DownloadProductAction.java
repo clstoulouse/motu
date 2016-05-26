@@ -23,12 +23,16 @@ import org.jasig.cas.client.util.AssertionHolder;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
+import fr.cls.atoll.motu.api.utils.JAXBWriter;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.web.bll.BLLManager;
-import fr.cls.atoll.motu.web.bll.request.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.ProductDeferedExtractNetcdfThread;
@@ -172,7 +176,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     }
 
     @Override
-    public void process() throws IOException {
+    public void process() throws MotuException {
         downloadProduct();
     }
 
@@ -205,10 +209,20 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         return extractionParameters;
     }
 
-    private void downloadProduct() throws IOException, ServletException, MotuException {
+    /** {@inheritDoc} */
+    private String getProductDownloadHttpUrl(ProductResult p_) {
+        String productDownloadHttpUrl = BLLManager.getInstance().getConfigManager().getProductDownloadHttpUrl();
+        if (!(productDownloadHttpUrl.endsWith("/"))) {
+            productDownloadHttpUrl += "/";
+        }
+        productDownloadHttpUrl += p_.getProductFileName();
+        return productDownloadHttpUrl;
+    }
+
+    private void downloadProduct() throws MotuException {
         // Read parameter from request
         // TODO SMA those 3 var were set in the Organizer
-        String requestLanguage = getLanguageFromRequest();
+        String requestLanguage = CommonHTTPParameters.getLanguageFromRequest(getRequest());
         short maxPoolAnonymous = getMaxPoolAnonymous();
         short maxPoolAuthenticate = getMaxPoolAuthenticate();
 
@@ -217,16 +231,19 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
         if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_STATUS)) {
             // Asynchronous mode
-            long rqtId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(createExtractionParameters());
-
+            long requestId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(createExtractionParameters());
+            getResponse().setContentType(CONTENT_TYPE_XML);
+            JAXBWriter.getInstance().write(createStatusModeResponse(requestId), getResponse().getWriter());
         } else {
-            long rqtId = BLLManager.getInstance().getRequestManager().download(createExtractionParameters());
+            ProductResult p = BLLManager.getInstance().getRequestManager().download(createExtractionParameters());
+            String productURL = getProductDownloadHttpUrl(p);
 
             // Synchronous mode
             if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_CONSOLE)) {
-
+                getResponse().sendRedirect(productURL);
             } else { // Default mode MotuRequestParametersConstant.PARAM_MODE_URL
-
+                getResponse().setContentType(CONTENT_TYPE_PLAIN);
+                getResponse().getWriter().write(productURL);
             }
         }
 
@@ -236,6 +253,16 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         if (!noMode) {
             SessionManager.getInstance().removeOrganizerSession(getSession());
         }
+    }
+
+    private StatusModeResponse createStatusModeResponse(long requestId) {
+        ObjectFactory objectFactory = new ObjectFactory();
+        StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
+        statusModeResponse.setCode(ErrorType.OK);
+        statusModeResponse.setStatus(StatusModeType.INPROGRESS);
+        statusModeResponse.setMsg("request in progress");
+        statusModeResponse.setRequestId(requestId);
+        return statusModeResponse;
     }
 
     @Override

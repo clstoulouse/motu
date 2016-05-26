@@ -89,7 +89,11 @@ public class MotuWebEngineContextListener implements ServletContextListener {
 
         BLLManager.getInstance().init();
 
-        USLManager.getInstance().init();
+        try {
+            USLManager.getInstance().init();
+        } catch (MotuException e) {
+            LOGGER.error("Error while initializing velocity template", e);
+        }
 
         // Init Cas filters
         initCasServer(sce);

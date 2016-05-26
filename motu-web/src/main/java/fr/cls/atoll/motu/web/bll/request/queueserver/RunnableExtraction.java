@@ -29,8 +29,6 @@ import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jasig.cas.client.util.AssertionHolder;
-import org.jasig.cas.client.validation.Assertion;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
@@ -55,7 +53,8 @@ import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.queueserver.ExtractionThreadPoolExecutor;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueLogError;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueLogPriority;
-import fr.cls.atoll.motu.web.bll.request.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueLogInfo;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
@@ -95,8 +94,6 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
 
     /** The status mode response. */
     protected StatusModeResponse statusModeResponse = null;
-
-    // private QueueLogError queueLogError = null;
 
     /**
      * The Constructor.
@@ -169,25 +166,10 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
      * Shutdown the runnable
      */
     public void shutdown() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("shutdown() - start");
-        }
-
         setError(ErrorType.SHUTTING_DOWN);
-
-        if (LOG.isInfoEnabled()) {
-            LOG.info(String.format("Extraction request below is shutting down :\n%s\n", getQueuelogInfoAsXML()));
-        }
-
+        LOG.info(String.format("Extraction request below is shutting down :\n%s\n", getQueuelogInfoAsXML()));
         aborted();
-
-        if (LOG.isInfoEnabled()) {
-            LOG.info(String.format("Extraction request above is shutdown.", getQueuelogInfoAsXML()));
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("shutdown() - end");
-        }
+        LOG.info(String.format("Extraction request above is shutdown.", getQueuelogInfoAsXML()));
     }
 
     /**
@@ -368,30 +350,9 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
      * 
      * @throws MotuException the motu exception
      */
-    public String getUserId() throws MotuException {
-        if (extractionParameters == null) {
-            MotuException e = new MotuException("ERROR in RunnableExtraction.getUserId : extraction parameter is null");
-            setError(e);
-            throw e;
-        }
-
-        String userId = extractionParameters.getUserId();
-        if (userId == null) {
-            MotuException e = new MotuException("ERROR in RunnableExtraction.getUserId : no user id filled - user id is null");
-            setError(e);
-            throw e;
-        }
-        return userId;
+    public String getUserId() {
+        return extractionParameters.getUserId();
     }
-
-    // /**
-    // * Sets the range.
-    // *
-    // * @param range the range
-    // */
-    // public void setRange(int range) {
-    // this.range = range;
-    // }
 
     /**
      * Increase priority.
@@ -480,67 +441,13 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
     @Override
     public void run() {
 
-        // try {
-        // Thread.sleep(60000);
-        // } catch (InterruptedException e1) {
-        // e1.printStackTrace();
-        // }
-        if (LOG.isDebugEnabled()) {
-            try {
-                LOG.debug("RunnableExtraction run() - entering");
-                LOG.debug(String.format("RunnableExtraction run() : user id: '%s' - request parameters '%s'",
-                                        getUserId(),
-                                        getExtractionParameters().toString()));
-            } catch (Exception e) {
-                // Do nothing
-            }
-        }
-        Assertion assertion = extractionParameters.getAssertion();
-        if (assertion != null) {
-            AssertionHolder.setAssertion(assertion);
-        }
-
         try {
-            setStatusInProgress();
-
-            product = organizer.extractData(extractionParameters);
-
-            setStatusDone();
 
         } catch (Exception e) {
-            LOG.error("RunnableExtraction.run()", e);
-            MotuException motuException = null;
-            try {
-                motuException = new MotuException(
-                        String.format("An error occurs during extraction (RunnableExtraction.run): user id: '%s' - request parameters '%s'",
-                                      getUserId(),
-                                      getExtractionParameters().toString()),
-                        e);
-            } catch (MotuException e1) {
-                // Do Nothing
-            }
-
-            setError(motuException);
 
         } catch (Error e) {
-            LOG.error("RunnableExtraction.run()", e);
-
-            MotuException motuException = null;
-            try {
-                motuException = new MotuException(
-                        String.format("An error occurs during extraction (RunnableExtraction.run): user id: '%s' - request paramters '%s'",
-                                      getUserId(),
-                                      getExtractionParameters().toString()),
-                        e);
-            } catch (MotuException e1) {
-                // Do Nothing
-            }
-            setError(motuException);
 
         } finally {
-            if (assertion != null) {
-                AssertionHolder.clear();
-            }
 
         }
 

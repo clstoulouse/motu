@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.web.servlet.RunnableHttpExtraction;
 import fr.cls.atoll.motu.web.usl.request.actions.DebugAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DownloadProductAction;
@@ -39,7 +40,7 @@ public class USLRequestManager implements IUSLRequestManager {
     }
 
     @Override
-    public void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws IOException, InvalidHTTPParameterException {
+    public void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws MotuException, InvalidHTTPParameterException {
         switch (CommonHTTPParameters.getActionFromRequest(request).toLowerCase()) {
         case PingAction.ACTION_NAME:
             new PingAction(request, response).doAction();

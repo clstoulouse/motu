@@ -31,7 +31,7 @@ import fr.cls.atoll.motu.api.rest.MotuRequestParameters;
 import fr.cls.atoll.motu.library.misc.data.ServiceData;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.web.bll.request.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;

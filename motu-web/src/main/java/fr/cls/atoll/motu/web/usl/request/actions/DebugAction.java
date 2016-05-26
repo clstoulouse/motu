@@ -12,6 +12,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueManagement;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.web.bll.BLLManager;
@@ -51,7 +52,7 @@ public class DebugAction extends AbstractAction {
     }
 
     @Override
-    public void process() throws IOException {
+    public void process() throws MotuException {
         StringBuffer stringBuffer = new StringBuffer();
 
         stringBuffer.append("<html>\n");
@@ -66,7 +67,11 @@ public class DebugAction extends AbstractAction {
         stringBuffer.append("<html>\n");
 
         getResponse().setContentType(CONTENT_TYPE_HTML);
-        getResponse().getWriter().write(stringBuffer.toString());
+        try {
+            getResponse().getWriter().write(stringBuffer.toString());
+        } catch (IOException e) {
+            throw new MotuException("Error while wirting the response", e);
+        }
     }
 
     /**

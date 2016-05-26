@@ -22,7 +22,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.web.bll.request.queueserver;
+package fr.cls.atoll.motu.web.bll.request.queueserver.queue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -43,7 +43,7 @@ import com.thoughtworks.xstream.XStream;
 
 import fr.cls.atoll.motu.library.misc.queueserver.QueueLogError;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueLogPriority;
-import fr.cls.atoll.motu.web.bll.request.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -73,7 +73,7 @@ public class QueueLogInfo {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
     /** Log format (configuration) */
-    private static String logFormat = "";
+    private String logFormat = "";
 
     /** The queue id. */
     private String queueId = "";

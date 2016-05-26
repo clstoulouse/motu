@@ -1,0 +1,87 @@
+##----------------------------------------------------------------------------------
+## WARNING : Macro are prefixed by template file name because of the bug in Velocity when
+## there are the same macro name in different Template. 
+## In case several templates have a common macro name, 
+## the result can be amazing (among others, execution mixes up the same macro with the same name)
+##----------------------------------------------------------------------------------
+## -------------------------------------------- listServices_uk_printServiceAsTable --------------------------------
+#macro(listServices_uk_printServiceAsTable)
+	#set($label = "${service.getGroup()}&nbsp;${service.getDescription()}") 			
+	<tr>
+		<td>
+    		#if($service.isDisableHrefLink())
+    			${label}
+    		#else
+                <a href=?action=listcatalog&service=${service.getNameEncoded()}>${label}</a>    				
+    		#end		
+		</td>
+		<td>
+			${service.getCatalogType().toString()}
+		</td>
+	</tr>
+#end
+## -------------------------------------------- listServices_uk_listServicesAsTable --------------------------------
+#macro(listServices_uk_listServicesAsTable)
+<table class="encadre" width="95%" border="0" cellspacing="2">
+	<tr>
+		<th>Description du service</th>
+		<th>Type</th>
+	</tr>
+	#foreach( $service in $serviceList )
+		#listServices_uk_printServiceAsTable()
+	#end
+</table>
+	
+#end	
+## -------------------------------------------- listServices_uk_listServicesAsList --------------------------------
+#macro(listServices_uk_listServicesAsList)
+	#foreach( $service in $serviceList )
+	<tr>
+		<td>	
+	    <h2>
+		#set($label = "${service.getGroup()}&nbsp;${service.getDescription()}&nbsp;(${service.getCatalogType().toString()})") 			
+		
+		#if($service.isDisableHrefLink())
+			${label}				
+		#else
+            <a href=?action=listcatalog&service=${service.getNameEncoded()}>${label}</a>
+		#end		
+		</h2>
+		
+		
+		</td>
+	</tr>
+	#end
+#end
+## -------------------------------------------- main --------------------------------
+
+<html>
+<head>
+  <title>Services disponibles via Motu</title>
+</head>
+
+<style>
+	h1
+	{
+	font: 18pt "Arial", "Helvetica", sans-serif;
+	font-weight: bold;
+	color:#000099;
+    padding-top: 20px;
+	}
+	h2
+	{
+	font: 14pt "Arial", "Helvetica", sans-serif;
+	font-weight: bold;
+	color:#000099;
+    padding-top: 10px;
+	}
+</style> 
+
+<body>
+	<h1>Services disponibles via Motu</h1>
+	<table>
+##		#listServices_uk_listServicesAsList()
+	#listServices_uk_listServicesAsTable()
+	</table>	   
+</body>
+</html>
