@@ -1,7 +1,5 @@
 package fr.cls.atoll.motu.web.usl.request.actions;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,10 +18,11 @@ import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.BLLManager;
-import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
+import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
-import fr.cls.atoll.motu.web.usl.request.parameter.validator.CatalogTypeParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.response.velocity.VelocityTemplateManager;
 import fr.cls.atoll.motu.web.usl.response.velocity.model.converter.VelocityModelConverter;
 
@@ -45,48 +44,39 @@ import fr.cls.atoll.motu.web.usl.response.velocity.model.converter.VelocityModel
  * @author Sylvain MARTY
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class ListServicesAction extends AbstractAuthorizedAction {
+public class ListCatalogAction extends AbstractAuthorizedAction {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static final String ACTION_NAME = "listservices";
+    public static final String ACTION_NAME = "listcatalog";
 
-    private CatalogTypeParameterValidator catalogTypeParameterValidator;
+    private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
 
     /**
      * 
      * @param actionName_
      */
-    public ListServicesAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public ListCatalogAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         super(ACTION_NAME, request, response, session);
 
-        catalogTypeParameterValidator = new CatalogTypeParameterValidator(
-                MotuRequestParametersConstant.PARAM_CATALOG_TYPE,
-                CommonHTTPParameters.getServiceFromRequest(getRequest()),
-                "");
+        serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
+                MotuRequestParametersConstant.PARAM_SERVICE,
+                CommonHTTPParameters.getServiceFromRequest(getRequest()));
+
     }
 
     @Override
     public void process() throws MotuException {
-        String catalogType = catalogTypeParameterValidator.getParameterValueValidated();
-        writeResponseWithVelocity(filterConfigService(catalogType));
+        ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
+        CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData();
+        writeResponseWithVelocity(cs, cd);
     }
 
-    private List<ConfigService> filterConfigService(String catalogType) {
-        List<ConfigService> csList = new ArrayList<ConfigService>();
-        for (ConfigService cs : BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService()) {
-            if (StringUtils.isNullOrEmpty(catalogType)
-                    || (!StringUtils.isNullOrEmpty(catalogType) && cs.getCatalog().getType().equalsIgnoreCase(catalogType))) {
-                csList.add(cs);
-            }
-        }
-        return csList;
-    }
-
-    private void writeResponseWithVelocity(List<ConfigService> csList_) throws MotuException {
+    private void writeResponseWithVelocity(ConfigService cs_, CatalogData cd) throws MotuException {
         VelocityContext context = VelocityTemplateManager.getPrepopulatedVelocityContext();
         context.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
-        context.put("serviceList", VelocityModelConverter.converServiceList(csList_));
+        context.put("service", VelocityModelConverter.convertToService(cs_, cd));
+        context.put("user", USLManager.getInstance().getUserManager().getUserName());
 
         try {
             Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null);
@@ -119,7 +109,7 @@ public class ListServicesAction extends AbstractAuthorizedAction {
     /** {@inheritDoc} */
     @Override
     protected void checkHTTPParameters() throws InvalidHTTPParameterException {
-        catalogTypeParameterValidator.validate();
+        serviceHTTPParameterValidator.validate();
     }
 
 }

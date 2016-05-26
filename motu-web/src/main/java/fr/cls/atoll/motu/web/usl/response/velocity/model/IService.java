@@ -1,5 +1,7 @@
 package fr.cls.atoll.motu.web.usl.response.velocity.model;
 
+import fr.cls.atoll.motu.web.usl.response.velocity.model.catalog.ICatalog;
+
 /**
  * <br>
  * <br>
@@ -14,10 +16,11 @@ public interface IService {
 
     String getGroup();
 
+    String getDescription();
+
     String getNameEncoded();
 
     String getCatalogType();
 
-    String getDescription();
-
+    ICatalog getCatalog();
 }

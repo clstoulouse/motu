@@ -2,7 +2,7 @@ package fr.cls.atoll.motu.web.usl;
 
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.web.usl.request.IUSLRequestManager;
-import fr.cls.atoll.motu.web.usl.user.USLUserManager;
+import fr.cls.atoll.motu.web.usl.user.IUSLUserManager;
 
 /**
  * <br>
@@ -28,7 +28,7 @@ public interface IUSLManager {
      * 
      * @return
      */
-    USLUserManager getUserManager();
+    IUSLUserManager getUserManager();
 
     /**
      * .

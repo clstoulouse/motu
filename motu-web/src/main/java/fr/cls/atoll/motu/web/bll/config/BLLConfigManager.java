@@ -1,5 +1,6 @@
 package fr.cls.atoll.motu.web.bll.config;
 
+import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.IDALConfigManager;
@@ -65,6 +66,19 @@ public class BLLConfigManager implements IBLLConfigManager {
     @Override
     public String getProductDownloadHttpUrl() {
         return dalConfigManager.getMotuConfig().getDownloadHttpUrl();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ConfigService getConfigService(String configServiceName) {
+        ConfigService csResult = null;
+        for (ConfigService c : getMotuConfig().getConfigService()) {
+            if (c.getName().equalsIgnoreCase(configServiceName)) {
+                csResult = c;
+                break;
+            }
+        }
+        return csResult;
     }
 
 }

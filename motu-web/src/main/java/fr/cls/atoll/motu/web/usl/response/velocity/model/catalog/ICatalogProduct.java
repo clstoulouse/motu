@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.web.usl.user;
+package fr.cls.atoll.motu.web.usl.response.velocity.model.catalog;
 
 /**
  * <br>
@@ -10,16 +10,9 @@ package fr.cls.atoll.motu.web.usl.user;
  * @author Sylvain MARTY
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public interface IUSLUserManager {
+public interface ICatalogProduct {
 
-    String getLogin();
+    ICatalogProductMetaData getProductMetaData();
 
-    boolean isUserAnonymous();
-
-    /**
-     * .
-     * 
-     * @return
-     */
-    String getUserName();
+    String getLocationData();
 }

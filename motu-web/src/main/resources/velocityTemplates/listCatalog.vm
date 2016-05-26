@@ -1,0 +1,244 @@
+##----------------------------------------------------------------------------------
+## WARNING : Macro are prefixed by template file name because of the bug in Velocity when
+## there are the same macro name in different Template. 
+## In case several templates have a common macro name, 
+## the result can be amazing (among others, execution mixes up the same macro with the same name)
+##----------------------------------------------------------------------------------
+## -------------------------------------------- catalog_uk_table_of_contents --------------------------------
+#macro(catalog_uk_table_of_contents)
+#set ($productMetaDataPrev = false)
+#set ($listProductTypeDataset = $catalog.getListProductTypeDataset() )
+<br>
+<table class="int" width="100%" cellspacing="2" cellpadding="5" border="0">
+<tr>
+#foreach( $sameProductTypeDataset in $listProductTypeDataset )	
+	#foreach( $product in $sameProductTypeDataset )
+		#set($productMetaData = $product.getProductMetaData())
+		#if($productMetaDataPrev)
+			#if(! $productMetaDataPrev.getProductType().equals($productMetaData.getProductType()))
+				</tr>
+				</table>
+				<table class="toc" width="100%" cellspacing="2" cellpadding="5" border="0">
+				#if(! $tocAsRow)
+					<tr>
+				#end
+			#end
+		#end
+		#catalog_uk_print_toc()			
+		#set ($productMetaDataPrev = $productMetaData)	
+	#end
+#end
+#if(! $tocAsRow)
+	</tr>
+#end
+</table>
+#end
+
+## -------------------------------------------- catalog_uk_print_toc --------------------------------
+#macro(catalog_uk_print_toc)
+	#if($productMetaDataPrev == false)
+		#catalog_uk_print_toc_all()
+	#else
+		#if($productMetaDataPrev.getProductType().equals($productMetaData.getProductType()))
+			#catalog_uk_print_toc_partial()		
+		#else
+			#catalog_uk_print_toc_all()		
+		#end				
+	#end
+#end
+## -------------------------------------------- catalog_uk_print_toc_all --------------------------------
+#macro(catalog_uk_print_toc_all)
+	##<th colspan="20" align="left"><div class="tete1">$productMetaData.getProductType()</div></th></tr><tr>
+	<th colspan="20" align="left">$productMetaData.getProductType()</th></tr><tr>
+	#set($listSubtypes = $productMetaData.getProductSubTypes())
+	#set($i = 0)
+	#foreach($subtype in $listSubtypes)
+		##--- just print one 
+		#if(($velocityCount >= $tocLowLevel) && ($velocityCount <= $tocHighLevel))
+			#if($tocAsRow)
+				<tr>
+			#end
+			<td>
+                <a href="#$productMetaData.getProductType()${subtype}">${subtype}</a>
+			</td>
+			#if($tocAsRow)
+				</tr>
+			#end
+		#end
+	#end	
+#end
+## -------------------------------------------- catalog_uk_printpartialheader --------------------------------
+#macro(catalog_uk_print_toc_partial)
+	#set($listSubtypes = $productMetaData.getProductSubTypes())
+	#set($listSubtypesPrev = $productMetaDataPrev.getProductSubTypes())	
+	#set($from = $productMetaData.compareSubTypes($listSubtypesPrev))	
+	#if($from < 0)
+		#catalog_uk_print_toc_all()
+	#else
+		#set($i = 0)
+		#foreach($subtype in $listSubtypes)
+			#set($level = $level + 1)
+			#if($i >= $from)
+				##--- just print one 
+				#if(($velocityCount >= $tocLowLevel) && ($velocityCount <= $tocHighLevel))
+					#if($tocAsRow)
+						<tr>
+					#end
+					<td>
+		                <a href="#$productMetaData.getProductType()${subtype}">${subtype}</a>
+					</td>
+					#if($tocAsRow)
+						</tr>
+					#end
+				#end				
+			#else
+				#set($i = $i +1)
+			#end
+		#end
+	#end	
+#end
+
+
+## -------------------------------------------- printpartialheader --------------------------------
+#macro(catalog_uk_printpartialheader)
+	#set($listSubtypes = $productMetaData.getProductSubTypes())
+	#set($listSubtypesPrev = $productMetaDataPrev.getProductSubTypes())	
+	#set($from = $productMetaData.compareSubTypes($listSubtypesPrev))	
+	#if($from < 0)
+		#catalog_uk_printallheader()
+	#else
+		#set($i = 0)
+		#set($level = 2)
+		#foreach($subtype in $listSubtypes)
+			#set($level = $level + 1)
+			#if($i >= $from)
+				#set( $line = "<h${level}>${subtype}</h${level}>" )
+				<a name="$productMetaData.getProductType()${subtype}"></a>
+				$line
+			#else
+				#set($i = $i +1)
+			#end
+		#end
+	#end	
+#end
+## -------------------------------------------- printallheader --------------------------------
+#macro(catalog_uk_printallheader)
+	<h2>$productMetaData.getProductType()</h2>
+	#set($listSubtypes = $productMetaData.getProductSubTypes())
+	#set($level = 2)
+	#foreach($subtype in $listSubtypes)
+		#set($level = $level + 1)
+		#set( $line = "<h${level}>${subtype}</h${level}>" )
+		<a name="$productMetaData.getProductType()${subtype}"></a>
+		$line
+	#end	
+#end
+## -------------------------------------------- printheader --------------------------------
+#macro(catalog_uk_printheader)
+	#if($productMetaDataPrev == false)
+		#catalog_uk_printallheader()
+	#else
+		#if($productMetaDataPrev.getProductType().equals($productMetaData.getProductType()))
+			#catalog_uk_printpartialheader()		
+		#else
+			#catalog_uk_printallheader()						
+		#end				
+	#end
+
+	<ul>			
+#end
+## -------------------------------------------- printbody --------------------------------
+#macro(catalog_uk_printbody)
+	#set ($Type = ${productMetaData.getProductTypeServiceValue()})
+	<style>
+		td.producttype
+		{
+		color: #cc6633;
+		}
+	</style> 
+
+	## ------------------------------------------
+	## Aviso along track products are not listed
+	## ------------------------------------------
+
+		<tr>	
+		#if($downloadOnTop)						
+			<td width="50%">
+				<li> 
+					Download&nbsp;
+					<a href=?action=productdownloadhome&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
+							 $productMetaData.getTitle()
+					</a>	
+				</li>	
+			</td>	
+			<td>
+					<a href=?action=listproductmetadata&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
+							 $titleMetadata
+					</a>	
+			</td>
+			<td>
+				Last update: &nbsp;$productMetaData.getLastUpdate()
+			</td>    	
+		#else
+			<td>
+				<li>
+					<a href=?action=listproductmetadata&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
+							 $productMetaData.getTitle()
+					</a>	
+				</li>	
+			</td>
+			<td>
+				Last update: &nbsp;$productMetaData.getLastUpdate()
+			</td>     	
+		#end
+		<td class="producttype">
+			$Type
+		</td>
+		</tr>	
+		
+	#end
+## -------------------------------------------- catalog_uk_catalog --------------------------------
+
+#macro(catalog_uk_catalog)
+
+#set ($productMetaDataPrev = false)
+#set ($listProductTypeDataset = $catalog.getListProductTypeDataset() )
+
+<h1>$catalog.getTitle()</h1>
+#foreach( $sameProductTypeDataset in $listProductTypeDataset )	
+	#set ( $printheaders = true )
+	#foreach( $product in $sameProductTypeDataset )
+		#set($productMetaData = $product.getProductMetaData())
+		#if($printheaders == true)
+			#set($printheaders = false )			
+			#if ($catalogType != "FTP")
+				#catalog_uk_printheader()	
+			#end
+		<table width="90%" border="0" cellspacing="0" cellpadding="0"><tr>
+		#end		
+		#catalog_uk_printbody()
+		#set ($productMetaDataPrev = $productMetaData)	
+	#end
+	</table>
+	</ul>		
+#end
+#end
+
+## -------------------------------------------- main --------------------------------
+
+#set($catalog = $service.getCatalog())
+
+
+## ------------------------ print table of contents ---------------------
+#set ($catalogType = $service.getCatalogType().toString().toUpperCase())
+
+#if($printcatalogtoc && ($catalogType != "FTP"))
+	#catalog_uk_table_of_contents()
+#end
+
+## ------------------------ print catalog ---------------------
+
+#catalog_uk_catalog()
+
+
+

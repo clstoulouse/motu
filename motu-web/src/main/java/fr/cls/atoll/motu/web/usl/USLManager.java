@@ -4,6 +4,7 @@ import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.web.usl.request.IUSLRequestManager;
 import fr.cls.atoll.motu.web.usl.request.USLRequestManager;
 import fr.cls.atoll.motu.web.usl.response.velocity.VelocityTemplateManager;
+import fr.cls.atoll.motu.web.usl.user.IUSLUserManager;
 import fr.cls.atoll.motu.web.usl.user.USLUserManager;
 
 /**
@@ -49,7 +50,7 @@ public class USLManager implements IUSLManager {
      * @return la valeur.
      */
     @Override
-    public USLUserManager getUserManager() {
+    public IUSLUserManager getUserManager() {
         return userManager;
     }
 

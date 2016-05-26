@@ -85,9 +85,12 @@ public class VelocityTemplateManager {
     private static String getTemplateFileNameFromActionName(String actionName_) {
         String templateFileName = "";
         switch (actionName_.toLowerCase()) {
+        case "listcatalog":
+            templateFileName = "listCatalog";
+            break;
         case "listservices":
         default:
-            templateFileName = "listservices";
+            templateFileName = "listServices";
         }
         return templateFileName;
     }

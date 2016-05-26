@@ -1,0 +1,427 @@
+<?xml version="1.0"?>
+<!DOCTYPE rdf:RDF [
+<!ENTITY myoceanUrn "http://purl.org/myocean/ontology/service/database#" >
+]>
+    <!-- 
+Motu Configuration Cartridge misgw - v. 1.0.5
+-->
+    <!--
+        =========================================================================================================== INFO: the complete XML schema
+        (XSD) of this configuration file can be downloaded from:
+        http://cls-motu.svn.sourceforge.net/viewvc/cls-motu/trunk/motu/motu-library/motu-library-misc/src/main/resources/schema/MotuConfig.xsd
+        ===========================================================================================================
+    -->
+
+    <!-- defaultService :
+	The service name when no service are specified.
+-->
+    <!-- useProxy :
+	True if a proxy is used between Motu and the opendaps, false otherwise.
+	Default value is false.
+-->
+    <!-- proxyHost :
+	Name of the proxy. Ignored if useProxy is false.
+	Default value is dp-vip.vlandata.cls.fr).
+-->
+    <!-- proxyPort :
+	Name of the proxy. Ignored if useProxy is false.
+	Default value is 8080).
+-->
+    <!-- dataBlockSize :
+	The number for data in Ko that can be read in the same time.
+-->
+    <!-- maxSizePerFile :
+	The number for data in Megabytes that can be written and download 
+	for a Netcdf file.
+-->
+    <!-- extractionPath :
+	The absolute path where to extract (write) files.
+-->
+    <!-- downloadHttpUrl :
+	Http virtual path corresponding to the attribute <extractionPath>.
+-->
+    <!-- httpDocumentRoot :
+	Document root of the servlet server.
+-->
+    <!--
+        cleanRequestInterval default="60" The waiting period admitted to keep the status response of an extraction data request. Value is stated in
+        minutes. minInclusive value="1"
+    -->
+    <!--
+        cleanExtractionFileInterval default="60" The waiting period admitted to keep the file that results of an extraction data request. Value is
+        stated in minutes. minInclusive value="1"
+    -->
+    <!--
+        extractionFilePatterns default=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$"> Patterns (as regular expression) that match extraction file to delete.
+    -->
+    <!--
+        extractionFileCacheSize default="0" The maximum value allowed to the cache during extraction. Beyond this value, the older extracted files are
+        quite frequently deleted until the maximum value is raised. The frequency corresponds to the runCleanInterval attribute. Value is stated in
+        mega-bytes (Mo). Value must be positive or zero. If value is zero: no delete. minInclusive value="0"
+    -->
+    <!--
+        runCleanInterval default="1" The interval period to run clean request and extraction file. Value is stated in minutes. minInclusive value="1"
+    -->
+    <!--
+        runGCInterval default="0" The interval period to force run garbage collector Value is stated in minutes and must bue positive or zero. If
+        value is zero: no force. minInclusive value="0"
+    -->
+<motuConfig defaultService="OpendapCLSarchive_allCatalog" 
+	useProxy="true" proxyHost="dp-vip.vlandata.cls.fr" proxyPort="8080" 
+	proxyLogin="" proxyPwd=""
+	defaultActionIsListServices="true" 
+	commonVeloTemplatePrefix="cls_new"
+	commonDefaultLanguage="FR"
+	useAuthentication="false"  
+	dataBlockSize="512000" 
+	maxSizePerFile="1024"
+	extractionPath="/datalocal/atoll/cls-archive-motu/deliveries"
+	downloadHttpUrl="http://motu.cls.fr/cls-archive-motu/deliveries"
+	httpDocumentRoot="http://localhost"
+	cleanExtractionFileInterval="60" cleanRequestInterval="60" runCleanInterval="1"
+	extractionFilePatterns=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|wps_output_.*$|wps_response_.*$|.*\.extract$"
+	extractionFileCacheSize="10000" runGCInterval="10">
+
+	
+	
+	<!--===========================================-->
+	<!--          all - Opendap archive CLS	       -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR"
+		description="   : full archive CLS Opendap catalog"
+		group="CLS" 
+		defaultGroupService="true" 
+		httpBaseRef="http://motu.cls.fr/cls-archive-motu/mis-gateway/"
+		name="OpendapCLSarchive_allCatalog" 
+		veloTemplatePrefix="cls_new"
+		profiles="internal">
+		<catalog name="catalog.xml" type="tds"
+			urlSite="http://atoll-vip4.vlandata.cls.fr:45080/thredds" />
+	</configService>
+	
+	
+	<!--===========================================-->
+	<!--            mercator-ocean - TDS  	       -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR"
+		description="   : Mercator models products"
+		group="mercator-ocean" 
+		httpBaseRef="http://motu.cls.fr/cls-archive-motu/mis-gateway/"
+		name="mercator-ocean" 
+		veloTemplatePrefix="cls_new" 
+		profiles="internal">
+		<catalog name="dataset-archive-mercator.xml" type="tds"
+			urlSite="http://atoll-vip4.vlandata.cls.fr:45080/thredds/archive/" />
+	</configService>
+	
+	
+	<!--===========================================-->
+	<!--            hycom - TDS      	       -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR"
+		description="   : Hycom models products"
+		group="hycom" 
+		httpBaseRef="http://motu.cls.fr/cls-archive-motu/mis-gateway/"
+		name="hycom" 
+		veloTemplatePrefix="cls_new" 
+		profiles="internal">
+		<catalog name="hycom.xml" type="tds"
+			urlSite="http://atoll-vip4.vlandata.cls.fr:45080/thredds/hycom/" />
+	</configService>
+	
+	
+	<!--===========================================-->
+	<!--            glorys - TDS  	       -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR"
+		description="   : Glorys reanalysis products"
+		group="glorys" 
+		httpBaseRef="http://motu.cls.fr/cls-archive-motu/mis-gateway/"
+		name="glorys" 
+		veloTemplatePrefix="cls_new" 
+		profiles="internal">
+		<catalog name="glorys.xml" type="tds"
+			urlSite="http://atoll-vip4.vlandata.cls.fr:45080/thredds/glorys/" />
+	</configService>
+	
+	
+	<!--===========================================-->
+	<!--            catsat - TDS  	               -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR"
+		description="   : Catsat satellite products (SST, Plankton, Sea Level)"
+		group="catsat" 
+		httpBaseRef="http://motu.cls.fr/cls-archive-motu/mis-gateway/"
+		name="catsat" 
+		veloTemplatePrefix="cls_new" 
+		profiles="internal, external, major">
+		<catalog name="catsat.xml" type="tds"
+			urlSite="http://atoll-vip4.vlandata.cls.fr:45080/thredds/catsat/" />
+	</configService>
+	
+	
+	<!--===========================================-->
+	<!--                 HCM - TDS  	       -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR"
+		description="   : CLS high resolution Hybrid Current Models products"
+		group="hcm" 
+		httpBaseRef="http://motu.cls.fr/cls-archive-motu/mis-gateway/"
+		name="hcm" 
+		veloTemplatePrefix="cls_new" 
+		profiles="internal">
+		<catalog name="hybridCurrent.xml" type="tds"
+			urlSite="http://atoll-vip4.vlandata.cls.fr:45080/thredds/hybridCurrent/" />
+	</configService>
+	
+	
+	<!--===========================================-->
+	<!--                Duacs - TDS  	       -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR"
+		description="   : DUACS altimetry products"
+		group="duacs" 
+		httpBaseRef="http://motu.cls.fr/cls-archive-motu/mis-gateway/"
+		name="duacs" 
+		veloTemplatePrefix="cls_new" 
+		profiles="internal">
+		<catalog name="duacs.xml" type="tds"
+			urlSite="http://atoll-vip4.vlandata.cls.fr:45080/thredds/duacs/" />
+	</configService>
+	
+	
+	<!--===========================================-->
+	<!--              Movimar - TDS  	       -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR"
+		description="   : Tropical Cyclone Heat Potential and 26 deg isotherm depth products"
+		group="movimar" 
+		httpBaseRef="http://motu.cls.fr/cls-archive-motu/mis-gateway/"
+		name="movimar" 
+		veloTemplatePrefix="cls_new" 
+		profiles="internal">
+		<catalog name="movimar.xml" type="tds"
+			urlSite="http://atoll-vip4.vlandata.cls.fr:45080/thredds/movimar/" />
+	</configService>
+	
+	
+	<!--===========================================-->
+	<!--               Tidal - TDS  	       -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR"
+		description="   : CLS tides products"
+		group="tides" 
+		httpBaseRef="http://motu.cls.fr/cls-archive-motu/mis-gateway/"
+		name="tides" 
+		veloTemplatePrefix="cls_new" 
+		profiles="internal">
+		<catalog name="maree-previ.xml" type="tds"
+			urlSite="http://atoll-vip4.vlandata.cls.fr:45080/thredds/maree/" />
+	</configService>
+	
+	
+	<!--===========================================-->
+	<!--               Surcouf - TDS  	       -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR"
+		description="   : Surcouf surface current products"
+		group="surcouf" 
+		httpBaseRef="http://motu.cls.fr/cls-archive-motu/mis-gateway/"
+		name="surcouf" 
+		veloTemplatePrefix="cls_new" 
+		profiles="internal">
+		<catalog name="surcouf.xml" type="tds"
+			urlSite="http://atoll-vip4.vlandata.cls.fr:45080/thredds/surcouf/" />
+	</configService>
+	
+	
+	<!--===========================================-->
+	<!--               Meteo - TDS  	       -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR"
+		description="   : Meteorological models products"
+		group="meteo" 
+		httpBaseRef="http://motu.cls.fr/cls-archive-motu/mis-gateway/"
+		name="meteo" 
+		veloTemplatePrefix="cls_new" 
+		profiles="internal">
+		<catalog name="meteo.xml" type="tds"
+			urlSite="http://atoll-vip4.vlandata.cls.fr:45080/thredds/meteo/" />
+	</configService>
+	
+	
+	<!--===========================================-->
+	<!--               Hycom - TDS  	       -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR"
+		description="   : Hycom models products"
+		group="hycom" 
+		httpBaseRef="http://motu.cls.fr/cls-archive-motu/mis-gateway/"
+		name="hycom" 
+		veloTemplatePrefix="cls_new" 
+		profiles="internal">
+		<catalog name="hycom.xml" type="tds"
+			urlSite="http://atoll-vip4.vlandata.cls.fr:45080/thredds/hycom/" />
+	</configService>
+	
+	
+	<!--===========================================-->
+	<!--               Seapodym - TDS  	       -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR"
+		description="   : Seapodym models products"
+		group="seapodym" 
+		httpBaseRef="http://motu.cls.fr/cls-archive-motu/mis-gateway/"
+		name="seapodym" 
+		veloTemplatePrefix="cls_new" 
+		profiles="internal, seapodym">
+		<catalog name="seapodym.xml" type="tds"
+			urlSite="http://atoll-vip4.vlandata.cls.fr:45080/thredds/seapodym/" />
+	</configService>
+	
+	<!--===========================================-->
+	<!--               Pro Oceano - TDS  	       -->
+	<!--===========================================-->
+	<configService defaultLanguage="FR"
+		description="   : Pro Oceano products"
+		group="prooceano" 
+		httpBaseRef="http://motu.cls.fr/cls-archive-motu/mis-gateway/"
+		name="prooceano" 
+		veloTemplatePrefix="cls_new" 
+		profiles="internal, prooceano">
+		<catalog name="prooceano.xml" type="tds"
+			urlSite="http://atoll-vip4.vlandata.cls.fr:45080/thredds/prooceano/" />
+	</configService>
+	
+	
+
+    <!-- ==========================  -->
+    <!-- Queue server configuration  -->
+    <!-- ==========================  -->
+
+    <!-- ..........................................
+		queueServerConfig 	Queue Server Settings
+		................................................. -->
+    <!--
+		defaultPriority
+		The default priority
+		default="2"
+		minInclusive value="1"		
+	-->
+    <!--
+        maxPoolAnonymous default="10" The maximum requests number allowed for a same anonymous user. A negative or zero value means 'unlimited'
+        minInclusive value="-1"
+    -->
+    <!--
+        maxPoolAuth default="1" The maximum requests number allowed for a same authenticated user. A negative or zero value means 'unlimited'
+        minInclusive value="-1"
+    -->
+    <!--
+        .......................................... queues Queue Settings min : 1 max : unbounded .................................................
+    -->
+    <!--
+        maxPoolSize" The maximum requests number allowed in the queue (requests that have been shelved or are in progress in the queue). A negative or
+        zero value means 'unlimited' default="-1" minInclusive value="-1"
+    -->
+    <!--
+        maxThreads The maximum simultaneous number of requests (threads) the queue have to process.. default="1" minInclusive value="1" maxInclusive
+        value="10"
+    -->
+    <!--
+        dataThreshold Amount of extracted data this queue stands for. Requests those amount of extracted data is beyond this value (in MegaBytes) are
+        not stored in this queue. minInclusive value="1.0"
+    -->
+    <!--
+        lowPriorityWaiting The waiting period admitted to the low priority requests. Beyond this period, low requests have high priority. Value is
+        stated in minutes. minInclusive value="1" maxInclusive value="15"
+    -->
+    <!--
+		id 
+		queue id (required).
+	-->
+    <!--
+		description
+		queue description 		
+	-->
+    <!--
+		batch 
+		Is it a batch que or not ?
+		Batch queue are used to undegrounded job.
+		default="false"
+	-->
+    <queueServerConfig
+        maxPoolAnonymous="-1"
+        maxPoolAuth="-1"
+        defaultPriority="2"
+    >
+        <queues
+            id="queue1"
+            description="light queue"
+            batch="false"
+        >
+            <maxThreads>2</maxThreads>
+            <maxPoolSize>-1</maxPoolSize>
+            <dataThreshold>75.0</dataThreshold>
+            <lowPriorityWaiting>1</lowPriorityWaiting>
+        </queues>
+        <queues
+            id="queue5"
+            description="mid queue"
+            batch="false"
+        >
+            <maxThreads>2</maxThreads>
+            <maxPoolSize>-1</maxPoolSize>
+            <dataThreshold>300</dataThreshold>
+            <lowPriorityWaiting>2</lowPriorityWaiting>
+        </queues>
+        <queues
+            id="queue2"
+            description="bulk queue"
+            batch="false"
+        >
+            <maxThreads>2</maxThreads>
+            <maxPoolSize>-1</maxPoolSize>
+            <dataThreshold>1024</dataThreshold>
+            <lowPriorityWaiting>2</lowPriorityWaiting>
+        </queues>
+        <queues
+            id="queue3"
+            description="batch light queue"
+            batch="true"
+        >
+            <maxThreads>2</maxThreads>
+            <maxPoolSize>-1</maxPoolSize>
+            <dataThreshold>75.0</dataThreshold>
+            <lowPriorityWaiting>1</lowPriorityWaiting>
+        </queues>
+        <queues
+            id="queue6"
+            description="batch mid queue"
+            batch="true"
+        >
+            <maxThreads>2</maxThreads>
+            <maxPoolSize>-1</maxPoolSize>
+            <dataThreshold>300</dataThreshold>
+            <lowPriorityWaiting>2</lowPriorityWaiting>
+        </queues>
+        <queues
+            id="queue4"
+            description="batch bulk queue"
+            batch="true"
+        >
+            <maxThreads>2</maxThreads>
+            <maxPoolSize>-1</maxPoolSize>
+            <dataThreshold>1024</dataThreshold>
+            <lowPriorityWaiting>2</lowPriorityWaiting>
+        </queues>
+    </queueServerConfig>
+
+    <!-- =====================================  -->
+    <!-- Customize servers (hosts)  configuration -->
+    <!-- =====================================  -->
+
+    <!-- for host "ftpsedr.cls.fr", user directory is the root directory : set ftpUserDirIsRoot to "true" -->
+    <configFileSystem
+        host="ftpsedr.cls.fr"
+        ftpUserDirIsRoot="true" />
+</motuConfig>

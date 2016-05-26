@@ -1,5 +1,9 @@
 package fr.cls.atoll.motu.web.usl.user;
 
+import org.jasig.cas.client.util.AssertionHolder;
+
+import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
+
 /**
  * <br>
  * <br>
@@ -19,15 +23,19 @@ public class USLUserManager implements IUSLUserManager {
     /** {@inheritDoc} */
     @Override
     public String getLogin() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isUserAnonymous() {
-        // TODO Auto-generated method stub
         return false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getUserName() {
+        return AssertionUtils.getAttributePrincipalName(AssertionHolder.getAssertion());
     }
 
 }
