@@ -27,9 +27,7 @@ package fr.cls.atoll.motu.web.servlet;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_DELETE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_DESCRIBE_COVERAGE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_GET_TIME_COVERAGE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LIST_CATALOG;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LIST_PRODUCT_METADATA;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LIST_SERVICES;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LOGOUT;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_PRODUCT_DOWNLOADHOME;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_REFRESH;
@@ -999,50 +997,6 @@ public class MotuServlet extends HttpServlet {
     }
 
     /**
-     * Executes the ACTION_LIST_CATALOG if request's parameters match.
-     *
-     * @param action action to be executed.
-     * @param request object that contains the request the client has made of the servlet.
-     * @param session request sesssion
-     * @param response object that contains the response the servlet sends to the client
-     * @return true is request is ACTION_LIST_CATALOG and have been executed, false otherwise.
-     * @throws ServletException the servlet exception
-     * @throws IOException the IO exception
-     */
-    protected boolean isActionListCatalog(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        response.setContentType(CONTENT_TYPE_HTML);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isActionListCatalog() - entering");
-        }
-
-        if (!action.equalsIgnoreCase(ACTION_LIST_CATALOG)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionListCatalog() - exiting");
-            }
-            return false;
-        }
-
-        String serviceName = request.getParameter(PARAM_SERVICE);
-        if (MotuServlet.isNullOrEmpty(serviceName)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionListCatalog() - exiting");
-            }
-            return false;
-        }
-
-        setLanguageParameter(request, session, response);
-        listCatalog(serviceName, session, response);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isActionListCatalog() - exiting");
-        }
-        return true;
-    }
-
-    /**
      * Executes the ACTION_PRODUCT_DOWNLOADHOME if request's parameters match.
      *
      * @param action action to be executed.
@@ -1227,42 +1181,6 @@ public class MotuServlet extends HttpServlet {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionListProductMetaData() - exiting");
-        }
-        return true;
-    }
-
-    /**
-     * Executes the ACTION_LIST_SERVICES if request's parameters match.
-     *
-     * @param action action to be executed.
-     * @param request object that contains the request the client has made of the servlet.
-     * @param session request sesssion
-     * @param response object that contains the response the servlet sends to the client
-     * @return true is request is ACTION_LIST_SERVICES and have been executed, false otherwise.
-     * @throws ServletException the servlet exception
-     * @throws IOException the IO exception
-     */
-    protected boolean isActionListServices(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        response.setContentType(CONTENT_TYPE_HTML);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isActionListServices() - entering");
-        }
-
-        if (!action.equalsIgnoreCase(ACTION_LIST_SERVICES)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionListServices() - exiting");
-            }
-            return false;
-        }
-
-        setLanguageParameter(request, session, response);
-        listServices(request, session, response);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isActionListServices() - exiting");
         }
         return true;
     }
