@@ -1,7 +1,7 @@
 package fr.cls.atoll.motu.web.dal.config;
 
-import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 
 /**
  * <br>

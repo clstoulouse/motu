@@ -165,4 +165,11 @@ public class BLLRequestManager implements IBLLRequestManager {
         return null;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public double getAmountDataSizeAsMBytes(ExtractionParameters extractionParameters) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
 }

@@ -1,5 +1,7 @@
 package fr.cls.atoll.motu.web.bll.catalog;
 
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 
 /**
@@ -17,8 +19,11 @@ public interface IBLLCatalogManager {
     /**
      * .
      * 
+     * @param cs
+     * 
      * @return
+     * @throws MotuException
      */
-    CatalogData getCatalogData();
+    CatalogData getCatalogData(ConfigService cs) throws MotuException;
 
 }

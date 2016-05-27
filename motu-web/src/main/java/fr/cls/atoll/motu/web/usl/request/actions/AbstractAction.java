@@ -13,9 +13,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
@@ -312,8 +312,6 @@ public abstract class AbstractAction {
         try {
             productId = getProductIdFromParamId(getRequest().getParameter(MotuRequestParametersConstant.PARAM_PRODUCT));
         } catch (MotuException e) {
-            getResponse().sendError(400, String.format("ERROR: '%s' ", e.notifyException()));
-        } catch (Exception e) {
             getResponse().sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
         }
         return productId;
@@ -331,25 +329,26 @@ public abstract class AbstractAction {
      * @throws ServletException the servlet exception
      * @throws MotuException the motu exception
      */
-    protected String getProductIdFromParamId(String productId) throws IOException, ServletException, MotuException {
+    protected String getProductIdFromParamId(String productId) throws MotuException {
         String serviceName = CommonHTTPParameters.getServiceFromRequest(getRequest());
 
         if ((StringUtils.isNullOrEmpty(serviceName)) || (StringUtils.isNullOrEmpty(productId))) {
             return productId;
         }
 
-        Organizer organizer = getOrganizer();
-
-        return organizer.getDatasetIdFromURI(productId, serviceName);
+        String uri = productId;
+        String[] split = uri.split(".*#");
+        if (split.length <= 1) {
+            return uri;
+        }
+        return split[1];
     }
 
     protected OutputFormat getOutputFormat() throws IOException {
         OutputFormat dataFormat = null;
         try {
             dataFormat = getDataFormatFromParameter();
-        } catch (MotuExceptionBase e) {
-            getResponse().sendError(400, String.format("ERROR: %s", e.notifyException()));
-        } catch (Exception e) {
+        } catch (MotuException e) {
             getResponse().sendError(400, String.format("ERROR: %s", e.getMessage()));
         }
         return dataFormat;

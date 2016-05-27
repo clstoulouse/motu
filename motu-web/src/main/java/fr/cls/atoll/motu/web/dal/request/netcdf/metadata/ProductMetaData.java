@@ -42,16 +42,7 @@ import java.util.Set;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
-import ucar.ma2.MAMath;
-import ucar.ma2.MAMath.MinMax;
-import ucar.nc2.Dimension;
-import ucar.nc2.Variable;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateAxis2D;
-import ucar.unidata.geoloc.LatLonRect;
 import fr.cls.atoll.motu.library.converter.DateUtils;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
@@ -61,13 +52,22 @@ import fr.cls.atoll.motu.library.misc.metadata.Delivery;
 import fr.cls.atoll.motu.library.misc.metadata.DocMetaData;
 import fr.cls.atoll.motu.library.misc.metadata.ParameterCategory;
 import fr.cls.atoll.motu.library.misc.netcdf.CoordSysBuilderYXLatLon;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
-import fr.cls.atoll.motu.library.misc.tds.server.Property;
-import fr.cls.atoll.motu.library.misc.tds.server.Variables;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DatasetBase;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.dal.tds.model.Property;
+import fr.cls.atoll.motu.web.dal.tds.model.Variables;
+import ucar.ma2.MAMath;
+import ucar.ma2.MAMath.MinMax;
+import ucar.nc2.Dimension;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis2D;
+import ucar.unidata.geoloc.LatLonRect;
 
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -431,10 +431,10 @@ public class ProductMetaData {
     public void setUpdated(String updated) {
         this.updated = updated;
     }
-    
+
     /** Last update of a dataset. */
-    private String lastUpdate = "Not Available";    
-    
+    private String lastUpdate = "Not Available";
+
     /**
      * Getter of the property <tt>lastUpdate</tt>.
      * 
@@ -455,7 +455,7 @@ public class ProductMetaData {
      */
     public void setLastUpdate(String lastupdate) {
         this.lastUpdate = lastupdate;
-    }    
+    }
 
     /** The parameter categories. */
     private Collection<ParameterCategory> parameterCategories;
@@ -1206,7 +1206,7 @@ public class ProductMetaData {
         if (this.coordinateAxesMap == null) {
             return false;
         }
-        
+
         return this.coordinateAxesMap.containsValue(coordinateAxes);
     }
 
@@ -1270,7 +1270,7 @@ public class ProductMetaData {
         if (this.coordinateAxesMap == null) {
             coordinateAxesMap = new HashMap<AxisType, CoordinateAxis>();
         }
-        
+
         this.coordinateAxesMap = coordinateAxes;
     }
 
@@ -1306,7 +1306,7 @@ public class ProductMetaData {
     public CoordinateAxis removeCoordinateAxes(AxisType key) {
         if (this.coordinateAxesMap == null) {
             return null;
-        }        
+        }
         return this.coordinateAxesMap.remove(key);
     }
 
@@ -1320,7 +1320,7 @@ public class ProductMetaData {
         if (this.coordinateAxesMap == null) {
             return;
         }
-        
+
         this.coordinateAxesMap.clear();
     }
 
@@ -1699,7 +1699,7 @@ public class ProductMetaData {
         MAMath.MinMax minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null);
         return NetCdfReader.getDateAsGMTString(minMax.max, axis.getUnitsString());
     }
-    
+
     /**
      * Gets the time axis min value as utc string.
      *
@@ -1709,7 +1709,7 @@ public class ProductMetaData {
     public String getTimeAxisMinValueAsUTCString() throws MotuException {
         return getTimeAxisMinValueAsUTCString(DateUtils.DATETIME_PATTERN3);
     }
-    
+
     /**
      * Gets the time axis min value as utc string.
      *
@@ -1721,7 +1721,7 @@ public class ProductMetaData {
         Date value = getTimeAxisMinValue();
         return DateUtils.getDateTimeAsUTCString(value, pattern);
     }
-    
+
     /**
      * Gets the time axis max value as utc string.
      *
@@ -1731,7 +1731,7 @@ public class ProductMetaData {
     public String getTimeAxisMaxValueAsUTCString() throws MotuException {
         return getTimeAxisMaxValueAsUTCString(DateUtils.DATETIME_PATTERN3);
     }
-    
+
     /**
      * Gets the time axis max value as utc string.
      *
@@ -1743,6 +1743,7 @@ public class ProductMetaData {
         Date value = getTimeAxisMaxValue();
         return DateUtils.getDateTimeAsUTCString(value, pattern);
     }
+
     /**
      * Checks for Z axis.
      * 
@@ -2830,7 +2831,7 @@ public class ProductMetaData {
     public String getStartTimeCoverageAsUTCString() {
         return getStartTimeCoverageAsUTCString(DateUtils.DATETIME_PATTERN3);
     }
-    
+
     /**
      * Gets the end time coverage as string.
      *
@@ -2839,7 +2840,7 @@ public class ProductMetaData {
     public String getEndTimeCoverageAsUTCString() {
         return getEndTimeCoverageAsUTCString(DateUtils.DATETIME_PATTERN3);
     }
-    
+
     /**
      * Gets the start time coverage as utc string.
      *
@@ -2853,7 +2854,7 @@ public class ProductMetaData {
         }
         return DateUtils.getDateTimeAsUTCString(timeCoverage.getStart(), pattern);
     }
-    
+
     /**
      * Gets the end time coverage as string.
      *
@@ -2867,7 +2868,6 @@ public class ProductMetaData {
         }
         return DateUtils.getDateTimeAsUTCString(timeCoverage.getEnd(), pattern);
     }
-
 
     /**
      * Gets the time coverage.
@@ -2930,7 +2930,7 @@ public class ProductMetaData {
 
     /** The geo b box. */
     private LatLonRect geoBBox = null;
-    
+
     /**
      * Checks for geo b box.
      *
@@ -2939,7 +2939,7 @@ public class ProductMetaData {
     public boolean hasGeoBBox() {
         return (geoBBox != null);
     }
-    
+
     /**
      * Gets the geo b box lon max as string.
      *
@@ -2950,10 +2950,10 @@ public class ProductMetaData {
         if (geoBBox == null) {
             return value;
         }
-        
-        return Double.toString(geoBBox.getLonMax());        
+
+        return Double.toString(geoBBox.getLonMax());
     }
-    
+
     /**
      * Gets the geo b box lon min as string.
      *
@@ -2964,10 +2964,10 @@ public class ProductMetaData {
         if (geoBBox == null) {
             return value;
         }
-        
-        return Double.toString(geoBBox.getLonMin());        
+
+        return Double.toString(geoBBox.getLonMin());
     }
-    
+
     /**
      * Gets the geo b box lat max as string.
      *
@@ -2978,10 +2978,10 @@ public class ProductMetaData {
         if (geoBBox == null) {
             return value;
         }
-        
-        return Double.toString(geoBBox.getLatMax());        
+
+        return Double.toString(geoBBox.getLatMax());
     }
-    
+
     /**
      * Gets the geo b box lat min as string.
      *
@@ -2992,10 +2992,9 @@ public class ProductMetaData {
         if (geoBBox == null) {
             return value;
         }
-        
-        return Double.toString(geoBBox.getLatMin());        
-    }
 
+        return Double.toString(geoBBox.getLatMin());
+    }
 
     /**
      * Gets the geo b box.
@@ -3017,7 +3016,7 @@ public class ProductMetaData {
 
     /** The depth coverage. */
     private MinMax depthCoverage = null;
-    
+
     /**
      * Checks for depth coverage.
      *
@@ -3026,7 +3025,7 @@ public class ProductMetaData {
     public boolean hasDepthCoverage() {
         return (depthCoverage != null);
     }
-    
+
     /**
      * Gets the depth max as string.
      *
@@ -3037,10 +3036,10 @@ public class ProductMetaData {
         if (depthCoverage == null) {
             return value;
         }
-        
-        return Double.toString(depthCoverage.max);        
+
+        return Double.toString(depthCoverage.max);
     }
-    
+
     /**
      * Gets the depth min as string.
      *
@@ -3051,11 +3050,10 @@ public class ProductMetaData {
         if (depthCoverage == null) {
             return value;
         }
-        
-        return Double.toString(depthCoverage.min);        
+
+        return Double.toString(depthCoverage.min);
     }
-    
-  
+
     /**
      * Gets the depth coverage.
      * 

@@ -15,9 +15,9 @@ import org.apache.velocity.tools.generic.MathTool;
 import org.apache.velocity.tools.generic.NumberTool;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
-import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
@@ -68,7 +68,7 @@ public class ListCatalogAction extends AbstractAuthorizedAction {
     @Override
     public void process() throws MotuException {
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
-        CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData();
+        CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
         writeResponseWithVelocity(cs, cd);
     }
 

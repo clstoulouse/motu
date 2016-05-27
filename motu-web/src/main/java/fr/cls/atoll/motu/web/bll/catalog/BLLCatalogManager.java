@@ -1,5 +1,8 @@
 package fr.cls.atoll.motu.web.bll.catalog;
 
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.dal.DALManager;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 
 /**
@@ -14,11 +17,14 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
  */
 public class BLLCatalogManager implements IBLLCatalogManager {
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws MotuException
+     */
     @Override
-    public CatalogData getCatalogData() {
-        // TODO Auto-generated method stub
-        return null;
+    public CatalogData getCatalogData(ConfigService cs) throws MotuException {
+        return DALManager.getInstance().getCatalogManager().getCatalogData(cs);
     }
 
 }

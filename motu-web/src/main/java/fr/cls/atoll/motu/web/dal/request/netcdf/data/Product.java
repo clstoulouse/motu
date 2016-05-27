@@ -51,17 +51,11 @@ import org.joda.time.DateTime;
 import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.library.inventory.Access;
 import fr.cls.atoll.motu.library.inventory.DepthCoverage;
-import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
 import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.inventory.Resource;
 import fr.cls.atoll.motu.library.inventory.TimePeriod;
-import fr.cls.atoll.motu.library.misc.data.ExtractCriteria;
-import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDatetime;
-import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDepth;
-import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.library.misc.data.SelectData;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
@@ -74,12 +68,20 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.metadata.DocMetaData;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteria;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.dal.catalog.tds.TDSCatalogLoader;
+import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
-import fr.cls.atoll.motu.web.dal.request.tds.ncss.NetCdfSubsetService;
+import fr.cls.atoll.motu.web.dal.tds.model.GeospatialCoverage;
+import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.MAMath;
@@ -1581,17 +1583,8 @@ public class Product {
      */
 
     public Variable findVariable(String varName) throws MotuException, NetCdfVariableNotFoundException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("findVariable() - entering");
-        }
-
         openNetCdfReader();
-
         Variable variable = getNetCdfReader().getRootVariable(varName);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("findVariable() - exiting");
-        }
         return variable;
     }
 
@@ -2073,7 +2066,7 @@ public class Product {
         // Create output NetCdf file to deliver to the user (equivalent to opendap)
         String fname = NetCdfWriter.getUniqueNetCdfFileName(getProductId());
         setExtractFilename(fname);
-        String dir = Organizer.getMotuConfigInstance().getExtractionPath();
+        String dir = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath();
 
         // Create and initialize selection
         NetCdfSubsetService ncss = new NetCdfSubsetService();
@@ -2210,7 +2203,7 @@ public class Product {
     }
 
     /** The tds service type. */
-    private String tdsServiceType = CatalogData.TDS_OPENDAP_SERVICE;
+    private String tdsServiceType = TDSCatalogLoader.TDS_OPENDAP_SERVICE;
 
     /**
      * Gets the tds service type.
@@ -2727,7 +2720,7 @@ public class Product {
 
         StringBuffer stringBuffer = new StringBuffer();
 
-        String dir = Organizer.getMotuConfigInstance().getExtractionPath();
+        String dir = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath();
         stringBuffer.append(dir);
 
         if (!(dir.endsWith("/") || dir.endsWith("\\"))) {
@@ -2744,7 +2737,7 @@ public class Product {
      * @throws MotuException the motu exception
      */
     public String getHpptServerDocumentRoot() throws MotuException {
-        return Organizer.getMotuConfigInstance().getHttpDocumentRoot();
+        return BLLManager.getInstance().getConfigManager().getMotuConfig().getHttpDocumentRoot();
     }
 
     /**
@@ -2775,7 +2768,7 @@ public class Product {
 
         StringBuffer stringBuffer = new StringBuffer();
 
-        String dir = Organizer.getMotuConfigInstance().getDownloadHttpUrl();
+        String dir = BLLManager.getInstance().getConfigManager().getMotuConfig().getDownloadHttpUrl();
         stringBuffer.append(dir);
 
         if (!(dir.endsWith("/") || dir.endsWith("\\"))) {

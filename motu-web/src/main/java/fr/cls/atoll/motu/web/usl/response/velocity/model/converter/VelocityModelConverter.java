@@ -3,7 +3,7 @@ package fr.cls.atoll.motu.web.usl.response.velocity.model.converter;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;

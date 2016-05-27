@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.web.dal.request.tds.ncss;
+package fr.cls.atoll.motu.web.dal.tds.ncss;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,10 +18,10 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDatetime;
-import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDepth;
-import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaLatLon;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import ucar.ma2.Array;
 import ucar.ma2.Range;

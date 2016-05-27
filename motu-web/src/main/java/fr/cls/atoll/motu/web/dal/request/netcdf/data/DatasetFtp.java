@@ -39,7 +39,6 @@ import org.joda.time.Interval;
 import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.library.misc.data.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
@@ -49,6 +48,7 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.utils.Zip;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 
 /**

@@ -28,13 +28,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
 import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
 import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
