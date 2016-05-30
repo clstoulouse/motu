@@ -27,7 +27,7 @@ package fr.cls.atoll.motu.web.bll.request.queueserver.queue;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
 
 /**
  * 

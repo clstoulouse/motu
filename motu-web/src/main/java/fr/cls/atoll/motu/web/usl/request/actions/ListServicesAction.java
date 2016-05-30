@@ -2,7 +2,6 @@ package fr.cls.atoll.motu.web.usl.request.actions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,9 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.tools.generic.DateTool;
-import org.apache.velocity.tools.generic.MathTool;
-import org.apache.velocity.tools.generic.NumberTool;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.web.bll.BLLManager;
@@ -94,26 +90,6 @@ public class ListServicesAction extends AbstractAuthorizedAction {
         } catch (Exception e) {
             throw new MotuException("Error while using velocity template", e);
         }
-    }
-
-    /**
-     * @return a new context with some tools initialized.
-     * 
-     * @see NumberTool
-     * @see DateTool
-     * @see MathTool
-     */
-    public static VelocityContext getPrepopulatedVelocityContext() {
-        final NumberTool numberTool = new NumberTool();
-        final DateTool dateTool = new DateTool();
-        final MathTool mathTool = new MathTool();
-
-        VelocityContext vc = new VelocityContext();
-        vc.put("numberTool", numberTool);
-        vc.put("dateTool", dateTool);
-        vc.put("mathTool", mathTool);
-        vc.put("enLocale", Locale.ENGLISH);
-        return vc;
     }
 
     /** {@inheritDoc} */

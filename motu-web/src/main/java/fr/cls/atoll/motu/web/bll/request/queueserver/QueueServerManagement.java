@@ -33,11 +33,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.util.AssertionHolder;
 
-import fr.cls.atoll.motu.library.misc.configuration.QueueServerType;
-import fr.cls.atoll.motu.library.misc.configuration.QueueType;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueDataCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.exception.MotuInconsistencyException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
@@ -53,12 +50,15 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueJob;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueJobListener;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueManagement;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueThresholdComparator;
+import fr.cls.atoll.motu.web.dal.config.xml.model.QueueServerType;
+import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
 
 /**
  * 

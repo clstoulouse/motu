@@ -14,9 +14,12 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.ProductHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.response.velocity.VelocityTemplateManager;
 import fr.cls.atoll.motu.web.usl.response.velocity.model.converter.VelocityModelConverter;
@@ -39,39 +42,49 @@ import fr.cls.atoll.motu.web.usl.response.velocity.model.converter.VelocityModel
  * @author Sylvain MARTY
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class ListCatalogAction extends AbstractAuthorizedAction {
+public class ProductMetadataAction extends AbstractAuthorizedAction {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static final String ACTION_NAME = "listcatalog";
+    public static final String ACTION_NAME = "listproductmetadata";
 
     private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
+    private ProductHTTPParameterValidator productHTTPParameterValidator;
 
     /**
      * 
      * @param actionName_
      */
-    public ListCatalogAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public ProductMetadataAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         super(ACTION_NAME, request, response, session);
 
         serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_SERVICE,
                 CommonHTTPParameters.getServiceFromRequest(getRequest()));
 
+        productHTTPParameterValidator = new ProductHTTPParameterValidator(
+                MotuRequestParametersConstant.PARAM_PRODUCT,
+                CommonHTTPParameters.getServiceFromRequest(getRequest()));
     }
 
     @Override
     public void process() throws MotuException {
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
         CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
-        writeResponseWithVelocity(cs, cd);
+        String productId = productHTTPParameterValidator.getParameterValueValidated();
+        Product p = cd.getProducts().get(productId);
+        ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager().getProductMetaData(productId, p.getLocationData());
+        p.setProductMetaData(pmd);
+
+        writeResponseWithVelocity(cs, cd, p);
     }
 
-    private void writeResponseWithVelocity(ConfigService cs_, CatalogData cd) throws MotuException {
+    private void writeResponseWithVelocity(ConfigService cs_, CatalogData cd_, Product product_) throws MotuException {
         VelocityContext context = VelocityTemplateManager.getPrepopulatedVelocityContext();
         context.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
-        context.put("service", VelocityModelConverter.convertToService(cs_, cd));
+        context.put("service", VelocityModelConverter.convertToService(cs_, cd_));
         context.put("user", USLManager.getInstance().getUserManager().getUserName());
+        context.put("product", VelocityModelConverter.convertToProduct(product_));
 
         try {
             Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null);
@@ -85,6 +98,7 @@ public class ListCatalogAction extends AbstractAuthorizedAction {
     @Override
     protected void checkHTTPParameters() throws InvalidHTTPParameterException {
         serviceHTTPParameterValidator.validate();
+        productHTTPParameterValidator.validate();
     }
 
 }

@@ -7,6 +7,8 @@ import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.catalog.opendap.OpenDapCatalogReader;
+import fr.cls.atoll.motu.web.dal.catalog.product.DALProductManager;
+import fr.cls.atoll.motu.web.dal.catalog.product.IDALProductManager;
 import fr.cls.atoll.motu.web.dal.catalog.tds.JAXBTDSModel;
 import fr.cls.atoll.motu.web.dal.catalog.tds.TDSCatalogLoader;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
@@ -25,6 +27,12 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 public class DALCatalogManager implements IDALCatalogManager {
 
     private static final Logger LOGGER = LogManager.getLogger();
+
+    private IDALProductManager dalProductManager;
+
+    public DALCatalogManager() {
+        dalProductManager = new DALProductManager();
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -52,6 +60,16 @@ public class DALCatalogManager implements IDALCatalogManager {
             // break;
         }
         return cd;
+    }
+
+    /**
+     * Valeur de dalProductManager.
+     * 
+     * @return la valeur.
+     */
+    @Override
+    public IDALProductManager getProductManager() {
+        return dalProductManager;
     }
 
 }

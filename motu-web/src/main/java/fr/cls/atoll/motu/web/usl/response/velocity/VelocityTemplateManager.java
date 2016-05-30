@@ -88,6 +88,9 @@ public class VelocityTemplateManager {
         case "listcatalog":
             templateFileName = "listCatalog";
             break;
+        case "listproductmetadata":
+            templateFileName = "listProductMetadata";
+            break;
         case "listservices":
         default:
             templateFileName = "listServices";

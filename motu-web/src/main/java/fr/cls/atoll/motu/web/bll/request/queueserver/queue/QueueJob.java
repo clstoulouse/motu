@@ -48,31 +48,33 @@ public class QueueJob implements IQueueJob {
         // -------------------------------------------------
         if (!StringUtils.isNullOrEmpty(getExtractionParameters().getLocationData())) {
 
-            product = extractData(params.getServiceName(),
-                                  params.getLocationData(),
+            product = extractData(extractionParameters.getServiceName(),
+                                  extractionParameters.getLocationData(),
                                   null,
-                                  params.getListVar(),
-                                  params.getListTemporalCoverage(),
-                                  params.getListLatLonCoverage(),
-                                  params.getListDepthCoverage(),
+                                  extractionParameters.getListVar(),
+                                  extractionParameters.getListTemporalCoverage(),
+                                  extractionParameters.getListLatLonCoverage(),
+                                  extractionParameters.getListDepthCoverage(),
                                   null,
-                                  params.getDataOutputFormat(),
-                                  params.getOut(),
-                                  params.getResponseFormat(),
+                                  extractionParameters.getDataOutputFormat(),
+                                  extractionParameters.getOut(),
+                                  extractionParameters.getResponseFormat(),
                                   null);
-        } else if (!StringUtils.isNullOrEmpty(params.getServiceName()) && !StringUtils.isNullOrEmpty(params.getProductId())) {
-            product = extractData(params.getServiceName(),
-                                  params.getListVar(),
-                                  params.getListTemporalCoverage(),
-                                  params.getListLatLonCoverage(),
-                                  params.getListDepthCoverage(),
-                                  params.getProductId(),
+        } else if (!StringUtils.isNullOrEmpty(extractionParameters.getServiceName())
+                && !StringUtils.isNullOrEmpty(extractionParameters.getProductId())) {
+            product = extractData(extractionParameters.getServiceName(),
+                                  extractionParameters.getListVar(),
+                                  extractionParameters.getListTemporalCoverage(),
+                                  extractionParameters.getListLatLonCoverage(),
+                                  extractionParameters.getListDepthCoverage(),
+                                  extractionParameters.getProductId(),
                                   null,
-                                  params.getDataOutputFormat(),
-                                  params.getOut(),
-                                  params.getResponseFormat());
+                                  extractionParameters.getDataOutputFormat(),
+                                  extractionParameters.getOut(),
+                                  extractionParameters.getResponseFormat());
         } else {
-            throw new MotuInconsistencyException(String.format("ERROR in extractData: inconsistency parameters : %s", params.toString()));
+            throw new MotuInconsistencyException(
+                    String.format("ERROR in extractData: inconsistency parameters : %s", extractionParameters.toString()));
         }
 
         return product;

@@ -2736,7 +2736,7 @@ public class Product {
      * 
      * @throws MotuException the motu exception
      */
-    public String getHpptServerDocumentRoot() throws MotuException {
+    public String getHttpServerDocumentRoot() {
         return BLLManager.getInstance().getConfigManager().getMotuConfig().getHttpDocumentRoot();
     }
 
