@@ -133,34 +133,7 @@ public class ProductMetaData {
      * Initialization.
      */
     private void init() {
-        // documentations = new ArrayList<DocMetaData>();
-        // deliveries = new ArrayList<Delivery>();
-
     }
-
-    // /**
-    // * Builds a unique id for the product.
-    // * the built id is equal to :
-    // * "'[Product Metadata Type].[Product Metadata Subtype 0].' ....'[Product
-    // Metadata Subtype n].[Product Metadata Title]'
-    // * @return built id of the product.
-    // */
-    // public String buildId() {
-    // StringBuffer buffer = new StringBuffer();
-    // buffer.append(getProductType());
-    // for (Iterator<String> it = getProductSubTypes().iterator() ; it.hasNext()
-    // ;) {
-    // buffer.append("-");
-    // buffer.append(it.next());
-    // }
-    // buffer.append(getTitle());
-    // String str = buffer.toString().replaceAll("[\\s*,\\W*,_*]", "x");
-    // //UUID uuid = UUID.fromString(str);
-    // //System.out.println(uuid.toString());
-    // //return uuid.toString();
-    // //System.out.println(str);
-    // return str.toLowerCase();
-    // }
 
     /**
      * Compares content of product subtypes list with another product subtypes list.

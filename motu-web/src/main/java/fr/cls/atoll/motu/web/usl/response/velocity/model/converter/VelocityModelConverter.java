@@ -241,9 +241,7 @@ public class VelocityModelConverter {
 
             @Override
             public IProductMetadata getProductMetaData() {
-
-                // TODO Auto-generated method stub
-                return null;
+                return convertToProductMetadata(product_, product_.getProductMetaData());
             }
 
         };
@@ -256,7 +254,7 @@ public class VelocityModelConverter {
      * @param product_
      * @return
      */
-    public static IProductMetadata convertToProductMetadata(final ProductMetaData productMetaData_) {
+    public static IProductMetadata convertToProductMetadata(final Product orginalProduct_, final ProductMetaData productMetaData_) {
         return new IProductMetadata() {
 
             @Override
@@ -311,7 +309,8 @@ public class VelocityModelConverter {
 
             @Override
             public boolean hasDepthBBox() {
-                return productMetaData_.hasDepthBBox();
+                // SMA: Not really sure of this call
+                return productMetaData_.hasDepthCoverage();
             }
 
             @Override
@@ -361,7 +360,7 @@ public class VelocityModelConverter {
 
             @Override
             public String getQuickLook(IParameterMetadata parameterMetadata) {
-                return productMetaData_.getQuickLook(convertToParameterMetadata(parameterMetadata));
+                return productMetaData_.getQuickLook(parameterMetadata.getName());
             }
 
             @Override
@@ -430,7 +429,12 @@ public class VelocityModelConverter {
 
             @Override
             public String getGeoYAxisMinValueAsLatString(IProduct product) {
-                return productMetaData_.getGeoYAxisMinValueAsLatString(product);
+                try {
+                    return productMetaData_.getGeoYAxisMinValueAsLatString(orginalProduct_);
+                } catch (Exception e) {
+                    LOGGER.error("Converting Product metadata to be used in Velocity", e);
+                }
+                return "";
             }
 
             @Override
@@ -440,12 +444,29 @@ public class VelocityModelConverter {
 
             @Override
             public String getGeoYAxisMaxValueAsLatString(IProduct product) {
-                return productMetaData_.getGeoYAxisMaxValueAsLatString(product);
+                try {
+                    return productMetaData_.getGeoYAxisMaxValueAsLatString(orginalProduct_);
+                } catch (Exception e) {
+                    LOGGER.error("Converting Product metadata to be used in Velocity", e);
+                }
+                return "";
             }
 
             @Override
             public IAxis getGeoYAxisAsLat(IProduct product) {
-                return convertToAxis(productMetaData_.getGeoYAxisAsLat(product));
+                return new IAxis() {
+
+                    @Override
+                    public String getName() {
+                        try {
+                            return productMetaData_.getGeoYAxisAsLat(orginalProduct_).getName();
+                        } catch (Exception e) {
+                            LOGGER.error("Converting Product metadata to be used in Velocity", e);
+                        }
+                        return "";
+                    }
+
+                };
             }
 
             @Override
@@ -460,7 +481,12 @@ public class VelocityModelConverter {
 
             @Override
             public String getGeoXAxisMinValueAsLonString(IProduct product) {
-                return productMetaData_.getGeoXAxisMinValueAsLonString(product);
+                try {
+                    return productMetaData_.getGeoXAxisMinValueAsLonString(orginalProduct_);
+                } catch (Exception e) {
+                    LOGGER.error("Converting Product metadata to be used in Velocity", e);
+                }
+                return "";
             }
 
             @Override
@@ -470,12 +496,29 @@ public class VelocityModelConverter {
 
             @Override
             public String getGeoXAxisMaxValueAsLonString(IProduct product) {
-                return productMetaData_.getGeoXAxisMaxValueAsLonString(product);
+                try {
+                    return productMetaData_.getGeoXAxisMaxValueAsLonString(orginalProduct_);
+                } catch (Exception e) {
+                    LOGGER.error("Converting Product metadata to be used in Velocity", e);
+                }
+                return "";
             }
 
             @Override
             public IAxis getGeoXAxisAsLon(IProduct product) {
-                return convertToAxis(productMetaData_.getGeoXAxisAsLon(product));
+                return new IAxis() {
+
+                    @Override
+                    public String getName() {
+                        try {
+                            return productMetaData_.getGeoXAxisAsLon(orginalProduct_).getName();
+                        } catch (Exception e) {
+                            LOGGER.error("Converting Product metadata to be used in Velocity", e);
+                        }
+                        return "";
+                    }
+
+                };
             }
 
             @Override
@@ -597,18 +640,6 @@ public class VelocityModelConverter {
             }
 
         };
-    }
-
-    protected static ParameterMetaData convertToParameterMetadata(final IParameterMetadata pmd) {
-        ParameterMetaData p = new ParameterMetaData();
-        p.setName(pmd.getName());
-        p.setLabel(pmd.getLabel());
-        p.setStandardName(pmd.getStandardName());
-        p.setUnit(pmd.getUnit());
-        p.setUnitLong(pmd.getUnitLong());
-        // TODO SMA How to convert String to list, what is the split separator in the string ?
-        // p.setDimensions(pmd.getDimensionsAsString());
-        return p;
     }
 
     /**
