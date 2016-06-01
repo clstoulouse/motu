@@ -73,21 +73,21 @@ public interface IBLLRequestManager {
      * This method retrieve the size of the data of a product.
      * 
      * @param extractionParameters This is the parameters which identify the data of the targeted product.
-     * @return The size of the product into KiloByte
+     * @return The size of the product into Byte
      */
-    double processProductDataSize(Product product,
-                                  List<String> listVar,
-                                  List<String> listTemporalCoverage,
-                                  List<String> listLatLongCoverage,
-                                  List<String> listDepthCoverage) throws MotuExceptionBase;
+    double getProductDataSizeIntoByte(Product product,
+                              List<String> listVar,
+                              List<String> listTemporalCoverage,
+                              List<String> listLatLongCoverage,
+                              List<String> listDepthCoverage) throws MotuExceptionBase;
 
     /**
      * This method retrieve the Max Allowed Data size of a product.
      * 
      * @param extractionParameters This is the parameters which identify the data of the targeted product.
-     * @return The Max Allowed Data size of the product into KiloByte
+     * @return The Max Allowed Data size of the product into Byte
      */
-    double processProductMaxAllowedDataSize(Product product) throws MotuExceptionBase;
+    double getProductMaxAllowedDataSizeIntoByte(Product product) throws MotuExceptionBase;
 
     /**
      * .

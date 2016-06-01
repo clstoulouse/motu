@@ -16,6 +16,7 @@ import fr.cls.atoll.motu.web.servlet.RunnableHttpExtraction;
 import fr.cls.atoll.motu.web.usl.request.actions.DebugAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DownloadProductAction;
 import fr.cls.atoll.motu.web.usl.request.actions.GetRequestStatusAction;
+import fr.cls.atoll.motu.web.usl.request.actions.GetSizeAction;
 import fr.cls.atoll.motu.web.usl.request.actions.PingAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
@@ -51,6 +52,9 @@ public class USLRequestManager implements IUSLRequestManager {
             break;
         case GetRequestStatusAction.ACTION_NAME:
             new GetRequestStatusAction(request, response).doAction();
+            break;
+        case GetSizeAction.ACTION_NAME:
+            new GetSizeAction(request, response, getSession(request)).doAction();
             break;
 
         // Authenticated actions

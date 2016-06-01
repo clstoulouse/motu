@@ -26,7 +26,6 @@ public class BLLProductManager implements IBLLProductManager {
      * @throws MotuException
      */
     @Override
-    // FIXME plac supprimer le productId
     public ProductMetaData getProductMetaData(String productId, String locationData) throws MotuException {
         return DALManager.getInstance().getCatalogManager().getProductManager()
                 .getMetadata(productId, locationData, BLLManager.getInstance().getConfigManager().getMotuConfig().getUseAuthentication());

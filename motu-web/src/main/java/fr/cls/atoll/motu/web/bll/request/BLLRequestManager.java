@@ -142,7 +142,7 @@ public class BLLRequestManager implements IBLLRequestManager {
      * @throws MotuExceptionBase
      */
     @Override
-    public double processProductDataSize(Product product,
+    public double getProductDataSizeIntoByte(Product product,
                                          List<String> listVar,
                                          List<String> listTemporalCoverage,
                                          List<String> listLatLongCoverage,
@@ -166,7 +166,7 @@ public class BLLRequestManager implements IBLLRequestManager {
 
     /** {@inheritDoc} */
     @Override
-    public double processProductMaxAllowedDataSize(Product product) throws MotuExceptionBase {
+    public double getProductMaxAllowedDataSizeIntoByte(Product product) throws MotuExceptionBase {
         return UnitUtils.toBytes(BLLManager.getInstance().getRequestManager().getQueueServerManager().getMaxDataThreshold());
     }
 

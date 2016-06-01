@@ -202,12 +202,12 @@ public class GetSizeAction extends AbstractAction {
 
             if (p != null) {
                 double productDataSize = BLLManager.getInstance().getRequestManager()
-                        .processProductDataSize(p,
+                        .getProductDataSizeIntoByte(p,
                                                 extractionParameters.getListVar(),
                                                 extractionParameters.getListTemporalCoverage(),
                                                 extractionParameters.getListLatLonCoverage(),
                                                 extractionParameters.getListDepthCoverage());
-                double productMaxAllowedDataSize = BLLManager.getInstance().getRequestManager().processProductMaxAllowedDataSize(p);
+                double productMaxAllowedDataSize = BLLManager.getInstance().getRequestManager().getProductMaxAllowedDataSizeIntoByte(p);
                 RequestSize requestSize = initRequestSize(productDataSize, productMaxAllowedDataSize);
                 marshallRequestSize(requestSize, getResponse().getWriter());
             } else {
