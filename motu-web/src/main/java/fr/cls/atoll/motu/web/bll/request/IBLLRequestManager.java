@@ -76,10 +76,10 @@ public interface IBLLRequestManager {
      * @return The size of the product into Byte
      */
     double getProductDataSizeIntoByte(Product product,
-                              List<String> listVar,
-                              List<String> listTemporalCoverage,
-                              List<String> listLatLongCoverage,
-                              List<String> listDepthCoverage) throws MotuExceptionBase;
+                                      List<String> listVar,
+                                      List<String> listTemporalCoverage,
+                                      List<String> listLatLongCoverage,
+                                      List<String> listDepthCoverage) throws MotuExceptionBase;
 
     /**
      * This method retrieve the Max Allowed Data size of a product.
@@ -103,5 +103,13 @@ public interface IBLLRequestManager {
      * @return The QueueServerManagement Object.
      */
     QueueServerManagement getQueueServerManager();
+
+    /**
+     * Delete the files associated to the provided URL. .
+     * 
+     * @param urls url list of the files to delete
+     * @return The status of the deletion for each provided files.
+     */
+    boolean[] deleteFiles(String[] urls);
 
 }

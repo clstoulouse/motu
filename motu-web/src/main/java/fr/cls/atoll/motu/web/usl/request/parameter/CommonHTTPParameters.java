@@ -122,6 +122,10 @@ public class CommonHTTPParameters {
         return request.getParameter(MotuRequestParametersConstant.PARAM_DATA);
     }
 
+    public static String[] getListOfDataFromParameter(HttpServletRequest request) {
+        return request.getParameterValues(MotuRequestParametersConstant.PARAM_DATA);
+    }
+
     public static String[] getVariablesFromParameter(HttpServletRequest request) {
         return request.getParameterValues(MotuRequestParametersConstant.PARAM_VARIABLE);
     }

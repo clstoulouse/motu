@@ -14,9 +14,11 @@ import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.servlet.RunnableHttpExtraction;
 import fr.cls.atoll.motu.web.usl.request.actions.DebugAction;
+import fr.cls.atoll.motu.web.usl.request.actions.DeleteAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DownloadProductAction;
 import fr.cls.atoll.motu.web.usl.request.actions.GetRequestStatusAction;
 import fr.cls.atoll.motu.web.usl.request.actions.GetSizeAction;
+import fr.cls.atoll.motu.web.usl.request.actions.LogoutAction;
 import fr.cls.atoll.motu.web.usl.request.actions.PingAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
@@ -55,6 +57,12 @@ public class USLRequestManager implements IUSLRequestManager {
             break;
         case GetSizeAction.ACTION_NAME:
             new GetSizeAction(request, response, getSession(request)).doAction();
+            break;
+        case LogoutAction.ACTION_NAME:
+            new LogoutAction(request, response, getSession(request)).doAction();
+            break;
+        case DeleteAction.ACTION_NAME:
+            new DeleteAction(request, response, getSession(request)).doAction();
             break;
 
         // Authenticated actions

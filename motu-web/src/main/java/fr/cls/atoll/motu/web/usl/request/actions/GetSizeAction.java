@@ -93,7 +93,11 @@ public class GetSizeAction extends AbstractAction {
 
     /**
      * 
-     * @param actionName_
+     * Constructor of the GetSizeAction class.
+     * 
+     * @param request The GetSize request to manage
+     * @param response The response object used to return the response of the request
+     * @param session The session object of the request
      */
     public GetSizeAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         super(ACTION_NAME, request, response, session);
@@ -203,10 +207,10 @@ public class GetSizeAction extends AbstractAction {
             if (p != null) {
                 double productDataSize = BLLManager.getInstance().getRequestManager()
                         .getProductDataSizeIntoByte(p,
-                                                extractionParameters.getListVar(),
-                                                extractionParameters.getListTemporalCoverage(),
-                                                extractionParameters.getListLatLonCoverage(),
-                                                extractionParameters.getListDepthCoverage());
+                                                    extractionParameters.getListVar(),
+                                                    extractionParameters.getListTemporalCoverage(),
+                                                    extractionParameters.getListLatLonCoverage(),
+                                                    extractionParameters.getListDepthCoverage());
                 double productMaxAllowedDataSize = BLLManager.getInstance().getRequestManager().getProductMaxAllowedDataSizeIntoByte(p);
                 RequestSize requestSize = initRequestSize(productDataSize, productMaxAllowedDataSize);
                 marshallRequestSize(requestSize, getResponse().getWriter());
