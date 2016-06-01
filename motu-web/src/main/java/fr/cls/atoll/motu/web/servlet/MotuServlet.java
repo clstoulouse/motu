@@ -25,7 +25,6 @@
 package fr.cls.atoll.motu.web.servlet;
 
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_DELETE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_DESCRIBE_COVERAGE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_GET_TIME_COVERAGE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LOGOUT;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_PRODUCT_DOWNLOADHOME;
@@ -1052,69 +1051,6 @@ public class MotuServlet extends HttpServlet {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionListProductDownloadHome() - exiting");
-        }
-        return true;
-    }
-
-    /**
-     * Executes the {@link MotuRequestParametersConstant#ACTION_DESCRIBE_COVERAGE} if request's parameters
-     * match.
-     *
-     * @param action action to be executed.
-     * @param request object that contains the request the client has made of the servlet.
-     * @param session request session
-     * @param response object that contains the response the servlet sends to the client
-     * @return true is request is A{@link MotuRequestParametersConstant#ACTION_DESCRIBE_COVERAGE} and have
-     *         been executed, false otherwise.
-     * @throws ServletException the servlet exception
-     * @throws IOException the IO exception
-     * @throws MotuException the motu exception
-     */
-    protected boolean isActionDescribeCoverage(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
-            throws ServletException, IOException, MotuException {
-
-        response.setContentType(CONTENT_TYPE_XML);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isActionDescribeCoverage() - entering");
-        }
-
-        if (!action.equalsIgnoreCase(ACTION_DESCRIBE_COVERAGE)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionDescribeCoverage() - exiting");
-            }
-            return false;
-        }
-
-        String serviceName = request.getParameter(PARAM_SERVICE);
-        if (MotuServlet.isNullOrEmpty(serviceName)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionDescribeCoverage() - exiting");
-            }
-            return false;
-        }
-        String productId = "";
-        try {
-            productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_DATASET_ID), request, response);
-        } catch (MotuException e) {
-            response.sendError(400, String.format("ERROR: '%s' ", e.notifyException()));
-            return true;
-        } catch (Exception e) {
-            response.sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
-            return true;
-        }
-        if (MotuServlet.isNullOrEmpty(productId)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionDescribeCoverage() - exiting");
-            }
-            return false;
-        }
-
-        setLanguageParameter(request, session, response);
-        describeCoverage(serviceName, productId, session, response);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isActionDescribeCoverage() - exiting");
         }
         return true;
     }
