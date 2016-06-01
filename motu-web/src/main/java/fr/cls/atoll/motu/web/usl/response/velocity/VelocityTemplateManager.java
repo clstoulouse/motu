@@ -61,6 +61,17 @@ public class VelocityTemplateManager {
      * @return
      */
     public static String getTemplatePath(String actionName, String lang_) {
+        return getTemplatePath(actionName, lang_, false);
+    }
+
+    /**
+     * .
+     * 
+     * @param actionName
+     * @param defaultLang
+     * @return
+     */
+    public static String getTemplatePath(String actionName, String lang_, boolean isXMLTemplate_) {
         String langSuffix = "";
         String lang = lang_;
         if (StringUtils.isNullOrEmpty(lang) || !isLocaleManaged(lang)) {
@@ -68,7 +79,12 @@ public class VelocityTemplateManager {
         } else {
             langSuffix = "_" + lang;
         }
-        return VELOCITY_TEMPLATE_DIR + getTemplateFileNameFromActionName(actionName) + langSuffix + ".vm";
+
+        String xmlDir = "";
+        if (isXMLTemplate_) {
+            xmlDir = "/xml";
+        }
+        return VELOCITY_TEMPLATE_DIR + xmlDir + getTemplateFileNameFromActionName(actionName) + langSuffix + ".vm";
     }
 
     /**
@@ -85,6 +101,9 @@ public class VelocityTemplateManager {
     private static String getTemplateFileNameFromActionName(String actionName_) {
         String templateFileName = "";
         switch (actionName_.toLowerCase()) {
+        case "describecoverage":
+            templateFileName = "describecoverage";
+            break;
         case "listcatalog":
             templateFileName = "listCatalog";
             break;

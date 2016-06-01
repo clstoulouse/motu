@@ -35,7 +35,7 @@ import fr.cls.atoll.motu.web.usl.response.velocity.model.converter.VelocityModel
  * Input parameters are the following: [x,y] is the cardinality<br>
  * <ul>
  * <li><b>action</b>: [1]: {@link #ACTION_NAME}</li>
- * <li><b>catalogtype</b>: [0,1]: Catalog type: TDS, FTP.</li>
+ * <li><b>catalogtype</b>: [0,1]: Catalog type: TDS, FTP. Used to filter only a specific catalog type</li>
  * </ul>
  * 
  * @author Sylvain MARTY

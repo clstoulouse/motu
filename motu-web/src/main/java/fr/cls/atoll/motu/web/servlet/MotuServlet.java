@@ -27,7 +27,6 @@ package fr.cls.atoll.motu.web.servlet;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_DELETE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_DESCRIBE_COVERAGE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_GET_TIME_COVERAGE;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LIST_PRODUCT_METADATA;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_LOGOUT;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_PRODUCT_DOWNLOADHOME;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.ACTION_REFRESH;
@@ -1116,71 +1115,6 @@ public class MotuServlet extends HttpServlet {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("isActionDescribeCoverage() - exiting");
-        }
-        return true;
-    }
-
-    /**
-     * Executes the ACTION_LIST_PRODUCT_METADATA if request's parameters match.
-     *
-     * @param action action to be executed.
-     * @param request object that contains the request the client has made of the servlet.
-     * @param session request sesssion
-     * @param response object that contains the response the servlet sends to the client
-     * @return true is request is ACTION_LIST_PRODUCT_METADATA and have been executed, false otherwise.
-     * @throws ServletException the servlet exception
-     * @throws IOException the IO exception
-     * @throws MotuException the motu exception
-     */
-    protected boolean isActionListProductMetaData(String action, HttpServletRequest request, HttpSession session, HttpServletResponse response)
-            throws ServletException, IOException, MotuException {
-        response.setContentType(CONTENT_TYPE_HTML);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isActionListProductMetaData() - entering");
-        }
-
-        if (!action.equalsIgnoreCase(ACTION_LIST_PRODUCT_METADATA)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionListProductMetaData() - exiting");
-            }
-            return false;
-        }
-
-        OutputFormat responseFormat = getResponseFormat(request);
-        setResponseContentType(responseFormat, response);
-
-        String serviceName = request.getParameter(PARAM_SERVICE);
-        if (MotuServlet.isNullOrEmpty(serviceName)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionListProductMetaData() - exiting");
-            }
-            return false;
-        }
-
-        String productId = "";
-        try {
-            productId = getProductIdFromParamId(request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT), request, response);
-        } catch (MotuException e) {
-            response.sendError(400, String.format("ERROR: '%s' ", e.notifyException()));
-            return true;
-        } catch (Exception e) {
-            response.sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
-            return true;
-        }
-
-        if (MotuServlet.isNullOrEmpty(productId)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("isActionListProductMetaData() - exiting");
-            }
-            return false;
-        }
-
-        setLanguageParameter(request, session, response);
-        listProductMetaData(serviceName, productId, responseFormat, session, response);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isActionListProductMetaData() - exiting");
         }
         return true;
     }

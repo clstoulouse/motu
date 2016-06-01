@@ -156,4 +156,12 @@ public class CommonHTTPParameters {
         return request.getParameter(MotuRequestParametersConstant.PARAM_ANONYMOUS);
     }
 
+    public static String getProductFromRequest(HttpServletRequest request) {
+        return request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT);
+    }
+
+    public static String getDatasetIdFromRequest(HttpServletRequest request) {
+        return request.getParameter(MotuRequestParametersConstant.PARAM_DATASET_ID);
+    }
+
 }

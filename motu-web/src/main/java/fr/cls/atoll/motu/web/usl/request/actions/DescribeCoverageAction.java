@@ -16,7 +16,6 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
-import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ProductHTTPParameterValidator;
@@ -36,17 +35,18 @@ import fr.cls.atoll.motu.web.usl.response.velocity.model.converter.VelocityModel
  * Input parameters are the following: [x,y] is the cardinality<br>
  * <ul>
  * <li><b>action</b>: [1]: {@link #ACTION_NAME}</li>
- * <li><b>catalogtype</b>: [0,1]: Catalog type: TDS, FTP.</li>
+ * <li><b>service</b>: [1]: The selected service.</li>
+ * <li><b>datasetID</b>: [1]: The dateset id. For Motu it represents a product ID.</li>
  * </ul>
  * 
  * @author Sylvain MARTY
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class ProductMetadataAction extends AbstractAuthorizedAction {
+public class DescribeCoverageAction extends AbstractAuthorizedAction {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static final String ACTION_NAME = "listproductmetadata";
+    public static final String ACTION_NAME = "describeCoverage";
 
     private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
     private ProductHTTPParameterValidator productHTTPParameterValidator;
@@ -55,16 +55,16 @@ public class ProductMetadataAction extends AbstractAuthorizedAction {
      * 
      * @param actionName_
      */
-    public ProductMetadataAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public DescribeCoverageAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         super(ACTION_NAME, request, response, session);
 
         serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_SERVICE,
                 CommonHTTPParameters.getServiceFromRequest(getRequest()));
-
         productHTTPParameterValidator = new ProductHTTPParameterValidator(
-                MotuRequestParametersConstant.PARAM_PRODUCT,
+                MotuRequestParametersConstant.PARAM_DATASET_ID,
                 CommonHTTPParameters.getProductFromRequest(getRequest()));
+
     }
 
     @Override
@@ -79,12 +79,11 @@ public class ProductMetadataAction extends AbstractAuthorizedAction {
         writeResponseWithVelocity(cs, cd, p);
     }
 
-    private void writeResponseWithVelocity(ConfigService cs_, CatalogData cd_, Product product_) throws MotuException {
+    private void writeResponseWithVelocity(ConfigService cs_, CatalogData cd, Product p) throws MotuException {
         VelocityContext context = VelocityTemplateManager.getPrepopulatedVelocityContext();
-        context.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
-        context.put("service", VelocityModelConverter.convertToService(cs_, cd_));
-        context.put("user", USLManager.getInstance().getUserManager().getUserName());
-        context.put("product", VelocityModelConverter.convertToProduct(product_));
+        context.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG, true));
+        context.put("service", VelocityModelConverter.convertToService(cs_, cd));
+        context.put("product", VelocityModelConverter.convertToProduct(p));
 
         try {
             Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null);
