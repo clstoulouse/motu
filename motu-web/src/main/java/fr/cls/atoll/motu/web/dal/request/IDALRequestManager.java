@@ -1,8 +1,8 @@
 package fr.cls.atoll.motu.web.dal.request;
 
-import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 
 /**
  * <br>
@@ -24,5 +24,5 @@ public interface IDALRequestManager {
      * @param extractionParameters
      * @throws MotuException
      */
-    void processRequest(StatusModeResponse statusModeResponse, ExtractionParameters extractionParameters);
+    void processRequest(RequestDownloadStatus requestDownloadStatus, ExtractionParameters extractionParameters);
 }

@@ -478,7 +478,7 @@ public class ExtractionParameters implements Cloneable {
     private boolean anonymousUser = true;
 
     /** The batch queue. */
-    protected boolean batchQueue = false;
+    // protected boolean batchQueue = false;
 
     /** The protocol scheme. */
     protected String protocolScheme = null;
@@ -867,8 +867,8 @@ public class ExtractionParameters implements Cloneable {
         buffer.append((userId == null ? "null" : userId));
         buffer.append(", anonymousUser:");
         buffer.append(anonymousUser);
-        buffer.append(", batchQueue:");
-        buffer.append(batchQueue);
+        // buffer.append(", batchQueue:");
+        // buffer.append(batchQueue);
         buffer.append("]");
         return buffer.toString();
     }
@@ -918,23 +918,23 @@ public class ExtractionParameters implements Cloneable {
         return temporalCoverageInDays;
     }
 
-    /**
-     * Checks if is batch queue.
-     * 
-     * @return true, if is batch queue
-     */
-    public boolean isBatchQueue() {
-        return batchQueue;
-    }
-
-    /**
-     * Sets the batch queue.
-     * 
-     * @param batchQueue the batch queue
-     */
-    public void setBatchQueue(boolean batchQueue) {
-        this.batchQueue = batchQueue;
-    }
+    // /**
+    // * Checks if is batch queue.
+    // *
+    // * @return true, if is batch queue
+    // */
+    // public boolean isBatchQueue() {
+    // return batchQueue;
+    // }
+    //
+    // /**
+    // * Sets the batch queue.
+    // *
+    // * @param batchQueue the batch queue
+    // */
+    // public void setBatchQueue(boolean batchQueue) {
+    // this.batchQueue = batchQueue;
+    // }
 
     /**
      * Gets the user host.

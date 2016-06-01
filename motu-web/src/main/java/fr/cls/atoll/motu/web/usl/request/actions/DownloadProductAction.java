@@ -1,6 +1,5 @@
 package fr.cls.atoll.motu.web.usl.request.actions;
 
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_BATCH;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_END_DATE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_HIGH_Z;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_Z;
@@ -9,10 +8,7 @@ import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_START_DATE;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -27,17 +23,11 @@ import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.api.utils.JAXBWriter;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
-import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
-import fr.cls.atoll.motu.web.dal.request.netcdf.ProductDeferedExtractNetcdfThread;
-import fr.cls.atoll.motu.web.servlet.MotuServlet;
-import fr.cls.atoll.motu.web.servlet.RunnableHttpExtraction;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.DepthHTTPParameterValidator;
@@ -45,9 +35,9 @@ import fr.cls.atoll.motu.web.usl.request.parameter.validator.LatitudeHTTPParamet
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LongitudeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ModeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.PriorityHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.ProductHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.TemporalHTTPParameterValidator;
-import fr.cls.atoll.motu.web.usl.request.session.SessionManager;
 
 /**
  * <br>
@@ -106,6 +96,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     public static final String ACTION_NAME = "productdownload";
 
     private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
+    private ProductHTTPParameterValidator productHTTPParameterValidator;
 
     private ModeHTTPParameterValidator modeHTTPParameterValidator;
 
@@ -132,7 +123,9 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_SERVICE,
                 CommonHTTPParameters.getServiceFromRequest(getRequest()));
-
+        productHTTPParameterValidator = new ProductHTTPParameterValidator(
+                MotuRequestParametersConstant.PARAM_PRODUCT,
+                CommonHTTPParameters.getProductFromRequest(getRequest()));
         modeHTTPParameterValidator = new ModeHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_MODE,
                 getModeFromRequest(),
@@ -177,10 +170,54 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
     @Override
     public void process() throws MotuException {
-        downloadProduct();
+        // Read parameter from request
+        // TODO SMA those 3 var were set in the Organizer
+        String requestLanguage = CommonHTTPParameters.getLanguageFromRequest(getRequest());
+        short maxPoolAnonymous = getMaxPoolAnonymous();
+        short maxPoolAuthenticate = getMaxPoolAuthenticate();
+        int priority = priorityHTTPParameterValidator.getParameterValueValidated();
+
+        String mode = modeHTTPParameterValidator.getParameterValueValidated();
+
+        if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_STATUS)) {
+            // Asynchronous mode
+            long requestId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(createExtractionParameters());
+            getResponse().setContentType(CONTENT_TYPE_XML);
+            try {
+                JAXBWriter.getInstance().write(createStatusModeResponse(requestId), getResponse().getWriter());
+            } catch (Exception e) {
+                throw new MotuException("JAXB error while writing createStatusModeResponse: ", e);
+            }
+        } else {
+            ProductResult p = BLLManager.getInstance().getRequestManager().download(createExtractionParameters());
+            String productURL = getProductDownloadHttpUrl(p);
+
+            // Synchronous mode
+            if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_CONSOLE)) {
+                try {
+                    getResponse().sendRedirect(productURL);
+                } catch (IOException e) {
+                    throw new MotuException("Error while sending download redirection PARAM_MODE_CONSOLE", e);
+                }
+            } else { // Default mode MotuRequestParametersConstant.PARAM_MODE_URL
+                getResponse().setContentType(CONTENT_TYPE_PLAIN);
+                try {
+                    getResponse().getWriter().write(productURL);
+                } catch (IOException e) {
+                    throw new MotuException("Error while writing download result CONTENT_TYPE_PLAIN", e);
+                }
+            }
+        }
+
+        // productDownload(createExtractionParameters(mode), mode, priority);
+        //
+        // boolean noMode = RunnableHttpExtraction.noMode(mode);
+        // if (!noMode) {
+        // SessionManager.getInstance().removeOrganizerSession(getSession());
+        // }
     }
 
-    private ExtractionParameters createExtractionParameters() throws IOException {
+    private ExtractionParameters createExtractionParameters() {
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 serviceHTTPParameterValidator.getParameterValueValidated(),
                 CommonHTTPParameters.getDataFromParameter(getRequest()),
@@ -197,11 +234,10 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 depthLowHTTPParameterValidator.getParameterValueValidated(),
                 depthHighHTTPParameterValidator.getParameterValueValidated(),
 
-                getProductId(),
+                productHTTPParameterValidator.getParameterValueValidated(),
 
                 getLoginOrUserHostname(),
                 isAnAnonymousUser());
-        extractionParameters.setBatchQueue(isBatch());
         extractionParameters.setUserHost(getLoginOrUserHostname());
 
         // Set assertion to manage CAS.
@@ -219,42 +255,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         return productDownloadHttpUrl;
     }
 
-    private void downloadProduct() throws MotuException {
-        // Read parameter from request
-        // TODO SMA those 3 var were set in the Organizer
-        String requestLanguage = CommonHTTPParameters.getLanguageFromRequest(getRequest());
-        short maxPoolAnonymous = getMaxPoolAnonymous();
-        short maxPoolAuthenticate = getMaxPoolAuthenticate();
-
-        int priority = priorityHTTPParameterValidator.getParameterValueValidated();
-        String mode = modeHTTPParameterValidator.getParameterValueValidated();
-
-        if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_STATUS)) {
-            // Asynchronous mode
-            long requestId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(createExtractionParameters());
-            getResponse().setContentType(CONTENT_TYPE_XML);
-            JAXBWriter.getInstance().write(createStatusModeResponse(requestId), getResponse().getWriter());
-        } else {
-            ProductResult p = BLLManager.getInstance().getRequestManager().download(createExtractionParameters());
-            String productURL = getProductDownloadHttpUrl(p);
-
-            // Synchronous mode
-            if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_CONSOLE)) {
-                getResponse().sendRedirect(productURL);
-            } else { // Default mode MotuRequestParametersConstant.PARAM_MODE_URL
-                getResponse().setContentType(CONTENT_TYPE_PLAIN);
-                getResponse().getWriter().write(productURL);
-            }
-        }
-
-        productDownload(createExtractionParameters(mode), mode, priority);
-
-        boolean noMode = RunnableHttpExtraction.noMode(mode);
-        if (!noMode) {
-            SessionManager.getInstance().removeOrganizerSession(getSession());
-        }
-    }
-
     private StatusModeResponse createStatusModeResponse(long requestId) {
         ObjectFactory objectFactory = new ObjectFactory();
         StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
@@ -263,33 +263,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         statusModeResponse.setMsg("request in progress");
         statusModeResponse.setRequestId(requestId);
         return statusModeResponse;
-    }
-
-    @Override
-    private OutputFormat getOutputFormat() throws IOException {
-        OutputFormat dataFormat = null;
-        try {
-            dataFormat = getDataFormatFromParameter();
-        } catch (MotuExceptionBase e) {
-            getResponse().sendError(400, String.format("ERROR: %s", e.notifyException()));
-        } catch (Exception e) {
-            getResponse().sendError(400, String.format("ERROR: %s", e.getMessage()));
-        }
-        return dataFormat;
-    }
-
-    @Override
-    private String getProductId() throws IOException {
-        String productId = null;
-        try {
-            productId = getProductIdFromParamId(getRequest().getParameter(MotuRequestParametersConstant.PARAM_PRODUCT));
-        } catch (MotuException e) {
-            getResponse().sendError(400, String.format("ERROR: '%s' ", e.notifyException()));
-        } catch (Exception e) {
-            getResponse().sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
-        }
-        return productId;
-
     }
 
     /**
@@ -328,199 +301,11 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         return maxPoolAuthOverrided;
     }
 
-    /**
-     * Gets the data format.
-     *
-     * @param request the request
-     * @return the data format
-     * @throws MotuException the motu exception
-     */
-    @Override
-    private OutputFormat getDataFormatFromParameter() throws MotuException {
-        String dataFormat = getRequest().getParameter(MotuRequestParametersConstant.PARAM_OUTPUT);
-        OutputFormat format;
-        if (StringUtils.isNullOrEmpty(dataFormat)) {
-            return OutputFormat.getDefault();
-        }
-
-        try {
-            format = OutputFormat.valueOf(dataFormat.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new MotuException(
-                    String.format("Parameter '%s': invalid value '%s' - Valid values are : %s",
-                                  MotuRequestParametersConstant.PARAM_OUTPUT,
-                                  dataFormat,
-                                  OutputFormat.valuesToString()),
-                    e);
-        }
-
-        return format;
-    }
-
-    /**
-     * Gets the response format.
-     * 
-     * @param request the request
-     * @return the response format
-     * @throws MotuException the motu exception
-     */
-    private OutputFormat getResponseFormat(HttpServletRequest request) throws MotuException {
-        String dataFormat = getRequest().getParameter(MotuRequestParametersConstant.PARAM_RESPONSE_FORMAT);
-        OutputFormat format = OutputFormat.HTML;
-
-        if (StringUtils.isNullOrEmpty(dataFormat)) {
-            return format;
-        }
-
-        try {
-            format = OutputFormat.valueOf(dataFormat.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new MotuException(
-                    String.format("Parameter '%s': invalid value '%s' - Valid values are : %s",
-                                  MotuRequestParametersConstant.PARAM_RESPONSE_FORMAT,
-                                  dataFormat,
-                                  OutputFormat.valuesToString()),
-                    e);
-        }
-
-        return format;
-    }
-
-    /**
-     * Gets the product id.
-     *
-     * @param productId the product id
-     * @param request the request
-     * @param response the response
-     * @return the product id
-     * @throws IOException Signals that an I/O exception has occurred.
-     * @throws ServletException the servlet exception
-     * @throws MotuException the motu exception
-     */
-    @Override
-    protected String getProductIdFromParamId(String productId) throws IOException, ServletException, MotuException {
-        String serviceName = serviceHTTPParameterValidator.getParameterValueValidated();
-
-        if ((StringUtils.isNullOrEmpty(serviceName)) || (StringUtils.isNullOrEmpty(productId))) {
-            return productId;
-        }
-
-        Organizer organizer = getOrganizer();
-
-        return organizer.getDatasetIdFromURI(productId, serviceName);
-    }
-
-    /**
-     * Gets the depth coverage from the request.
-     * 
-     * @param request servlet request
-     * 
-     * @return a list of deph coverage : first depth min, then depth max
-     */
-    private List<String> getDepthCoverage() {
-        String lowdepth = Double.toString(depthLowHTTPParameterValidator.getParameterValueValidated());
-        String highDepth = Double.toString(depthHighHTTPParameterValidator.getParameterValueValidated());
-
-        List<String> listDepthCoverage = new ArrayList<String>();
-        listDepthCoverage.add(lowdepth);
-        listDepthCoverage.add(highDepth);
-        return listDepthCoverage;
-    }
-
-    /**
-     * Gets the geographical coverage from the request.
-     * 
-     * @param request servlet request
-     * 
-     * @return a list of geographical coverage : Lat min, Lon min, Lat max, Lon max
-     */
-    private List<String> getGeoCoverage() {
-        List<String> listLatLonCoverage = new ArrayList<String>();
-        listLatLonCoverage.add(Double.toString(latitudeLowHTTPParameterValidator.getParameterValueValidated()));
-        listLatLonCoverage.add(Double.toString(longitudeLowHTTPParameterValidator.getParameterValueValidated()));
-        listLatLonCoverage.add(Double.toString(latitudeHighHTTPParameterValidator.getParameterValueValidated()));
-        listLatLonCoverage.add(Double.toString(longitudeHighHTTPParameterValidator.getParameterValueValidated()));
-        return listLatLonCoverage;
-    }
-
-    private String getBatchParameter() {
-        return getRequest().getParameter(PARAM_BATCH);
-    }
-
-    /**
-     * Checks if is batch.
-     * 
-     * @param request the request
-     * 
-     * @return true, if is batch
-     */
-    @Override
-    private boolean isBatch() {
-        String batchAsString = getBatchParameter();
-        return batchAsString != null && (batchAsString.trim().equalsIgnoreCase("true") || batchAsString.trim().equalsIgnoreCase("1"));
-    }
-
-    /**
-     * Product defered extract netcdf with status as file.
-     * 
-     * @param organizer the organizer
-     * @param extractionParameters the extraction parameters
-     * @param mode the mode
-     * 
-     * @return the string
-     * 
-     * @throws MotuException the motu exception
-     */
-    private String productDeferedExtractNetcdfWithStatusAsFile(Organizer organizer, ExtractionParameters extractionParameters, String mode)
-            throws MotuException {
-
-        String productDeferedExtractNetcdfStatusFileName = getStatusFileName();
-
-        String productDeferedExtractNetcdfStatusFilePathName = Organizer.getMotuConfigInstance().getExtractionPath() + "/"
-                + productDeferedExtractNetcdfStatusFileName;
-        String productDeferedExtractNetcdfStatusUrl = Organizer.getMotuConfigInstance().getDownloadHttpUrl() + "/"
-                + productDeferedExtractNetcdfStatusFileName;
-        ProductDeferedExtractNetcdfThread productDeferedExtractNetcdfThread = null;
-
-        productDeferedExtractNetcdfThread = new ProductDeferedExtractNetcdfThread(
-                productDeferedExtractNetcdfStatusFilePathName,
-                organizer,
-                extractionParameters);
-        try {
-            MotuServlet.printProductDeferedExtractNetcdfStatus(null,
-                                                               productDeferedExtractNetcdfThread.createWriter(),
-                                                               StatusModeType.INPROGRESS,
-                                                               MSG_IN_PROGRESS,
-                                                               ErrorType.OK);
-        } catch (IOException e) {
-            throw new MotuException(e);
-        }
-        productDeferedExtractNetcdfThread.start();
-
-        return productDeferedExtractNetcdfStatusUrl;
-
-    }
-
-    /**
-     * Gets the status file name.
-     * 
-     * @return the status file name
-     */
-    private String getStatusFileName() {
-        StringBuffer stringBuffer = new StringBuffer();
-
-        stringBuffer.append("pr_defered_");
-        stringBuffer.append(BLLManager.getInstance().getRequestManager().getNewRequestId());
-        stringBuffer.append("status.xml");
-
-        return stringBuffer.toString();
-
-    }
-
     /** {@inheritDoc} */
     @Override
     protected void checkHTTPParameters() throws InvalidHTTPParameterException {
         modeHTTPParameterValidator.validate();
+        productHTTPParameterValidator.validate();
         serviceHTTPParameterValidator.validate();
 
         latitudeLowHTTPParameterValidator.validate();

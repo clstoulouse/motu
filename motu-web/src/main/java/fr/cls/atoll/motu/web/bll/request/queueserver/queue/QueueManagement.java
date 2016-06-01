@@ -89,9 +89,9 @@ public class QueueManagement {
         return queueConfig;
     }
 
-    private void checkMaxQueueSize() throws MotuExceedingQueueCapacityException {
+    private void checkMaxQueueSize() throws MotuException {
         if (isMaxQueueSizeReached()) {
-            throw new MotuExceedingQueueCapacityException(priorityBlockingQueue.size());
+            throw new MotuException("Max queue size limit reached: " + priorityBlockingQueue.size());
         }
     }
 
@@ -104,7 +104,7 @@ public class QueueManagement {
      * @throws MotuExceedingQueueCapacityException the motu exceeding queue capacity exception
      * @throws MotuInvalidQueuePriorityException the motu invalid queue priority exception
      */
-    public void execute(IQueueJob runnableExtraction) throws MotuExceedingQueueCapacityException, MotuException, MotuInvalidQueuePriorityException {
+    public void execute(IQueueJob runnableExtraction) throws MotuException {
         // If queue is full, throws new MotuExceedingQueueCapacityException
         checkMaxQueueSize();
 

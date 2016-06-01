@@ -80,8 +80,7 @@ public class BLLRequestManager implements IBLLRequestManager {
     /** {@inheritDoc} */
     @Override
     public long downloadAsynchonously(ExtractionParameters extractionParameters) {
-        long requestId = download(true, extractionParameters);
-        return requestId;
+        return download(true, extractionParameters);
     }
 
     private long download(boolean isAsynchronous, final ExtractionParameters extractionParameters) {
@@ -133,9 +132,7 @@ public class BLLRequestManager implements IBLLRequestManager {
         checkNumberOfRunningRequestForUser(extractionParameters.getUserId());
 
         // TODO SMA The request download is delegated to a download request manager
-        queueServerManagement.execute(extractionParameters);
-
-        DALManager.getInstance().getRequestManager().processRequest(requestDownloadStatus, extractionParameters);
+        queueServerManagement.execute(requestDownloadStatus, extractionParameters);
     }
 
     /**

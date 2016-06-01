@@ -307,17 +307,6 @@ public abstract class AbstractAction {
         return listTemporalCoverage;
     }
 
-    protected String getProductId() throws IOException {
-        String productId = null;
-        try {
-            productId = getProductIdFromParamId(getRequest().getParameter(MotuRequestParametersConstant.PARAM_PRODUCT));
-        } catch (MotuException e) {
-            getResponse().sendError(400, String.format("ERROR: '%s' ", e.getMessage()));
-        }
-        return productId;
-
-    }
-
     /**
      * Gets the product id.
      *

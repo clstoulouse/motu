@@ -101,8 +101,9 @@ public class QueueServerManagement {
      * @param runnableExtraction the runnable extraction
      * 
      * @throws MotuExceptionBase the motu exception base
+     * @throws MotuException
      */
-    public void execute(final RequestDownloadStatus rds_, final ExtractionParameters extractionParameters) throws MotuExceptionBase {
+    public void execute(final RequestDownloadStatus rds_, final ExtractionParameters extractionParameters) throws MotuException {
         // TODO SMA : Ask BLL service for the amount size of the request
         // runnableExtraction.getAmountDataSizeAsMBytes()
         double sizeInMB = BLLManager.getInstance().getRequestManager().getAmountDataSizeAsMBytes(extractionParameters);
