@@ -3,9 +3,11 @@ package fr.cls.atoll.motu.web.bll.request;
 import java.util.List;
 
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
  * <br>
@@ -72,7 +74,19 @@ public interface IBLLRequestManager {
      * @param extractionParameters This is the parameters which identify the data of the targeted product.
      * @return The size of the product into KiloByte
      */
-    double processProductDataSize(ExtractionParameters extractionParameters);
+    double processProductDataSize(Product product,
+                                  List<String> listVar,
+                                  List<String> listTemporalCoverage,
+                                  List<String> listLatLongCoverage,
+                                  List<String> listDepthCoverage) throws MotuExceptionBase;
+
+    /**
+     * This method retrieve the Max Allowed Data size of a product.
+     * 
+     * @param extractionParameters This is the parameters which identify the data of the targeted product.
+     * @return The Max Allowed Data size of the product into KiloByte
+     */
+    double processProductMaxAllowedDataSize(Product product) throws MotuExceptionBase;
 
     /**
      * .

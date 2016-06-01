@@ -1,6 +1,7 @@
 package fr.cls.atoll.motu.web.bll.catalog.product;
 
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 
 /**
@@ -24,5 +25,24 @@ public interface IBLLProductManager {
      * @throws MotuException
      */
     ProductMetaData getProductMetaData(String productId, String locationData) throws MotuException;
+
+    /**
+     * .
+     * 
+     * @param locationData
+     * @return
+     * @throws MotuException
+     */
+    Product getProduct(String locationData) throws MotuException;
+
+    /**
+     * .
+     * 
+     * @param serviceName
+     * @param productId
+     * @return
+     * @throws MotuException
+     */
+    Product getProduct(String serviceName, String productId) throws MotuException;
 
 }

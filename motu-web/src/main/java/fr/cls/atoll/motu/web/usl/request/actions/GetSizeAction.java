@@ -7,7 +7,6 @@ import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,33 +23,15 @@ import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
 import fr.cls.atoll.motu.api.message.xml.RequestSize;
 import fr.cls.atoll.motu.api.utils.JAXBWriter;
-import fr.cls.atoll.motu.library.misc.data.ProductPersistent;
-import fr.cls.atoll.motu.library.misc.data.ServicePersistent;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueDataCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.exception.MotuInconsistencyException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
 import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
+import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.DatasetFtp;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
@@ -165,7 +146,7 @@ public class GetSizeAction extends AbstractAction {
     private void retrieveSize() throws MotuException {
         try {
             getAmountDataSize(createExtractionParameters(), getResponse());
-        } catch (ServletException | IOException | JAXBException e) {
+        } catch (IOException | JAXBException e) {
             throw new MotuException("Error while computing getAmountDataSize", e);
         }
     }
@@ -214,110 +195,40 @@ public class GetSizeAction extends AbstractAction {
      * @throws JAXBException
      */
     private void getAmountDataSize(ExtractionParameters extractionParameters, HttpServletResponse response)
-            throws ServletException, IOException, JAXBException {
+            throws MotuException, JAXBException, IOException {
 
         try {
-            getAmountDataSize(extractionParameters);
-        } catch (MotuMarshallException e) {
-            response.sendError(500, String.format("ERROR: %s", e.getMessage()));
+            Product p = null;
+            if (!StringUtils.isNullOrEmpty(extractionParameters.getLocationData())) {
+                p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(extractionParameters.getLocationData());
+            } else if (!StringUtils.isNullOrEmpty(extractionParameters.getServiceName())
+                    && !StringUtils.isNullOrEmpty(extractionParameters.getProductId())) {
+                p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(extractionParameters.getServiceName(),
+                                                                                                extractionParameters.getProductId());
+            }
+
+            if (p != null) {
+                // FIXME plac Récupérer la taille du produit demandé
+                double productDataSize = BLLManager.getInstance().getRequestManager()
+                        .processProductDataSize(p,
+                                                extractionParameters.getListVar(),
+                                                extractionParameters.getListTemporalCoverage(),
+                                                extractionParameters.getListLatLonCoverage(),
+                                                extractionParameters.getListDepthCoverage());
+                // FIXME plac Récupérer la taille maximale authorisé pour le produit demandé
+                double productMaxAllowedDataSize = BLLManager.getInstance().getRequestManager().processProductMaxAllowedDataSize(p);
+                // FIXME plac construire la requête avec le résultat
+                RequestSize requestSize = initRequestSize(productDataSize, productMaxAllowedDataSize);
+            } else {
+                // FIXME plac gérer le cas d'erreur du produit n'existant pas.
+            }
         } catch (MotuExceptionBase e) {
-            // Do nothing error is in response error code
-            // response.sendError(400, String.format("ERROR: %s", e.notifyException()));
+            try {
+                marshallRequestSize(e, extractionParameters.getOut());
+            } catch (MotuMarshallException e2) {
+                response.sendError(500, String.format("ERROR: %s", e2.getMessage()));
+            }
         }
-    }
-
-    /**
-     * Gets the amount data size.
-     * 
-     * @param batchQueue the batch queue
-     * @param listVar the list var
-     * @param locationData the location data
-     * @param listLatLonCoverage the list lat lon coverage
-     * @param listDepthCoverage the list depth coverage
-     * @param listTemporalCoverage the list temporal coverage
-     * @param out the out
-     * @param productId the product id
-     * 
-     * @return the amount data size
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws MotuMarshallException the motu marshall exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException
-     * @throws JAXBException
-     */
-    public Product getAmountDataSize(String locationData,
-                                     List<String> listVar,
-                                     List<String> listTemporalCoverage,
-                                     List<String> listLatLonCoverage,
-                                     List<String> listDepthCoverage,
-                                     Writer out,
-                                     boolean batchQueue,
-                                     String productId) throws MotuException, MotuMarshallException, MotuInvalidDateException,
-                                             MotuInvalidDepthException, MotuInvalidLatitudeException, MotuInvalidLongitudeException,
-                                             MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
-                                             MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException,
-                                             MotuNoVarException, NetCdfVariableNotFoundException, JAXBException, IOException {
-        Product product = null;
-
-        RequestSize requestSize = null;
-        try {
-            product = getAmountDataSize(locationData, productId, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
-            requestSize = initRequestSize(product, batchQueue);
-        } catch (MotuException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidDateException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidDepthException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidLatitudeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidLongitudeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidDateRangeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuExceedingCapacityException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuNotImplementedException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidLatLonRangeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidDepthRangeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (NetCdfVariableException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuNoVarException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (NetCdfVariableNotFoundException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        }
-        marshallRequestSize(requestSize, batchQueue, out);
-
-        return product;
     }
 
     /**
@@ -329,7 +240,7 @@ public class GetSizeAction extends AbstractAction {
      * 
      * @return the request size
      */
-    public static RequestSize initRequestSize(double size, boolean batchQueue, boolean isFtp) {
+    private static RequestSize initRequestSize(double size, double maxAllowedSize) {
 
         RequestSize requestSize = createRequestSize();
 
@@ -342,297 +253,41 @@ public class GetSizeAction extends AbstractAction {
             return requestSize;
         }
 
-        double maxAllowedSizeToSet = 0d;
-        double maxAllowedSize = 0d;
-
-        try {
-            if (isFtp)
-                maxAllowedSize = Organizer.convertFromMegabytesToBytes(Organizer.getMotuConfigInstance().getMaxSizePerFile().doubleValue());
-            else
-                maxAllowedSize = Organizer.convertFromMegabytesToBytes(Organizer.getMotuConfigInstance().getMaxSizePerFileTDS().doubleValue());
-        } catch (MotuException e) {
-            ExceptionUtils.setError(requestSize, e);
-            return requestSize;
-        }
-
         MotuExceptionBase exceptionBase = null;
 
         if (size > maxAllowedSize) {
-            exceptionBase = new MotuExceedingCapacityException(
-                    Organizer.convertFromBytesToMegabytes(size),
-                    Organizer.convertFromBytesToMegabytes(maxAllowedSize));
+            exceptionBase = new MotuExceedingCapacityException(convertFromBytesToMegabytes(size), convertFromBytesToMegabytes(maxAllowedSize));
         }
-
-        maxAllowedSizeToSet = maxAllowedSize;
-
-        if (QueueServerManagement.hasInstance()) {
-            double maxDataThreshold = 0d;
-            try {
-                maxDataThreshold = Organizer.convertFromMegabytesToBytes(QueueServerManagement.getInstance().getMaxDataThreshold(batchQueue));
-            } catch (MotuException e) {
-                ExceptionUtils.setError(requestSize, e);
-                return requestSize;
-            }
-            if (size > maxDataThreshold) {
-                exceptionBase = new MotuExceedingQueueDataCapacityException(
-                        Organizer.convertFromBytesToMegabytes(size),
-                        maxDataThreshold,
-                        batchQueue);
-            }
-            maxAllowedSizeToSet = maxAllowedSizeToSet > maxDataThreshold ? maxDataThreshold : maxAllowedSizeToSet;
-        }
-
-        requestSize.setMaxAllowedSize(maxAllowedSizeToSet);
 
         if (exceptionBase != null) {
             ExceptionUtils.setError(requestSize, exceptionBase);
         }
-        if (size > maxAllowedSize) {
-            exceptionBase = new MotuExceedingCapacityException(
-                    Organizer.convertFromBytesToMegabytes(size),
-                    Organizer.convertFromBytesToMegabytes(maxAllowedSize));
-        }
+
+        requestSize.setMaxAllowedSize(maxAllowedSize);
 
         return requestSize;
     }
 
     /**
-     * Inits the request size.
+     * Convert from bytes to kilobytes.
      * 
-     * @param product the product
-     * @param batchQueue the batch queue
+     * @param value the value
      * 
-     * @return the request size
-     * 
-     * @throws MotuException the motu exception
+     * @return the double
      */
-    public static RequestSize initRequestSize(Product product, boolean batchQueue) throws MotuException {
-        if (product == null) {
-            throw new MotuException("ERROR in Organizer.initRequestSize- Product is null");
-        }
-
-        // Check type (TDS/FTP) --> different maximum request sizes
-        boolean isFtp = false;
-        if (product.getDataset() instanceof DatasetFtp) {
-            isFtp = true;
-        }
-
-        return initRequestSize(product.getAmountDataSizeAsBytes(), batchQueue, isFtp);
+    public static double convertFromBytesToKilobytes(double value) {
+        return value / 1024d;
     }
 
     /**
-     * Gets the amount data size.
+     * Convert from bytes to megabytes.
      * 
-     * @param params the params
+     * @param value the value
      * 
-     * @return the amount data size
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuInconsistencyException the motu inconsistency exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws NetCdfAttributeException the net cdf attribute exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws MotuMarshallException the motu marshall exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException
-     * @throws JAXBException
+     * @return the double
      */
-    public Product getAmountDataSize(ExtractionParameters params)
-            throws MotuInconsistencyException, MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException,
-            MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
-            MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
-            NetCdfVariableNotFoundException, MotuMarshallException, JAXBException, IOException {
-
-        params.verifyParameters();
-        Product product = null;
-
-        if (!Organizer.isNullOrEmpty(params.getLocationData())) {
-            product = getAmountDataSize(params.getLocationData(),
-                                        params.getListVar(),
-                                        params.getListTemporalCoverage(),
-                                        params.getListLatLonCoverage(),
-                                        params.getListDepthCoverage(),
-                                        params.getOut(),
-                                        params.isBatchQueue(),
-                                        null);
-        } else if (!Organizer.isNullOrEmpty(params.getServiceName()) && !Organizer.isNullOrEmpty(params.getProductId())) {
-            product = getAmountDataSize(params.getServiceName(),
-                                        params.getListVar(),
-                                        params.getListTemporalCoverage(),
-                                        params.getListLatLonCoverage(),
-                                        params.getListDepthCoverage(),
-                                        params.getProductId(),
-                                        params.getOut(),
-                                        params.isBatchQueue());
-        } else {
-            throw new MotuInconsistencyException(String.format("ERROR in getAmountDataSize: inconsistency parameters : %s", params.toString()));
-        }
-
-        return product;
-    }
-
-    /**
-     * Gets the amount data size.
-     * 
-     * @param listVar the list var
-     * @param listLatLonCoverage the list lat lon coverage
-     * @param listDepthCoverage the list depth coverage
-     * @param listTemporalCoverage the list temporal coverage
-     * @param serviceName the service name
-     * @param productId the product id
-     * 
-     * @return the amount data size
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws NetCdfAttributeException the net cdf attribute exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     */
-    public Product getAmountDataSize(String serviceName,
-                                     List<String> listVar,
-                                     List<String> listTemporalCoverage,
-                                     List<String> listLatLonCoverage,
-                                     List<String> listDepthCoverage,
-                                     String productId) throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException,
-                                             MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-                                             MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
-                                             MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
-                                             NetCdfVariableNotFoundException {
-
-        ServicePersistent servicePersistent = null;
-        if (!Organizer.servicesPersistentContainsKey(serviceName)) {
-            loadCatalogInfo(serviceName);
-        }
-
-        setCurrentService(serviceName);
-
-        servicePersistent = Organizer.getServicesPersistent(serviceName);
-
-        ProductPersistent productPersistent = servicePersistent.getProductsPersistent(productId);
-        if (productPersistent == null) {
-            throw new MotuException(String.format("ERROR in getAmountDataSize - product '%s' not found", productId));
-        }
-
-        String locationData = getLocationData(productPersistent);
-
-        Product product = getAmountDataSize(locationData, productId, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
-
-        return product;
-
-    }
-
-    /**
-     * Gets the amount data size.
-     * 
-     * @param batchQueue the batch queue
-     * @param listVar the list var
-     * @param listLatLonCoverage the list lat lon coverage
-     * @param listDepthCoverage the list depth coverage
-     * @param listTemporalCoverage the list temporal coverage
-     * @param out the out
-     * @param productId the product id
-     * @param serviceName the service name
-     * 
-     * @return the amount data size
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws NetCdfAttributeException the net cdf attribute exception
-     * @throws MotuMarshallException the motu marshall exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException
-     * @throws JAXBException
-     */
-    public Product getAmountDataSize(String serviceName,
-                                     List<String> listVar,
-                                     List<String> listTemporalCoverage,
-                                     List<String> listLatLonCoverage,
-                                     List<String> listDepthCoverage,
-                                     String productId,
-                                     Writer out,
-                                     boolean batchQueue) throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException,
-                                             MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-                                             MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
-                                             MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
-                                             NetCdfVariableNotFoundException, MotuMarshallException, JAXBException, IOException {
-        Product product = null;
-
-        RequestSize requestSize = null;
-        try {
-            product = getAmountDataSize(serviceName, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage, productId);
-            requestSize = initRequestSize(product, batchQueue);
-        } catch (MotuException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidDateException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidDepthException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidLatitudeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidLongitudeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidDateRangeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuExceedingCapacityException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuNotImplementedException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidLatLonRangeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidDepthRangeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (NetCdfVariableException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuNoVarException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (NetCdfVariableNotFoundException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        }
-        marshallRequestSize(requestSize, batchQueue, out);
-
-        return product;
+    public static double convertFromBytesToMegabytes(double value) {
+        return convertFromBytesToKilobytes(value / 1024d);
     }
 
     /**
@@ -706,62 +361,11 @@ public class GetSizeAction extends AbstractAction {
         }
 
         if (requestSize == null) {
-            requestSize = initRequestSize(-1d, batchQueue, false);
+            requestSize = initRequestSize(-1d, -1d);
         }
         JAXBWriter.getInstance().write(requestSize, writer);
         writer.flush();
         writer.close();
-    }
-
-    /**
-     * Gets the amount data size.
-     * 
-     * @param listVar the list var
-     * @param locationData the location data
-     * @param listLatLonCoverage the list lat lon coverage
-     * @param listDepthCoverage the list depth coverage
-     * @param listTemporalCoverage the list temporal coverage
-     * @param productId the product id
-     * 
-     * @return the amount data size
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     */
-    public Product getAmountDataSize(String locationData,
-                                     String productId,
-                                     List<String> listVar,
-                                     List<String> listTemporalCoverage,
-                                     List<String> listLatLonCoverage,
-                                     List<String> listDepthCoverage) throws MotuInvalidDateException, MotuInvalidDepthException,
-                                             MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException,
-                                             MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
-                                             MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException,
-                                             MotuNoVarException, NetCdfVariableNotFoundException {
-        Product product = null;
-        try {
-            product = getProductInformation(locationData);
-            if (!Organizer.isNullOrEmpty(productId)) {
-                product.setProductId(productId);
-            }
-
-            currentService.computeAmountDataSize(product, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
-        } catch (NetCdfAttributeException e) {
-            // Do nothing;
-        }
-
-        return product;
     }
 
     /** {@inheritDoc} */

@@ -1,9 +1,12 @@
 package fr.cls.atoll.motu.web.bll.config;
 
+import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.IDALConfigManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
  * <br>
@@ -79,6 +82,24 @@ public class BLLConfigManager implements IBLLConfigManager {
             }
         }
         return csResult;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws MotuException
+     */
+    @Override
+    public Product getProduct(String productLocation) throws MotuException {
+        Product productResult = null;
+        for (ConfigService c : getMotuConfig().getConfigService()) {
+            String currentProductLocation = c.getCatalog().getUrlSite() + c.getCatalog().getName();
+            if (currentProductLocation.equalsIgnoreCase(productLocation)) {
+                productResult = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(c.getName(), c.getCatalog().getName());
+                break;
+            }
+        }
+        return productResult;
     }
 
 }

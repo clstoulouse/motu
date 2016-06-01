@@ -10,12 +10,14 @@ import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingUserCapacityException;
+import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.web.dal.DALManager;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
  * <br>
@@ -136,20 +138,19 @@ public class BLLRequestManager implements IBLLRequestManager {
         DALManager.getInstance().getRequestManager().processRequest(requestDownloadStatus, extractionParameters);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws MotuExceptionBase
+     */
     @Override
-    public double processProductDataSize(ExtractionParameters extractionParameters) {
-        // TODO PLA Produt myProduct = DALManager.getInstance().getProductManager().getProduct(extract)
-        // double size = DALManager.getInstance().getProductManager().getSize(product);
-        // boolean isFTP = DALManager.getInstance().getProductManager().isFTP(product);
-        // if(isFTP){
-        // double max = BLLManager.getInstance().getBLLConfigManager().getMaxAllowedFTP();
-        // else{
-        // double max = BLLManager.getInstance().getBLLConfigManager().getMaxAllowedNotFTP();
-        // }
-        // InfoSize myInfoSize = new InfoSize(size, max);
-        // return myInfoSize;
-        return DALManager.getInstance().getRequestManager().processProductDataSizeRequest(extractionParameters);
+    public double processProductDataSize(Product product,
+                                         List<String> listVar,
+                                         List<String> listTemporalCoverage,
+                                         List<String> listLatLongCoverage,
+                                         List<String> listDepthCoverage) throws MotuExceptionBase {
+        return DALManager.getInstance().getCatalogManager().getProductManager()
+                .getProductDataSizeRequest(product, listVar, listTemporalCoverage, listLatLongCoverage, listDepthCoverage);
     }
 
     /** {@inheritDoc} */
@@ -163,6 +164,13 @@ public class BLLRequestManager implements IBLLRequestManager {
     public StatusModeResponse processRequest(ExtractionParameters extractionParameters) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public double processProductMaxAllowedDataSize(Product product) throws MotuExceptionBase {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
     /** {@inheritDoc} */

@@ -25,12 +25,4 @@ public interface IDALRequestManager {
      * @throws MotuException
      */
     void processRequest(StatusModeResponse statusModeResponse, ExtractionParameters extractionParameters);
-
-    /**
-     * Retrieve the Size of the provided Product.
-     * 
-     * @return
-     */
-    double processProductDataSizeRequest(ExtractionParameters extractionParameters);
-
 }
