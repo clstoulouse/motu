@@ -4,7 +4,6 @@ import java.util.List;
 
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 
@@ -42,11 +41,4 @@ public interface IDALProductManager {
                                      List<String> listTemporalCoverage,
                                      List<String> listLatLongCoverage,
                                      List<String> listDepthCoverage) throws MotuExceptionBase;
-
-    /**
-     * Retrieve the Maximum Allowed Data Size of the provided Product into byte.
-     * 
-     * @return The Maximum Allowed Data Size into byte.
-     */
-    double getProductMaxAllowedDataSizeRequest(ExtractionParameters extractionParameters);
 }

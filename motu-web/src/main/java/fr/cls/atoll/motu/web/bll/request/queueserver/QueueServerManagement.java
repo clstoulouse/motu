@@ -265,7 +265,7 @@ public class QueueServerManagement {
      * 
      * @return the max data threshold
      */
-    private double getMaxDataThreshold() {
+    public double getMaxDataThreshold() {
         List<QueueType> queuesConfig = getQueueServerConfig().getQueues();
         double size = -1.0;
         for (QueueType queueType : queuesConfig) {
