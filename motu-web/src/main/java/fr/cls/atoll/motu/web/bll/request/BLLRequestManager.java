@@ -16,6 +16,7 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.queueserver.QueueServerManagement;
+import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
@@ -166,8 +167,7 @@ public class BLLRequestManager implements IBLLRequestManager {
     /** {@inheritDoc} */
     @Override
     public double processProductMaxAllowedDataSize(Product product) throws MotuExceptionBase {
-        // TODO Auto-generated method stub
-        return 0;
+        return UnitUtils.toBytes(BLLManager.getInstance().getRequestManager().getQueueServerManager().getMaxDataThreshold());
     }
 
     /** {@inheritDoc} */
@@ -175,6 +175,12 @@ public class BLLRequestManager implements IBLLRequestManager {
     public double getAmountDataSizeAsMBytes(ExtractionParameters extractionParameters) {
         // TODO Auto-generated method stub
         return 0;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public QueueServerManagement getQueueServerManager() {
+        return queueServerManagement;
     }
 
 }

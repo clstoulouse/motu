@@ -7,6 +7,7 @@ import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
@@ -95,5 +96,12 @@ public interface IBLLRequestManager {
      * @return
      */
     double getAmountDataSizeAsMBytes(ExtractionParameters extractionParameters);
+
+    /**
+     * Return the QueueServerManagement object
+     * 
+     * @return The QueueServerManagement Object.
+     */
+    QueueServerManagement getQueueServerManager();
 
 }

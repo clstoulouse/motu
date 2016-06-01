@@ -16,4 +16,8 @@ public class UnitUtils {
         return sizeInBits / (1024 * 1024);
     }
 
+    public static double toBytes(double sizeInMegaBytes) {
+        return sizeInMegaBytes * (1024 * 1024);
+    }
+
 }

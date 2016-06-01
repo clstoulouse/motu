@@ -23,7 +23,6 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.ProductSizeRequest;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.dal.catalog.product.metadata.opendap.OpenDapProductMetadataReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
@@ -57,13 +56,6 @@ public class DALProductManager implements IDALProductManager {
                                             List<String> listLatLongCoverage,
                                             List<String> listDepthCoverage) throws MotuExceptionBase {
         return getAmountDataSize(product, listVar, listTemporalCoverage, listLatLongCoverage, listDepthCoverage);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public double getProductMaxAllowedDataSizeRequest(ExtractionParameters extractionParameters) {
-        // TODO PLAC Impl the code of the product data size
-        return 0;
     }
 
     /**
