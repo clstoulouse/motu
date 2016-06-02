@@ -338,7 +338,6 @@ public class QueueLogInfo {
             outputStream.write(extractionParameters.getUserId().concat(CSV_SEPARATOR).getBytes(encoding));
             outputStream.write(extractionParameters.getUserHost().concat(CSV_SEPARATOR).getBytes(encoding));
             outputStream.write(Boolean.toString(extractionParameters.isAnonymousUser()).concat(CSV_SEPARATOR).getBytes(encoding));
-            outputStream.write(Boolean.toString(extractionParameters.isBatchQueue()).concat(CSV_SEPARATOR).getBytes(encoding));
 
             // List of variables
             for (String v : extractionParameters.getListVar()) {

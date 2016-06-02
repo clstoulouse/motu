@@ -31,7 +31,6 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jasig.cas.client.util.AssertionHolder;
 
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueDataCapacityException;
@@ -57,8 +56,10 @@ import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueJob;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueJobListener;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueManagement;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueThresholdComparator;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueServerType;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
  * 
@@ -96,6 +97,15 @@ public class QueueServerManagement {
     }
 
     /**
+     * Valeur de queueManagementMap.
+     * 
+     * @return la valeur.
+     */
+    public Map<QueueType, QueueManagement> getQueueManagementMap() {
+        return queueManagementMap;
+    }
+
+    /**
      * Execute.
      * 
      * @param runnableExtraction the runnable extraction
@@ -103,22 +113,23 @@ public class QueueServerManagement {
      * @throws MotuExceptionBase the motu exception base
      * @throws MotuException
      */
-    public void execute(final RequestDownloadStatus rds_, final ExtractionParameters extractionParameters) throws MotuException {
+    public void execute(final RequestDownloadStatus rds_, ConfigService cs_, Product product_, ExtractionParameters extractionParameters_)
+            throws MotuException {
         // TODO SMA : Ask BLL service for the amount size of the request
         // runnableExtraction.getAmountDataSizeAsMBytes()
-        double sizeInMB = BLLManager.getInstance().getRequestManager().getAmountDataSizeAsMBytes(extractionParameters);
+        double sizeInMB = BLLManager.getInstance().getRequestManager().getAmountDataSizeAsMBytes(extractionParameters_);
 
         QueueManagement queueManagement = findQueue(sizeInMB);
-        queueManagement.execute(new QueueJob(extractionParameters, new QueueJobListener() {
+        queueManagement.execute(new QueueJob(cs_, product_, extractionParameters_.getDataOutputFormat(), new QueueJobListener() {
 
             @Override
             public void onJobStarted() {
                 rds_.setStartProcessingDateTime(System.currentTimeMillis());
 
                 // TODO SMA not sure that CAS AssertionHolder shall be managed here !
-                if (extractionParameters.getAssertion() != null) {
-                    AssertionHolder.setAssertion(extractionParameters.getAssertion());
-                }
+                // if (extractionParameters.getAssertion() != null) {
+                // AssertionHolder.setAssertion(extractionParameters.getAssertion());
+                // }
             }
 
             @Override
@@ -132,9 +143,9 @@ public class QueueServerManagement {
                 rds_.setEndProcessingDateTime(System.currentTimeMillis());
 
                 // TODO SMA not sure that CAS AssertionHolder shall be managed here !
-                if (extractionParameters.getAssertion() != null) {
-                    AssertionHolder.clear();
-                }
+                // if (extractionParameters.getAssertion() != null) {
+                // AssertionHolder.clear();
+                // }
             }
 
         }));
@@ -197,7 +208,7 @@ public class QueueServerManagement {
      * @param queueManagement
      * @return true if too much
      */
-    private boolean isNumberOfRequestTooHighForUser(String userId) {
+    public boolean isNumberOfRequestTooHighForUser(String userId) {
         int countRequest = countRequestUser(userId);
         boolean isAnonymousUser = (userId == null);
 

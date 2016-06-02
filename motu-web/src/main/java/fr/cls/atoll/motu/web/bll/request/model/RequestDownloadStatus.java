@@ -187,6 +187,7 @@ public class RequestDownloadStatus {
      */
     public void setRunningException(Exception runningException) {
         this.runningException = runningException;
+        setEndProcessingDateTime(System.currentTimeMillis());
     }
 
     /**

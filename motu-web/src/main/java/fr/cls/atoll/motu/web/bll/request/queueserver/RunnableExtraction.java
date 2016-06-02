@@ -343,19 +343,6 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
     // }
 
     /**
-     * Checks if is batch queue.
-     * 
-     * @return true, if is batch queue
-     */
-    public boolean isBatchQueue() {
-        if (extractionParameters == null) {
-            return false;
-        }
-
-        return extractionParameters.isBatchQueue();
-    }
-
-    /**
      * Checks if is out of time.
      * 
      * @param timeOutInMinutes the time out in minutes
@@ -410,19 +397,6 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
         if (LOG.isDebugEnabled()) {
             LOG.debug("run() - exiting");
         }
-    }
-
-    /**
-     * Sets the batch queue.
-     * 
-     * @param batchQueue the batch queue
-     */
-    public void setBatchQueue(boolean batchQueue) {
-        if (extractionParameters == null) {
-            return;
-        }
-
-        extractionParameters.setBatchQueue(batchQueue);
     }
 
     /**
@@ -678,6 +652,16 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
 
     public String getMode() {
         return "N/A";
+    }
+
+    /**
+     * .
+     * 
+     * @param e
+     */
+    public void setError(fr.cls.atoll.motu.library.misc.exception.MotuException e) {
+        // TODO SMA Not sure of the usage ! Auto-generated method stub
+
     }
 
 }

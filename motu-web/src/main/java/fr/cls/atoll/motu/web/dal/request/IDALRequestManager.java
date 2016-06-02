@@ -1,8 +1,9 @@
 package fr.cls.atoll.motu.web.dal.request;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
-import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
  * <br>
@@ -16,13 +17,25 @@ import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
  */
 public interface IDALRequestManager {
 
+    // /**
+    // * .
+    // *
+    // * @param statusModeResponse
+    // * @param organizer
+    // * @param extractionParameters
+    // * @return
+    // * @throws MotuException
+    // */
+    // Product processRequest(RequestDownloadStatus requestDownloadStatus, ExtractionParameters
+    // extractionParameters) throws MotuException;
+
     /**
      * .
      * 
-     * @param statusModeResponse
-     * @param organizer
-     * @param extractionParameters
+     * @param cs
+     * @param p
+     * @param dataOutputFormat
      * @throws MotuException
      */
-    void processRequest(RequestDownloadStatus requestDownloadStatus, ExtractionParameters extractionParameters);
+    void downloadProduct(ConfigService cs, Product p, OutputFormat dataOutputFormat) throws MotuException;
 }

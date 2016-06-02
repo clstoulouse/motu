@@ -16,7 +16,6 @@ import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueDataCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingUserCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.library.misc.exception.MotuInconsistencyException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
@@ -33,6 +32,7 @@ import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 

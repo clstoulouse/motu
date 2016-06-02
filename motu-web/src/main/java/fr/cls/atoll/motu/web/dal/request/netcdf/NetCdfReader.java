@@ -67,9 +67,9 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.netcdf.CoordSysBuilderYXLatLon;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfCancelTask;
-import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
-import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
+import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardName;
 import opendap.dap.DConnect2;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -2479,25 +2479,16 @@ public class NetCdfReader {
      * @return the standard name equivalence
      */
     public static List<String> getStandardNameEquivalence(String standardName) {
-        StandardNames stdNames = null;
-        try {
-            stdNames = Organizer.getStdNameEquiv();
-        } catch (MotuException e) {
-            // Do nothing
-        }
         List<String> listVarName = new ArrayList<String>();
+        List<StandardName> listStd = BLLManager.getInstance().getConfigManager().getStandardNameList();
+        if (listStd != null) {
+            for (StandardName std : listStd) {
+                if (standardName.equalsIgnoreCase(std.getName())) {
+                    List<JAXBElement<String>> ncVars = std.getNetcdfName();
 
-        if (stdNames == null) {
-            return listVarName;
-        }
-
-        List<StandardName> listStd = stdNames.getStandardName();
-        for (StandardName std : listStd) {
-            if (standardName.equalsIgnoreCase(std.getName())) {
-                List<JAXBElement<String>> ncVars = std.getNetcdfName();
-
-                for (JAXBElement<String> ncVar : ncVars) {
-                    listVarName.add(ncVar.getValue());
+                    for (JAXBElement<String> ncVar : ncVars) {
+                        listVarName.add(ncVar.getValue());
+                    }
                 }
             }
         }

@@ -28,6 +28,10 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.DepthHTTPParameterValidator;
@@ -177,11 +181,18 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         short maxPoolAuthenticate = getMaxPoolAuthenticate();
         int priority = priorityHTTPParameterValidator.getParameterValueValidated();
 
+        ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
+        CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
+        String productId = productHTTPParameterValidator.getParameterValueValidated();
+        Product p = cd.getProducts().get(productId);
+        ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager().getProductMetaData(productId, p.getLocationData());
+        p.setProductMetaData(pmd);
+
         String mode = modeHTTPParameterValidator.getParameterValueValidated();
 
         if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_STATUS)) {
             // Asynchronous mode
-            long requestId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(createExtractionParameters());
+            long requestId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(cs, p, createExtractionParameters());
             getResponse().setContentType(CONTENT_TYPE_XML);
             try {
                 JAXBWriter.getInstance().write(createStatusModeResponse(requestId), getResponse().getWriter());
@@ -189,8 +200,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 throw new MotuException("JAXB error while writing createStatusModeResponse: ", e);
             }
         } else {
-            ProductResult p = BLLManager.getInstance().getRequestManager().download(createExtractionParameters());
-            String productURL = getProductDownloadHttpUrl(p);
+            ProductResult pr = BLLManager.getInstance().getRequestManager().download(cs, p, createExtractionParameters());
+            String productURL = getProductDownloadHttpUrl(pr);
 
             // Synchronous mode
             if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_CONSOLE)) {

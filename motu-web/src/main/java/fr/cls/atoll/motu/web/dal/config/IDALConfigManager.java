@@ -1,6 +1,9 @@
 package fr.cls.atoll.motu.web.dal.config;
 
+import java.util.List;
+
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardName;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 
 /**
@@ -42,5 +45,12 @@ public interface IDALConfigManager {
      * @return
      */
     MotuConfig getMotuConfig();
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    List<StandardName> getStandardNameList();
 
 }

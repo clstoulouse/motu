@@ -1658,5 +1658,14 @@ public abstract class DatasetBase {
 
     }
 
+    /**
+     * Valeur de productMetadata.
+     * 
+     * @param productMetadata nouvelle valeur.
+     */
+    public void setProductMetadata(ProductMetaData productMetadata) {
+        this.productMetadata = productMetadata;
+    }
+
 }
 // CSON: MultipleStringLiterals

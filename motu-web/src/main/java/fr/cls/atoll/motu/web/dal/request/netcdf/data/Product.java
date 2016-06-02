@@ -27,8 +27,6 @@ package fr.cls.atoll.motu.web.dal.request.netcdf.data;
 import java.io.File;
 import java.io.IOException;
 import java.math.RoundingMode;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,11 +47,6 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import fr.cls.atoll.motu.library.converter.DateUtils;
-import fr.cls.atoll.motu.library.inventory.Access;
-import fr.cls.atoll.motu.library.inventory.DepthCoverage;
-import fr.cls.atoll.motu.library.inventory.Inventory;
-import fr.cls.atoll.motu.library.inventory.Resource;
-import fr.cls.atoll.motu.library.inventory.TimePeriod;
 import fr.cls.atoll.motu.library.misc.data.SelectData;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
@@ -80,19 +73,16 @@ import fr.cls.atoll.motu.web.dal.catalog.tds.TDSCatalogLoader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
-import fr.cls.atoll.motu.web.dal.tds.model.GeospatialCoverage;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.MAMath;
-import ucar.ma2.MAMath.MinMax;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.geoloc.LatLonRect;
 
 // TODO: Auto-generated Javadoc
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
@@ -554,173 +544,176 @@ public class Product {
         }
     }
 
-    /**
-     * Load inventory meta data.
-     * 
-     * @throws MotuException the motu exception
-     */
-    public void loadInventoryMetaData() throws MotuException {
-        loadInventoryMetaData(this.getLocationMetaData());
-    }
+    // /**
+    // * Load inventory meta data.
+    // *
+    // * @throws MotuException the motu exception
+    // */
+    // public void loadInventoryMetaData() throws MotuException {
+    // loadInventoryMetaData(this.getLocationMetaData());
+    // }
+    //
+    // /**
+    // * Load inventory meta data.
+    // *
+    // * @param xmlUri the xml uri
+    // * @throws MotuException the motu exception
+    // */
+    // public void loadInventoryMetaData(String xmlUri) throws MotuException {
+    // Inventory inventoryOLA = Organizer.getInventoryOLA(xmlUri);
+    // loadInventoryMetaData(inventoryOLA);
+    // }
 
-    /**
-     * Load inventory meta data.
-     * 
-     * @param xmlUri the xml uri
-     * @throws MotuException the motu exception
-     */
-    public void loadInventoryMetaData(String xmlUri) throws MotuException {
-        Inventory inventoryOLA = Organizer.getInventoryOLA(xmlUri);
-        loadInventoryMetaData(inventoryOLA);
-    }
-
-    /**
-     * Load inventory meta data.
-     * 
-     * @param inventoryOLA the inventory ola
-     * @throws MotuException the motu exception
-     */
-    public void loadInventoryMetaData(Inventory inventoryOLA) throws MotuException {
-
-        if (inventoryOLA == null) {
-            return;
-        }
-
-        Resource resource = inventoryOLA.getResource();
-        Access access = resource.getAccess();
-
-        if (productMetaData == null) {
-            productMetaData = new ProductMetaData();
-        }
-
-        loadInventoryGlobalMetaData(inventoryOLA);
-
-        URI accessUri = null;
-        URI accessUriTemp = null;
-        String login = access.getLogin();
-        String password = access.getPassword();
-        StringBuffer userInfo = null;
-
-        if (password == null) {
-            password = "";
-        }
-
-        if (!Organizer.isNullOrEmpty(login)) {
-            userInfo = new StringBuffer();
-            userInfo.append(login);
-            userInfo.append(":");
-            userInfo.append(password);
-        }
-
-        try {
-            accessUriTemp = access.getUrlPath();
-
-            if (userInfo != null) {
-                accessUri = new URI(
-                        accessUriTemp.getScheme(),
-                        userInfo.toString(),
-                        accessUriTemp.getHost(),
-                        accessUriTemp.getPort(),
-                        accessUriTemp.getPath(),
-                        accessUriTemp.getQuery(),
-                        accessUriTemp.getFragment());
-            } else {
-                accessUri = accessUriTemp;
-            }
-
-        } catch (URISyntaxException e) {
-            throw new MotuException(
-                    String.format("Invalid URI '%s' in inventory product '%s' at '%s.urlPath' tag.attribute",
-                                  accessUri,
-                                  productMetaData.getProductId(),
-                                  access.getClass().toString()),
-                    e);
-        }
-
-        setLocationData(accessUri.toString());
-
-        List<DataFile> dataFiles = CatalogData.loadFtpDataFiles(inventoryOLA);
-
-        setDataFiles(dataFiles);
-
-    }
-
-    /**
-     * Reads product global variable metadata from a NetCDF file.
-     * 
-     * @param inventoryOLA the inventory ola
-     * 
-     * @throws MotuException the motu exception
-     */
-
-    public void loadInventoryGlobalMetaData(Inventory inventoryOLA) throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("loadInventoryGlobalMetaData() - entering");
-        }
-
-        if (productMetaData == null) {
-            throw new MotuException("Error in loadInventoryGlobalMetaData - Unable to load - productMetaData is null");
-        }
-
-        productMetaData.setProductId(inventoryOLA.getResource().getUrn().toString());
-        productMetaData.setTitle(Organizer.getDatasetIdFromURI(inventoryOLA.getResource().getUrn().toString()));
-        productMetaData.setLastUpdate(DateUtils.getDateTimeAsUTCString(inventoryOLA.getLastModificationDate(), DateUtils.DATETIME_PATTERN2));
-
-        Resource resource = inventoryOLA.getResource();
-
-        TimePeriod timePeriod = resource.getTimePeriod();
-        if (timePeriod != null) {
-            productMetaData.setTimeCoverage(timePeriod.getStart(), timePeriod.getEnd());
-        }
-
-        GeospatialCoverage geospatialCoverage = resource.getGeospatialCoverage();
-        if (geospatialCoverage != null) {
-            ExtractCriteriaLatLon criteriaLatLon = new ExtractCriteriaLatLon(geospatialCoverage);
-            productMetaData.setGeoBBox(new LatLonRect(criteriaLatLon.getLatLonRect()));
-        }
-
-        DepthCoverage depthCoverage = resource.getDepthCoverage();
-        if (depthCoverage != null) {
-            productMetaData
-                    .setDepthCoverage(new MinMax(depthCoverage.getMin().getValue().doubleValue(), depthCoverage.getMax().getValue().doubleValue()));
-        }
-
-        // Gets variables metadata.
-        fr.cls.atoll.motu.library.inventory.Variables variables = resource.getVariables();
-        if (variables != null) {
-
-            for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {
-
-                ParameterMetaData parameterMetaData = new ParameterMetaData();
-
-                parameterMetaData.setName(variable.getName());
-                parameterMetaData.setLabel(variable.getName());
-                parameterMetaData.setUnit(variable.getUnits());
-                parameterMetaData.setUnitLong(variable.getUnits());
-                parameterMetaData.setStandardName(variable.getVocabularyName());
-
-                if (productMetaData.getParameterMetaDatas() == null) {
-                    productMetaData.setParameterMetaDatas(new HashMap<String, ParameterMetaData>());
-                }
-                productMetaData.putParameterMetaDatas(variable.getName(), parameterMetaData);
-
-            }
-        }
-
-        // if (productMetaData.getDocumentations() == null) {
-        // productMetaData.setDocumentations(new ArrayList<DocMetaData>());
-        // }
-        // productMetaData.clearDocumentations();
-        //
-        // DocMetaData docMetaData = new DocMetaData();
-        // docMetaData.setTitle(ProductMetaData.MEDIA_KEY);
-        // docMetaData.setResource(CatalogData.CatalogType.FTP.name());
-        // productMetaData.addDocumentations(docMetaData);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("loadInventoryGlobalMetaData() - exiting");
-        }
-    }
+    // /**
+    // * Load inventory meta data.
+    // *
+    // * @param inventoryOLA the inventory ola
+    // * @throws MotuException the motu exception
+    // */
+    // public void loadInventoryMetaData(Inventory inventoryOLA) throws MotuException {
+    //
+    // if (inventoryOLA == null) {
+    // return;
+    // }
+    //
+    // Resource resource = inventoryOLA.getResource();
+    // Access access = resource.getAccess();
+    //
+    // if (productMetaData == null) {
+    // productMetaData = new ProductMetaData();
+    // }
+    //
+    // loadInventoryGlobalMetaData(inventoryOLA);
+    //
+    // URI accessUri = null;
+    // URI accessUriTemp = null;
+    // String login = access.getLogin();
+    // String password = access.getPassword();
+    // StringBuffer userInfo = null;
+    //
+    // if (password == null) {
+    // password = "";
+    // }
+    //
+    // if (!Organizer.isNullOrEmpty(login)) {
+    // userInfo = new StringBuffer();
+    // userInfo.append(login);
+    // userInfo.append(":");
+    // userInfo.append(password);
+    // }
+    //
+    // try {
+    // accessUriTemp = access.getUrlPath();
+    //
+    // if (userInfo != null) {
+    // accessUri = new URI(
+    // accessUriTemp.getScheme(),
+    // userInfo.toString(),
+    // accessUriTemp.getHost(),
+    // accessUriTemp.getPort(),
+    // accessUriTemp.getPath(),
+    // accessUriTemp.getQuery(),
+    // accessUriTemp.getFragment());
+    // } else {
+    // accessUri = accessUriTemp;
+    // }
+    //
+    // } catch (URISyntaxException e) {
+    // throw new MotuException(
+    // String.format("Invalid URI '%s' in inventory product '%s' at '%s.urlPath' tag.attribute",
+    // accessUri,
+    // productMetaData.getProductId(),
+    // access.getClass().toString()),
+    // e);
+    // }
+    //
+    // setLocationData(accessUri.toString());
+    //
+    // List<DataFile> dataFiles = CatalogData.loadFtpDataFiles(inventoryOLA);
+    //
+    // setDataFiles(dataFiles);
+    //
+    // }
+    //
+    // /**
+    // * Reads product global variable metadata from a NetCDF file.
+    // *
+    // * @param inventoryOLA the inventory ola
+    // *
+    // * @throws MotuException the motu exception
+    // */
+    //
+    // public void loadInventoryGlobalMetaData(Inventory inventoryOLA) throws MotuException {
+    // if (LOG.isDebugEnabled()) {
+    // LOG.debug("loadInventoryGlobalMetaData() - entering");
+    // }
+    //
+    // if (productMetaData == null) {
+    // throw new MotuException("Error in loadInventoryGlobalMetaData - Unable to load - productMetaData is
+    // null");
+    // }
+    //
+    // productMetaData.setProductId(inventoryOLA.getResource().getUrn().toString());
+    // productMetaData.setTitle(Organizer.getDatasetIdFromURI(inventoryOLA.getResource().getUrn().toString()));
+    // productMetaData.setLastUpdate(DateUtils.getDateTimeAsUTCString(inventoryOLA.getLastModificationDate(),
+    // DateUtils.DATETIME_PATTERN2));
+    //
+    // Resource resource = inventoryOLA.getResource();
+    //
+    // TimePeriod timePeriod = resource.getTimePeriod();
+    // if (timePeriod != null) {
+    // productMetaData.setTimeCoverage(timePeriod.getStart(), timePeriod.getEnd());
+    // }
+    //
+    // GeospatialCoverage geospatialCoverage = resource.getGeospatialCoverage();
+    // if (geospatialCoverage != null) {
+    // ExtractCriteriaLatLon criteriaLatLon = new ExtractCriteriaLatLon(geospatialCoverage);
+    // productMetaData.setGeoBBox(new LatLonRect(criteriaLatLon.getLatLonRect()));
+    // }
+    //
+    // DepthCoverage depthCoverage = resource.getDepthCoverage();
+    // if (depthCoverage != null) {
+    // productMetaData
+    // .setDepthCoverage(new MinMax(depthCoverage.getMin().getValue().doubleValue(),
+    // depthCoverage.getMax().getValue().doubleValue()));
+    // }
+    //
+    // // Gets variables metadata.
+    // fr.cls.atoll.motu.library.inventory.Variables variables = resource.getVariables();
+    // if (variables != null) {
+    //
+    // for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {
+    //
+    // ParameterMetaData parameterMetaData = new ParameterMetaData();
+    //
+    // parameterMetaData.setName(variable.getName());
+    // parameterMetaData.setLabel(variable.getName());
+    // parameterMetaData.setUnit(variable.getUnits());
+    // parameterMetaData.setUnitLong(variable.getUnits());
+    // parameterMetaData.setStandardName(variable.getVocabularyName());
+    //
+    // if (productMetaData.getParameterMetaDatas() == null) {
+    // productMetaData.setParameterMetaDatas(new HashMap<String, ParameterMetaData>());
+    // }
+    // productMetaData.putParameterMetaDatas(variable.getName(), parameterMetaData);
+    //
+    // }
+    // }
+    //
+    // // if (productMetaData.getDocumentations() == null) {
+    // // productMetaData.setDocumentations(new ArrayList<DocMetaData>());
+    // // }
+    // // productMetaData.clearDocumentations();
+    // //
+    // // DocMetaData docMetaData = new DocMetaData();
+    // // docMetaData.setTitle(ProductMetaData.MEDIA_KEY);
+    // // docMetaData.setResource(CatalogData.CatalogType.FTP.name());
+    // // productMetaData.addDocumentations(docMetaData);
+    //
+    // if (LOG.isDebugEnabled()) {
+    // LOG.debug("loadInventoryGlobalMetaData() - exiting");
+    // }
+    // }
 
     /**
      * Sets the media key.
@@ -1126,19 +1119,17 @@ public class Product {
             throw new MotuException("Error in CreateDataset - Unable to create dataset - productMetaData is null");
         }
 
-        if (isFtpMedia()) {
-            dataset = new DatasetFtp(this);
-        } else if (isProductAlongTrack()) {
-            dataset = new DatasetAlongTrack(this);
-            throw new MotuException("Extraction of 'Along Track' Product is not yet available.");
-        } else if (getNetCdfReader().hasGeoXYAxisWithLonLatEquivalence()) {
-            // dataset = new DatasetGridXYLatLon(this);
-            dataset = new DatasetGrid(this);
-            // throw new
-            // MotuNotImplementedException("Dataset grid with 2-dimensional Lat/Lon data is not implemented");
-        } else {
-            dataset = new DatasetGrid(this);
-        }
+        // if (isFtpMedia()) {
+        // dataset = new DatasetFtp(this);
+        // } else if (isProductAlongTrack()) {
+        // dataset = new DatasetAlongTrack(this);
+        // throw new MotuException("Extraction of 'Along Track' Product is not yet available.");
+        // } else
+        // if (getNetCdfReader().hasGeoXYAxisWithLonLatEquivalence()) {
+        dataset = new DatasetGrid(this);
+        // } else {
+        // dataset = new DatasetGrid(this);
+        // }
 
     }
 

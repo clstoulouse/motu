@@ -24,6 +24,13 @@
  */
 package fr.cls.atoll.motu.web.servlet;
 
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.rest.MotuRequest;
 import fr.cls.atoll.motu.api.rest.MotuRequestException;
@@ -32,18 +39,11 @@ import fr.cls.atoll.motu.library.misc.data.ServiceData;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
+import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
-
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-
 import ucar.nc2.Dimension;
 
 /**
@@ -225,7 +225,8 @@ public class TestQueueServer {
 
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_MODE, MotuRequestParameters.PARAM_MODE_STATUS);
 
-        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_BATCH, Boolean.toString(extractionParameters.isBatchQueue()));
+        // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_BATCH,
+        // Boolean.toString(extractionParameters.isBatchQueue()));
 
         // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PRIORITY, "1");
         // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_MAX_POOL_ANONYMOUS, "30");
@@ -327,7 +328,7 @@ public class TestQueueServer {
                 fileWriter.append(servletUrl);
                 fileWriter.append("\n");
 
-                CatalogData catalog = service.getCatalog();
+                CatalogData catalog = null;// service.getCatalog();
                 Collection<Product> products = catalog.productsValues();
 
                 for (Product product : products) {
@@ -337,8 +338,8 @@ public class TestQueueServer {
 
                     // ParameterMetaData[] variables = new
                     // ParameterMetaData[productMetaData.parameterMetaDatasValues().size()];
-                    ParameterMetaData[] variables = productMetaData.parameterMetaDatasValues().toArray(new ParameterMetaData[productMetaData
-                            .parameterMetaDatasValues().size()]);
+                    ParameterMetaData[] variables = productMetaData.parameterMetaDatasValues()
+                            .toArray(new ParameterMetaData[productMetaData.parameterMetaDatasValues().size()]);
                     List<String> varToExtract = new ArrayList<String>();
                     int maxVarToExtract = variables.length >= 2 ? 2 : variables.length;
                     // for (int i = 0; i < variables.length; i++) {
@@ -440,7 +441,7 @@ public class TestQueueServer {
                             null,
                             userId,
                             anonymous);
-                    extractionParameters.setBatchQueue(random.nextBoolean());
+                    // extractionParameters.setBatchQueue(random.nextBoolean());
 
                     launchMotuRequest(extractionParameters, servletUrl, fileWriter);
                     // Thread.sleep(10000);

@@ -1,9 +1,12 @@
 package fr.cls.atoll.motu.web.bll.config;
 
+import java.util.List;
+
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.IDALConfigManager;
+import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardName;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
@@ -38,6 +41,16 @@ public class BLLConfigManager implements IBLLConfigManager {
     @Override
     public boolean isCasActivated() {
         return dalConfigManager.isCasActivated();
+    }
+
+    /**
+     * Valeur de standardNameList.
+     * 
+     * @return la valeur.
+     */
+    @Override
+    public List<StandardName> getStandardNameList() {
+        return dalConfigManager.getStandardNameList();
     }
 
     /**

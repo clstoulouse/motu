@@ -9,15 +9,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceedingUserCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 import fr.cls.atoll.motu.web.dal.DALManager;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
@@ -69,8 +70,8 @@ public class BLLRequestManager implements IBLLRequestManager {
 
     /** {@inheritDoc} */
     @Override
-    public ProductResult download(ExtractionParameters extractionParameters) {
-        long requestId = download(false, extractionParameters);
+    public ProductResult download(ConfigService cs_, Product product_, ExtractionParameters extractionParameters) {
+        long requestId = download(false, cs_, product_, extractionParameters);
 
         ProductResult p = new ProductResult();
         // TODO SMA set product fileName
@@ -80,11 +81,12 @@ public class BLLRequestManager implements IBLLRequestManager {
 
     /** {@inheritDoc} */
     @Override
-    public long downloadAsynchonously(ExtractionParameters extractionParameters) {
-        return download(true, extractionParameters);
+    public long downloadAsynchonously(ConfigService cs_, Product product_, ExtractionParameters extractionParameters) {
+        return download(true, cs_, product_, extractionParameters);
     }
 
-    private long download(boolean isAsynchronous, final ExtractionParameters extractionParameters) {
+    private long download(boolean isAsynchronous, final ConfigService cs_, final Product product_, final ExtractionParameters extractionParameters) {
+
         final long requestId = initRequest(extractionParameters.getUserId(), extractionParameters.getUserHost()).getRequestId();
 
         Thread t = new Thread("download isAsynchRqt=" + Boolean.toString(isAsynchronous) + " - " + requestId) {
@@ -92,7 +94,7 @@ public class BLLRequestManager implements IBLLRequestManager {
             /** {@inheritDoc} */
             @Override
             public void run() {
-                download(extractionParameters, requestId);
+                download(extractionParameters, cs_, product_, requestId);
             }
 
         };
@@ -116,24 +118,28 @@ public class BLLRequestManager implements IBLLRequestManager {
         return requestDownloadStatus;
     }
 
-    public void checkNumberOfRunningRequestForUser(String userId_) throws MotuExceedingUserCapacityException {
+    public void checkNumberOfRunningRequestForUser(String userId_) throws MotuException {
         if (queueServerManagement.isNumberOfRequestTooHighForUser(userId_)) {
-            throw new MotuExceedingUserCapacityException(
-                    userId_,
-                    userId_ == null,
-                    userId_ == null ? BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig().getMaxPoolAnonymous()
-                            : BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig().getMaxPoolAuth());
+            throw new MotuException(
+                    "Maximum number of running request reached for user: " + userId_ + ", "
+                            + (userId_ == null
+                                    ? BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig().getMaxPoolAnonymous()
+                                    : BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig().getMaxPoolAuth()));
         }
     }
 
-    private void download(ExtractionParameters extractionParameters, long requestId) throws MotuExceedingUserCapacityException {
+    private void download(ExtractionParameters extractionParameters, ConfigService cs_, Product product_, long requestId) {
         RequestDownloadStatus requestDownloadStatus = requestIdList.get(requestId);
 
-        // If too much request for this user, throws MotuExceedingUserCapacityException
-        checkNumberOfRunningRequestForUser(extractionParameters.getUserId());
+        try {
+            // If too much request for this user, throws MotuExceedingUserCapacityException
+            checkNumberOfRunningRequestForUser(extractionParameters.getUserId());
 
-        // TODO SMA The request download is delegated to a download request manager
-        queueServerManagement.execute(requestDownloadStatus, extractionParameters);
+            // TODO SMA The request download is delegated to a download request manager
+            queueServerManagement.execute(requestDownloadStatus, cs_, product_, extractionParameters);
+        } catch (MotuException e) {
+            requestDownloadStatus.setRunningException(e);
+        }
     }
 
     /**

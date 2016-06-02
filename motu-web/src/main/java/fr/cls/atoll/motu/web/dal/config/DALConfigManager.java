@@ -5,12 +5,19 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import fr.cls.atoll.motu.library.misc.utils.PropertiesUtilities;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.dal.config.stdname.StdNameReader;
+import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardName;
+import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardNames;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 
 /**
@@ -26,7 +33,10 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 public class DALConfigManager implements IDALConfigManager {
 
     /** Application configuration. */
-    private static MotuConfig motuConfig = null;
+    private MotuConfig motuConfig = null;
+
+    private List<StandardName> standardNameList;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /** {@inheritDoc} */
     @Override
@@ -35,6 +45,32 @@ public class DALConfigManager implements IDALConfigManager {
             initMotuConfig();
         } catch (FileNotFoundException e) {
             throw new MotuException("Error while initializing Motu configuration: ", e);
+        }
+
+        initStdNames();
+    }
+
+    /**
+     * Valeur de standardNameList.
+     * 
+     * @return la valeur.
+     */
+    @Override
+    public List<StandardName> getStandardNameList() {
+        return standardNameList;
+    }
+
+    /**
+     * .
+     * 
+     * @throws MotuException
+     */
+    private void initStdNames() throws MotuException {
+        StandardNames sn = new StdNameReader().getStdNameEquiv();
+        if (sn != null) {
+            standardNameList = sn.getStandardName();
+        } else {
+            LOGGER.warn("No standard names loaded from configuration folder");
         }
     }
 

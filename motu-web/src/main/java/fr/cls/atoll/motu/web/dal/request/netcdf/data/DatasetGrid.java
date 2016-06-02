@@ -968,11 +968,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
      * @throws NetCdfVariableException
      * 
      */
-    public void getZRange() throws MotuException, MotuInvalidDepthRangeException, NetCdfVariableException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getZRange() - entering");
-        }
-
+    public Range getZRange() throws MotuException, MotuInvalidDepthRangeException, NetCdfVariableException {
         if (zRangeValue != null) {
             assert zRangeValue.length == 2;
             zRangeValue[0] = Double.MAX_VALUE;
@@ -988,9 +984,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
             }
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getZRange() - exiting");
-        }
+        return zRange;
     }
 
     /**

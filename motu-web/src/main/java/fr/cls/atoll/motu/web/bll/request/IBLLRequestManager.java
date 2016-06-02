@@ -8,6 +8,7 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.queueserver.QueueServerManagement;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
@@ -53,23 +54,6 @@ public interface IBLLRequestManager {
     StatusModeResponse processRequest(ExtractionParameters extractionParameters);
 
     /**
-     * .
-     * 
-     * @param createExtractionParameters
-     * @param b
-     * @return
-     */
-    ProductResult download(ExtractionParameters createExtractionParameters);
-
-    /**
-     * .
-     * 
-     * @param createExtractionParameters
-     * @return
-     */
-    long downloadAsynchonously(ExtractionParameters createExtractionParameters);
-
-    /**
      * This method retrieve the size of the data of a product.
      * 
      * @param extractionParameters This is the parameters which identify the data of the targeted product.
@@ -103,5 +87,25 @@ public interface IBLLRequestManager {
      * @return The QueueServerManagement Object.
      */
     QueueServerManagement getQueueServerManager();
+
+    /**
+     * .
+     * 
+     * @param cs_
+     * @param product_
+     * @param extractionParameters
+     * @return
+     */
+    ProductResult download(ConfigService cs_, Product product_, ExtractionParameters extractionParameters);
+
+    /**
+     * .
+     * 
+     * @param cs_
+     * @param product_
+     * @param extractionParameters
+     * @return
+     */
+    long downloadAsynchonously(ConfigService cs_, Product product_, ExtractionParameters extractionParameters);
 
 }

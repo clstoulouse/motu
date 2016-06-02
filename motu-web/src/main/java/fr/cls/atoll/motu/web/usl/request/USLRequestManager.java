@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.servlet.RunnableHttpExtraction;
 import fr.cls.atoll.motu.web.usl.request.actions.DebugAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DownloadProductAction;
 import fr.cls.atoll.motu.web.usl.request.actions.GetRequestStatusAction;
@@ -94,7 +93,7 @@ public class USLRequestManager implements IUSLRequestManager {
         String action = CommonHTTPParameters.getActionFromRequest(request);
         String mode = CommonHTTPParameters.getModeFromRequest(request);
         // TODO SMA Need to understand what mode is ???
-        boolean noMode = RunnableHttpExtraction.noMode(mode);
+        boolean noMode = false;// RunnableHttpExtraction.noMode(mode);
 
         boolean createOk = false;
         createOk |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_REFRESH);

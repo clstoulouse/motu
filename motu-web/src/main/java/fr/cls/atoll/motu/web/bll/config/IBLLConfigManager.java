@@ -1,6 +1,9 @@
 package fr.cls.atoll.motu.web.bll.config;
 
+import java.util.List;
+
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardName;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
@@ -70,4 +73,11 @@ public interface IBLLConfigManager {
      * @throws MotuException
      */
     Product getProduct(String productLocation) throws MotuException;
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    List<StandardName> getStandardNameList();
 }

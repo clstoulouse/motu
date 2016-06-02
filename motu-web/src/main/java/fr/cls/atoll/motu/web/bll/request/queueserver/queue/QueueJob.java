@@ -1,8 +1,10 @@
 package fr.cls.atoll.motu.web.bll.request.queueserver.queue;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuInconsistencyException;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
-import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.dal.DALManager;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
@@ -19,9 +21,14 @@ public class QueueJob implements IQueueJob {
 
     private QueueJobListener queueJobListener;
     private ExtractionParameters extractionParameters;
+    private Product product;
+    private ConfigService cs;
+    private OutputFormat dataOutputFormat;
 
-    public QueueJob(ExtractionParameters extractionParameters_, QueueJobListener queueJobListener_) {
-        extractionParameters = extractionParameters_;
+    public QueueJob(ConfigService cs_, Product product_, OutputFormat dataOutputFormat_, QueueJobListener queueJobListener_) {
+        cs = cs_;
+        product = product_;
+        dataOutputFormat = dataOutputFormat_;
         queueJobListener = queueJobListener_;
     }
 
@@ -40,44 +47,9 @@ public class QueueJob implements IQueueJob {
     /**
      * .
      */
-    private void processJob() {
-        Product product = null;
-
-        // -------------------------------------------------
-        // Data extraction OPENDAP
-        // -------------------------------------------------
-        if (!StringUtils.isNullOrEmpty(getExtractionParameters().getLocationData())) {
-
-            product = extractData(extractionParameters.getServiceName(),
-                                  extractionParameters.getLocationData(),
-                                  null,
-                                  extractionParameters.getListVar(),
-                                  extractionParameters.getListTemporalCoverage(),
-                                  extractionParameters.getListLatLonCoverage(),
-                                  extractionParameters.getListDepthCoverage(),
-                                  null,
-                                  extractionParameters.getDataOutputFormat(),
-                                  extractionParameters.getOut(),
-                                  extractionParameters.getResponseFormat(),
-                                  null);
-        } else if (!StringUtils.isNullOrEmpty(extractionParameters.getServiceName())
-                && !StringUtils.isNullOrEmpty(extractionParameters.getProductId())) {
-            product = extractData(extractionParameters.getServiceName(),
-                                  extractionParameters.getListVar(),
-                                  extractionParameters.getListTemporalCoverage(),
-                                  extractionParameters.getListLatLonCoverage(),
-                                  extractionParameters.getListDepthCoverage(),
-                                  extractionParameters.getProductId(),
-                                  null,
-                                  extractionParameters.getDataOutputFormat(),
-                                  extractionParameters.getOut(),
-                                  extractionParameters.getResponseFormat());
-        } else {
-            throw new MotuInconsistencyException(
-                    String.format("ERROR in extractData: inconsistency parameters : %s", extractionParameters.toString()));
-        }
-
-        return product;
+    private void processJob() throws MotuException {
+        DALManager.getInstance().getRequestManager().downloadProduct(cs, product, dataOutputFormat);
+        // processRequest(requestDownloadStatus, extractionParameters);
     }
 
     private void onJobStarted() {

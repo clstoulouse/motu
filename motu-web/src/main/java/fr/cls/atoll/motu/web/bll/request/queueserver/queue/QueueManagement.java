@@ -237,4 +237,14 @@ public class QueueManagement {
     public String getName() {
         return queueConfig.getId();
     }
+
+    /**
+     * Valeur de threadPoolExecutor.
+     * 
+     * @return la valeur.
+     */
+    public ExtractionThreadPoolExecutor getThreadPoolExecutor() {
+        return threadPoolExecutor;
+    }
+
 }
