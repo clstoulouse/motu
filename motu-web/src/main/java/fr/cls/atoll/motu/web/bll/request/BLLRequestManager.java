@@ -1,5 +1,6 @@
 package fr.cls.atoll.motu.web.bll.request;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,7 +9,6 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
@@ -16,6 +16,7 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.queueserver.QueueServerManagement;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
@@ -148,11 +149,11 @@ public class BLLRequestManager implements IBLLRequestManager {
      * @throws MotuExceptionBase
      */
     @Override
-    public double processProductDataSize(Product product,
-                                         List<String> listVar,
-                                         List<String> listTemporalCoverage,
-                                         List<String> listLatLongCoverage,
-                                         List<String> listDepthCoverage) throws MotuExceptionBase {
+    public double getProductDataSizeIntoByte(Product product,
+                                             List<String> listVar,
+                                             List<String> listTemporalCoverage,
+                                             List<String> listLatLongCoverage,
+                                             List<String> listDepthCoverage) throws MotuExceptionBase {
         return DALManager.getInstance().getCatalogManager().getProductManager()
                 .getProductDataSizeRequest(product, listVar, listTemporalCoverage, listLatLongCoverage, listDepthCoverage);
     }
@@ -165,28 +166,38 @@ public class BLLRequestManager implements IBLLRequestManager {
 
     /** {@inheritDoc} */
     @Override
-    public StatusModeResponse processRequest(ExtractionParameters extractionParameters) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public double processProductMaxAllowedDataSize(Product product) throws MotuExceptionBase {
+    public double getProductMaxAllowedDataSizeIntoByte(Product product) throws MotuExceptionBase {
         return UnitUtils.toBytes(BLLManager.getInstance().getRequestManager().getQueueServerManager().getMaxDataThreshold());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public double getAmountDataSizeAsMBytes(ExtractionParameters extractionParameters) {
-        // TODO Auto-generated method stub
-        return 0;
     }
 
     /** {@inheritDoc} */
     @Override
     public QueueServerManagement getQueueServerManager() {
         return queueServerManagement;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean[] deleteFiles(String[] urls) {
+        boolean[] fileDeletionStatus = new boolean[urls.length];
+        int cpteFile = 0;
+
+        String extractionPath = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath();
+        String downloadHttpUrl = BLLManager.getInstance().getConfigManager().getMotuConfig().getDownloadHttpUrl();
+
+        for (String url : urls) {
+
+            if (StringUtils.isNullOrEmpty(url)) {
+                continue;
+            }
+            String fileName = url.replace(downloadHttpUrl, extractionPath);
+
+            File file = new File(fileName);
+            fileDeletionStatus[cpteFile] = file.delete();
+            cpteFile++;
+        }
+
+        return fileDeletionStatus;
     }
 
 }

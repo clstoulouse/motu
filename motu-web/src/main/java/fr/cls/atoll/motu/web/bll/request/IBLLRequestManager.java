@@ -2,7 +2,6 @@ package fr.cls.atoll.motu.web.bll.request;
 
 import java.util.List;
 
-import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
@@ -46,42 +45,6 @@ public interface IBLLRequestManager {
     long getNewRequestId();
 
     /**
-     * .
-     * 
-     * @param extractionParameters
-     * @return
-     */
-    StatusModeResponse processRequest(ExtractionParameters extractionParameters);
-
-    /**
-     * This method retrieve the size of the data of a product.
-     * 
-     * @param extractionParameters This is the parameters which identify the data of the targeted product.
-     * @return The size of the product into KiloByte
-     */
-    double processProductDataSize(Product product,
-                                  List<String> listVar,
-                                  List<String> listTemporalCoverage,
-                                  List<String> listLatLongCoverage,
-                                  List<String> listDepthCoverage) throws MotuExceptionBase;
-
-    /**
-     * This method retrieve the Max Allowed Data size of a product.
-     * 
-     * @param extractionParameters This is the parameters which identify the data of the targeted product.
-     * @return The Max Allowed Data size of the product into KiloByte
-     */
-    double processProductMaxAllowedDataSize(Product product) throws MotuExceptionBase;
-
-    /**
-     * .
-     * 
-     * @param extractionParameters
-     * @return
-     */
-    double getAmountDataSizeAsMBytes(ExtractionParameters extractionParameters);
-
-    /**
      * Return the QueueServerManagement object
      * 
      * @return The QueueServerManagement Object.
@@ -108,4 +71,37 @@ public interface IBLLRequestManager {
      */
     long downloadAsynchonously(ConfigService cs_, Product product_, ExtractionParameters extractionParameters);
 
+    /**
+     * Delete the files associated to the provided URL. .
+     * 
+     * @param urls url list of the files to delete
+     * @return The status of the deletion for each provided files.
+     */
+    boolean[] deleteFiles(String[] urls);
+
+    /**
+     * .
+     * 
+     * @param product
+     * @return
+     * @throws MotuExceptionBase
+     */
+    double getProductMaxAllowedDataSizeIntoByte(Product product) throws MotuExceptionBase;
+
+    /**
+     * .
+     * 
+     * @param product
+     * @param listVar
+     * @param listTemporalCoverage
+     * @param listLatLongCoverage
+     * @param listDepthCoverage
+     * @return
+     * @throws MotuExceptionBase
+     */
+    double getProductDataSizeIntoByte(Product product,
+                                      List<String> listVar,
+                                      List<String> listTemporalCoverage,
+                                      List<String> listLatLongCoverage,
+                                      List<String> listDepthCoverage) throws MotuExceptionBase;
 }
