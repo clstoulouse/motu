@@ -14,11 +14,15 @@ import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.usl.request.actions.DebugAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DeleteAction;
+import fr.cls.atoll.motu.web.usl.request.actions.DescribeCoverageAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DownloadProductAction;
 import fr.cls.atoll.motu.web.usl.request.actions.GetRequestStatusAction;
 import fr.cls.atoll.motu.web.usl.request.actions.GetSizeAction;
+import fr.cls.atoll.motu.web.usl.request.actions.ListCatalogAction;
+import fr.cls.atoll.motu.web.usl.request.actions.ListServicesAction;
 import fr.cls.atoll.motu.web.usl.request.actions.LogoutAction;
 import fr.cls.atoll.motu.web.usl.request.actions.PingAction;
+import fr.cls.atoll.motu.web.usl.request.actions.ProductMetadataAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 
@@ -57,6 +61,7 @@ public class USLRequestManager implements IUSLRequestManager {
         case GetSizeAction.ACTION_NAME:
             new GetSizeAction(request, response, getSession(request)).doAction();
             break;
+        // TODO SMA Add ActionDescribeProduct and ActionGetTimeCoverage
         case LogoutAction.ACTION_NAME:
             new LogoutAction(request, response, getSession(request)).doAction();
             break;
@@ -67,6 +72,20 @@ public class USLRequestManager implements IUSLRequestManager {
         // Authenticated actions
         case DownloadProductAction.ACTION_NAME:
             new DownloadProductAction(request, response, getSession(request)).doAction();
+            break;
+        case ListCatalogAction.ACTION_NAME:
+            new ListCatalogAction(request, response, getSession(request)).doAction();
+            break;
+        case ProductMetadataAction.ACTION_NAME:
+            new ProductMetadataAction(request, response, getSession(request)).doAction();
+            break;
+        // TODO SMA Add isActionListProductDownloadHome
+        case ListServicesAction.ACTION_NAME:
+            new ListServicesAction(request, response, getSession(request)).doAction();
+            break;
+        // TODO SMA Action Refresh ???
+        case DescribeCoverageAction.ACTION_NAME:
+            new DescribeCoverageAction(request, response, getSession(request)).doAction();
             break;
         }
     }

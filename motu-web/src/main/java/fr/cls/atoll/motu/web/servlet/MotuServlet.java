@@ -31,12 +31,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.cls.atoll.motu.library.misc.utils.ManifestManagedBean;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
@@ -190,23 +188,24 @@ public class MotuServlet extends HttpServlet {
      * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest,
      * javax.servlet.http.HttpServletResponse)
      */
-    @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-        // FIXME SMA : Mangage shutdown actions !
-        // if (isShuttingDown()) {
-        // resp.sendError(400, RunnableExtraction.SHUTDOWN_MSG);
-        // return;
-        // }
-        //
-        // enteringServiceMethod();
-        //
-        // try {
-        // super.service(req, resp);
-        // } finally {
-        // leavingServiceMethod();
-        // }
-    }
+    // @Override
+    // protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
+    // IOException {
+    //
+    // // FIXME SMA : Mangage shutdown actions !
+    // // if (isShuttingDown()) {
+    // // resp.sendError(400, RunnableExtraction.SHUTDOWN_MSG);
+    // // return;
+    // // }
+    // //
+    // // enteringServiceMethod();
+    // //
+    // // try {
+    // // super.service(req, resp);
+    // // } finally {
+    // // leavingServiceMethod();
+    // // }
+    // }
 
     // /**
     // * Ecriture du status d'extraction différé de produit dans un fichier XML.
@@ -373,7 +372,7 @@ public class MotuServlet extends HttpServlet {
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
 
-        ManifestManagedBean.register();
+        // ManifestManagedBean.register();
 
         // Log initialization is done by a listener configured in web.xml.
         // LogManager.getInstance().loadConfiguration("log4j.xml");
@@ -442,78 +441,6 @@ public class MotuServlet extends HttpServlet {
     }
 
     /**
-     * Executes the default request.
-     *
-     * @param request object that contains the request the client has made of the servlet.
-     * @param session request sesssion
-     * @param response object that contains the response the servlet sends to the client
-     * @throws ServletException the servlet exception
-     * @throws IOException the IO exception
-     */
-    protected void execDefaultRequest(HttpServletRequest request, HttpSession session, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        // response.setContentType(CONTENT_TYPE_HTML);
-        //
-        // if (LOG.isDebugEnabled()) {
-        // LOG.debug("execDefaultRequest() - entering");
-        // }
-        //
-        // setLanguageParameter(request, session, response);
-        //
-        // try {
-        // if (Organizer.getMotuConfigInstance().getDefaultActionIsListServices()) {
-        // listServices(request, session, response);
-        // if (LOG.isDebugEnabled()) {
-        // LOG.debug("execDefaultRequest() - exiting");
-        // }
-        // return;
-        // }
-        // } catch (MotuExceptionBase e) {
-        // throw new ServletException(e.notifyException(), e);
-        // }
-        //
-        // // System.out.println("deduceServiceNameFromPath(request) :");
-        // // System.out.println(deduceServiceNameFromPath(request));
-        //
-        // // String serviceName = getServletConfig().getInitParameter(PARAM_SERVICE);
-        // String serviceName;
-        // try {
-        // if (LOG.isDebugEnabled()) {
-        // LOG.debug("execDefaultRequest(HttpServletRequest, HttpSession, HttpServletResponse) - Going to
-        // deduce Service Name");
-        // }
-        //
-        // serviceName = deduceServiceNameFromPath(request);
-        // } catch (MotuExceptionBase e) {
-        // throw new ServletException(e.notifyException(), e);
-        // }
-        //
-        // if (MotuServlet.isNullOrEmpty(serviceName)) {
-        // Organizer organizer = getOrganizer(session, response);
-        // listCatalog(organizer.getDefaultServiceName(), session, response);
-        // } else {
-        // listCatalog(serviceName, session, response);
-        // }
-
-        // if (isMercator()) {
-        // setLanguageParameter(request, session);
-        // listCatalog(PARAM_SERVICE_MERCATOR, session, response);
-        // } else if (isAviso()) {
-        // setLanguageParameter(request, session);
-        // listCatalog(PARAM_SERVICE_AVISO_NRT, session, response);
-        // } else if (isCls()) {
-        // setLanguageParameter(request, session);
-        // listCatalog(PARAM_SERVICE_CLS, session, response);
-        // }
-        // Organizer organizer = getOrganizer(session);
-        // listCatalog(organizer.getDefaultServiceName(), session, response);
-
-        // listServices(session, response);
-
-    }
-
-    /**
      * Scans request's parameters and executes the request. Each request must have the {@value #PARAM_ACTION}
      * parameter. If request's parameters doesn't match, a default request is execute.
      * 
@@ -534,69 +461,70 @@ public class MotuServlet extends HttpServlet {
      * @throws IOException the IO exception
      * @throws MotuException the motu exception
      */
-    protected void execRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, MotuException {
-        // if (LOG.isDebugEnabled()) {
-        // LOG.debug("execRequest() - entering");
-        // }
-        //
-        // String action = getAction(request);
-        // // -----------------------------------
-        // // actions before check authorization and/or without Http session
-        // // -----------------------------------
-        // if (isActionPing(action, request, response)) {
-        // // Nothing to do
-        // } else if (isActionDebug(action, request, response)) {
-        // // Nothing to do
-        // } else if (isActionGetRequestStatus(action, request, response)) {
-        // // Nothing to do
-        // } else if (isActionDescribeProduct(action, request, response)) {
-        // // Nothing to do
-        // } else if (isActionGetTimeCoverage(action, request, response)) {
-        // // Nothing to do
-        // } else if (isActionGetSize(action, request, response)) {
-        // // Nothing to do
-        // } else if (isActionDelete(action, request, response)) {
-        // // Nothing to do
-        // } else if (isActionLogout(action, request, response)) {
-        // // Nothing to do
-        // } else {
-        //
-        // // -----------------------------------
-        // // actions with check authorization if needed, and/or with Http session
-        // // -----------------------------------
-        // HttpSession session = getSession(request);
-        //
-        // if (!checkAuthorized(request, session, response)) {
-        // LOG.debug("execRequest() - exiting");
-        // return;
-        // }
-        //
-        // // content returned is the responsibility of each action
-        // // response.setContentType(CONTENT_TYPE_HTML);
-        //
-        // if (isActionListCatalog(action, request, session, response)) {
-        // // Nothing to do
-        // } else if (isActionListProductMetaData(action, request, session, response)) {
-        // // Nothing to do
-        // } else if (isActionListProductDownloadHome(action, request, session, response)) {
-        // // Nothing to do
-        // } else if (isActionProductDownload(action, request, session, response)) {
-        // // Nothing to do
-        // } else if (isActionListServices(action, request, session, response)) {
-        // // Nothing to do
-        // } else if (isActionRefresh(action, request, session, response)) {
-        // // Nothing to do
-        // } else if (isActionDescribeCoverage(action, request, session, response)) {
-        // // Nothing to do
-        // } else {
-        // // No parameter or parameters doesn't match
-        // execDefaultRequest(request, session, response);
-        // }
-        // }
-        // if (LOG.isDebugEnabled()) {
-        // LOG.debug("execRequest() - exiting");
-        // }
-    }
+    // protected void execRequest(HttpServletRequest request, HttpServletResponse response) throws
+    // ServletException, IOException, MotuException {
+    // if (LOG.isDebugEnabled()) {
+    // LOG.debug("execRequest() - entering");
+    // }
+    //
+    // String action = getAction(request);
+    // // -----------------------------------
+    // // actions before check authorization and/or without Http session
+    // // -----------------------------------
+    // if (isActionPing(action, request, response)) {
+    // // Nothing to do
+    // } else if (isActionDebug(action, request, response)) {
+    // // Nothing to do
+    // } else if (isActionGetRequestStatus(action, request, response)) {
+    // // Nothing to do
+    // } else if (isActionDescribeProduct(action, request, response)) {
+    // // Nothing to do
+    // } else if (isActionGetTimeCoverage(action, request, response)) {
+    // // Nothing to do
+    // } else if (isActionGetSize(action, request, response)) {
+    // // Nothing to do
+    // } else if (isActionDelete(action, request, response)) {
+    // // Nothing to do
+    // } else if (isActionLogout(action, request, response)) {
+    // // Nothing to do
+    // } else {
+    //
+    // // -----------------------------------
+    // // actions with check authorization if needed, and/or with Http session
+    // // -----------------------------------
+    // HttpSession session = getSession(request);
+    //
+    // if (!checkAuthorized(request, session, response)) {
+    // LOG.debug("execRequest() - exiting");
+    // return;
+    // }
+    //
+    // // content returned is the responsibility of each action
+    // // response.setContentType(CONTENT_TYPE_HTML);
+    //
+    // if (isActionListCatalog(action, request, session, response)) {
+    // // Nothing to do
+    // } else if (isActionListProductMetaData(action, request, session, response)) {
+    // // Nothing to do
+    // } else if (isActionListProductDownloadHome(action, request, session, response)) {
+    // // Nothing to do
+    // } else if (isActionProductDownload(action, request, session, response)) {
+    // // Nothing to do
+    // } else if (isActionListServices(action, request, session, response)) {
+    // // Nothing to do
+    // } else if (isActionRefresh(action, request, session, response)) {
+    // // Nothing to do
+    // } else if (isActionDescribeCoverage(action, request, session, response)) {
+    // // Nothing to do
+    // } else {
+    // // No parameter or parameters doesn't match
+    // execDefaultRequest(request, session, response);
+    // }
+    // }
+    // if (LOG.isDebugEnabled()) {
+    // LOG.debug("execRequest() - exiting");
+    // }
+    // }
 
 }
 // CSON: MultipleStringLiterals

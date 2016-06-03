@@ -29,15 +29,13 @@ import java.util.Comparator;
 import java.util.Formatter;
 import java.util.List;
 
-import javax.measure.DecimalMeasure;
-
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.tds.model.GeospatialCoverage;
 import fr.cls.atoll.motu.web.dal.tds.model.SpatialRange;
 import ucar.ma2.InvalidRangeException;
@@ -143,9 +141,10 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      * @param latHigh the lat high
      * @param lonHigh the lon high
      */
-    public ExtractCriteriaLatLon(DecimalMeasure<?> latLow, DecimalMeasure<?> lonLow, DecimalMeasure<?> latHigh, DecimalMeasure<?> lonHigh) {
-        setLatLonRect(latLow, lonLow, latHigh, lonHigh);
-    }
+    // public ExtractCriteriaLatLon(DecimalMeasure<?> latLow, DecimalMeasure<?> lonLow, DecimalMeasure<?>
+    // latHigh, DecimalMeasure<?> lonHigh) {
+    // setLatLonRect(latLow, lonLow, latHigh, lonHigh);
+    // }
 
     /**
      * Constructor.
@@ -292,14 +291,19 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      * @param latHigh the lat high
      * @param lonHigh the lon high
      */
-    public void setLatLonRect(DecimalMeasure<?> latLow, DecimalMeasure<?> lonLow, DecimalMeasure<?> latHigh, DecimalMeasure<?> lonHigh) {
-        double latlowTemp = (latLow != null) ? latLow.getValue().doubleValue() : Double.parseDouble(LATITUDE_MIN);
-        double lonLowTemp = (lonLow != null) ? lonLow.getValue().doubleValue() : Double.parseDouble(LONGITUDE_MIN);
-        double latHighTemp = (latHigh != null) ? latHigh.getValue().doubleValue() : Double.parseDouble(LATITUDE_MAX);
-        double lonHighTemp = (lonHigh != null) ? lonHigh.getValue().doubleValue() : Double.parseDouble(LONGITUDE_MAX);
-
-        setLatLonRect(latlowTemp, lonLowTemp, latHighTemp, lonHighTemp);
-    }
+    // public void setLatLonRect(DecimalMeasure<?> latLow, DecimalMeasure<?> lonLow, DecimalMeasure<?>
+    // latHigh, DecimalMeasure<?> lonHigh) {
+    // double latlowTemp = (latLow != null) ? latLow.getValue().doubleValue() :
+    // Double.parseDouble(LATITUDE_MIN);
+    // double lonLowTemp = (lonLow != null) ? lonLow.getValue().doubleValue() :
+    // Double.parseDouble(LONGITUDE_MIN);
+    // double latHighTemp = (latHigh != null) ? latHigh.getValue().doubleValue() :
+    // Double.parseDouble(LATITUDE_MAX);
+    // double lonHighTemp = (lonHigh != null) ? lonHigh.getValue().doubleValue() :
+    // Double.parseDouble(LONGITUDE_MAX);
+    //
+    // setLatLonRect(latlowTemp, lonLowTemp, latHighTemp, lonHighTemp);
+    // }
 
     /**
      * Sets the lat lon rect.

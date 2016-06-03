@@ -27,9 +27,9 @@ package fr.cls.atoll.motu.web.bll.request.model;
 import java.util.Date;
 import java.util.List;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateRangeException;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import ucar.ma2.Array;
 import ucar.ma2.Range;

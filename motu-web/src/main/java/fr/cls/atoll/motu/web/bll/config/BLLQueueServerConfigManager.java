@@ -1,7 +1,6 @@
 package fr.cls.atoll.motu.web.bll.config;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.web.bll.BLLManager;
 
 /**
  * <br>
@@ -17,13 +16,6 @@ public class BLLQueueServerConfigManager implements IBLLQueueServerConfigManager
 
     @Override
     public short getRequestDefaultPriority() {
-        // TODO SMA => ask to DAL this parameter and do not treat exception here
-        try {
-            return Organizer.getMotuConfigInstance().getQueueServerConfig().getDefaultPriority();
-        } catch (MotuException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return 0;
-        }
+        return BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig().getDefaultPriority();
     }
 }

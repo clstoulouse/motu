@@ -26,7 +26,6 @@ package fr.cls.atoll.motu.web.servlet;
 
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -35,16 +34,8 @@ import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.rest.MotuRequest;
 import fr.cls.atoll.motu.api.rest.MotuRequestException;
 import fr.cls.atoll.motu.api.rest.MotuRequestParameters;
-import fr.cls.atoll.motu.library.misc.data.ServiceData;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
-import fr.cls.atoll.motu.web.common.format.OutputFormat;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
-import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
-import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
-import ucar.nc2.Dimension;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 
 /**
  * 
@@ -267,7 +258,7 @@ public class TestQueueServer {
             if (!MotuRequest.isStatusError(statusModeResponse)) {
                 // fileWriter.append(motuRequest.getRequestUrl());
                 fileWriter.append("wget \"$SERVLET_URL?");
-                if (!Organizer.isNullOrEmpty(extractionParameters.getServiceName())) {
+                if (!StringUtils.isNullOrEmpty(extractionParameters.getServiceName())) {
                     fileWriter.append("wget -o ");
                     fileWriter.append(extractionParameters.getServiceName());
                     fileWriter.append("_out.log");
@@ -301,160 +292,162 @@ public class TestQueueServer {
 
         Random random = new Random();
 
-        Organizer organizer = null;
-
-        try {
-            organizer = new Organizer();
-            Collection<ServiceData> services = organizer.servicesValues();
-
-            for (ServiceData service : services) {
-                if (service.getName().equalsIgnoreCase("catsat")) {
-                    continue;
-                }
-                if (service.getName().equalsIgnoreCase("motu")) {
-                    continue;
-                }
-                // if (service.getName().equalsIgnoreCase("mercator")) {
-                // continue;
-                // }
-                if (service.getName().equalsIgnoreCase("aviso")) {
-                    continue;
-                }
-                int iCount = 0;
-                FileWriter fileWriter = new FileWriter(String.format("request_%s.txt", service.getName()));
-                fileWriter.append("#!/bin/sh");
-                fileWriter.append("\n");
-                fileWriter.append("SERVLET_URL=");
-                fileWriter.append(servletUrl);
-                fileWriter.append("\n");
-
-                CatalogData catalog = null;// service.getCatalog();
-                Collection<Product> products = catalog.productsValues();
-
-                for (Product product : products) {
-                    String productId = product.getProductId();
-                    product.loadOpendapGlobalMetaData();
-                    ProductMetaData productMetaData = product.getProductMetaData();
-
-                    // ParameterMetaData[] variables = new
-                    // ParameterMetaData[productMetaData.parameterMetaDatasValues().size()];
-                    ParameterMetaData[] variables = productMetaData.parameterMetaDatasValues()
-                            .toArray(new ParameterMetaData[productMetaData.parameterMetaDatasValues().size()]);
-                    List<String> varToExtract = new ArrayList<String>();
-                    int maxVarToExtract = variables.length >= 2 ? 2 : variables.length;
-                    // for (int i = 0; i < variables.length; i++) {
-                    // System.out.println(variables[i].getName());
-                    // }
-
-                    for (int i = 0; i < maxVarToExtract; i++) {
-                        int iVarToExtract = random.nextInt(variables.length);
-                        if (iVarToExtract == variables.length) {
-                            iVarToExtract--;
-                        }
-                        if (!varToExtract.contains(variables[i])) {
-                            varToExtract.add(variables[i].getName());
-                        }
-
-                    }
-                    // TimeCoverage timeCoverage = organizer.getTimeCoverage(product.getLocationData());
-                    // XMLGregorianCalendar start = timeCoverage.getStart().normalize();
-                    // XMLGregorianCalendar end = timeCoverage.getEnd().normalize();
-                    // System.out.print("Start: ");
-                    // System.out.println(start.toString());
-                    // System.out.print("End: ");
-                    // System.out.println(end.toString());
-                    // random.setSeed(variables.size()-1);
-
-                    Double tMin = productMetaData.getTimeAxisMinValueAsDouble();
-                    Double tMax = productMetaData.getTimeAxisMaxValueAsDouble();
-
-                    int nbDayToExtract = random.nextInt(tMax.intValue() - tMin.intValue() + 1);
-
-                    System.out.println(tMin);
-                    System.out.println(tMax);
-                    System.out.println(nbDayToExtract);
-
-                    tMin = tMax - nbDayToExtract;
-
-                    List<String> dateToExtract = new ArrayList<String>();
-                    dateToExtract.add(NetCdfReader.getDateAsGMTNoZeroTimeString(tMin, productMetaData.getTimeAxis().getUnitsString()));
-                    dateToExtract.add(NetCdfReader.getDateAsGMTNoZeroTimeString(tMax, productMetaData.getTimeAxis().getUnitsString()));
-
-                    Double zMin = null;
-                    Double zMax = null;
-                    int nbZToExtract = 0;
-
-                    List<String> zToExtract = new ArrayList<String>();
-
-                    if (productMetaData.hasZAxis()) {
-                        // zMin = productMetaData.getZAxisMinValue();
-                        // zMax = productMetaData.getZAxisMaxValue();
-                        // nbZToExtract = random.nextInt(zMax.intValue() - zMin.intValue() + 1);
-
-                        Dimension zDim = productMetaData.getZAxis().getDimension(0);
-                        if (zDim != null) {
-                            nbZToExtract = random.nextInt(zDim.getLength());
-                            if (nbZToExtract <= 0) {
-                                nbZToExtract = 1;
-                            }
-                            zToExtract.add(product.getZAxisDataAsString().get(0));
-                            zToExtract.add(product.getZAxisDataAsString().get(nbZToExtract - 1));
-                        } else {
-                            zToExtract.add(product.getZAxisDataAsString().get(0));
-                        }
-                        System.out.println(0);
-                        System.out.println(nbZToExtract);
-                    }
-
-                    boolean anonymous = false;
-                    // anonymous = random.nextBoolean();
-
-                    String userId = null;
-                    if (!anonymous) {
-                        iCount++;
-                        userId = String.format("%s_%s", service.getName(), iCount);
-                        // userId = String.format("%s_%s", service.getName(),
-                        // Integer.toString(random.nextInt(5)));
-                    }
-
-                    // ExtractionParameters extractionParameters = new ExtractionParameters(
-                    // product.getLocationData(),
-                    // varToExtract,
-                    // dateToExtract,
-                    // null,
-                    // zToExtract,
-                    // OutputFormat.NETCDF,
-                    // null,
-                    // null,
-                    // userId,
-                    // anonymous);
-
-                    ExtractionParameters extractionParameters = new ExtractionParameters(
-                            service.getName(),
-                            varToExtract,
-                            dateToExtract,
-                            null,
-                            zToExtract,
-                            productId,
-                            OutputFormat.NETCDF,
-                            null,
-                            null,
-                            userId,
-                            anonymous);
-                    // extractionParameters.setBatchQueue(random.nextBoolean());
-
-                    launchMotuRequest(extractionParameters, servletUrl, fileWriter);
-                    // Thread.sleep(10000);
-                    // return;
-                }
-
-                fileWriter.close();
-            }
-
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        // Organizer organizer = null;
+        //
+        // try {
+        // organizer = new Organizer();
+        // Collection<ServiceData> services = organizer.servicesValues();
+        //
+        // for (ServiceData service : services) {
+        // if (service.getName().equalsIgnoreCase("catsat")) {
+        // continue;
+        // }
+        // if (service.getName().equalsIgnoreCase("motu")) {
+        // continue;
+        // }
+        // // if (service.getName().equalsIgnoreCase("mercator")) {
+        // // continue;
+        // // }
+        // if (service.getName().equalsIgnoreCase("aviso")) {
+        // continue;
+        // }
+        // int iCount = 0;
+        // FileWriter fileWriter = new FileWriter(String.format("request_%s.txt", service.getName()));
+        // fileWriter.append("#!/bin/sh");
+        // fileWriter.append("\n");
+        // fileWriter.append("SERVLET_URL=");
+        // fileWriter.append(servletUrl);
+        // fileWriter.append("\n");
+        //
+        // CatalogData catalog = null;// service.getCatalog();
+        // Collection<Product> products = catalog.productsValues();
+        //
+        // for (Product product : products) {
+        // String productId = product.getProductId();
+        // product.loadOpendapGlobalMetaData();
+        // ProductMetaData productMetaData = product.getProductMetaData();
+        //
+        // // ParameterMetaData[] variables = new
+        // // ParameterMetaData[productMetaData.parameterMetaDatasValues().size()];
+        // ParameterMetaData[] variables = productMetaData.parameterMetaDatasValues()
+        // .toArray(new ParameterMetaData[productMetaData.parameterMetaDatasValues().size()]);
+        // List<String> varToExtract = new ArrayList<String>();
+        // int maxVarToExtract = variables.length >= 2 ? 2 : variables.length;
+        // // for (int i = 0; i < variables.length; i++) {
+        // // System.out.println(variables[i].getName());
+        // // }
+        //
+        // for (int i = 0; i < maxVarToExtract; i++) {
+        // int iVarToExtract = random.nextInt(variables.length);
+        // if (iVarToExtract == variables.length) {
+        // iVarToExtract--;
+        // }
+        // if (!varToExtract.contains(variables[i])) {
+        // varToExtract.add(variables[i].getName());
+        // }
+        //
+        // }
+        // // TimeCoverage timeCoverage = organizer.getTimeCoverage(product.getLocationData());
+        // // XMLGregorianCalendar start = timeCoverage.getStart().normalize();
+        // // XMLGregorianCalendar end = timeCoverage.getEnd().normalize();
+        // // System.out.print("Start: ");
+        // // System.out.println(start.toString());
+        // // System.out.print("End: ");
+        // // System.out.println(end.toString());
+        // // random.setSeed(variables.size()-1);
+        //
+        // Double tMin = productMetaData.getTimeAxisMinValueAsDouble();
+        // Double tMax = productMetaData.getTimeAxisMaxValueAsDouble();
+        //
+        // int nbDayToExtract = random.nextInt(tMax.intValue() - tMin.intValue() + 1);
+        //
+        // System.out.println(tMin);
+        // System.out.println(tMax);
+        // System.out.println(nbDayToExtract);
+        //
+        // tMin = tMax - nbDayToExtract;
+        //
+        // List<String> dateToExtract = new ArrayList<String>();
+        // dateToExtract.add(NetCdfReader.getDateAsGMTNoZeroTimeString(tMin,
+        // productMetaData.getTimeAxis().getUnitsString()));
+        // dateToExtract.add(NetCdfReader.getDateAsGMTNoZeroTimeString(tMax,
+        // productMetaData.getTimeAxis().getUnitsString()));
+        //
+        // Double zMin = null;
+        // Double zMax = null;
+        // int nbZToExtract = 0;
+        //
+        // List<String> zToExtract = new ArrayList<String>();
+        //
+        // if (productMetaData.hasZAxis()) {
+        // // zMin = productMetaData.getZAxisMinValue();
+        // // zMax = productMetaData.getZAxisMaxValue();
+        // // nbZToExtract = random.nextInt(zMax.intValue() - zMin.intValue() + 1);
+        //
+        // Dimension zDim = productMetaData.getZAxis().getDimension(0);
+        // if (zDim != null) {
+        // nbZToExtract = random.nextInt(zDim.getLength());
+        // if (nbZToExtract <= 0) {
+        // nbZToExtract = 1;
+        // }
+        // zToExtract.add(product.getZAxisDataAsString().get(0));
+        // zToExtract.add(product.getZAxisDataAsString().get(nbZToExtract - 1));
+        // } else {
+        // zToExtract.add(product.getZAxisDataAsString().get(0));
+        // }
+        // System.out.println(0);
+        // System.out.println(nbZToExtract);
+        // }
+        //
+        // boolean anonymous = false;
+        // // anonymous = random.nextBoolean();
+        //
+        // String userId = null;
+        // if (!anonymous) {
+        // iCount++;
+        // userId = String.format("%s_%s", service.getName(), iCount);
+        // // userId = String.format("%s_%s", service.getName(),
+        // // Integer.toString(random.nextInt(5)));
+        // }
+        //
+        // // ExtractionParameters extractionParameters = new ExtractionParameters(
+        // // product.getLocationData(),
+        // // varToExtract,
+        // // dateToExtract,
+        // // null,
+        // // zToExtract,
+        // // OutputFormat.NETCDF,
+        // // null,
+        // // null,
+        // // userId,
+        // // anonymous);
+        //
+        // ExtractionParameters extractionParameters = new ExtractionParameters(
+        // service.getName(),
+        // varToExtract,
+        // dateToExtract,
+        // null,
+        // zToExtract,
+        // productId,
+        // OutputFormat.NETCDF,
+        // null,
+        // null,
+        // userId,
+        // anonymous);
+        // // extractionParameters.setBatchQueue(random.nextBoolean());
+        //
+        // launchMotuRequest(extractionParameters, servletUrl, fileWriter);
+        // // Thread.sleep(10000);
+        // // return;
+        // }
+        //
+        // fileWriter.close();
+        // }
+        //
+        // } catch (Exception e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
 
     }
 

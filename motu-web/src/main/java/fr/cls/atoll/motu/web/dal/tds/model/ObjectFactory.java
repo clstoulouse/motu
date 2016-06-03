@@ -29,32 +29,27 @@
 // Generated on: 2009.03.25 at 11:44:51 AM CET 
 //
 
-
 package fr.cls.atoll.motu.web.dal.tds.model;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
-import fr.cls.atoll.motu.library.misc.tds.server.Aggregation.Scan;
-import fr.cls.atoll.motu.library.misc.tds.server.Aggregation.ScanFmrc;
-import fr.cls.atoll.motu.library.misc.tds.server.Aggregation.VariableAgg;
-import fr.cls.atoll.motu.library.misc.tds.server.Sort.LexigraphicByName;
-import fr.cls.atoll.motu.library.misc.tds.server.SourceType.Contact;
 
+import fr.cls.atoll.motu.web.dal.tds.model.Aggregation.Scan;
+import fr.cls.atoll.motu.web.dal.tds.model.Aggregation.ScanFmrc;
+import fr.cls.atoll.motu.web.dal.tds.model.Aggregation.VariableAgg;
+import fr.cls.atoll.motu.web.dal.tds.model.Sort.LexigraphicByName;
+import fr.cls.atoll.motu.web.dal.tds.model.SourceType.Contact;
 
 /**
- * This object contains factory methods for each 
- * Java content interface and Java element interface 
- * generated in the fr.cls.atoll.motu.library.misc.tds.server package. 
- * <p>An ObjectFactory allows you to programatically 
- * construct new instances of the Java representation 
- * for XML content. The Java representation of XML 
- * content can consist of schema derived interfaces 
- * and classes representing the binding of schema 
- * type definitions, element declarations and model 
- * groups.  Factory methods for each of these are 
- * provided in this class.
+ * This object contains factory methods for each Java content interface and Java element interface generated
+ * in the fr.cls.atoll.motu.library.misc.tds.server package.
+ * <p>
+ * An ObjectFactory allows you to programatically construct new instances of the Java representation for XML
+ * content. The Java representation of XML content can consist of schema derived interfaces and classes
+ * representing the binding of schema type definitions, element declarations and model groups. Factory methods
+ * for each of these are provided in this class.
  * 
  */
 @XmlRegistry
@@ -74,17 +69,28 @@ public class ObjectFactory {
     private final static QName _DatasetTypeProject_QNAME = new QName("http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0", "project");
     private final static QName _DatasetTypePublisher_QNAME = new QName("http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0", "publisher");
     private final static QName _DatasetTypeCreator_QNAME = new QName("http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0", "creator");
-    private final static QName _DatasetTypeServiceName_QNAME = new QName("http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0", "serviceName");
+    private final static QName _DatasetTypeServiceName_QNAME = new QName(
+            "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0",
+            "serviceName");
     private final static QName _DatasetTypeDate_QNAME = new QName("http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0", "date");
-    private final static QName _DatasetTypeTimeCoverage_QNAME = new QName("http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0", "timeCoverage");
-    private final static QName _DatasetTypeDataFormat_QNAME = new QName("http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0", "dataFormat");
-    private final static QName _DatasetTypeDocumentation_QNAME = new QName("http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0", "documentation");
+    private final static QName _DatasetTypeTimeCoverage_QNAME = new QName(
+            "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0",
+            "timeCoverage");
+    private final static QName _DatasetTypeDataFormat_QNAME = new QName(
+            "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0",
+            "dataFormat");
+    private final static QName _DatasetTypeDocumentation_QNAME = new QName(
+            "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0",
+            "documentation");
     private final static QName _TimeCoverageTypeStart_QNAME = new QName("http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0", "start");
-    private final static QName _TimeCoverageTypeDuration_QNAME = new QName("http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0", "duration");
+    private final static QName _TimeCoverageTypeDuration_QNAME = new QName(
+            "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0",
+            "duration");
     private final static QName _TimeCoverageTypeEnd_QNAME = new QName("http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0", "end");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: fr.cls.atoll.motu.library.misc.tds.server
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for
+     * package: fr.cls.atoll.motu.library.misc.tds.server
      * 
      */
     public ObjectFactory() {

@@ -37,20 +37,20 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
+import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuNoVarException;
+import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.common.utils.ListUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
@@ -386,7 +386,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
                     if (isGeoXY) {
                         String varName = geoGridSubset.getVariable().getName();
                         List<Section> listVarOrgRanges = mapVarOrgRanges.get(varName);
-                        if (Organizer.isNullOrEmpty(listVarOrgRanges)) {
+                        if (ListUtils.isNullOrEmpty(listVarOrgRanges)) {
                             listVarOrgRanges = new ArrayList<Section>();
                             mapVarOrgRanges.put(varName, listVarOrgRanges);
                         }
@@ -520,7 +520,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
 
         String xName = xaxis.getName();
         List<Section> listVarOrgRanges = mapVarOrgRanges.get(xName);
-        if (Organizer.isNullOrEmpty(listVarOrgRanges)) {
+        if (ListUtils.isNullOrEmpty(listVarOrgRanges)) {
             listVarOrgRanges = new ArrayList<Section>();
             mapVarOrgRanges.put(xName, listVarOrgRanges);
         }
@@ -530,7 +530,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
 
         String yName = yaxis.getName();
         listVarOrgRanges = mapVarOrgRanges.get(yName);
-        if (Organizer.isNullOrEmpty(listVarOrgRanges)) {
+        if (ListUtils.isNullOrEmpty(listVarOrgRanges)) {
             listVarOrgRanges = new ArrayList<Section>();
             mapVarOrgRanges.put(yName, listVarOrgRanges);
         }
@@ -588,7 +588,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
             listVariableYSubset.add(axis);
             String axisName = axis.getName();
             List<Section> listVarOrgRanges = mapVarOrgRanges.get(axisName);
-            if (Organizer.isNullOrEmpty(listVarOrgRanges)) {
+            if (ListUtils.isNullOrEmpty(listVarOrgRanges)) {
                 listVarOrgRanges = new ArrayList<Section>();
                 mapVarOrgRanges.put(axisName, listVarOrgRanges);
             }
@@ -604,7 +604,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
             listVariableXSubset.add(axis);
             String axisName = axis.getName();
             List<Section> listVarOrgRanges = mapVarOrgRanges.get(axisName);
-            if (Organizer.isNullOrEmpty(listVarOrgRanges)) {
+            if (ListUtils.isNullOrEmpty(listVarOrgRanges)) {
                 listVarOrgRanges = new ArrayList<Section>();
                 mapVarOrgRanges.put(axisName, listVarOrgRanges);
             }

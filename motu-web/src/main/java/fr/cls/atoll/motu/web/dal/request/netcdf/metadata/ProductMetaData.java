@@ -43,18 +43,17 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import fr.cls.atoll.motu.library.converter.DateUtils;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.metadata.CoordinateSystem;
-import fr.cls.atoll.motu.library.misc.metadata.DataProvider;
-import fr.cls.atoll.motu.library.misc.metadata.Delivery;
-import fr.cls.atoll.motu.library.misc.metadata.DocMetaData;
-import fr.cls.atoll.motu.library.misc.metadata.ParameterCategory;
-import fr.cls.atoll.motu.library.misc.netcdf.CoordSysBuilderYXLatLon;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.web.bll.request.model.metadata.DataProvider;
+import fr.cls.atoll.motu.web.bll.request.model.metadata.Delivery;
+import fr.cls.atoll.motu.web.bll.request.model.metadata.DocMetaData;
+import fr.cls.atoll.motu.web.bll.request.model.metadata.ParameterCategory;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.dal.request.netcdf.CoordSysBuilderYXLatLon;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DatasetBase;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
@@ -67,6 +66,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis2D;
+import ucar.nc2.dataset.CoordinateSystem;
 import ucar.unidata.geoloc.LatLonRect;
 
 //CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
@@ -223,7 +223,7 @@ public class ProductMetaData {
     public String getProductIdEncoded(String enc) {
         String productId = this.getProductId();
 
-        if (Organizer.isNullOrEmpty(productId)) {
+        if (StringUtils.isNullOrEmpty(productId)) {
             return "Unknown_product_Id";
         }
 
@@ -1488,7 +1488,7 @@ public class ProductMetaData {
         Collection<ParameterMetaData> list = parameterMetaDatasValues();
         for (ParameterMetaData p : list) {
             String standardNameValue = p.getStandardName();
-            if (!Organizer.isNullOrEmpty(standardNameValue)) {
+            if (!StringUtils.isNullOrEmpty(standardNameValue)) {
                 if (standardNameValue.equals(name)) {
                     parameterMetaData = p;
                     break;

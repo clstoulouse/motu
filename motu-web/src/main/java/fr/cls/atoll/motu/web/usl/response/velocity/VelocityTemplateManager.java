@@ -16,8 +16,8 @@ import org.apache.velocity.tools.generic.DateTool;
 import org.apache.velocity.tools.generic.MathTool;
 import org.apache.velocity.tools.generic.NumberTool;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.response.velocity.model.ICommonService;
 
@@ -166,7 +166,10 @@ public class VelocityTemplateManager {
         velocityEngine = new VelocityEngine();
 
         Properties conf = new Properties();
+        // TO disable logs: VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS,
+        // "org.apache.velocity.runtime.log.NullLogChute"
         conf.put(VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.SimpleLog4JLogSystem");
+        conf.put(VelocityEngine.RUNTIME_LOG, System.getProperty("motu-log-dir") + "/velocity.log");
         // conf.put("runtime.log.logsystem.log4j.category", LOG.getName());
         conf.put("resource.loader", "class");
         conf.put("class.resource.loader.description", "Velocity Classpath Resource Loader");

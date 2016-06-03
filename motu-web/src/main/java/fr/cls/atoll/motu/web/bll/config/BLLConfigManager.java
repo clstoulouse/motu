@@ -31,6 +31,11 @@ public class BLLConfigManager implements IBLLConfigManager {
         bllQueueServerConfigManager = new BLLQueueServerConfigManager();
     }
 
+    @Override
+    public void init() throws MotuException {
+        dalConfigManager.init();
+    }
+
     /** {@inheritDoc} */
     @Override
     public String getCasServerUrl() {

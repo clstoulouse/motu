@@ -48,27 +48,25 @@ import javax.xml.bind.JAXBElement;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.params.HttpClientParams;
-import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.util.datetime.FastDateFormat;
 
 import fr.cls.atoll.motu.library.cas.HttpClientCAS;
 import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
 import fr.cls.atoll.motu.library.cas.util.HttpUtil;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.netcdf.CoordSysBuilderYXLatLon;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfCancelTask;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeNotFoundException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardName;
 import opendap.dap.DConnect2;
 import ucar.ma2.Array;
@@ -2190,7 +2188,7 @@ public class NetCdfReader {
                 } catch (Exception e) {
                     // Do nothing
                 }
-                if (!Organizer.isNullOrEmpty(stdNameValue)) {
+                if (!StringUtils.isNullOrEmpty(stdNameValue)) {
                     if (stdNameValue.equals(name)) {
                         varFound = var;
                         break;
@@ -2242,7 +2240,7 @@ public class NetCdfReader {
                 } catch (Exception e) {
                     // Do nothing
                 }
-                if (!Organizer.isNullOrEmpty(stdNameValue)) {
+                if (!StringUtils.isNullOrEmpty(stdNameValue)) {
                     if (stdNameValue.equals(name)) {
                         varFound = var;
                         break;

@@ -36,6 +36,11 @@ import java.util.Comparator;
 public class DataFileComparator implements Comparator<DataFile>, Serializable {
 
     /**
+     * .
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Instantiates a new data file comparator.
      */
     public DataFileComparator() {

@@ -7,7 +7,7 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.tds.model.Catalog;
 
 /**

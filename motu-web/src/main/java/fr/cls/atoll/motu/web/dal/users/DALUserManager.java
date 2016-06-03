@@ -1,10 +1,10 @@
 package fr.cls.atoll.motu.web.dal.users;
 
+import java.io.InputStream;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
 
-import fr.cls.atoll.motu.library.misc.utils.PropertiesUtilities;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
@@ -37,7 +37,10 @@ public class DALUserManager implements IDALUserManager {
         try {
             MotuConfig motuConfig = BLLManager.getInstance().getConfigManager().getMotuConfig();
             if (motuConfig.getUseAuthentication()) {
-                authenticationProps = PropertiesUtilities.loadFromClasspath("motuUser.properties");
+                authenticationProps = new Properties();
+                InputStream in = getClass().getResourceAsStream("motuUser.properties");
+                authenticationProps.load(in);
+                in.close();
             }
         } catch (Exception e) {
             throw new MotuException("Authentication initialisation failure ", e);

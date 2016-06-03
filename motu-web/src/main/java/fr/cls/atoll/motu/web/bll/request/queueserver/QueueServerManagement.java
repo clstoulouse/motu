@@ -32,24 +32,24 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueDataCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.exception.MotuInconsistencyException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
+import fr.cls.atoll.motu.web.bll.exception.MotuExceedingQueueDataCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.web.bll.exception.MotuInconsistencyException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuNoVarException;
+import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueJob;
@@ -86,7 +86,12 @@ public class QueueServerManagement {
      */
     public QueueServerManagement() {
         queueManagementMap = new HashMap<QueueType, QueueManagement>();
+    }
 
+    /**
+     * .
+     */
+    public void init() {
         queueServerConfig = BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig();
         // Order queue by size (threshold) asc
         Collections.sort(getQueueServerConfig().getQueues(), new QueueThresholdComparator());
@@ -117,7 +122,11 @@ public class QueueServerManagement {
             throws MotuException {
         // TODO SMA : Ask BLL service for the amount size of the request
         // runnableExtraction.getAmountDataSizeAsMBytes()
-        double sizeInMB = BLLManager.getInstance().getRequestManager().getAmountDataSizeAsMBytes(extractionParameters_);
+        double sizeInMB = BLLManager.getInstance().getRequestManager().getProductDataSizeIntoByte(product_,
+                                                                                                  extractionParameters_.getListVar(),
+                                                                                                  extractionParameters_.getListTemporalCoverage(),
+                                                                                                  extractionParameters_.getListLatLonCoverage(),
+                                                                                                  extractionParameters_.getListDepthCoverage());
 
         QueueManagement queueManagement = findQueue(sizeInMB);
         queueManagement.execute(new QueueJob(cs_, product_, extractionParameters_.getDataOutputFormat(), new QueueJobListener() {

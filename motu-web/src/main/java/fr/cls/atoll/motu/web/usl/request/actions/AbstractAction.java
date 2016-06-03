@@ -13,8 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
@@ -225,61 +223,6 @@ public abstract class AbstractAction {
             hostName = getHostFromRequestHeader();
         }
         return HTTPUtils.getHostName(hostName);
-    }
-
-    /**
-     * Gets Organizer object form the HttpSession.
-     *
-     * @param session that contains Organizer.
-     * @param response the response
-     * @return Organizer object.
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    protected Organizer getOrganizer() throws IOException {
-
-        Organizer organizer = null;
-        try {
-            if (session != null) {
-                organizer = SessionManager.getInstance().getOrganizer(getSession());
-                isValid(organizer);
-            } else {
-                organizer = new Organizer();
-            }
-        } catch (MotuExceptionBase e) {
-            response.sendError(500,
-                               String.format("ERROR: - MotuServlet.getOrganizer - Unable to create a new organiser. Native Error: %s",
-                                             e.notifyException()));
-        } catch (ServletException e) {
-            response.sendError(500, String.format("ERROR: - MotuServlet.getOrganizer : %s", e.getMessage()));
-        }
-
-        return organizer;
-    }
-
-    /**
-     * Tests if HttpSession object is valid.
-     * 
-     * @param session instance to be tested.
-     * 
-     * @throws ServletException the servlet exception
-     */
-    private void isValid(HttpSession session) throws ServletException {
-        if (session == null) {
-            throw new ServletException(new MotuException("Error - session is null"));
-        }
-    }
-
-    /**
-     * Tests if Organizer object is valid.
-     * 
-     * @param organizer instance to be tested.
-     * 
-     * @throws ServletException the servlet exception
-     */
-    private void isValid(Organizer organizer) throws ServletException {
-        if (organizer == null) {
-            throw new ServletException(new MotuException("Error - organizer is null - perhaps session has expired."));
-        }
     }
 
     protected String getDataFromParameter() {

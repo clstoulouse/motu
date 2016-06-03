@@ -2,6 +2,7 @@ package fr.cls.atoll.motu.web.bll.users;
 
 import java.util.Properties;
 
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.users.IDALUserManager;
 
@@ -21,6 +22,11 @@ public class BLLUserManager implements IBLLUserManager {
 
     public BLLUserManager() {
         dalUserManager = DALManager.getInstance().getUserManager();
+    }
+
+    @Override
+    public void init() throws MotuException {
+        dalUserManager.init();
     }
 
     @Override

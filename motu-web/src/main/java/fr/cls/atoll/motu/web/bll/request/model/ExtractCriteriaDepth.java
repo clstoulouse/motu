@@ -26,11 +26,11 @@ package fr.cls.atoll.motu.web.bll.request.model;
 
 import java.util.List;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import ucar.ma2.Array;
 import ucar.ma2.Range;

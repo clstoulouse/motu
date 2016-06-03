@@ -259,8 +259,10 @@ __initMotuJavaOpt() {
    __addCatalinaOpt "$casAuthServerName" "-Dcas-auth-serverName=$casAuthServerName"
    __addCatalinaOpt "$casServerUrl" "-Dcas-server-url=$casServerUrl"
    __addCatalinaOpt "$casValidationFilterProxyCallbackUrl" "-Dcas-validationFilter-proxyCallbackUrl=$casValidationFilterProxyCallbackUrl"
-   __addCatalinaOpt "$MOTU_CONF_DIR_NAME" "-Dmotu-config-dir=$MOTU_CONF_DIR_NAME"
-
+   __addCatalinaOpt "$MOTU_CONF_DIR_NAME" "-Dmotu-config-dir=$MOTU_CONF_DIR"
+   __addCatalinaOpt "$MOTU_LOG_DIR" "-Dmotu-log-dir=$MOTU_LOG_DIR"
+   __addCatalinaOpt "$MOTU_CONF_DIR" "-Dlog4j.configurationFile=$MOTU_CONF_DIR/log4j.xml"
+   export MOTU_LOG_DIR=$MOTU_LOG_DIR
    export JAVA_OPTS=$JAVA_OPTS_ORIG
 
 }

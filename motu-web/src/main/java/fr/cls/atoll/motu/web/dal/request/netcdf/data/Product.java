@@ -46,31 +46,30 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
-import fr.cls.atoll.motu.library.converter.DateUtils;
-import fr.cls.atoll.motu.library.misc.data.SelectData;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.metadata.DocMetaData;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuNoVarException;
+import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeNotFoundException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteria;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
+import fr.cls.atoll.motu.web.bll.request.model.metadata.DocMetaData;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.common.utils.ListUtils;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.catalog.tds.TDSCatalogLoader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
@@ -749,9 +748,9 @@ public class Product {
 
         openNetCdfReader();
 
-        List variables = netCdfReader.getVariables();
-        for (Iterator it = variables.iterator(); it.hasNext();) {
-            Variable variable = (Variable) it.next();
+        List<Variable> variables = netCdfReader.getVariables();
+        for (Iterator<Variable> it = variables.iterator(); it.hasNext();) {
+            Variable variable = it.next();
 
             // Don't get coordinate variables which are in coordinate axes collection
             // (which have a known AxisType).
@@ -888,7 +887,7 @@ public class Product {
         }
         // if list of variables to extract is no set,
         // get all variables form this product
-        if (Organizer.isNullOrEmpty(listVar)) {
+        if (ListUtils.isNullOrEmpty(listVar)) {
             listVar = getVariables();
         }
 
@@ -934,7 +933,7 @@ public class Product {
 
         Collection<ParameterMetaData> listParameterMetaData = parameterMetaDatas.values();
         for (ParameterMetaData parameterMetaData : listParameterMetaData) {
-            if (Organizer.isNullOrEmpty(parameterMetaData.getName())) {
+            if (StringUtils.isNullOrEmpty(parameterMetaData.getName())) {
                 continue;
             }
             listVar.add(parameterMetaData.getName());
@@ -2252,7 +2251,7 @@ public class Product {
 
         for (DataFile dataFile : dataFiles) {
             // Warning : get Datetime as UTC
-            DateTime fileStart = DateUtils.dateTimeToUTC(dataFile.getStartCoverageDate());
+            DateTime fileStart = fr.cls.atoll.motu.library.converter.DateUtils.dateTimeToUTC(dataFile.getStartCoverageDate());
 
             calendar.setTime(fileStart.toDate());
 
@@ -2260,14 +2259,14 @@ public class Product {
             int m = calendar.get(Calendar.MINUTE);
             int s = calendar.get(Calendar.SECOND);
 
-            String format = DateUtils.DATETIME_PATTERN3;
+            String format = fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_PATTERN3;
 
             if ((h == 0) && (m == 0) && (s == 0)) {
-                format = DateUtils.DATETIME_PATTERN1;
+                format = fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_PATTERN1;
             }
 
             if (fileStart != null) {
-                timeCoverage.add(DateUtils.DATETIME_FORMATTERS.get(format).print(fileStart));
+                timeCoverage.add(fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_FORMATTERS.get(format).print(fileStart));
             }
 
         }

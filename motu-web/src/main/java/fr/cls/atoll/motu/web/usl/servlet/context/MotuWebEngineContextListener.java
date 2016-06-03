@@ -47,6 +47,7 @@ import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.common.log.log4j.Log4JInitializer;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.usl.USLManager;
 
@@ -76,28 +77,37 @@ public class MotuWebEngineContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
     }
 
+    private void initCommonTools() {
+        Log4JInitializer.init(null);
+
+        setDefaultTimeZoneToGMT();
+    }
+
     @Override
     public void contextInitialized(final ServletContextEvent sce) {
-        setDefaultTimeZoneToGMT();
+        initCommonTools();
 
         try {
             // Init DAL and also LOG4J
             DALManager.getInstance().init();
         } catch (MotuException e) {
-            LOGGER.error("Error while initializing DALManager", e);
+            LOGGER.error("Error while initializing DAL:Data Access Layer", e);
         }
 
-        BLLManager.getInstance().init();
+        try {
+            BLLManager.getInstance().init();
+        } catch (MotuException e) {
+            LOGGER.error("Error while initializing BLL:Business Logic Layer", e);
+        }
 
         try {
             USLManager.getInstance().init();
         } catch (MotuException e) {
-            LOGGER.error("Error while initializing velocity template", e);
+            LOGGER.error("Error while initializing USL:User Service Layer", e);
         }
 
         // Init Cas filters
         initCasServer(sce);
-
     }
 
     /**

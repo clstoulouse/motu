@@ -3,20 +3,20 @@ package fr.cls.atoll.motu.web.bll.request;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuNoVarException;
+import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteria;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
@@ -139,8 +139,7 @@ public class ProductSizeRequest {
         }
         if (listTemporalCoverage != null) {
             if (!listTemporalCoverage.isEmpty()) {
-                ExtractCriteriaDatetime c = null;
-                c = new ExtractCriteriaDatetime();
+                ExtractCriteriaDatetime c = new ExtractCriteriaDatetime();
                 criteria.add(c);
                 c.setValues(listTemporalCoverage);
             }

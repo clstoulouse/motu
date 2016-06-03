@@ -10,7 +10,7 @@ ${project.name} - v. ${project.version}
 	<description>Motu</description>
 	
     <listener>
-        <description>Log4j, CAS, ... initialization</description>
+        <description>Common (Log4j, CAS), USL, BLL and DAL layers initialization</description>
         <listener-class>fr.cls.atoll.motu.web.usl.servlet.context.MotuWebEngineContextListener</listener-class>
     </listener>
 	

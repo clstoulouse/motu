@@ -34,7 +34,9 @@
 
 		<jdk.source.version>1.7</jdk.source.version>
 		<jdk.source.encoding>UTF-8</jdk.source.encoding>
-		<slf4j.version>1.5.8</slf4j.version>
+		
+		<dependencies.version.slf4j>1.7.21</dependencies.version.slf4j>
+		<dependencies.version.log4j>2.5</dependencies.version.log4j>
 		<dependencies.version.spring>2.5.6</dependencies.version.spring>
 		<dependencies.version.jersey>1.5</dependencies.version.jersey>
 		<dependencies.version.commons-io>1.4</dependencies.version.commons-io>
@@ -57,28 +59,28 @@
 	</distributionManagement>
 
 	<dependencies>
-
-		<!-- SLF4J -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
+			<version>${dependencies.version.slf4j}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
-			<version>${slf4j.version}</version>
+			<version>${dependencies.version.slf4j}</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>2.5</version>
+			<version>${dependencies.version.log4j}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.5</version>
+			<version>${dependencies.version.log4j}</version>
 		</dependency>
+
 
 		<!-- Test dependencies -->
 		<dependency>
@@ -89,6 +91,38 @@
 			<type>jar</type>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity-tools</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>servlet-api</artifactId>
+					<groupId>javax.servlet</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>log4j</artifactId>
+					<groupId>log4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>ucar</groupId>
+			<artifactId>netcdf</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>stax-api</artifactId>
+					<groupId>stax</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>log4j</artifactId>
+					<groupId>log4j</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>slf4j-log4j12</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -424,11 +458,8 @@
 				<artifactId>motu-library-inventory</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>cls.atoll.motu</groupId>
-				<artifactId>motu-library-misc</artifactId>
-				<version>${project.version}</version>
-			</dependency>
+			<!-- <dependency> <groupId>cls.atoll.motu</groupId> <artifactId>motu-library-misc</artifactId> 
+				<version>${project.version}</version> </dependency> -->
 			<dependency>
 				<groupId>cls.atoll.motu</groupId>
 				<artifactId>motu-api-message</artifactId>
@@ -451,7 +482,7 @@
 		<module>../motu-library-cas</module>
 		<module>../motu-library-inventory</module>
 
-		<module>../motu-library-misc</module>
+		<!-- <module>../motu-library-misc</module> -->
 		<module>../motu-web</module>
 	</modules>
 

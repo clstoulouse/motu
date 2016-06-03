@@ -2,7 +2,8 @@ package fr.cls.atoll.motu.web.bll.request;
 
 import java.util.List;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
@@ -86,7 +87,7 @@ public interface IBLLRequestManager {
      * @return
      * @throws MotuExceptionBase
      */
-    double getProductMaxAllowedDataSizeIntoByte(Product product) throws MotuExceptionBase;
+    double getProductMaxAllowedDataSizeIntoByte(Product product) throws MotuException;
 
     /**
      * .
@@ -103,5 +104,12 @@ public interface IBLLRequestManager {
                                       List<String> listVar,
                                       List<String> listTemporalCoverage,
                                       List<String> listLatLongCoverage,
-                                      List<String> listDepthCoverage) throws MotuExceptionBase;
+                                      List<String> listDepthCoverage) throws MotuException;
+
+    /**
+     * .
+     * 
+     * @throws MotuException
+     */
+    void init() throws MotuException;
 }

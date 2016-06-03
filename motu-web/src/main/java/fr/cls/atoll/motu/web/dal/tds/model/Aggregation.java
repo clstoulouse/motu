@@ -29,11 +29,11 @@
 // Generated on: 2009.03.25 at 11:44:51 AM CET 
 //
 
-
 package fr.cls.atoll.motu.web.dal.tds.model;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -42,15 +42,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import fr.cls.atoll.motu.library.misc.tds.server.Aggregation.Scan;
-import fr.cls.atoll.motu.library.misc.tds.server.Aggregation.ScanFmrc;
-import fr.cls.atoll.motu.library.misc.tds.server.Aggregation.VariableAgg;
-
 
 /**
- * <p>Java class for aggregation element declaration.
+ * <p>
+ * Java class for aggregation element declaration.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;element name="aggregation">
@@ -119,12 +117,7 @@ import fr.cls.atoll.motu.library.misc.tds.server.Aggregation.VariableAgg;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "variableAgg",
-    "netcdf",
-    "scan",
-    "scanFmrc"
-})
+@XmlType(name = "", propOrder = { "variableAgg", "netcdf", "scan", "scanFmrc" })
 @XmlRootElement(name = "aggregation", namespace = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2")
 public class Aggregation {
 
@@ -162,21 +155,20 @@ public class Aggregation {
      * Gets the value of the variableAgg property.
      * 
      * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the variableAgg property.
+     * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification
+     * you make to the returned list will be present inside the JAXB object. This is why there is not a
+     * <CODE>set</CODE> method for the variableAgg property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getVariableAgg().add(newItem);
+     * getVariableAgg().add(newItem);
      * </pre>
      * 
      * 
      * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link VariableAgg }
+     * Objects of the following type(s) are allowed in the list {@link VariableAgg }
      * 
      * 
      */
@@ -191,21 +183,20 @@ public class Aggregation {
      * Gets the value of the netcdf property.
      * 
      * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the netcdf property.
+     * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification
+     * you make to the returned list will be present inside the JAXB object. This is why there is not a
+     * <CODE>set</CODE> method for the netcdf property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getNetcdf().add(newItem);
+     * getNetcdf().add(newItem);
      * </pre>
      * 
      * 
      * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Netcdf }
+     * Objects of the following type(s) are allowed in the list {@link Netcdf }
      * 
      * 
      */
@@ -220,21 +211,20 @@ public class Aggregation {
      * Gets the value of the scan property.
      * 
      * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the scan property.
+     * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification
+     * you make to the returned list will be present inside the JAXB object. This is why there is not a
+     * <CODE>set</CODE> method for the scan property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getScan().add(newItem);
+     * getScan().add(newItem);
      * </pre>
      * 
      * 
      * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Scan }
+     * Objects of the following type(s) are allowed in the list {@link Scan }
      * 
      * 
      */
@@ -249,21 +239,20 @@ public class Aggregation {
      * Gets the value of the scanFmrc property.
      * 
      * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the scanFmrc property.
+     * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification
+     * you make to the returned list will be present inside the JAXB object. This is why there is not a
+     * <CODE>set</CODE> method for the scanFmrc property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getScanFmrc().add(newItem);
+     * getScanFmrc().add(newItem);
      * </pre>
      * 
      * 
      * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ScanFmrc }
+     * Objects of the following type(s) are allowed in the list {@link ScanFmrc }
      * 
      * 
      */
@@ -277,10 +266,8 @@ public class Aggregation {
     /**
      * Gets the value of the dimName property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getDimName() {
         return dimName;
@@ -289,10 +276,8 @@ public class Aggregation {
     /**
      * Sets the value of the dimName property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setDimName(String value) {
         this.dimName = value;
@@ -301,10 +286,8 @@ public class Aggregation {
     /**
      * Gets the value of the fmrcDefinition property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getFmrcDefinition() {
         return fmrcDefinition;
@@ -313,10 +296,8 @@ public class Aggregation {
     /**
      * Sets the value of the fmrcDefinition property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setFmrcDefinition(String value) {
         this.fmrcDefinition = value;
@@ -325,10 +306,8 @@ public class Aggregation {
     /**
      * Gets the value of the forecastDate property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getForecastDate() {
         return forecastDate;
@@ -337,10 +316,8 @@ public class Aggregation {
     /**
      * Sets the value of the forecastDate property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setForecastDate(String value) {
         this.forecastDate = value;
@@ -349,10 +326,8 @@ public class Aggregation {
     /**
      * Gets the value of the forecastDateVariable property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getForecastDateVariable() {
         return forecastDateVariable;
@@ -361,10 +336,8 @@ public class Aggregation {
     /**
      * Sets the value of the forecastDateVariable property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setForecastDateVariable(String value) {
         this.forecastDateVariable = value;
@@ -373,10 +346,8 @@ public class Aggregation {
     /**
      * Gets the value of the forecastOffset property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getForecastOffset() {
         return forecastOffset;
@@ -385,10 +356,8 @@ public class Aggregation {
     /**
      * Sets the value of the forecastOffset property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setForecastOffset(String value) {
         this.forecastOffset = value;
@@ -397,10 +366,8 @@ public class Aggregation {
     /**
      * Gets the value of the forecastTimeOffset property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getForecastTimeOffset() {
         return forecastTimeOffset;
@@ -409,10 +376,8 @@ public class Aggregation {
     /**
      * Sets the value of the forecastTimeOffset property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setForecastTimeOffset(String value) {
         this.forecastTimeOffset = value;
@@ -421,10 +386,8 @@ public class Aggregation {
     /**
      * Gets the value of the recheckEvery property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getRecheckEvery() {
         return recheckEvery;
@@ -433,10 +396,8 @@ public class Aggregation {
     /**
      * Sets the value of the recheckEvery property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setRecheckEvery(String value) {
         this.recheckEvery = value;
@@ -445,10 +406,8 @@ public class Aggregation {
     /**
      * Gets the value of the referenceDateVariable property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getReferenceDateVariable() {
         return referenceDateVariable;
@@ -457,10 +416,8 @@ public class Aggregation {
     /**
      * Sets the value of the referenceDateVariable property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setReferenceDateVariable(String value) {
         this.referenceDateVariable = value;
@@ -469,10 +426,8 @@ public class Aggregation {
     /**
      * Gets the value of the timeUnitsChange property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     * @return possible object is {@link Boolean }
+     * 
      */
     public Boolean isTimeUnitsChange() {
         return timeUnitsChange;
@@ -481,10 +436,8 @@ public class Aggregation {
     /**
      * Sets the value of the timeUnitsChange property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     * @param value allowed object is {@link Boolean }
+     * 
      */
     public void setTimeUnitsChange(Boolean value) {
         this.timeUnitsChange = value;
@@ -493,10 +446,8 @@ public class Aggregation {
     /**
      * Gets the value of the type property.
      * 
-     * @return
-     *     possible object is
-     *     {@link AggregationType }
-     *     
+     * @return possible object is {@link AggregationType }
+     * 
      */
     public AggregationType getType() {
         return type;
@@ -505,20 +456,19 @@ public class Aggregation {
     /**
      * Sets the value of the type property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link AggregationType }
-     *     
+     * @param value allowed object is {@link AggregationType }
+     * 
      */
     public void setType(AggregationType value) {
         this.type = value;
     }
 
-
     /**
-     * <p>Java class for anonymous complex type.
+     * <p>
+     * Java class for anonymous complex type.
      * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
+     * <p>
+     * The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
      * &lt;complexType>
@@ -560,10 +510,8 @@ public class Aggregation {
         /**
          * Gets the value of the dateFormatMark property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getDateFormatMark() {
             return dateFormatMark;
@@ -572,10 +520,8 @@ public class Aggregation {
         /**
          * Sets the value of the dateFormatMark property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setDateFormatMark(String value) {
             this.dateFormatMark = value;
@@ -584,10 +530,8 @@ public class Aggregation {
         /**
          * Gets the value of the enhance property.
          * 
-         * @return
-         *     possible object is
-         *     {@link Boolean }
-         *     
+         * @return possible object is {@link Boolean }
+         * 
          */
         public Boolean isEnhance() {
             return enhance;
@@ -596,10 +540,8 @@ public class Aggregation {
         /**
          * Sets the value of the enhance property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link Boolean }
-         *     
+         * @param value allowed object is {@link Boolean }
+         * 
          */
         public void setEnhance(Boolean value) {
             this.enhance = value;
@@ -608,10 +550,8 @@ public class Aggregation {
         /**
          * Gets the value of the location property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getLocation() {
             return location;
@@ -620,10 +560,8 @@ public class Aggregation {
         /**
          * Sets the value of the location property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setLocation(String value) {
             this.location = value;
@@ -632,10 +570,8 @@ public class Aggregation {
         /**
          * Gets the value of the olderThan property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getOlderThan() {
             return olderThan;
@@ -644,10 +580,8 @@ public class Aggregation {
         /**
          * Sets the value of the olderThan property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setOlderThan(String value) {
             this.olderThan = value;
@@ -656,10 +590,8 @@ public class Aggregation {
         /**
          * Gets the value of the regExp property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getRegExp() {
             return regExp;
@@ -668,10 +600,8 @@ public class Aggregation {
         /**
          * Sets the value of the regExp property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setRegExp(String value) {
             this.regExp = value;
@@ -680,10 +610,8 @@ public class Aggregation {
         /**
          * Gets the value of the subdirs property.
          * 
-         * @return
-         *     possible object is
-         *     {@link Boolean }
-         *     
+         * @return possible object is {@link Boolean }
+         * 
          */
         public boolean isSubdirs() {
             if (subdirs == null) {
@@ -696,10 +624,8 @@ public class Aggregation {
         /**
          * Sets the value of the subdirs property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link Boolean }
-         *     
+         * @param value allowed object is {@link Boolean }
+         * 
          */
         public void setSubdirs(Boolean value) {
             this.subdirs = value;
@@ -708,10 +634,8 @@ public class Aggregation {
         /**
          * Gets the value of the suffix property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getSuffix() {
             return suffix;
@@ -720,10 +644,8 @@ public class Aggregation {
         /**
          * Sets the value of the suffix property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setSuffix(String value) {
             this.suffix = value;
@@ -731,11 +653,12 @@ public class Aggregation {
 
     }
 
-
     /**
-     * <p>Java class for anonymous complex type.
+     * <p>
+     * Java class for anonymous complex type.
      * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
+     * <p>
+     * The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
      * &lt;complexType>
@@ -780,10 +703,8 @@ public class Aggregation {
         /**
          * Gets the value of the forecastDateMatcher property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getForecastDateMatcher() {
             return forecastDateMatcher;
@@ -792,10 +713,8 @@ public class Aggregation {
         /**
          * Sets the value of the forecastDateMatcher property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setForecastDateMatcher(String value) {
             this.forecastDateMatcher = value;
@@ -804,10 +723,8 @@ public class Aggregation {
         /**
          * Gets the value of the forecastOffsetMatcher property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getForecastOffsetMatcher() {
             return forecastOffsetMatcher;
@@ -816,10 +733,8 @@ public class Aggregation {
         /**
          * Sets the value of the forecastOffsetMatcher property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setForecastOffsetMatcher(String value) {
             this.forecastOffsetMatcher = value;
@@ -828,10 +743,8 @@ public class Aggregation {
         /**
          * Gets the value of the location property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getLocation() {
             return location;
@@ -840,10 +753,8 @@ public class Aggregation {
         /**
          * Sets the value of the location property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setLocation(String value) {
             this.location = value;
@@ -852,10 +763,8 @@ public class Aggregation {
         /**
          * Gets the value of the olderThan property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getOlderThan() {
             return olderThan;
@@ -864,10 +773,8 @@ public class Aggregation {
         /**
          * Sets the value of the olderThan property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setOlderThan(String value) {
             this.olderThan = value;
@@ -876,10 +783,8 @@ public class Aggregation {
         /**
          * Gets the value of the regExp property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getRegExp() {
             return regExp;
@@ -888,10 +793,8 @@ public class Aggregation {
         /**
          * Sets the value of the regExp property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setRegExp(String value) {
             this.regExp = value;
@@ -900,10 +803,8 @@ public class Aggregation {
         /**
          * Gets the value of the runDateMatcher property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getRunDateMatcher() {
             return runDateMatcher;
@@ -912,10 +813,8 @@ public class Aggregation {
         /**
          * Sets the value of the runDateMatcher property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setRunDateMatcher(String value) {
             this.runDateMatcher = value;
@@ -924,10 +823,8 @@ public class Aggregation {
         /**
          * Gets the value of the subdirs property.
          * 
-         * @return
-         *     possible object is
-         *     {@link Boolean }
-         *     
+         * @return possible object is {@link Boolean }
+         * 
          */
         public boolean isSubdirs() {
             if (subdirs == null) {
@@ -940,10 +837,8 @@ public class Aggregation {
         /**
          * Sets the value of the subdirs property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link Boolean }
-         *     
+         * @param value allowed object is {@link Boolean }
+         * 
          */
         public void setSubdirs(Boolean value) {
             this.subdirs = value;
@@ -952,10 +847,8 @@ public class Aggregation {
         /**
          * Gets the value of the suffix property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getSuffix() {
             return suffix;
@@ -964,10 +857,8 @@ public class Aggregation {
         /**
          * Sets the value of the suffix property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setSuffix(String value) {
             this.suffix = value;
@@ -975,11 +866,12 @@ public class Aggregation {
 
     }
 
-
     /**
-     * <p>Java class for anonymous complex type.
+     * <p>
+     * Java class for anonymous complex type.
      * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
+     * <p>
+     * The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
      * &lt;complexType>
@@ -1003,10 +895,8 @@ public class Aggregation {
         /**
          * Gets the value of the name property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getName() {
             return name;
@@ -1015,10 +905,8 @@ public class Aggregation {
         /**
          * Sets the value of the name property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setName(String value) {
             this.name = value;

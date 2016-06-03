@@ -31,18 +31,13 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
 
-import fr.cls.atoll.motu.library.misc.queueserver.QueueLogError;
-import fr.cls.atoll.motu.library.misc.queueserver.QueueLogPriority;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 
 // TODO: Auto-generated Javadoc
@@ -129,8 +124,8 @@ public class QueueLogInfo {
     /** The extraction parameters. */
     private ExtractionParameters extractionParameters = null;
 
-    /** The priority info. */
-    private final List<QueueLogPriority> priorities = new ArrayList<QueueLogPriority>();
+    // /** The priority info. */
+    // private final List<QueueLogPriority> priorities = new ArrayList<QueueLogPriority>();
 
     /** The download url path. */
     private String downloadUrlPath = "";
@@ -204,7 +199,7 @@ public class QueueLogInfo {
      */
     public void initXStreamOptions() {
 
-        xStream.alias("priority", QueueLogPriority.class);
+        // xStream.alias("priority", QueueLogPriority.class);
 
         xStream.useAttributeFor(Date.class);
         xStream.useAttributeFor(long.class);
@@ -218,8 +213,8 @@ public class QueueLogInfo {
         // xStream.useAttributeFor("priority", int.class);
         // xStream.useAttributeFor("range", int.class);
 
-        xStream.useAttributeFor(QueueLogPriority.class, "priority");
-        xStream.useAttributeFor(QueueLogPriority.class, "range");
+        // xStream.useAttributeFor(QueueLogPriority.class, "priority");
+        // xStream.useAttributeFor(QueueLogPriority.class, "range");
 
         xStream.useAttributeFor(ExtractionParameters.class, "userId");
         // xStream.useAttributeFor(ExtractionParameters.class, "user");
@@ -364,11 +359,11 @@ public class QueueLogInfo {
             outputStream.write((CSV_SEPARATOR).getBytes(encoding));
 
             // Priorities
-            for (QueueLogPriority p : priorities) {
-                outputStream.write(Integer.toString(p.getPriority()).concat(CSV_SEPARATOR).getBytes(encoding));
-                outputStream.write(Integer.toString(p.getRange()).concat(CSV_SEPARATOR).getBytes(encoding));
-                outputStream.write(DATE_FORMAT.format(p.getDate()).concat(CSV_SEPARATOR).getBytes(encoding));
-            }
+            // for (QueueLogPriority p : priorities) {
+            // outputStream.write(Integer.toString(p.getPriority()).concat(CSV_SEPARATOR).getBytes(encoding));
+            // outputStream.write(Integer.toString(p.getRange()).concat(CSV_SEPARATOR).getBytes(encoding));
+            // outputStream.write(DATE_FORMAT.format(p.getDate()).concat(CSV_SEPARATOR).getBytes(encoding));
+            // }
             outputStream.write((CSV_SEPARATOR).getBytes(encoding));
 
             // Return CSV line to String
@@ -750,9 +745,9 @@ public class QueueLogInfo {
      * 
      * @return the priorities
      */
-    public List<QueueLogPriority> getPriorities() {
-        return priorities;
-    }
+    // public List<QueueLogPriority> getPriorities() {
+    // return priorities;
+    // }
 
     /**
      * Adds the priority.
@@ -761,31 +756,31 @@ public class QueueLogInfo {
      * @param range the range
      * @param date the date
      */
-    public void addPriority(int priority, int range, Date date) {
-
-        if (date == null) {
-            Calendar cal = Calendar.getInstance();
-            date = cal.getTime();
-        }
-        QueueLogPriority queueLogPriority = new QueueLogPriority(priority, range, date);
-        this.priorities.add(queueLogPriority);
-    }
-
-    /**
-     * Gets the most recent priority.
-     * 
-     * @return the most recent priority
-     */
-    public QueueLogPriority getMostRecentPriority() {
-        if (priorities == null) {
-            return null;
-        }
-        if (priorities.isEmpty()) {
-            return null;
-        }
-
-        return priorities.get(priorities.size() - 1);
-    }
+    // public void addPriority(int priority, int range, Date date) {
+    //
+    // if (date == null) {
+    // Calendar cal = Calendar.getInstance();
+    // date = cal.getTime();
+    // }
+    // QueueLogPriority queueLogPriority = new QueueLogPriority(priority, range, date);
+    // this.priorities.add(queueLogPriority);
+    // }
+    //
+    // /**
+    // * Gets the most recent priority.
+    // *
+    // * @return the most recent priority
+    // */
+    // public QueueLogPriority getMostRecentPriority() {
+    // if (priorities == null) {
+    // return null;
+    // }
+    // if (priorities.isEmpty()) {
+    // return null;
+    // }
+    //
+    // return priorities.get(priorities.size() - 1);
+    // }
 
     // /**
     // * Gets the priorities time.

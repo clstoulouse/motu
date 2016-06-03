@@ -2,8 +2,6 @@ package fr.cls.atoll.motu.web.usl.request.session;
 
 import javax.servlet.http.HttpSession;
 
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-
 /**
  * <br>
  * <br>
@@ -61,15 +59,15 @@ public class SessionManager {
         return (String) session.getAttribute(SESSION_AUTHORIZED_USER);
     }
 
-    /**
-     * .
-     * 
-     * @param session
-     * @return
-     */
-    public Organizer getOrganizer(HttpSession session) {
-        return (Organizer) session.getAttribute(ORGANIZER_SESSION_ATTR);
-    }
+    // /**
+    // * .
+    // *
+    // * @param session
+    // * @return
+    // */
+    // public Organizer getOrganizer(HttpSession session) {
+    // return (Organizer) session.getAttribute(ORGANIZER_SESSION_ATTR);
+    // }
 
     /**
      * .

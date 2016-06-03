@@ -16,10 +16,9 @@ import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.api.utils.JAXBWriter;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuMarshallException;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 
@@ -195,12 +194,7 @@ public class DeleteAction extends AbstractAction {
     public static void setError(StatusModeResponse statusModeResponse, Exception e) {
         ErrorType errorType = ErrorType.SYSTEM;
         statusModeResponse.setStatus(StatusModeType.ERROR);
-        if (e instanceof MotuExceptionBase) {
-            MotuExceptionBase e2 = (MotuExceptionBase) e;
-            statusModeResponse.setMsg(e2.notifyException());
-        } else {
-            statusModeResponse.setMsg(e.getMessage());
-        }
+        statusModeResponse.setMsg(e.getMessage());
         statusModeResponse.setCode(errorType);
     }
 }

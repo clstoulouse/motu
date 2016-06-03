@@ -5,23 +5,23 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.exception.MotuInconsistencyException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.web.bll.exception.MotuInconsistencyException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatLonRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuMarshallException;
+import fr.cls.atoll.motu.web.bll.exception.MotuNoVarException;
+import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.ProductSizeRequest;
 import fr.cls.atoll.motu.web.dal.catalog.product.metadata.opendap.OpenDapProductMetadataReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
@@ -54,7 +54,7 @@ public class DALProductManager implements IDALProductManager {
                                             List<String> listVar,
                                             List<String> listTemporalCoverage,
                                             List<String> listLatLongCoverage,
-                                            List<String> listDepthCoverage) throws MotuExceptionBase {
+                                            List<String> listDepthCoverage) throws MotuException {
         return getAmountDataSize(product, listVar, listTemporalCoverage, listLatLongCoverage, listDepthCoverage);
     }
 
@@ -88,7 +88,7 @@ public class DALProductManager implements IDALProductManager {
                                     List<String> listVar,
                                     List<String> listTemporalCoverage,
                                     List<String> listLatLongCoverage,
-                                    List<String> listDepthCoverage) throws MotuExceptionBase {
+                                    List<String> listDepthCoverage) throws MotuException {
 
         double productDataSize = -1d;
 
@@ -96,11 +96,12 @@ public class DALProductManager implements IDALProductManager {
             ProductSizeRequest.computeAmountDataSize(product, listVar, listTemporalCoverage, listLatLongCoverage, listDepthCoverage);
 
             productDataSize = product.getAmountDataSizeAsBytes();
-        } catch (NetCdfAttributeException e) {
-            // Do nothing;
         } catch (Exception e) {
-            throw new MotuExceptionBase(e);
+            throw new MotuException(e);
         }
+        // catch (NetCdfAttributeException e) {
+        // // Do nothing;
+        // }
 
         return productDataSize;
     }

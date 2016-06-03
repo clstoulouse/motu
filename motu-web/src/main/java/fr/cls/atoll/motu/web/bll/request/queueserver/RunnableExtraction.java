@@ -30,12 +30,11 @@ import java.util.Date;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.queueserver.QueueLogPriority;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueLogInfo;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
@@ -87,10 +86,10 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
 
         String userId = extractionParameters.getUserId();
         String userHost = extractionParameters.getUserHost();
-        if (Organizer.isNullOrEmpty(userHost)) {
+        if (StringUtils.isNullOrEmpty(userHost)) {
             userHost = "Unknown";
         }
-        if (Organizer.isNullOrEmpty(userId)) {
+        if (StringUtils.isNullOrEmpty(userId)) {
             userId = userHost;
         }
 
@@ -342,41 +341,41 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
     // return extractionParameters.isAnonymousUser();
     // }
 
-    /**
-     * Checks if is out of time.
-     * 
-     * @param timeOutInMinutes the time out in minutes
-     * 
-     * @return true, if is out of time
-     */
-    public boolean isOutOfTime(short timeOutInMinutes) {
-        if (priority == 1) {
-            // isHigherPriority
-            return false;
-        }
-
-        Date timeToCompare = null;
-
-        QueueLogPriority queueLogPriority = queueLogInfo.getMostRecentPriority();
-
-        if (queueLogPriority != null) {
-            timeToCompare = queueLogPriority.getDate();
-        } else {
-            timeToCompare = queueLogInfo.getInQueueTime();
-        }
-
-        if (timeToCompare == null) {
-            return false;
-        }
-
-        Calendar cal = Calendar.getInstance();
-
-        long elapsedTime = cal.getTime().getTime() - timeToCompare.getTime();
-        long timeOut = 1000L * 60 * timeOutInMinutes;
-
-        return elapsedTime >= timeOut;
-
-    }
+    // /**
+    // * Checks if is out of time.
+    // *
+    // * @param timeOutInMinutes the time out in minutes
+    // *
+    // * @return true, if is out of time
+    // */
+    // public boolean isOutOfTime(short timeOutInMinutes) {
+    // if (priority == 1) {
+    // // isHigherPriority
+    // return false;
+    // }
+    //
+    // Date timeToCompare = null;
+    //
+    // QueueLogPriority queueLogPriority = queueLogInfo.getMostRecentPriority();
+    //
+    // if (queueLogPriority != null) {
+    // timeToCompare = queueLogPriority.getDate();
+    // } else {
+    // timeToCompare = queueLogInfo.getInQueueTime();
+    // }
+    //
+    // if (timeToCompare == null) {
+    // return false;
+    // }
+    //
+    // Calendar cal = Calendar.getInstance();
+    //
+    // long elapsedTime = cal.getTime().getTime() - timeToCompare.getTime();
+    // long timeOut = 1000L * 60 * timeOutInMinutes;
+    //
+    // return elapsedTime >= timeOut;
+    //
+    // }
 
     /**
      * Run.
@@ -532,7 +531,7 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
         this.priority = priorityValue;
         this.range = rangeValue;
 
-        queueLogInfo.addPriority(this.priority, this.range, null);
+        // queueLogInfo.addPriority(this.priority, this.range, null);
     }
 
     /**
@@ -659,7 +658,7 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
      * 
      * @param e
      */
-    public void setError(fr.cls.atoll.motu.library.misc.exception.MotuException e) {
+    public void setError(MotuException e) {
         // TODO SMA Not sure of the usage ! Auto-generated method stub
 
     }

@@ -28,8 +28,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import ucar.nc2.Dimension;
 
 /**
@@ -202,7 +201,7 @@ public class ParameterMetaData {
      * @return the id
      */
     public String getId() {
-        if (Organizer.isNullOrEmpty(this.standardName)) {
+        if (StringUtils.isNullOrEmpty(this.standardName)) {
             return getName();
         }
         return getStandardName(false);
@@ -245,7 +244,21 @@ public class ParameterMetaData {
         }
 
         this.standardName = standardName;
-        this.standardNameWithoutURI = Organizer.getStandardNameFromURI(standardName);
+
+        if (StringUtils.isNullOrEmpty(standardName)) {
+            this.standardNameWithoutURI = standardName;
+        } else {
+
+            String[] split = standardName.split(".*#");
+            if (split.length <= 1) {
+                split = standardName.split(".*#");
+                if (split.length <= 1) {
+                    this.standardNameWithoutURI = standardName;
+                }
+            } else {
+                this.standardNameWithoutURI = split[1];
+            }
+        }
     }
 
     /** The long name. */

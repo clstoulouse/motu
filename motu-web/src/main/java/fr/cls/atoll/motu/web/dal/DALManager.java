@@ -9,7 +9,6 @@ import fr.cls.atoll.motu.web.dal.request.DALRequestManager;
 import fr.cls.atoll.motu.web.dal.request.IDALRequestManager;
 import fr.cls.atoll.motu.web.dal.users.DALUserManager;
 import fr.cls.atoll.motu.web.dal.users.IDALUserManager;
-import fr.cls.atoll.motu.web.usl.utils.log4j.Log4JInitializer;
 
 /**
  * <br>
@@ -46,11 +45,7 @@ public class DALManager implements IDALManager {
 
     @Override
     public void init() throws MotuException {
-        // Init log4j
-        Log4JInitializer.init(null);
-
         dalConfigManager.init();
-        dalUserManager.init();
         dalCatalogManager.init();
     }
 

@@ -9,9 +9,9 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
@@ -53,8 +53,9 @@ public class BLLRequestManager implements IBLLRequestManager {
         // TODO SMA This class should take code from RequestManagement.getInstance();
     }
 
-    public void init() {
-
+    @Override
+    public void init() throws MotuException {
+        queueServerManagement.init();
     }
 
     /** {@inheritDoc} */
@@ -153,7 +154,7 @@ public class BLLRequestManager implements IBLLRequestManager {
                                              List<String> listVar,
                                              List<String> listTemporalCoverage,
                                              List<String> listLatLongCoverage,
-                                             List<String> listDepthCoverage) throws MotuExceptionBase {
+                                             List<String> listDepthCoverage) throws MotuException {
         return DALManager.getInstance().getCatalogManager().getProductManager()
                 .getProductDataSizeRequest(product, listVar, listTemporalCoverage, listLatLongCoverage, listDepthCoverage);
     }
@@ -166,7 +167,7 @@ public class BLLRequestManager implements IBLLRequestManager {
 
     /** {@inheritDoc} */
     @Override
-    public double getProductMaxAllowedDataSizeIntoByte(Product product) throws MotuExceptionBase {
+    public double getProductMaxAllowedDataSizeIntoByte(Product product) throws MotuException {
         return UnitUtils.toBytes(BLLManager.getInstance().getRequestManager().getQueueServerManager().getMaxDataThreshold());
     }
 

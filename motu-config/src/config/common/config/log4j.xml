@@ -1,104 +1,86 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
-<log4j:configuration debug="false"
-        xmlns:log4j="http://jakarta.apache.org/log4j/">
-        <appender class="org.apache.log4j.ConsoleAppender" name="CONSOLE">
-                <param name="Target" value="System.Out" />
-                <layout class="org.apache.log4j.PatternLayout">
-                        <param name="ConversionPattern" value="[%-5p &lt;%d{dd/MM/yyyy HH:mm:ss.SSS}&gt;, thrID: %t - %c.%M%n%m ]%n%n" />
-                </layout>
-        </appender>
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration packages="fr.cls.atoll.motu.web.common.log.log4j">
+	<!-- ######################################################################################################################## -->
+	<!-- ### OVERVIEW LOG4J ### -->
+	<!-- ######################################################################################################################## -->
+	<!-- [LEVEL] LOGGER APPENDERS ### -->
+	<!-- ######################################################################################################################## -->
+	<!-- [ERROR] root logbook.log[INFO] warning.log[WARN] errors.log[ERROR] -->
+	<!-- [INFO] fr.cls.atoll.motu // // // -->
+	<!-- ######################################################################################################################## -->
 
-        <appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
-                <param name="File" value="/opt/atoll/misgw/tomcat-motu-cas/logs/localhost-log.log" />
-                <param name="DatePattern" value="'.'yyyy-MM-dd"/>
-                <param name="Append" value="true"/>
-                <layout class="org.apache.log4j.PatternLayout">
-                        <param name="ConversionPattern" value="%d{HH:mm:ss:SSS} - %p - %C{1} - %m%n"/>
-                </layout>
-        </appender>
+	<!-- ######################################################################################################################## -->
+	<!-- ######################################################################################################################## -->
+	<Properties>
+		<!-- This property is read from Java option -dmotu-log-dir=$absoluteDirPath
+			 And here is the property if not found
+		 -->
+		<Property name="motu-log-dir">/opt/cmems-cis/motu</Property>
+	</Properties>
 
-        <appender class="org.apache.log4j.DailyRollingFileAppender" name="XMLFileInfo">
-                <param name="file" value="/opt/atoll/misgw/tomcat-motu-cas/logs/motuQSlog.xml" />
-                <param name="Append" value="true" />
-                <param name="DatePattern" value="'.'yyyy-MM" />
-                <layout class="fr.cls.atoll.motu.library.misc.log4j.MotuXMLLayout"></layout>
-                <!--
-                        <layout class="fr.cls.atoll.motu.web.servlet.TestLogXML"></layout>
-                        <layout class="org.apache.log4j.xml.XMLLayout"/>
-                -->
-        </appender>
-		
-        <appender name="catalinaOutput" class="org.apache.log4j.DailyRollingFileAppender">
-                <param name="File" value="/opt/atoll/misgw/tomcat-motu-cas/logs/catalina.out"/>
-                <param name="DatePattern" value=".yyyy-MM-dd"/>
-                <layout class="org.apache.log4j.PatternLayout">
-                <param name="ConversionPattern" value="%d{dd/MM/yyyy-HH:mm:ss}; [%t] %-5p @%M %m%n"/>
-                </layout>
-        </appender>
-		
-<!--
-		<logger name="fr.cls.atoll.motu">
-				<level value="INFO" />
-				<appender-ref ref="CONSOLE" />
+	<Appenders>
+		<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n" />
+		</Console>
+
+		<!-- ############################################################ -->
+		<!-- ### logbook.log, warning.log, errors.log ################### -->
+		<!-- ############################################################ -->
+		<RollingFile name="log-file-logbook" fileName="${sys:motu-log-dir}/logbook.log"
+			filePattern="${sys:motu-log-dir}/logbook.log.%d{dd-MM-yyyy}"
+			append="true">
+			<PatternLayout pattern="%d{ISO8601} [%t] %-5p %c.%M %m%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+			</Policies>
+		</RollingFile>
+
+		<RollingFile name="log-file-warning" fileName="${sys:motu-log-dir}/warnings.log"
+			filePattern="${sys:motu-log-dir}/warnings.log.%d{dd-MM-yyyy}"
+			append="true">
+			<PatternLayout pattern="%d{ISO8601} [%t] %-5p %c.%M %m%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+			</Policies>
+
+		</RollingFile>
+
+		<RollingFile name="log-file-errors" fileName="${sys:motu-log-dir}/errors.log"
+			filePattern="${sys:motu-log-dir}/errors.log.%d{dd-MM-yyyy}"
+			append="true">
+			<PatternLayout pattern="%d{ISO8601} [%t] %-5p %c.%M %m%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" modulate="true" />
+			</Policies>
+		</RollingFile>
+
+		<!-- ############################################################ -->
+		<!-- ### Queue ##### -->
+		<!-- ############################################################ -->
+		<RollingFile name="log-file-infos.queue" fileName="${sys:motu-log-dir}/queue.log"
+			filePattern="${sys:motu-log-dir}/queue.log.%d{dd-MM-yyyy}"
+			append="true">
+			<MotuCustomLayout />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+			</Policies>
+		</RollingFile>
+	</Appenders>
+
+	<Loggers>
+		<logger
+			name="fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueLogInfo"
+			additivity="false" level="INFO">
+			<AppenderRef ref="log-file-infos.queue" level="INFO"/>
 		</logger>
-		
-        <logger name="atoll.motu.queueserver">
-                <level value="INFO" />
-                <appender-ref ref="XMLFileInfo" />
-        </logger>		
 
-        <logger name="fr.cls.atoll.motu.cas.proxy">
-                <level value="INFO" />
-                <appender-ref ref="FILE" />
-        </logger>
-		
-        <logger name="fr.cls.atoll.motu.library">
-                <level value="INFO" />
-                <appender-ref ref="FILE" />
-        </logger>	
+		<logger name="fr.cls.atoll.motu" level="INFO" >
+			<AppenderRef ref="log-file-logbook" level="INFO" />
+			<AppenderRef ref="log-file-warning" level="WARN" />
+			<AppenderRef ref="log-file-errors" level="ERROR" />
+		</logger>
+		<Root level="ERROR">
+		</Root>
+	</Loggers>
 
-        <logger name="org.apache.commons.httpclient">
-                <level value="INFO" />
-                <appender-ref ref="FILE" />
-        </logger>
-		
-        <logger name="fr.cls.atoll.motu.processor">
-                <level value="INFO" />
-                <appender-ref ref="CONSOLE" />
-        </logger>
-		
-        <logger name="org.deegree.services">
-                <level value="INFO" />
-                <appender-ref ref="CONSOLE" />
-        </logger>
-		
-        <logger name="org.apache.commons.vfs2">
-                <level value="INFO" />
-                <appender-ref ref="CONSOLE" />
-        </logger>	
-
-        <logger name="httpclient.wire">
-                <level value="INFO" />
-                <appender-ref ref="FILE" />
-        </logger>		
-
-        <logger name="org.jasig.cas">
-                <level value="ALL" />
-                <appender-ref ref="FILE" />
-        </logger>
-        <logger name="httpclient.wire.header">
-                <level value="fatal" />
-        </logger>
-
-        <logger name="httpclient.wire.content">
-                <level value="fatal" />
-        </logger>
--->
-        <root>
-                <level value="WARN" />
-                <appender-ref ref="FILE" />
-                <appender-ref ref="CONSOLE" />
-                <appender-ref ref="catalinaOutput"/>
-        </root>
-</log4j:configuration>
+</Configuration>

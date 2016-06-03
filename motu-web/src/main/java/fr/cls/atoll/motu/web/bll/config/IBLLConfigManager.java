@@ -80,4 +80,11 @@ public interface IBLLConfigManager {
      * @return
      */
     List<StandardName> getStandardNameList();
+
+    /**
+     * .
+     * 
+     * @throws MotuException
+     */
+    void init() throws MotuException;
 }

@@ -29,7 +29,6 @@
 // Generated on: 2009.03.25 at 11:44:51 AM CET 
 //
 
-
 package fr.cls.atoll.motu.web.dal.tds.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -37,13 +36,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import fr.cls.atoll.motu.library.misc.tds.server.SourceType.Contact;
-
 
 /**
- * <p>Java class for sourceType complex type.
+ * <p>
+ * Java class for sourceType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="sourceType">
@@ -70,10 +69,7 @@ import fr.cls.atoll.motu.library.misc.tds.server.SourceType.Contact;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "sourceType", propOrder = {
-    "name",
-    "contact"
-})
+@XmlType(name = "sourceType", propOrder = { "name", "contact" })
 public class SourceType {
 
     @XmlElement(namespace = "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0", required = true)
@@ -84,10 +80,8 @@ public class SourceType {
     /**
      * Gets the value of the name property.
      * 
-     * @return
-     *     possible object is
-     *     {@link ControlledVocabulary }
-     *     
+     * @return possible object is {@link ControlledVocabulary }
+     * 
      */
     public ControlledVocabulary getName() {
         return name;
@@ -96,10 +90,8 @@ public class SourceType {
     /**
      * Sets the value of the name property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link ControlledVocabulary }
-     *     
+     * @param value allowed object is {@link ControlledVocabulary }
+     * 
      */
     public void setName(ControlledVocabulary value) {
         this.name = value;
@@ -108,10 +100,8 @@ public class SourceType {
     /**
      * Gets the value of the contact property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Contact }
-     *     
+     * @return possible object is {@link Contact }
+     * 
      */
     public Contact getContact() {
         return contact;
@@ -120,20 +110,19 @@ public class SourceType {
     /**
      * Sets the value of the contact property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Contact }
-     *     
+     * @param value allowed object is {@link Contact }
+     * 
      */
     public void setContact(Contact value) {
         this.contact = value;
     }
 
-
     /**
-     * <p>Java class for anonymous complex type.
+     * <p>
+     * Java class for anonymous complex type.
      * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
+     * <p>
+     * The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
      * &lt;complexType>
@@ -160,10 +149,8 @@ public class SourceType {
         /**
          * Gets the value of the email property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getEmail() {
             return email;
@@ -172,10 +159,8 @@ public class SourceType {
         /**
          * Sets the value of the email property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setEmail(String value) {
             this.email = value;
@@ -184,10 +169,8 @@ public class SourceType {
         /**
          * Gets the value of the url property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getUrl() {
             return url;
@@ -196,10 +179,8 @@ public class SourceType {
         /**
          * Sets the value of the url property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setUrl(String value) {
             this.url = value;

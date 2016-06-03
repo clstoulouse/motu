@@ -36,13 +36,13 @@ import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.validation.Assertion;
 
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.misc.exception.MotuException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInconsistencyException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInconsistencyException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.TimeUtils;
+import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 
 /**
  * 
@@ -517,7 +517,7 @@ public class ExtractionParameters implements Cloneable {
         // --> set anonymous user to false
         if (overrideUserId) {
             String name = AssertionUtils.getAttributePrincipalName(assertion);
-            if (!Organizer.isNullOrEmpty(name)) {
+            if (!StringUtils.isNullOrEmpty(name)) {
                 setUserId(name);
                 setAnonymousUser(false);
             }
@@ -573,18 +573,17 @@ public class ExtractionParameters implements Cloneable {
      * @throws MotuException the motu exception
      */
     public String getProtocolScheme() throws MotuException {
-        if (!Organizer.isNullOrEmpty(this.protocolScheme)) {
+        if (!StringUtils.isNullOrEmpty(this.protocolScheme)) {
             return this.protocolScheme;
         }
 
-        if (Organizer.isNullOrEmpty(locationData)) {
+        if (StringUtils.isNullOrEmpty(locationData)) {
             return null;
         }
 
         URI uri = null;
         try {
-            // uri = new URI(locationData);
-            uri = Organizer.newURI(locationData);
+            uri = new URI(locationData.replace("\\", "/"));
         } catch (URISyntaxException e) {
             throw new MotuException(String.format("ERROR: location data '%s' has not a valid syntax", locationData), e);
         }
@@ -795,7 +794,7 @@ public class ExtractionParameters implements Cloneable {
             LOGGER.debug("verifyParameters() - entering");
         }
 
-        if (Organizer.isNullOrEmpty(locationData) && Organizer.isNullOrEmpty(productId)) {
+        if (StringUtils.isNullOrEmpty(locationData) && StringUtils.isNullOrEmpty(productId)) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.info(" empty locationData and empty productId");
                 LOGGER.debug("verifyParameters() - exiting");
@@ -806,7 +805,7 @@ public class ExtractionParameters implements Cloneable {
             throw new MotuInconsistencyException("ERROR: neither location data nor product id parameters are filled - Choose one of them");
         }
 
-        if (!Organizer.isNullOrEmpty(locationData) && !Organizer.isNullOrEmpty(productId)) {
+        if (!StringUtils.isNullOrEmpty(locationData) && !StringUtils.isNullOrEmpty(productId)) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.info(" non empty locationData and non empty productId");
                 LOGGER.debug("verifyParameters() - exiting");
@@ -817,7 +816,7 @@ public class ExtractionParameters implements Cloneable {
             throw new MotuInconsistencyException("ERROR: location data and product id parameters are not compatible - Choose only one of them");
         }
 
-        if (Organizer.isNullOrEmpty(serviceName) && !Organizer.isNullOrEmpty(productId)) {
+        if (StringUtils.isNullOrEmpty(serviceName) && !StringUtils.isNullOrEmpty(productId)) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.info("empty serviceName  and non empty productId");
                 LOGGER.debug("verifyParameters() - exiting");

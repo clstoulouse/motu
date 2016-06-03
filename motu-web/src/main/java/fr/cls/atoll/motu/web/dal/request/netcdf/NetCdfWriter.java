@@ -36,12 +36,13 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeNotFoundException;
-import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeNotFoundException;
+import fr.cls.atoll.motu.web.common.utils.ListUtils;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayFloat;
@@ -1480,7 +1481,7 @@ public class NetCdfWriter {
      */
     public void writeVariables(List<CoordinateAxis> listCoordinateAxis, Map<String, Range> mapRange, Map<String, Variable> originalVariables)
             throws MotuException, MotuNotImplementedException, MotuExceedingCapacityException {
-        if (Organizer.isNullOrEmpty(listCoordinateAxis)) {
+        if (ListUtils.isNullOrEmpty(listCoordinateAxis)) {
             return;
         }
 
@@ -1668,7 +1669,7 @@ public class NetCdfWriter {
             // Find variable relative to Coordinate Systems attribute
             Attribute attribute = NetCdfReader.getAttribute(v, NetCdfReader.VARIABLEATTRIBUTE_GRID_MAPPING);
             String varProjectionName = attribute.getStringValue();
-            if (!Organizer.isNullOrEmpty(varProjectionName)) {
+            if (!StringUtils.isNullOrEmpty(varProjectionName)) {
                 Variable varProjection = (Variable) gds.getDataVariable(varProjectionName);
                 if (varProjection != null) {
                     putVariables(varProjection.getName(), varProjection);
@@ -2153,7 +2154,7 @@ public class NetCdfWriter {
 
         try {
             for (List<Variable> listVar : variablesMap.values()) {
-                if (Organizer.isNullOrEmpty(listVar)) {
+                if (ListUtils.isNullOrEmpty(listVar)) {
                     continue;
                 }
                 List<Section> listVarOrgRanges = mapVarOrgRanges.get(listVar.get(0).getName());
@@ -2166,7 +2167,7 @@ public class NetCdfWriter {
                     // }
                     Variable var = listVar.get(index);
                     Section varOrgRanges = null;
-                    if (!Organizer.isNullOrEmpty(listVarOrgRanges)) {
+                    if (!ListUtils.isNullOrEmpty(listVarOrgRanges)) {
                         varOrgRanges = listVarOrgRanges.get(index);
                     }
                     writeVariableByBlockGeoXY(var, listDistinctXRange, listDistinctYRange, varOrgRanges);
@@ -2624,7 +2625,7 @@ public class NetCdfWriter {
             throws MotuException {
 
         int diff = 0;
-        if (Organizer.isNullOrEmpty(listDistinctRange)) {
+        if (ListUtils.isNullOrEmpty(listDistinctRange)) {
             return diff;
             // throw new
             // MotuException("Error in NetcdfWriter computeSectionOffset - listDistinctRange is null or
@@ -2703,7 +2704,7 @@ public class NetCdfWriter {
         int index = -1;
         for (int i = 0; i < var.getDimensions().size(); i++) {
             List<Variable> axes = variablesMap.get(var.getDimension(i).getName());
-            if (Organizer.isNullOrEmpty(axes)) {
+            if (ListUtils.isNullOrEmpty(axes)) {
                 return index;
             }
 
@@ -2752,7 +2753,7 @@ public class NetCdfWriter {
 
         for (Dimension dim : var.getDimensions()) {
             List<Variable> axes = variablesMap.get(dim.getName());
-            if (Organizer.isNullOrEmpty(axes)) {
+            if (ListUtils.isNullOrEmpty(axes)) {
                 return axis;
             }
 
@@ -3968,7 +3969,7 @@ public class NetCdfWriter {
      * @return a unique NetCdf file name based on system time.
      */
     public static String getUniqueNetCdfFileName(String prefix) {
-        return Organizer.getUniqueFileName(prefix, NetCdfWriter.NETCDF_FILE_EXTENSION_FINAL);
+        return StringUtils.getUniqueFileName(prefix, NetCdfWriter.NETCDF_FILE_EXTENSION_FINAL);
     }
 
     /**

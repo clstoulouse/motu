@@ -33,9 +33,9 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueCapacityException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidQueuePriorityException;
+import fr.cls.atoll.motu.web.bll.exception.MotuExceedingQueueCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidQueuePriorityException;
 import fr.cls.atoll.motu.web.bll.request.queueserver.RunnableExtraction;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
 

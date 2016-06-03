@@ -3,6 +3,7 @@ package fr.cls.atoll.motu.web.bll;
 import fr.cls.atoll.motu.web.bll.catalog.IBLLCatalogManager;
 import fr.cls.atoll.motu.web.bll.config.BLLConfigManager;
 import fr.cls.atoll.motu.web.bll.config.IBLLConfigManager;
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.BLLRequestManager;
 import fr.cls.atoll.motu.web.bll.request.IBLLRequestManager;
 import fr.cls.atoll.motu.web.bll.users.BLLUserManager;
@@ -41,7 +42,10 @@ public class BLLManager implements IBLLManager {
     }
 
     @Override
-    public void init() {
+    public void init() throws MotuException {
+        configManager.init();
+        userManager.init();
+        requestManager.init();
     }
 
     /** {@inheritDoc} */

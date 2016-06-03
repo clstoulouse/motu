@@ -13,8 +13,8 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.cls.atoll.motu.library.misc.utils.PropertiesUtilities;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.common.utils.PropertiesUtilities;
 import fr.cls.atoll.motu.web.dal.config.stdname.StdNameReader;
 import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardName;
 import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardNames;

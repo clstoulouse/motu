@@ -2,8 +2,8 @@ package fr.cls.atoll.motu.web.dal.catalog.product;
 
 import java.util.List;
 
-import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 
@@ -40,5 +40,5 @@ public interface IDALProductManager {
                                      List<String> listVar,
                                      List<String> listTemporalCoverage,
                                      List<String> listLatLongCoverage,
-                                     List<String> listDepthCoverage) throws MotuExceptionBase;
+                                     List<String> listDepthCoverage) throws MotuException;
 }

@@ -2,6 +2,8 @@ package fr.cls.atoll.motu.web.bll.users;
 
 import java.util.Properties;
 
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
+
 /**
  * <br>
  * <br>
@@ -20,5 +22,12 @@ public interface IBLLUserManager {
      * @return
      */
     Properties getAuthenticationProps();
+
+    /**
+     * .
+     * 
+     * @throws MotuException
+     */
+    void init() throws MotuException;
 
 }
