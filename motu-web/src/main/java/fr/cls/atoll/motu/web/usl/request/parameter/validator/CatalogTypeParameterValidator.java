@@ -33,9 +33,10 @@ public class CatalogTypeParameterValidator extends AbstractHTTPParameterValidato
      */
     @Override
     public String onValidateAction() throws InvalidHTTPParameterException {
-        if (!StringUtils.isNullOrEmpty(getParameterValue()) && (getParameterValue().equalsIgnoreCase(MotuRequestParametersConstant.PARAM_CATALOG_TYPE)
-                || getParameterValue().equalsIgnoreCase(MotuRequestParametersConstant.PARAM_CATALOG_TYPE_TDS)
-                || getParameterValue().equalsIgnoreCase(MotuRequestParametersConstant.PARAM_CATALOG_TYPE_FTP))) {
+        if ((isParameterOptional() && StringUtils.isNullOrEmpty(getParameterValue())) || (!StringUtils.isNullOrEmpty(getParameterValue())
+                && (getParameterValue().equalsIgnoreCase(MotuRequestParametersConstant.PARAM_CATALOG_TYPE)
+                        || getParameterValue().equalsIgnoreCase(MotuRequestParametersConstant.PARAM_CATALOG_TYPE_TDS)
+                        || getParameterValue().equalsIgnoreCase(MotuRequestParametersConstant.PARAM_CATALOG_TYPE_FTP)))) {
             return getParameterValue();
         } else {
             throw new InvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
@@ -46,4 +47,5 @@ public class CatalogTypeParameterValidator extends AbstractHTTPParameterValidato
     protected String getParameterBoundaries() {
         return "[TDS,FTP]";
     }
+
 }

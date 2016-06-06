@@ -22,6 +22,7 @@ public abstract class AbstractHTTPParameterValidator<T> {
     private T parameterValueValidated;
     private String parameterName;
     private String parameterValue;
+    private boolean isParameterOptional;
 
     /**
      * Constructeur.
@@ -32,6 +33,25 @@ public abstract class AbstractHTTPParameterValidator<T> {
     public AbstractHTTPParameterValidator(String parameterName_, String parameterValue_) {
         parameterName = parameterName_;
         parameterValue = parameterValue_;
+        isParameterOptional = false;
+    }
+
+    /**
+     * .
+     * 
+     * @param b
+     */
+    public void setOptional(boolean isParameterOptional_) {
+        isParameterOptional = isParameterOptional_;
+    }
+
+    /**
+     * Valeur de isParameterOptional.
+     * 
+     * @return la valeur.
+     */
+    public boolean isParameterOptional() {
+        return isParameterOptional;
     }
 
     /**

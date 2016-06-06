@@ -58,8 +58,9 @@ public class ListServicesAction extends AbstractAuthorizedAction {
 
         catalogTypeParameterValidator = new CatalogTypeParameterValidator(
                 MotuRequestParametersConstant.PARAM_CATALOG_TYPE,
-                CommonHTTPParameters.getServiceFromRequest(getRequest()),
+                CommonHTTPParameters.getCatalogTypeFromRequest(getRequest()),
                 "");
+        catalogTypeParameterValidator.setOptional(true);
     }
 
     @Override

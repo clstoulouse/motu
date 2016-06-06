@@ -216,11 +216,14 @@ public class VelocityTemplateManager {
         } else {
             buffer.append(veloTemplatePrefix.toLowerCase());
         }
-        buffer.append("_");
 
         if (StringUtils.isNullOrEmpty(lang)) {
-            buffer.append(BLLManager.getInstance().getConfigManager().getMotuConfig().getCommonDefaultLanguage());
+            if (!"UK".equalsIgnoreCase(BLLManager.getInstance().getConfigManager().getMotuConfig().getCommonDefaultLanguage())) {
+                buffer.append("_");
+                buffer.append(BLLManager.getInstance().getConfigManager().getMotuConfig().getCommonDefaultLanguage());
+            }
         } else {
+            buffer.append("_");
             buffer.append(lang);
         }
         buffer.append(".vm");
