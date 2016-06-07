@@ -41,4 +41,10 @@ public class BLLCatalogManager implements IBLLCatalogManager {
         return bllProductManager;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void init() throws MotuException {
+        // noop
+    }
+
 }

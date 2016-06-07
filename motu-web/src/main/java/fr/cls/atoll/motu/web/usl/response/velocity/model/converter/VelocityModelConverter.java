@@ -78,6 +78,16 @@ public class VelocityModelConverter {
             public ICatalog getCatalog() {
                 return convertToICatalog(c);
             }
+
+            @Override
+            public String getHttpBaseRef() {
+                return cs.getHttpBaseRef();
+            }
+
+            @Override
+            public boolean isDownloadOnTop() {
+                return cs.getDownloadOnTop();
+            }
         };
     }
 

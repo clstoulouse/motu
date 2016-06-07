@@ -176,7 +176,7 @@ __initJavaConfig() {
    
    __addCatalinaOpt "$JVM_OPTS" "$JVM_OPTS"
    __addCatalinaOpt $JVM_PORT_JMX "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=$JVM_PORT_JMX -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
-   __addCatalinaOpt "$JVM_ADDRESS_DEBUG" "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=$JVM_ADDRESS_DEBUG"
+   __addCatalinaOpt "$JVM_ADDRESS_DEBUG" "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=$JVM_ADDRESS_DEBUG"
    
    export JAVA_OPTS=$JAVA_OPTS_ORIG
 }

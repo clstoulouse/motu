@@ -87,4 +87,11 @@ public interface IBLLConfigManager {
      * @throws MotuException
      */
     void init() throws MotuException;
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    String getMotuConfigurationFolderPath();
 }

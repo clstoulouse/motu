@@ -53,4 +53,11 @@ public interface IDALConfigManager {
      */
     List<StandardName> getStandardNameList();
 
+    /**
+     * .
+     * 
+     * @return
+     */
+    String getMotuConfigurationFolderPath();
+
 }

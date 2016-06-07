@@ -24,6 +24,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.DocMetaData;
 import fr.cls.atoll.motu.web.common.utils.ReflectionUtils;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.catalog.AbstractCatalogLoader;
 import fr.cls.atoll.motu.web.dal.config.xml.model.CatalogService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
@@ -152,66 +153,54 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
     /**
      * Loads Tds products from Tds catalog.
      * 
-     * @param catalogXml Tds catalog
-     * @param datasetType dataset (from Tds catalog) from which information will be loaded Dataset contains a
-     *            list of datasets, recursivity is use to load.
+     * @param tdsCatalogXml Tds catalog
+     * @param tdsDatasetType dataset (from Tds catalog) from which information will be loaded Dataset contains
+     *            a list of datasets, recursivity is use to load.
      * 
      * @throws MotuException the motu exception
      */
-    private void loadTdsProducts(DatasetType datasetType, Catalog catalogXml, boolean useSSO, CatalogData cd) throws MotuException {
-        if (datasetType == null) {
+    private void loadTdsProducts(DatasetType tdsDatasetType, Catalog tdsCatalogXml, boolean useSSO, CatalogData cd) throws MotuException {
+        if (tdsDatasetType == null) {
             return;
         }
 
         // When Url path of the dataset is not null or not empty,
         // we are at the last level --> Create Product and add to the list.
-        if (datasetType.getUrlPath() != null) {
-            if (!datasetType.getUrlPath().equals("")) {
-
-                initializeProductFromTds(datasetType, catalogXml, useSSO, cd);
-
-                return;
-            }
+        if (!StringUtils.isNullOrEmpty(tdsDatasetType.getUrlPath())) {
+            initializeProductFromTds(tdsDatasetType, tdsCatalogXml, useSSO, cd);
+            return;
         }
 
-        cd.setCurrentGeospatialCoverage(findTdsGeoAndDepthCoverage(datasetType));
+        cd.setCurrentGeospatialCoverage(findTdsGeoAndDepthCoverage(tdsDatasetType));
 
         // Saves - the product type at the top level product (on the first call,
         // level 0)
         // - the product sub-type, if not top level product
-        // (type or sub-type correspond to the dataser name)
+        // (type or sub-type correspond to the dataset name)
         if (cd.getCurrentProductType() == null || cd.getCurrentProductType().length() <= 0) {
-            cd.setCurrentProductType(datasetType.getName());
+            cd.setCurrentProductType(tdsDatasetType.getName());
         } else {
-            cd.getCurrentProductSubTypes().add(datasetType.getName());
+            cd.getCurrentProductSubTypes().add(tdsDatasetType.getName());
         }
 
-        List<Service> listServices = datasetType.getService();
+        List<Service> listServices = tdsDatasetType.getService();
         for (Service o : listServices) {
             if (o == null) {
                 continue;
             }
-            catalogXml.getService().add(o);
-            // System.out.print(o.getName());
-            // System.out.print(":");
-            // System.out.println(o.getServiceType());
+            tdsCatalogXml.getService().add(o);
         }
 
-        List<JAXBElement<? extends DatasetType>> list = datasetType.getDataset();
+        List<JAXBElement<? extends DatasetType>> list = tdsDatasetType.getDataset();
 
         for (Iterator<JAXBElement<? extends DatasetType>> it = list.iterator(); it.hasNext();) {
-            JAXBElement<? extends DatasetType> o = it.next();
-
-            DatasetType datasetTypeChild = o.getValue();
-            if (datasetTypeChild != null) {
-                if (datasetTypeChild instanceof CatalogRef) {
-                    // System.out.println("is CatalogRef");
-                    int numberSubPaths = loadTdsCatalogRef((CatalogRef) datasetTypeChild, useSSO, cd);
+            DatasetType tdsDatasetTypeChild = it.next().getValue();
+            if (tdsDatasetTypeChild != null) {
+                if (tdsDatasetTypeChild instanceof CatalogRef) {
+                    int numberSubPaths = loadTdsCatalogRef((CatalogRef) tdsDatasetTypeChild, useSSO, cd);
                     removeListCatalogRefSubPaths(cd, numberSubPaths);
-
-                } else if (datasetType instanceof DatasetType) {
-                    // System.out.println("is DatasetType");
-                    loadTdsProducts(datasetTypeChild, catalogXml, useSSO, cd);
+                } else if (tdsDatasetType instanceof DatasetType) {
+                    loadTdsProducts(tdsDatasetTypeChild, tdsCatalogXml, useSSO, cd);
                 }
             }
         }
@@ -220,7 +209,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
 
         if (cd.getSameProductTypeDataset().size() > 0) {
             cd.getListProductTypeDataset().add(cd.getSameProductTypeDataset());
-            cd.getSameProductTypeDataset().clear();
+            cd.setSameProductTypeDataset(new ArrayList<Product>());
         }
 
         int last = cd.getCurrentProductSubTypes().size() - 1;
@@ -242,7 +231,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
     private GeospatialCoverage findTdsGeoAndDepthCoverage(DatasetType datasetType) throws MotuException {
         GeospatialCoverage geospatialCoverage = null;
 
-        List<Object> listMetadataObject = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), Metadata.class);
+        List<Object> listMetadataObject = JAXBTDSModel.findJaxbElement(datasetType.getThreddsMetadataGroup(), Metadata.class);
         if (listMetadataObject == null) {
             return geospatialCoverage;
         }
@@ -252,7 +241,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
                 continue;
             }
             Metadata metadata = (Metadata) objectMetadataElt;
-            List<Object> listGeoCoverageObject = CatalogData.findJaxbElement(metadata.getThreddsMetadataGroup(), GeospatialCoverage.class);
+            List<Object> listGeoCoverageObject = JAXBTDSModel.findJaxbElement(metadata.getThreddsMetadataGroup(), GeospatialCoverage.class);
             for (Object objectElt : listGeoCoverageObject) {
 
                 if (!(objectElt instanceof GeospatialCoverage)) {
@@ -269,20 +258,19 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
     /**
      * Initializes product and its metadata from an Tds dataset.
      * 
-     * @param catalogXml Tds catalog
-     * @param datasetType Tds dataset which have a non-empty url path.
+     * @param tdsCatalogXml Tds catalog
+     * @param tdsDatasetType Tds dataset which have a non-empty url path.
      * 
      * @throws MotuException the motu exception
      */
-    private void initializeProductFromTds(DatasetType datasetType, Catalog catalogXml, boolean isSSO, CatalogData cd) throws MotuException {
-
-        if (datasetType == null) {
+    private void initializeProductFromTds(DatasetType tdsDatasetType, Catalog tdsCatalogXml, boolean isSSO, CatalogData cd) throws MotuException {
+        if (tdsDatasetType == null) {
             throw new MotuException("Error in initializeProductFromTds - Tds dataset is null");
         }
-        if (datasetType.getUrlPath() == null) {
+        if (tdsDatasetType.getUrlPath() == null) {
             throw new MotuException("Error in initializeProductFromTds - Invalid dataset branch - Tds dataset has a null url path");
         }
-        if (datasetType.getUrlPath().equals("")) {
+        if (tdsDatasetType.getUrlPath().equals("")) {
             throw new MotuException("Error in initializeProductFromTds - Invalid dataset branch - Tds dataset has an empty url path");
         }
 
@@ -290,15 +278,15 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         String tdsUrlPath = "";
         boolean newProduct = true;
 
-        if (datasetType.getUrlPath() != null) {
-            tdsUrlPath = datasetType.getUrlPath();
+        if (tdsDatasetType.getUrlPath() != null) {
+            tdsUrlPath = tdsDatasetType.getUrlPath();
         }
 
-        if (datasetType.getID() != null) {
-            if (datasetType.getID().equals("")) {
+        if (tdsDatasetType.getID() != null) {
+            if (tdsDatasetType.getID().equals("")) {
                 productId = tdsUrlPath;
             } else {
-                productId = datasetType.getID();
+                productId = tdsDatasetType.getID();
             }
         } else {
             productId = tdsUrlPath;
@@ -325,33 +313,33 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         productSubTypesWork.addAll(cd.getCurrentProductSubTypes());
 
         productMetaData.setProductSubTypes(productSubTypesWork);
-        productMetaData.setTitle(datasetType.getName());
+        productMetaData.setTitle(tdsDatasetType.getName());
 
         // Loads href documentation of the dataset
-        loadTdsHrefDoc(datasetType, productMetaData);
+        loadTdsHrefDoc(tdsDatasetType, productMetaData);
 
         // Loads time coverage of the dataset
-        loadTdsTimeCoverage(datasetType, productMetaData);
+        loadTdsTimeCoverage(tdsDatasetType, productMetaData);
 
         // Loads geo and depth coverage
-        loadTdsGeoAndDepthCoverage(datasetType, productMetaData, cd);
+        loadTdsGeoAndDepthCoverage(tdsDatasetType, productMetaData, cd);
 
         // Loads Variables vocabulary
-        loadTdsVariablesVocabulary(datasetType, productMetaData, cd);
+        loadTdsVariablesVocabulary(tdsDatasetType, productMetaData, cd);
 
         // Loads Property meatadata
-        loadTdsMetadataProperty(datasetType, productMetaData, cd);
+        loadTdsMetadataProperty(tdsDatasetType, productMetaData, cd);
 
         // Loads last date update
-        loadTdsMetadataLastDate(datasetType, productMetaData);
+        loadTdsMetadataLastDate(tdsDatasetType, productMetaData);
 
         product.setProductMetaData(productMetaData);
 
         // Load OPENDAP/dods url from TDS catalog
-        getUrlOpendapFromTds(datasetType, catalogXml, product, cd);
+        getUrlOpendapFromTds(tdsDatasetType, tdsCatalogXml, product, cd);
 
         // Load NCSS service url from TDS catalog
-        getUrlNCSSFromTds(datasetType, catalogXml, product, cd);
+        getUrlNCSSFromTds(tdsDatasetType, tdsCatalogXml, product, cd);
 
         if (newProduct) {
             putProducts(productMetaData.getProductId(), product, cd);
@@ -377,7 +365,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         xPath.append("//threddsMetadataGroup[name='{");
         xPath.append(xmlNamespace);
         xPath.append("}serviceName']/value");
-        List<Object> listServiceNameObject = CatalogData.findJaxbElementUsingJXPath(datasetType, xPath.toString());
+        List<Object> listServiceNameObject = JAXBTDSModel.findJaxbElementUsingJXPath(datasetType, xPath.toString());
 
         for (Object objectElt : listServiceNameObject) {
             if (!(objectElt instanceof String)) {
@@ -512,22 +500,21 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      * get Opendap (or Dods) server Url.
      * 
      * @param product the product
-     * @param catalogXml Xml TDS catalog
-     * @param datasetType dataset from which one's search url
+     * @param tdsCatalogXml Xml TDS catalog
+     * @param tdsDatasetType dataset from which one's search url
      * 
      * @return Opendap Server Url.
      * 
      * @throws MotuException the motu exception
      */
-    private String getUrlOpendapFromTds(DatasetType datasetType, Catalog catalogXml, Product product, CatalogData cd) throws MotuException {
-
+    private String getUrlOpendapFromTds(DatasetType tdsDatasetType, Catalog tdsCatalogXml, Product product, CatalogData cd) throws MotuException {
         String tdsServiceName = "";
-        String xmlNamespace = ReflectionUtils.getXmlSchemaNamespace(datasetType.getClass());
+        String xmlNamespace = ReflectionUtils.getXmlSchemaNamespace(tdsDatasetType.getClass());
         StringBuffer xPath = new StringBuffer();
         xPath.append("//threddsMetadataGroup[name='{");
         xPath.append(xmlNamespace);
         xPath.append("}serviceName']/value");
-        List<Object> listServiceNameObject = CatalogData.findJaxbElementUsingJXPath(datasetType, xPath.toString());
+        List<Object> listServiceNameObject = JAXBTDSModel.findJaxbElementUsingJXPath(tdsDatasetType, xPath.toString());
 
         for (Object objectElt : listServiceNameObject) {
             if (!(objectElt instanceof String)) {
@@ -539,13 +526,13 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
 
         if (tdsServiceName.equals("")) {
             throw new MotuException(
-                    String.format("Error in getUrlOpendapFromTds - No TDS service found in TDS catalog for dataset '%s' ", datasetType.getName()));
+                    String.format("Error in getUrlOpendapFromTds - No TDS service found in TDS catalog for dataset '%s' ", tdsDatasetType.getName()));
         }
 
         // Search for opendap service, dods if not found
-        Service tdsService = findTdsService(tdsServiceName, TDS_OPENDAP_SERVICE, catalogXml.getService());
+        Service tdsService = findTdsService(tdsServiceName, TDS_OPENDAP_SERVICE, tdsCatalogXml.getService());
         if (tdsService == null) {
-            tdsService = findTdsService(tdsServiceName, TDS_DODS_SERVICE, catalogXml.getService());
+            tdsService = findTdsService(tdsServiceName, TDS_DODS_SERVICE, tdsCatalogXml.getService());
         }
 
         // One of the two is mandatory
@@ -553,7 +540,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
             throw new MotuException(
                     String.format("Error in getUrlOpendapFromTds - TDS service '%s' found in TDS catalog for dataset '%s' has neither 'opendap' nor 'dods' service type",
                                   tdsServiceName,
-                                  datasetType.getName()));
+                                  tdsDatasetType.getName()));
         }
 
         // Gather URLS from TDS
@@ -574,7 +561,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         // Store metadata in Product
         StringBuffer locationData = new StringBuffer();
         locationData.append(opendapUri.toString());
-        locationData.append(datasetType.getUrlPath());
+        locationData.append(tdsDatasetType.getUrlPath());
         product.setLocationData(locationData.toString());
         product.setTdsServiceType(tdsService.getServiceType().toLowerCase());
 
@@ -584,17 +571,17 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
     /**
      * Loads Tsd products documentations from Tds catalog.
      * 
-     * @param datasetType dataset (from Tds catalog) from which information will be loaded
+     * @param tdsDatasetType dataset (from Tds catalog) from which information will be loaded
      * @param productMetaData metadata in which to record href documentation
      */
-    private void loadTdsHrefDoc(DatasetType datasetType, ProductMetaData productMetaData) {
+    private void loadTdsHrefDoc(DatasetType tdsDatasetType, ProductMetaData productMetaData) {
 
         if (productMetaData.getDocumentations() == null) {
             productMetaData.setDocumentations(new ArrayList<DocMetaData>());
         }
         productMetaData.clearDocumentations();
 
-        List<Object> listDocObject = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), DocumentationType.class);
+        List<Object> listDocObject = JAXBTDSModel.findJaxbElement(tdsDatasetType.getThreddsMetadataGroup(), DocumentationType.class);
 
         for (Object objectElt : listDocObject) {
 
@@ -630,7 +617,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      * @throws MotuException the motu exception
      */
     private void loadTdsTimeCoverage(DatasetType datasetType, ProductMetaData productMetaData) throws MotuException {
-        List<Object> listTimeCoverageObject = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), TimeCoverageType.class);
+        List<Object> listTimeCoverageObject = JAXBTDSModel.findJaxbElement(datasetType.getThreddsMetadataGroup(), TimeCoverageType.class);
 
         productMetaData.setTimeCoverage(null);
 
@@ -664,7 +651,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      */
     private Date getPartOfTimeCoverage(String xmlTagName, List<JAXBElement<?>> listJaxbElement) throws MotuException {
 
-        List<Object> listStartOrEndOrDuration = CatalogData.findJaxbElement(xmlTagName, listJaxbElement);
+        List<Object> listStartOrEndOrDuration = JAXBTDSModel.findJaxbElement(xmlTagName, listJaxbElement);
         Date date = null;
 
         for (Object o : listStartOrEndOrDuration) {
@@ -694,7 +681,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
             return;
         }
 
-        List<Object> listVariablesVocabularyObject = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), Variables.class);
+        List<Object> listVariablesVocabularyObject = JAXBTDSModel.findJaxbElement(datasetType.getThreddsMetadataGroup(), Variables.class);
 
         productMetaData.setVariablesVocabulary(null);
 
@@ -721,7 +708,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
             return;
         }
 
-        List<Object> listProperty = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), Property.class);
+        List<Object> listProperty = JAXBTDSModel.findJaxbElement(datasetType.getThreddsMetadataGroup(), Property.class);
 
         productMetaData.setListTDSMetaDataProperty(null);
 
@@ -744,7 +731,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      * @throws MotuException the motu exception
      */
     private void loadTdsMetadataLastDate(DatasetType datasetType, ProductMetaData productMetaData) throws MotuException {
-        List<Object> listProperty = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), DateTypeFormatted.class);
+        List<Object> listProperty = JAXBTDSModel.findJaxbElement(datasetType.getThreddsMetadataGroup(), DateTypeFormatted.class);
 
         productMetaData.setListTDSMetaDataProperty(null);
 
@@ -768,7 +755,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      * @throws MotuException the motu exception
      */
     private void loadTdsGeoAndDepthCoverage(DatasetType datasetType, ProductMetaData productMetaData, CatalogData cd) throws MotuException {
-        List<Object> listGeoCoverageObject = CatalogData.findJaxbElement(datasetType.getThreddsMetadataGroup(), GeospatialCoverage.class);
+        List<Object> listGeoCoverageObject = JAXBTDSModel.findJaxbElement(datasetType.getThreddsMetadataGroup(), GeospatialCoverage.class);
 
         productMetaData.setGeoBBox(null);
         // productMetaData.setNorthSouthResolution(null);
@@ -876,28 +863,26 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      */
     public CatalogData loadTdsCatalog(CatalogService catalogService) throws MotuException {
         try {
-            Catalog catalogXml = getCatalogFromTDS(catalogService);
+            Catalog tdsCatalogXml = getCatalogFromTDS(catalogService);
             CatalogData catalogData = new CatalogData();
             catalogData.setUrlSite(catalogService.getUrlSite());
             catalogData.setCasAuthentication(false);
-            catalogData.setTitle(catalogXml.getName());
+            catalogData.setTitle(tdsCatalogXml.getName());
 
-            List<JAXBElement<? extends DatasetType>> list = catalogXml.getDataset();
+            // Loop over all dataset
+            List<JAXBElement<? extends DatasetType>> list = tdsCatalogXml.getDataset();
             for (Iterator<JAXBElement<? extends DatasetType>> it = list.iterator(); it.hasNext();) {
-                JAXBElement<? extends DatasetType> o = it.next();
-                // System.out.println(o.getDeclaredType().getName());
-
-                DatasetType datasetType = o.getValue();
-                if (datasetType != null) {
-                    if (datasetType instanceof CatalogRef) {
+                DatasetType tdsDatasetType = it.next().getValue();
+                if (tdsDatasetType != null) {
+                    if (tdsDatasetType instanceof CatalogRef) {
                         catalogData.setCurrentProductType("");
-                        int numberSubPaths = loadTdsCatalogRef((CatalogRef) datasetType, catalogService.getCasAuthentication(), catalogData);
+                        int numberSubPaths = loadTdsCatalogRef((CatalogRef) tdsDatasetType, catalogService.getCasAuthentication(), catalogData);
                         removeListCatalogRefSubPaths(catalogData, numberSubPaths);
-                    } else if (datasetType instanceof DatasetType) {
+                    } else if (tdsDatasetType instanceof DatasetType) {
                         catalogData.setCurrentProductType("");
                         List<Product> sameProductTypeDataset = new ArrayList<Product>();
-                        loadTdsProducts(datasetType, catalogXml, catalogService.getCasAuthentication(), catalogData);
-                        if (sameProductTypeDataset.size() > 0) {
+                        loadTdsProducts(tdsDatasetType, tdsCatalogXml, catalogService.getCasAuthentication(), catalogData);
+                        if (catalogData.getSameProductTypeDataset().size() > 0) {// sameProductTypeDataset
                             catalogData.getListProductTypeDataset().add(sameProductTypeDataset);
                         }
                     }
@@ -924,8 +909,11 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         URL url = new URL(getUrlWithSSO(catalogUrl, useSSO_));
         URLConnection conn = url.openConnection();
         InputStream in = conn.getInputStream();
-        catalog = (Catalog) JAXBTDSModel.getInstance().getUnmarshallerTdsModel().unmarshal(in);
-        in.close();
+        try {
+            catalog = (Catalog) JAXBTDSModel.getInstance().getUnmarshallerTdsModel().unmarshal(in);
+        } finally {
+            in.close();
+        }
         return catalog;
     }
 

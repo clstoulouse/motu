@@ -86,7 +86,9 @@ public class DALConfigManager implements IDALConfigManager {
         return Boolean.parseBoolean(System.getProperty("cas-activated", "False"));
     }
 
-    private String getMotuConfigurationFolderPath() {
+    /** {@inheritDoc} */
+    @Override
+    public String getMotuConfigurationFolderPath() {
         return System.getProperty("motu-config-dir", null);
     }
 

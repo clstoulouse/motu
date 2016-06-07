@@ -171,7 +171,11 @@ public class VelocityTemplateManager {
         conf.put(VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.SimpleLog4JLogSystem");
         conf.put(VelocityEngine.RUNTIME_LOG, System.getProperty("motu-log-dir") + "/velocity.log");
         // conf.put("runtime.log.logsystem.log4j.category", LOG.getName());
-        conf.put("resource.loader", "class");
+
+        // 1st try to load from the configuration folder,
+        // then if not found, load project src/main/resources folder
+        conf.put("file.resource.loader.path", BLLManager.getInstance().getConfigManager().getMotuConfigurationFolderPath());
+        conf.put("resource.loader", "file, class");
         conf.put("class.resource.loader.description", "Velocity Classpath Resource Loader");
         conf.put("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
 

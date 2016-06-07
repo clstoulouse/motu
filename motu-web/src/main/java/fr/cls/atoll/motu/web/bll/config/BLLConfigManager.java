@@ -120,4 +120,10 @@ public class BLLConfigManager implements IBLLConfigManager {
         return productResult;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public String getMotuConfigurationFolderPath() {
+        return dalConfigManager.getMotuConfigurationFolderPath();
+    }
+
 }

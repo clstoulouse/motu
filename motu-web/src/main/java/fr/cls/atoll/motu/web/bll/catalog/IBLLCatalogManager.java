@@ -34,4 +34,8 @@ public interface IBLLCatalogManager {
      */
     IBLLProductManager getProductManager();
 
+    /**
+     * .
+     */
+    void init() throws MotuException;
 }

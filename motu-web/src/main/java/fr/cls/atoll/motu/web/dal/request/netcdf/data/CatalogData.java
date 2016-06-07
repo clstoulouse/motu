@@ -29,16 +29,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.bind.JAXBElement;
-
-import org.apache.commons.jxpath.JXPathContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -69,7 +65,7 @@ public class CatalogData {
     private boolean casAuthentication = false;
 
     /** List contains lists of products from the catalog, group product of the same type/subtypes. */
-    private ArrayList<List<Product>> listProductTypeDataset = null;
+    private List<List<Product>> listProductTypeDataset = null;
 
     /** List contains products from the catalog, which have the same type/subtypes. */
     protected List<Product> sameProductTypeDataset = null;
@@ -87,7 +83,7 @@ public class CatalogData {
     private String urlSite = "";
 
     /** The products map. Key is product tds url path */
-    private Map<String, Product> productsByTdsUrlMap = new HashMap<String, Product>();
+    private Map<String, Product> productsByTdsUrlMap;
 
     /** The current product sub-types. */
     private List<String> currentProductSubTypes;
@@ -188,6 +184,7 @@ public class CatalogData {
         productsLoaded = new HashSet<String>();
         listProductTypeDataset = new ArrayList<List<Product>>();
         productsMap = new HashMap<String, Product>();
+        productsByTdsUrlMap = new HashMap<String, Product>();
     }
 
     /**
@@ -246,136 +243,6 @@ public class CatalogData {
         Collections.sort(dataFiles, dataFileComparator);
 
         return dataFiles;
-    }
-
-    /**
-     * Searches objects from a jaxbElement object list according to a specific class .
-     * 
-     * @param listObject list in which one searches
-     * @param classObject class to search
-     * 
-     * @return a list that contains object corresponding to classObject parameter (can be empty)
-     */
-    static public List<Object> findJaxbElement(List<Object> listObject, Class<?> classObject) {
-
-        if (listObject == null) {
-            return null;
-        }
-
-        List<Object> listObjectFound = new ArrayList<Object>();
-
-        for (Object elt : listObject) {
-            if (elt == null) {
-                continue;
-            }
-
-            if (classObject.isInstance(elt)) {
-                listObjectFound.add(elt);
-            }
-
-            if (!(elt instanceof JAXBElement)) {
-                continue;
-            }
-
-            JAXBElement<?> jabxElement = (JAXBElement<?>) elt;
-
-            // System.out.println(jabxElement.getClass().getName());
-            // System.out.println(jabxElement.getDeclaredType().getName());
-
-            Object objectElt = jabxElement.getValue();
-
-            if (classObject.isInstance(objectElt)) {
-                listObjectFound.add(objectElt);
-            }
-        }
-
-        return listObjectFound;
-
-    }
-
-    static public List<Object> findJaxbElementUsingJXPath(Object object, String xPath) {
-
-        List<Object> listObjectFound = new ArrayList<Object>();
-
-        JXPathContext context = JXPathContext.newContext(object);
-        context.setLenient(true);
-        // Object oo =
-        // context.getValue("//threddsMetadataGroup[name='{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}serviceName']/value");
-        // Object oo =
-        // context.getValue("//threddsMetadataGroup[name='{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}serviceName']/value");
-        // Iterator it =
-        // context.iterate("//threddsMetadataGroup[name='{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}serviceName']/value");
-        Iterator<?> it = context.iterate(xPath);
-        while (it.hasNext()) {
-            listObjectFound.add(it.next());
-        }
-        return listObjectFound;
-    }
-
-    /**
-     * Search object from a jaxbElement object list according to a specific tag name.
-     * 
-     * @param listObject list in which one searches
-     * @param tagName tag name to search (ignore case)
-     * 
-     * @return a list that contains object corresponding to tagName parameter (can be empty)
-     */
-    static public List<Object> findJaxbElement(List<Object> listObject, String tagName) {
-
-        List<Object> listObjectFound = new ArrayList<Object>();
-
-        for (Object elt : listObject) {
-            if (elt == null) {
-                continue;
-            }
-            if (!(elt instanceof JAXBElement)) {
-                continue;
-            }
-
-            JAXBElement<?> jabxElement = (JAXBElement<?>) elt;
-
-            if (!jabxElement.getName().getLocalPart().equalsIgnoreCase(tagName)) {
-                continue;
-            }
-
-            listObjectFound.add(jabxElement.getValue());
-        }
-
-        return listObjectFound;
-
-    }
-
-    /**
-     * Find jaxb element.
-     * 
-     * @param tagName the tag name
-     * @param listJaxbElement the list jaxb element
-     * 
-     * @return the list< object>
-     */
-    static public List<Object> findJaxbElement(String tagName, List<JAXBElement<?>> listJaxbElement) {
-
-        List<Object> listObjectFound = new ArrayList<Object>();
-
-        for (Object elt : listJaxbElement) {
-            if (elt == null) {
-                continue;
-            }
-            if (!(elt instanceof JAXBElement)) {
-                continue;
-            }
-
-            JAXBElement<?> jabxElement = (JAXBElement<?>) elt;
-
-            if (!jabxElement.getName().getLocalPart().equalsIgnoreCase(tagName)) {
-                continue;
-            }
-
-            listObjectFound.add(jabxElement.getValue());
-        }
-
-        return listObjectFound;
-
     }
 
     /**
@@ -531,15 +398,6 @@ public class CatalogData {
      */
     public List<List<Product>> getListProductTypeDataset() {
         return this.listProductTypeDataset;
-    }
-
-    /**
-     * Sets the list product type dataset.
-     * 
-     * @param listProductTypeDataset the listProductTypeDataset to set
-     */
-    public void setListProductTypeDataset(ArrayList<List<Product>> listProductTypeDataset) {
-        this.listProductTypeDataset = listProductTypeDataset;
     }
 
     /**

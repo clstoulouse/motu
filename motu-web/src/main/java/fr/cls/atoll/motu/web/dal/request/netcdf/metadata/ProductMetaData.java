@@ -185,9 +185,6 @@ public class ProductMetaData {
      * @uml.property name="productId"
      */
     public String getProductId() {
-        // if (productId.equals("")) {
-        // productId = buildId();
-        // }
         return productId;
     }
 

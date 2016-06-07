@@ -1,9 +1,15 @@
 package fr.cls.atoll.motu.web.dal.catalog.tds;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.jxpath.JXPathContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -63,6 +69,127 @@ public class JAXBTDSModel {
      */
     public Unmarshaller getUnmarshallerTdsModel() {
         return unmarshallerTdsModel;
+    }
+
+    /**
+     * Searches objects from a jaxbElement object list according to a specific class .
+     * 
+     * @param listObject list in which one searches
+     * @param classObject class to search
+     * 
+     * @return a list that contains object corresponding to classObject parameter (can be empty)
+     */
+    public static List<Object> findJaxbElement(List<Object> listObject, Class<?> classObject) {
+
+        if (listObject == null) {
+            return null;
+        }
+
+        List<Object> listObjectFound = new ArrayList<Object>();
+
+        for (Object elt : listObject) {
+            if (elt == null) {
+                continue;
+            }
+
+            if (classObject.isInstance(elt)) {
+                listObjectFound.add(elt);
+            }
+
+            if (!(elt instanceof JAXBElement)) {
+                continue;
+            }
+
+            JAXBElement<?> jabxElement = (JAXBElement<?>) elt;
+
+            Object objectElt = jabxElement.getValue();
+
+            if (classObject.isInstance(objectElt)) {
+                listObjectFound.add(objectElt);
+            }
+        }
+
+        return listObjectFound;
+
+    }
+
+    public static List<Object> findJaxbElementUsingJXPath(Object object, String xPath) {
+
+        List<Object> listObjectFound = new ArrayList<Object>();
+
+        JXPathContext context = JXPathContext.newContext(object);
+        context.setLenient(true);
+        Iterator<?> it = context.iterate(xPath);
+        while (it.hasNext()) {
+            listObjectFound.add(it.next());
+        }
+        return listObjectFound;
+    }
+
+    /**
+     * Search object from a jaxbElement object list according to a specific tag name.
+     * 
+     * @param listObject list in which one searches
+     * @param tagName tag name to search (ignore case)
+     * 
+     * @return a list that contains object corresponding to tagName parameter (can be empty)
+     */
+    public static List<Object> findJaxbElement(List<Object> listObject, String tagName) {
+
+        List<Object> listObjectFound = new ArrayList<Object>();
+
+        for (Object elt : listObject) {
+            if (elt == null) {
+                continue;
+            }
+            if (!(elt instanceof JAXBElement)) {
+                continue;
+            }
+
+            JAXBElement<?> jabxElement = (JAXBElement<?>) elt;
+
+            if (!jabxElement.getName().getLocalPart().equalsIgnoreCase(tagName)) {
+                continue;
+            }
+
+            listObjectFound.add(jabxElement.getValue());
+        }
+
+        return listObjectFound;
+
+    }
+
+    /**
+     * Find jaxb element.
+     * 
+     * @param tagName the tag name
+     * @param listJaxbElement the list jaxb element
+     * 
+     * @return the list< object>
+     */
+    public static List<Object> findJaxbElement(String tagName, List<JAXBElement<?>> listJaxbElement) {
+
+        List<Object> listObjectFound = new ArrayList<Object>();
+
+        for (Object elt : listJaxbElement) {
+            if (elt == null) {
+                continue;
+            }
+            if (!(elt instanceof JAXBElement)) {
+                continue;
+            }
+
+            JAXBElement<?> jabxElement = (JAXBElement<?>) elt;
+
+            if (!jabxElement.getName().getLocalPart().equalsIgnoreCase(tagName)) {
+                continue;
+            }
+
+            listObjectFound.add(jabxElement.getValue());
+        }
+
+        return listObjectFound;
+
     }
 
 }

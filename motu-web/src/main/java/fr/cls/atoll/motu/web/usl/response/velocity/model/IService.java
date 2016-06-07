@@ -12,7 +12,7 @@ import fr.cls.atoll.motu.web.usl.response.velocity.model.catalog.ICatalog;
  * @author Sylvain MARTY
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public interface IService {
+public interface IService extends ICommonService {
 
     String getGroup();
 
@@ -23,4 +23,6 @@ public interface IService {
     String getCatalogType();
 
     ICatalog getCatalog();
+
+    boolean isDownloadOnTop();
 }
