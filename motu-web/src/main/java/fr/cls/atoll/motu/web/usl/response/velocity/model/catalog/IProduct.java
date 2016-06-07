@@ -1,5 +1,7 @@
 package fr.cls.atoll.motu.web.usl.response.velocity.model.catalog;
 
+import java.util.List;
+
 /**
  * <br>
  * <br>
@@ -27,4 +29,18 @@ public interface IProduct {
     boolean hasGeoYAxisWithLatEquivalence();
 
     IProductMetadata getProductMetaData();
+
+    boolean hasCriteriaDateTime();
+
+    IDateTime getCriteriaDateTime();
+
+    boolean hasCriteriaDepth();
+
+    IDepth getCriteriaDepth();
+
+    List<String> getZAxisRoundedDownDataAsString(int desiredDecimalNumberDigits);
+
+    List<String> getZAxisRoundedUpDataAsString(int desiredDecimalNumberDigits);
+
+    List<String> getTimeAxisDataAsString();
 }

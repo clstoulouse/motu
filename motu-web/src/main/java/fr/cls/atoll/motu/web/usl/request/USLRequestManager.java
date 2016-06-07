@@ -22,6 +22,7 @@ import fr.cls.atoll.motu.web.usl.request.actions.ListCatalogAction;
 import fr.cls.atoll.motu.web.usl.request.actions.ListServicesAction;
 import fr.cls.atoll.motu.web.usl.request.actions.LogoutAction;
 import fr.cls.atoll.motu.web.usl.request.actions.PingAction;
+import fr.cls.atoll.motu.web.usl.request.actions.ProductDownloadHomeAction;
 import fr.cls.atoll.motu.web.usl.request.actions.ProductMetadataAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
@@ -79,7 +80,9 @@ public class USLRequestManager implements IUSLRequestManager {
         case ProductMetadataAction.ACTION_NAME:
             new ProductMetadataAction(request, response, getSession(request)).doAction();
             break;
-        // TODO SMA Add isActionListProductDownloadHome
+        case ProductDownloadHomeAction.ACTION_NAME:
+            new ProductDownloadHomeAction(request, response, getSession(request)).doAction();
+            break;
         case ListServicesAction.ACTION_NAME:
             new ListServicesAction(request, response, getSession(request)).doAction();
             break;

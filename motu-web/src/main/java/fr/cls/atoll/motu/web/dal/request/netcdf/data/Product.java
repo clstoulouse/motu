@@ -1253,11 +1253,7 @@ public class Product {
      * @throws MotuException the motu exception
      * @throws NetCdfVariableException the net cdf variable exception
      */
-    public Array getTimeAxisData() throws MotuException, NetCdfVariableException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getTimeAxisData() - entering");
-        }
-
+    public Array getTimeAxisData() throws MotuException {
         if (productMetaData == null) {
             throw new MotuException("Error in getTimeAxisData - productMetaData is null");
         }
@@ -1271,9 +1267,11 @@ public class Product {
             return null;
         }
 
-        Array returnArray = readVariable(variable);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getTimeAxisData() - exiting");
+        Array returnArray;
+        try {
+            returnArray = readVariable(variable);
+        } catch (NetCdfVariableException e) {
+            throw new MotuException("Error while reading variable " + variable, e);
         }
         return returnArray;
     }
@@ -1319,11 +1317,7 @@ public class Product {
      * @throws MotuException the motu exception
      * @throws NetCdfVariableException the net cdf variable exception
      */
-    public List<String> getTimeAxisDataAsString() throws MotuException, NetCdfVariableException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getTimeAxisDataAsString() - entering");
-        }
-
+    public List<String> getTimeAxisDataAsString() throws MotuException {
         List<String> list = new ArrayList<String>();
 
         Array array = getTimeAxisData();
@@ -1338,9 +1332,6 @@ public class Product {
             list.add(NetCdfReader.getDateAsGMTNoZeroTimeString(datetime, productMetaData.getTimeAxis().getUnitsString()));
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getTimeAxisDataAsString() - exiting");
-        }
         return list;
     }
 
@@ -1351,11 +1342,7 @@ public class Product {
      * @throws MotuException the motu exception
      * @throws NetCdfVariableException the net cdf variable exception
      */
-    public Array getZAxisData() throws MotuException, NetCdfVariableException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getZAxisData() - entering");
-        }
-
+    public Array getZAxisData() throws MotuException {
         if (productMetaData == null) {
             throw new MotuException("Error in getZAxisData - productMetaData is null");
         }
@@ -1365,9 +1352,11 @@ public class Product {
             throw new MotuException(String.format("Error in getZAxisData - No Z (depth) axis found in this product '%s'", this.getProductId()));
         }
 
-        Array returnArray = readVariable(variable);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getZAxisData() - exiting");
+        Array returnArray;
+        try {
+            returnArray = readVariable(variable);
+        } catch (NetCdfVariableException e) {
+            throw new MotuException("Error while reading variable " + variable, e);
         }
         return returnArray;
 
@@ -1413,7 +1402,7 @@ public class Product {
      * @throws MotuException the motu exception
      * @throws NetCdfVariableException the net cdf variable exception
      */
-    public List<String> getZAxisRoundedUpDataAsString(int desiredDecimalNumberDigits) throws MotuException, NetCdfVariableException {
+    public List<String> getZAxisRoundedUpDataAsString(int desiredDecimalNumberDigits) throws MotuException {
         return getZAxisDataAsString(RoundingMode.UP, desiredDecimalNumberDigits);
     }
 
@@ -1427,7 +1416,7 @@ public class Product {
      * @throws MotuException the motu exception
      * @throws NetCdfVariableException the net cdf variable exception
      */
-    public List<String> getZAxisRoundedDownDataAsString(int desiredDecimalNumberDigits) throws MotuException, NetCdfVariableException {
+    public List<String> getZAxisRoundedDownDataAsString(int desiredDecimalNumberDigits) throws MotuException {
         return getZAxisDataAsString(RoundingMode.DOWN, desiredDecimalNumberDigits);
     }
 
@@ -1442,28 +1431,15 @@ public class Product {
      * @throws MotuException the motu exception
      * @throws NetCdfVariableException the net cdf variable exception
      */
-    public List<String> getZAxisDataAsString(RoundingMode roundingMode, int desiredDecimalNumberDigits)
-            throws MotuException, NetCdfVariableException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getZAxisDataAsString() - entering");
-        }
-
+    public List<String> getZAxisDataAsString(RoundingMode roundingMode, int desiredDecimalNumberDigits) throws MotuException {
         List<String> list = new ArrayList<String>();
-
         Array array = getZAxisData();
-
         double depth = 0.0;
-
         for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
             depth = it.getDoubleNext();
             list.add(NetCdfReader.getStandardZAsString(depth, roundingMode, desiredDecimalNumberDigits));
         }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getZAxisDataAsString() - exiting");
-        }
         return list;
-
     }
 
     /**

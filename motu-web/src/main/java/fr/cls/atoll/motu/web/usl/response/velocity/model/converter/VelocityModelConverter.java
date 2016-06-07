@@ -8,6 +8,8 @@ import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
@@ -19,6 +21,8 @@ import fr.cls.atoll.motu.web.usl.response.velocity.model.catalog.IAxis;
 import fr.cls.atoll.motu.web.usl.response.velocity.model.catalog.ICatalog;
 import fr.cls.atoll.motu.web.usl.response.velocity.model.catalog.ICatalogProduct;
 import fr.cls.atoll.motu.web.usl.response.velocity.model.catalog.ICatalogProductMetaData;
+import fr.cls.atoll.motu.web.usl.response.velocity.model.catalog.IDateTime;
+import fr.cls.atoll.motu.web.usl.response.velocity.model.catalog.IDepth;
 import fr.cls.atoll.motu.web.usl.response.velocity.model.catalog.IParameterMetadata;
 import fr.cls.atoll.motu.web.usl.response.velocity.model.catalog.IProduct;
 import fr.cls.atoll.motu.web.usl.response.velocity.model.catalog.IProductMetadata;
@@ -254,8 +258,102 @@ public class VelocityModelConverter {
                 return convertToProductMetadata(product_, product_.getProductMetaData());
             }
 
+            @Override
+            public IDateTime getCriteriaDateTime() {
+                return convertToDateTime(product_.getCriteriaDateTime());
+            }
+
+            @Override
+            public List<String> getZAxisRoundedDownDataAsString(int desiredDecimalNumberDigits) {
+                try {
+                    return product_.getZAxisRoundedDownDataAsString(desiredDecimalNumberDigits);
+                } catch (MotuException e) {
+                    LOGGER.error("Error while converting Product", e);
+                    return null;
+                }
+            }
+
+            @Override
+            public List<String> getZAxisRoundedUpDataAsString(int desiredDecimalNumberDigits) {
+                try {
+                    return product_.getZAxisRoundedUpDataAsString(desiredDecimalNumberDigits);
+                } catch (MotuException e) {
+                    LOGGER.error("Error while converting Product", e);
+                    return null;
+                }
+            }
+
+            @Override
+            public boolean hasCriteriaDepth() {
+                return product_.hasCriteriaDepth();
+            }
+
+            @Override
+            public boolean hasCriteriaDateTime() {
+                return product_.hasCriteriaDateTime();
+            }
+
+            @Override
+            public IDepth getCriteriaDepth() {
+                return convertToDepth(product_.getCriteriaDepth());
+            }
+
+            @Override
+            public List<String> getTimeAxisDataAsString() {
+                try {
+                    return product_.getTimeAxisDataAsString();
+                } catch (MotuException e) {
+                    LOGGER.error("Error while converting Product", e);
+                    return null;
+                }
+            }
+
         };
         return ip;
+    }
+
+    /**
+     * .
+     * 
+     * @param criteriaDepth
+     * @return
+     */
+    protected static IDepth convertToDepth(final ExtractCriteriaDepth criteriaDepth) {
+        return new IDepth() {
+
+            @Override
+            public String getFromAsString(String pattern_) {
+                return criteriaDepth.getFromAsString(pattern_);
+            }
+
+            @Override
+            public String getToAsString(String pattern_) {
+                return criteriaDepth.getToAsString(pattern_);
+            }
+
+        };
+    }
+
+    /**
+     * .
+     * 
+     * @param criteriaDateTime
+     * @return
+     */
+    protected static IDateTime convertToDateTime(final ExtractCriteriaDatetime criteriaDateTime_) {
+        return new IDateTime() {
+
+            @Override
+            public String getFromAsString() {
+                return criteriaDateTime_.getFromAsString();
+            }
+
+            @Override
+            public String getToAsString() {
+                return criteriaDateTime_.getToAsString();
+            }
+
+        };
     }
 
     /**

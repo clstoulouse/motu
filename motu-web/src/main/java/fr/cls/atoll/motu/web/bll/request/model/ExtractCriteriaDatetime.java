@@ -365,7 +365,7 @@ public class ExtractCriteriaDatetime extends ExtractCriteria {
      * @return start date as string
      * @throws MotuException
      */
-    public String getFromAsString() throws MotuException {
+    public String getFromAsString() {
         return NetCdfReader.getDateAsGMTNoZeroTimeString(from);
     }
 
@@ -373,7 +373,7 @@ public class ExtractCriteriaDatetime extends ExtractCriteria {
      * @return end date as string
      * @throws MotuException
      */
-    public String getToAsString() throws MotuException {
+    public String getToAsString() {
         return NetCdfReader.getDateAsGMTNoZeroTimeString(to);
     }
 }
