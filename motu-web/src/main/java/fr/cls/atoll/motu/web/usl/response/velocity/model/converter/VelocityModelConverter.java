@@ -574,6 +574,16 @@ public class VelocityModelConverter {
                         return "";
                     }
 
+                    @Override
+                    public String getUnitsString() {
+                        try {
+                            return productMetaData_.getGeoYAxisAsLat(orginalProduct_).getUnitsString();
+                        } catch (Exception e) {
+                            LOGGER.error("Converting Product metadata to be used in Velocity", e);
+                        }
+                        return "";
+                    }
+
                 };
             }
 
@@ -620,6 +630,16 @@ public class VelocityModelConverter {
                     public String getName() {
                         try {
                             return productMetaData_.getGeoXAxisAsLon(orginalProduct_).getName();
+                        } catch (Exception e) {
+                            LOGGER.error("Converting Product metadata to be used in Velocity", e);
+                        }
+                        return "";
+                    }
+
+                    @Override
+                    public String getUnitsString() {
+                        try {
+                            return productMetaData_.getGeoXAxisAsLon(orginalProduct_).getUnitsString();
                         } catch (Exception e) {
                             LOGGER.error("Converting Product metadata to be used in Velocity", e);
                         }
@@ -762,6 +782,11 @@ public class VelocityModelConverter {
             @Override
             public String getName() {
                 return zAxis.getName();
+            }
+
+            @Override
+            public String getUnitsString() {
+                return zAxis.getUnitsString();
             }
 
         };

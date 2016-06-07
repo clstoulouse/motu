@@ -13,4 +13,6 @@ package fr.cls.atoll.motu.web.usl.response.velocity.model.catalog;
 public interface IAxis {
 
     String getName();
+
+    String getUnitsString();
 }
