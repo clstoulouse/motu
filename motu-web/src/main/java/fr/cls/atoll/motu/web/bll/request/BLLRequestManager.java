@@ -15,7 +15,8 @@ import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
-import fr.cls.atoll.motu.web.bll.request.queueserver.QueueServerManagement;
+import fr.cls.atoll.motu.web.bll.request.queueserver.IQueueServerManager;
+import fr.cls.atoll.motu.web.bll.request.queueserver.QueueServerManager;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 import fr.cls.atoll.motu.web.dal.DALManager;
@@ -44,18 +45,17 @@ public class BLLRequestManager implements IBLLRequestManager {
 
     private IRequestIdManager requestIdManager;
     private Map<Long, RequestDownloadStatus> requestIdList;
-    private QueueServerManagement queueServerManagement;
+    private IQueueServerManager queueServerManager;
 
     public BLLRequestManager() {
         requestIdManager = new RequestIdManager();
         requestIdList = new HashMap<Long, RequestDownloadStatus>();
-        queueServerManagement = new QueueServerManagement();
-        // TODO SMA This class should take code from RequestManagement.getInstance();
+        queueServerManager = new QueueServerManager();
     }
 
     @Override
     public void init() throws MotuException {
-        queueServerManagement.init();
+        queueServerManager.init();
     }
 
     /** {@inheritDoc} */
@@ -125,7 +125,7 @@ public class BLLRequestManager implements IBLLRequestManager {
     }
 
     public void checkNumberOfRunningRequestForUser(String userId_) throws MotuException {
-        if (queueServerManagement.isNumberOfRequestTooHighForUser(userId_)) {
+        if (queueServerManager.isNumberOfRequestTooHighForUser(userId_)) {
             throw new MotuException(
                     "Maximum number of running request reached for user: " + userId_ + ", "
                             + (userId_ == null
@@ -142,7 +142,7 @@ public class BLLRequestManager implements IBLLRequestManager {
             checkNumberOfRunningRequestForUser(extractionParameters.getUserId());
 
             // The request download is delegated to a download request manager
-            queueServerManagement.execute(requestDownloadStatus, cs_, product_, extractionParameters);
+            queueServerManager.execute(requestDownloadStatus, cs_, product_, extractionParameters);
         } catch (MotuException e) {
             requestDownloadStatus.setRunningException(e);
         }
@@ -177,8 +177,8 @@ public class BLLRequestManager implements IBLLRequestManager {
 
     /** {@inheritDoc} */
     @Override
-    public QueueServerManagement getQueueServerManager() {
-        return queueServerManagement;
+    public IQueueServerManager getQueueServerManager() {
+        return queueServerManager;
     }
 
     /** {@inheritDoc} */

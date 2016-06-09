@@ -40,7 +40,6 @@ import com.thoughtworks.xstream.XStream;
 
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 
-// TODO: Auto-generated Javadoc
 /**
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites).
  *

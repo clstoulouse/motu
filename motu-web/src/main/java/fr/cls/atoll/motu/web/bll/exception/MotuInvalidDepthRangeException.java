@@ -24,7 +24,6 @@
  */
 package fr.cls.atoll.motu.web.bll.exception;
 
-// TODO: Auto-generated Javadoc
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
 /**

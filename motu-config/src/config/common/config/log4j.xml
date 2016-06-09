@@ -15,7 +15,7 @@
 		<!-- This property is read from Java option -dmotu-log-dir=$absoluteDirPath
 			 And here is the property if not found
 		 -->
-		<Property name="motu-log-dir">/opt/cmems-cis/motu</Property>
+		<Property name="motu-log-dir">/opt/cmems-cis/motu/log</Property>
 	</Properties>
 
 	<Appenders>

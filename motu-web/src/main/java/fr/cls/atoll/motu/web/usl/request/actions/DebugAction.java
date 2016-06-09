@@ -15,7 +15,7 @@ import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.request.queueserver.QueueServerManagement;
+import fr.cls.atoll.motu.web.bll.request.queueserver.IQueueServerManager;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueManagement;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
@@ -212,7 +212,7 @@ public class DebugAction extends AbstractAction {
         stringBuffer.append("</h1>\n");
 
         try {
-            QueueServerManagement queueServerManagement = BLLManager.getInstance().getRequestManager().getQueueServerManager();
+            IQueueServerManager queueServerManagement = BLLManager.getInstance().getRequestManager().getQueueServerManager();
             if (queueServerManagement == null) {
                 stringBuffer.append("<p> Queue server is not active</p>");
                 return;
@@ -248,7 +248,7 @@ public class DebugAction extends AbstractAction {
      * @param queueServerManagement the queue server management
      * @param batch the batch
      */
-    private void debugPendingRequest(StringBuffer stringBuffer, QueueServerManagement queueServerManagement) {
+    private void debugPendingRequest(StringBuffer stringBuffer, IQueueServerManager queueServerManagement) {
         List<QueueType> queuesConfig = BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig().getQueues();
         QueueManagement queueManagement = null;
         boolean hasQueue = false;

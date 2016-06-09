@@ -69,7 +69,7 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-public class QueueServerManagement {
+public class QueueServerManager implements IQueueServerManager {
 
     /** Logger for this class. */
     private static final Logger LOGGER = LogManager.getLogger();
@@ -85,13 +85,14 @@ public class QueueServerManagement {
      * 
      * @throws MotuException the motu exception
      */
-    public QueueServerManagement() {
+    public QueueServerManager() {
         queueManagementMap = new HashMap<QueueType, QueueManagement>();
     }
 
     /**
      * .
      */
+    @Override
     public void init() {
         queueServerConfig = BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig();
         // Order queue by size (threshold) asc
@@ -107,6 +108,7 @@ public class QueueServerManagement {
      * 
      * @return la valeur.
      */
+    @Override
     public Map<QueueType, QueueManagement> getQueueManagementMap() {
         return queueManagementMap;
     }
@@ -119,6 +121,7 @@ public class QueueServerManagement {
      * @throws MotuExceptionBase the motu exception base
      * @throws MotuException
      */
+    @Override
     public void execute(RequestDownloadStatus rds_, ConfigService cs_, Product product_, ExtractionParameters extractionParameters_)
             throws MotuException {
         double sizeInMB = UnitUtils.toMegaBytes(BLLManager.getInstance().getRequestManager()
@@ -162,20 +165,15 @@ public class QueueServerManagement {
             @Override
             public void onJobStarted() {
                 rds_.setStartProcessingDateTime(System.currentTimeMillis());
-
-                // TODO SMA not sure that CAS AssertionHolder shall be managed here !
-                // if (extractionParameters.getAssertion() != null) {
-                // AssertionHolder.setAssertion(extractionParameters.getAssertion());
-                // }
             }
 
             @Override
             public void onJobStopped() {
                 rds_.setEndProcessingDateTime(System.currentTimeMillis());
 
-                synchronized (QueueServerManagement.this) {
+                synchronized (QueueServerManager.this) {
                     isJobEnded = true;
-                    QueueServerManagement.this.notify();
+                    QueueServerManager.this.notify();
                 }
             }
 
@@ -184,14 +182,10 @@ public class QueueServerManagement {
                 rds_.setRunningException(e);
                 rds_.setEndProcessingDateTime(System.currentTimeMillis());
 
-                synchronized (QueueServerManagement.this) {
+                synchronized (QueueServerManager.this) {
                     isJobEnded = true;
-                    QueueServerManagement.this.notify();
+                    QueueServerManager.this.notify();
                 }
-                // TODO SMA not sure that CAS AssertionHolder shall be managed here !
-                // if (extractionParameters.getAssertion() != null) {
-                // AssertionHolder.clear();
-                // }
             }
 
             @Override
@@ -259,6 +253,7 @@ public class QueueServerManagement {
      * @param queueManagement
      * @return true if too much
      */
+    @Override
     public boolean isNumberOfRequestTooHighForUser(String userId) {
         int countRequest = countRequestUser(userId);
         boolean isAnonymousUser = (userId == null);
@@ -328,6 +323,7 @@ public class QueueServerManagement {
      * 
      * @return the max data threshold
      */
+    @Override
     public double getMaxDataThreshold() {
         List<QueueType> queuesConfig = getQueueServerConfig().getQueues();
         double size = -1.0;
@@ -346,6 +342,7 @@ public class QueueServerManagement {
      * 
      * @throws MotuException the motu exception
      */
+    @Override
     public void shutdown() throws MotuException {
         for (QueueManagement queueManagement : getQueueManagement().values()) {
             queueManagement.shutdown();

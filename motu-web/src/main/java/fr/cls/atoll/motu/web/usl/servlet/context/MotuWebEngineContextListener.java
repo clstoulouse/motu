@@ -47,7 +47,6 @@ import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.common.log.log4j.Log4JInitializer;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.usl.USLManager;
 
@@ -78,8 +77,6 @@ public class MotuWebEngineContextListener implements ServletContextListener {
     }
 
     private void initCommonTools() {
-        Log4JInitializer.init(null);
-
         setDefaultTimeZoneToGMT();
     }
 
