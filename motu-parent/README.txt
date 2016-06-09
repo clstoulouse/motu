@@ -25,5 +25,5 @@ Click Debug configurations...> Under Apache Tomcat, debug "Motu Tomcat v7.0 Serv
 Open a web browser and test:
 http://localhost:8080/motu-web/Motu?action=ping
 
-it should displays: OK - response action=ping
+it displays "OK - response action=ping"
 
