@@ -1,5 +1,8 @@
 package fr.cls.atoll.motu.web.usl.request.actions;
 
+import java.io.IOException;
+import java.io.Writer;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -76,19 +79,22 @@ public class ProductDownloadHomeAction extends AbstractAuthorizedAction {
         ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager().getProductMetaData(productId, p.getLocationData());
         p.setProductMetaData(pmd);
 
-        writeResponseWithVelocity(cs, cd, p);
+        try {
+            writeResponseWithVelocity(cs, cd, p, getResponse().getWriter());
+        } catch (IOException e) {
+            throw new MotuException("Error while using velocity template", e);
+        }
     }
 
-    private void writeResponseWithVelocity(ConfigService cs_, CatalogData cd_, Product product_) throws MotuException {
+    public static void writeResponseWithVelocity(ConfigService cs_, CatalogData cd_, Product product_, Writer w_) throws MotuException {
         VelocityContext context = VelocityTemplateManager.getPrepopulatedVelocityContext();
         context.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
         context.put("service", VelocityModelConverter.convertToService(cs_, cd_));
         context.put("user", USLManager.getInstance().getUserManager().getUserName());
         context.put("product", VelocityModelConverter.convertToProduct(product_));
-
         try {
             Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null);
-            template.merge(context, getResponse().getWriter());
+            template.merge(context, w_);
         } catch (Exception e) {
             throw new MotuException("Error while using velocity template", e);
         }

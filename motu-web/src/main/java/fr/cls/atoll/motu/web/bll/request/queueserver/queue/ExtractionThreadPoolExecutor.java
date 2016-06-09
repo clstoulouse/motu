@@ -32,7 +32,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.request.queueserver.RunnableExtraction;
 
 /**
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
@@ -50,7 +49,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
     /**
      * The users.
      */
-    private final ConcurrentMap<String, Integer> users = new ConcurrentHashMap<String, Integer>();
+    private ConcurrentMap<String, Integer> users;
 
     /**
      * The Constructor.
@@ -72,6 +71,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
         BlockingQueue<Runnable> workQueue) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, new QueueThreadFactory(id));
         this.id = id;
+        users = new ConcurrentHashMap<String, Integer>();
     }
 
     /**
@@ -128,6 +128,19 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
         return nbRqtForUser;
     }
 
+    // /**
+    // * Before execute.
+    // *
+    // * @param t the t
+    // * @param r the r
+    // * @see {@link java.util.concurrent.ThreadPoolExecutor}
+    // */
+    // @Override
+    // protected void beforeExecute(Thread t, Runnable r) {
+    // ((IQueueJob) r).setStarted();
+    // super.beforeExecute(t, r);
+    // }
+
     /**
      * After execute.
      *
@@ -139,32 +152,19 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
     protected void afterExecute(Runnable r, Throwable t) {
         super.afterExecute(r, t);
 
-        RunnableExtraction runnableExtraction = (RunnableExtraction) r;
+        IQueueJob qj = (IQueueJob) r;
         if (t != null) {
             MotuException e = new MotuException(
                     String.format("An error occurs during extraction (detected from afterExecute): user id: '%s' - request parameters '%s'",
-                                  runnableExtraction.getUserId(),
-                                  runnableExtraction.getExtractionParameters().toString()),
+                                  qj.getExtractionParameters().getUserId(),
+                                  qj.getExtractionParameters().toString()),
                     t);
-            runnableExtraction.setError(e);
+            qj.onJobException(e);
         }
 
-        onRequestStoppedForUser(runnableExtraction.getUserId());
+        onRequestStoppedForUser(qj.getExtractionParameters().getUserId());
 
-        runnableExtraction.setEnded();
-    }
-
-    /**
-     * Before execute.
-     *
-     * @param t the t
-     * @param r the r
-     * @see {@link java.util.concurrent.ThreadPoolExecutor}
-     */
-    @Override
-    protected void beforeExecute(Thread t, Runnable r) {
-        ((RunnableExtraction) r).setStarted();
-        super.beforeExecute(t, r);
+        // runnableExtraction.setEnded();
     }
 
     /** @return the unique identifier of this pool executor */

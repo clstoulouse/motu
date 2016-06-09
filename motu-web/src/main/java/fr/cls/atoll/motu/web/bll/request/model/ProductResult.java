@@ -1,5 +1,7 @@
 package fr.cls.atoll.motu.web.bll.request.model;
 
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
+
 /**
  * <br>
  * <br>
@@ -13,6 +15,7 @@ package fr.cls.atoll.motu.web.bll.request.model;
 public class ProductResult {
 
     private String productFileName;
+    private MotuException runningException;
 
     /**
      * Valeur de productFileName.
@@ -30,6 +33,24 @@ public class ProductResult {
      */
     public void setProductFileName(String productFileName) {
         this.productFileName = productFileName;
+    }
+
+    /**
+     * .
+     * 
+     * @param runningException
+     */
+    public void setRunningException(MotuException runningException_) {
+        runningException = runningException_;
+    }
+
+    /**
+     * Valeur de runningException_.
+     * 
+     * @return la valeur.
+     */
+    public MotuException getRunningException() {
+        return runningException;
     }
 
 }

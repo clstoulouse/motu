@@ -31,7 +31,7 @@ public class CommonHTTPParameters {
     public static String getActionFromRequest(HttpServletRequest request) {
         String action = request.getParameter(MotuRequestParametersConstant.PARAM_ACTION);
         if (StringUtils.isNullOrEmpty(action)) {
-            action = MotuRequestParametersConstant.ACTION_LIST_CATALOG;
+            action = MotuRequestParametersConstant.ACTION_LIST_SERVICES;
         }
 
         return action;

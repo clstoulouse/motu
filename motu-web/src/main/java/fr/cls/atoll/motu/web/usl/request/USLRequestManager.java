@@ -11,7 +11,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.request.actions.DebugAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DeleteAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DescribeCoverageAction;
@@ -168,6 +171,24 @@ public class USLRequestManager implements IUSLRequestManager {
         // } catch (Exception e) {
         // throw new ServletException(e);
         // }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getProductDownloadUrlPath(Product product) {
+        if (StringUtils.isNullOrEmpty(product.getExtractFilename())) {
+            return "";
+        }
+
+        String httpDownloadUrlBase = BLLManager.getInstance().getConfigManager().getMotuConfig().getDownloadHttpUrl();
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append(httpDownloadUrlBase);
+        if (!(httpDownloadUrlBase.endsWith("/"))) {
+            stringBuffer.append("/");
+        }
+        stringBuffer.append(product.getExtractFilename());
+
+        return stringBuffer.toString();
     }
 
 }

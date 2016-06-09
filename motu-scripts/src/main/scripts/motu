@@ -111,7 +111,8 @@ __initApacheTomcatConfig() {
    if [ ! -f "$CATALINA_BASE/conf/web.xml" ]; then
      cp "$CATALINA_HOME/conf/web.xml" "$CATALINA_BASE/conf/"
    fi
-   
+  
+   if [ ! -f "$CATALINA_BASE/conf/server.xml" ]; then 
    #####################
    ## conf/server.xml
    #####################
@@ -151,6 +152,7 @@ __initApacheTomcatConfig() {
      rm $CATALINA_BASE/conf/server.xml
    fi
    mv $serverXmlTmpFilePath $CATALINA_BASE/conf/server.xml
+   fi
 }
 
 __addCatalinaOpt() {

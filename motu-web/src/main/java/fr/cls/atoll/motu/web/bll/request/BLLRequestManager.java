@@ -76,8 +76,12 @@ public class BLLRequestManager implements IBLLRequestManager {
         long requestId = download(false, cs_, product_, extractionParameters);
 
         ProductResult p = new ProductResult();
-        // TODO SMA set product fileName
-        p.setProductFileName(null);
+        RequestDownloadStatus rds = getResquestStatus(requestId);
+        if (rds.getRunningException() != null) {
+            p.setRunningException(rds.getRunningException());
+        }
+        p.setProductFileName(product_.getExtractFilename());
+
         return p;
     }
 
@@ -137,7 +141,7 @@ public class BLLRequestManager implements IBLLRequestManager {
             // If too much request for this user, throws MotuExceedingUserCapacityException
             checkNumberOfRunningRequestForUser(extractionParameters.getUserId());
 
-            // TODO SMA The request download is delegated to a download request manager
+            // The request download is delegated to a download request manager
             queueServerManagement.execute(requestDownloadStatus, cs_, product_, extractionParameters);
         } catch (MotuException e) {
             requestDownloadStatus.setRunningException(e);

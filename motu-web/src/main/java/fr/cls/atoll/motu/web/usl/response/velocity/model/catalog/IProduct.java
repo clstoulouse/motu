@@ -14,6 +14,18 @@ import java.util.List;
  */
 public interface IProduct {
 
+    //// Methods used only for the download part when a file has been extracted
+    boolean hasDownloadUrlPath();
+
+    String getDownloadUrlPath();
+
+    String getExtractFilename();
+
+    boolean isAutoDownloadTimeOutEnable();
+
+    int getAutoDownloadTimeOut();
+
+    ////
     String getHttpServerDocumentRoot();
 
     boolean isProductDownloadable();
@@ -43,4 +55,8 @@ public interface IProduct {
     List<String> getZAxisRoundedUpDataAsString(int desiredDecimalNumberDigits);
 
     List<String> getTimeAxisDataAsString();
+
+    boolean hasLastError();
+
+    String getLastError();
 }

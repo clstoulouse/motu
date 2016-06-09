@@ -99,7 +99,7 @@ public class DALRequestManager implements IDALRequestManager {
         // Create output NetCdf file to deliver to the user (equivalent to opendap)
         String fname = NetCdfWriter.getUniqueNetCdfFileName(p.getProductId());
         p.setExtractFilename(fname);
-        String dir = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath();
+        String extractDirPath = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath();
 
         // Create and initialize selection
         NetCdfSubsetService ncss = new NetCdfSubsetService();
@@ -108,7 +108,7 @@ public class DALRequestManager implements IDALRequestManager {
         ncss.setDepthSubset(depth);
         ncss.setVariablesSubset(var);
         ncss.setOutputFormat(dataOutputFormat);
-        ncss.setOutputDir(dir);
+        ncss.setOutputDir(extractDirPath);
         ncss.setOutputFile(fname);
         ncss.setncssURL(p.getLocationDataNCSS());
 

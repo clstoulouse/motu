@@ -44,6 +44,10 @@ public interface IProductMetadata {
 
     String getLastUpdate();
 
+    boolean hasLatLonAxis();
+
+    boolean hasGeoXYAxis();
+
     boolean hasLatAxis();
 
     IAxis getLatAxis();

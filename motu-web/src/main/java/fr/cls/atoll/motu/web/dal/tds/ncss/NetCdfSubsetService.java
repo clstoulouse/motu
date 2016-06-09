@@ -1,5 +1,6 @@
 package fr.cls.atoll.motu.web.dal.tds.ncss;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +13,8 @@ import java.util.Set;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -40,6 +43,9 @@ import ucar.ma2.Range;
  */
 
 public class NetCdfSubsetService {
+
+    /** Logger for this class. */
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /** Size block read in bytes from REST response */
     public final static int BSIZE_READ = 256;
@@ -392,12 +398,22 @@ public class NetCdfSubsetService {
             if (response.getType().toString().contains("application/x-netcdf")) {
                 // Output file and directory depending on concatenation
                 InputStream is = response.getEntity(InputStream.class);
-                FileOutputStream fos;
+                String extractFolder = outputDir;
+                String extractFileName = outputFile;
                 if (multipleRequest) {
-                    fos = new FileOutputStream(depthTempDir + "/" + depthTempFname);
-                } else {
-                    fos = new FileOutputStream(outputDir + "/" + outputFile);
+                    extractFolder = depthTempDir.toFile().getAbsolutePath();
+                    extractFileName = depthTempFname;
                 }
+                File extractFolderFile = new File(extractFolder);
+                if (!extractFolderFile.exists()) {
+                    boolean folderCreated = extractFolderFile.mkdirs();
+                    if (folderCreated) {
+                        LOGGER.info("Creation of the folder: " + extractFolder);
+                    } else {
+                        LOGGER.error("Error while creating folder: " + extractFolder);
+                    }
+                }
+                FileOutputStream fos = new FileOutputStream(new File(extractFolderFile, extractFileName));
 
                 // Read/Write by chunks the REST response (avoid Heap over-usage)
                 int bytesRead = 0;

@@ -10,11 +10,13 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
+import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.response.velocity.VelocityTemplateManager;
 import fr.cls.atoll.motu.web.usl.response.velocity.model.IService;
 import fr.cls.atoll.motu.web.usl.response.velocity.model.catalog.IAxis;
@@ -306,6 +308,41 @@ public class VelocityModelConverter {
                     LOGGER.error("Error while converting Product", e);
                     return null;
                 }
+            }
+
+            @Override
+            public boolean hasLastError() {
+                return product_.hasLastError();
+            }
+
+            @Override
+            public String getLastError() {
+                return product_.getLastError();
+            }
+
+            @Override
+            public boolean hasDownloadUrlPath() {
+                return !StringUtils.isNullOrEmpty(product_.getExtractFilename());
+            }
+
+            @Override
+            public String getDownloadUrlPath() {
+                return USLManager.getInstance().getRequestManager().getProductDownloadUrlPath(product_);
+            }
+
+            @Override
+            public String getExtractFilename() {
+                return product_.getExtractFilename();
+            }
+
+            @Override
+            public boolean isAutoDownloadTimeOutEnable() {
+                return !StringUtils.isNullOrEmpty(product_.getExtractFilename());
+            }
+
+            @Override
+            public int getAutoDownloadTimeOut() {
+                return 3000;
             }
 
         };
@@ -702,6 +739,16 @@ public class VelocityModelConverter {
             @Override
             public ITimeAxis getTimeAxis() {
                 return convertToTimeAxis(productMetaData_.getTimeAxis());
+            }
+
+            @Override
+            public boolean hasLatLonAxis() {
+                return productMetaData_.hasLatLonAxis();
+            }
+
+            @Override
+            public boolean hasGeoXYAxis() {
+                return productMetaData_.hasLatLonAxis();
             }
         };
     }

@@ -1,5 +1,7 @@
 package fr.cls.atoll.motu.web.bll.request.model;
 
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
+
 /**
  * <br>
  * <br>
@@ -28,7 +30,7 @@ public class RequestDownloadStatus {
     private long sizeInBits;
     private String downloadUrlPath;
 
-    private Exception runningException;
+    private MotuException runningException;
 
     /**
      * Constructeur.
@@ -176,7 +178,7 @@ public class RequestDownloadStatus {
      * 
      * @return la valeur.
      */
-    public Exception getRunningException() {
+    public MotuException getRunningException() {
         return runningException;
     }
 
@@ -185,7 +187,7 @@ public class RequestDownloadStatus {
      * 
      * @param runningException nouvelle valeur.
      */
-    public void setRunningException(Exception runningException) {
+    public void setRunningException(MotuException runningException) {
         this.runningException = runningException;
         setEndProcessingDateTime(System.currentTimeMillis());
     }

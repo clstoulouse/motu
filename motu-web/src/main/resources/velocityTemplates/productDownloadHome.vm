@@ -418,13 +418,13 @@
 
 <form  method="get" name="${formName}">		
 <input type="hidden" name="action" value="productdownload" />
-<input type="hidden" name="service" value="$service.getName()" />
+<input type="hidden" name="service" value="$service.getNameEncoded()" />
 ## #if($catalogType != "FTP")	
 ##	<input type="hidden" name="data" value="$product.getLocationData()" />
 ## #else
-##	<input type="hidden" name="product" value="$product.getProductId()" />
+##	<input type="hidden" name="product" value="$productMetaData.getProductIdEncoded()" />
 ## #end
-<input type="hidden" name="product" value="$product.getProductId()" />
+<input type="hidden" name="product" value="$productMetaData.getProductIdEncoded()" />
 <input type="hidden" name="nexturl" value=" " />
 #if(($productMetaData.hasLatLonAxis()) || ($productMetaData.hasGeoXYAxis()))
 	#if($product.hasCriteriaLatLon())				

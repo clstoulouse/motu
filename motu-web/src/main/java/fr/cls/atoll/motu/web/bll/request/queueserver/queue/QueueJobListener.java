@@ -1,5 +1,7 @@
 package fr.cls.atoll.motu.web.bll.request.queueserver.queue;
 
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
+
 /**
  * <br>
  * <br>
@@ -27,6 +29,8 @@ public interface QueueJobListener {
      * 
      * @param e
      */
-    void onJobException(Exception e);
+    void onJobException(MotuException e);
+
+    boolean isJobEnded();
 
 }

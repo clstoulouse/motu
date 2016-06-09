@@ -12,6 +12,10 @@ package fr.cls.atoll.motu.web.common.utils;
  */
 public class UnitUtils {
 
+    public static double toMegaBytes(double sizeInByte) {
+        return sizeInByte / (1000000);
+    }
+
     public static double toMegaBytes(long sizeInBits) {
         return sizeInBits / (1024 * 1024);
     }

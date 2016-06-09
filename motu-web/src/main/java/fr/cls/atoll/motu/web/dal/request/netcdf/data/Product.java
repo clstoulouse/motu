@@ -99,9 +99,6 @@ public class Product {
     /** Logger for this class. */
     private static final Logger LOG = LogManager.getLogger();
 
-    /** Time-out in milliseconds for automatic download of the extracted file. */
-    private static final int DEFAULT_AUTOMATIC_DOWNLOAD_TIMEOUT = 3000;
-
     /** Contains variables names of 'gridded' product that are hidden to the user. */
     private static final String[] UNUSED_VARIABLES_GRIDS = new String[] { "LatLonMin", "LatLonStep", "LatLon", };
 
@@ -882,9 +879,6 @@ public class Product {
      * @throws MotuNotImplementedException the motu not implemented exception
      */
     public void updateVariables(List<String> listVar) throws MotuException, MotuNotImplementedException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("updateVariables(List<String>) - start");
-        }
         // if list of variables to extract is no set,
         // get all variables form this product
         if (ListUtils.isNullOrEmpty(listVar)) {
@@ -896,10 +890,6 @@ public class Product {
         }
 
         dataset.updateVariables(listVar);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("updateVariables(List<String>) - end");
-        }
     }
 
     /**
@@ -1690,13 +1680,11 @@ public class Product {
     public void computeAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
             NetCdfVariableNotFoundException {
-
         if (dataset == null) {
             throw new MotuException("Error in getAmountDataSize - Nothing to get - dataset is null");
         }
 
         dataset.computeAmountDataSize();
-
     }
 
     /**
@@ -2541,48 +2529,6 @@ public class Product {
         this.lastError = lastError;
     }
 
-    /** Time-out in milliseconds for automatic download of the extracted file. */
-    private int autoDownloadTimeOut = DEFAULT_AUTOMATIC_DOWNLOAD_TIMEOUT;
-
-    /**
-     * Getter of the property <tt>autoDownloadTimeOut</tt>.
-     * 
-     * @return Returns the autoDownloadTimeOut.
-     * 
-     * @uml.property name="autoDownloadTimeOut"
-     */
-    public int getAutoDownloadTimeOut() {
-        return this.autoDownloadTimeOut;
-    }
-
-    /**
-     * Setter of the property <tt>autoDownloadTimeOut</tt>. Sets to zero, to disable automatic download.
-     * 
-     * @param autoDownloadTimeOut The autoDownloadTimeOut to set.
-     * 
-     * @uml.property name="autoDownloadTimeOut"
-     */
-    public void setAutoDownloadTimeOut(int autoDownloadTimeOut) {
-        this.autoDownloadTimeOut = autoDownloadTimeOut;
-    }
-
-    /**
-     * Sets the automatic download time-out of the default value (DEFAULT_AUTOMATIC_DOWNLOAD_TIMEOUT
-     * constant).
-     */
-    public void setDefaultAutoDownloadTimeOut() {
-        this.autoDownloadTimeOut = DEFAULT_AUTOMATIC_DOWNLOAD_TIMEOUT;
-    }
-
-    /**
-     * Checks if is auto download time out enable.
-     * 
-     * @return true if the automatic download time-out is enable (> 0).
-     */
-    public boolean isAutoDownloadTimeOutEnable() {
-        return this.autoDownloadTimeOut > 0;
-    }
-
     /**
      * Clears <tt>lastError</tt>.
      * 
@@ -2598,8 +2544,7 @@ public class Product {
      * @return true last error message string is not empty, false otherwise.
      */
     public boolean hasLastError() {
-
-        return getLastError().length() > 0;
+        return !StringUtils.isNullOrEmpty(getLastError());
     }
 
     /**
@@ -2704,57 +2649,6 @@ public class Product {
      */
     public String getHttpServerDocumentRoot() {
         return BLLManager.getInstance().getConfigManager().getMotuConfig().getHttpDocumentRoot();
-    }
-
-    /**
-     * Gets the url to download the output file.
-     * 
-     * @return the url to downolad the output file
-     * 
-     * @throws MotuException the motu exception
-     */
-    public String getDownloadUrlPath() throws MotuException {
-        return getDownloadUrlPath(extractFilename);
-    }
-
-    /**
-     * Gets the download url path.
-     * 
-     * @param fileName the file name
-     * 
-     * @return the download url path
-     * 
-     * @throws MotuException the motu exception
-     */
-    public static String getDownloadUrlPath(String fileName) throws MotuException {
-
-        if (fileName.length() <= 0) {
-            return "";
-        }
-
-        StringBuffer stringBuffer = new StringBuffer();
-
-        String dir = BLLManager.getInstance().getConfigManager().getMotuConfig().getDownloadHttpUrl();
-        stringBuffer.append(dir);
-
-        if (!(dir.endsWith("/") || dir.endsWith("\\"))) {
-            stringBuffer.append("/");
-        }
-        stringBuffer.append(fileName);
-
-        return stringBuffer.toString();
-    }
-
-    /**
-     * Checks for download url path.
-     * 
-     * @return true the url of the output file to download is not empty, false otherwise.
-     * 
-     * @throws MotuException the motu exception
-     */
-    public boolean hasDownloadUrlPath() throws MotuException {
-
-        return getDownloadUrlPath().length() > 0;
     }
 
 }

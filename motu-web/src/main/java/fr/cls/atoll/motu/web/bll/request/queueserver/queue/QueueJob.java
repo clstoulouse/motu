@@ -25,10 +25,11 @@ public class QueueJob implements IQueueJob {
     private ConfigService cs;
     private OutputFormat dataOutputFormat;
 
-    public QueueJob(ConfigService cs_, Product product_, OutputFormat dataOutputFormat_, QueueJobListener queueJobListener_) {
+    public QueueJob(ConfigService cs_, Product product_, ExtractionParameters extractionParameters_, QueueJobListener queueJobListener_) {
         cs = cs_;
         product = product_;
-        dataOutputFormat = dataOutputFormat_;
+        extractionParameters = extractionParameters_;
+        dataOutputFormat = extractionParameters.getDataOutputFormat();
         queueJobListener = queueJobListener_;
     }
 
@@ -39,8 +40,10 @@ public class QueueJob implements IQueueJob {
             onJobStarted();
             processJob();
             onJobStopped();
-        } catch (Exception e) {
+        } catch (MotuException e) {
             onJobException(e);
+        } catch (Exception e) {
+            onJobException(new MotuException(e));
         }
     }
 
@@ -60,7 +63,8 @@ public class QueueJob implements IQueueJob {
         queueJobListener.onJobStopped();
     }
 
-    private void onJobException(Exception e) {
+    @Override
+    public void onJobException(MotuException e) {
         queueJobListener.onJobException(e);
     }
 

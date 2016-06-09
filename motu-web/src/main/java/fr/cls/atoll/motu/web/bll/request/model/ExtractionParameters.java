@@ -68,6 +68,7 @@ public class ExtractionParameters implements Cloneable {
         double z_lo_,
         double z_hi_,
         String productId,
+        OutputFormat dataOutputFormat_,
         String userId,
         boolean anonymousUser) {
         this(
@@ -78,7 +79,7 @@ public class ExtractionParameters implements Cloneable {
             getGeoCoverage(x_lo_, x_hi_, y_lo_, y_hi_),
             getDepthCoverage(z_lo_, z_hi_),
             productId,
-            null,
+            dataOutputFormat_,
             null,
             null,
             userId,

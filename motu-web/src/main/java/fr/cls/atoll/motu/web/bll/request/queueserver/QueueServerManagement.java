@@ -56,6 +56,7 @@ import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueJob;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueJobListener;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueManagement;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueThresholdComparator;
+import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueServerType;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
@@ -118,18 +119,45 @@ public class QueueServerManagement {
      * @throws MotuExceptionBase the motu exception base
      * @throws MotuException
      */
-    public void execute(final RequestDownloadStatus rds_, ConfigService cs_, Product product_, ExtractionParameters extractionParameters_)
+    public void execute(RequestDownloadStatus rds_, ConfigService cs_, Product product_, ExtractionParameters extractionParameters_)
             throws MotuException {
-        // TODO SMA : Ask BLL service for the amount size of the request
-        // runnableExtraction.getAmountDataSizeAsMBytes()
-        double sizeInMB = BLLManager.getInstance().getRequestManager().getProductDataSizeIntoByte(product_,
-                                                                                                  extractionParameters_.getListVar(),
-                                                                                                  extractionParameters_.getListTemporalCoverage(),
-                                                                                                  extractionParameters_.getListLatLonCoverage(),
-                                                                                                  extractionParameters_.getListDepthCoverage());
+        double sizeInMB = UnitUtils.toMegaBytes(BLLManager.getInstance().getRequestManager()
+                .getProductDataSizeIntoByte(product_,
+                                            extractionParameters_.getListVar(),
+                                            extractionParameters_.getListTemporalCoverage(),
+                                            extractionParameters_.getListLatLonCoverage(),
+                                            extractionParameters_.getListDepthCoverage()));
 
         QueueManagement queueManagement = findQueue(sizeInMB);
-        queueManagement.execute(new QueueJob(cs_, product_, extractionParameters_.getDataOutputFormat(), new QueueJobListener() {
+        if (queueManagement == null) {
+            throw new MotuException(
+                    "Oops, the size of the data to download (" + (int) sizeInMB + " Megabyte) is not managed by the Motu queue management system.");
+        }
+
+        // Here we synchronize the execution of the request
+        QueueJobListener qjl = createQueueJobListener(rds_);
+        queueManagement.execute(new QueueJob(cs_, product_, extractionParameters_, qjl));
+
+        synchronized (this) {
+            if (!qjl.isJobEnded()) {
+                try {
+                    wait();
+                } catch (InterruptedException e1) {
+                    LOGGER.error(e1);
+                }
+            }
+        }
+    }
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    private QueueJobListener createQueueJobListener(final RequestDownloadStatus rds_) {
+        return new QueueJobListener() {
+
+            boolean isJobEnded = false;
 
             @Override
             public void onJobStarted() {
@@ -144,20 +172,34 @@ public class QueueServerManagement {
             @Override
             public void onJobStopped() {
                 rds_.setEndProcessingDateTime(System.currentTimeMillis());
+
+                synchronized (QueueServerManagement.this) {
+                    isJobEnded = true;
+                    QueueServerManagement.this.notify();
+                }
             }
 
             @Override
-            public void onJobException(Exception e) {
+            public void onJobException(MotuException e) {
                 rds_.setRunningException(e);
                 rds_.setEndProcessingDateTime(System.currentTimeMillis());
 
+                synchronized (QueueServerManagement.this) {
+                    isJobEnded = true;
+                    QueueServerManagement.this.notify();
+                }
                 // TODO SMA not sure that CAS AssertionHolder shall be managed here !
                 // if (extractionParameters.getAssertion() != null) {
                 // AssertionHolder.clear();
                 // }
             }
 
-        }));
+            @Override
+            public boolean isJobEnded() {
+                return isJobEnded;
+            }
+
+        };
     }
 
     /**

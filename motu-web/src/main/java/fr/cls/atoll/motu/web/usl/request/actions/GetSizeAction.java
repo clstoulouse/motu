@@ -30,6 +30,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.MotuMarshallException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
+import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
@@ -172,7 +173,7 @@ public class GetSizeAction extends AbstractAction {
                 depthHighHTTPParameterValidator.getParameterValueValidated(),
 
                 productHTTPParameterValidator.getParameterValueValidated(),
-
+                OutputFormat.NETCDF,
                 getLoginOrUserHostname(),
                 isAnAnonymousUser());
 

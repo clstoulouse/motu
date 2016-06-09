@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 
 /**
@@ -30,5 +31,13 @@ public interface IUSLRequestManager {
      * @throws MotuException
      */
     void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws InvalidHTTPParameterException, MotuException;
+
+    /**
+     * .
+     * 
+     * @param product
+     * @return
+     */
+    String getProductDownloadUrlPath(Product product);
 
 }

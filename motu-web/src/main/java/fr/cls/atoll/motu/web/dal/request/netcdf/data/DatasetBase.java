@@ -405,14 +405,13 @@ public abstract class DatasetBase {
      * @throws MotuException the motu exception
      */
     public List<String> addVariables(List<String> listVar) throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("addVariables() - entering");
-        }
         List<String> listVarNameResolved = new ArrayList<String>();
         if (listVar == null) {
             throw new MotuException("Error in addVariables - List of variables to be added is null");
         }
 
+        NetCdfReader netCdfReader = new NetCdfReader(product.getLocationData(), false);
+        netCdfReader.open(true);
         for (String standardName : listVar) {
             if (variablesMap == null) {
                 variablesMap = new HashMap<String, VarData>();
@@ -422,7 +421,7 @@ public abstract class DatasetBase {
 
             List<String> listVarName;
             try {
-                listVarName = product.getNetCdfReader().getNetcdfVarNameByStandardName(trimmedStandardName);
+                listVarName = netCdfReader.getNetcdfVarNameByStandardName(trimmedStandardName);
             } catch (NetCdfAttributeException e) {
                 throw new MotuException("Error in addVariables - Unable to get netcdf variable name", e);
             }
@@ -434,9 +433,6 @@ public abstract class DatasetBase {
             }
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("addVariables() - exiting");
-        }
         return listVarNameResolved;
     }
 
@@ -449,32 +445,10 @@ public abstract class DatasetBase {
      * @throws MotuException the motu exception
      */
     public void updateVariables(List<String> listVar) throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("updateVariables() - entering");
-        }
-
-        // if (listVar == null) {
-        // throw new MotuException("Error in updateVariables - List of variables to be updated is null");
-        // }
-        //
-        // for (String var : listVar) {
-        // VarData varData = new VarData(var);
-        // if (variablesMap == null) {
-        // variablesMap = new HashMap<String, VarData>();
-        // }
-        // // add variables, If variable already exists in the dataset, it will
-        // // be replaced
-        // putVariables(var, varData);
-        // }
-
         List<String> listVarNameResolved = addVariables(listVar);
 
         // remove variables which are in variables map and not in listVar.
         variablesKeySet().retainAll(listVarNameResolved);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("updateVariables() - exiting");
-        }
     }
 
     /**
@@ -485,21 +459,10 @@ public abstract class DatasetBase {
      * @throws MotuException the motu exception
      */
     public void removeVariables(List<String> listVar) throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("removeVariables() - entering");
-        }
-
         if (listVar == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("removeVariables() - exiting");
-            }
             return;
         }
         variablesKeySet().removeAll(listVar);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("removeVariables() - exiting");
-        }
     }
 
     /**

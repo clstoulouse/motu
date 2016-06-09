@@ -27,6 +27,7 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
+import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
@@ -201,31 +202,49 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
             }
         } else {
             ProductResult pr = BLLManager.getInstance().getRequestManager().download(cs, p, createExtractionParameters());
-            String productURL = getProductDownloadHttpUrl(pr);
-
-            // Synchronous mode
-            if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_CONSOLE)) {
+            if (pr.getRunningException() != null) {
+                p.setLastError(pr.getRunningException().getMessage());
+                onError(cs, cd, p);
+            } else {
                 try {
-                    getResponse().sendRedirect(productURL);
+                    ProductDownloadHomeAction.writeResponseWithVelocity(cs, cd, p, getResponse().getWriter());
                 } catch (IOException e) {
-                    throw new MotuException("Error while sending download redirection PARAM_MODE_CONSOLE", e);
+                    throw new MotuException("Error while using velocity template", e);
                 }
-            } else { // Default mode MotuRequestParametersConstant.PARAM_MODE_URL
-                getResponse().setContentType(CONTENT_TYPE_PLAIN);
-                try {
-                    getResponse().getWriter().write(productURL);
-                } catch (IOException e) {
-                    throw new MotuException("Error while writing download result CONTENT_TYPE_PLAIN", e);
+
+                String productURL = getProductDownloadHttpUrl(pr);
+
+                // Synchronous mode
+                if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_CONSOLE)) {
+                    try {
+                        getResponse().sendRedirect(productURL);
+                    } catch (IOException e) {
+                        throw new MotuException("Error while sending download redirection PARAM_MODE_CONSOLE", e);
+                    }
+                } else { // Default mode MotuRequestParametersConstant.PARAM_MODE_URL
+
+                    getResponse().setContentType(CONTENT_TYPE_PLAIN);
+                    try {
+                        getResponse().getWriter().write(productURL);
+                    } catch (IOException e) {
+                        throw new MotuException("Error while writing download result CONTENT_TYPE_PLAIN", e);
+                    }
                 }
             }
         }
+    }
 
-        // productDownload(createExtractionParameters(mode), mode, priority);
-        //
-        // boolean noMode = RunnableHttpExtraction.noMode(mode);
-        // if (!noMode) {
-        // SessionManager.getInstance().removeOrganizerSession(getSession());
-        // }
+    /**
+     * .
+     * 
+     * @throws MotuException
+     */
+    private void onError(ConfigService cs, CatalogData cd, Product p) throws MotuException {
+        try {
+            ProductDownloadHomeAction.writeResponseWithVelocity(cs, cd, p, getResponse().getWriter());
+        } catch (IOException e) {
+            throw new MotuException("Error while using velocity template", e);
+        }
     }
 
     private ExtractionParameters createExtractionParameters() {
@@ -246,7 +265,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 depthHighHTTPParameterValidator.getParameterValueValidated(),
 
                 productHTTPParameterValidator.getParameterValueValidated(),
-
+                OutputFormat.NETCDF,
                 getLoginOrUserHostname(),
                 isAnAnonymousUser());
         extractionParameters.setUserHost(getLoginOrUserHostname());

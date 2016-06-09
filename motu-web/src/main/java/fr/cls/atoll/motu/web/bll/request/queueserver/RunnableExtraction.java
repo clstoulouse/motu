@@ -36,6 +36,7 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueLogInfo;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.usl.USLManager;
 
 /**
  * 
@@ -404,7 +405,7 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
     public void setEnded() {
         try {
             if (product != null) {
-                queueLogInfo.setDownloadUrlPath(product.getDownloadUrlPath());
+                queueLogInfo.setDownloadUrlPath(USLManager.getInstance().getRequestManager().getProductDownloadUrlPath(product));
                 queueLogInfo.setExtractLocationData(product.getExtractLocationData());
                 queueLogInfo.addReadingTime(product.getReadingTimeAsMilliSeconds());
                 queueLogInfo.addWritingTime(product.getWritingTimeAsMilliSeconds());
