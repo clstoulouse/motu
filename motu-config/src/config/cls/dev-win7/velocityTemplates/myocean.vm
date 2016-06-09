@@ -1,0 +1,194 @@
+##----------------------------------------------------------------------------------
+## WARNING : Macro are prefixed by template file name because of the bug in Velocity when
+## there are the same macro name in different Template. 
+## In case several templates have a common macro name, 
+## the result can be amazing (among others, execution mixes up the same macro with the same name)
+##----------------------------------------------------------------------------------
+## ------------------------------ myocean_uk_printSubTitleCatalog --------------------------------
+#macro(myocean_uk_printSubTitleListInventories)
+<li>
+    <a>Access Services</a>	
+</li>
+
+#end
+## ------------------------------ myocean_uk_printSubTitleProductMetadata --------------------------------
+#macro(myocean_uk_printSubTitleCatalog)
+<li>
+	<a href="?action=listservices">Access Services</a>
+</li>
+<li>
+    <a>&gt;&nbsp;Data Product Catalogue</a>	
+</li>
+
+#end
+
+## ------------------------------ myocean_uk_printSubTitleProductMetadata --------------------------------
+#macro(myocean_uk_printSubTitleProductMetadata)
+<li>
+	<a href="?action=listservices" class="mainlevel">Access Services</a>
+</li>
+<li>
+	<a href="?action=listcatalog&service=${service.getNameEncoded()}">&gt;&nbsp;Data Product Catalogue</a>
+</li>
+<li>
+    <a>&gt;&nbsp;${titleMetadata}</a>
+</li>
+
+#end
+
+## ------------------------------ myocean_uk_printSubTitleProductDownloadHome --------------------------------
+#macro(myocean_uk_printSubTitleProductDownloadHome)
+<li><a href="?action=listservices">Access Services</a></li>
+<li><a href="?action=listcatalog&service=${service.getNameEncoded()}">&gt;&nbsp;Data Product Catalogue</a></li>
+
+#if($downloadOnTop == false)
+	<li><a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">&gt;&nbsp;${titleMetadata}</a></li>
+#end
+
+<li><a>&gt;&nbsp;Download</a></li>
+
+#end
+
+## -------------------------------------------- myocean_uk_printSubTitle --------------------------------
+#macro(myocean_uk_printSubTitle)
+	#if($body_template.equalsIgnoreCase($templateListInventories))
+		#myocean_uk_printSubTitleListInventories()	
+	#end
+	#if($body_template.equalsIgnoreCase($templateCatalog))
+		#myocean_uk_printSubTitleCatalog()	
+	#end
+	#if($body_template.equalsIgnoreCase($templateProductMetadata))
+		#myocean_uk_printSubTitleProductMetadata()	
+	#end	
+	#if($body_template.equalsIgnoreCase($templateProductDownloadHome))
+		#myocean_uk_printSubTitleProductDownloadHome()	
+	#end
+#end
+
+## -------------------------------------------- main --------------------------------
+
+#set($templateListInventories = "velocityTemplates/listServices_uk.vm")
+#set($templateCatalog = "velocityTemplates/catalog_uk.vm")
+#set($templateProductMetadata = "velocityTemplates/product_metadata_uk.vm")
+#set($templateProductDownloadHome = "velocityTemplates/product_downloadhome_uk.vm")
+#set($httpSite = ${service.getHttpBaseRef()})
+
+#set($titleMetadata = "Dataset Metadata")
+
+#set($downloadOnTop = ${service.isDownloadOnTop()})
+#set($showOpendapLinks = false)
+
+## variables pour menu Motu 
+#set($titleMenuMotu = "Downloading and extraction service")
+###set($labelMenuMotu = "Opendap Server")
+###set($hrefMenuMotu = "?action=listcatalog&service=Mercator&lang=uk")
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<title>MyOcean Service - MyOcean</title>
+	<link rel="icon" type="image/x-icon" href="$httpSite/myocean_mis-gw/css/myocean/screen/images/favicon.ico" />
+	<meta name="robots" content="noindex, nofollow" />
+	<meta name="language" content="en" />
+	<meta name="copyright" content="MyOcean" />
+
+	<link rel="stylesheet" href="$httpSite/myocean_mis-gw/css/myocean/myocean.css" type="text/css" />
+	<link rel="stylesheet" href="$httpSite/myocean_mis-gw/css/myocean/screen/nav_services.css" type="text/css" />
+	<!--[if lte IE 7]>
+	<link href="$httpSite/myocean_mis-gw/css/myocean/patches/patch_my_layout.css" rel="stylesheet" type="text/css" />
+	<![endif]-->
+	<style><!--
+
+	
+	
+	-->
+	</style>
+  <link rel="stylesheet" type="text/css" href="$httpSite/myocean_mis-gw/css/myocean/screen/content_cc.css" media="all">
+  <link rel="stylesheet" type="text/css" href="$httpSite/myocean_mis-gw/css/myocean/screen/mis-gw.css" media="all">
+  
+	<script type="text/javascript" src="$httpSite/myocean_mis-gw/js/myocean.js"></script>
+
+</head>
+
+<body onLoad="setWhiteBoxHeight('topLeftMenuInner',200);init();" onUnload="unload();">
+	<a name="up" id="up"></a>
+	
+	<div class="page_margins">
+		<div class="page">
+			<div id="header">
+				<div id="logo"><a href="http://www.myocean.eu"><img src="$httpSite/myocean_mis-gw/css/myocean/screen/images/logo_myocean.gif"  border="0" alt="MyOcean" title="MyOcean homepage" /></a></div>
+					<div id="headerText">
+
+<div class="text"><h1>Products and Services</h1>
+
+</div>
+
+</div>
+
+				</div>
+			</div>
+		</div>
+		<!-- begin: #home_top -->
+	<div id="white_background_inner"></div>
+		<div class="page_margins">
+			<div class="page">
+				<div id="main">
+					<div id="col1">
+						<!-- Top left content -->						
+						<div id="topLeftMenuInner">							
+							<div class="topLeftMenu" style="height:100px;">
+							</div> 
+						</div>
+						<div id="col1_content" class="clearfix">
+							<!-- Bottom left content -->
+							
+						</div>
+
+					</div>
+					<div id="col3">
+						<div id="white_background_inner_page"></div>
+						<div id="col3_content" class="clearfix">
+							<!-- Page content -->
+							
+							<div id="breadcrumb">
+								
+							</div>
+	<div id="nav_main">
+		   <div id="ps_nav">
+			  <div class="hlist">
+					<ul>
+					#myocean_uk_printSubTitle()
+					</ul>
+				</div>
+			 </div>
+	      </div>
+			  
+	      <!-- CONTENT START -->
+	      <div id="content">
+			
+			
+			
+#set($tocLowLevel = 1)
+#set($tocHighLevel = 1)
+#set($tocAsRow = true)
+#set($printcatalogtoc = false)
+
+#parse ($body_template)
+		  </div>	
+		  <div id="ie_clearing"> &nbsp; </div>
+		  </div>	
+					</div>
+<div id="footer">
+					<div id="gmes_fp7"><div>
+
+						</div></div>
+					<div id="footer_content"><div>All rights reserved</div></div>
+				</div>
+### main                </div>
+### page            </div>
+</div>
+
+</body>
+
+</html>
