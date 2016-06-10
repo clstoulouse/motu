@@ -168,4 +168,12 @@ public class CommonHTTPParameters {
         return request.getParameter(MotuRequestParametersConstant.PARAM_DATASET_ID);
     }
 
+    public static String getXmlFileFromRequest(HttpServletRequest request) {
+        return request.getParameter(MotuRequestParametersConstant.PARAM_XML_FILE);
+    }
+
+    public static String getExtraMetaDataFromRequest(HttpServletRequest request) {
+        return request.getParameter(MotuRequestParametersConstant.PARAM_EXTRA_METADATA);
+    }
+
 }

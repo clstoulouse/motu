@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -248,32 +247,6 @@ public abstract class AbstractAction {
             listTemporalCoverage.add(endDate);
         }
         return listTemporalCoverage;
-    }
-
-    /**
-     * Gets the product id.
-     *
-     * @param productId the product id
-     * @param request the request
-     * @param response the response
-     * @return the product id
-     * @throws IOException Signals that an I/O exception has occurred.
-     * @throws ServletException the servlet exception
-     * @throws MotuException the motu exception
-     */
-    protected String getProductIdFromParamId(String productId) throws MotuException {
-        String serviceName = CommonHTTPParameters.getServiceFromRequest(getRequest());
-
-        if ((StringUtils.isNullOrEmpty(serviceName)) || (StringUtils.isNullOrEmpty(productId))) {
-            return productId;
-        }
-
-        String uri = productId;
-        String[] split = uri.split(".*#");
-        if (split.length <= 1) {
-            return uri;
-        }
-        return split[1];
     }
 
     protected OutputFormat getOutputFormat() throws IOException {
