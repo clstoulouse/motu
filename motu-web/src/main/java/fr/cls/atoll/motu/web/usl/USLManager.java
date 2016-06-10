@@ -39,6 +39,7 @@ public class USLManager implements IUSLManager {
     public void init() throws MotuException {
         try {
             VelocityTemplateManager.getInstance().init();
+            requestManager.init();
         } catch (Exception e) {
             throw new MotuException("Error while initializing velocity template", e);
         }

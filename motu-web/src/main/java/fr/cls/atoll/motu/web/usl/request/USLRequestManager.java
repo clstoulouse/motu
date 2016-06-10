@@ -6,11 +6,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.bind.JAXBException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.api.utils.JAXBWriter;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
@@ -189,6 +191,16 @@ public class USLRequestManager implements IUSLRequestManager {
         stringBuffer.append(product.getExtractFilename());
 
         return stringBuffer.toString();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void init() throws MotuException {
+        try {
+            JAXBWriter.getInstance().init();
+        } catch (JAXBException e) {
+            throw new MotuException(e);
+        }
     }
 
 }

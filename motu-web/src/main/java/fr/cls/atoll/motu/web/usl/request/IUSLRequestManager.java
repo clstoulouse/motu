@@ -40,4 +40,11 @@ public interface IUSLRequestManager {
      */
     String getProductDownloadUrlPath(Product product);
 
+    /**
+     * Initialize the USLRequestManager .
+     * 
+     * @throws MotuException
+     */
+    void init() throws MotuException;
+
 }

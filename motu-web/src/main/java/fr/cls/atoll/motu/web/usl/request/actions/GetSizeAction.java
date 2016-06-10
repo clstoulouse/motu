@@ -33,6 +33,7 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.DepthHTTPParameterValidator;
@@ -204,6 +205,10 @@ public class GetSizeAction extends AbstractAction {
                 p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(extractionParameters.getServiceName(),
                                                                                                 extractionParameters.getProductId());
             }
+
+            ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager().getProductMetaData(p.getProductId(),
+                                                                                                                      p.getLocationData());
+            p.setProductMetaData(pmd);
 
             if (p != null) {
                 double productDataSize = BLLManager.getInstance().getRequestManager()
