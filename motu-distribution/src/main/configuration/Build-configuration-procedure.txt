@@ -1,0 +1,18 @@
+Procedure for building an configuration:
+==================================================================================
+
+Purpose:
+--------------------
+
+The purpose of this procedure is to the build saisdpc-distribution-config-x.y.z-qualifier-target-xxxxx.tar.gz and saisdpc-distribution-config-x.y.z-target-esb-bps-xxxxx.tar.gz from the emsa config repository
+
+Pre-requisites:
+--------------------
+$PROJECT_NAME=motu
+$PROJECT_TAG=${project.version}
+
+tar xvzf $PROJECT_NAME-distribution-config-$PROJECT_TAG.tar.gz
+
+cd $PROJECT_NAME-distribution-config
+
+mvn package

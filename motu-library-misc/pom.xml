@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>cls.atoll.motu</groupId>
+        <groupId>cls.motu</groupId>
         <artifactId>motu-parent</artifactId>
         <version>2.6.00-SNAPSHOT</version>
         <relativePath>../motu-parent</relativePath>
@@ -14,15 +14,15 @@
 
 	<dependencies>	
 		<dependency>
-			<groupId>cls.atoll.motu</groupId>
+			<groupId>cls.motu</groupId>
 			<artifactId>motu-library-converter</artifactId>
 		</dependency>	
         <dependency>
-            <groupId>cls.atoll.motu</groupId>
+            <groupId>cls.motu</groupId>
             <artifactId>motu-library-inventory</artifactId>
         </dependency>
         <dependency>
-			<groupId>cls.atoll.motu</groupId>
+			<groupId>cls.motu</groupId>
 			<artifactId>motu-library-cas</artifactId>
         </dependency>
 		<dependency>
@@ -160,7 +160,7 @@
             <artifactId>defaultvalueplugin</artifactId>
         </dependency>
         <dependency>
-        	<groupId>cls.atoll.motu</groupId>
+        	<groupId>cls.motu</groupId>
         	<artifactId>motu-api-message</artifactId>
         </dependency>
 	</dependencies>

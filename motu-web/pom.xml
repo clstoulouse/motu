@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>cls.atoll.motu</groupId>
+		<groupId>cls.motu</groupId>
 		<artifactId>motu-parent</artifactId>
 		<version>2.6.00-SNAPSHOT</version>
 		<relativePath>../motu-parent</relativePath>
@@ -36,11 +36,11 @@
             <artifactId>joda-time</artifactId>
         </dependency>
 		<dependency>
-			<groupId>cls.atoll.motu</groupId>
+			<groupId>cls.motu</groupId>
 			<artifactId>motu-library-converter</artifactId>
 		</dependency>	
         <dependency>
-            <groupId>cls.atoll.motu</groupId>
+            <groupId>cls.motu</groupId>
             <artifactId>motu-library-inventory</artifactId>
         </dependency>
 
@@ -53,11 +53,11 @@
 			<artifactId>cas-client-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>cls.atoll.motu</groupId>
+			<groupId>cls.motu</groupId>
 			<artifactId>motu-api-message</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>cls.atoll.motu</groupId>
+			<groupId>cls.motu</groupId>
 			<artifactId>motu-api-rest</artifactId>
 		</dependency>
 
