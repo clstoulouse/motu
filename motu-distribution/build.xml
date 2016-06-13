@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ANT File
-	 Build 3 tar.gz files
-	 
-	 - motu-products-A.B.tar.gz  (retrived from V:\cmems-cis\06- Livraison\61- livraison-de-CLS\611 - FilesUsedToBuild\motu-products-3.0.tar.gz)
-	 - motu-distribution-X.Y.Z.tar.gz (built from source code)
-	 - motu-config-$target-X.Y.Z-$timestamp.tar.gz (built from source code)
+	 Build 3 tar.gz files in target-ant/delivery/$timestamp folder:
+	   - motu-products-A.B.tar.gz  (retrived from V:\cmems-cis\06- Livraison\61- livraison-de-CLS\611 - FilesUsedToBuild\motu-products-3.0.tar.gz)
+	   - motu-distribution-X.Y.Z.tar.gz (built from source code)
+	   - motu-config-$target-X.Y.Z-$timestamp.tar.gz (built from source code)
 	     $target=CLS,CMEMS,INDESO,AVISO
 	     $timestamp=Build date time with format yyyyMMddHHmmssSSS
 	     
+	     
+	 This ANT script needs http://maven.apache.org/ant-tasks/ to be installed in order to read the POM version.
 	     
 -->
 <project name="MOTU_Delivery" default="all" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
