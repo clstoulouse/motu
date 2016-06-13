@@ -20,6 +20,7 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.request.actions.DebugAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DeleteAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DescribeCoverageAction;
+import fr.cls.atoll.motu.web.usl.request.actions.DescribeProductAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DownloadProductAction;
 import fr.cls.atoll.motu.web.usl.request.actions.GetRequestStatusAction;
 import fr.cls.atoll.motu.web.usl.request.actions.GetSizeAction;
@@ -67,7 +68,10 @@ public class USLRequestManager implements IUSLRequestManager {
         case GetSizeAction.ACTION_NAME:
             new GetSizeAction(request, response, getSession(request)).doAction();
             break;
-        // TODO SMA Add ActionDescribeProduct and ActionGetTimeCoverage
+        case DescribeProductAction.ACTION_NAME:
+            new DescribeProductAction(request, response, getSession(request)).doAction();
+            break;
+        // TODO SMA Add ActionGetTimeCoverage
         case LogoutAction.ACTION_NAME:
             new LogoutAction(request, response, getSession(request)).doAction();
             break;
