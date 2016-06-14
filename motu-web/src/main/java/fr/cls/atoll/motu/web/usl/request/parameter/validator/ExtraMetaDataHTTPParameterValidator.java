@@ -25,6 +25,13 @@ public class ExtraMetaDataHTTPParameterValidator extends AbstractHTTPParameterVa
         super(parameterName_, parameterValue_);
     }
 
+    public ExtraMetaDataHTTPParameterValidator(String parameterName_, String parameterValue_, String defaultValue_) {
+        this(parameterName_, parameterValue_);
+        if (StringUtils.isNullOrEmpty(parameterValue_)) {
+            setParameterValue(defaultValue_);
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     protected Boolean onValidateAction() throws InvalidHTTPParameterException {

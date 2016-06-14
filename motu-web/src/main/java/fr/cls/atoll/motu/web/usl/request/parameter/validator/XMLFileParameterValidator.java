@@ -25,10 +25,18 @@ public class XMLFileParameterValidator extends AbstractHTTPParameterValidator<St
         super(parameterName_, parameterValue_);
     }
 
+    public XMLFileParameterValidator(String parameterName_, String parameterValue_, String defaultValue_) {
+        this(parameterName_, parameterValue_);
+        if (StringUtils.isNullOrEmpty(parameterValue_)) {
+            setParameterValue(defaultValue_);
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     protected String onValidateAction() throws InvalidHTTPParameterException {
-        if (StringUtils.isNullOrEmpty(getParameterValue()) || !getParameterValue().endsWith(".xml")) {
+        if (!AbstractHTTPParameterValidator.EMPTY_VALUE.equals(getParameterValue())
+                && (StringUtils.isNullOrEmpty(getParameterValue()) || !getParameterValue().endsWith(".xml"))) {
             throw new InvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
         }
 

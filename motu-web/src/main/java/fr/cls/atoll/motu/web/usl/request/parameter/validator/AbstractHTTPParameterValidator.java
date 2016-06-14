@@ -19,6 +19,11 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
  */
 public abstract class AbstractHTTPParameterValidator<T> {
 
+    /**
+     * The default value if a parameter is empty
+     */
+    public static final String EMPTY_VALUE = "NoValue";
+
     private T parameterValueValidated;
     private String parameterName;
     private String parameterValue;

@@ -66,4 +66,15 @@ public class StringUtils {
         return temp.replaceAll("[\\W&&[^\\.]]", "-");
     }
 
+    /**
+     * Hack to determine the name of the catalog from the catalog file name. .
+     * 
+     * @param catalogName The catalog file name
+     * @return a name which matches the name attribute of the dataset tag in the TDS xml file.
+     */
+    public static final String getDataSetName(String catalogName) {
+        String result = catalogName.toUpperCase().replace(".XML", "");
+        return result.replace("M_", "");
+    }
+
 }

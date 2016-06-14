@@ -19,6 +19,13 @@ public class ServiceHTTPParameterValidator extends AbstractHTTPParameterValidato
         super(parameterName_, parameterValue_);
     }
 
+    public ServiceHTTPParameterValidator(String parameterName_, String parameterValue_, String defaultValue_) {
+        this(parameterName_, parameterValue_);
+        if (StringUtils.isNullOrEmpty(parameterValue_)) {
+            setParameterValue(defaultValue_);
+        }
+    }
+
     /**
      * .
      * 
