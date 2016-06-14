@@ -20,6 +20,7 @@
 
 		<dependencySet>
 			<outputDirectory>tomcat-motu/webapps</outputDirectory>
+			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
 			<includes>
 				<include>cls.motu:motu-web:war</include>
 			</includes>
@@ -35,6 +36,28 @@
 			<directory>src/main/configuration/dir-structure</directory>
 			<outputDirectory>/</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
+			<fileMode>0664</fileMode>
+			<directoryMode>0755</directoryMode>
+			<filtered>true</filtered>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/configuration/dir-structure</directory>
+			<outputDirectory>/</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<directoryMode>0755</directoryMode>
+			<excludes>
+				<exclude>version-distribution.txt</exclude>
+			</excludes>
 		</fileSet>
 	</fileSets>
+
+	<files>
+		<file>
+			<source>src/main/configuration/dir-structure/version-distribution.txt</source>
+			<outputDirectory>/</outputDirectory>
+			<filtered>true</filtered>
+			<fileMode>0660</fileMode>
+		</file>
+	</files>
+
 </assembly>

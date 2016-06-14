@@ -1,5 +1,7 @@
 package fr.cls.atoll.motu.web.dal.config.stdname;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -9,6 +11,7 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardNames;
 
@@ -29,21 +32,24 @@ public class StdNameReader {
     public StandardNames getStdNameEquiv() throws MotuException {
         StandardNames stdNameEquiv = null;
         String fileName = "standardNames.xml";
+        InputStream in = null;
+        try {
+            in = new FileInputStream(new File(BLLManager.getInstance().getConfigManager().getMotuConfigurationFolderPath(), fileName));
+            if (in != null) {
 
-        InputStream in = StdNameReader.class.getResourceAsStream(fileName);
-        if (in != null) {
-
-            try {
                 JAXBContext jc = JAXBContext.newInstance(StandardNames.class.getPackage().getName());
                 Unmarshaller unmarshaller = jc.createUnmarshaller();
                 stdNameEquiv = (StandardNames) unmarshaller.unmarshal(in);
-            } catch (Exception e) {
-            } finally {
-                try {
+
+            }
+        } catch (Exception e) {
+        } finally {
+            try {
+                if (in != null) {
                     in.close();
-                } catch (IOException e) {
-                    LOGGER.error("Error while loading file from config folder: " + fileName, e);
                 }
+            } catch (IOException e) {
+                LOGGER.error("Error while loading file from config folder: " + fileName, e);
             }
         }
 

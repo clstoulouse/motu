@@ -1,17 +1,23 @@
 #!/bin/bash
 #
 # Motu main script used to:
-# start|stop|restart|status|clean|help
-# Tomcat Motu process
-# Tomcat TDS  process
+# - start|stop|restart|status|clean|help
+# - Tomcat Motu process
 #
-
+# This script had been designed to also get the opportunity 
+# to run these same operations on Tomcat TDS  process.
+# But as in production, Tomcat TDS process has a independent life cycle, 
+# we only accept the Tomcat Motu process as argument. To do it, we set the 
+# variable RUN_ONLY_TOMCAT_MOTU=true. 
+# To accept both Motu and TDS, unset or comment this variable.
+#
+RUN_ONLY_TOMCAT_MOTU=true
 
 cd "$(dirname "$0")"
 MOTU_INSTALL_DIR=$(pwd)
 
 MOTU_PRODUCTS_JAVA_DIR=$MOTU_INSTALL_DIR/products/jdk1.7.0_79
-MOTU_PRODUCTS_TOMCAT_DIR=$MOTU_INSTALL_DIR/products/apache-tomcat-7.0.69
+MOTU_PRODUCTS_TOMCAT_DIR=$MOTU_INSTALL_DIR/products/apache-tomcat-7.0.67
 
 
 APP_NAME_MOTU=tomcat-motu
@@ -44,15 +50,7 @@ __setApacheTomcatCatalinaEnvVar() {
   export CATALINA_TMPDIR=$MOTU_INSTALL_DIR/$1/temp
 }
 
-initDirs() {
-  if [ ! -e $MOTU_PID_DIR ]; then
-    mkdir $MOTU_PID_DIR
-  fi
-
-  if [ ! -e $MOTU_LOG_DIR ]; then
-    mkdir $MOTU_LOG_DIR
-  fi
-  
+initDirsMotu() {
   #Motu
   if [ ! -e $TOMCAT_MOTU_DIR_NAME ]; then
     mkdir $TOMCAT_MOTU_DIR_NAME
@@ -63,7 +61,9 @@ initDirs() {
       mkdir -p $TOMCAT_MOTU_DIR_NAME/$dirName
     fi
   done 
-  
+}
+
+initDirsTds() {
   #TDS
   if [ ! -e $TOMCAT_TDS_DIR_NAME ]; then
     mkdir $TOMCAT_TDS_DIR_NAME
@@ -74,7 +74,31 @@ initDirs() {
       mkdir -p $TOMCAT_TDS_DIR_NAME/$dirName
     fi
   done
+}
+
+initDirs() {
+  app=$1
   
+  if [ ! -e $MOTU_PID_DIR ]; then
+    mkdir $MOTU_PID_DIR
+  fi
+
+  if [ ! -e $MOTU_LOG_DIR ]; then
+    mkdir $MOTU_LOG_DIR
+  fi
+  
+  
+  if [ -z "$app" ]; then
+    #ALL
+    initDirsMotu
+    initDirsTds
+  elif [ "${app,,}" = "${APP_NAME_MOTU,,}" ]; then
+    #Motu
+    initDirsMotu
+  elif [ "${app,,}" = "${APP_NAME_TDS,,}" ]; then
+    #TDS
+    initDirsTds
+  fi
 }
 
 __initEnvVarOrig() {
@@ -112,7 +136,6 @@ __initApacheTomcatConfig() {
      cp "$CATALINA_HOME/conf/web.xml" "$CATALINA_BASE/conf/"
    fi
   
-   if [ ! -f "$CATALINA_BASE/conf/server.xml" ]; then 
    #####################
    ## conf/server.xml
    #####################
@@ -125,13 +148,18 @@ __initApacheTomcatConfig() {
    TOMCAT_PORT_HTTPS=$(grep "$tomcatDirName-port-https=" $motuPropertiesFilePath | grep -v "#" | cut -d= -f2-)
    TOMCAT_PORT_AJP=$(grep "$tomcatDirName-port-ajp=" $motuPropertiesFilePath | grep -v "#" | cut -d= -f2-)
    TOMCAT_PORT_SHUTDOWN=$(grep "$tomcatDirName-port-shutdown=" $motuPropertiesFilePath | grep -v "#" | cut -d= -f2-)
+	   
+   serverXmlOriginalFilePath=$CATALINA_HOME/conf/server.xml
+   if [ -f "$CATALINA_BASE/conf/server.xml" ]; then 
+       serverXmlOriginalFilePath="$CATALINA_BASE/conf/server.xml"
+   fi
    
    # copy server.xml to server.xml.tmp
    serverXmlTmpFilePath="$CATALINA_BASE/conf/server.xml.tmp"
    if [ -e $serverXmlTmpFilePath ]; then
      rm $serverXmlTmpFilePath
    fi
-   cp $CATALINA_HOME/conf/server.xml $serverXmlTmpFilePath
+   cp $serverXmlOriginalFilePath $serverXmlTmpFilePath
    
    # replace token in server.xml.tmp
    if [ -n "$TOMCAT_PORT_SHUTDOWN" ]; then
@@ -152,7 +180,7 @@ __initApacheTomcatConfig() {
      rm $CATALINA_BASE/conf/server.xml
    fi
    mv $serverXmlTmpFilePath $CATALINA_BASE/conf/server.xml
-   fi
+  
 }
 
 __addCatalinaOpt() {
@@ -478,30 +506,34 @@ onCleanAction() {
 ###########################################
 ###  MAIN 
 ###########################################
+app=$2
 
-initDirs
+if [ -z $RUN_ONLY_TOMCAT_MOTU ]; then
+   allApps="[all|tomcat-motu|tomcat-tds]"
+else
+   # Patch to only get the possibility to run operations on Tomcat Motu
+   allApps=
+   app="tomcat-motu"
+fi
+
+initDirs $app
 
 case "$1" in
     start)
-      app=$2
       onStartAction $app
       ;;
     stop)
-      app=$2
       onStopAction $app
       ;;
     restart)
-      app=$2
       onRestartAction $app
       ;;
     status)
-      app=$2
       onStatusAction $app
       ;;
     clean)
-      app=$2
       onCleanAction $app
       ;;
-    *) echo "\nUsage: ./motu start|stop|restart|status|clean|help [all|tomcat-motu|tomcat-tds]\n"
+    *) echo -e "\nUsage: ./motu start|stop|restart|status|clean|help $allApps\n"
        ;;
 esac
