@@ -5,18 +5,13 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.JAXBException;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,13 +34,11 @@ import fr.cls.atoll.motu.api.message.xml.Variables;
 import fr.cls.atoll.motu.api.message.xml.VariablesVocabulary;
 import fr.cls.atoll.motu.api.utils.JAXBWriter;
 import fr.cls.atoll.motu.library.converter.DateUtils;
-import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.MotuMarshallException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataFile;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
@@ -56,8 +49,6 @@ import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.AbstractHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ExtraMetaDataHTTPParameterValidator;
-import fr.cls.atoll.motu.web.usl.request.parameter.validator.ProductHTTPParameterValidator;
-import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.XMLFileParameterValidator;
 import ucar.ma2.MAMath.MinMax;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -73,14 +64,12 @@ import ucar.unidata.geoloc.LatLonRect;
  * @author Pierre LACOSTE
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class DescribeProductAction extends AbstractAction {
+public class DescribeProductAction extends AbstractProductInfoAction {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "describeproduct";
 
-    private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
-    private ProductHTTPParameterValidator productHTTPParameterValidator;
     private XMLFileParameterValidator xmlFileParameterValidator;
     private ExtraMetaDataHTTPParameterValidator extraMetaDataHTTPParameterValidator;
 
@@ -93,16 +82,6 @@ public class DescribeProductAction extends AbstractAction {
      */
     public DescribeProductAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         super(ACTION_NAME, request, response, session);
-        serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
-                MotuRequestParametersConstant.PARAM_SERVICE,
-                CommonHTTPParameters.getServiceFromRequest(getRequest()),
-                AbstractHTTPParameterValidator.EMPTY_VALUE);
-        serviceHTTPParameterValidator.setOptional(true);
-        productHTTPParameterValidator = new ProductHTTPParameterValidator(
-                MotuRequestParametersConstant.PARAM_PRODUCT,
-                CommonHTTPParameters.getProductFromRequest(getRequest()),
-                AbstractHTTPParameterValidator.EMPTY_VALUE);
-        productHTTPParameterValidator.setOptional(true);
         xmlFileParameterValidator = new XMLFileParameterValidator(
                 MotuRequestParametersConstant.PARAM_XML_FILE,
                 CommonHTTPParameters.getXmlFileFromRequest(getRequest()),
@@ -118,61 +97,26 @@ public class DescribeProductAction extends AbstractAction {
     /** {@inheritDoc} */
     @Override
     protected void checkHTTPParameters() throws InvalidHTTPParameterException {
-        serviceHTTPParameterValidator.validate();
-        productHTTPParameterValidator.validate();
+        super.checkHTTPParameters();
         xmlFileParameterValidator.validate();
         extraMetaDataHTTPParameterValidator.validate();
     }
 
     @Override
     protected void process() throws MotuException {
-        String serviceName = serviceHTTPParameterValidator.getParameterValueValidated();
-        String locationData = CommonHTTPParameters.getDataFromParameter(getRequest());
 
-        String productId = getProductId();
+        if (hasProductIdentifier()) {
+            ProductMetadataInfo pmdi;
+            try {
+                pmdi = initProductMetadataInfo(getProduct());
 
-        try {
+                marshallProductMetadata(pmdi, getResponse().getWriter());
 
-            if (StringUtils.isNullOrEmpty(locationData) && StringUtils.isNullOrEmpty(productId)) {
-                getResponse().sendError(400,
-                                        String.format("ERROR: neither '%s' nor '%s' parameters are filled - Choose one of them",
-                                                      MotuRequestParametersConstant.PARAM_DATA,
-                                                      MotuRequestParametersConstant.PARAM_PRODUCT));
+                getResponse().setContentType(null);
+            } catch (MotuExceptionBase | JAXBException | IOException e) {
+                throw new MotuException(e);
             }
-
-            if (!StringUtils.isNullOrEmpty(locationData) && !StringUtils.isNullOrEmpty(productId)) {
-                getResponse().sendError(400,
-                                        String.format("ERROR: '%s' and '%s' parameters are not compatible - Choose only one of them",
-                                                      MotuRequestParametersConstant.PARAM_DATA,
-                                                      MotuRequestParametersConstant.PARAM_PRODUCT));
-            }
-
-            if (AbstractHTTPParameterValidator.EMPTY_VALUE.equals(serviceName) && !StringUtils.isNullOrEmpty(productId)) {
-                getResponse().sendError(400,
-                                        String.format("ERROR: '%s' parameter is filled but '%s' is empty. You have to fill it.",
-                                                      MotuRequestParametersConstant.PARAM_PRODUCT,
-                                                      MotuRequestParametersConstant.PARAM_SERVICE));
-            }
-            Product p = null;
-            if (!StringUtils.isNullOrEmpty(locationData)) {
-                p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(locationData);
-            } else if (!AbstractHTTPParameterValidator.EMPTY_VALUE.equals(serviceName) && !StringUtils.isNullOrEmpty(productId)) {
-                p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(serviceName, StringUtils.getDataSetName(productId));
-            }
-
-            ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager().getProductMetaData(p.getProductId(),
-                                                                                                                      p.getLocationData());
-            p.setProductMetaData(pmd);
-
-            ProductMetadataInfo pmdi = initProductMetadataInfo(p);
-
-            marshallProductMetadata(pmdi, getResponse().getWriter());
-
-        } catch (IOException | MotuExceptionBase | JAXBException e) {
-            throw new MotuException(e);
         }
-
-        getResponse().setContentType(null);
     }
 
     /**
@@ -194,37 +138,6 @@ public class DescribeProductAction extends AbstractAction {
         JAXBWriter.getInstance().write(productMetatData, writer);
         writer.flush();
         writer.close();
-    }
-
-    /**
-     * Gets the product id.
-     *
-     * @param paramId the product id
-     * @param request the request
-     * @param response the response
-     * @return the product id
-     * @throws IOException Signals that an I/O exception has occurred.
-     * @throws ServletException the servlet exception
-     * @throws MotuException the motu exception
-     */
-    protected String getProductId() throws MotuException {
-        String paramId = productHTTPParameterValidator.getParameterValueValidated();
-        String serviceName = CommonHTTPParameters.getServiceFromRequest(getRequest());
-
-        if (!AbstractHTTPParameterValidator.EMPTY_VALUE.equals(paramId)) {
-            if ((StringUtils.isNullOrEmpty(serviceName)) || (StringUtils.isNullOrEmpty(paramId))) {
-                return paramId;
-            }
-
-            String uri = paramId;
-            String[] split = uri.split(".*#");
-            if (split.length <= 1) {
-                return uri;
-            }
-            return split[1];
-        } else {
-            return "";
-        }
     }
 
     /**
@@ -811,27 +724,6 @@ public class DescribeProductAction extends AbstractAction {
         ExceptionUtils.setError(timeCoverage, new MotuException("If you see that message, the request has failed and the error has not been filled"));
         return timeCoverage;
 
-    }
-
-    /**
-     * Date to XML gregorian calendar.
-     * 
-     * @param date the date
-     * 
-     * @return the XML gregorian calendar
-     * 
-     * @throws MotuException the motu exception
-     */
-    public static XMLGregorianCalendar dateToXMLGregorianCalendar(Date date) throws MotuException {
-        GregorianCalendar gCalendar = new GregorianCalendar();
-        gCalendar.setTime(date);
-        XMLGregorianCalendar xmlGregorianCalendar;
-        try {
-            xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendar);
-        } catch (DatatypeConfigurationException e) {
-            throw new MotuException("ERROR in dateToXMLGregorianCalendar", e);
-        }
-        return xmlGregorianCalendar;
     }
 
     /**

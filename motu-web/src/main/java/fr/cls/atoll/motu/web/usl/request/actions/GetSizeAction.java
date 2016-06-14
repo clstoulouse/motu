@@ -33,14 +33,11 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
-import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.DepthHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LatitudeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LongitudeHTTPParameterValidator;
-import fr.cls.atoll.motu.web.usl.request.parameter.validator.ProductHTTPParameterValidator;
-import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.TemporalHTTPParameterValidator;
 
 /**
@@ -74,14 +71,11 @@ import fr.cls.atoll.motu.web.usl.request.parameter.validator.TemporalHTTPParamet
  * @author Pierre LACOSTE
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class GetSizeAction extends AbstractAction {
+public class GetSizeAction extends AbstractProductInfoAction {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "getsize";
-
-    private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
-    private ProductHTTPParameterValidator productHTTPParameterValidator;
 
     private DepthHTTPParameterValidator depthLowHTTPParameterValidator;
     private DepthHTTPParameterValidator depthHighHTTPParameterValidator;
@@ -104,12 +98,6 @@ public class GetSizeAction extends AbstractAction {
     public GetSizeAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         super(ACTION_NAME, request, response, session);
 
-        serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
-                MotuRequestParametersConstant.PARAM_SERVICE,
-                CommonHTTPParameters.getServiceFromRequest(getRequest()));
-        productHTTPParameterValidator = new ProductHTTPParameterValidator(
-                MotuRequestParametersConstant.PARAM_PRODUCT,
-                CommonHTTPParameters.getProductFromRequest(getRequest()));
         latitudeLowHTTPParameterValidator = new LatitudeHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_LOW_LAT,
                 CommonHTTPParameters.getLatitudeLowFromRequest(getRequest()),
@@ -158,7 +146,7 @@ public class GetSizeAction extends AbstractAction {
 
     private ExtractionParameters createExtractionParameters() throws IOException {
         ExtractionParameters extractionParameters = new ExtractionParameters(
-                serviceHTTPParameterValidator.getParameterValueValidated(),
+                getServiceHTTPParameterValidator().getParameterValueValidated(),
                 CommonHTTPParameters.getDataFromParameter(getRequest()),
                 CommonHTTPParameters.getVariablesAsListFromParameter(getRequest()),
 
@@ -173,7 +161,7 @@ public class GetSizeAction extends AbstractAction {
                 depthLowHTTPParameterValidator.getParameterValueValidated(),
                 depthHighHTTPParameterValidator.getParameterValueValidated(),
 
-                productHTTPParameterValidator.getParameterValueValidated(),
+                getProductHTTPParameterValidator().getParameterValueValidated(),
                 OutputFormat.NETCDF,
                 getLoginOrUserHostname(),
                 isAnAnonymousUser());
@@ -197,18 +185,7 @@ public class GetSizeAction extends AbstractAction {
             throws MotuException, JAXBException, IOException {
 
         try {
-            Product p = null;
-            if (!StringUtils.isNullOrEmpty(extractionParameters.getLocationData())) {
-                p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(extractionParameters.getLocationData());
-            } else if (!StringUtils.isNullOrEmpty(extractionParameters.getServiceName())
-                    && !StringUtils.isNullOrEmpty(extractionParameters.getProductId())) {
-                p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(extractionParameters.getServiceName(),
-                                                                                                extractionParameters.getProductId());
-            }
-
-            ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager().getProductMetaData(p.getProductId(),
-                                                                                                                      p.getLocationData());
-            p.setProductMetaData(pmd);
+            Product p = getProduct();
 
             if (p != null) {
                 double productDataSize = BLLManager.getInstance().getRequestManager()
@@ -221,7 +198,7 @@ public class GetSizeAction extends AbstractAction {
                 RequestSize requestSize = initRequestSize(productDataSize, productMaxAllowedDataSize);
                 marshallRequestSize(requestSize, getResponse().getWriter());
             } else {
-                throw new MotuException("Product not found : " + productHTTPParameterValidator.getParameterValue());
+                throw new MotuException("Product not found : " + getProductHTTPParameterValidator().getParameterValue());
             }
         } catch (MotuExceptionBase e) {
             try {
@@ -242,7 +219,6 @@ public class GetSizeAction extends AbstractAction {
      * @return the request size
      */
     private static RequestSize initRequestSize(double size, double maxAllowedSize) {
-
         RequestSize requestSize = createRequestSize();
 
         requestSize.setSize(size);
@@ -366,8 +342,7 @@ public class GetSizeAction extends AbstractAction {
     /** {@inheritDoc} */
     @Override
     protected void checkHTTPParameters() throws InvalidHTTPParameterException {
-        getServiceHTTPParameterValidator().validate();
-        getProductHTTPParameterValidator().validate();
+        super.checkHTTPParameters();
 
         getLatitudeLowHTTPParameterValidator().validate();
         getLatitudeHighHTTPParameterValidator().validate();
@@ -379,15 +354,6 @@ public class GetSizeAction extends AbstractAction {
 
         getStartDateTemporalHTTPParameterValidator().validate();
         getEndDateTemporalHighHTTPParameterValidator().validate();
-    }
-
-    /**
-     * Valeur de productHTTPParameterValidator.
-     * 
-     * @return la valeur.
-     */
-    public ProductHTTPParameterValidator getProductHTTPParameterValidator() {
-        return productHTTPParameterValidator;
     }
 
     /**
@@ -460,14 +426,5 @@ public class GetSizeAction extends AbstractAction {
      */
     public TemporalHTTPParameterValidator getEndDateTemporalHighHTTPParameterValidator() {
         return endDateTemporalHighHTTPParameterValidator;
-    }
-
-    /**
-     * Valeur de serviceHTTPParameterValidator.
-     * 
-     * @return la valeur.
-     */
-    public ServiceHTTPParameterValidator getServiceHTTPParameterValidator() {
-        return serviceHTTPParameterValidator;
     }
 }

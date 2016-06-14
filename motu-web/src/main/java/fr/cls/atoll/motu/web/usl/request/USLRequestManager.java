@@ -30,6 +30,7 @@ import fr.cls.atoll.motu.web.usl.request.actions.LogoutAction;
 import fr.cls.atoll.motu.web.usl.request.actions.PingAction;
 import fr.cls.atoll.motu.web.usl.request.actions.ProductDownloadHomeAction;
 import fr.cls.atoll.motu.web.usl.request.actions.ProductMetadataAction;
+import fr.cls.atoll.motu.web.usl.request.actions.TimeCoverageAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 
@@ -70,6 +71,9 @@ public class USLRequestManager implements IUSLRequestManager {
             break;
         case DescribeProductAction.ACTION_NAME:
             new DescribeProductAction(request, response, getSession(request)).doAction();
+            break;
+        case TimeCoverageAction.ACTION_NAME:
+            new TimeCoverageAction(request, response, getSession(request)).doAction();
             break;
         // TODO SMA Add ActionGetTimeCoverage
         case LogoutAction.ACTION_NAME:

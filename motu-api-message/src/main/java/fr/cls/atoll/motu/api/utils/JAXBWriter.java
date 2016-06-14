@@ -13,6 +13,7 @@ import fr.cls.atoll.motu.api.message.MotuMsgConstant;
 import fr.cls.atoll.motu.api.message.xml.ProductMetadataInfo;
 import fr.cls.atoll.motu.api.message.xml.RequestSize;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.api.message.xml.TimeCoverage;
 
 /**
  * <br>
@@ -70,6 +71,17 @@ public class JAXBWriter {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("initJAXBMotuMsg() - exiting");
         }
+    }
+
+    /**
+     * .
+     * 
+     * @param statusModeResponse
+     * @param writer
+     * @throws JAXBException
+     */
+    public synchronized void write(TimeCoverage timeCoverage, Writer writer) throws JAXBException {
+        marshallerMotuMsg.marshal(timeCoverage, writer);
     }
 
     /**
