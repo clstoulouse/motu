@@ -56,18 +56,23 @@ public class DebugOrderHTTParameterValidator extends AbstractHTTPParameterValida
             order = DEFAULT_LIST_ORDER;
         } else {
             order = Arrays.asList(getParameterValue().split(","));
-            String notExistingItem = "";
-            for (String currentItem : order) {
-                if (!DEFAULT_LIST_ORDER.contains(currentItem)) {
-                    notExistingItem += currentItem + ',';
+            if (order.size() == DEFAULT_LIST_ORDER.size()) {
+                String notExistingItem = "";
+                for (String currentItem : order) {
+                    if (!DEFAULT_LIST_ORDER.contains(currentItem)) {
+                        notExistingItem += currentItem + ',';
+                    }
                 }
-            }
 
-            if (!StringUtils.isNullOrEmpty(notExistingItem)) {
-                throw new InvalidHTTPParameterException(
-                        getParameterName(),
-                        getParameterValue(),
-                        "The parameter(s) value(s) " + notExistingItem + " is not valid.\n" + getParameterBoundaries());
+                if (!StringUtils.isNullOrEmpty(notExistingItem)) {
+                    throw new InvalidHTTPParameterException(
+                            getParameterName(),
+                            getParameterValue(),
+                            "The parameter(s) value(s) " + notExistingItem + " is not valid.\n" + getParameterBoundaries());
+                }
+            } else {
+                throw new InvalidHTTPParameterException(getParameterName(), getParameterValue(), "The parameter order have to contains "
+                        + DEFAULT_LIST_ORDER.size() + " values separated by \",\".\n" + getParameterBoundaries());
             }
         }
         return order;
