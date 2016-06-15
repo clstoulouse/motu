@@ -17,18 +17,6 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
  */
 public interface IDALRequestManager {
 
-    // /**
-    // * .
-    // *
-    // * @param statusModeResponse
-    // * @param organizer
-    // * @param extractionParameters
-    // * @return
-    // * @throws MotuException
-    // */
-    // Product processRequest(RequestDownloadStatus requestDownloadStatus, ExtractionParameters
-    // extractionParameters) throws MotuException;
-
     /**
      * .
      * 

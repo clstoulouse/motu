@@ -56,7 +56,6 @@ import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueJob;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueJobListener;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueManagement;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueThresholdComparator;
-import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueServerType;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
@@ -122,19 +121,15 @@ public class QueueServerManager implements IQueueServerManager {
      * @throws MotuException
      */
     @Override
-    public void execute(RequestDownloadStatus rds_, ConfigService cs_, Product product_, ExtractionParameters extractionParameters_)
-            throws MotuException {
-        double sizeInMB = UnitUtils.toMegaBytes(BLLManager.getInstance().getRequestManager()
-                .getProductDataSizeIntoByte(product_,
-                                            extractionParameters_.getListVar(),
-                                            extractionParameters_.getListTemporalCoverage(),
-                                            extractionParameters_.getListLatLonCoverage(),
-                                            extractionParameters_.getListDepthCoverage()));
-
-        QueueManagement queueManagement = findQueue(sizeInMB);
+    public void execute(RequestDownloadStatus rds_,
+                        ConfigService cs_,
+                        Product product_,
+                        ExtractionParameters extractionParameters_,
+                        double requestSizeInMB_) throws MotuException {
+        QueueManagement queueManagement = findQueue(requestSizeInMB_);
         if (queueManagement == null) {
-            throw new MotuException(
-                    "Oops, the size of the data to download (" + (int) sizeInMB + " Megabyte) is not managed by the Motu queue management system.");
+            throw new MotuException("Oops, the size of the data to download (" + (int) requestSizeInMB_
+                    + " Megabyte) is not managed by the Motu queue management system.");
         }
 
         // Here we synchronize the execution of the request

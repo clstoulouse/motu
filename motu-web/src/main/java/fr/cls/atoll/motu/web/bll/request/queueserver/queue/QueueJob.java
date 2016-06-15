@@ -52,7 +52,6 @@ public class QueueJob implements IQueueJob {
      */
     private void processJob() throws MotuException {
         DALManager.getInstance().getRequestManager().downloadProduct(cs, product, dataOutputFormat);
-        // processRequest(requestDownloadStatus, extractionParameters);
     }
 
     private void onJobStarted() {

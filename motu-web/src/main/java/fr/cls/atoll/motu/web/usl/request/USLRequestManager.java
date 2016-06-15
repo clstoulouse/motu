@@ -75,7 +75,6 @@ public class USLRequestManager implements IUSLRequestManager {
         case TimeCoverageAction.ACTION_NAME:
             new TimeCoverageAction(request, response, getSession(request)).doAction();
             break;
-        // TODO SMA Add ActionGetTimeCoverage
         case LogoutAction.ACTION_NAME:
             new LogoutAction(request, response, getSession(request)).doAction();
             break;

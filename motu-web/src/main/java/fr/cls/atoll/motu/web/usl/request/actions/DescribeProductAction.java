@@ -43,8 +43,8 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataFile;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
-import fr.cls.atoll.motu.web.dal.tds.model.Property;
-import fr.cls.atoll.motu.web.dal.tds.model.VariableDesc;
+import fr.cls.atoll.motu.web.dal.tds.ncss.model.Property;
+import fr.cls.atoll.motu.web.dal.tds.ncss.model.VariableDesc;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.AbstractHTTPParameterValidator;
@@ -618,7 +618,7 @@ public class DescribeProductAction extends AbstractProductInfoAction {
             return variablesVocabulary;
         }
 
-        fr.cls.atoll.motu.web.dal.tds.model.Variables variables = productMetaData.getVariablesVocabulary();
+        fr.cls.atoll.motu.web.dal.tds.ncss.model.Variables variables = productMetaData.getVariablesVocabulary();
         if (variables == null) {
             variablesVocabulary.setCode(ErrorType.OK);
             variablesVocabulary.setMsg(ErrorType.OK.toString());

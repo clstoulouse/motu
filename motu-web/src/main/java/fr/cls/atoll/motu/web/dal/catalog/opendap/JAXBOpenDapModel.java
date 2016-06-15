@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.dal.opendap.model.Catalog;
+import fr.cls.atoll.motu.web.dal.tds.opendap.model.Catalog;
 
 /**
  * <br>

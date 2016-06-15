@@ -51,8 +51,11 @@ public interface IQueueServerManager {
      * @param extractionParameters
      * @throws MotuException
      */
-    void execute(RequestDownloadStatus requestDownloadStatus, ConfigService cs_, Product product_, ExtractionParameters extractionParameters)
-            throws MotuException;
+    void execute(RequestDownloadStatus requestDownloadStatus,
+                 ConfigService cs_,
+                 Product product_,
+                 ExtractionParameters extractionParameters,
+                 double requestSizeInMB) throws MotuException;
 
     /**
      * .

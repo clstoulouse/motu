@@ -134,7 +134,6 @@ public class MotuWebEngineContextListener implements ServletContextListener {
             public void run() {
                 try {
                     String logCasServerInWebXML = "activated";
-                    // TODO read from motu config
                     if (!BLLManager.getInstance().getConfigManager().isCasActivated()) {
                         removeAllCasFilters(getStandardContext(sce));
                         logCasServerInWebXML = "disabled";

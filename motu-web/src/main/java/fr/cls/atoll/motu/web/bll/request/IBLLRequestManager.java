@@ -112,4 +112,11 @@ public interface IBLLRequestManager {
      * @throws MotuException
      */
     void init() throws MotuException;
+
+    /**
+     * .
+     * 
+     * @param requestId
+     */
+    void deleteRequest(Long requestId);
 }

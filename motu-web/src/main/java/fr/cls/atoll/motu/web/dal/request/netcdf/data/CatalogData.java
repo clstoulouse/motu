@@ -41,8 +41,8 @@ import org.apache.logging.log4j.Logger;
 import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
-import fr.cls.atoll.motu.web.dal.tds.model.GeospatialCoverage;
-import fr.cls.atoll.motu.web.dal.tds.model.SpatialRange;
+import fr.cls.atoll.motu.web.dal.tds.ncss.model.GeospatialCoverage;
+import fr.cls.atoll.motu.web.dal.tds.ncss.model.SpatialRange;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 

@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.web.bll.request.cleaner.RequestCleanerDaemonThread;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
@@ -44,30 +45,32 @@ public class BLLRequestManager implements IBLLRequestManager {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private IRequestIdManager requestIdManager;
-    private Map<Long, RequestDownloadStatus> requestIdList;
+    private Map<Long, RequestDownloadStatus> requestIdStatusMap;
     private IQueueServerManager queueServerManager;
 
     public BLLRequestManager() {
         requestIdManager = new RequestIdManager();
-        requestIdList = new HashMap<Long, RequestDownloadStatus>();
+        requestIdStatusMap = new HashMap<Long, RequestDownloadStatus>();
         queueServerManager = new QueueServerManager();
     }
 
     @Override
     public void init() throws MotuException {
         queueServerManager.init();
+
+        new RequestCleanerDaemonThread().start();
     }
 
     /** {@inheritDoc} */
     @Override
     public List<Long> getRequestIds() {
-        return new ArrayList<Long>(requestIdList.keySet());
+        return new ArrayList<Long>(requestIdStatusMap.keySet());
     }
 
     /** {@inheritDoc} */
     @Override
     public RequestDownloadStatus getResquestStatus(Long requestId_) {
-        return requestIdList.get(requestId_);
+        return requestIdStatusMap.get(requestId_);
     }
 
     /** {@inheritDoc} */
@@ -120,7 +123,7 @@ public class BLLRequestManager implements IBLLRequestManager {
     private RequestDownloadStatus initRequest(String userId, String userHost) {
         final long requestId = getNewRequestId();
         RequestDownloadStatus requestDownloadStatus = new RequestDownloadStatus(requestId, userId, userHost);
-        requestIdList.put(requestId, requestDownloadStatus);
+        requestIdStatusMap.put(requestId, requestDownloadStatus);
         return requestDownloadStatus;
     }
 
@@ -135,17 +138,29 @@ public class BLLRequestManager implements IBLLRequestManager {
     }
 
     private void download(ExtractionParameters extractionParameters, ConfigService cs_, Product product_, long requestId) {
-        RequestDownloadStatus requestDownloadStatus = requestIdList.get(requestId);
+        RequestDownloadStatus requestDownloadStatus = requestIdStatusMap.get(requestId);
 
         try {
             // If too much request for this user, throws MotuExceedingUserCapacityException
             checkNumberOfRunningRequestForUser(extractionParameters.getUserId());
 
+            double requestSizeInMB = getRequestSizeInMB(extractionParameters, product_);
+            // TODO PLE check disk usage
+
             // The request download is delegated to a download request manager
-            queueServerManager.execute(requestDownloadStatus, cs_, product_, extractionParameters);
+            queueServerManager.execute(requestDownloadStatus, cs_, product_, extractionParameters, requestSizeInMB);
         } catch (MotuException e) {
             requestDownloadStatus.setRunningException(e);
         }
+    }
+
+    private double getRequestSizeInMB(ExtractionParameters extractionParameters, Product product_) throws MotuException {
+        return UnitUtils.toMegaBytes(BLLManager.getInstance().getRequestManager()
+                .getProductDataSizeIntoByte(product_,
+                                            extractionParameters.getListVar(),
+                                            extractionParameters.getListTemporalCoverage(),
+                                            extractionParameters.getListLatLonCoverage(),
+                                            extractionParameters.getListDepthCoverage()));
     }
 
     /**
@@ -203,6 +218,12 @@ public class BLLRequestManager implements IBLLRequestManager {
         }
 
         return fileDeletionStatus;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void deleteRequest(Long requestId) {
+        requestIdStatusMap.remove(requestId);
     }
 
 }

@@ -20,12 +20,12 @@ import fr.cls.atoll.motu.web.bll.request.model.metadata.DocMetaData;
 import fr.cls.atoll.motu.web.dal.catalog.AbstractCatalogLoader;
 import fr.cls.atoll.motu.web.dal.catalog.tds.JAXBTDSModel;
 import fr.cls.atoll.motu.web.dal.config.xml.model.CatalogService;
-import fr.cls.atoll.motu.web.dal.opendap.model.Catalog;
-import fr.cls.atoll.motu.web.dal.opendap.model.Dataset;
-import fr.cls.atoll.motu.web.dal.opendap.model.Service;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
+import fr.cls.atoll.motu.web.dal.tds.opendap.model.Catalog;
+import fr.cls.atoll.motu.web.dal.tds.opendap.model.Dataset;
+import fr.cls.atoll.motu.web.dal.tds.opendap.model.Service;
 
 /**
  * <br>
