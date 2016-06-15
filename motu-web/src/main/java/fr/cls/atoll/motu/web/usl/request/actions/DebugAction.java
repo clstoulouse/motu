@@ -11,6 +11,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
@@ -18,7 +19,9 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.queueserver.IQueueServerManager;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueManagement;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
+import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.DebugOrderHTTParameterValidator;
 import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
 
 /**
@@ -47,6 +50,8 @@ public class DebugAction extends AbstractAction {
     public static final String ACTION_NAME = "debug";
     public static final String ACTION_NAME_ALIAS_QUEUE_SERVER = "queue-server";
 
+    private DebugOrderHTTParameterValidator debugOrderHTTParameterValidator;
+
     /**
      * Constructeur.
      * 
@@ -54,6 +59,10 @@ public class DebugAction extends AbstractAction {
      */
     public DebugAction(HttpServletRequest request, HttpServletResponse response) {
         super(ACTION_NAME, request, response);
+
+        debugOrderHTTParameterValidator = new DebugOrderHTTParameterValidator(
+                MotuRequestParametersConstant.PARAM_DEBUG_ORDER,
+                CommonHTTPParameters.getDebugOrderFromRequest(getRequest()));
     }
 
     @Override
@@ -92,10 +101,14 @@ public class DebugAction extends AbstractAction {
         stringBuffer.append("Request status");
         stringBuffer.append("</h1>\n");
 
-        for (StatusModeType statusModeType : StatusModeType.values()) {
-            debugRequestStatus(stringBuffer, statusModeType);
-
+        List<String> orders = debugOrderHTTParameterValidator.getParameterValueValidated();
+        for (String currentItem : orders) {
+            debugRequestStatus(stringBuffer, statusMapping(currentItem));
         }
+    }
+
+    private StatusModeType statusMapping(String status) {
+        return StatusModeType.valueOf(status);
     }
 
     /**
@@ -409,7 +422,7 @@ public class DebugAction extends AbstractAction {
     /** {@inheritDoc} */
     @Override
     protected void checkHTTPParameters() throws InvalidHTTPParameterException {
-        // No parameter to check
+        debugOrderHTTParameterValidator.validate();
     }
 
 }

@@ -176,4 +176,8 @@ public class CommonHTTPParameters {
         return request.getParameter(MotuRequestParametersConstant.PARAM_EXTRA_METADATA);
     }
 
+    public static String getDebugOrderFromRequest(HttpServletRequest request) {
+        return request.getParameter(MotuRequestParametersConstant.PARAM_DEBUG_ORDER);
+    }
+
 }

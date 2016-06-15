@@ -207,4 +207,7 @@ public interface MotuRequestParametersConstant {
     /** The PARA m_ extr a_ metadata. */
     final String PARAM_EXTRA_METADATA = "extraMetadata";
 
+    /** The order of section into debug page */
+    final String PARAM_DEBUG_ORDER = "order";
+
 }

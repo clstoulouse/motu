@@ -137,6 +137,7 @@ public class GetSizeAction extends AbstractProductInfoAction {
      */
     @Override
     protected void process() throws MotuException {
+        LOGGER.debug("GetSize in progress");
         try {
             getAmountDataSize(createExtractionParameters(), getResponse());
         } catch (IOException | JAXBException e) {
