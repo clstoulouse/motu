@@ -33,23 +33,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
-import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
-import fr.cls.atoll.motu.web.bll.exception.MotuExceedingQueueDataCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.web.bll.exception.MotuInconsistencyException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.web.bll.exception.MotuNoVarException;
-import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueJob;
@@ -280,22 +265,6 @@ public class QueueServerManager implements IQueueServerManager {
      * 
      * @return the queue management
      * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuInconsistencyException the motu inconsistency exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws NetCdfAttributeException the net cdf attribute exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuExceedingQueueDataCapacityException the motu exceeding queue data capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
      */
     private QueueManagement findQueue(double sizeInMB_) {
         QueueManagement queueManagement = null;
