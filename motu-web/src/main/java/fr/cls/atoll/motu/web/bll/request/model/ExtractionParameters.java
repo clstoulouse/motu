@@ -113,7 +113,7 @@ public class ExtractionParameters implements Cloneable {
         listLatLonCoverage.add(Double.toString(y_lo_));
         listLatLonCoverage.add(Double.toString(x_lo_));
         listLatLonCoverage.add(Double.toString(y_hi_));
-        listLatLonCoverage.add(Double.toString(y_hi_));
+        listLatLonCoverage.add(Double.toString(x_hi_));
         return listLatLonCoverage;
     }
 

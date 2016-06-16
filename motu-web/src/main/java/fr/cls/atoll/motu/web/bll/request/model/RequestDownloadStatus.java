@@ -28,9 +28,9 @@ public class RequestDownloadStatus {
     private long endProcessingDateTime;
 
     private long sizeInBits;
-    private String downloadUrlPath;
 
     private MotuException runningException;
+    private String extractFilename;
 
     /**
      * Constructeur.
@@ -213,10 +213,19 @@ public class RequestDownloadStatus {
     /**
      * .
      * 
-     * @return
+     * @param extractFilename
      */
-    public String getDownloadUrlPath() {
-        return downloadUrlPath;
+    public void setProductFileName(String extractFilename_) {
+        extractFilename = extractFilename_;
+    }
+
+    /**
+     * Valeur de extractFilename.
+     * 
+     * @return la valeur.
+     */
+    public String getExtractFilename() {
+        return extractFilename;
     }
 
 }

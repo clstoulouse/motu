@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
+import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingQueueCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingQueueDataCapacityException;
@@ -56,11 +57,14 @@ public class XMLConverter {
         smr.setCode(convertErrorCode(requestDownloadStatus.getRunningException()));
         smr.setDateProc(dateToXMLGregorianCalendar(requestDownloadStatus.getStartProcessingDateTime()));
         smr.setDateSubmit(dateToXMLGregorianCalendar(requestDownloadStatus.getCreationDateTime()));
-        smr.setLocalUri(requestDownloadStatus.getUserHost());
         // TODO SMA Is the Msg a duplication of the status ???
         smr.setMsg("");
-        smr.setRemoteUri(requestDownloadStatus.getDownloadUrlPath());
+        smr.setLocalUri(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath() + "/"
+                + requestDownloadStatus.getExtractFilename());
+        smr.setRemoteUri(BLLManager.getInstance().getConfigManager().getMotuConfig().getDownloadHttpUrl() + "/"
+                + requestDownloadStatus.getExtractFilename());
         smr.setRequestId(requestDownloadStatus.getRequestId());
+
         smr.setSize(UnitUtils.toMegaBytes(requestDownloadStatus.getSizeInBits()));
         smr.setStatus(convertStatusModeResponse(requestDownloadStatus.getRequestStatus()));
         smr.setUserHost(requestDownloadStatus.getUserHost());

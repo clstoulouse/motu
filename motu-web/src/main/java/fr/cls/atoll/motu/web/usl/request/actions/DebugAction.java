@@ -179,26 +179,31 @@ public class DebugAction extends AbstractAction {
                 stringBuffer.append(statusModeResponse.getCode().toString());
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("<td>\n");
-                stringBuffer.append(statusModeResponse.getMsg());
-                stringBuffer.append(" - file length is : ");
+                // stringBuffer.append(statusModeResponse.getMsg());
+                stringBuffer.append("Length : ");
                 if (statusModeResponse.getSize() != null) {
                     stringBuffer.append(statusModeResponse.getSize());
-                } else {
-                    stringBuffer.append("null");
+                    stringBuffer.append("Mb");
                 }
-                stringBuffer.append(" - file lastModified is : ");
+                stringBuffer.append("<BR>Last modified: ");
                 if (statusModeResponse.getDateProc() != null) {
                     XMLGregorianCalendar lastModified = statusModeResponse.getDateProc().normalize();
                     stringBuffer.append(lastModified.toString());
-                } else {
-                    stringBuffer.append("null");
                 }
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("<td>\n");
-                stringBuffer.append(statusModeResponse.getRemoteUri());
+                if (!statusModeResponse.getRemoteUri().endsWith("null")) {
+                    stringBuffer.append(statusModeResponse.getRemoteUri());
+                } else {
+                    stringBuffer.append("In progress...");
+                }
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("<td>\n");
-                stringBuffer.append(statusModeResponse.getLocalUri());
+                if (!statusModeResponse.getLocalUri().endsWith("null")) {
+                    stringBuffer.append(statusModeResponse.getLocalUri());
+                } else {
+                    stringBuffer.append("In progress...");
+                }
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("</tr>\n");
                 stringBuffer.append("\n");

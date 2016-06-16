@@ -142,7 +142,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 "-90");
         latitudeHighHTTPParameterValidator = new LatitudeHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_HIGH_LAT,
-                CommonHTTPParameters.getLatitudeLowFromRequest(getRequest()),
+                CommonHTTPParameters.getLatitudeHighFromRequest(getRequest()),
                 "90");
         longitudeLowHTTPParameterValidator = new LongitudeHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_LOW_LON,

@@ -83,6 +83,7 @@ public class BLLRequestManager implements IBLLRequestManager {
         if (rds.getRunningException() != null) {
             p.setRunningException(rds.getRunningException());
         }
+        rds.setProductFileName(product_.getExtractFilename());
         p.setProductFileName(product_.getExtractFilename());
 
         return p;
@@ -95,15 +96,15 @@ public class BLLRequestManager implements IBLLRequestManager {
     }
 
     private long download(boolean isAsynchronous, final ConfigService cs_, final Product product_, final ExtractionParameters extractionParameters) {
-
-        final long requestId = initRequest(extractionParameters.getUserId(), extractionParameters.getUserHost()).getRequestId();
+        final RequestDownloadStatus rds = initRequest(extractionParameters.getUserId(), extractionParameters.getUserHost());
+        final long requestId = rds.getRequestId();
 
         Thread t = new Thread("download isAsynchRqt=" + Boolean.toString(isAsynchronous) + " - " + requestId) {
 
             /** {@inheritDoc} */
             @Override
             public void run() {
-                download(extractionParameters, cs_, product_, requestId);
+                download(rds, extractionParameters, cs_, product_, requestId);
             }
 
         };
@@ -137,14 +138,20 @@ public class BLLRequestManager implements IBLLRequestManager {
         }
     }
 
-    private void download(ExtractionParameters extractionParameters, ConfigService cs_, Product product_, long requestId) {
+    private void download(RequestDownloadStatus rds_,
+                          ExtractionParameters extractionParameters,
+                          ConfigService cs_,
+                          Product product_,
+                          long requestId) {
         RequestDownloadStatus requestDownloadStatus = requestIdStatusMap.get(requestId);
 
         try {
             // If too much request for this user, throws MotuExceedingUserCapacityException
             checkNumberOfRunningRequestForUser(extractionParameters.getUserId());
 
-            double requestSizeInMB = getRequestSizeInMB(extractionParameters, product_);
+            double requestSizeInByte = getRequestSizeInByte(extractionParameters, product_);
+            rds_.setSizeInBits(new Double(requestSizeInByte * 8).longValue());
+            double requestSizeInMB = UnitUtils.toMegaBytes(requestSizeInByte);
             // TODO PLE check disk usage
 
             // The request download is delegated to a download request manager
@@ -154,13 +161,12 @@ public class BLLRequestManager implements IBLLRequestManager {
         }
     }
 
-    private double getRequestSizeInMB(ExtractionParameters extractionParameters, Product product_) throws MotuException {
-        return UnitUtils.toMegaBytes(BLLManager.getInstance().getRequestManager()
-                .getProductDataSizeIntoByte(product_,
-                                            extractionParameters.getListVar(),
-                                            extractionParameters.getListTemporalCoverage(),
-                                            extractionParameters.getListLatLonCoverage(),
-                                            extractionParameters.getListDepthCoverage()));
+    private double getRequestSizeInByte(ExtractionParameters extractionParameters, Product product_) throws MotuException {
+        return BLLManager.getInstance().getRequestManager().getProductDataSizeIntoByte(product_,
+                                                                                       extractionParameters.getListVar(),
+                                                                                       extractionParameters.getListTemporalCoverage(),
+                                                                                       extractionParameters.getListLatLonCoverage(),
+                                                                                       extractionParameters.getListDepthCoverage());
     }
 
     /**
