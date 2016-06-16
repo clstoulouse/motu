@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.web.bll.exception.NotEnoughSpaceException;
 import fr.cls.atoll.motu.web.bll.request.cleaner.RequestCleanerDaemonThread;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
@@ -147,8 +148,15 @@ public class BLLRequestManager implements IBLLRequestManager {
             double requestSizeInMB = getRequestSizeInMB(extractionParameters, product_);
             // TODO PLE check disk usage
 
-            // The request download is delegated to a download request manager
-            queueServerManager.execute(requestDownloadStatus, cs_, product_, extractionParameters, requestSizeInMB);
+            File extractionDirectory = new File(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath());
+
+            if (UnitUtils.toMegaBytes(extractionDirectory.getFreeSpace()) > requestSizeInMB) {
+
+                // The request download is delegated to a download request manager
+                queueServerManager.execute(requestDownloadStatus, cs_, product_, extractionParameters, requestSizeInMB);
+            } else {
+                throw new NotEnoughSpaceException("There is not enough disk space available to generate the file result and to satisfy this request");
+            }
         } catch (MotuException e) {
             requestDownloadStatus.setRunningException(e);
         }
