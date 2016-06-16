@@ -18,6 +18,7 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.queueserver.IQueueServerManager;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueManagement;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
@@ -179,7 +180,10 @@ public class DebugAction extends AbstractAction {
                 stringBuffer.append(statusModeResponse.getCode().toString());
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("<td>\n");
-                // stringBuffer.append(statusModeResponse.getMsg());
+                if (!StringUtils.isNullOrEmpty(statusModeResponse.getMsg())) {
+                    stringBuffer.append(statusModeResponse.getMsg());
+                    stringBuffer.append("<BR>");
+                }
                 stringBuffer.append("Length : ");
                 if (statusModeResponse.getSize() != null) {
                     stringBuffer.append(statusModeResponse.getSize());
@@ -188,18 +192,26 @@ public class DebugAction extends AbstractAction {
                 stringBuffer.append("<BR>Last modified: ");
                 if (statusModeResponse.getDateProc() != null) {
                     XMLGregorianCalendar lastModified = statusModeResponse.getDateProc().normalize();
-                    stringBuffer.append(lastModified.toString());
+                    if (lastModified.getYear() == 1970) {
+                        stringBuffer.append("Unknown");
+                    } else {
+                        stringBuffer.append(lastModified.toString());
+                    }
                 }
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("<td>\n");
-                if (!statusModeResponse.getRemoteUri().endsWith("null")) {
+                if (statusModeResponse.getRemoteUri().endsWith("/")) {
+                    stringBuffer.append("No file.");
+                } else if (!statusModeResponse.getRemoteUri().endsWith("null")) {
                     stringBuffer.append(statusModeResponse.getRemoteUri());
                 } else {
                     stringBuffer.append("In progress...");
                 }
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("<td>\n");
-                if (!statusModeResponse.getLocalUri().endsWith("null")) {
+                if (statusModeResponse.getLocalUri().endsWith("/")) {
+                    stringBuffer.append("No file.");
+                } else if (!statusModeResponse.getLocalUri().endsWith("null")) {
                     stringBuffer.append(statusModeResponse.getLocalUri());
                 } else {
                     stringBuffer.append("In progress...");

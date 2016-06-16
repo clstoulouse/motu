@@ -57,8 +57,11 @@ public class XMLConverter {
         smr.setCode(convertErrorCode(requestDownloadStatus.getRunningException()));
         smr.setDateProc(dateToXMLGregorianCalendar(requestDownloadStatus.getStartProcessingDateTime()));
         smr.setDateSubmit(dateToXMLGregorianCalendar(requestDownloadStatus.getCreationDateTime()));
-        // TODO SMA Is the Msg a duplication of the status ???
-        smr.setMsg("");
+        String msg = "";
+        if (requestDownloadStatus.getRunningException() != null) {
+            msg = requestDownloadStatus.getRunningException().getMessage();
+        }
+        smr.setMsg(msg);
         smr.setLocalUri(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath() + "/"
                 + requestDownloadStatus.getExtractFilename());
         smr.setRemoteUri(BLLManager.getInstance().getConfigManager().getMotuConfig().getDownloadHttpUrl() + "/"
