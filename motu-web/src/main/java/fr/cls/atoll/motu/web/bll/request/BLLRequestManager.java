@@ -153,7 +153,6 @@ public class BLLRequestManager implements IBLLRequestManager {
             double requestSizeInByte = getRequestSizeInByte(extractionParameters, product_);
             rds_.setSizeInBits(new Double(requestSizeInByte * 8).longValue());
             double requestSizeInMB = UnitUtils.toMegaBytes(requestSizeInByte);
-            // TODO PLE check disk usage
 
             File extractionDirectory = new File(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath());
 
