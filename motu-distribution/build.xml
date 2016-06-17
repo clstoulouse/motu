@@ -17,7 +17,7 @@
 		<property name="project.name" value="motu"></property>
 		
 		<!-- ##### External folders ##### -->
-		<property name="products.dir" location="W:\DT\Pour smarty" />
+		<property name="products.dir" location="V:/cmems-cis/06-livraison/61-livraison-de-CLS/611-FilesUsedToBuild" />
 		<property name="motu-config.dir" location="../../motu-config/motu-config" />
 						
 		
