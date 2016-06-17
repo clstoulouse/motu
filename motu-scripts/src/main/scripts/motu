@@ -258,8 +258,8 @@ __checkCDOToolAvailable() {
   if [ -z "$cdoFilePath" ] ; then
      echo "ERROR: cdo tool is not available, please check that it has been installed"
      exit 20;  
-  else
-     echo "CDO tools path=$cdoFilePath"
+  #else
+  #   echo "CDO tools path=$cdoFilePath"
   fi
 
 }
