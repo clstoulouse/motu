@@ -125,20 +125,17 @@ ${project.name} - v. ${project.version}
 			<param-value>https://atoll-app2.vlandata.cls.fr:7943/cas/login</param-value>        
                                -->
 		</init-param>
+		
 		<init-param>
 			<param-name>serverName</param-name>
 			<param-value>${cas-auth-serverName}</param-value>
         </init-param>
-
 		<init-param>
 			<param-name>encodeServiceUrl</param-name>
 			<param-value>false</param-value>
 		</init-param>
 
-		<init-param>
-			<param-name>renew</param-name>
-			<param-value>false</param-value>
-		</init-param>
+		
 		<init-param>
 			<param-name>gateway</param-name>
 			<param-value>false</param-value>
@@ -173,7 +170,8 @@ ${project.name} - v. ${project.version}
 		</init-param>
 		<init-param>
 			<param-name>proxyReceptorUrl</param-name>
-			<param-value>/cls-gateway-servlet/proxyCallback</param-value>
+			<!--  /cls-gateway-servlet/proxyCallback -->
+			<param-value>/proxyCallback</param-value>
 		</init-param>		 
 		<init-param>
 			<param-name>acceptAnyProxy</param-name>

@@ -47,6 +47,7 @@ import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
+import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 
 public class Cas20ProxyReceivingTicketAuthorizationFilter implements Filter {
 
@@ -71,30 +72,26 @@ public class Cas20ProxyReceivingTicketAuthorizationFilter implements Filter {
         // Get LDAP attributes from request
         Principal p = request.getUserPrincipal();
         AttributePrincipal principal = (AttributePrincipal) p;
-        Map attributes = principal.getAttributes();
+        Map<String, Object> attributes = principal.getAttributes();
 
         // Get MOTU params
         String service = null;
         String defService = null;
         MotuConfig conf = null;
         String action = null;
-        boolean DefaultActionIsListServices = false;
+        boolean isDefaultActionListServicei = false;
 
         // try {
         // Load MOTU configuration
         conf = BLLManager.getInstance().getConfigManager().getMotuConfig();
 
         // Get the MOTU service parameter (Get default service just in case)
-        service = request.getParameter(MotuRequestParametersConstant.PARAM_SERVICE);
+        service = CommonHTTPParameters.getServiceFromRequest(request);
         defService = conf.getDefaultService();
 
         // Get the MOTU action parameter (and the default action)
-        action = request.getParameter(MotuRequestParametersConstant.PARAM_ACTION);
-        DefaultActionIsListServices = conf.getDefaultActionIsListServices();
-
-        // } catch (MotuException e) {
-        // e.printStackTrace();
-        // }
+        action = CommonHTTPParameters.getActionFromRequest(request);
+        isDefaultActionListServicei = conf.getDefaultActionIsListServices();
 
         // Authorization (only for service)
         boolean authorized = false;
@@ -108,14 +105,14 @@ public class Cas20ProxyReceivingTicketAuthorizationFilter implements Filter {
                         || action.equals(MotuRequestParametersConstant.ACTION_REFRESH)) {
                     authorized = true; // (2) public services
                 } else {
-                    if (DefaultActionIsListServices)
+                    if (isDefaultActionListServicei)
                         authorized = true;
                     else
                         authorized = match_ldap_vs_motu(attributes, conf, defService); // (3) default service
                                                                                        // check
                 }
             } else {
-                if (DefaultActionIsListServices)
+                if (isDefaultActionListServicei)
                     authorized = true;
                 else
                     authorized = match_ldap_vs_motu(attributes, conf, defService); // (3) default service
