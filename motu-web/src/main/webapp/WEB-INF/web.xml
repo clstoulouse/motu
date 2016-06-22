@@ -265,11 +265,14 @@ ${project.name} - v. ${project.version}
 
 	<error-page>
 		<error-code>403</error-code>
-		<location>/misgw-motu-403.html</location>
+		<location>/403.html</location>
 	</error-page>
 	<error-page>
 		<error-code>404</error-code>
-		<location>/misgw-motu-404.html</location>
+		<location>/404.html</location>
 	</error-page>
 	
+	<welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>    
 </web-app>
