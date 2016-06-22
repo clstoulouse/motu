@@ -17,8 +17,8 @@
 		<property name="project.name" value="motu"></property>
 		
 		<!-- ##### External folders ##### -->
-		<property name="products.dir" location="W:\DT\Pour smarty" />
-		<property name="motu-config.dir" location="../../motu-config/motu-config" />
+		<property name="products.dir" location="V:/cmems-cis/06-livraison/61-livraison-de-CLS/611-FilesUsedToBuild" />
+		<property name="motu-config.dir" location="../../motu-config" />
 						
 		
 		<!-- ##### Init JAVA_HOME ##### -->
@@ -75,8 +75,14 @@
 	     ##### BUILD 
 	     ################################################### -->
 	<target name="build-config" depends="init">
-		<!-- SAISDPC config -->
-		<exec executable="${mvn}" failonerror="true" dir="${motu-config.dir}">
+		<!-- /motu-config -->
+		<exec executable="${mvn}" failonerror="true" dir="${motu-config.dir}/motu-config">
+			<env key="JAVA_HOME" value="${JAVA_HOME}"/>
+			<env key="Path" value="${PathWithGoodJavaVersion}"/>
+			<arg line="clean install -Dmaven.test.skip=true -Dbuild-timestamp=${build-timestamp}" />
+		</exec>
+		<!-- /motu-web-static-files -->
+		<exec executable="${mvn}" failonerror="true" dir="${motu-config.dir}/motu-web-static-files">
 			<env key="JAVA_HOME" value="${JAVA_HOME}"/>
 			<env key="Path" value="${PathWithGoodJavaVersion}"/>
 			<arg line="clean install -Dmaven.test.skip=true -Dbuild-timestamp=${build-timestamp}" />
@@ -98,16 +104,15 @@
 	</target>
 	
 	<target name="package-config" depends="package-init">
-		<!-- config -->
+		<!-- motu-config -->
 		<copy todir="${delivery.config.dir}" >
-			<fileset dir="${motu-config.dir}/${maven.target.dir.name}" casesensitive="yes">
+			<fileset dir="${motu-config.dir}/motu-config/${maven.target.dir.name}" casesensitive="yes">
 			  <include name="${project.name}-config-*.tar.gz"/>
 			  <exclude name="${project.name}-config-*src.tar.gz"/>
 			</fileset>
 		</copy>
-		
 		<copy todir="${delivery.src.dir}" >
-			<fileset dir="${motu-config.dir}/${maven.target.dir.name}" casesensitive="yes">
+			<fileset dir="${motu-config.dir}/motu-config/${maven.target.dir.name}" casesensitive="yes">
 			  <include name="${project.name}-config-*src.tar.gz"/>
 			</fileset>
 		</copy>
@@ -115,6 +120,20 @@
 		<copy todir="${delivery.src.dir}" >
 			<fileset dir="src/main/configuration" casesensitive="yes">
 			  <include name="Build-configuration-procedure.txt"/>
+			</fileset>
+		</copy>
+		
+		<!-- motu-web-static-files -->
+		<copy todir="${delivery.config.dir}" >
+			<fileset dir="${motu-config.dir}/motu-web-static-files/${maven.target.dir.name}" casesensitive="yes">
+			  <include name="${project.name}-web-static-files-*.tar.gz"/>
+			  <exclude name="${project.name}-web-static-files-*src.tar.gz"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${delivery.src.dir}" >
+			<fileset dir="${motu-config.dir}/motu-web-static-files/${maven.target.dir.name}" casesensitive="yes">
+			  <include name="${project.name}-web-static-files-*src.tar.gz"/>
 			</fileset>
 		</copy>
 	</target>
@@ -142,6 +161,8 @@
 	</target>
 	
 	<target name="build-src" depends="init">
+		<echo>current directory: ${basedir}</echo>
+		<echo>current directory: ${user.dir}</echo>
 		<!-- TAR SOURCE FILES -->
 		<tar destfile="../${project.name}-${pom.version}-src.tar.gz" compression="gzip">
 		  <tarfileset dir="../">
@@ -149,11 +170,12 @@
 		  			  		  		  	
 			<exclude name="${project.name}-${pom.version}-src.tar.gz"/>
 		  	
-		  	<exclude name="**/target*" />
-		  	<exclude name="**/build/**" />
-		  	<exclude name="**/gen/**" />
-		  	<exclude name="**/.svn/**" />
-		  	<exclude name="**/.git/**" />
+		  	<exclude name="*/target/**" />
+		  	<exclude name="*/target-ant/**" />
+		  	<exclude name="*/build/**" />
+		  	<exclude name="*/gen/**" />
+		  	<exclude name="*/.svn/**" />
+		  	<exclude name="*/.git/**" />
 		  </tarfileset>
 		</tar>
 	</target>

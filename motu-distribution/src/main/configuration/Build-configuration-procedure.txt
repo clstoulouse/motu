@@ -11,8 +11,10 @@ Pre-requisites:
 $PROJECT_NAME=motu
 $PROJECT_TAG=${project.version}
 
-tar xvzf $PROJECT_NAME-distribution-config-$PROJECT_TAG.tar.gz
+tar xvzf $PROJECT_NAME-config-$PROJECT_TAG.tar.gz
 
-cd $PROJECT_NAME-distribution-config
+cd $PROJECT_NAME-config
+mvn package
 
+cd $PROJECT_NAME-web-static-files
 mvn package
