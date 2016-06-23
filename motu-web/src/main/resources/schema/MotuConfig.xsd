@@ -583,7 +583,7 @@
 				(distinct from service velocity template)
 			-->
 			<xs:attribute name="commonVeloTemplatePrefix"
-				type="xs:string" default="myocean" />
+				type="xs:string" default="motu" />
 
 			<!--
 				defaultLanguage: Common default language used (can be UK or FR)

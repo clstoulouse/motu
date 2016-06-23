@@ -16,6 +16,7 @@ import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
+import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
@@ -72,6 +73,7 @@ public class ProductDownloadHomeAction extends AbstractAuthorizedAction {
 
     @Override
     public void process() throws MotuException {
+        MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
         CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
         String productId = productHTTPParameterValidator.getParameterValueValidated();
@@ -80,16 +82,17 @@ public class ProductDownloadHomeAction extends AbstractAuthorizedAction {
         p.setProductMetaData(pmd);
 
         try {
-            writeResponseWithVelocity(cs, cd, p, getResponse().getWriter());
+            writeResponseWithVelocity(mc, cs, cd, p, getResponse().getWriter());
         } catch (IOException e) {
             throw new MotuException("Error while using velocity template", e);
         }
     }
 
-    public static void writeResponseWithVelocity(ConfigService cs_, CatalogData cd_, Product product_, Writer w_) throws MotuException {
+    public static void writeResponseWithVelocity(MotuConfig mc_, ConfigService cs_, CatalogData cd_, Product product_, Writer w_)
+            throws MotuException {
         VelocityContext context = VelocityTemplateManager.getPrepopulatedVelocityContext();
         context.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
-        context.put("service", VelocityModelConverter.convertToService(cs_, cd_));
+        context.put("service", VelocityModelConverter.convertToService(mc_, cs_, cd_));
         context.put("user", USLManager.getInstance().getUserManager().getUserName());
         context.put("product", VelocityModelConverter.convertToProduct(product_));
         try {

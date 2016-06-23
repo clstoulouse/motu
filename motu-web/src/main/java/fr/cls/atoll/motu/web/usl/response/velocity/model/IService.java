@@ -25,4 +25,6 @@ public interface IService extends ICommonService {
     ICatalog getCatalog();
 
     boolean isDownloadOnTop();
+
+    String getCatalogLocation();
 }

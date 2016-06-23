@@ -1,8 +1,11 @@
 
-
 //----------------------------------------------------------
+window.onload = function(e) {
+    setRegionRanges();
+};
 
-
+var aMapTool=null;
+var aRegionWidget=null;
 
 //Override this function if you want some actions after a page load
 function init() {
@@ -814,15 +817,13 @@ RegionWidget.prototype.onChange = function() {
 	theForm.xhi_text.value = String(xhi);
 	theForm.yhi_text.value = String(yhi);
 	
-	aMapTool.mApplet.wx[0].validate();
-	aMapTool.mApplet.wx[1].validate();
-	aMapTool.mApplet.wy[0].validate();
-	aMapTool.mApplet.wy[1].validate();
+	if( aMapTool !== null && aMapTool.mApplet !== null ){
+		aMapTool.mApplet.wx[0].validate();
+		aMapTool.mApplet.wx[1].validate();
+		aMapTool.mApplet.wy[0].validate();
+		aMapTool.mApplet.wy[1].validate();
+	}
 }
-
-
-var aMapTool;
-var aRegionWidget;
 
 function updateMap() {
 // var widxlot = new MapTextWidget(this,"lon", 'region',"xlo_text");
@@ -1050,3 +1051,4 @@ function closeScriptCmdWin() {
  function unload() {
 	closeScriptCmdWin();
  }
+ 
