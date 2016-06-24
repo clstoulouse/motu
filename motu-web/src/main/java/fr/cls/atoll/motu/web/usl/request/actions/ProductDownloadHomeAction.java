@@ -96,7 +96,7 @@ public class ProductDownloadHomeAction extends AbstractAuthorizedAction {
         context.put("user", USLManager.getInstance().getUserManager().getUserName());
         context.put("product", VelocityModelConverter.convertToProduct(product_));
         try {
-            Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null);
+            Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null, cs_.getVeloTemplatePrefix());
             template.merge(context, w_);
         } catch (Exception e) {
             throw new MotuException("Error while using velocity template", e);

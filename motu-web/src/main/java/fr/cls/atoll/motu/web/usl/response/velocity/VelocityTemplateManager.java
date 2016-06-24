@@ -211,12 +211,21 @@ public class VelocityTemplateManager {
      * @throws ParseErrorException
      * @throws ResourceNotFoundException
      */
-    public Template initVelocityEngineWithGenericTemplate(String lang) throws ResourceNotFoundException, ParseErrorException, Exception {
-        return getVelocityEngine().getTemplate(getCommonGlobalVeloTemplateName(lang));
+    public Template initVelocityEngineWithGenericTemplate(String lang, String velocityTemplateName_)
+            throws ResourceNotFoundException, ParseErrorException, Exception {
+        String veloTplName = velocityTemplateName_;
+        if (veloTplName == null) {
+            veloTplName = getCommonGlobalVeloTemplateName(lang);
+        }
+        if (veloTplName != null && !veloTplName.endsWith(".vm")) {
+            veloTplName += ".vm";
+        }
+
+        return getVelocityEngine().getTemplate(VELOCITY_TEMPLATE_DIR + veloTplName);
     }
 
     protected String getCommonGlobalVeloTemplateName(String lang) {
-        StringBuffer buffer = new StringBuffer(VELOCITY_TEMPLATE_DIR);
+        StringBuffer buffer = new StringBuffer();
         String veloTemplatePrefix = BLLManager.getInstance().getConfigManager().getMotuConfig().getCommonVeloTemplatePrefix();
         if (StringUtils.isNullOrEmpty(veloTemplatePrefix)) {
             buffer.append("generic");

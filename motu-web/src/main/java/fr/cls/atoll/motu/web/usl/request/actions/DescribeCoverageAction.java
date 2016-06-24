@@ -88,7 +88,7 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
         context.put("product", VelocityModelConverter.convertToProduct(p));
 
         try {
-            Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null);
+            Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null, cs_.getVeloTemplatePrefix());
             template.merge(context, getResponse().getWriter());
         } catch (Exception e) {
             throw new MotuException("Error while using velocity template", e);

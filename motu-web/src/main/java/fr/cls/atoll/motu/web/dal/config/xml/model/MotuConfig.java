@@ -683,7 +683,7 @@ public class MotuConfig {
      */
     public String getCommonVeloTemplatePrefix() {
         if (commonVeloTemplatePrefix == null) {
-            return "motu";
+            return "index";
         } else {
             return commonVeloTemplatePrefix;
         }

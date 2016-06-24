@@ -76,7 +76,7 @@ public class ListCatalogAction extends AbstractAuthorizedAction {
         context.put("user", USLManager.getInstance().getUserManager().getUserName());
 
         try {
-            Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null);
+            Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null, cs_.getVeloTemplatePrefix());
             template.merge(context, getResponse().getWriter());
         } catch (Exception e) {
             throw new MotuException("Error while using velocity template", e);
