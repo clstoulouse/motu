@@ -1,0 +1,200 @@
+@media all
+{
+  .hlist {
+    /* (en) This image is mainly transparent */
+    background:transparent url("images/ps_nav/bg.gif") repeat-x bottom;
+    float:left;
+    width:100%;
+  }
+
+  .hlist ul {
+    margin:0;
+    padding:0;
+    line-height:20px;
+    list-style:none;
+    white-space:nowrap;
+  }
+
+  .hlist li {
+    /* (en) Repeat the main color from the image */
+    list-style-type:none !important;
+    background:#265685 url("images/ps_nav/left.gif") no-repeat top left;
+    border-bottom:none;
+    float:left; /* LTR */
+    margin:0;
+    padding:0 0 10px 3px;
+  }
+
+  .hlist a,
+  .hlist strong {
+    /* (en) This image is mainly transparent */
+    background:transparent url("images/ps_nav/right.gif") no-repeat top right;
+    color:#fff;
+    display:block;
+    font-weight:bold;
+    padding:0px 11px 0px 8px;
+    text-decoration:none;
+    text-transform:none;
+
+    /**
+     * @bugfix
+     * @affected   IE5.x, IE6
+     * @css-for    all browsers
+     * @valid      yes
+     */
+    width:auto; /* only IE 5.x */
+    width/**/:/**/ .1em; /* only IE 6.0 */
+  }
+
+  .hlist a:link,
+  .hlist a:visited { background-color:transparent; color:#fff; }
+
+  /**
+   * @bugfix
+   * @affected   IE5.x, IE6
+   * @css-for    all browsers
+   * @valid      yes
+   */
+  .hlist > ul a,
+  .hlist > ul strong { width:auto; }  /* for other browsers */
+
+  
+  .hlist ul li:focus,
+  .hlist ul li:hover,
+  .hlist ul li:active {
+    /* (en) Repeat the main color from the image */
+/*    background-color:#c4d0dc;
+    background-position:0 -150px;*/
+  }
+/*
+  .hlist ul li:focus a,
+  .hlist ul li:hover a,
+  .hlist ul li:active a { background-position:100% -150px; }
+*/
+  .hlist a:focus,
+  .hlist a:hover,
+  .hlist a:active {
+    background:transparent url("images/ps_nav/right.gif") no-repeat top right;
+    color:#000;
+    outline: 0 none;
+    text-decoration:none;
+  }
+
+  .hlist ul li.CMS_current,
+  .hlist ul li.CMS_current:focus,
+  .hlist ul li.CMS_current:hover,
+  .hlist ul li.CMS_current:active {
+    /* (en) Repeat the main color from the image */
+    background:white url("images/ps_nav/left.gif") no-repeat top left;
+    border:0 none;
+  }
+
+  .hlist li.CMS_current a,
+  .hlist li.CMS_current a:focus,
+  .hlist li.CMS_current a:hover,
+  .hlist li.CMS_current a:active {
+    color: #000;
+  }
+
+
+  .hlist li.CMS_current strong {
+    /* (en) This image is mainly transparent */
+    background:transparent url("images/ps_nav/right.gif") no-repeat top right;
+    color:#000;
+    font-weight:bold;
+    padding-bottom:4px;
+    padding-top:5px;
+  }
+
+  /*.hlist li div:focus, .hlist li div:hover , .hlist li div:active, */
+  .hlist li.CMS_current div {
+	height: 27px;
+    background:transparent url("images/ps_nav/active.gif") no-repeat top center;
+  }
+
+
+  #safety .hlist li,
+  #safety .hlist ul li.CMS_current,
+  #safety .hlist ul li.CMS_current:focus,
+  #safety .hlist ul li.CMS_current:hover,
+  #safety .hlist ul li.CMS_current:active  {
+    background:#E85C0F url("images/ps_nav/left_safety.gif") no-repeat top left;
+  }
+
+  #safety .hlist a,
+  #safety .hlist strong,
+  #safety .hlist a:focus,
+  #safety .hlist a:hover,
+  #safety .hlist a:active,
+  #safety .hlist li.CMS_current strong  {
+    background:transparent url("images/ps_nav/right_safety.gif") no-repeat top right;
+  }
+
+  #safety .hlist li.CMS_current div {
+    background:transparent url("images/ps_nav/active_safety.gif") no-repeat top center;
+  }
+
+  #resources .hlist li,
+  #resources .hlist ul li.CMS_current,
+  #resources .hlist ul li.CMS_current:focus,
+  #resources .hlist ul li.CMS_current:hover,
+  #resources .hlist ul li.CMS_current:active  {
+    background:#006BC4 url("images/ps_nav/left_resources.gif") no-repeat top left;
+  }
+
+  #resources .hlist a,
+  #resources .hlist strong,
+  #resources .hlist a:focus,
+  #resources .hlist a:hover,
+  #resources .hlist a:active,
+  #resources .hlist li.CMS_current strong  {
+    background:transparent url("images/ps_nav/right_resources.gif") no-repeat top right;
+  }
+
+  #resources .hlist li.CMS_current div {
+    background:transparent url("images/ps_nav/active_resources.gif") no-repeat top center;
+  }
+
+  #environment .hlist li,
+  #environment .hlist ul li.CMS_current,
+  #environment .hlist ul li.CMS_current:focus,
+  #environment .hlist ul li.CMS_current:hover,
+  #environment .hlist ul li.CMS_current:active  {
+    background:#50BAC1 url("images/ps_nav/left_environment.gif") no-repeat top left;
+  }
+
+  #environment .hlist a,
+  #environment .hlist strong,
+  #environment .hlist a:focus,
+  #environment .hlist a:hover,
+  #environment .hlist a:active,
+  #environment .hlist li.CMS_current strong  {
+    background:transparent url("images/ps_nav/right_environment.gif") no-repeat top right;
+  }
+
+  #environment .hlist li.CMS_current div {
+    background:transparent url("images/ps_nav/active_environment.gif") no-repeat top center;
+  }
+
+  #forecast .hlist li,
+  #forecast .hlist ul li.CMS_current,
+  #forecast .hlist ul li.CMS_current:focus,
+  #forecast .hlist ul li.CMS_current:hover,
+  #forecast .hlist ul li.CMS_current:active  {
+    background:#96BD0D url("images/ps_nav/left_forecast.gif") no-repeat top left;
+  }
+
+  #forecast .hlist a,
+  #forecast .hlist strong,
+  #forecast .hlist a:focus,
+  #forecast .hlist a:hover,
+  #forecast .hlist a:active,
+  #forecast .hlist li.CMS_current strong  {
+    background:transparent url("images/ps_nav/right_forecast.gif") no-repeat top right;
+  }
+
+  #forecast .hlist li.CMS_current div {
+    background:transparent url("images/ps_nav/active_forecast.gif") no-repeat top center;
+  }
+
+}

@@ -228,7 +228,7 @@ public class VelocityTemplateManager {
         StringBuffer buffer = new StringBuffer();
         String veloTemplatePrefix = BLLManager.getInstance().getConfigManager().getMotuConfig().getCommonVeloTemplatePrefix();
         if (StringUtils.isNullOrEmpty(veloTemplatePrefix)) {
-            buffer.append("generic");
+            buffer.append("index");
         } else {
             buffer.append(veloTemplatePrefix.toLowerCase());
         }

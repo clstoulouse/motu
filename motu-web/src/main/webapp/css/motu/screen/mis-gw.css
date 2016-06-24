@@ -1,0 +1,106 @@
+  table.encadre
+    {
+		border: #d8d6d6 1px solid;
+		border-collapse: separate;
+		border-spacing: 0px;
+		border-radius: 8px;
+		-moz-border-radius: 8px;
+		-webkit-border-radius: 8px;
+		overflow: hidden;
+
+    }
+  table.encadre TD
+    {
+        border: #d8d6d6 1px solid;
+        border-collapse: separate;
+        background-color : #fff;
+		padding: 0.5em 0.5em;
+    }
+  table.encadre TH
+    {
+		border: #d8d6d6 1px solid;
+		border-collapse: separate;
+		background: #0f97cd; /* Old browsers */
+		background: -moz-linear-gradient(top, #0f97cd 0%, #00648c 100%); /* FF3.6-15 */
+		background: -webkit-linear-gradient(top, #0f97cd 0%,#00648c 100%); /* Chrome10-25,Safari5.1-6 */
+		background: linear-gradient(to bottom, #0f97cd 0%,#00648c 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0f97cd', endColorstr='#00648c',GradientType=0 ); /* IE6-9 */
+		color: #fff;
+		text-align: center;
+		padding: 1em 0.5em;
+    }    
+  table.toc
+    {
+        background-color:#DDECF8;
+    }
+  table.toc TD
+    {
+        font-size: 9pt;
+        font-family: Arial, Helvetica, sans-serif;
+  }
+  table.toc TH
+    {
+        font-family: Arial, Helvetica, sans-serif;
+        width: 100%;
+        background-color: #99CCFF;
+        color: #000000;
+        font-size: 10pt; padding: 2px;
+        border: #FFF1B3;
+        font-weight: bold;
+    }
+  img.suiv2
+    {
+        width:18px;
+        height:14px;
+        border:0px;
+    }
+        
+  input, select {
+       border:1px solid #d8d6d6;
+       padding:4px;
+		border-radius: 3px;
+		-moz-border-radius: 3px;
+		-webkit-border-radius: 3px;
+  }
+    
+  table {
+       border-bottom:0 none;
+       border-top:0 none;
+  }
+    
+  tbody td {
+        border-bottom:0 none;
+  }
+    
+  h1 {
+        margin: 2.5em 0 1em;
+  }
+    
+  h2, h3, h4, h5, h6 {
+      margin:0 0 1em;
+  }
+    
+  .encadre th, td {
+        padding-left:0.2em;
+        padding-right:0.2em;
+        padding-top:0.5em;
+        padding-bottom:0.5em;
+    }
+    
+  #content {
+        width: 681px;
+  }
+    
+  input[type=submit], input[type=button] {
+        border:0 none;
+		background-color: #eee;
+        color:#0f91c5;
+        font-weight:normal;
+		margin: 0 10px 7px 0; 
+        padding: 5px 10px;
+        text-align:left;
+        cursor:pointer;
+		border-radius: 0;
+		-moz-border-radius: 0;
+		-webkit-border-radius: 0;
+  }
