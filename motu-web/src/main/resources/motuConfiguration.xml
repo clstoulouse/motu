@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Default configuration file -->
+<motuConfig defaultService="" useProxy="false" proxyHost="" proxyPort="" proxyLogin="" proxyPwd="" 
+defaultActionIsListServices="true" useAuthentication="false" 
+dataBlockSize="1024000" maxSizePerFile="1024" 
+extractionPath="/data/motu/data-deliveries" 
+downloadHttpUrl="http://localhost:8080/motu/deliveries" 
+httpDocumentRoot="http://localhost:8080" 
+httpBaseRef="/motu-web" 
+
+cleanExtractionFileInterval="60" 
+cleanRequestInterval="60" 
+runCleanInterval="15" 
+
+extractionFilePatterns=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|.*\.extract$|wps_output_.*$|wps_response_.*$" 
+extractionFileCacheSize="10000" 
+runGCInterval="0"
+>
+
+	<!--======================================================================================-->
+	<!--                  All TDS Services (OpenDAP or NCSS)                   					  -->
+	<!--======================================================================================-->	
+	<!-- <configService defaultLanguage="UK" description="TEST_HR_MOD-TDS" group="TEST Performance" 
+							httpBaseRef="" name="HR_MOD-TDS" 
+							veloTemplatePrefix="" profiles="external">
+		<catalog name="m_HR_MOD.xml" type="tds" ncss="enabled" urlSite="http://misgw-ddo-qt.cls.fr:61080/thredds/"/>
+	</configService>	 -->
+	
+	
+	<!--======================================================================================-->
+	<!--                  queueServerConfig                      							  -->
+	<!--======================================================================================-->
+	<queueServerConfig maxPoolAnonymous="-1" maxPoolAuth="-1" defaultPriority="2">
+		<queues id="queue1" description="light queue" batch="false">
+			<maxThreads>2</maxThreads>
+			<maxPoolSize>-1</maxPoolSize>
+			<dataThreshold>75.0</dataThreshold>
+			<lowPriorityWaiting>1</lowPriorityWaiting>
+		</queues>
+		<queues id="queue5" description="mid queue" batch="false">
+			<maxThreads>2</maxThreads>
+			<maxPoolSize>-1</maxPoolSize>
+			<dataThreshold>300</dataThreshold>
+			<lowPriorityWaiting>2</lowPriorityWaiting>
+		</queues>
+		<queues id="queue2" description="bulk queue" batch="false">
+			<maxThreads>2</maxThreads>
+			<maxPoolSize>-1</maxPoolSize>
+			<dataThreshold>1024</dataThreshold>
+			<lowPriorityWaiting>2</lowPriorityWaiting>
+		</queues>
+	</queueServerConfig>
+</motuConfig>

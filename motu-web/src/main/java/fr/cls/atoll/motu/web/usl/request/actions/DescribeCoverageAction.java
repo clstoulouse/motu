@@ -13,6 +13,7 @@ import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
+import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
@@ -69,6 +70,7 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
 
     @Override
     public void process() throws MotuException {
+        MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
         CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
         String productId = productHTTPParameterValidator.getParameterValueValidated();
@@ -76,17 +78,17 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
         ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager().getProductMetaData(productId, p.getLocationData());
         p.setProductMetaData(pmd);
 
-        writeResponseWithVelocity(cs, cd, p);
+        writeResponseWithVelocity(mc, cs, cd, p);
     }
 
-    private void writeResponseWithVelocity(ConfigService cs_, CatalogData cd, Product p) throws MotuException {
+    private void writeResponseWithVelocity(MotuConfig mc_, ConfigService cs_, CatalogData cd, Product p) throws MotuException {
         VelocityContext context = VelocityTemplateManager.getPrepopulatedVelocityContext();
         context.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG, true));
-        context.put("service", VelocityModelConverter.convertToService(cs_, cd));
+        context.put("service", VelocityModelConverter.convertToService(mc_, cs_, cd));
         context.put("product", VelocityModelConverter.convertToProduct(p));
 
         try {
-            Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null);
+            Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null, cs_.getVeloTemplatePrefix());
             template.merge(context, getResponse().getWriter());
         } catch (Exception e) {
             throw new MotuException("Error while using velocity template", e);

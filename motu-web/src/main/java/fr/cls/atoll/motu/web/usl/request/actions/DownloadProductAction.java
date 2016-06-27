@@ -30,6 +30,7 @@ import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
+import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
@@ -182,6 +183,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         short maxPoolAuthenticate = getMaxPoolAuthenticate();
         int priority = priorityHTTPParameterValidator.getParameterValueValidated();
 
+        MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
         CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
         String productId = productHTTPParameterValidator.getParameterValueValidated();
@@ -204,10 +206,10 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
             ProductResult pr = BLLManager.getInstance().getRequestManager().download(cs, p, createExtractionParameters());
             if (pr.getRunningException() != null) {
                 p.setLastError(pr.getRunningException().getMessage());
-                onError(cs, cd, p);
+                onError(mc, cs, cd, p);
             } else {
                 try {
-                    ProductDownloadHomeAction.writeResponseWithVelocity(cs, cd, p, getResponse().getWriter());
+                    ProductDownloadHomeAction.writeResponseWithVelocity(mc, cs, cd, p, getResponse().getWriter());
                 } catch (IOException e) {
                     throw new MotuException("Error while using velocity template", e);
                 }
@@ -239,9 +241,9 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      * 
      * @throws MotuException
      */
-    private void onError(ConfigService cs, CatalogData cd, Product p) throws MotuException {
+    private void onError(MotuConfig mc_, ConfigService cs, CatalogData cd, Product p) throws MotuException {
         try {
-            ProductDownloadHomeAction.writeResponseWithVelocity(cs, cd, p, getResponse().getWriter());
+            ProductDownloadHomeAction.writeResponseWithVelocity(mc_, cs, cd, p, getResponse().getWriter());
         } catch (IOException e) {
             throw new MotuException("Error while using velocity template", e);
         }

@@ -16,8 +16,6 @@
 	<description>Artefact containing the configurations for the distribution package.
     </description>
 
-
-
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>

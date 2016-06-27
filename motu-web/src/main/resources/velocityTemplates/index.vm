@@ -4,15 +4,15 @@
 ## In case several templates have a common macro name, 
 ## the result can be amazing (among others, execution mixes up the same macro with the same name)
 ##----------------------------------------------------------------------------------
-## ------------------------------ myocean_uk_printSubTitleCatalog --------------------------------
-#macro(myocean_uk_printSubTitleListInventories)
+## ------------------------------ printSubTitleCatalog --------------------------------
+#macro(printSubTitleListInventories)
 <li>
     <a>Access Services</a>	
 </li>
 
 #end
-## ------------------------------ myocean_uk_printSubTitleProductMetadata --------------------------------
-#macro(myocean_uk_printSubTitleCatalog)
+## ------------------------------ printSubTitleProductMetadata --------------------------------
+#macro(printSubTitleCatalog)
 <li>
 	<a href="?action=listservices">Access Services</a>
 <li>
@@ -22,8 +22,8 @@
 
 #end
 
-## ------------------------------ myocean_uk_printSubTitleProductMetadata --------------------------------
-#macro(myocean_uk_printSubTitleProductMetadata)
+## ------------------------------ printSubTitleProductMetadata --------------------------------
+#macro(printSubTitleProductMetadata)
 <li>
 	<a href="?action=listservices" class="mainlevel">Access Services</a>
 </li>
@@ -36,8 +36,8 @@
 
 #end
 
-## ------------------------------ myocean_uk_printSubTitleProductDownloadHome --------------------------------
-#macro(myocean_uk_printSubTitleProductDownloadHome)
+## ------------------------------ printSubTitleProductDownloadHome --------------------------------
+#macro(printSubTitleProductDownloadHome)
 <li><a href="?action=listservices">Access Services</a></li>
 <li><a href="?action=listcatalog&service=${service.getNameEncoded()}">&gt;&nbsp;Data Product Catalogue</a></li>
 
@@ -51,28 +51,28 @@
 
 #end
 
-## -------------------------------------------- myocean_uk_printSubTitle --------------------------------
-#macro(myocean_uk_printSubTitle)
+## -------------------------------------------- printSubTitle --------------------------------
+#macro(printSubTitle)
 	#if($body_template.equalsIgnoreCase($templateListInventories))
-		#myocean_uk_printSubTitleListInventories()	
+		#printSubTitleListInventories()	
 	#end
 	#if($body_template.equalsIgnoreCase($templateCatalog))
-		#myocean_uk_printSubTitleCatalog()	
+		#printSubTitleCatalog()	
 	#end
 	#if($body_template.equalsIgnoreCase($templateProductMetadata))
-		#myocean_uk_printSubTitleProductMetadata()	
+		#printSubTitleProductMetadata()	
 	#end	
 	#if($body_template.equalsIgnoreCase($templateProductDownloadHome))
-		#myocean_uk_printSubTitleProductDownloadHome()	
+		#printSubTitleProductDownloadHome()	
 	#end
 #end
 
 ## -------------------------------------------- main --------------------------------
 
-#set($templateListInventories = "velocityTemplates/listServices_uk.vm")
-#set($templateCatalog = "velocityTemplates/catalog_uk.vm")
-#set($templateProductMetadata = "velocityTemplates/product_metadata_uk.vm")
-#set($templateProductDownloadHome = "velocityTemplates/product_downloadhome_uk.vm")
+#set($templateListInventories = "velocityTemplates/listServices.vm")
+#set($templateCatalog = "velocityTemplates/listCatalog.vm")
+#set($templateProductMetadata = "velocityTemplates/listProductMetadata.vm")
+#set($templateProductDownloadHome = "velocityTemplates/productDownloadHome.vm")
 #set($httpSite = ${service.getHttpBaseRef()})
 
 #set($titleMetadata = "Dataset Metadata")
@@ -89,16 +89,16 @@
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
 	<title>Motu</title>
-	<link rel="icon" type="image/x-icon" href="$httpSite/css/myocean/screen/images/favicon.ico" />
+	<link rel="icon" type="image/x-icon" href="$httpSite/css/motu/screen/images/favicon.ico" />
 	<meta name="robots" content="noindex, nofollow" />
 	<meta name="language" content="en" />
 	<meta name="copyright" content="Motu" />
 
-	<link rel="stylesheet" href="$httpSite/css/myocean/myocean.css" type="text/css" />
-	<link rel="stylesheet" href="$httpSite/css/myocean/screen/nav_services.css" type="text/css" />
+	<link rel="stylesheet" href="$httpSite/css/motu/motu.css" type="text/css" />
+	<link rel="stylesheet" href="$httpSite/css/motu/screen/nav_services.css" type="text/css" />
 	<!--[if lte IE 7]>
 	<link 
-href="$httpSite/css/myocean/patches/patch_myocean.css"
+href="$httpSite/css/motu/patches/patch_motu.css"
  rel="stylesheet" type="text/css" />
 	<![endif]-->
 	<style><!--
@@ -107,8 +107,8 @@ href="$httpSite/css/myocean/patches/patch_myocean.css"
 	
 	-->
 	</style>
-  <link rel="stylesheet" type="text/css" href="$httpSite/css/myocean/screen/content_cc.css" media="all">
-  <link rel="stylesheet" type="text/css" href="$httpSite/css/myocean/screen/mis-gw.css" media="all">
+  <link rel="stylesheet" type="text/css" href="$httpSite/css/motu/screen/content_cc.css" media="all">
+  <link rel="stylesheet" type="text/css" href="$httpSite/css/motu/screen/mis-gw.css" media="all">
 
 </head>
 
@@ -125,7 +125,7 @@ href="$httpSite/css/myocean/patches/patch_myocean.css"
 			<header class="body_header" role="banner">
 					<div class="row-fluid">
 						<div id="logo-left" class="span3">
-							<img src="$httpSite/css/myocean/screen/images/logo-cls.png" alt="CLS" title="" />
+							<img src="$httpSite/css/motu/screen/images/logo-cls.png" alt="CLS" title="" />
 						</div>
 						<div id="logo-right" class="span9">
 							<div class="header_top">
@@ -145,7 +145,7 @@ href="$httpSite/css/myocean/patches/patch_myocean.css"
 					</div>
 					<div class="row-fluid">
 						<div id="banner-img" class="span12">
-						 <img src="$httpSite/css/myocean/screen/images/banner_img.jpg" alt="" title="" />
+						 <img src="$httpSite/css/motu/screen/images/banner_img.jpg" alt="" title="" />
 						</div>
 					</div>
 			</header>
@@ -174,7 +174,7 @@ href="$httpSite/css/myocean/patches/patch_myocean.css"
 							    <div id="ps_nav">
 									<div class="hlist">
 										<ul>
-										#myocean_uk_printSubTitle()
+										#printSubTitle()
 										</ul>
 									</div>
 								</div>

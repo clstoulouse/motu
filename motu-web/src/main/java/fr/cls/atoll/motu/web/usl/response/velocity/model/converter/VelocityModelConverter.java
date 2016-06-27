@@ -11,7 +11,9 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.common.utils.URLUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
+import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
@@ -45,19 +47,19 @@ public class VelocityModelConverter {
 
     private final static Logger LOGGER = LogManager.getLogger();
 
-    public static List<IService> converServiceList(List<ConfigService> cfgList_) {
+    public static List<IService> converServiceList(MotuConfig mc, List<ConfigService> cfgList_) {
         List<IService> isList = new ArrayList<IService>(cfgList_.size());
         for (final ConfigService cs : cfgList_) {
-            isList.add(convertToService(cs));
+            isList.add(convertToService(mc, cs));
         }
         return isList;
     }
 
-    public static IService convertToService(final ConfigService cs) {
-        return convertToService(cs, null);
+    public static IService convertToService(MotuConfig mc, ConfigService cs) {
+        return convertToService(mc, cs, null);
     }
 
-    public static IService convertToService(final ConfigService cs, final CatalogData c) {
+    public static IService convertToService(final MotuConfig mc_, final ConfigService cs, final CatalogData c) {
         return new IService() {
 
             @Override
@@ -87,13 +89,19 @@ public class VelocityModelConverter {
 
             @Override
             public String getHttpBaseRef() {
-                return cs.getHttpBaseRef();
+                return StringUtils.isNullOrEmpty(cs.getHttpBaseRef()) ? mc_.getHttpBaseRef() : cs.getHttpBaseRef();
             }
 
             @Override
             public boolean isDownloadOnTop() {
                 return cs.getDownloadOnTop();
             }
+
+            @Override
+            public String getCatalogLocation() {
+                return URLUtils.concatUrlPaths(cs.getCatalog().getUrlSite(), cs.getCatalog().getName());
+            }
+
         };
     }
 

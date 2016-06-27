@@ -88,7 +88,7 @@ import fr.cls.atoll.motu.library.converter.jaxb.JodaPeriodAdapter;
  *         &lt;/simpleType>
  *       &lt;/attribute>
  *       &lt;attribute name="casRestUrlSuffix" type="{http://www.w3.org/2001/XMLSchema}string" default="/v1/tickets" />
- *       &lt;attribute name="commonVeloTemplatePrefix" type="{http://www.w3.org/2001/XMLSchema}string" default="myocean" />
+ *       &lt;attribute name="commonVeloTemplatePrefix" type="{http://www.w3.org/2001/XMLSchema}string" default="motu" />
  *       &lt;attribute name="commonDefaultLanguage" type="{http://www.w3.org/2001/XMLSchema}string" default="UK" />
  *       &lt;attribute name="httpBaseRef" type="{http://www.w3.org/2001/XMLSchema}string" default="http://resources.myocean.eu" />
  *       &lt;attribute name="defaultActionIsListServices" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
@@ -683,7 +683,7 @@ public class MotuConfig {
      */
     public String getCommonVeloTemplatePrefix() {
         if (commonVeloTemplatePrefix == null) {
-            return "myocean";
+            return "index";
         } else {
             return commonVeloTemplatePrefix;
         }

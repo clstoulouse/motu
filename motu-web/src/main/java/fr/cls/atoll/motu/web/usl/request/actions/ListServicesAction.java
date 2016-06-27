@@ -17,6 +17,7 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
+import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.CatalogTypeParameterValidator;
@@ -65,8 +66,9 @@ public class ListServicesAction extends AbstractAuthorizedAction {
 
     @Override
     public void process() throws MotuException {
+        MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
         String catalogType = catalogTypeParameterValidator.getParameterValueValidated();
-        writeResponseWithVelocity(filterConfigService(catalogType));
+        writeResponseWithVelocity(mc, filterConfigService(catalogType));
     }
 
     private List<ConfigService> filterConfigService(String catalogType) {
@@ -80,13 +82,13 @@ public class ListServicesAction extends AbstractAuthorizedAction {
         return csList;
     }
 
-    private void writeResponseWithVelocity(List<ConfigService> csList_) throws MotuException {
+    private void writeResponseWithVelocity(MotuConfig mc, List<ConfigService> csList_) throws MotuException {
         VelocityContext context = VelocityTemplateManager.getPrepopulatedVelocityContext();
         context.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
-        context.put("serviceList", VelocityModelConverter.converServiceList(csList_));
+        context.put("serviceList", VelocityModelConverter.converServiceList(mc, csList_));
 
         try {
-            Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null);
+            Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null, null);
             template.merge(context, getResponse().getWriter());
         } catch (Exception e) {
             throw new MotuException("Error while using velocity template", e);

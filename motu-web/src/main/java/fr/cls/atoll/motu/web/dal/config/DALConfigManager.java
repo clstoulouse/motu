@@ -93,7 +93,13 @@ public class DALConfigManager implements IDALConfigManager {
     }
 
     private void initMotuConfig() throws MotuException, FileNotFoundException {
-        InputStream in = new FileInputStream(new File(getMotuConfigurationFolderPath(), "motuConfiguration.xml"));
+        File fMotuConfig = new File(getMotuConfigurationFolderPath(), "motuConfiguration.xml");
+        InputStream in = null;
+        if (fMotuConfig.exists()) {
+            in = new FileInputStream(fMotuConfig);
+        } else {
+            in = DALConfigManager.class.getClassLoader().getResourceAsStream("motuConfiguration.xml");
+        }
 
         try {
             JAXBContext jc = JAXBContext.newInstance(MotuConfig.class.getPackage().getName());

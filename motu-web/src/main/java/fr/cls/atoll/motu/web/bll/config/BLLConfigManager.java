@@ -5,6 +5,7 @@ import java.util.List;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.common.utils.URLUtils;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.IDALConfigManager;
 import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardName;
@@ -112,7 +113,7 @@ public class BLLConfigManager implements IBLLConfigManager {
     public Product getProduct(String productLocation) throws MotuException {
         Product productResult = null;
         for (ConfigService c : getMotuConfig().getConfigService()) {
-            String currentProductLocation = c.getCatalog().getUrlSite() + c.getCatalog().getName();
+            String currentProductLocation = URLUtils.concatUrlPaths(c.getCatalog().getUrlSite(), c.getCatalog().getName());
             if (currentProductLocation.equalsIgnoreCase(productLocation)) {
                 productResult = BLLManager.getInstance().getCatalogManager().getProductManager()
                         .getProduct(c.getName(), StringUtils.getDataSetName(c.getCatalog().getName()));

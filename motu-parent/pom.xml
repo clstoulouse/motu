@@ -389,7 +389,13 @@
 			<dependency>
 				<groupId>org.jasig.cas.client</groupId>
 				<artifactId>cas-client-core</artifactId>
-				<version>3.1.11-PATCH-CLS</version>
+				<!--  Patch used to return LDAP attributes in Map<String, Object> attributes = principal.getAttributes(); in
+				/motu-web/src/main/java/fr/cls/atoll/motu/web/servlet/filter/Cas20ProxyReceivingTicketAuthorizationFilter.java
+				
+				This issue has not been fixed by 3.4.1
+				-->
+				<version>3.1.11-PATCH-CLS</version> 
+				<!-- <version>3.4.1</version>-->
 			</dependency>
 
 			<dependency>
