@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ANT File
-	 Build 3 tar.gz files in target-ant/delivery/$timestamp folder:
-	   - motu-products-A.B.tar.gz  (retrived from V:\cmems-cis\06- Livraison\61- livraison-de-CLS\611 - FilesUsedToBuild\motu-products-3.0.tar.gz)
-	   - motu-distribution-X.Y.Z.tar.gz (built from source code)
-	   - motu-config-$target-X.Y.Z-$timestamp.tar.gz (built from source code)
-	     $target=CLS,CMEMS,INDESO,AVISO
-	     $timestamp=Build date time with format yyyyMMddHHmmssSSS
-	     
+     
+     Build under /motu-distribution/target-ant/delivery/YYYYmmDDhhMMssSSS 3 folders:
+       - config : All configuration archives, plus Motu web static files
+       - motu: The products and the distribution
+       - src: The distribution source files and build procedures
+     
+     Before running the default target you have to set the properties below defined in the "init" target:
+       - products.dir
+       - products.version
+       - motu-config.dir
+       - JAVA_HOME
 	     
 	 This ANT script needs http://maven.apache.org/ant-tasks/ to be installed in order to read the POM version.
 	     
@@ -17,8 +21,9 @@
 		<property name="project.name" value="motu"></property>
 		
 		<!-- ##### External folders ##### -->
-		<property name="products.dir" location="V:/cmems-cis/06-livraison/61-livraison-de-CLS/611-FilesUsedToBuild" />
-		<property name="motu-config.dir" location="../../motu-config" />
+		<property name="products.dir" location="V:/cmems-cis/06-livraison/61-livraison-de-CLS/611-FilesUsedToBuild" description="This folder contains motu-products-A.B.tar.gz"/>
+		<property name="products.version" value="3.0" description="The version A.B written in motu-products-A.B.tar.gz"/>
+		<property name="motu-config.dir" location="../../motu-config" description="This path contains 2 sub-folders motu-config and motu-web-static-files."/>
 						
 		
 		<!-- ##### Init JAVA_HOME ##### -->
@@ -202,7 +207,7 @@
 		
 		<copy todir="${delivery.distrib.dir}" >
 			<fileset dir="${products.dir}" casesensitive="yes">
-			  <include name="${project.name}-products-3.0.tar.gz"/>
+			  <include name="${project.name}-products-${products.version}.tar.gz"/>
 			</fileset>
 		</copy>
 	</target>
