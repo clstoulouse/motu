@@ -6,7 +6,6 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardName;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
  * <br>
@@ -64,15 +63,6 @@ public interface IBLLConfigManager {
      * @return
      */
     ConfigService getConfigService(String configServiceName);
-
-    /**
-     * Return the product associated to the provided Product location. .
-     * 
-     * @param productLocation
-     * @return
-     * @throws MotuException
-     */
-    Product getProduct(String productLocation) throws MotuException;
 
     /**
      * .

@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -34,11 +35,14 @@ import fr.cls.atoll.motu.api.message.xml.Variables;
 import fr.cls.atoll.motu.api.message.xml.VariablesVocabulary;
 import fr.cls.atoll.motu.api.utils.JAXBWriter;
 import fr.cls.atoll.motu.library.converter.DateUtils;
+import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.bll.catalog.product.IBLLProductManager;
 import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.MotuMarshallException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataFile;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
@@ -49,6 +53,8 @@ import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.AbstractHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ExtraMetaDataHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.ProductHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.XMLFileParameterValidator;
 import ucar.ma2.MAMath.MinMax;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -64,12 +70,14 @@ import ucar.unidata.geoloc.LatLonRect;
  * @author Pierre LACOSTE
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class DescribeProductAction extends AbstractProductInfoAction {
+public class DescribeProductAction extends AbstractAction {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "describeproduct";
 
+    private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
+    private ProductHTTPParameterValidator productHTTPParameterValidator;
     private XMLFileParameterValidator xmlFileParameterValidator;
     private ExtraMetaDataHTTPParameterValidator extraMetaDataHTTPParameterValidator;
 
@@ -82,6 +90,16 @@ public class DescribeProductAction extends AbstractProductInfoAction {
      */
     public DescribeProductAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         super(ACTION_NAME, request, response, session);
+        serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
+                MotuRequestParametersConstant.PARAM_SERVICE,
+                CommonHTTPParameters.getServiceFromRequest(getRequest()),
+                AbstractHTTPParameterValidator.EMPTY_VALUE);
+        serviceHTTPParameterValidator.setOptional(true);
+        productHTTPParameterValidator = new ProductHTTPParameterValidator(
+                MotuRequestParametersConstant.PARAM_PRODUCT,
+                CommonHTTPParameters.getProductFromRequest(getRequest()),
+                AbstractHTTPParameterValidator.EMPTY_VALUE);
+        productHTTPParameterValidator.setOptional(true);
         xmlFileParameterValidator = new XMLFileParameterValidator(
                 MotuRequestParametersConstant.PARAM_XML_FILE,
                 CommonHTTPParameters.getXmlFileFromRequest(getRequest()),
@@ -97,7 +115,8 @@ public class DescribeProductAction extends AbstractProductInfoAction {
     /** {@inheritDoc} */
     @Override
     protected void checkHTTPParameters() throws InvalidHTTPParameterException {
-        super.checkHTTPParameters();
+        serviceHTTPParameterValidator.validate();
+        productHTTPParameterValidator.validate();
         xmlFileParameterValidator.validate();
         extraMetaDataHTTPParameterValidator.validate();
     }
@@ -106,9 +125,25 @@ public class DescribeProductAction extends AbstractProductInfoAction {
     protected void process() throws MotuException {
 
         if (hasProductIdentifier()) {
-            ProductMetadataInfo pmdi;
+            ProductMetadataInfo pmdi = null;
             try {
-                pmdi = initProductMetadataInfo(getProduct());
+                String locationData = CommonHTTPParameters.getDataFromParameter(getRequest());
+                String xmlFile = xmlFileParameterValidator.getParameterValueValidated();
+
+                System.out.println("locationdata : " + locationData);
+                System.out.println("xmlfile : " + xmlFile);
+
+                String catalogName = xmlFile.substring(xmlFile.lastIndexOf("/") + 1, xmlFile.length());
+                String urlPath = AbstractProductInfoAction.datasetIdFromProductLocation(locationData);
+
+                IBLLProductManager productManager = BLLManager.getInstance().getCatalogManager().getProductManager();
+                Product currentProduct = productManager.getProductFromLocation(catalogName, urlPath);
+
+                ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
+                        .getProductMetaData(currentProduct.getProductId(), currentProduct.getLocationData());
+                currentProduct.setProductMetaData(pmd);
+
+                pmdi = initProductMetadataInfo(currentProduct);
 
                 marshallProductMetadata(pmdi, getResponse().getWriter());
 
@@ -116,6 +151,75 @@ public class DescribeProductAction extends AbstractProductInfoAction {
             } catch (MotuExceptionBase | JAXBException | IOException e) {
                 throw new MotuException(e);
             }
+        }
+
+    }
+
+    protected boolean hasProductIdentifier() throws MotuException {
+        boolean hasproductIdentifier = true;
+        String productId = getProductId();
+        String locationData = CommonHTTPParameters.getDataFromParameter(getRequest());
+        String serviceName = serviceHTTPParameterValidator.getParameterValueValidated();
+        try {
+            if (StringUtils.isNullOrEmpty(locationData) && StringUtils.isNullOrEmpty(productId)) {
+                getResponse().sendError(400,
+                                        String.format("ERROR: neither '%s' nor '%s' parameters are filled - Choose one of them",
+                                                      MotuRequestParametersConstant.PARAM_DATA,
+                                                      MotuRequestParametersConstant.PARAM_PRODUCT));
+                hasproductIdentifier = false;
+
+            }
+
+            if (!StringUtils.isNullOrEmpty(locationData) && !StringUtils.isNullOrEmpty(productId)) {
+                getResponse().sendError(400,
+                                        String.format("ERROR: '%s' and '%s' parameters are not compatible - Choose only one of them",
+                                                      MotuRequestParametersConstant.PARAM_DATA,
+                                                      MotuRequestParametersConstant.PARAM_PRODUCT));
+                hasproductIdentifier = false;
+            }
+
+            if (AbstractHTTPParameterValidator.EMPTY_VALUE.equals(serviceName) && !StringUtils.isNullOrEmpty(productId)) {
+                getResponse().sendError(400,
+                                        String.format("ERROR: '%s' parameter is filled but '%s' is empty. You have to fill it.",
+                                                      MotuRequestParametersConstant.PARAM_PRODUCT,
+                                                      MotuRequestParametersConstant.PARAM_SERVICE));
+                hasproductIdentifier = false;
+            }
+        } catch (IOException e) {
+            throw new MotuException(e);
+        }
+
+        return hasproductIdentifier;
+    }
+
+    /**
+     * Gets the product id.
+     *
+     * @param paramId the product id
+     * @param request the request
+     * @param response the response
+     * @return the product id
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws ServletException the servlet exception
+     * @throws MotuException the motu exception
+     */
+    protected String getProductId() throws MotuException {
+        String paramId = productHTTPParameterValidator.getParameterValueValidated();
+        String serviceName = CommonHTTPParameters.getServiceFromRequest(getRequest());
+
+        if (!AbstractHTTPParameterValidator.EMPTY_VALUE.equals(paramId)) {
+            if ((StringUtils.isNullOrEmpty(serviceName)) || (StringUtils.isNullOrEmpty(paramId))) {
+                return paramId;
+            }
+
+            String uri = paramId;
+            String[] split = uri.split(".*#");
+            if (split.length <= 1) {
+                return uri;
+            }
+            return split[1];
+        } else {
+            return "";
         }
     }
 
@@ -594,8 +698,8 @@ public class DescribeProductAction extends AbstractProductInfoAction {
         Date start = datePeriod.getStart().toDate();
         Date end = datePeriod.getEnd().toDate();
 
-        timeCoverage.setStart(dateToXMLGregorianCalendar(start));
-        timeCoverage.setEnd(dateToXMLGregorianCalendar(end));
+        // timeCoverage.setStart(dateToXMLGregorianCalendar(start));
+        // timeCoverage.setEnd(dateToXMLGregorianCalendar(end));
         timeCoverage.setCode(ErrorType.OK);
         timeCoverage.setMsg(ErrorType.OK.toString());
 

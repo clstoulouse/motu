@@ -27,13 +27,23 @@ public interface IBLLProductManager {
     ProductMetaData getProductMetaData(String productId, String locationData) throws MotuException;
 
     /**
-     * .
+     * Retrieve the product using the catalog name and the url path of the product. .
      * 
-     * @param locationData
-     * @return
+     * @param catalogName The catalog name of the product
+     * @param urlPath The url path of the product
+     * @return The product object if found, null otherwise
      * @throws MotuException
      */
-    Product getProduct(String locationData) throws MotuException;
+    Product getProductFromLocation(String catalogName, String urlPath) throws MotuException;
+
+    /**
+     * Retrieve the Product using the url path of the product. .
+     * 
+     * @param urlPath The url path of the product
+     * @return The product object if found, null otherwise
+     * @throws MotuException
+     */
+    Product getProductFromLocation(String urlPath) throws MotuException;
 
     /**
      * .
