@@ -2640,16 +2640,5 @@ public class Product {
         return stringBuffer.toString();
     }
 
-    /**
-     * Gets the document root oh the Http server.
-     * 
-     * @return the document root oh the Http server.
-     * 
-     * @throws MotuException the motu exception
-     */
-    public String getHttpServerDocumentRoot() {
-        return BLLManager.getInstance().getConfigManager().getMotuConfig().getHttpDocumentRoot();
-    }
-
 }
 // CSON: MultipleStringLiterals

@@ -7,8 +7,6 @@
 
 ## -------------------------------------------- printAssociateService --------------------------------
 #macro(product_metadata_uk_printAssociateService)
-	#set($images_dir = "${product.getHttpServerDocumentRoot()}/atoll-motuservlet/images")
-	#set ($imgSuiv = "<img class=suiv2 src=${images_dir}/suiv2.gif>&nbsp;&nbsp;&nbsp;")
 	#set ($pageSiteWeb = ${productMetaData.getPageSiteWebURL()})
 	#set ($LAS = ${productMetaData.getLASViewingServiceURL()})
 	#set ($FTP = ${productMetaData.getFTPServiceURL()})

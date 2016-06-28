@@ -186,29 +186,6 @@ public class QueueServerManager implements IQueueServerManager {
     }
 
     /**
-     * Gets the queue according to a data threshold.
-     * 
-     * @param dataThreshold the data threshold
-     * 
-     * @return the queue or null if no queue can manage the dataThreshold
-     * 
-     */
-    private QueueType getQueue(float dataThreshold) {
-        List<QueueType> queuesConfig = getQueueServerConfig().getQueues();
-
-        QueueType queueConfigToReturn = null;
-        // Assumes that list of queues have been sorted by data threshold.
-        for (QueueType queue : queuesConfig) {
-            if (dataThreshold <= queue.getDataThreshold()
-                    && (queueConfigToReturn != null && queueConfigToReturn.getDataThreshold() > queue.getDataThreshold())) {
-                queueConfigToReturn = queue;
-            }
-        }
-
-        return queueConfigToReturn;
-    }
-
-    /**
      * Getter of the property <tt>queueManagement</tt>.
      * 
      * @return Returns the queueManagementMap.

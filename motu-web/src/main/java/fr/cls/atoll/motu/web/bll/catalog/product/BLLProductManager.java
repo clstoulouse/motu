@@ -1,5 +1,7 @@
 package fr.cls.atoll.motu.web.bll.catalog.product;
 
+import java.util.Map;
+
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.DALManager;
@@ -31,14 +33,53 @@ public class BLLProductManager implements IBLLProductManager {
                 .getMetadata(productId, locationData, BLLManager.getInstance().getConfigManager().getMotuConfig().getUseAuthentication());
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @throws MotuException
-     */
     @Override
-    public Product getProduct(String locationData) throws MotuException {
-        return BLLManager.getInstance().getConfigManager().getProduct(locationData);
+    public Product getProductFromLocation(String catalogName, String URLPath) throws MotuException {
+        Product productFound = null;
+        for (ConfigService c : BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService()) {
+            String currentCatalogName = c.getCatalog().getName();
+            // System.out.println("CatalogName : " + currentCatalogName);
+            // System.out.println("providedCatalogName : " + catalogName);
+            if (currentCatalogName.equals(catalogName)) {
+                CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(c);
+                // System.out.println("DataSetName : " + datasetName);
+                Map<String, Product> products = cd.getProducts();
+                for (Map.Entry<String, Product> product : products.entrySet()) {
+                    if (product.getValue().getTdsUrlPath().equals(URLPath)) {
+                        productFound = product.getValue();
+                        break;
+                    }
+                }
+                // System.out.println("MyProduct : " + myProduct);
+                // System.out.println("Product Id : " + myProduct.getProductId());
+                // System.out.println("Location Data : " + myProduct.getLocationData());
+                break;
+            }
+        }
+
+        return productFound;
+    }
+
+    public Product getProductFromLocation(String URLPath) throws MotuException {
+        Product productFound = null;
+        for (ConfigService c : BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService()) {
+            // System.out.println("CatalogName : " + currentCatalogName);
+            // System.out.println("providedCatalogName : " + catalogName);
+            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(c);
+            // System.out.println("DataSetName : " + datasetName);
+            Map<String, Product> products = cd.getProducts();
+            for (Map.Entry<String, Product> product : products.entrySet()) {
+                if (product.getValue().getTdsUrlPath().equals(URLPath)) {
+                    productFound = product.getValue();
+                    break;
+                }
+            }
+            // System.out.println("MyProduct : " + myProduct);
+            // System.out.println("Product Id : " + myProduct.getProductId());
+            // System.out.println("Location Data : " + myProduct.getLocationData());
+        }
+
+        return productFound;
     }
 
     /**

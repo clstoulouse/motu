@@ -25,9 +25,6 @@ public interface IProduct {
 
     int getAutoDownloadTimeOut();
 
-    ////
-    String getHttpServerDocumentRoot();
-
     boolean isProductDownloadable();
 
     String getLocationData();

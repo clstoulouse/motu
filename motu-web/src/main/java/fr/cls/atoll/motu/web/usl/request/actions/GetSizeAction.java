@@ -187,6 +187,7 @@ public class GetSizeAction extends AbstractProductInfoAction {
 
         try {
             Product p = getProduct();
+            initProductMetaData(p);
 
             if (p != null) {
                 double productDataSize = BLLManager.getInstance().getRequestManager()

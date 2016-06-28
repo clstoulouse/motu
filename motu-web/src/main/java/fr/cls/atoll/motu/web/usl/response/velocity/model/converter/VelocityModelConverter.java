@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
@@ -207,11 +206,6 @@ public class VelocityModelConverter {
      */
     public static IProduct convertToProduct(final Product product_) {
         IProduct ip = new IProduct() {
-
-            @Override
-            public String getHttpServerDocumentRoot() {
-                return BLLManager.getInstance().getConfigManager().getMotuConfig().getHttpDocumentRoot();
-            }
 
             @Override
             public boolean isProductDownloadable() {

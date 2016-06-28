@@ -101,30 +101,32 @@ public class RequestCleaner implements IRequestCleaner {
     private void deleteOlderFilesBeyondCacheSize(File folderToScan) {
         // gets disk space used by files (in Megabytes).
         int extractionFileCacheSize = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionFileCacheSize();
-        long length = Math.round(UnitUtils.toMegaBytes(getRecurseFileLength(folderExtractionPath)));
-        if (extractionFileCacheSize > 0 && length > extractionFileCacheSize) {
-            File[] files = folderToScan.listFiles(new FileFilter() {
+        if (extractionFileCacheSize > 0) {
+            long length = Math.round(UnitUtils.toMegaBytes(getRecurseFileLength(folderExtractionPath)));
+            if (length > extractionFileCacheSize) {
+                File[] files = folderToScan.listFiles(new FileFilter() {
 
-                @Override
-                public boolean accept(File file) {
-                    return file.getName().matches(extractionFilePattern);
-                }
-            });
-            if (files != null) {
-                List<File> listFiles = Arrays.asList(files);
-                // Sort file by last modified date/time (older first);
-                FileLastModifiedComparator fileLastModifiedComparator = new FileLastModifiedComparator();
-                Collections.sort(listFiles, fileLastModifiedComparator);
-                for (File fileToDelete : listFiles) {
-                    boolean isDeleted = fileToDelete.delete();
-                    LOGGER.info(String.format("deleteOlderFilesBeyondCacheSize - Deleting file '%s : %b' ", fileToDelete.getPath(), isDeleted));
-                    length = Math.round(UnitUtils.toMegaBytes(getRecurseFileLength(folderToScan)));
-                    if (length <= extractionFileCacheSize) {
-                        break;
+                    @Override
+                    public boolean accept(File file) {
+                        return file.getName().matches(extractionFilePattern);
+                    }
+                });
+                if (files != null) {
+                    List<File> listFiles = Arrays.asList(files);
+                    // Sort file by last modified date/time (older first);
+                    FileLastModifiedComparator fileLastModifiedComparator = new FileLastModifiedComparator();
+                    Collections.sort(listFiles, fileLastModifiedComparator);
+                    for (File fileToDelete : listFiles) {
+                        boolean isDeleted = fileToDelete.delete();
+                        LOGGER.info(String.format("deleteOlderFilesBeyondCacheSize - Deleting file '%s : %b' ", fileToDelete.getPath(), isDeleted));
+                        length = Math.round(UnitUtils.toMegaBytes(getRecurseFileLength(folderToScan)));
+                        if (length <= extractionFileCacheSize) {
+                            break;
+                        }
                     }
                 }
-            }
 
+            }
         }
     }
 
