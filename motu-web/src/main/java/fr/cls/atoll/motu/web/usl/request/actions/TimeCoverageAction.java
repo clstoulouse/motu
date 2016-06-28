@@ -22,6 +22,7 @@ import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.MotuMarshallException;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
@@ -74,7 +75,9 @@ public class TimeCoverageAction extends AbstractProductInfoAction {
         if (hasProductIdentifier()) {
             TimeCoverage timeCoverage;
             try {
-                timeCoverage = initTimeCoverage(getProduct().getProductMetaData());
+                Product product = getProduct();
+                initProductMetaData(product);
+                timeCoverage = initTimeCoverage(product.getProductMetaData());
 
                 marshallTimeCoverage(timeCoverage, getResponse().getWriter());
 

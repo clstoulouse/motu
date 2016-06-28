@@ -53,8 +53,6 @@ import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.AbstractHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ExtraMetaDataHTTPParameterValidator;
-import fr.cls.atoll.motu.web.usl.request.parameter.validator.ProductHTTPParameterValidator;
-import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.XMLFileParameterValidator;
 import ucar.ma2.MAMath.MinMax;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -70,14 +68,11 @@ import ucar.unidata.geoloc.LatLonRect;
  * @author Pierre LACOSTE
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class DescribeProductAction extends AbstractAction {
+public class DescribeProductAction extends AbstractProductInfoAction {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "describeproduct";
-
-    private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
-    private ProductHTTPParameterValidator productHTTPParameterValidator;
     private XMLFileParameterValidator xmlFileParameterValidator;
     private ExtraMetaDataHTTPParameterValidator extraMetaDataHTTPParameterValidator;
 
@@ -90,16 +85,6 @@ public class DescribeProductAction extends AbstractAction {
      */
     public DescribeProductAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         super(ACTION_NAME, request, response, session);
-        serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
-                MotuRequestParametersConstant.PARAM_SERVICE,
-                CommonHTTPParameters.getServiceFromRequest(getRequest()),
-                AbstractHTTPParameterValidator.EMPTY_VALUE);
-        serviceHTTPParameterValidator.setOptional(true);
-        productHTTPParameterValidator = new ProductHTTPParameterValidator(
-                MotuRequestParametersConstant.PARAM_PRODUCT,
-                CommonHTTPParameters.getProductFromRequest(getRequest()),
-                AbstractHTTPParameterValidator.EMPTY_VALUE);
-        productHTTPParameterValidator.setOptional(true);
         xmlFileParameterValidator = new XMLFileParameterValidator(
                 MotuRequestParametersConstant.PARAM_XML_FILE,
                 CommonHTTPParameters.getXmlFileFromRequest(getRequest()),
@@ -115,8 +100,7 @@ public class DescribeProductAction extends AbstractAction {
     /** {@inheritDoc} */
     @Override
     protected void checkHTTPParameters() throws InvalidHTTPParameterException {
-        serviceHTTPParameterValidator.validate();
-        productHTTPParameterValidator.validate();
+        super.checkHTTPParameters();
         xmlFileParameterValidator.validate();
         extraMetaDataHTTPParameterValidator.validate();
     }
@@ -127,21 +111,8 @@ public class DescribeProductAction extends AbstractAction {
         if (hasProductIdentifier()) {
             ProductMetadataInfo pmdi = null;
             try {
-                String locationData = CommonHTTPParameters.getDataFromParameter(getRequest());
-                String xmlFile = xmlFileParameterValidator.getParameterValueValidated();
-
-                System.out.println("locationdata : " + locationData);
-                System.out.println("xmlfile : " + xmlFile);
-
-                String catalogName = xmlFile.substring(xmlFile.lastIndexOf("/") + 1, xmlFile.length());
-                String urlPath = AbstractProductInfoAction.datasetIdFromProductLocation(locationData);
-
-                IBLLProductManager productManager = BLLManager.getInstance().getCatalogManager().getProductManager();
-                Product currentProduct = productManager.getProductFromLocation(catalogName, urlPath);
-
-                ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
-                        .getProductMetaData(currentProduct.getProductId(), currentProduct.getLocationData());
-                currentProduct.setProductMetaData(pmd);
+                Product currentProduct = getProduct();
+                initProductMetaData(currentProduct);
 
                 pmdi = initProductMetadataInfo(currentProduct);
 
@@ -152,14 +123,33 @@ public class DescribeProductAction extends AbstractAction {
                 throw new MotuException(e);
             }
         }
-
     }
 
+    @Override
+    protected Product getProduct() throws MotuException {
+        Product currentProduct = null;
+        String locationData = CommonHTTPParameters.getDataFromParameter(getRequest());
+        String xmlFile = xmlFileParameterValidator.getParameterValueValidated();
+
+        if (!StringUtils.isNullOrEmpty(locationData) && !StringUtils.isNullOrEmpty(xmlFile)) {
+            String catalogName = xmlFile.substring(xmlFile.lastIndexOf("/") + 1, xmlFile.length());
+            String urlPath = AbstractProductInfoAction.datasetIdFromProductLocation(locationData);
+
+            IBLLProductManager productManager = BLLManager.getInstance().getCatalogManager().getProductManager();
+            currentProduct = productManager.getProductFromLocation(catalogName, urlPath);
+        } else {
+            currentProduct = super.getProduct();
+        }
+
+        return currentProduct;
+    }
+
+    @Override
     protected boolean hasProductIdentifier() throws MotuException {
         boolean hasproductIdentifier = true;
         String productId = getProductId();
         String locationData = CommonHTTPParameters.getDataFromParameter(getRequest());
-        String serviceName = serviceHTTPParameterValidator.getParameterValueValidated();
+        String serviceName = getServiceHTTPParameterValidator().getParameterValueValidated();
         try {
             if (StringUtils.isNullOrEmpty(locationData) && StringUtils.isNullOrEmpty(productId)) {
                 getResponse().sendError(400,
@@ -203,8 +193,9 @@ public class DescribeProductAction extends AbstractAction {
      * @throws ServletException the servlet exception
      * @throws MotuException the motu exception
      */
+    @Override
     protected String getProductId() throws MotuException {
-        String paramId = productHTTPParameterValidator.getParameterValueValidated();
+        String paramId = getProductHTTPParameterValidator().getParameterValueValidated();
         String serviceName = CommonHTTPParameters.getServiceFromRequest(getRequest());
 
         if (!AbstractHTTPParameterValidator.EMPTY_VALUE.equals(paramId)) {

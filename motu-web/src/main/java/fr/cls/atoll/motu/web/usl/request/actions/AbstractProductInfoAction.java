@@ -186,11 +186,13 @@ public abstract class AbstractProductInfoAction extends AbstractAction {
             p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(serviceName, StringUtils.getDataSetName(productId));
         }
 
-        ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager().getProductMetaData(p.getProductId(),
-                                                                                                                  p.getLocationData());
-        p.setProductMetaData(pmd);
-
         return p;
+    }
+
+    protected void initProductMetaData(Product product) throws MotuException {
+        ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager().getProductMetaData(product.getProductId(),
+                                                                                                                  product.getLocationData());
+        product.setProductMetaData(pmd);
     }
 
     /**
