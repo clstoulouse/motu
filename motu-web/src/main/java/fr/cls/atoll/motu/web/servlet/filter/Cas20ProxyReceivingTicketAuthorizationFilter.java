@@ -45,6 +45,7 @@ import org.jasig.cas.client.authentication.AttributePrincipal;
 import fr.cls.atoll.motu.api.message.MotuMonitoringParametersConstant;
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
@@ -181,7 +182,7 @@ public class Cas20ProxyReceivingTicketAuthorizationFilter implements Filter {
         }
 
         // If there is a profile restriction for service Y
-        if (profiles_conf != null && !profiles_conf.isEmpty()) {
+        if (!StringUtils.isNullOrEmpty(profiles_conf)) {
             String[] profiles_c = profiles_conf.split(",");
             String[] profiles_l = profiles_ldap.split(",");
 

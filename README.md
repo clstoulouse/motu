@@ -301,11 +301,18 @@ String which describes the group
 String which describes the service
 
 ##### profiles
-Used to manage access right from an SSO cas server.  
-Three profiles exists:  
-* internal: [TBD]
-* major: [TBD]
-* external: [TBD]
+Optional string containing one value, several values separated by a comma.  
+Used to manage access right from a SSO cas server.  
+In the frame of CMEMS, three profiles exist:  
+
+* internal: internal users of the CMEMS project  
+* major: major accounts  
+* external: external users  
+
+Otherwise, it’s possible to configure as many profiles as needed.  
+Profiles are configured in LDAP within the attribute "memberUid" of each user. This attribute is read by CAS and is sent to Motu 
+once a user is logged in, in order to check if it matches profiles configured in Motu to allow a user accessing the data.  
+In LDAP, "memberUid" attribute can be empty, contains one value or several values separated by a comma.  
 
 
 ##### veloTemplatePrefix
