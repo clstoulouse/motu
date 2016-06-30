@@ -995,10 +995,6 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
      * @throws MotuException
      */
     public void getAdjacentYXRange() throws MotuException, MotuInvalidLatLonRangeException, MotuNotImplementedException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getAdjacentYXRange() - entering");
-        }
-
         if (yRangeValue != null) {
             assert yRangeValue.length == 2;
             yRangeValue[0] = Double.MAX_VALUE;
@@ -1076,10 +1072,6 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
         } else if (productMetadata.hasGeoXYAxis()) {
             throw new MotuNotImplementedException(
                     "Extraction with X/Y axes and without Lat/Lon data are not implemented (method DatasetGrid#getAdjacentYXRange");
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getAdjacentYXRange() - exiting");
         }
     }
 

@@ -47,6 +47,7 @@ public class ProductSizeRequest {
 
         product.clearExtractFilename();
         product.clearLastError();
+        product.resetDataset();
 
         // Converts criteria
         List<ExtractCriteria> criteria = new ArrayList<ExtractCriteria>();
