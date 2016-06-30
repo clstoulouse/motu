@@ -12,8 +12,14 @@ import org.apache.logging.log4j.Logger;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.web.bll.exception.NotEnoughSpaceException;
 import fr.cls.atoll.motu.web.bll.request.cleaner.RequestCleanerDaemonThread;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteria;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
@@ -158,6 +164,13 @@ public class BLLRequestManager implements IBLLRequestManager {
 
             if (UnitUtils.toMegaBytes(extractionDirectory.getFreeSpace()) > requestSizeInMB) {
 
+                // Clear and update the product in case of the instance have already been used for other
+                // calculation.
+                clearAndUpdateProductDataSet(product_,
+                                             extractionParameters.getListVar(),
+                                             extractionParameters.getListTemporalCoverage(),
+                                             extractionParameters.getListLatLonCoverage(),
+                                             extractionParameters.getListDepthCoverage());
                 // The request download is delegated to a download request manager
                 queueServerManager.execute(requestDownloadStatus, cs_, product_, extractionParameters, requestSizeInMB);
             } else {
@@ -189,6 +202,34 @@ public class BLLRequestManager implements IBLLRequestManager {
                                              List<String> listDepthCoverage) throws MotuException {
         return DALManager.getInstance().getCatalogManager().getProductManager()
                 .getProductDataSizeRequest(product, listVar, listTemporalCoverage, listLatLongCoverage, listDepthCoverage);
+    }
+
+    /**
+     * Hack due to the previous implementation of Motu. This method clear and update the dataset of the
+     * provided product in contemplation of a new calculation on the product. .
+     * 
+     * @param product the product to clear and update
+     * @param listVar the list of variable for the update
+     * @param listTemporalCoverage the list of temporal coverage for the update
+     * @param listLatLongCoverage the list of lat/long coverage for the update
+     * @param listDepthCoverage the list of depth coverage for the update
+     * @throws MotuException
+     */
+    private void clearAndUpdateProductDataSet(Product product,
+                                              List<String> listVar,
+                                              List<String> listTemporalCoverage,
+                                              List<String> listLatLongCoverage,
+                                              List<String> listDepthCoverage) throws MotuException {
+        try {
+            product.resetDataset();
+            product.updateVariables(listVar);
+            List<ExtractCriteria> criteria = new ArrayList<ExtractCriteria>();
+            ProductSizeRequest.createCriteriaList(listTemporalCoverage, listLatLongCoverage, listDepthCoverage, criteria);
+            product.updateCriteria(criteria);
+        } catch (MotuNotImplementedException | MotuInvalidDateException | MotuInvalidDepthException | MotuInvalidLatitudeException
+                | MotuInvalidLongitudeException e) {
+            throw new MotuException(e);
+        }
     }
 
     /** {@inheritDoc} */

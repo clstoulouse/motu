@@ -1091,24 +1091,10 @@ public abstract class DatasetBase {
                     } else if (value > max) {
                         max = value;
                     }
-                    System.out.print(value);
-                    System.out.print(" ");
                 }
-                System.out.print("--> nb values: ");
-                System.out.println(latValues.length);
 
             }
-            System.out.print("--> min: ");
-            System.out.print(min);
-            System.out.print(" max: ");
-            System.out.println(max);
             return new MAMath.MinMax(NetCdfReader.getLatNormal(min), NetCdfReader.getLatNormal(max));
-            // throw new
-            // MotuNotImplementedException(String.format("Latitude ranges list with more than 2 elements is
-            // not implemented (%s)",
-            // this
-            // .getClass().getName()));
-
         }
     }
 
