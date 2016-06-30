@@ -731,7 +731,7 @@ public class MotuConfig {
      */
     public String getHttpBaseRef() {
         if (httpBaseRef == null) {
-            return "http://resources.myocean.eu";
+            return ".";
         } else {
             return httpBaseRef;
         }

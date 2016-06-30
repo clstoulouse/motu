@@ -214,7 +214,7 @@ public class VelocityTemplateManager {
     public Template initVelocityEngineWithGenericTemplate(String lang, String velocityTemplateName_)
             throws ResourceNotFoundException, ParseErrorException, Exception {
         String veloTplName = velocityTemplateName_;
-        if (veloTplName == null) {
+        if (StringUtils.isNullOrEmpty(veloTplName)) {
             veloTplName = getCommonGlobalVeloTemplateName(lang);
         }
         if (veloTplName != null && !veloTplName.endsWith(".vm")) {
