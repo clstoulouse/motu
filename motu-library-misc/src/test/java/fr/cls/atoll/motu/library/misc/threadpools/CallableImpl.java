@@ -37,10 +37,11 @@ public class CallableImpl implements Callable<Integer> {
 
     private int myName;
 
-    CallableImpl(int i) {
+    public CallableImpl(int i) {
         myName = i;
     }
 
+    @Override
     public Integer call() {
         for (int i = 0; i < 10; i++) {
             System.out.println("Thread : " + getMyName() + " I is : " + i);

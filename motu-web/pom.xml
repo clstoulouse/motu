@@ -1,223 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>cls.atoll.motu</groupId>
-        <artifactId>motu-parent</artifactId>
-        <version>2.6.00-SNAPSHOT</version>
-        <relativePath>../motu-parent</relativePath>
-    </parent>
-    <artifactId>motu-web</artifactId>
-    <packaging>war</packaging>
-    <name>Motu Web</name>
-    <description>This package holds the motu web server.</description>
- 
-    <properties>
-        <application.tomcat.context>atoll-motuservlet</application.tomcat.context>
-    </properties>
-    <dependencies>
-        <dependency>
-            <groupId>org.seleniumhq.selenium.client-drivers</groupId>
-            <artifactId>selenium-java-client-driver</artifactId>
-        </dependency>
+	<parent>
+		<groupId>cls.motu</groupId>
+		<artifactId>motu-parent</artifactId>
+		<version>2.6.00-SNAPSHOT</version>
+		<relativePath>../motu-parent</relativePath>
+	</parent>
+	<artifactId>motu-web</artifactId>
+	<packaging>war</packaging>
+	<name>Motu Web</name>
+	<description>This package holds the motu web server.</description>
 
-        <dependency>
-            <groupId>org.jasig.cas.client</groupId>
-            <artifactId>cas-client-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cls.atoll.motu</groupId>
-            <artifactId>motu-library-misc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cls.atoll.motu</groupId>
-            <artifactId>motu-api-rest</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cls.atoll.motu</groupId>
-            <artifactId>motu-api-message</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cls.atoll.motu</groupId>
-            <artifactId>motu-processor-wps</artifactId>
-        </dependency>
-
-        <dependency>
-			<groupId>org.jolokia</groupId>
-  		  	<artifactId>jolokia-core</artifactId>
-        </dependency>        
+	<properties>
+		<application.tomcat.context>atoll-motuservlet</application.tomcat.context>
+	</properties>
+	<dependencies>
 		<dependency>
-		    <groupId>org.tuckey</groupId>
-		    <artifactId>urlrewritefilter</artifactId>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+        </dependency>      
+		<dependency>
+            <groupId>velocity</groupId>
+            <artifactId>velocity</artifactId>
+        </dependency>
+        
+		<dependency>
+		    <groupId>commons-jxpath</groupId>
+		    <artifactId>commons-jxpath</artifactId>
+		</dependency>        
+		<dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+		<dependency>
+			<groupId>cls.motu</groupId>
+			<artifactId>motu-library-converter</artifactId>
+		</dependency>	
+        <dependency>
+            <groupId>cls.motu</groupId>
+            <artifactId>motu-library-inventory</artifactId>
+        </dependency>
+
+		<dependency>
+			<groupId>org.seleniumhq.selenium.client-drivers</groupId>
+			<artifactId>selenium-java-client-driver</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>catalina</artifactId>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.jasig.cas.client</groupId>
+			<artifactId>cas-client-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cls.motu</groupId>
+			<artifactId>motu-api-message</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cls.motu</groupId>
+			<artifactId>motu-api-rest</artifactId>
+		</dependency>
 
-    <build>
-        <plugins>
-            <!--
-                <plugin> <artifactId>maven-war-plugin</artifactId> <configuration> <webResources> <resource>
-                <directory>src/main/config/localhost</directory> </resource> </webResources> </configuration> </plugin>
-            -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.2</version>                
-                <configuration>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                    <archive>
-                        <manifestEntries>
-                            <!--  We keep track of the built version in the manifest. This allows to get it from the code (Product Versioning Specification) -->
-                            <Implementation-Version>${project.version}</Implementation-Version>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.cargo</groupId>
-                <artifactId>cargo-maven2-plugin</artifactId>
-                <version>1.2.3</version>                
-                <configuration>
-                    <container>
-                        <containerId>tomcat5x</containerId>
-                        <type>remote</type>
-                    </container>
-                    <configuration>
-                        <type>runtime</type>
-                        <properties>
-                            <cargo.tomcat.manager.url>${tomcat.url}/manager</cargo.tomcat.manager.url>
-                            <cargo.remote.username>${remote.username}</cargo.remote.username>
-                            <cargo.remote.password>${remote.password}</cargo.remote.password>
-                        </properties>
-                    </configuration>
-                    <deployer>
-                        <type>remote</type>
-                        <deployables>
-                            <deployable>
-                                <groupId>${project.groupId}</groupId>
-                                <artifactId>${project.artifactId}</artifactId>
-                                <type>war</type>
-                                <properties>
-                                    <!-- 
-									<context>${project.artifactId}</context>
-									<context>${application.tomcat.context}</context>
- 									-->
-                                    <context>${remote.application.tomcat.context}</context>
-                                </properties>
-                            </deployable>
-                        </deployables>
-                    </deployer>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+		<dependency>
+			<groupId>org.jolokia</groupId>
+			<artifactId>jolokia-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.tuckey</groupId>
+			<artifactId>urlrewritefilter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-catalina</artifactId>
+		</dependency>
 
-    <profiles>
-        <profile>
-            <id>motuconfactivate</id>
-            <!--
-                <activation> <property> <name>motu.config.activate</name> <value>true</value> </property> </activation>
-            -->
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-war-plugin</artifactId>
-                        <configuration>
-                            <overlays>
-                                <overlay>
-                                    <groupId>cls.atoll.motu.configuration</groupId>
-                                    <artifactId>motu-configuration-${motu.config}</artifactId>
-                                    <type>zip</type>
-                                </overlay>
-                                <overlay>
-                                    <!-- empty groupId/artifactId is detected as the current build -->
-                                </overlay>
-                            </overlays>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-            <dependencies>
-                <dependency>
-                    <groupId>cls.atoll.motu.configuration</groupId>
-                    <artifactId>motu-configuration-${motu.config}</artifactId>
-                    <version>${motu.config.version}</version>
-                    <type>war</type>
-                    <scope>runtime</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>onlybinaries</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <motu.config.activate>false</motu.config.activate>
-            </properties>
-        </profile>
-        <profile>
-            <id>localhost</id>
-            <properties>
-                <motu.config>dev-localhost</motu.config>
-                <motu.config.version>2.1.1-SNAPSHOT</motu.config.version>
-                <tomcat.url>http://localhost:8080</tomcat.url>
-                <remote.username>admin</remote.username>
-                <remote.password />
-                <remote.application.tomcat.context>${application.tomcat.context}</remote.application.tomcat.context>
-            </properties>
-        </profile>
-        <profile>
-            <id>atoll-dev</id>
-            <properties>
-                <motu.config>dev-atoll-dev</motu.config>
-                <motu.config.version>2.1.1-SNAPSHOT</motu.config.version>
-                <tomcat.url>http://atoll-dev.cls.fr:30080</tomcat.url>
-                <remote.username>admin</remote.username>
-                <remote.password />
-                <remote.application.tomcat.context>${application.tomcat.context}</remote.application.tomcat.context>
-            </properties>
-        </profile>
-        <profile>
-            <id>misgw-qt</id>
-            <properties>
-                <motu.config>qt-misgw</motu.config>
-                <motu.config.version>2.0.0-SNAPSHOT</motu.config.version>
-                <tomcat.url>http://misgw-qt.cls.fr:33080</tomcat.url>
-                <remote.username>admin</remote.username>
-                <remote.password />
-                <remote.application.tomcat.context>atoll-motu-servlet</remote.application.tomcat.context>
-            </properties>
-        </profile>
-        <profile>
-            <id>atoll-qt1</id>
-            <properties>
-                <motu.config>qt-atoll-qt1</motu.config>
-                <motu.config.version>2.1.1-SNAPSHOT</motu.config.version>
-                <tomcat.url>http://atoll-qt1.cls.fr:33080</tomcat.url>
-                <remote.username>admin</remote.username>
-                <remote.password />
-                <remote.application.tomcat.context>atoll-motu-servlet</remote.application.tomcat.context>
-            </properties>
-        </profile>
-        <profile>
-            <id>atoll-qt4</id>
-            <properties>
-                <motu.config>qt-atoll-qt4</motu.config>
-                <motu.config.version>2.1.1-SNAPSHOT</motu.config.version>
-                <tomcat.url>http://atoll-qt4.cls.fr:33080</tomcat.url>
-                <remote.username>admin</remote.username>
-                <remote.password />
-                <remote.application.tomcat.context>atoll-motu-servlet</remote.application.tomcat.context>
-            </properties>
-        </profile>
-    </profiles>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<archiveClasses>true</archiveClasses>
+					<archive>
+						<manifestEntries>
+							<!-- We keep track of the built version in the manifest. This allows 
+								to get it from the code (Product Versioning Specification) -->
+							<Implementation-Version>${project.version}</Implementation-Version>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>

@@ -25,7 +25,7 @@
 /*
  * @(#)StaticResourceBackedDynamicEnum.java     9 Feb 2009
  * 
- * Copyright © 2009 Andrew Phillips.
+ * Copyright Â© 2009 Andrew Phillips.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -32,11 +32,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
-
-import fr.cls.atoll.motu.library.misc.data.Product;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidQueuePriorityException;
+import ucar.unidata.util.Product;
 
 /**
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
@@ -66,19 +64,24 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
      */
     private final String id;
 
-    
     /**
      * The Constructor.
      *
-     * @param id              the unique identifier of this thread executor
-     * @param unit            the unit
-     * @param corePoolSize    the core pool size
-     * @param workQueue       the work queue
+     * @param id the unique identifier of this thread executor
+     * @param unit the unit
+     * @param corePoolSize the core pool size
+     * @param workQueue the work queue
      * @param maximumPoolSize the maximum pool size
-     * @param keepAliveTime   the keep alive time
+     * @param keepAliveTime the keep alive time
      * @see {@link java.util.concurrent.ThreadPoolExecutor}
      */
-    public ExtractionThreadPoolExecutor(String id, int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
+    public ExtractionThreadPoolExecutor(
+        String id,
+        int corePoolSize,
+        int maximumPoolSize,
+        long keepAliveTime,
+        TimeUnit unit,
+        BlockingQueue<Runnable> workQueue) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, new QueueThreadFactory(id));
         this.id = id;
     }
@@ -87,8 +90,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
      * Check priority.
      *
      * @param priority the priority
-     * @throws MotuInvalidQueuePriorityException
-     *          the motu invalid queue priority exception
+     * @throws MotuInvalidQueuePriorityException the motu invalid queue priority exception
      */
     public static void checkPriority(int priority) throws MotuInvalidQueuePriorityException {
         if ((priority < MIN_PRIORITY_VALUE) || (priority > MAX_PRIORITY_VALUE)) {
@@ -128,7 +130,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
      * @return the users
      */
     @Override
-    public ConcurrentMap<String, Integer> getUsers() {
+    public ConcurrentMap<String, Integer> getUsersRequestNumberMap() {
         return users;
     }
 
@@ -184,7 +186,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
      * Put users.
      *
      * @param value the value
-     * @param key   the key
+     * @param key the key
      * @return the integer
      */
     public Integer putUsers(String key, Integer value) {
@@ -195,7 +197,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
      * Replace users.
      *
      * @param value the value
-     * @param key   the key
+     * @param key the key
      * @return the integer
      */
     public Integer replaceUsers(String key, Integer value) {
@@ -226,10 +228,6 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
      * @return the integer
      */
     public Integer incrementUser(String key) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("incrementUser(String) - entering");
-        }
-
         if (key == null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("incrementUser(String) - exiting");
@@ -317,10 +315,6 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
      * @param runnableExtraction the runnable extraction
      */
     public void incrementUser(RunnableExtraction runnableExtraction) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("incrementUser(RunnableExtraction) - entering");
-        }
-
         String userId = null;
         try {
             userId = runnableExtraction.getUserId();
@@ -331,10 +325,6 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
         }
 
         incrementUser(userId);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("incrementUser(RunnableExtraction) - exiting");
-        }
 
     }
 
@@ -404,7 +394,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
      * Put priority map.
      *
      * @param value the value
-     * @param key   the key
+     * @param key the key
      * @return the integer
      */
     public Integer putPriorityMap(Integer key, Integer value) {
@@ -415,7 +405,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
      * Replace priority map.
      *
      * @param value the value
-     * @param key   the key
+     * @param key the key
      * @return the integer
      */
     public Integer replacePriorityMap(Integer key, Integer value) {
@@ -444,8 +434,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
      *
      * @param priority the priority
      * @return the integer
-     * @throws MotuInvalidQueuePriorityException
-     *          the motu invalid queue priority exception
+     * @throws MotuInvalidQueuePriorityException the motu invalid queue priority exception
      */
     public synchronized Integer incrementPriorityMap(Integer priority) throws MotuInvalidQueuePriorityException {
         // check first it is not null
@@ -518,9 +507,9 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
             if (lastRange == runningRange) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug(String.format("adjustPriorityMap priority %d range %d max rage %d - remove priority.",
-                            priority.intValue(),
-                            runningRange,
-                            lastRange));
+                                            priority.intValue(),
+                                            runningRange,
+                                            lastRange));
                 }
                 removePriorityMap(priority);
             }
@@ -534,8 +523,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
      * Increment priority map.
      *
      * @param runnableExtraction the runnable extraction
-     * @throws MotuInvalidQueuePriorityException
-     *          the motu invalid queue priority exception
+     * @throws MotuInvalidQueuePriorityException the motu invalid queue priority exception
      */
     public synchronized void incrementPriorityMap(RunnableExtraction runnableExtraction) throws MotuInvalidQueuePriorityException {
 
@@ -586,15 +574,17 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
                     extractLocationData = product.getExtractLocationData();
                 }
 
-                LOG.debug(String
-                        .format("afterExecute : user id: '%s' \n\t request parameters '%s'\n\t downloadUrlPath: '%s'\n\t extractLocationData: '%s' ",
-                                runnableExtraction.getUserId(),
-                                runnableExtraction.getExtractionParameters().toString(),
-                                downloadUrlPath,
-                                extractLocationData));
-                LOG.debug(String.format("afterExecute : stattus response '%s', code: %s (%d), msg: '%s'", runnableExtraction.getStatusModeResponse()
-                        .getStatus(), runnableExtraction.getStatusModeResponse().getCode().toString(), runnableExtraction.getStatusModeResponse()
-                        .getCode().value(), runnableExtraction.getStatusModeResponse().getMsg()));
+                LOG.debug(String.format(
+                                        "afterExecute : user id: '%s' \n\t request parameters '%s'\n\t downloadUrlPath: '%s'\n\t extractLocationData: '%s' ",
+                                        runnableExtraction.getUserId(),
+                                        runnableExtraction.getExtractionParameters().toString(),
+                                        downloadUrlPath,
+                                        extractLocationData));
+                LOG.debug(String.format("afterExecute : stattus response '%s', code: %s (%d), msg: '%s'",
+                                        runnableExtraction.getStatusModeResponse().getStatus(),
+                                        runnableExtraction.getStatusModeResponse().getCode().toString(),
+                                        runnableExtraction.getStatusModeResponse().getCode().value(),
+                                        runnableExtraction.getStatusModeResponse().getMsg()));
             } catch (Exception e) {
                 // Do nothing
             }
@@ -602,10 +592,11 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
 
         if (t != null) {
             try {
-                MotuException e = new MotuException(String
-                        .format("An error occurs during extraction (detected from afterExecute): user id: '%s' - request parameters '%s'",
-                                runnableExtraction.getUserId(),
-                                runnableExtraction.getExtractionParameters().toString()), t);
+                MotuException e = new MotuException(
+                        String.format("An error occurs during extraction (detected from afterExecute): user id: '%s' - request parameters '%s'",
+                                      runnableExtraction.getUserId(),
+                                      runnableExtraction.getExtractionParameters().toString()),
+                        t);
                 runnableExtraction.setError(e);
             } catch (MotuException e) {
                 // Do nothing
@@ -634,7 +625,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
         if (LOG.isDebugEnabled()) {
             LOG.debug("beforeExecute(Thread, Runnable) - entering");
         }
-        
+
         RunnableExtraction runnableExtraction = null;
         if (!(r instanceof RunnableExtraction)) {
             super.beforeExecute(t, r);
@@ -648,8 +639,9 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
         runnableExtraction = (RunnableExtraction) r;
         if (LOG.isDebugEnabled()) {
             try {
-                LOG.debug(String.format("beforeExecute: user id: '%s' - request paramters '%s'", runnableExtraction.getUserId(), runnableExtraction
-                        .getExtractionParameters().toString()));
+                LOG.debug(String.format("beforeExecute: user id: '%s' - request paramters '%s'",
+                                        runnableExtraction.getUserId(),
+                                        runnableExtraction.getExtractionParameters().toString()));
             } catch (Exception e) {
                 // Do nothing
             }
@@ -665,8 +657,6 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor implements 
         }
 
     }
-    
-
 
     /** @return the unique identifier of this pool executor */
     @Override

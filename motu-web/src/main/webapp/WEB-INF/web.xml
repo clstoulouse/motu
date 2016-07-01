@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--	
+${project.name} - v. ${project.version}
+-->
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	
+    <display-name>Motu</display-name>
+	<description>Motu</description>
+	
+    <listener>
+        <description>Common (Log4j, CAS), USL, BLL and DAL layers initialization</description>
+        <listener-class>fr.cls.atoll.motu.web.usl.servlet.context.MotuWebEngineContextListener</listener-class>
+    </listener>
+	
+    <!-- ####################################### -->
+	<!-- ############# MOTU   ################## -->
+	<!-- ####################################### -->
+    <servlet>
+		<display-name>Motu</display-name>
+		<servlet-name>Motu</servlet-name>
+		<servlet-class>fr.cls.atoll.motu.web.servlet.MotuServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+
+	<!-- ############################################# -->
+	<!-- ############# Jolokia  (JMX Monitoring) ##### -->
+	<!-- ############################################# -->	
+	<servlet>
+		<display-name>Agent</display-name>
+		<servlet-name>Agent</servlet-name>
+		<servlet-class>org.jolokia.http.AgentServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<!-- org.tuckey UrlRewriteFilter FILTERS : see http://urlrewritefilter.googlecode.com/svn/trunk/src/doc/manual/3.1/index.html
+	     Used for supervision
+	-->
+    <filter>
+        <filter-name>UrlRewriteFilter</filter-name>
+        <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+
+        <!-- set the amount of seconds the conf file will be checked for reload
+        can be a valid integer (0 denotes check every time,
+        -1 denotes no reload check, default -1) -->
+        <init-param>
+            <param-name>confReloadCheckInterval</param-name>
+            <param-value>-1</param-value>
+        </init-param>
+
+        <!-- if you need to the conf file path can be changed
+        it is specified as a path relative to the root of your context
+        (default /WEB-INF/urlrewrite.xml) -->
+        <init-param>
+            <param-name>confPath</param-name>
+            <param-value>/WEB-INF/urlrewrite.xml</param-value>
+        </init-param>
+
+        <!-- sets up log level (will be logged to context log)
+        can be: TRACE, DEBUG, INFO (default), WARN, ERROR, FATAL, log4j, commons,
+        sysout:{level} (ie, sysout:DEBUG)
+        if you are having trouble using normal levels use sysout:DEBUG
+        (default WARN) -->
+        <init-param>
+            <param-name>logLevel</param-name>
+            <param-value>INFO</param-value>
+        </init-param>
+
+        <!-- you can change status path so that it does not
+        conflict with your installed apps (note, defaults
+        to /rewrite-status) note, must start with / -->
+        <init-param>
+            <param-name>statusPath</param-name>
+            <param-value>/status</param-value>
+        </init-param>
+
+        <!-- you can disable status page if desired
+        can be: true, false (default true) -->
+        <init-param>
+            <param-name>statusEnabled</param-name>
+            <param-value>true</param-value>
+        </init-param>
+
+        <!-- you may want to allow more hosts to look at the status page
+        statusEnabledOnHosts is a comma delimited list of hosts, * can
+        be used as a wildcard (defaults to "localhost, local, 127.0.0.1") -->
+        <init-param>
+            <param-name>statusEnabledOnHosts</param-name>
+            <param-value>${tomcat-motu-urlrewrite-statusEnabledOnHosts}</param-value>
+        </init-param>
+
+        <!-- defaults to false. use mod_rewrite style configuration file (if this is true and confPath
+        is not specified confPath will be set to /WEB-INF/.htaccess) -->
+        <init-param>
+            <param-name>modRewriteConf</param-name>
+            <param-value>false</param-value>
+        </init-param>
+
+        <!-- load mod_rewrite style configuration from this parameter's value.
+                note, Setting this parameter will mean that all other conf parameters are ignored.
+            <init-param>
+                <param-name>modRewriteConfText</param-name>
+                <param-value>
+                    RewriteRule ^/~([^/]+)/?(.*) /u/$1/$2 [R]
+                    RewriteRule ^/([uge])/([^/]+)$ /$1/$2/ [R]
+                </param-value>
+            </init-param>
+        -->
+
+    </filter>
+	
+	
+	<!-- ############################################# -->
+	<!-- ############# CAS (SSO) ##################### -->
+	<!-- ############################################# -->	
+	<filter>
+		<filter-name>CAS Authentication Filter</filter-name>
+		<filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
+		<init-param>
+			<param-name>casServerLoginUrl</param-name>
+			<param-value>${cas-server-url}/login</param-value>
+            <!--
+			<param-value>https://atoll-app2.vlandata.cls.fr:7943/cas/login</param-value>        
+                               -->
+		</init-param>
+		
+		<init-param>
+			<param-name>serverName</param-name>
+			<param-value>${cas-auth-serverName}</param-value>
+        </init-param>
+		<init-param>
+			<param-name>encodeServiceUrl</param-name>
+			<param-value>false</param-value>
+		</init-param>
+
+		
+		<init-param>
+			<param-name>gateway</param-name>
+			<param-value>false</param-value>
+		</init-param>
+	</filter>
+	
+	<filter>
+		<filter-name>CAS Validation Filter</filter-name>
+		<filter-class>org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter</filter-class>
+		<init-param>
+			<param-name>casServerUrlPrefix</param-name>
+			<param-value>${cas-server-url}</param-value>
+		</init-param>
+		<init-param>
+			<param-name>serverName</param-name>
+			<param-value>${cas-auth-serverName}</param-value>
+            <!--
+			<param-value>http://atoll-app1.vlandata.cls.fr:36080</param-value>
+                               -->
+        </init-param>
+        
+		<init-param>
+			<param-name>encodeServiceUrl</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>proxyCallbackUrl</param-name>
+            <!-- HERE USE ONLY TOMCAT HTTPS URL - DON'T  USE TOMCAT HTTP URL or APACHE HTTP/HTTPS URL -->
+			<!--param-value>https://atoll-vip5.vlandata.cls.fr:37043/cls-gateway-servlet/proxyCallback</param-value-->
+			<param-value>${cas-validationFilter-proxyCallbackUrl}</param-value>
+		</init-param>
+		<init-param>
+			<param-name>proxyReceptorUrl</param-name>
+			<!--  /cls-gateway-servlet/proxyCallback -->
+			<param-value>/proxyCallback</param-value>
+		</init-param>		 
+		<init-param>
+			<param-name>acceptAnyProxy</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>redirectAfterValidation</param-name>
+			<param-value>true</param-value>
+		</init-param>	
+		
+	</filter>
+	
+	<filter>
+		<filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+		<filter-class>org.jasig.cas.client.util.HttpServletRequestWrapperFilter</filter-class>
+	</filter>
+	
+	<filter>
+		<filter-name>CAS Assertion Thread Local Filter</filter-name>
+		<filter-class>org.jasig.cas.client.util.AssertionThreadLocalFilter</filter-class>
+	</filter>
+    
+	<filter>
+		<filter-name>CAS Authorization Filter</filter-name>
+		<filter-class>fr.cls.atoll.motu.web.servlet.filter.Cas20ProxyReceivingTicketAuthorizationFilter</filter-class>
+    </filter>
+
+
+	<!-- ############################################# -->
+	<!-- ############# FILTER MAPPING ################ -->
+	<!-- ############################################# -->	
+	
+	<!-- UrlRewriteFilter FILTER MAPPING - MUST BE BEFORE CAS FILTER MAPPING -->
+	<filter-mapping>
+		<filter-name>UrlRewriteFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- CAS FILTER MAPPING -->
+
+	<filter-mapping>
+		<filter-name>CAS Validation Filter</filter-name>
+		<url-pattern>/proxyCallback</url-pattern>	
+	</filter-mapping>	
+
+	<filter-mapping>
+		<filter-name>CAS Authentication Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>CAS Validation Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	 
+	<filter-mapping>
+		<filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<filter-mapping>
+		<filter-name>CAS Assertion Thread Local Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<filter-mapping>
+		<filter-name>CAS Authorization Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+    </filter-mapping> 
+
+	
+
+
+	<!-- ############################################# -->
+	<!-- ############# MAPPING ####################### -->
+	<!-- ############################################# -->
+	<servlet-mapping>
+		<servlet-name>Motu</servlet-name>
+		<url-pattern>/CLS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>Motu</servlet-name>
+		<url-pattern>/Motu</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>Agent</servlet-name>
+		<url-pattern>/supervision/*</url-pattern>
+	</servlet-mapping>
+
+	<error-page>
+		<error-code>403</error-code>
+		<location>/403.html</location>
+	</error-page>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/404.html</location>
+	</error-page>
+	
+	<welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>    
+</web-app>

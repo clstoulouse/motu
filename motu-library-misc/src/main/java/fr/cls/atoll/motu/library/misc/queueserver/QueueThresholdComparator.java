@@ -24,10 +24,10 @@
  */
 package fr.cls.atoll.motu.library.misc.queueserver;
 
-import fr.cls.atoll.motu.library.misc.configuration.QueueType;
-
 import java.io.Serializable;
 import java.util.Comparator;
+
+import fr.cls.atoll.motu.library.misc.configuration.QueueType;
 
 /**
  * 
@@ -39,9 +39,9 @@ import java.util.Comparator;
 public class QueueThresholdComparator implements Comparator<QueueType>, Serializable {
 
     /**
-     * Serial version id.
+     * .
      */
-    private static final long serialVersionUID = -8583053363136513136L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructeur.
@@ -50,6 +50,7 @@ public class QueueThresholdComparator implements Comparator<QueueType>, Serializ
     }
 
     /** {@inheritDoc} */
+    @Override
     public int compare(QueueType o1, QueueType o2) {
         if (o1.getDataThreshold() > o2.getDataThreshold()) {
             return 1;

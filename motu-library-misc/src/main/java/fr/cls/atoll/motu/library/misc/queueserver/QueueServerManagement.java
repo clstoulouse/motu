@@ -24,6 +24,20 @@
  */
 package fr.cls.atoll.motu.library.misc.queueserver;
 
+import java.lang.management.ManagementFactory;
+import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+
+import org.quartz.Scheduler;
+
 import fr.cls.atoll.motu.library.misc.configuration.QueueServerType;
 import fr.cls.atoll.motu.library.misc.configuration.QueueType;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
@@ -45,20 +59,6 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-
-import java.lang.management.ManagementFactory;
-import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
-import org.quartz.Scheduler;
-
-import javax.management.*;
 
 /**
  * 
@@ -180,28 +180,27 @@ public class QueueServerManagement {
     }
 
     /**
-     * Registers to the MBean platform the managed beans like the queue managements and extraction thread pool executors.
+     * Registers to the MBean platform the managed beans like the queue managements and extraction thread pool
+     * executors.
      */
     private void registerJmxMbeans() {
-        try
-        {
+        try {
             // works well in tomcat
             final MBeanServer platform = ManagementFactory.getPlatformMBeanServer();
 
-            for( QueueManagement queueManagement : queueManagementMap.values() ) {
+            for (QueueManagement queueManagement : queueManagementMap.values()) {
                 // registers the queue management
                 ObjectName name = new ObjectName(MessageFormat.format(OBJECT_NAME_PATTERN, queueManagement.getId(), "QueueManagement"));
-                platform.registerMBean( queueManagement, name );
+                platform.registerMBean(queueManagement, name);
 
                 // registers its associated executor
                 name = new ObjectName(MessageFormat.format(OBJECT_NAME_PATTERN, queueManagement.getId(), "ThreadPoolExecutor"));
-                platform.registerMBean( queueManagement.getThreadPoolExecutor(), name );
+                platform.registerMBean(queueManagement.getThreadPoolExecutor(), name);
             }
-        }catch( Exception e ) {
+        } catch (Exception e) {
             // JMX supervision should never alters Motu behaviour, so we don't let exeption propagation
             LOG.error("Failed to register managed beans (Motu will still continue to start)", e);
         }
-
 
     }
 
@@ -280,8 +279,8 @@ public class QueueServerManagement {
             }
         }
         if (queueConfigToReturn == null) {
-            throw new MotuException(String.format("ERROR in QueueServerManagement.getQueue: no queue equivalent to a '%f' data threshold found",
-                                                  dataThreshold));
+            throw new MotuException(
+                    String.format("ERROR in QueueServerManagement.getQueue: no queue equivalent to a '%f' data threshold found", dataThreshold));
         }
 
         if (LOG.isDebugEnabled()) {
@@ -540,8 +539,8 @@ public class QueueServerManagement {
      * @throws MotuException the motu exception
      * @throws MotuExceedingUserCapacityException the motu exceeding user capacity exception
      */
-    public void checkMaxUser(RunnableExtraction runnableExtraction, QueueManagement queueManagement) throws MotuException,
-            MotuExceedingUserCapacityException {
+    public void checkMaxUser(RunnableExtraction runnableExtraction, QueueManagement queueManagement)
+            throws MotuException, MotuExceedingUserCapacityException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("controlMaxUser(RunnableExtraction) - entering");
         }
@@ -667,11 +666,11 @@ public class QueueServerManagement {
      * @throws MotuInvalidDateException the motu invalid date exception
      * @throws MotuInvalidDateRangeException the motu invalid date range exception
      */
-    public QueueManagement findQueueManagement(RunnableExtraction runnableExtraction) throws MotuInconsistencyException, MotuInvalidDateException,
-            MotuInvalidDepthException, MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
-            NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException,
-            MotuExceedingQueueDataCapacityException {
+    public QueueManagement findQueueManagement(RunnableExtraction runnableExtraction)
+            throws MotuInconsistencyException, MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException,
+            MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
+            MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
+            NetCdfVariableNotFoundException, MotuExceedingQueueDataCapacityException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("findQueueManagement(RunnableExtraction) - entering");
         }
@@ -688,17 +687,19 @@ public class QueueServerManagement {
             if (size <= queueConfig.getDataThreshold()) {
                 queueManagement = getQueueManagement(queueConfig);
                 if (queueManagement == null) {
-                    throw new MotuException(String
-                            .format("ERROR in QueueserverManagement.findQueueManagement : unable to find queue configuration '%s' ", queueConfig
-                                    .getDescription()));
+                    throw new MotuException(
+                            String.format("ERROR in QueueserverManagement.findQueueManagement : unable to find queue configuration '%s' ",
+                                          queueConfig.getDescription()));
                 }
                 break;
             }
         }
 
         if (queueManagement == null) {
-            throw new MotuExceedingQueueDataCapacityException(size, getMaxDataThreshold(runnableExtraction.isBatchQueue()), runnableExtraction
-                    .isBatchQueue());
+            throw new MotuExceedingQueueDataCapacityException(
+                    size,
+                    getMaxDataThreshold(runnableExtraction.isBatchQueue()),
+                    runnableExtraction.isBatchQueue());
 
         }
 
@@ -750,30 +751,6 @@ public class QueueServerManagement {
         if (LOG.isDebugEnabled()) {
             LOG.debug("QueueServerManagement shutdown() - entering");
         }
-
-        // try {
-        // Thread.sleep(500);
-        // if (LOG.isDebugEnabled()) {
-        // LOG.debug("QueueServerManagement shutdown() - Shutdown scheduler in progress....");
-        // }
-        // if (scheduler != null) {
-        // if (!(scheduler.isShutdown())) {
-        // scheduler.shutdown(true);
-        // }
-        // }
-        //
-        // if (LOG.isDebugEnabled()) {
-        // LOG.debug(String.format("QueueServerManagement shutdown() - scheduler shutdown: %b",
-        // scheduler.isShutdown()));
-        // }
-        //
-        // } catch (InterruptedException e) {
-        // LOG.error("shutdown()", e);
-        // throw new MotuException("ERROR in QueueServerManagement.shutdown.", e);
-        // } catch (SchedulerException e) {
-        // LOG.error("shutdown()", e);
-        // throw new MotuException("ERROR in QueueServerManagement.shutdown.", e);
-        // }
 
         Collection<QueueManagement> queuesCollection = queueManagementValues();
         for (QueueManagement queueManagement : queuesCollection) {

@@ -32,14 +32,14 @@ import fr.cls.atoll.motu.library.misc.configuration.QueueType;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
 import fr.cls.atoll.motu.library.misc.queueserver.ExtractionThreadPoolExecutor;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueLogError;
-import fr.cls.atoll.motu.library.misc.queueserver.QueueLogInfo;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
 import fr.cls.atoll.motu.library.misc.queueserver.RequestManagement;
-import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
+import fr.cls.atoll.motu.web.bll.request.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.queueserver.QueueLogInfo;
+import fr.cls.atoll.motu.web.bll.request.queueserver.RunnableExtraction;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
@@ -337,7 +337,7 @@ public class TestThreadPools {
         // listLatLonCoverage,
         // listDepthCoverage,
         // productId,
-        // Organizer.Format.NETCDF,
+        // OutputFormat.NETCDF,
         // null,
         // null,
         // "login",
@@ -350,7 +350,7 @@ public class TestThreadPools {
                 listLatLonCoverage,
                 listDepthCoverage,
                 productId,
-                Organizer.Format.NETCDF,
+                OutputFormat.NETCDF,
                 null,
                 null,
                 "theUserLogin",
@@ -369,7 +369,7 @@ public class TestThreadPools {
                 listLatLonCoverage,
                 listDepthCoverage,
                 productId,
-                Organizer.Format.NETCDF,
+                OutputFormat.NETCDF,
                 null,
                 null,
                 "theUserLogin",
@@ -387,7 +387,7 @@ public class TestThreadPools {
                 listLatLonCoverage,
                 listDepthCoverage,
                 productId,
-                Organizer.Format.NETCDF,
+                OutputFormat.NETCDF,
                 null,
                 null,
                 "theUserLogin",
@@ -493,9 +493,9 @@ public class TestThreadPools {
 
         xstream.alias("myString", String.class);
 
-        // String str = "\n⁄te_max%dfsdf€&dsf%";
+        // String str = "\n√öte_max%dfsdf√õ&dsf%";
 
-        String str = "È‡˘";
+        String str = "√©√†√π";
 
         xml = xstream.toXML(str);
         System.out.println(decl + xml);
@@ -573,7 +573,7 @@ public class TestThreadPools {
         // non trie
         // Set<QueueType> queuesConfig = queueServerManagement.queueManagementKeySet();
 
-        // triÈ
+        // tri√©
         List<QueueType> queuesConfig = requestManagement.getQueueServerManagement().getQueuesConfig();
 
         for (QueueType queue : queuesConfig) {

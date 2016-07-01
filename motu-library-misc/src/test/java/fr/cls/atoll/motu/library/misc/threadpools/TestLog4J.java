@@ -24,9 +24,9 @@
  */
 package fr.cls.atoll.motu.library.misc.threadpools;
 
-import fr.cls.atoll.motu.library.misc.intfce.ExtractionParameters;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
+import fr.cls.atoll.motu.web.bll.request.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.queueserver.RunnableExtraction;
 
 /**
  * 

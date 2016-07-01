@@ -25,6 +25,7 @@
 package fr.cls.atoll.motu.library.misc.queueserver;
 
 import fr.cls.atoll.motu.library.misc.configuration.QueueType;
+import fr.cls.atoll.motu.web.bll.request.queueserver.RunnableExtraction;
 
 import java.util.HashMap;
 import java.util.Map;

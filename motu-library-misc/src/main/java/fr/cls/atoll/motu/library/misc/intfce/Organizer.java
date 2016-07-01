@@ -53,14 +53,14 @@ import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.vfs2.FileObject;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -68,7 +68,6 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 
-import fr.cls.atoll.motu.api.message.MotuMsgConstant;
 import fr.cls.atoll.motu.api.message.xml.AvailableDepths;
 import fr.cls.atoll.motu.api.message.xml.AvailableTimes;
 import fr.cls.atoll.motu.api.message.xml.Axis;
@@ -97,19 +96,12 @@ import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigFileSystemType;
 import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
-import fr.cls.atoll.motu.library.misc.data.CatalogData;
-import fr.cls.atoll.motu.library.misc.data.CatalogData.CatalogType;
-import fr.cls.atoll.motu.library.misc.data.DataFile;
-import fr.cls.atoll.motu.library.misc.data.DatasetFtp;
 import fr.cls.atoll.motu.library.misc.data.ExtractCriteria;
-import fr.cls.atoll.motu.library.misc.data.Product;
 import fr.cls.atoll.motu.library.misc.data.ProductPersistent;
-import fr.cls.atoll.motu.library.misc.data.SelectData;
 import fr.cls.atoll.motu.library.misc.data.ServiceData;
 import fr.cls.atoll.motu.library.misc.data.ServiceData.HTMLPage;
 import fr.cls.atoll.motu.library.misc.data.ServiceData.Language;
 import fr.cls.atoll.motu.library.misc.data.ServicePersistent;
-import fr.cls.atoll.motu.library.misc.data.VarData;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueCapacityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceedingQueueDataCapacityException;
@@ -124,7 +116,6 @@ import fr.cls.atoll.motu.library.misc.exception.MotuInvalidDepthRangeException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatLonRangeException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLatitudeException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.library.misc.exception.MotuInvalidQueuePriorityException;
 import fr.cls.atoll.motu.library.misc.exception.MotuInvalidRequestIdException;
 import fr.cls.atoll.motu.library.misc.exception.MotuMarshallException;
 import fr.cls.atoll.motu.library.misc.exception.MotuNoVarException;
@@ -132,10 +123,7 @@ import fr.cls.atoll.motu.library.misc.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.library.misc.metadata.ParameterMetaData;
-import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.queueserver.QueueServerManagement;
-import fr.cls.atoll.motu.library.misc.queueserver.RunnableExtraction;
 import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
 import fr.cls.atoll.motu.library.misc.tds.server.Property;
 import fr.cls.atoll.motu.library.misc.tds.server.VariableDesc;
@@ -147,6 +135,14 @@ import fr.cls.atoll.motu.library.misc.utils.Zip;
 import fr.cls.atoll.motu.library.misc.vfs.VFSManager;
 import fr.cls.atoll.motu.library.misc.xml.XMLErrorHandler;
 import fr.cls.atoll.motu.library.misc.xml.XMLUtils;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataFile;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.DatasetFtp;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.VarData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData.CatalogType;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import ucar.ma2.MAMath.MinMax;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.unidata.geoloc.LatLonRect;
@@ -165,95 +161,6 @@ import ucar.unidata.geoloc.LatLonRect;
  */
 public class Organizer {
 
-    /**
-     * Enumeration for available formats.
-     */
-    public enum Format {
-
-        /** ascii format. */
-        ASCII(0),
-
-        /** html format. */
-        HTML(1),
-
-        /** NetCdf-3 format. */
-        NETCDF(2),
-
-        /** xml format. */
-        XML(3),
-
-        /** xml format. */
-        URL(4),
-
-        /** NetCdf-4 format. */
-        NETCDF4(5);
-
-        /** The value. */
-        private final int value;
-
-        /**
-         * Instantiates a new format.
-         * 
-         * @param v the v
-         */
-        Format(int v) {
-            value = v;
-        }
-
-        /**
-         * Value.
-         * 
-         * @return the int
-         */
-        public int value() {
-            return value;
-        }
-
-        /**
-         * From value.
-         * 
-         * @param v the v
-         * 
-         * @return the format
-         */
-        public static Format fromValue(int v) {
-            for (Format c : Format.values()) {
-                if (c.value == v) {
-                    return c;
-                }
-            }
-            throw new IllegalArgumentException(String.valueOf(v));
-        }
-
-        // public static Format fromValue(String v) {
-        // for (Format c : Format.values()) {
-        // if (c.toString().equalsIgnoreCase(v)) {
-        // return c;
-        // }
-        // }
-        // throw new IllegalArgumentException(String.valueOf(v));
-        // }
-
-        public static String valuesToString() {
-            StringBuffer stringBuffer = new StringBuffer();
-            for (Format c : Format.values()) {
-                stringBuffer.append(c.toString());
-                stringBuffer.append(" ");
-            }
-            return stringBuffer.toString();
-        }
-
-        /**
-         * Gets the default.
-         * 
-         * @return the default
-         */
-        public static Format getDefault() {
-            return NETCDF;
-        }
-
-    }
-
     public static final String TDS_CATALOG_FILENAME = "catalog.xml";
 
     /** The Constant SHARP_DATASET_REGEXP. */
@@ -264,22 +171,6 @@ public class Organizer {
 
     /** The Constant SLASH_REGEXP. */
     public static final String SLASH_REGEXP = ".*/";
-
-    /** Number of milliseconds per hour, except when a leap second is inserted. */
-    public static final long MILLISECS_PER_HOUR = 60 * Organizer.MILLISECS_PER_MINUTE;
-
-    /**
-     * All minutes have this many milliseconds except the last minute of the day on a day defined with a leap
-     * second.
-     */
-    public static final long MILLISECS_PER_MINUTE = 60 * 1000;
-
-    /**
-     * Number of leap seconds per day expect on <BR/>
-     * 1. days when a leap second has been inserted, e.g. 1999 JAN 1. <BR/>
-     * 2. Daylight-savings "spring forward" or "fall back" days.
-     */
-    protected static final long MILLISECS_PER_DAY = 24 * MILLISECS_PER_HOUR;
 
     /** The Constant CONFIG_SCHEMA_PACK_NAME. */
     private static final String CONFIG_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.misc.configuration";
@@ -296,9 +187,6 @@ public class Organizer {
     /** The is std name equiv loaded. */
     private static boolean isStdNameEquivLoaded = false;
 
-    /** The jaxb context motu msg. */
-    private static JAXBContext jaxbContextMotuMsg = null;
-
     /** The jaxb context opendap config. */
     private static JAXBContext jaxbContextOpendapConfig = null;
 
@@ -306,10 +194,7 @@ public class Organizer {
     private static JAXBContext jaxbContextTdsConfig = null;
 
     /** Logger for this class. */
-    private static final Logger LOG = Logger.getLogger(Organizer.class);
-
-    /** The marshaller motu msg. */
-    private static Marshaller marshallerMotuMsg = null;
+    private static final Logger LOG = LogManager.getLogger();
 
     // /** The Constant MOTU_XSD_RESOURCEPATH. */
     // private static final String MOTU_XSD_RESOURCEPATH = "schema/";
@@ -659,66 +544,6 @@ public class Organizer {
     }
 
     /**
-     * Creates the request size.
-     * 
-     * @return the request size
-     */
-    public static RequestSize createRequestSize() {
-
-        ObjectFactory objectFactory = new ObjectFactory();
-
-        RequestSize requestSize = objectFactory.createRequestSize();
-        requestSize.setSize(-1d);
-        Organizer.setError(requestSize, new MotuException("If you see that message, the request has failed and the error has not been filled"));
-        return requestSize;
-
-    }
-
-    /**
-     * Creates the request size.
-     * 
-     * @param e the e
-     * 
-     * @return the request size
-     */
-    public static RequestSize createRequestSize(MotuExceptionBase e) {
-
-        RequestSize requestSize = Organizer.createRequestSize();
-        Organizer.setError(requestSize, e);
-        return requestSize;
-
-    }
-
-    /**
-     * Creates the status mode response.
-     * 
-     * @return the status mode response
-     */
-    public static StatusModeResponse createStatusModeResponse() {
-
-        ObjectFactory objectFactory = new ObjectFactory();
-        StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
-        Organizer.setError(statusModeResponse,
-                           new MotuException("If you see that message, the request has failed and the error has not been filled"));
-        return statusModeResponse;
-
-    }
-
-    /**
-     * Creates the status mode response.
-     * 
-     * @param e the e
-     * 
-     * @return the status mode response
-     */
-    public static StatusModeResponse createStatusModeResponse(Exception e) {
-
-        StatusModeResponse statusModeResponse = Organizer.createStatusModeResponse();
-        Organizer.setError(statusModeResponse, e);
-        return statusModeResponse;
-    }
-
-    /**
      * Creates the time coverage.
      * 
      * @return the time coverage
@@ -1043,61 +868,6 @@ public class Organizer {
     }
 
     /**
-     * Gets the error type.
-     * 
-     * @param e the e
-     * 
-     * @return the error type
-     */
-    public static ErrorType getErrorType(Exception e) {
-
-        if (e instanceof MotuInconsistencyException) {
-            return ErrorType.INCONSISTENCY;
-        } else if (e instanceof MotuInvalidRequestIdException) {
-            return ErrorType.UNKNOWN_REQUEST_ID;
-        } else if (e instanceof MotuExceedingQueueDataCapacityException) {
-            return ErrorType.EXCEEDING_QUEUE_DATA_CAPACITY;
-        } else if (e instanceof MotuExceedingQueueCapacityException) {
-            return ErrorType.EXCEEDING_QUEUE_CAPACITY;
-        } else if (e instanceof MotuExceedingUserCapacityException) {
-            return ErrorType.EXCEEDING_USER_CAPACITY;
-        } else if (e instanceof MotuInvalidQueuePriorityException) {
-            return ErrorType.INVALID_QUEUE_PRIORITY;
-        } else if (e instanceof MotuInvalidDateException) {
-            return ErrorType.INVALID_DATE;
-        } else if (e instanceof MotuInvalidDepthException) {
-            return ErrorType.INVALID_DEPTH;
-        } else if (e instanceof MotuInvalidLatitudeException) {
-            return ErrorType.INVALID_LATITUDE;
-        } else if (e instanceof MotuInvalidLongitudeException) {
-            return ErrorType.INVALID_LONGITUDE;
-        } else if (e instanceof MotuInvalidDateRangeException) {
-            return ErrorType.INVALID_DATE_RANGE;
-        } else if (e instanceof MotuExceedingCapacityException) {
-            return ErrorType.EXCEEDING_CAPACITY;
-        } else if (e instanceof MotuNotImplementedException) {
-            return ErrorType.NOT_IMPLEMENTED;
-        } else if (e instanceof MotuInvalidLatLonRangeException) {
-            return ErrorType.INVALID_LAT_LON_RANGE;
-        } else if (e instanceof MotuInvalidDepthRangeException) {
-            return ErrorType.INVALID_DEPTH_RANGE;
-        } else if (e instanceof NetCdfVariableException) {
-            return ErrorType.NETCDF_VARIABLE;
-        } else if (e instanceof MotuNoVarException) {
-            return ErrorType.NO_VARIABLE;
-        } else if (e instanceof NetCdfAttributeException) {
-            return ErrorType.NETCDF_ATTRIBUTE;
-        } else if (e instanceof NetCdfVariableNotFoundException) {
-            return ErrorType.NETCDF_VARIABLE_NOT_FOUND;
-        } else if (e instanceof MotuException) {
-            return ErrorType.SYSTEM;
-        } else if (e instanceof MotuExceptionBase) {
-            return ErrorType.SYSTEM;
-        }
-        return ErrorType.SYSTEM;
-    }
-
-    /**
      * Gets the formatted error.
      * 
      * @param e the e
@@ -1240,47 +1010,7 @@ public class Organizer {
      * @uml.property name="motuConfig"
      */
     public static synchronized MotuConfig getMotuConfigInstance() throws MotuException {
-        if (motuConfig == null) {
-
-            List<String> errors = validateMotuConfig();
-            if (errors.size() > 0) {
-                StringBuffer stringBuffer = new StringBuffer();
-                for (String str : errors) {
-                    stringBuffer.append(str);
-                    stringBuffer.append("\n");
-                }
-                throw new MotuException(
-                        String.format("ERROR - Motu configuration file '%s' is not valid - See errors below:\n%s",
-                                      Organizer.getMotuConfigXmlName(),
-                                      stringBuffer.toString()));
-            }
-
-            InputStream in = Organizer.getMotuConfigXml();
-
-            try {
-                JAXBContext jc = JAXBContext.newInstance(CONFIG_SCHEMA_PACK_NAME);
-                Unmarshaller unmarshaller = jc.createUnmarshaller();
-                motuConfig = (MotuConfig) unmarshaller.unmarshal(in);
-                motuConfig.setExtractionPath(PropertiesUtilities.replaceSystemVariable(motuConfig.getExtractionPath()));
-                motuConfig.setDownloadHttpUrl(PropertiesUtilities.replaceSystemVariable(motuConfig.getDownloadHttpUrl()));
-                motuConfig.setHttpDocumentRoot(PropertiesUtilities.replaceSystemVariable(motuConfig.getHttpDocumentRoot()));
-            } catch (Exception e) {
-                throw new MotuException("Error in getMotuConfigInstance", e);
-            }
-
-            if (motuConfig == null) {
-                throw new MotuException("Unable to load Motu configuration (motuConfig is null)");
-            }
-
-            Organizer.setFileSystemConfiguration();
-
-            try {
-                in.close();
-            } catch (IOException io) {
-                // Do nothing
-            }
-        }
-        return motuConfig;
+        XXXXXXXXXXX
     }
 
     /**
@@ -1935,107 +1665,6 @@ public class Organizer {
         isStdNameEquivLoaded = true;
 
         return stdNameEquiv;
-    }
-
-    /**
-     * Inits the request size.
-     * 
-     * @param batchQueue the batch queue
-     * @param size the size
-     * @param isFtp type of request
-     * 
-     * @return the request size
-     */
-    public static RequestSize initRequestSize(double size, boolean batchQueue, boolean isFtp) {
-
-        RequestSize requestSize = Organizer.createRequestSize();
-
-        requestSize.setSize(size);
-        requestSize.setCode(ErrorType.OK);
-        requestSize.setMsg(ErrorType.OK.toString());
-
-        if (size < 0) {
-            Organizer.setError(requestSize, new MotuException("size can't be computed and the cause is unspecified"));
-            return requestSize;
-        }
-
-        double maxAllowedSizeToSet = 0d;
-        double maxAllowedSize = 0d;
-
-        try {
-            if (isFtp)
-                maxAllowedSize = Organizer.convertFromMegabytesToBytes(Organizer.getMotuConfigInstance().getMaxSizePerFile().doubleValue());
-            else
-                maxAllowedSize = Organizer.convertFromMegabytesToBytes(Organizer.getMotuConfigInstance().getMaxSizePerFileTDS().doubleValue());
-        } catch (MotuException e) {
-            Organizer.setError(requestSize, e);
-            return requestSize;
-        }
-
-        MotuExceptionBase exceptionBase = null;
-
-        if (size > maxAllowedSize) {
-            exceptionBase = new MotuExceedingCapacityException(
-                    Organizer.convertFromBytesToMegabytes(size),
-                    Organizer.convertFromBytesToMegabytes(maxAllowedSize));
-        }
-
-        maxAllowedSizeToSet = maxAllowedSize;
-
-        if (QueueServerManagement.hasInstance()) {
-            double maxDataThreshold = 0d;
-            try {
-                maxDataThreshold = Organizer.convertFromMegabytesToBytes(QueueServerManagement.getInstance().getMaxDataThreshold(batchQueue));
-            } catch (MotuException e) {
-                Organizer.setError(requestSize, e);
-                return requestSize;
-            }
-            if (size > maxDataThreshold) {
-                exceptionBase = new MotuExceedingQueueDataCapacityException(
-                        Organizer.convertFromBytesToMegabytes(size),
-                        maxDataThreshold,
-                        batchQueue);
-            }
-            maxAllowedSizeToSet = maxAllowedSizeToSet > maxDataThreshold ? maxDataThreshold : maxAllowedSizeToSet;
-        }
-
-        requestSize.setMaxAllowedSize(maxAllowedSizeToSet);
-
-        if (exceptionBase != null) {
-            Organizer.setError(requestSize, exceptionBase);
-        }
-        if (size > maxAllowedSize) {
-            exceptionBase = new MotuExceedingCapacityException(
-                    Organizer.convertFromBytesToMegabytes(size),
-                    Organizer.convertFromBytesToMegabytes(maxAllowedSize));
-        }
-
-        return requestSize;
-    }
-
-    /**
-     * Inits the request size.
-     * 
-     * @param product the product
-     * @param batchQueue the batch queue
-     * 
-     * @return the request size
-     * 
-     * @throws MotuException the motu exception
-     */
-    public static RequestSize initRequestSize(Product product, boolean batchQueue) throws MotuException {
-        if (product == null) {
-            throw new MotuException("ERROR in Organizer.initRequestSize- Product is null");
-        }
-
-        // Check type (TDS/FTP) --> different maximum request sizes
-        boolean isFtp = false;
-        if (product.getDataset() instanceof DatasetFtp) {
-            isFtp = true;
-        }
-
-        return Organizer.initRequestSize(product.getAmountDataSizeAsBytes(), batchQueue, isFtp);
-
     }
 
     /**
@@ -2730,119 +2359,6 @@ public class Organizer {
     }
 
     /**
-     * Marshall request size.
-     * 
-     * @param ex the ex
-     * @param writer the writer
-     * 
-     * @throws MotuMarshallException the motu marshall exception
-     */
-    public static void marshallRequestSize(MotuExceptionBase ex, Writer writer) throws MotuMarshallException {
-
-        if (writer == null) {
-            return;
-        }
-
-        RequestSize requestSize = createRequestSize(ex);
-        try {
-            synchronized (Organizer.marshallerMotuMsg) {
-                Organizer.marshallerMotuMsg.marshal(requestSize, writer);
-                writer.flush();
-                writer.close();
-            }
-        } catch (JAXBException e) {
-            throw new MotuMarshallException("Error in Organizer - marshallRequestSize", e);
-        } catch (IOException e) {
-            throw new MotuMarshallException("Error in Organizer - marshallRequestSize", e);
-        }
-    }
-
-    /**
-     * Marshall request size.
-     * 
-     * @param batchQueue the batch queue
-     * @param requestSize the request size
-     * @param writer the writer
-     * 
-     * @throws MotuMarshallException the motu marshall exception
-     */
-    public static void marshallRequestSize(RequestSize requestSize, boolean batchQueue, Writer writer) throws MotuMarshallException {
-        if (writer == null) {
-            return;
-        }
-
-        if (requestSize == null) {
-            requestSize = initRequestSize(-1d, batchQueue, false);
-        }
-        try {
-            synchronized (Organizer.marshallerMotuMsg) {
-                Organizer.marshallerMotuMsg.marshal(requestSize, writer);
-                writer.flush();
-                writer.close();
-            }
-        } catch (JAXBException e) {
-            throw new MotuMarshallException("Error in Organizer - marshallRequestSize", e);
-        } catch (IOException e) {
-            throw new MotuMarshallException("Error in Organizer - marshallRequestSize", e);
-        }
-    }
-
-    /**
-     * Marshall status mode response.
-     * 
-     * @param ex the ex
-     * @param writer the writer
-     * 
-     * @throws MotuMarshallException the motu marshall exception
-     */
-    public static void marshallStatusModeResponse(Exception ex, Writer writer) throws MotuMarshallException {
-
-        if (writer == null) {
-            return;
-        }
-
-        StatusModeResponse statusModeResponse = Organizer.createStatusModeResponse(ex);
-        try {
-            synchronized (Organizer.marshallerMotuMsg) {
-                Organizer.marshallerMotuMsg.marshal(statusModeResponse, writer);
-                writer.flush();
-                writer.close();
-            }
-        } catch (JAXBException e) {
-            throw new MotuMarshallException("Error in Organizer - marshallRequestSize", e);
-        } catch (IOException e) {
-            throw new MotuMarshallException("Error in Organizer - marshallRequestSize", e);
-        }
-    }
-
-    /**
-     * Marshall status mode response.
-     * 
-     * @param writer the writer
-     * @param statusModeResponse the status mode response
-     * 
-     * @throws MotuMarshallException the motu marshall exception
-     */
-    public static void marshallStatusModeResponse(StatusModeResponse statusModeResponse, Writer writer) throws MotuMarshallException {
-        if (writer == null) {
-            return;
-        }
-
-        if (statusModeResponse == null) {
-            return;
-        }
-        try {
-            synchronized (Organizer.marshallerMotuMsg) {
-                Organizer.marshallerMotuMsg.marshal(statusModeResponse, writer);
-                writer.flush();
-                writer.close();
-            }
-        } catch (Exception e) {
-            throw new MotuMarshallException("Error in Organizer - marshallStatusModeResponse", e);
-        }
-    }
-
-    /**
      * Marshall time coverage.
      * 
      * @param ex the ex
@@ -3058,356 +2574,6 @@ public class Organizer {
         return Organizer.servicesPersistent.values();
     }
 
-    // CSOFF: StrictDuplicateCode : normal duplication code.
-
-    /**
-     * Sets the error.
-     * 
-     * @param requestSize the request size
-     * @param e the e
-     */
-    public static void setError(RequestSize requestSize, Exception e) {
-        ErrorType errorType = Organizer.getErrorType(e);
-        if (e instanceof MotuExceptionBase) {
-            MotuExceptionBase e2 = (MotuExceptionBase) e;
-            requestSize.setMsg(e2.notifyException());
-        } else {
-            requestSize.setMsg(e.getMessage());
-        }
-        requestSize.setCode(errorType);
-
-    }
-
-    /**
-     * Sets the error.
-     * 
-     * @param e the e
-     * @param statusModeResponse the status mode response
-     */
-    public static void setError(StatusModeResponse statusModeResponse, Exception e) {
-        ErrorType errorType = Organizer.getErrorType(e);
-        statusModeResponse.setStatus(StatusModeType.ERROR);
-        if (e instanceof MotuExceptionBase) {
-            MotuExceptionBase e2 = (MotuExceptionBase) e;
-            statusModeResponse.setMsg(e2.notifyException());
-        } else {
-            statusModeResponse.setMsg(e.getMessage());
-        }
-        statusModeResponse.setCode(errorType);
-
-    }
-
-    /**
-     * Sets the error.
-     * 
-     * @param statusModeResponse the status mode response
-     * @param errorType the error type
-     */
-    public static void setError(StatusModeResponse statusModeResponse, ErrorType errorType) {
-        statusModeResponse.setStatus(StatusModeType.ERROR);
-        if (errorType.equals(ErrorType.SHUTTING_DOWN)) {
-            statusModeResponse.setMsg(RunnableExtraction.SHUTDOWN_MSG);
-        } else {
-            statusModeResponse.setMsg(errorType.toString());
-        }
-        statusModeResponse.setCode(errorType);
-
-    }
-
-    /**
-     * Sets the error.
-     * 
-     * @param e the e
-     * @param timeCoverage the time coverage
-     */
-    public static void setError(TimeCoverage timeCoverage, Exception e) {
-        ErrorType errorType = Organizer.getErrorType(e);
-        if (e instanceof MotuExceptionBase) {
-            MotuExceptionBase e2 = (MotuExceptionBase) e;
-            timeCoverage.setMsg(e2.notifyException());
-        } else {
-            timeCoverage.setMsg(e.getMessage());
-        }
-        timeCoverage.setCode(errorType);
-
-    }
-
-    /**
-     * Sets the error.
-     * 
-     * @param productMetadataInfo the product metadata info
-     * @param e the e
-     */
-    public static void setError(ProductMetadataInfo productMetadataInfo, Exception e) {
-        ErrorType errorType = Organizer.getErrorType(e);
-        if (e instanceof MotuExceptionBase) {
-            MotuExceptionBase e2 = (MotuExceptionBase) e;
-            productMetadataInfo.setMsg(e2.notifyException());
-        } else {
-            productMetadataInfo.setMsg(e.getMessage());
-        }
-        productMetadataInfo.setCode(errorType);
-
-    }
-
-    /**
-     * Sets the error.
-     * 
-     * @param geospatialCoverage the geospatial coverage
-     * @param e the e
-     */
-    public static void setError(GeospatialCoverage geospatialCoverage, Exception e) {
-        ErrorType errorType = Organizer.getErrorType(e);
-        if (e instanceof MotuExceptionBase) {
-            MotuExceptionBase e2 = (MotuExceptionBase) e;
-            geospatialCoverage.setMsg(e2.notifyException());
-        } else {
-            geospatialCoverage.setMsg(e.getMessage());
-        }
-        geospatialCoverage.setCode(errorType);
-
-    }
-
-    /**
-     * Sets the error.
-     * 
-     * @param dataGeospatialCoverage the data geospatial coverage
-     * @param e the e
-     */
-    public static void setError(DataGeospatialCoverage dataGeospatialCoverage, Exception e) {
-        ErrorType errorType = Organizer.getErrorType(e);
-        if (e instanceof MotuExceptionBase) {
-            MotuExceptionBase e2 = (MotuExceptionBase) e;
-            dataGeospatialCoverage.setMsg(e2.notifyException());
-        } else {
-            dataGeospatialCoverage.setMsg(e.getMessage());
-        }
-        dataGeospatialCoverage.setCode(errorType);
-
-    }
-
-    /**
-     * Sets the error.
-     * 
-     * @param axis the axis
-     * @param e the e
-     */
-    public static void setError(Axis axis, Exception e) {
-        ErrorType errorType = Organizer.getErrorType(e);
-        if (e instanceof MotuExceptionBase) {
-            MotuExceptionBase e2 = (MotuExceptionBase) e;
-            axis.setMsg(e2.notifyException());
-        } else {
-            axis.setMsg(e.getMessage());
-        }
-        axis.setCode(errorType);
-
-    }
-
-    /**
-     * Sets the error.
-     * 
-     * @param availableDepths the available depths
-     * @param e the e
-     */
-    public static void setError(AvailableDepths availableDepths, Exception e) {
-        ErrorType errorType = Organizer.getErrorType(e);
-        if (e instanceof MotuExceptionBase) {
-            MotuExceptionBase e2 = (MotuExceptionBase) e;
-            availableDepths.setMsg(e2.notifyException());
-        } else {
-            availableDepths.setMsg(e.getMessage());
-        }
-        availableDepths.setCode(errorType);
-
-    }
-
-    /**
-     * Sets the error.
-     * 
-     * @param properties the properties
-     * @param e the e
-     */
-    public static void setError(fr.cls.atoll.motu.api.message.xml.Properties properties, Exception e) {
-        ErrorType errorType = Organizer.getErrorType(e);
-        if (e instanceof MotuExceptionBase) {
-            MotuExceptionBase e2 = (MotuExceptionBase) e;
-            properties.setMsg(e2.notifyException());
-        } else {
-            properties.setMsg(e.getMessage());
-        }
-        properties.setCode(errorType);
-
-    }
-
-    /**
-     * Sets the error.
-     * 
-     * @param property the property
-     * @param e the e
-     */
-    public static void setError(fr.cls.atoll.motu.api.message.xml.Property property, Exception e) {
-        ErrorType errorType = Organizer.getErrorType(e);
-        if (e instanceof MotuExceptionBase) {
-            MotuExceptionBase e2 = (MotuExceptionBase) e;
-            property.setMsg(e2.notifyException());
-        } else {
-            property.setMsg(e.getMessage());
-        }
-        property.setCode(errorType);
-
-    }
-
-    /**
-     * Sets the error.
-     * 
-     * @param variablesVocabulary the variables vocabulary
-     * @param e the e
-     */
-    public static void setError(VariablesVocabulary variablesVocabulary, Exception e) {
-        ErrorType errorType = Organizer.getErrorType(e);
-        if (e instanceof MotuExceptionBase) {
-            MotuExceptionBase e2 = (MotuExceptionBase) e;
-            variablesVocabulary.setMsg(e2.notifyException());
-        } else {
-            variablesVocabulary.setMsg(e.getMessage());
-        }
-        variablesVocabulary.setCode(errorType);
-
-    }
-
-    /**
-     * Sets the error.
-     * 
-     * @param variableVocabulary the variable vocabulary
-     * @param e the e
-     */
-    public static void setError(VariableVocabulary variableVocabulary, Exception e) {
-        ErrorType errorType = Organizer.getErrorType(e);
-        if (e instanceof MotuExceptionBase) {
-            MotuExceptionBase e2 = (MotuExceptionBase) e;
-            variableVocabulary.setMsg(e2.notifyException());
-        } else {
-            variableVocabulary.setMsg(e.getMessage());
-        }
-        variableVocabulary.setCode(errorType);
-
-    }
-
-    /**
-     * Sets the error.
-     * 
-     * @param variables the variables
-     * @param e the e
-     */
-    public static void setError(Variables variables, Exception e) {
-        ErrorType errorType = Organizer.getErrorType(e);
-        if (e instanceof MotuExceptionBase) {
-            MotuExceptionBase e2 = (MotuExceptionBase) e;
-            variables.setMsg(e2.notifyException());
-        } else {
-            variables.setMsg(e.getMessage());
-        }
-        variables.setCode(errorType);
-
-    }
-
-    /**
-     * Sets the error.
-     * 
-     * @param variable the variable
-     * @param e the e
-     */
-    public static void setError(Variable variable, Exception e) {
-        ErrorType errorType = Organizer.getErrorType(e);
-        if (e instanceof MotuExceptionBase) {
-            MotuExceptionBase e2 = (MotuExceptionBase) e;
-            variable.setMsg(e2.notifyException());
-        } else {
-            variable.setMsg(e.getMessage());
-        }
-        variable.setCode(errorType);
-
-    }
-
-    /**
-     * Sets the error.
-     * 
-     * @param availableTimes the available times
-     * @param e the e
-     */
-    public static void setError(AvailableTimes availableTimes, Exception e) {
-        ErrorType errorType = Organizer.getErrorType(e);
-        if (e instanceof MotuExceptionBase) {
-            MotuExceptionBase e2 = (MotuExceptionBase) e;
-            availableTimes.setMsg(e2.notifyException());
-        } else {
-            availableTimes.setMsg(e.getMessage());
-        }
-        availableTimes.setCode(errorType);
-
-    }
-
-    /**
-     * Sets the status done.
-     * 
-     * @param product the product
-     * @param statusModeResponse the status mode response
-     * 
-     * @throws MotuException the motu exception
-     */
-    public static void setStatusDone(StatusModeResponse statusModeResponse, Product product) throws MotuException {
-
-        String downloadUrlPath = product.getDownloadUrlPath();
-        String locationData = product.getExtractLocationData();
-
-        File fileData = new File(locationData);
-
-        Long size = fileData.length();
-
-        Date lastModified = new Date(fileData.lastModified());
-
-        statusModeResponse.setStatus(StatusModeType.DONE);
-        statusModeResponse.setMsg(downloadUrlPath);
-        statusModeResponse.setSize(size.doubleValue());
-        statusModeResponse.setDateProc(Organizer.dateToXMLGregorianCalendar(lastModified));
-        statusModeResponse.setCode(ErrorType.OK);
-        statusModeResponse.setRemoteUri(downloadUrlPath);
-        statusModeResponse.setLocalUri(locationData);
-
-    }
-
-    /**
-     * Validate motu config.
-     * 
-     * @return a list of XML validation errors (empty is no error)
-     * 
-     * @throws MotuException the motu exception
-     */
-    public static List<String> validateMotuConfig() throws MotuException {
-
-        InputStream inSchema = Organizer.getMotuConfigSchema();
-        if (inSchema == null) {
-            throw new MotuException(
-                    String.format("ERROR in Organiser.validateMotuConfig - Motu configuration schema ('%s') not found:",
-                                  Organizer.getMotuConfigSchemaName()));
-        }
-        InputStream inXml = Organizer.getMotuConfigXml();
-        if (inXml == null) {
-            throw new MotuException(
-                    String.format("ERROR in Organiser.validateMotuConfig - Motu configuration xml ('%s') not found:",
-                                  Organizer.getMotuConfigXmlName()));
-        }
-
-        XMLErrorHandler errorHandler = XMLUtils.validateXML(inSchema, inXml);
-
-        if (errorHandler == null) {
-            throw new MotuException("ERROR in Organiser.validateMotuConfig - Motu configuration schema : XMLErrorHandler is null");
-        }
-        return errorHandler.getErrors();
-
-    }
-
     /**
      * Validate catalog ola.
      * 
@@ -3496,35 +2662,6 @@ public class Organizer {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("initJAXB() - exiting");
-        }
-    }
-
-    /**
-     * Inits the JAXB motu msg.
-     * 
-     * @throws MotuException the motu exception
-     */
-    public static void initJAXBMotuMsg() throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initJAXBMotuMsg() - entering");
-        }
-        if (Organizer.jaxbContextMotuMsg != null) {
-            return;
-        }
-
-        try {
-            Organizer.jaxbContextMotuMsg = JAXBContext.newInstance(MotuMsgConstant.MOTU_MSG_SCHEMA_PACK_NAME);
-            Organizer.marshallerMotuMsg = Organizer.jaxbContextMotuMsg.createMarshaller();
-            Organizer.marshallerMotuMsg.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-        } catch (JAXBException e) {
-            LOG.error("initJAXBMotuMsg()", e);
-            throw new MotuException("Error in Organizer - initJAXBMotuMsg ", e);
-
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initJAXBMotuMsg() - exiting");
         }
     }
 
@@ -3618,9 +2755,9 @@ public class Organizer {
     // List<String> listVar,
     // List<ExtractCriteria> criteria,
     // SelectData selectData,
-    // Organizer.Format dataOutputFormat,
+    // OutputFormat dataOutputFormat,
     // Writer out,
-    // Organizer.Format responseFormat) throws MotuInvalidDateException,
+    // OutputFormat responseFormat) throws MotuInvalidDateException,
     // MotuInvalidDepthException,
     // MotuInvalidLatitudeException, MotuInvalidLongitudeException,
     // MotuException,
@@ -3770,742 +2907,6 @@ public class Organizer {
         currentService.setVelocityEngine(this.velocityEngine);
     }
 
-    /**
-     * Extract data.
-     * 
-     * @param params the params
-     * 
-     * @return the product
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuInconsistencyException the motu inconsistency exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws NetCdfAttributeException the net cdf attribute exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    public Product extractData(ExtractionParameters params) throws MotuInconsistencyException, MotuInvalidDateException, MotuInvalidDepthException,
-            MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-            MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException,
-            NetCdfAttributeException, NetCdfVariableNotFoundException, IOException {
-
-        // Verify input parameters and raise error if necessary
-        params.verifyParameters();
-        Product product = null;
-
-        // -------------------------------------------------
-        // Data extraction OPENDAP
-        // -------------------------------------------------
-        if (!Organizer.isNullOrEmpty(params.getLocationData())) {
-            product = extractData(params.getServiceName(),
-                                  params.getLocationData(),
-                                  null,
-                                  params.getListVar(),
-                                  params.getListTemporalCoverage(),
-                                  params.getListLatLonCoverage(),
-                                  params.getListDepthCoverage(),
-                                  null,
-                                  params.getDataOutputFormat(),
-                                  params.getOut(),
-                                  params.getResponseFormat(),
-                                  null);
-        } else if (!Organizer.isNullOrEmpty(params.getServiceName()) && !Organizer.isNullOrEmpty(params.getProductId())) {
-            product = extractData(params.getServiceName(),
-                                  params.getListVar(),
-                                  params.getListTemporalCoverage(),
-                                  params.getListLatLonCoverage(),
-                                  params.getListDepthCoverage(),
-                                  params.getProductId(),
-                                  null,
-                                  params.getDataOutputFormat(),
-                                  params.getOut(),
-                                  params.getResponseFormat());
-        } else {
-            throw new MotuInconsistencyException(String.format("ERROR in extractData: inconsistency parameters : %s", params.toString()));
-        }
-
-        return product;
-    }
-
-    /**
-     * Extracts data from a location data (url , filename) according to criteria (geographical and/or temporal
-     * and/or logical expression).
-     * 
-     * @param product product to be extracted
-     * @param listVar list of variables (parameters) or expressions to extract.
-     * @param selectData logical expression if it's true extract th data, if it's failse ignore the data.
-     * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
-     * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
-     * @param listDepthCoverage list contains low depth, high depth.
-     * @param listTemporalCoverage list contains start date and end date (can be empty string)
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the netcdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws NetCdfAttributeException the net cdf attribute exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    public void extractData(Product product,
-                            List<String> listVar,
-                            List<String> listTemporalCoverage,
-                            List<String> listLatLonCoverage,
-                            List<String> listDepthCoverage,
-                            SelectData selectData,
-                            Organizer.Format dataOutputFormat) throws MotuInvalidDateException, MotuInvalidDepthException,
-                                    MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-                                    MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
-                                    MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
-                                    NetCdfVariableNotFoundException, IOException {
-        // CSON: StrictDuplicateCode.
-
-        if (this.currentService == null) {
-            // Create a virtual service with default option
-            createVirtualService();
-        }
-
-        extractData(product, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage, selectData, dataOutputFormat, null, null);
-    }
-
-    // CSOFF: StrictDuplicateCode : normal duplication code.
-    /**
-     * Extracts data from a location data (url , filename) according to criteria (geographical and/or temporal
-     * and/or logical expression).
-     * 
-     * @param product product to download
-     * @param listVar list of variables (parameters) or expressions to extract.
-     * @param selectData logical expression if it's true extract th data, if it's failse ignore the data.
-     * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
-     * @param responseFormat response output format (HTML, XML, Ascii).
-     * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
-     * @param listDepthCoverage list contains low depth, high depth.
-     * @param listTemporalCoverage list contains start date and end date (can be empty string)
-     * @param out writer in which response of the extraction will be list.
-     * 
-     * @return product object corresponding to the extraction
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws NetCdfAttributeException the net cdf attribute exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    public Product extractData(Product product,
-                               List<String> listVar,
-                               List<String> listTemporalCoverage,
-                               List<String> listLatLonCoverage,
-                               List<String> listDepthCoverage,
-                               SelectData selectData,
-                               Organizer.Format dataOutputFormat,
-                               Writer out,
-                               Organizer.Format responseFormat) throws MotuInvalidDateException, MotuInvalidDepthException,
-                                       MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-                                       MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
-                                       MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
-                                       NetCdfVariableNotFoundException, IOException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("extractData() - entering");
-        }
-
-        // CSON: StrictDuplicateCode.
-
-        if (this.currentService == null) {
-            // Create a virtual service with default option
-            createVirtualService();
-        }
-
-        if (responseFormat == null || out == null) {
-            currentService.extractData(product, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage, selectData, dataOutputFormat);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("extractData() - exiting");
-            }
-            return product;
-        }
-
-        switch (responseFormat) {
-
-        case HTML:
-            product = currentService.extractDataHTML(product,
-                                                     listVar,
-                                                     listTemporalCoverage,
-                                                     listLatLonCoverage,
-                                                     listDepthCoverage,
-                                                     selectData,
-                                                     dataOutputFormat,
-                                                     out);
-            /*
-             * extractDataHTML(productId, listVar, geoCriteria, temporalCriteria, selectData, out,
-             * dataOutputFormat);
-             */
-            break;
-
-        case XML:
-        case ASCII:
-            throw new MotuNotImplementedException(String.format("extractData - Format %s not implemented", responseFormat.toString()));
-            // break;
-
-        default:
-            throw new MotuException("extractData - Unknown Format");
-            // break;
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("extractData() - exiting");
-        }
-        return product;
-
-    }
-
-    // CSOFF: StrictDuplicateCode : normal duplication code.
-    /**
-     * Extracts data from a location data (url , filename) according to criteria (geographical and/or temporal
-     * and/or logical expression).
-     * 
-     * @param listVar list of variables (parameters) or expressions to extract.
-     * @param selectData logical expression if it's true extract th data, if it's failse ignore the data.
-     * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
-     * @param locationData locaton of the data to download (url, filename)
-     * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
-     * @param listDepthCoverage list contains low depth, high depth.
-     * @param listTemporalCoverage list contains start date and end date (can be empty string)
-     * 
-     * @return product object corresponding to the extraction
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws NetCdfAttributeException the net cdf attribute exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    public Product extractData(String locationData,
-                               String locationDataNCSS,
-                               List<String> listVar,
-                               List<String> listTemporalCoverage,
-                               List<String> listLatLonCoverage,
-                               List<String> listDepthCoverage,
-                               SelectData selectData,
-                               Organizer.Format dataOutputFormat) throws MotuInvalidDateException, MotuInvalidDepthException,
-                                       MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-                                       MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
-                                       MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
-                                       NetCdfVariableNotFoundException, IOException {
-        // CSON: StrictDuplicateCode.
-
-        return extractData(locationData,
-                           locationDataNCSS,
-                           listVar,
-                           listTemporalCoverage,
-                           listLatLonCoverage,
-                           listDepthCoverage,
-                           selectData,
-                           dataOutputFormat,
-                           null,
-                           null,
-                           null);
-    }
-
-    // CSOFF: StrictDuplicateCode : normal duplication code.
-    /**
-     * Extracts data from a location data (url , filename) according to criteria (geographical and/or temporal
-     * and/or logical expression).
-     * 
-     * @param listVar list of variables (parameters) or expressions to extract.
-     * @param selectData logical expression if it's true extract th data, if it's failse ignore the data.
-     * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
-     * @param locationData locaton of the data to download (url, filename)
-     * @param responseFormat response output format (HTML, XML, Ascii).
-     * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
-     * @param listDepthCoverage list contains low depth, high depth.
-     * @param listTemporalCoverage list contains start date and end date (can be empty string)
-     * @param out writer in which response of the extraction will be list.
-     * @param productId the product id
-     * 
-     * @return product object corresponding to the extraction
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws NetCdfAttributeException the net cdf attribute exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    public Product extractData(String locationData,
-                               String locationDataNCSS,
-                               List<String> listVar,
-                               List<String> listTemporalCoverage,
-                               List<String> listLatLonCoverage,
-                               List<String> listDepthCoverage,
-                               SelectData selectData,
-                               Organizer.Format dataOutputFormat,
-                               Writer out,
-                               Organizer.Format responseFormat,
-                               String productId) throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException,
-                                       MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-                                       MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
-                                       NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException,
-                                       IOException {
-        // CSON: StrictDuplicateCode.
-
-        Product product = getProductInformation(locationData);
-        // Update ID
-        if (!Organizer.isNullOrEmpty(productId)) {
-            product.setProductId(productId);
-        }
-        // Update NCSS link
-        product.setLocationDataNCSS(locationDataNCSS);
-
-        extractData(product, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage, selectData, dataOutputFormat, out, responseFormat);
-
-        return product;
-    }
-
-    /**
-     * Extracts data from a service name and a product id and according to criteria (geographical and/or
-     * temporal and/or logical expression).
-     * 
-     * @param listVar list of variables (parameters) or expressions to extract.
-     * @param selectData logical expression if it's true extract th data, if it's failse ignore the data.
-     * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
-     * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
-     * @param listDepthCoverage list contains low depth, high depth.
-     * @param listTemporalCoverage list contains start date and end date (can be empty string)
-     * @param serviceName name of the service for the product
-     * @param productId id of the product
-     * 
-     * @return product object corresponding to the extraction
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws NetCdfAttributeException the net cdf attribute exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-
-    public Product extractData(String serviceName,
-                               List<String> listVar,
-                               List<String> listTemporalCoverage,
-                               List<String> listLatLonCoverage,
-                               List<String> listDepthCoverage,
-                               String productId,
-                               SelectData selectData,
-                               Organizer.Format dataOutputFormat) throws MotuInvalidDateException, MotuInvalidDepthException,
-                                       MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-                                       MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
-                                       MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
-                                       NetCdfVariableNotFoundException, IOException {
-        // CSON: StrictDuplicateCode
-
-        // setCurrentService(serviceName);
-        //
-        // Product product = currentService.getProductInformation(productId);
-        //
-        // extractData(product, listVar, listTemporalCoverage,
-        // listLatLonCoverage, listDepthCoverage,
-        // selectData, dataOutputFormat, null, null);
-        //
-        // return product;
-        return extractData(serviceName,
-                           listVar,
-                           listTemporalCoverage,
-                           listLatLonCoverage,
-                           listDepthCoverage,
-                           productId,
-                           selectData,
-                           dataOutputFormat,
-                           null,
-                           null);
-
-    }
-
-    // CSOFF: StrictDuplicateCode : normal duplication code.
-    /**
-     * Extracts data from a service name and a product id and according to criteria (geographical and/or
-     * temporal and/or logical expression).
-     * 
-     * @param listVar list of variables (parameters) or expressions to extract.
-     * @param selectData logical expression if it's true extract th data, if it's failse ignore the data.
-     * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
-     * @param responseFormat response output format (HTML, XML, Ascii).
-     * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
-     * @param listDepthCoverage list contains low depth, high depth.
-     * @param listTemporalCoverage list contains start date and end date (can be empty string)
-     * @param serviceName name of the service for the product
-     * @param productId id of the product
-     * @param out writer in which response of the extraction will be list.
-     * 
-     * @return product object corresponding to the extraction
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws NetCdfAttributeException the net cdf attribute exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-
-    public Product extractData(String serviceName,
-                               List<String> listVar,
-                               List<String> listTemporalCoverage,
-                               List<String> listLatLonCoverage,
-                               List<String> listDepthCoverage,
-                               String productId,
-                               SelectData selectData,
-                               Organizer.Format dataOutputFormat,
-                               Writer out,
-                               Organizer.Format responseFormat) throws MotuInvalidDateException, MotuInvalidDepthException,
-                                       MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-                                       MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
-                                       MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
-                                       NetCdfVariableNotFoundException, IOException {
-        // CSON: StrictDuplicateCode
-
-        ServicePersistent servicePersistent = null;
-        if (!Organizer.servicesPersistentContainsKey(serviceName)) {
-            loadCatalogInfo(serviceName);
-        }
-
-        setCurrentService(serviceName);
-
-        servicePersistent = Organizer.getServicesPersistent(serviceName);
-
-        ProductPersistent productPersistent = servicePersistent.getProductsPersistent(productId);
-        if (productPersistent == null) {
-            throw new MotuException(String.format("ERROR in extractData - product '%s' not found", productId));
-        }
-
-        String locationData = getLocationData(productPersistent);
-        String locationDataNCSS = productPersistent.getUrlNCSS();
-
-        Product product = extractData(serviceName,
-                                      locationData,
-                                      locationDataNCSS,
-                                      listVar,
-                                      listTemporalCoverage,
-                                      listLatLonCoverage,
-                                      listDepthCoverage,
-                                      selectData,
-                                      dataOutputFormat,
-                                      out,
-                                      responseFormat,
-                                      productId);
-        return product;
-        //
-        // setCurrentService(serviceName);
-        // Product product = currentService.getProductInformation(productId);
-        //
-        // extractData(product, listVar, listTemporalCoverage,
-        // listLatLonCoverage, listDepthCoverage,
-        // selectData, dataOutputFormat, out, responseFormat);
-        //
-        // return product;
-
-    }
-
-    // CSOFF: StrictDuplicateCode : normal duplication code.
-    /**
-     * Extracts data from a location data (url , filename) and according to criteria (geographical and/or
-     * temporal and/or logical expression).
-     * 
-     * @param listVar list of variables (parameters) or expressions to extract.
-     * @param selectData logical expression if it's true extract th data, if it's failse ignore the data.
-     * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
-     * @param locationData locaton of the data to download (url, filename)
-     * @param responseFormat response output format (HTML, XML, Ascii).
-     * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
-     *            be empty string)
-     * @param listDepthCoverage list contains low depth, high depth.
-     * @param listTemporalCoverage list contains start date and end date (can be empty string)
-     * @param serviceName name of the service for the product
-     * @param out writer in which response of the extraction will be list.
-     * @param productId the product id
-     * 
-     * @return product object corresponding to the extraction
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws NetCdfAttributeException the net cdf attribute exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-
-    public Product extractData(String serviceName,
-                               String locationData,
-                               String locationDataNCSS,
-                               List<String> listVar,
-                               List<String> listTemporalCoverage,
-                               List<String> listLatLonCoverage,
-                               List<String> listDepthCoverage,
-                               SelectData selectData,
-                               Organizer.Format dataOutputFormat,
-                               Writer out,
-                               Organizer.Format responseFormat,
-                               String productId) throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException,
-                                       MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-                                       MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
-                                       NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException,
-                                       IOException {
-
-        // CSON: StrictDuplicateCode
-        if (!Organizer.isNullOrEmpty(serviceName)) {
-            setCurrentService(serviceName);
-        }
-
-        return extractData(locationData,
-                           locationDataNCSS,
-                           listVar,
-                           listTemporalCoverage,
-                           listLatLonCoverage,
-                           listDepthCoverage,
-                           selectData,
-                           dataOutputFormat,
-                           out,
-                           responseFormat,
-                           productId);
-        // Product product = getProductInformation(locationData);
-        //
-        // extractData(product, listVar, listTemporalCoverage,
-        // listLatLonCoverage, listDepthCoverage,
-        // selectData, dataOutputFormat, out, responseFormat);
-        //
-        // return product;
-    }
-
-    /**
-     * Gets the location data.
-     * 
-     * @param productPersistent the product persistent
-     * @return the location data
-     */
-    protected String getLocationData(ProductPersistent productPersistent) {
-        return getLocationData(this.currentService, productPersistent);
-    }
-
-    /**
-     * Gets the location data.
-     * 
-     * @param service the service
-     * @param productPersistent the product persistent
-     * @return the location data
-     */
-    protected String getLocationData(ServiceData service, ProductPersistent productPersistent) {
-        String locationData = "";
-
-        if (service == null) {
-            return locationData;
-        }
-        if (productPersistent == null) {
-            return locationData;
-        }
-
-        if (service.getCatalogType() == CatalogData.CatalogType.FTP) {
-            locationData = productPersistent.getUrlMetaData();
-        } else {
-            locationData = productPersistent.getUrl();
-        }
-        return locationData;
-    }
-
-    /**
-     * Gets the amount data size.
-     * 
-     * @param params the params
-     * 
-     * @return the amount data size
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuInconsistencyException the motu inconsistency exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws NetCdfAttributeException the net cdf attribute exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws MotuMarshallException the motu marshall exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     */
-    public Product getAmountDataSize(ExtractionParameters params) throws MotuInconsistencyException, MotuInvalidDateException,
-            MotuInvalidDepthException, MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
-            NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException, MotuMarshallException {
-
-        params.verifyParameters();
-        Product product = null;
-
-        if (!Organizer.isNullOrEmpty(params.getLocationData())) {
-            product = getAmountDataSize(params.getLocationData(),
-                                        params.getListVar(),
-                                        params.getListTemporalCoverage(),
-                                        params.getListLatLonCoverage(),
-                                        params.getListDepthCoverage(),
-                                        params.getOut(),
-                                        params.isBatchQueue(),
-                                        null);
-        } else if (!Organizer.isNullOrEmpty(params.getServiceName()) && !Organizer.isNullOrEmpty(params.getProductId())) {
-            product = getAmountDataSize(params.getServiceName(),
-                                        params.getListVar(),
-                                        params.getListTemporalCoverage(),
-                                        params.getListLatLonCoverage(),
-                                        params.getListDepthCoverage(),
-                                        params.getProductId(),
-                                        params.getOut(),
-                                        params.isBatchQueue());
-        } else {
-            throw new MotuInconsistencyException(String.format("ERROR in getAmountDataSize: inconsistency parameters : %s", params.toString()));
-        }
-
-        return product;
-    }
-
-    /**
-     * Gets the amount data size.
-     * 
-     * @param listVar the list var
-     * @param locationData the location data
-     * @param listLatLonCoverage the list lat lon coverage
-     * @param listDepthCoverage the list depth coverage
-     * @param listTemporalCoverage the list temporal coverage
-     * @param productId the product id
-     * 
-     * @return the amount data size
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     */
-    public Product getAmountDataSize(String locationData,
-                                     String productId,
-                                     List<String> listVar,
-                                     List<String> listTemporalCoverage,
-                                     List<String> listLatLonCoverage,
-                                     List<String> listDepthCoverage) throws MotuInvalidDateException, MotuInvalidDepthException,
-                                             MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException,
-                                             MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
-                                             MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException,
-                                             MotuNoVarException, NetCdfVariableNotFoundException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getAmountDataSize(String, List<String>, List<String>, List<String>, List<String>) - entering");
-        }
-
-        // CSON: StrictDuplicateCode.
-
-        Product product = null;
-        try {
-            product = getProductInformation(locationData);
-            if (!Organizer.isNullOrEmpty(productId)) {
-                product.setProductId(productId);
-            }
-
-            currentService.computeAmountDataSize(product, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
-        } catch (NetCdfAttributeException e) {
-            // Do nothing;
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getAmountDataSize(String, List<String>, List<String>, List<String>, List<String>) - exiting");
-        }
-        return product;
-
-    }
-
     //
     // public static synchronized void validateMotuConfig2() throws
     // MotuException {
@@ -4547,276 +2948,6 @@ public class Organizer {
     //
 
     /**
-     * Gets the amount data size.
-     * 
-     * @param listVar the list var
-     * @param listLatLonCoverage the list lat lon coverage
-     * @param listDepthCoverage the list depth coverage
-     * @param listTemporalCoverage the list temporal coverage
-     * @param serviceName the service name
-     * @param productId the product id
-     * 
-     * @return the amount data size
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws NetCdfAttributeException the net cdf attribute exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     */
-    public Product getAmountDataSize(String serviceName,
-                                     List<String> listVar,
-                                     List<String> listTemporalCoverage,
-                                     List<String> listLatLonCoverage,
-                                     List<String> listDepthCoverage,
-                                     String productId) throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException,
-                                             MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-                                             MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
-                                             MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
-                                             NetCdfVariableNotFoundException {
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getAmountDataSize(String, List<String>, List<String>, List<String>, List<String>, String) - entering");
-        }
-
-        ServicePersistent servicePersistent = null;
-        if (!Organizer.servicesPersistentContainsKey(serviceName)) {
-            loadCatalogInfo(serviceName);
-        }
-
-        setCurrentService(serviceName);
-
-        servicePersistent = Organizer.getServicesPersistent(serviceName);
-
-        ProductPersistent productPersistent = servicePersistent.getProductsPersistent(productId);
-        if (productPersistent == null) {
-            throw new MotuException(String.format("ERROR in getAmountDataSize - product '%s' not found", productId));
-        }
-
-        String locationData = getLocationData(productPersistent);
-
-        Product product = getAmountDataSize(locationData, productId, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getAmountDataSize(String, List<String>, List<String>, List<String>, List<String>, String) - exiting");
-        }
-        return product;
-
-    }
-
-    /**
-     * Gets the amount data size.
-     * 
-     * @param batchQueue the batch queue
-     * @param listVar the list var
-     * @param listLatLonCoverage the list lat lon coverage
-     * @param listDepthCoverage the list depth coverage
-     * @param listTemporalCoverage the list temporal coverage
-     * @param out the out
-     * @param productId the product id
-     * @param serviceName the service name
-     * 
-     * @return the amount data size
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws NetCdfAttributeException the net cdf attribute exception
-     * @throws MotuMarshallException the motu marshall exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     */
-    public Product getAmountDataSize(String serviceName,
-                                     List<String> listVar,
-                                     List<String> listTemporalCoverage,
-                                     List<String> listLatLonCoverage,
-                                     List<String> listDepthCoverage,
-                                     String productId,
-                                     Writer out,
-                                     boolean batchQueue) throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException,
-                                             MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-                                             MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
-                                             MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
-                                             NetCdfVariableNotFoundException, MotuMarshallException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getAmountDataSize(String, List<String>, List<String>, List<String>, List<String>, String, Writer) - entering");
-        }
-
-        Product product = null;
-
-        RequestSize requestSize = null;
-        try {
-            product = getAmountDataSize(serviceName, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage, productId);
-            requestSize = initRequestSize(product, batchQueue);
-        } catch (MotuException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidDateException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidDepthException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidLatitudeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidLongitudeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidDateRangeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuExceedingCapacityException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuNotImplementedException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidLatLonRangeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidDepthRangeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (NetCdfVariableException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuNoVarException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (NetCdfVariableNotFoundException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        }
-        marshallRequestSize(requestSize, batchQueue, out);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getAmountDataSize(String, List<String>, List<String>, List<String>, List<String>, String, Writer) - exiting");
-        }
-
-        return product;
-
-    }
-
-    /**
-     * Gets the amount data size.
-     * 
-     * @param batchQueue the batch queue
-     * @param listVar the list var
-     * @param locationData the location data
-     * @param listLatLonCoverage the list lat lon coverage
-     * @param listDepthCoverage the list depth coverage
-     * @param listTemporalCoverage the list temporal coverage
-     * @param out the out
-     * @param productId the product id
-     * 
-     * @return the amount data size
-     * 
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws MotuInvalidDepthException the motu invalid depth exception
-     * @throws MotuMarshallException the motu marshall exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateException the motu invalid date exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     */
-    public Product getAmountDataSize(String locationData,
-                                     List<String> listVar,
-                                     List<String> listTemporalCoverage,
-                                     List<String> listLatLonCoverage,
-                                     List<String> listDepthCoverage,
-                                     Writer out,
-                                     boolean batchQueue,
-                                     String productId) throws MotuException, MotuMarshallException, MotuInvalidDateException,
-                                             MotuInvalidDepthException, MotuInvalidLatitudeException, MotuInvalidLongitudeException,
-                                             MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
-                                             MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException, NetCdfVariableException,
-                                             MotuNoVarException, NetCdfVariableNotFoundException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getAmountDataSize(String, List<String>, List<String>, List<String>, List<String>, Writer) - entering");
-        }
-
-        // CSON: StrictDuplicateCode.
-
-        Product product = null;
-
-        RequestSize requestSize = null;
-        try {
-            product = getAmountDataSize(locationData, productId, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
-            requestSize = Organizer.initRequestSize(product, batchQueue);
-        } catch (MotuException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidDateException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidDepthException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidLatitudeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidLongitudeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidDateRangeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuExceedingCapacityException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuNotImplementedException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidLatLonRangeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuInvalidDepthRangeException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (NetCdfVariableException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (MotuNoVarException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        } catch (NetCdfVariableNotFoundException e) {
-            marshallRequestSize(e, out);
-            throw e;
-        }
-        marshallRequestSize(requestSize, batchQueue, out);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getAmountDataSize(String, List<String>, List<String>, List<String>, List<String>, Writer) - exiting");
-        }
-        return product;
-
-    }
-
-    /**
      * Gets the available services.
      * 
      * @param out the out
@@ -4825,7 +2956,7 @@ public class Organizer {
      * @throws MotuException the motu exception
      * @throws MotuNotImplementedException the motu not implemented exception
      */
-    public void getAvailableServices(Writer out, Organizer.Format format) throws MotuException, MotuNotImplementedException {
+    public void getAvailableServices(Writer out, OutputFormat format) throws MotuException, MotuNotImplementedException {
         getAvailableServices(out, format, null);
     }
 
@@ -4838,7 +2969,7 @@ public class Organizer {
      * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuException the motu exception
      */
-    public void getAvailableServices(Writer out, Organizer.Format format, List<CatalogData.CatalogType> listCatalogType)
+    public void getAvailableServices(Writer out, OutputFormat format, List<CatalogData.CatalogType> listCatalogType)
             throws MotuException, MotuNotImplementedException {
         switch (format) {
 
@@ -4867,7 +2998,7 @@ public class Organizer {
      * @throws MotuException the motu exception
      * @throws NetCdfAttributeException the net cdf attribute exception
      */
-    public void getCatalogInformation(String serviceName, Writer out, Organizer.Format format)
+    public void getCatalogInformation(String serviceName, Writer out, OutputFormat format)
             throws MotuException, MotuNotImplementedException, NetCdfAttributeException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getCatalogInformation() - entering");
@@ -4969,7 +3100,7 @@ public class Organizer {
      * @throws MotuException the motu exception
      * @throws NetCdfAttributeException the net cdf attribute exception
      */
-    public void getProductDownloadInfo(String serviceName, String productId, Writer out, Organizer.Format format)
+    public void getProductDownloadInfo(String serviceName, String productId, Writer out, OutputFormat format)
             throws MotuException, MotuNotImplementedException, NetCdfAttributeException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductDownloadInfo() - entering");
@@ -4995,7 +3126,7 @@ public class Organizer {
      * @throws MotuException the motu exception
      * @throws NetCdfAttributeException the net cdf attribute exception
      */
-    public void getProductDownloadInfo(String productId, Writer out, Organizer.Format format)
+    public void getProductDownloadInfo(String productId, Writer out, OutputFormat format)
             throws MotuException, MotuNotImplementedException, NetCdfAttributeException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductDownloadInfo() - entering");
@@ -5103,7 +3234,7 @@ public class Organizer {
      * @throws MotuException the motu exception
      * @throws NetCdfAttributeException the net cdf attribute exception
      */
-    public Product getProductInformation(String serviceName, String productId, Writer out, Organizer.Format format)
+    public Product getProductInformation(String serviceName, String productId, Writer out, OutputFormat format)
             throws MotuException, MotuNotImplementedException, NetCdfAttributeException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductInformation() - entering");
@@ -5132,7 +3263,7 @@ public class Organizer {
      * @throws MotuException the motu exception
      * @throws NetCdfAttributeException the net cdf attribute exception
      */
-    public Product getProductInformation(String productId, Writer out, Organizer.Format format)
+    public Product getProductInformation(String productId, Writer out, OutputFormat format)
             throws MotuException, MotuNotImplementedException, NetCdfAttributeException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getProductInformation() - entering");
@@ -5154,7 +3285,7 @@ public class Organizer {
         switch (format) {
 
         case HTML:
-            // Normalement à supprimer car c'est fait dans
+            // Normalement ï¿½ supprimer car c'est fait dans
             // currentService.getProductInformation(productId)
             // currentService.getProductInformation(product);
             currentService.writeProductInformationHTML(product, out);
@@ -6940,9 +5071,9 @@ public class Organizer {
 
         if ((catalogType.compareTo(CatalogType.OPENDAP) == 0) || (catalogType.compareTo(CatalogType.TDS) == 0)) {
             // Extraire uniquement l'id du dataset
-            // Suppression de cette fonctionalité.
+            // Suppression de cette fonctionalitï¿½.
             // http://jira.cls.fr:8080/browse/ATOLL-104
-            // Rajout et modification de cette fonctionalité mais uiniquement
+            // Rajout et modification de cette fonctionalitï¿½ mais uiniquement
             // por TDS etOPENDAP
             // http://jira.cls.fr:8080/browse/ATOLL-107
             productId = Organizer.getDatasetIdFromURI(productId);

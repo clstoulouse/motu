@@ -4,7 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
@@ -28,7 +29,7 @@ import fr.cls.atoll.motu.library.converter.exception.MotuConverterException;
 public class DateUtils {
 
     /** Logger for this class. */
-    private static final Logger LOG = Logger.getLogger(DateUtils.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /** The Constant DATETIME_PATTERN1. */
     public static final String DATETIME_PATTERN1 = "yyyy-MM-dd";
@@ -273,10 +274,11 @@ public class DateUtils {
         }
 
         if (dateTime == null) {
-            throw new MotuConverterException(String.format("Cannot convert '%s' to DateTime. Format '%s' is not valid.\nAcceptable format are '%s'",
-                                                           s,
-                                                           stringBuffer.toString(),
-                                                           DateUtils.DATETIME_FORMATTERS.keySet().toString()));
+            throw new MotuConverterException(
+                    String.format("Cannot convert '%s' to DateTime. Format '%s' is not valid.\nAcceptable format are '%s'",
+                                  s,
+                                  stringBuffer.toString(),
+                                  DateUtils.DATETIME_FORMATTERS.keySet().toString()));
         }
 
         if (LOG.isDebugEnabled()) {
@@ -316,10 +318,11 @@ public class DateUtils {
         }
 
         if (period == null) {
-            throw new MotuConverterException(String.format("Cannot convert '%s' to Period. Format '%s' is not valid.\nAcceptable format are '%s'",
-                                                           s,
-                                                           stringBuffer.toString(),
-                                                           DateUtils.PERIOD_FORMATTERS.keySet().toString()));
+            throw new MotuConverterException(
+                    String.format("Cannot convert '%s' to Period. Format '%s' is not valid.\nAcceptable format are '%s'",
+                                  s,
+                                  stringBuffer.toString(),
+                                  DateUtils.PERIOD_FORMATTERS.keySet().toString()));
         }
 
         if (LOG.isDebugEnabled()) {
@@ -327,7 +330,7 @@ public class DateUtils {
         }
         return period;
     }
-    
+
     /**
      * Convert a given date into a string representation (only date).
      * 
@@ -341,14 +344,14 @@ public class DateUtils {
         }
 
         if (st.contains("T")) {
-        	String[] tmp = st.split("T");
-        	return tmp[0];
-        }        
-        
+            String[] tmp = st.split("T");
+            return tmp[0];
+        }
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("getDate(DateTime) - exiting");
         }
         return st;
-    }    
+    }
 
 }

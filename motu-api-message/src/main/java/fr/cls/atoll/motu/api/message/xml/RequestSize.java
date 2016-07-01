@@ -17,9 +17,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * 
- * 					Réponse informations volume de donneés (en
+ * 					RÃ©ponse informations volume de donneÃ©s (en
  * 					octets)
- * 					d'une requête d'extraction.
+ * 					d'une requÃªte d'extraction.
  * 				
  * 
  * <p>Java class for anonymous complex type.

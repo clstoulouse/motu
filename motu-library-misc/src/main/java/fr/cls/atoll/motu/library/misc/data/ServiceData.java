@@ -41,7 +41,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -49,7 +50,9 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.tools.generic.DateTool;
 import org.apache.velocity.tools.generic.MathTool;
 import org.apache.velocity.tools.generic.NumberTool;
+import org.dom4j.io.OutputFormat;
 import org.jasig.cas.client.util.AssertionHolder;
+import org.opengis.metadata.distribution.DataFile;
 
 import fr.cls.atoll.motu.library.cas.exception.MotuCasBadRequestException;
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
@@ -71,8 +74,8 @@ import fr.cls.atoll.motu.library.misc.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.library.misc.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.library.misc.intfce.Organizer;
-import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.utils.ConfigLoader;
+import ucar.unidata.util.Product;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -87,7 +90,7 @@ import fr.cls.atoll.motu.library.misc.utils.ConfigLoader;
 public class ServiceData {
 
     /** Logger for this class. */
-    private static final Logger LOG = Logger.getLogger(ServiceData.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * Name of the file that contents information of how to get huge data file. With '%s' corresponding to the
@@ -215,64 +218,6 @@ public class ServiceData {
 
     /** Default language. */
     public static final Language DEFAULT_LANGUAGE = Language.UK;
-
-    // /**
-    // * Emumeration for available param can be used with servlet.
-    // *
-    // * @param PARAM_ACTION action parameter.
-    // * @param PARAM_LOGIN login parameter.
-    // * @param PARAM_PWD password parameter.
-    // * @param PARAM_SERVICE service parameter.
-    // * @param PARAM_PRODUCT product parameter.
-    // */
-    // public enum ParamServlet {
-    // ACTION ("action"),
-    // LOGIN ("login"),
-    // PWD ("pwd"),
-    // SERVICE ("service"),
-    // PRODUCT ("product");
-    // /**
-    // * Contructor.
-    // * @param id id of enum
-    // */
-    // private ParamServlet(String id) {this.id = id;}
-    // /**
-    // * id of enum.
-    // */
-    // private String id;
-    // /**
-    // * @return id of enum
-    // */
-    // public String getId(){ return id;}
-    // };
-    // /**
-    // * Emumeration for available action value can be used with action servlet
-    // prameter.
-    // *
-    // * @param LIST_CATALOG list a catalog.
-    // * @param LIST_PRODUCT_METADATA list product's metadata.
-    // * @param PRODUCT_DOWNLOADHOME get product download home inforamtions.
-    // * @param PRODUCT_DOWNLOAD download a product.
-    // */
-    // public enum ActionServlet {
-    // LIST_CATALOG ("listcatalog"),
-    // LIST_PRODUCT_METADATA ("listproductmetadata"),
-    // PRODUCT_DOWNLOADHOME ("productdownloadhome"),
-    // PRODUCT_DOWNLOAD ("productdownload");
-    // /**
-    // * Contructor.
-    // * @param id id of enum
-    // */
-    // private ActionServlet(String id) {this.id = id;}
-    // /**
-    // * id of enum.
-    // */
-    // private String id;
-    // /**
-    // * @return id of enum
-    // */
-    // public String getId(){ return id;}
-    // };
 
     /** The disable href link. */
     private boolean disableHrefLink = false;
@@ -976,8 +921,8 @@ public class ServiceData {
         // Synchronisation pour ne pas que plusieurs threads effectue ce
         // chargement
         synchronized (Organizer.getServicesPersistentInstance()) {
-            // On teste si le service n'est pas dÈj‡ chargÈ
-            // car un autre thread a pu le faire juste avant dans cette mÈthode.
+            // On teste si le service n'est pas d√©j√† charg√©
+            // car un autre thread a pu le faire juste avant dans cette m√©thode.
 
             if (!(Organizer.servicesPersistentContainsKey(this.name))) {
                 ServicePersistent servicePersistent = Organizer.getServicesPersistent(this.name);
@@ -1972,7 +1917,7 @@ public class ServiceData {
     // List<String> listLatLonCoverage,
     // List<String> listDepthCoverage,
     // SelectData selectData,
-    // Organizer.Format dataOutputFormat) throws MotuInvalidDateException,
+    // OutputFormat dataOutputFormat) throws MotuInvalidDateException,
     // MotuInvalidDepthException,
     // MotuInvalidLatitudeException, MotuInvalidLongitudeException,
     // MotuException,
@@ -2027,11 +1972,11 @@ public class ServiceData {
                             List<String> listLatLonCoverage,
                             List<String> listDepthCoverage,
                             SelectData selectData,
-                            Organizer.Format dataOutputFormat) throws MotuInvalidDateException, MotuInvalidDepthException,
-                                    MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException,
-                                    MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidLatLonRangeException,
-                                    MotuInvalidDepthRangeException, NetCdfVariableException, MotuNoVarException, NetCdfAttributeException,
-                                    NetCdfVariableNotFoundException, IOException {
+                            OutputFormat dataOutputFormat) throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException,
+                                    MotuInvalidLongitudeException, MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
+                                    MotuNotImplementedException, MotuInvalidLatLonRangeException, MotuInvalidDepthRangeException,
+                                    NetCdfVariableException, MotuNoVarException, NetCdfAttributeException, NetCdfVariableNotFoundException,
+                                    IOException {
 
         product.clearExtractFilename();
         product.clearLastError();
@@ -2067,7 +2012,7 @@ public class ServiceData {
     // List<String> listVar,
     // List<ExtractCriteria> criteria,
     // SelectData selectData,
-    // Organizer.Format dataOutputFormat) throws MotuException,
+    // OutputFormat dataOutputFormat) throws MotuException,
     // NetCdfAttributeException,
     // MotuNotImplementedException,
     // NetCdfVariableException, MotuExceedingCapacityException,
@@ -2221,7 +2166,7 @@ public class ServiceData {
                             List<String> listVar,
                             List<ExtractCriteria> criteria,
                             SelectData selectData,
-                            Organizer.Format dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
+                            OutputFormat dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
                                     MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException,
                                     NetCdfVariableException, MotuNoVarException, NetCdfVariableNotFoundException, IOException {
         if (LOG.isDebugEnabled()) {
@@ -2285,7 +2230,7 @@ public class ServiceData {
                                    List<String> listLatLonCoverage,
                                    List<String> listDepthCoverage,
                                    SelectData selectData,
-                                   Organizer.Format dataOutputFormat,
+                                   OutputFormat dataOutputFormat,
                                    Writer out) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
                                            MotuNotImplementedException, MotuInvalidDepthRangeException, NetCdfVariableException,
                                            NetCdfAttributeException, MotuNoVarException, MotuInvalidDepthException, MotuInvalidDateException,

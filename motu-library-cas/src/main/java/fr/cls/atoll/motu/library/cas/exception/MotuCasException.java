@@ -24,7 +24,8 @@
  */
 package fr.cls.atoll.motu.library.cas.exception;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -37,10 +38,8 @@ import org.apache.log4j.Logger;
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class MotuCasException extends Exception {
-    /**
-     * Logger for this class.
-     */
-    private static final Logger LOG = Logger.getLogger(MotuCasException.class);
+    /** Logger for this class. */
+    private static final Logger LOG = LogManager.getLogger();
 
     private static final long serialVersionUID = -1L;
 

@@ -49,17 +49,18 @@ import fr.cls.atoll.motu.library.misc.configuration.ConfigService;
 import fr.cls.atoll.motu.library.misc.configuration.MotuConfig;
 import fr.cls.atoll.motu.library.misc.configuration.QueueServerType;
 import fr.cls.atoll.motu.library.misc.configuration.QueueType;
-import fr.cls.atoll.motu.library.misc.data.CatalogData;
-import fr.cls.atoll.motu.library.misc.data.DataFile;
-import fr.cls.atoll.motu.library.misc.data.Product;
 import fr.cls.atoll.motu.library.misc.data.ServiceData;
 import fr.cls.atoll.motu.library.misc.exception.MotuException;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardName;
 import fr.cls.atoll.motu.library.misc.sdtnameequiv.StandardNames;
 import fr.cls.atoll.motu.library.misc.threadpools.TestThreadPools;
+import fr.cls.atoll.motu.web.bll.request.ExtractionParameters;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataFile;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import ucar.ma2.MAMath.MinMax;
 import ucar.ma2.StructureData;
 import ucar.nc2.Dimension;
@@ -101,7 +102,7 @@ public class TestIntfce {
      * @param args
      */
     public static void main(String[] args) {
-        // String s = "Native Exception Ô Type: class java.lang.NumberFormatException\n\tNative Exception
+        // String s = "Native Exception Ã” Type: class java.lang.NumberFormatException\n\tNative Exception
         // Message: For input string: &quot;--40&quot;\n\nLongitude:--40";
         // System.out.println(s);
         //
@@ -254,8 +255,8 @@ public class TestIntfce {
         // Period p = JodaPeriodAdapter.PERIOD_FORMATER.parsePeriod("P10D");
         // System.out.println(p.getDays());
 
-        // System.out.println (Organizer.Format.valueOf("NETCDFRRRRRR"));
-        // System.out.println (Organizer.Format.fromValue(2));
+        // System.out.println (OutputFormat.valueOf("NETCDFRRRRRR"));
+        // System.out.println (OutputFormat.fromValue(2));
         // testFraction();
 
         // Mandatory if there is a proxy to access Opendap server.
@@ -456,7 +457,7 @@ public class TestIntfce {
             Organizer organizer = new Organizer();
             organizer.setCurrentLanguage("fr");
             FileWriter writer = new FileWriter("./target/resultListCatalog.html");
-            organizer.getAvailableServices(writer, Organizer.Format.HTML);
+            organizer.getAvailableServices(writer, OutputFormat.HTML);
             writer.flush();
             writer.close();
         } catch (MotuExceptionBase e) {
@@ -486,7 +487,7 @@ public class TestIntfce {
             FileWriter writer = new FileWriter("./target/resultCatalogInfo.html");
             Organizer organizer = new Organizer();
             // organizer.setCurrentLanguage("uk");
-            organizer.getCatalogInformation(serviceName, writer, Organizer.Format.HTML);
+            organizer.getCatalogInformation(serviceName, writer, OutputFormat.HTML);
             writer.flush();
             writer.close();
         } catch (MotuExceptionBase e) {
@@ -692,8 +693,8 @@ public class TestIntfce {
             // String productId = "global_sst";
             // String productId = "dt_ref_global_merged_madt_h";
 
-            // Organizer.Format outputFormat = Organizer.Format.HTML;
-            Organizer.Format outputFormat = Organizer.Format.XML;
+            // OutputFormat outputFormat = OutputFormat.HTML;
+            OutputFormat outputFormat = OutputFormat.XML;
             FileWriter writer = new FileWriter("./target/resultProductInfo." + outputFormat.toString());
             Organizer organizer = new Organizer();
             // organizer.setCurrentLanguage("uk");
@@ -745,7 +746,7 @@ public class TestIntfce {
             Organizer organizer = new Organizer();
             // organizer.setCurrentLanguage("uk");
             organizer.setCurrentLanguage("fr");
-            organizer.getProductDownloadInfo(serviceName, productId, writer, Organizer.Format.HTML);
+            organizer.getProductDownloadInfo(serviceName, productId, writer, OutputFormat.HTML);
             writer.flush();
             writer.close();
         } catch (MotuExceptionBase e) {
@@ -795,10 +796,10 @@ public class TestIntfce {
                     null,
                     null,
                     null, // productId,
-                    Organizer.Format.NETCDF,
-                    // Organizer.Format.URL,
+                    OutputFormat.NETCDF,
+                    // OutputFormat.URL,
                     writer, // or null
-                    Organizer.Format.HTML, // or null
+                    OutputFormat.HTML, // or null
                     "login",
                     true);
 
@@ -883,7 +884,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -949,7 +950,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -978,7 +979,7 @@ public class TestIntfce {
             writer = new FileWriter("./target/resultProductData1.html");
 
             extractionParameters.setOut(writer);
-            extractionParameters.setResponseFormat(Organizer.Format.HTML);
+            extractionParameters.setResponseFormat(OutputFormat.HTML);
             // extractionParameters.setListVar(null);
             // extractionParameters.setLocationData(null);
             // extractionParameters.setProductId(null);
@@ -1060,9 +1061,9 @@ public class TestIntfce {
                                             listDepthCoverage,
                                             productId,
                                             null,
-                                            Organizer.Format.NETCDF,
+                                            OutputFormat.NETCDF,
                                             writer,
-                                            Organizer.Format.HTML);
+                                            OutputFormat.HTML);
             writer.flush();
             writer.close();
 
@@ -1125,9 +1126,9 @@ public class TestIntfce {
             // listLatLonCoverage,
             // listDepthCoverage,
             // null,
-            // Organizer.Format.NETCDF,
+            // OutputFormat.NETCDF,
             // writer,
-            // Organizer.Format.HTML);
+            // OutputFormat.HTML);
             // writer.flush();
             // writer.close();
             //
@@ -1140,9 +1141,9 @@ public class TestIntfce {
             // listLatLonCoverage,
             // listDepthCoverage,
             // null,
-            // Organizer.Format.NETCDF,
+            // OutputFormat.NETCDF,
             // writer,
-            // Organizer.Format.HTML);
+            // OutputFormat.HTML);
             //
             // writer.flush();
             // writer.close();
@@ -1167,9 +1168,9 @@ public class TestIntfce {
                                             listDepthCoverage,
                                             productId,
                                             null,
-                                            Organizer.Format.NETCDF,
+                                            OutputFormat.NETCDF,
                                             writer,
-                                            Organizer.Format.HTML);
+                                            OutputFormat.HTML);
 
             writer.flush();
             writer.close();
@@ -1228,9 +1229,9 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF,
+                                            OutputFormat.NETCDF,
                                             writer,
-                                            Organizer.Format.HTML,
+                                            OutputFormat.HTML,
                                             null);
             writer.flush();
             writer.close();
@@ -1244,9 +1245,9 @@ public class TestIntfce {
             // listLatLonCoverage,
             // listDepthCoverage,
             // null,
-            // Organizer.Format.NETCDF,
+            // OutputFormat.NETCDF,
             // writer,
-            // Organizer.Format.HTML);
+            // OutputFormat.HTML);
             //
             // writer.flush();
             // writer.close();
@@ -1534,7 +1535,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -1604,7 +1605,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -1678,7 +1679,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -1748,7 +1749,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -1805,7 +1806,7 @@ public class TestIntfce {
         try {
             Organizer organizer = new Organizer();
 
-            organizer.extractData(product, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage, null, Organizer.Format.NETCDF);
+            organizer.extractData(product, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage, null, OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -1924,7 +1925,7 @@ public class TestIntfce {
                                   listLatLonCoverage,
                                   globalListDepthCoverage,
                                   null,
-                                  Organizer.Format.NETCDF);
+                                  OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = globalProduct.getExtractLocationData();
@@ -2186,7 +2187,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -2259,7 +2260,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -2332,7 +2333,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -2903,7 +2904,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -2968,7 +2969,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -3033,7 +3034,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -3105,7 +3106,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -3176,7 +3177,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -3246,7 +3247,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -3316,7 +3317,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -3385,7 +3386,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();
@@ -3449,7 +3450,7 @@ public class TestIntfce {
                                             listLatLonCoverage,
                                             listDepthCoverage,
                                             null,
-                                            Organizer.Format.NETCDF);
+                                            OutputFormat.NETCDF);
 
             // get the output full file name (with path)
             String extractLocationData = product.getExtractLocationData();

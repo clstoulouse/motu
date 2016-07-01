@@ -24,7 +24,6 @@
  */
 package fr.cls.atoll.motu.library.misc.queueserver;
 
-import java.lang.management.ManagementFactory;
 import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -32,11 +31,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.apache.log4j.Logger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
@@ -190,8 +186,9 @@ public class RequestManagement implements JobListener, RequestManagementMBean {
 
             // Trigger trigger = TriggerUtils.makeMinutelyTrigger(queueConfig.getLowPriorityWaiting());
             // trigger.setName(SCHEDULE_PRIORITY_TRIGGER_NAME);
-            Trigger trigger = TriggerUtils.makeMinutelyTrigger(RequestManagement.SCHEDULE_CLEAN_TRIGGER_NAME, Organizer.getMotuConfigInstance()
-                    .getRunCleanInterval(), SimpleTrigger.REPEAT_INDEFINITELY);
+            Trigger trigger = TriggerUtils.makeMinutelyTrigger(RequestManagement.SCHEDULE_CLEAN_TRIGGER_NAME,
+                                                               Organizer.getMotuConfigInstance().getRunCleanInterval(),
+                                                               SimpleTrigger.REPEAT_INDEFINITELY);
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.MINUTE, 1);
             trigger.setStartTime(cal.getTime());
@@ -277,26 +274,6 @@ public class RequestManagement implements JobListener, RequestManagementMBean {
     // }
 
     /**
-     * Generate request id.
-     * 
-     * @return the long
-     */
-    public long generateRequestId() {
-
-        // Calcul d'un numéro de requête à partir du temps
-        synchronized (this) {
-            long num = Calendar.getInstance().getTimeInMillis();
-            if (num == lastRequestId) {
-                // Si c'est le même temps que le précédent on incrément pour en avoir un différent
-                lastRequestId++;
-            } else {
-                lastRequestId = num;
-            }
-            return lastRequestId;
-        }
-    }
-
-    /**
      * Gets the last request id.
      * 
      * @return the last request id
@@ -310,6 +287,7 @@ public class RequestManagement implements JobListener, RequestManagementMBean {
      * 
      * @return the name
      */
+    @Override
     public String getName() {
         return this.getClass().getSimpleName();
     }
@@ -370,6 +348,7 @@ public class RequestManagement implements JobListener, RequestManagementMBean {
      * 
      * @param context the context
      */
+    @Override
     public void jobExecutionVetoed(JobExecutionContext context) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("RequestManagement.jobExecutionVetoed(JobExecutionContext) - entering");
@@ -385,6 +364,7 @@ public class RequestManagement implements JobListener, RequestManagementMBean {
      * 
      * @param context the context
      */
+    @Override
     public void jobToBeExecuted(JobExecutionContext context) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("RequestManagement.jobToBeExecuted(JobExecutionContext) - entering");
@@ -401,6 +381,7 @@ public class RequestManagement implements JobListener, RequestManagementMBean {
      * @param context the context
      * @param jobException the job exception
      */
+    @Override
     @SuppressWarnings("unchecked")
     public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
         if (LOG.isDebugEnabled()) {
@@ -672,8 +653,8 @@ public class RequestManagement implements JobListener, RequestManagementMBean {
      */
     public static ObjectName getStatusModeResponseObjectName(StatusModeResponse statusModeResponse) {
         try {
-            return new ObjectName(MessageFormat.format(OBJECT_NAME_PATTERN, statusModeResponse.getUserId(), statusModeResponse.getRequestId()
-                    .toString()));
+            return new ObjectName(
+                    MessageFormat.format(OBJECT_NAME_PATTERN, statusModeResponse.getUserId(), statusModeResponse.getRequestId().toString()));
         } catch (Exception e) {
             // JMX supervision should never alters Motu behaviour, so we don't let exception propagation
             LOG.error("Failed to create ObjectName for managed beans (Motu will still continue to start)", e);
@@ -741,7 +722,7 @@ public class RequestManagement implements JobListener, RequestManagementMBean {
      * Unregisters to the MBean platform the managed beans like the status of the request.
      */
     public void unregisterJmxMbeansStatusModeResponse(List<Long> requestIdToDelete) {
-        
+
         for (Long requestId : requestIdToDelete) {
             StatusModeResponse statusModeResponse = requestStatusMap.get(requestId);
             MBeanUtils.unregisterMBean(RequestManagement.getStatusModeResponseObjectName(statusModeResponse));

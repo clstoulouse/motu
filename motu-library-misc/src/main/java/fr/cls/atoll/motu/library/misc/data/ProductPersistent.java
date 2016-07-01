@@ -26,6 +26,8 @@ package fr.cls.atoll.motu.library.misc.data;
 
 import java.util.List;
 
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataFile;
+
 /**
  * 
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)

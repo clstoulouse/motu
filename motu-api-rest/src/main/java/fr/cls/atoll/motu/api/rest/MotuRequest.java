@@ -51,7 +51,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.AuthenticationMode;
 import fr.cls.atoll.motu.api.message.MotuMsgConstant;
@@ -76,7 +77,7 @@ import fr.cls.atoll.motu.library.cas.util.RestUtil;
 public class MotuRequest {
 
     /** Logger for this class. */
-    private static final Logger LOG = Logger.getLogger(MotuRequest.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /** The jcontext. */
     private static JAXBContext jaxbContextMotuMsg = null;
@@ -89,7 +90,6 @@ public class MotuRequest {
 
     // private static CookieStore cookieStore = new sun.net.www.protocol.http.InMemoryCookieStore();
     private static CookieStore cookieStore = new PublicInMemoryCookieStore();
-
 
     /**
      * The Constructor.
@@ -176,9 +176,9 @@ public class MotuRequest {
     }
 
     /**
-     * Exécute de la requête et retourne du résultat dans un flux. Le flux contient le fichier netcdf en
-     * mode console, l'url du fichier extrait en mode url ou l'url du fichier de status en mode status (ce
-     * fichier contiendra l'état de la requête en cours : INPRGRESS ou ERROR msg_erreur ou DONE.
+     * Exécute de la requête et retourne du résultat dans un flux. Le flux contient le fichier netcdf en mode
+     * console, l'url du fichier extrait en mode url ou l'url du fichier de status en mode status (ce fichier
+     * contiendra l'état de la requête en cours : INPRGRESS ou ERROR msg_erreur ou DONE.
      * 
      * @return le flux résultat de la requête
      * 
@@ -475,8 +475,8 @@ public class MotuRequest {
     }
 
     /**
-     * Méthode utilitaire qui fait une requête via {@code execute()} et retourne ne résultat sous forme
-     * d'une string. Trés utilisé en mode url et mode status.
+     * Méthode utilitaire qui fait une requête via {@code execute()} et retourne ne résultat sous forme d'une
+     * string. Trés utilisé en mode url et mode status.
      * 
      * @return La chaine qui contient le résultat de la requête: en mode url, l'url du fichier extrait, en
      *         mode status, l'url du fichier de status.

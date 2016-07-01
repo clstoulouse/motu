@@ -41,6 +41,8 @@
 <li><a href="?action=listservices">Access Services</a></li>
 <li><a href="?action=listcatalog&service=${service.getNameEncoded()}">&gt;&nbsp;Data Product Catalogue</a></li>
 
+#set($downloadOnTop = ${service.isDownloadOnTop()})
+
 #if($downloadOnTop == false)
 	<li><a href="?action=listproductmetadata&service=${service.getNameEncoded()}&product=${product.getProductMetaData().getProductIdEncoded()}">&gt;&nbsp;${titleMetadata}</a></li>
 #end
@@ -75,7 +77,6 @@
 
 #set($titleMetadata = "Dataset Metadata")
 
-#set($downloadOnTop = ${service.isDownloadOnTop()})
 #set($showOpendapLinks = false)
 
 ## variables pour menu Motu 

@@ -89,7 +89,7 @@ SERVICE_URL='http://atoll-dev.cls.fr:30080/atoll-motuservlet/Catsat?action=produ
 #PRODUCT='http://purl.org/cls/atoll/ontology/individual/atoll%23dataset-duacs-global-nrt-madt-merged-h'
 #echo `url_encode 'http://purl.org/cls/atoll/ontology/individual/atoll#dataset-duacs-global-nrt-madt-merged-h'`
 
-#iconv -f ISO-8859-1 -t UTF-8 < http://purl.org/cls/atoll/ontology/individual/atoll#dataset-duacs-global-nrt-madt-merged-h
+#iconv -f UTF-8 -t UTF-8 < http://purl.org/cls/atoll/ontology/individual/atoll#dataset-duacs-global-nrt-madt-merged-h
 
 #wget -O testFTP.nc --no-check-certificate "http://atoll-qt1.cls.fr:33080/atoll-motu-servlet/Motu?action=productdownload&service=http://purl.org/cls/atoll/ontology/individual/atoll%23motu-ftp-aviso&product=$PRODUCT&t_lo=2010-03-02&t_hi=2010-03-02&variable=Grid_0001&mode=console"
 #wget -v -S -d  --no-check-certificate "http://atoll-qt1.cls.fr:33080/atoll-motu-servlet/Motu?action=productdownload&service=http://purl.org/cls/atoll/ontology/individual/atoll%23motu-ftp-aviso&product=$PRODUCT&t_lo=2010-02-04&t_hi=2010-02-05&mode=console"

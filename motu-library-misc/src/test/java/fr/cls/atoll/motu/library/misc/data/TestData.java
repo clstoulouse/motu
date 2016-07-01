@@ -30,13 +30,14 @@ package fr.cls.atoll.motu.library.misc.data;
 import fr.cls.atoll.motu.library.misc.MyAuthenticator;
 import fr.cls.atoll.motu.library.misc.Test;
 import fr.cls.atoll.motu.library.misc.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.library.misc.metadata.ProductMetaData;
 import fr.cls.atoll.motu.library.misc.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.library.misc.opendap.server.Aggregation;
 import fr.cls.atoll.motu.library.misc.opendap.server.Catalog;
 import fr.cls.atoll.motu.library.misc.opendap.server.Dataset;
 import fr.cls.atoll.motu.library.misc.opendap.server.Metadata;
 import fr.cls.atoll.motu.library.misc.opendap.server.Service;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

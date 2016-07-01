@@ -1,0 +1,59 @@
+package fr.cls.atoll.motu.web.usl.response.velocity.model.catalog;
+
+import java.util.List;
+
+/**
+ * <br>
+ * <br>
+ * Copyright : Copyright (c) 2016 <br>
+ * <br>
+ * Société : CLS (Collecte Localisation Satellites)
+ * 
+ * @author Sylvain MARTY
+ * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
+ */
+public interface IProduct {
+
+    //// Methods used only for the download part when a file has been extracted
+    boolean hasDownloadUrlPath();
+
+    String getDownloadUrlPath();
+
+    String getExtractFilename();
+
+    boolean isAutoDownloadTimeOutEnable();
+
+    int getAutoDownloadTimeOut();
+
+    boolean isProductDownloadable();
+
+    String getLocationData();
+
+    String getLocationMetaData();
+
+    boolean isProductAlongTrack();
+
+    boolean hasGeoXAxisWithLonEquivalence();
+
+    boolean hasGeoYAxisWithLatEquivalence();
+
+    IProductMetadata getProductMetaData();
+
+    boolean hasCriteriaDateTime();
+
+    IDateTime getCriteriaDateTime();
+
+    boolean hasCriteriaDepth();
+
+    IDepth getCriteriaDepth();
+
+    List<String> getZAxisRoundedDownDataAsString(int desiredDecimalNumberDigits);
+
+    List<String> getZAxisRoundedUpDataAsString(int desiredDecimalNumberDigits);
+
+    List<String> getTimeAxisDataAsString();
+
+    boolean hasLastError();
+
+    String getLastError();
+}

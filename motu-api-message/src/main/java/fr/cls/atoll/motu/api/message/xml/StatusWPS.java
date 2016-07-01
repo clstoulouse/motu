@@ -26,7 +26,7 @@ import org.w3c.dom.Element;
 
 /**
  * 
- * 					Réponse à une requete d'extraction en mode
+ * 					RÃ©ponse Ã  une requete d'extraction en mode
  * 					'status'
  * 				
  * 
@@ -64,7 +64,7 @@ public class StatusWPS {
 
     /**
      * 
-     * 					Réponse à une requete d'extraction en mode
+     * 					RÃ©ponse Ã  une requete d'extraction en mode
      * 					'status'
      * 				Gets the value of the content property.
      * 

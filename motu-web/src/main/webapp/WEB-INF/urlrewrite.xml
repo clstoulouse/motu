@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE urlrewrite
+PUBLIC "-//tuckey.org//DTD UrlRewrite 3.0//EN"
+"http://tuckey.org/res/dtds/urlrewrite3.0.dtd">
+<!-- see : http://urlrewritefilter.googlecode.com/svn/trunk/src/doc/manual/3.1/index.html -->
+
+<urlrewrite>
+	<rule>
+	   <from>^/supervision/(.*)$</from>
+	   <to>/supervision/$1</to>
+	</rule>
+
+	<rule>
+	   <from>^/supervision</from>
+	   <to>/supervision</to>
+	</rule>
+</urlrewrite>

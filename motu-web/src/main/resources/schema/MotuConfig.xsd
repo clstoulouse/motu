@@ -1,0 +1,869 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<!-- ===================  -->
+	<!-- PROXY options        -->
+	<!-- ===================  -->
+	<xs:attributeGroup name="proxyOptions">
+		<xs:annotation>
+			<xs:documentation>
+				PROXY options. 
+			</xs:documentation>
+		</xs:annotation>
+		
+		<xs:attribute name="useProxy" type="xs:boolean" default="false" >
+			<xs:annotation>
+				<xs:documentation>
+					True if an HTTP proxy is used between Motu and a remote connection,
+					false otherwise. Default value is false.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		
+<!-- WARNING - The useFtpProxy option is not used yet - Declared for future developpment  -->
+		<xs:attribute name="useFtpProxy" type="xs:boolean" default="false" >
+			<xs:annotation>
+				<xs:documentation>
+					True if a FTP proxy is used between Motu and a remote connection,
+					false otherwise. Default value is false.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+<!-- WARNING - The useSftpProxy  option is not used yet - Declared for future developpment  -->
+		<xs:attribute name="useSftpProxy" type="xs:boolean" default="false" >
+			<xs:annotation>
+				<xs:documentation>
+					True if a SFTP proxy is used between Motu and a remote connection,
+					false otherwise. Default value is false.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+<!-- WARNING - The useSocksProxy option is not used yet - Declared for future developpment  -->
+		<xs:attribute name="useSocksProxy" type="xs:boolean" default="false" >
+			<xs:annotation>
+				<xs:documentation>
+					True if a SOCKS proxy is used between Motu and a remote connection,
+					false otherwise. Default value is false.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+								
+		<xs:attributeGroup ref="httpProxyOptions" />
+
+<!-- WARNING - The ftpProxyOptions options are not used yet - Declared for future developpment  -->
+		<xs:attributeGroup ref="ftpProxyOptions" />
+<!-- WARNING - The sftpProxyOptions options are not used yet - Declared for future developpment  -->
+		<xs:attributeGroup ref="sftpProxyOptions" />
+<!-- WARNING - The socksProxyOptions options are not used yet - Declared for future developpment  -->
+		<xs:attributeGroup ref="socksProxyOptions" />
+
+		
+	</xs:attributeGroup>
+	
+	<!-- ===================  -->
+	<!-- HTTP PROXY options        -->
+	<!-- ===================  -->
+	<xs:attributeGroup name="httpProxyOptions">
+		<xs:annotation>
+			<xs:documentation>
+				HTTP PROXY options. 
+			</xs:documentation>
+		</xs:annotation>
+		
+		<xs:attribute name="proxyLogin" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					Login to connect to the HTTP proxy
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	
+  		<xs:attribute name="proxyPwd" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					Password to connect to the HTTP proxy
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="proxyHost" type="xs:string" default="proxy-prod.cls.fr">
+			<xs:annotation>
+				<xs:documentation>
+					Name of the HTTP proxy. Ignored if useProxy is false. Default
+					value is proxy-prod.cls.fr).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+		<xs:attribute name="proxyPort" type="xs:string" default="8080">
+			<xs:annotation>
+				<xs:documentation>
+					Port of the HTTP proxy. Ignored if useProxy is false. Default
+					value is 8080).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		
+	</xs:attributeGroup>
+	
+	<!-- ===================  -->
+	<!-- FTP PROXY options        -->
+	<!-- ===================  -->
+	<xs:attributeGroup name="ftpProxyOptions">
+		<xs:annotation>
+			<xs:documentation>
+				FTP PROXY options. 
+			</xs:documentation>
+		</xs:annotation>
+		
+		<xs:attribute name="ftpProxyLogin" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					Login to connect to the FTP proxy
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	
+  		<xs:attribute name="ftpProxyPwd" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					Password to connect to the FTP proxy
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ftpProxyHost" type="xs:string" default="proxy-prod.cls.fr">
+			<xs:annotation>
+				<xs:documentation>
+					Name of the FTP proxy. Ignored if useFtpProxy is false. Default
+					value is proxy-prod.cls.fr).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+		<xs:attribute name="ftpProxyPort" type="xs:string" default="8080">
+			<xs:annotation>
+				<xs:documentation>
+					Port of the FTP proxy. Ignored if useFtpProxy is false. Default
+					value is 8080).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		
+	</xs:attributeGroup>
+	
+	<!-- ===================  -->
+	<!-- SFTP PROXY options        -->
+	<!-- ===================  -->
+	<xs:attributeGroup name="sftpProxyOptions">
+		<xs:annotation>
+			<xs:documentation>
+				SFTP PROXY options. 
+			</xs:documentation>
+		</xs:annotation>
+		
+		<xs:attribute name="sftpProxyLogin" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					Login to connect to the SFTP proxy
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	
+  		<xs:attribute name="sftpProxyPwd" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					Password to connect to the SFTP proxy
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="sftpProxyHost" type="xs:string" default="proxy-prod.cls.fr">
+			<xs:annotation>
+				<xs:documentation>
+					Name of the SFTP proxy. Ignored if useSftpProxy is false. Default
+					value is proxy-prod.cls.fr).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+		<xs:attribute name="sftpProxyPort" type="xs:string" default="8080">
+			<xs:annotation>
+				<xs:documentation>
+					Port of the SFTP proxy. Ignored if useSftpProxy is false. Default
+					value is 8080).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		
+	</xs:attributeGroup>
+
+	<!-- ===================  -->
+	<!-- SOCKS PROXY options        -->
+	<!-- ===================  -->
+	<xs:attributeGroup name="socksProxyOptions">
+		<xs:annotation>
+			<xs:documentation>
+				SOCKS PROXY options. 
+			</xs:documentation>
+		</xs:annotation>
+		
+		<xs:attribute name="socksProxyLogin" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					Login to connect to the SOCKS proxy
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	
+  		<xs:attribute name="socksProxyPwd" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					Password to connect to the SOCKS proxy
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="socksProxyHost" type="xs:string" default="proxy-prod.cls.fr">
+			<xs:annotation>
+				<xs:documentation>
+					Name of the SOCKS proxy. Ignored if useSocksProxy is false. Default
+					value is proxy-prod.cls.fr).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+		<xs:attribute name="socksProxyPort" type="xs:string" default="1080">
+			<xs:annotation>
+				<xs:documentation>
+					Port of the SOCKS proxy. Ignored if useSocksProxy is false. Default
+					value is 1080).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		
+	</xs:attributeGroup>
+	<!-- ===================  -->
+	<!-- FTP options          -->
+	<!-- ===================  -->
+
+	<xs:attributeGroup name="ftpOptions">
+		<xs:annotation>
+			<xs:documentation>
+				FTP communication options. 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="ftpUserDirIsRoot" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					true: use user directory as root (do not change to
+					filesystem root).
+					false: use filesystem directory as root (do change
+					to filesystem root).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ftpPassiveMode" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					true: enter into passive mode,
+					false: do not enter into passive mode 
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ftpDataTimeOut" type="xs:duration" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					Sets the data timeout for the ftp client.
+					If you don't set any data timeout no data timeout will be set on the ftp
+					client.
+
+					Value is
+					stated in standard duration.
+					The duration data type is used to
+					specify a time interval.
+
+					The time interval is specified in the
+					following form "PnYnMnDTnHnMnS"
+					where:
+
+					* P indicates the period
+					(required)
+					* nY indicates the number of years
+					* nM indicates the
+					number of months
+					* nD indicates the number of days
+					* T indicates the
+					start of a time section (required if you are
+					going to specify
+					hours, minutes, or seconds)
+					* nH indicates the number of hours
+					* nM indicates the number of minutes
+					* nS indicates the number of
+					seconds
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
+
+
+	<!-- ===================  -->
+	<!-- SFTP options          -->
+	<!-- ===================  -->
+	<xs:attributeGroup name="sftpOptions">
+		<xs:annotation>
+			<xs:documentation>
+				FTP communication options. 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="sftpUserDirIsRoot" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					true: use user directory as root (do not change to
+					filesystem root).
+					false: use filesystem directory as root (do change
+					to filesystem root).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="sftpSessionTimeOut" type="xs:duration"
+			default="PT0M">
+			<xs:annotation>
+				<xs:documentation>
+					The timeout value on a sftp session.
+					Value is
+					stated in standard duration.
+					The duration data type is used to
+					specify a time interval.
+
+					The time interval is specified in the
+					following form "PnYnMnDTnHnMnS"
+					where:
+
+					* P indicates the period
+					(required)
+					* nY indicates the number of years
+					* nM indicates the
+					number of months
+					* nD indicates the number of days
+					* T indicates the
+					start of a time section (required if you are
+					going to specify
+					hours, minutes, or seconds)
+					* nH indicates the number of hours
+					* nM
+					indicates the number of minutes
+					* nS indicates the number of
+					seconds						
+					</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="strictHostKeyChecking" default="no">
+			<xs:annotation>
+				<xs:documentation>
+					Configure the host key checking to use.
+					Valid
+					arguments are only 'yes' and 'no'.
+					</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="yes" />
+					<xs:enumeration value="no" />
+				</xs:restriction>
+			</xs:simpleType>
+
+		</xs:attribute>
+	</xs:attributeGroup>
+	
+	<!-- ===================  -->
+	<!-- File System configuration   -->
+	<!-- ===================  -->
+
+	<xs:complexType name="configFileSystemType">
+		<xs:annotation>
+			<xs:documentation>
+			 File system configuration.
+			 Allows to set protocol communication options and parameters for a host.
+			</xs:documentation>
+		</xs:annotation>
+		
+		<xs:attribute name="host" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					DNS or IP address of the host to configure.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		
+<!-- WARNING - The proxyOptions options are not used yet for configFileSystemType - Declared for future developpment  -->
+		<xs:attributeGroup ref="proxyOptions" />
+		<xs:attributeGroup ref="ftpOptions" />
+    	<xs:attributeGroup ref="sftpOptions" />
+		
+	</xs:complexType>	
+	
+
+	<!-- ===================  -->
+	<!-- Motu configuration   -->
+	<!-- ===================  -->
+	<xs:element name="motuConfig">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" minOccurs="0"
+					name="configService" type="configService">
+				</xs:element>
+				<xs:element name="queueServerConfig"
+					type="queueServerType" maxOccurs="1" minOccurs="1">
+				</xs:element>
+				<xs:element name="configFileSystem" minOccurs="0"
+					maxOccurs="unbounded" type="configFileSystemType">
+				</xs:element>
+			</xs:sequence>
+			<!--
+				defaultService : The service name when no service is specified.
+			-->
+			<xs:attribute name="defaultService" type="xs:string"
+				default="aviso_nrt" />
+			<!--
+				useAuthentication True if users have to be authenticated, false
+				otherwise. Default value is false.
+			-->
+			<xs:attribute name="logFormat" type="xs:string"></xs:attribute>
+			<xs:attribute name="useAuthentication" type="xs:boolean"
+				default="false" />
+			<xs:attribute name="authFilePath" type="xs:string"
+				use="optional">
+				<xs:annotation>
+					<xs:documentation>
+						Path to the file that contains authentication
+						data (login, pwd).
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+
+			<!--
+				dataBlockSize : The number for data in Kilobytes that can be read in
+				the same time.
+			-->
+			<xs:attribute name="dataBlockSize" type="xs:integer"
+				default="2048" />
+			<!--
+				maxSizePerFile : The number for data in Megabytes that can be
+				written and download for a Netcdf file.
+			-->
+			<xs:attribute name="maxSizePerFile" type="xs:integer"
+				default="1024" />
+			<!--
+				maxSizePerFileTDS : The number for data in Megabytes that can be
+				written and download for a Netcdf file.
+			-->
+			<xs:attribute name="maxSizePerFileTDS" type="xs:integer"
+				default="1024" />
+			<!--
+				extractionPath : The absolute path where to extract (write) files.
+			-->
+			<xs:attribute name="extractionPath" type="xs:string"
+				use="required" />
+			<!--
+				downloadHttpUrl : Http virtual path corresponding to the attribute
+				<extractionPath>.
+			-->
+			<xs:attribute name="downloadHttpUrl" type="xs:string"
+				use="required" />
+			<!--
+				httpDocumentRoot : http url of the document root of the servlet
+				server.
+			-->
+			<xs:attribute name="httpDocumentRoot" type="xs:string"
+				use="required" />
+
+			<!-- WARNING - Within proxyOptions, only http proxy options are used - The others are declared for future developpment  -->
+			<xs:attributeGroup ref="proxyOptions" />
+			<xs:attributeGroup ref="ftpOptions" />
+			<xs:attributeGroup ref="sftpOptions" />
+
+			<xs:attribute name="cleanRequestInterval" default="60">
+				<xs:annotation>
+					<xs:documentation>
+						The waiting period admitted to keep the status
+						response of an extraction data request. Value is
+						stated in minutes.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="1" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="cleanExtractionFileInterval"
+				default="60">
+				<xs:annotation>
+					<xs:documentation>
+						The waiting period admitted to keep the file
+						that results of an extraction data request.
+						Value is stated in minutes.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="1" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="extractionFilePatterns" type="xs:string"
+				default=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|wps_output_.*$|wps_response_.*$">
+				<xs:annotation>
+					<xs:documentation>
+						Patterns (as regular expression) that match
+						extraction file to delete.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="extractionFileCacheSize" default="0">
+				<xs:annotation>
+					<xs:documentation>
+						The maximum value allowed to the cache during
+						extraction. Beyond this value, the older
+						extracted files are quite frequently deleted
+						until the maximum value is raised. The frequency
+						corresponds to the runCleanInterval attribute.
+						Value is stated in mega-bytes (Mo). Value must
+						be positive or zero. If value is zero: no
+						delete.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="0" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="runCleanInterval" default="1">
+				<xs:annotation>
+					<xs:documentation>
+						The interval period to run clean request and
+						extraction file. Value is stated in minutes.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="1" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="runGCInterval" default="0">
+				<xs:annotation>
+					<xs:documentation>
+						The interval period to force run garbage
+						collector Value is stated in minutes and must
+						bue positive or zero. If value is zero: no
+						force.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="0" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<!--
+				casRestUrlSuffix : The relative path to the CAS REST API.
+			-->
+			<xs:attribute name="casRestUrlSuffix" type="xs:string"
+				default="/v1/tickets">
+				<xs:annotation>
+					<xs:documentation>
+						The relative path to the CAS REST API (i.e th
+						servlet mapping of 'restlet' servlet').
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<!--
+				commonVeloTemplatePrefix : Common velocity template prefix name
+				(distinct from service velocity template)
+			-->
+			<xs:attribute name="commonVeloTemplatePrefix"
+				type="xs:string" default="motu" />
+
+			<!--
+				defaultLanguage: Common default language used (can be UK or FR)
+				(distinct from service velocity template)
+			-->
+			<xs:attribute name="commonDefaultLanguage" type="xs:string"
+				default="UK" />
+
+			<!-- httpBaseRef:
+				Http base reference of the service site.
+			-->
+			<xs:attribute name="httpBaseRef" type="xs:string"
+				default="http://resources.myocean.eu" />
+
+			<!--
+				defaultActionIsListServices: If true and when no 'action' parameter
+				is specified : the default request processes is 'list available
+				services'. Otherwise the default request is 'list available products
+				of the default service' (see defaultService)
+			-->
+			<xs:attribute name="defaultActionIsListServices"
+				type="xs:boolean" default="false" />
+
+		</xs:complexType>
+
+	</xs:element>
+
+
+	<!-- ===================  -->
+	<!-- Service description   -->
+	<!-- ===================  -->
+
+	<xs:complexType name="configService">
+		<xs:sequence>
+			<!-- catalog :
+				catalog description.
+			-->
+			<xs:element name="catalog" type="catalogService" />
+		</xs:sequence>
+		<!-- name :
+			name of the service.
+		-->
+		<xs:attribute name="name" type="xs:string" />
+		<!-- description :
+			description of the service.
+		-->
+		<xs:attribute name="description" type="xs:string" />
+		<!-- group :
+			group (category) of the service.
+		-->
+		<xs:attribute name="group" type="xs:string" />
+		<!--
+			defaultgroupService : set if this service is the default for the
+			group. default value is false.
+		-->
+		<xs:attribute name="defaultGroupService" type="xs:boolean"
+			default="false" />
+		<!-- veloTemplatePrefix :
+			velocity template prefix name.
+		-->
+		<xs:attribute name="veloTemplatePrefix" type="xs:string" />
+		<!-- httpBaseRef:
+			Http base reference of the service site.
+		-->
+		<xs:attribute name="httpBaseRef" type="xs:string" />
+		<!-- defaultLanguage:
+			Default language used (can be UK or FR)
+		-->
+		<xs:attribute name="defaultLanguage" type="xs:string"
+			default="UK" />
+
+		<!-- profiles :
+			Profiles associated to a service (ex-> "group1,group2,...,groupN") ?
+		-->
+		<xs:attribute name="profiles" type="xs:string" use="optional"/>
+
+		<xs:attribute name="keepDataFilesList" type="xs:boolean"
+			default="false">
+			<xs:annotation>
+				<xs:documentation>
+					Used only for FTP service.
+					True : the lists of data files of the products are kept in memory.
+					False : the lists of data files of the products are not kept and
+					loaded when necessary (for each extraction request).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="downloadOnTop" type="xs:boolean"
+			default="true">
+			<xs:annotation>
+				<xs:documentation>
+					Used only Motu HTML Interface (mode REST).
+					True (default): links the dataset url (shows on the catalog dataset list) links to the download HTML page.
+					False: links the dataset url (shows on the catalog dataset list) links to the metadata HTML page.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		
+	</xs:complexType>
+
+	<!-- =================================  -->
+	<!-- Catalog description for a service  -->
+	<!-- =================================  -->
+
+	<xs:complexType name="catalogService">
+		<!-- name :
+			catalog file name.
+		-->
+		<xs:attribute name="name" type="xs:string" />
+		<!-- urlSite :
+			url base of the catalog.
+		-->
+		<xs:attribute name="urlSite" type="xs:string" />
+		<!-- type :
+			catalog type (ie. opendap).
+		-->
+		<xs:attribute name="type" type="xs:string" />
+
+		<!-- casAuthentication :
+			Service needs CAS authentication ?
+		-->
+		<xs:attribute name="casAuthentication" type="xs:boolean"
+			default="false" />
+
+		<!--
+			protocol : protocol scheme (ie. http, ftp, sftp, gsiftp).
+		-->
+		<!--
+			<xs:attribute name="protocol" use="optional" default="http">
+			<xs:simpleType> <xs:restriction base="xs:string"> <xs:enumeration
+			value="http" /> <xs:enumeration value="ftp" /> <xs:enumeration
+			value="sftp" /> <xs:enumeration value="gsiftp" /> </xs:restriction>
+			</xs:simpleType> </xs:attribute>
+		-->
+		<xs:attribute name="ncss" type="xs:string"></xs:attribute>
+	</xs:complexType>
+
+	<!-- ===================  -->
+	<!-- Queue  description   -->
+	<!-- ===================  -->
+
+	<xs:complexType name="queueType">
+		<xs:annotation>
+			<xs:documentation>A Queue Settings</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="maxPoolSize" minOccurs="0" maxOccurs="1"
+				default="-1">
+				<xs:annotation>
+					<xs:documentation>
+						The maximum requests number allowed in the queue
+						(requests that have been shelved or are in
+						progress in the queue).
+						A negative or zero value
+						means 'unlimited'
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:short">
+						<xs:minInclusive value="-1" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="maxThreads" minOccurs="0" maxOccurs="1"
+				default="1">
+				<xs:annotation>
+					<xs:documentation>
+						The maximum simultaneous number of requests
+						(threads) the queue have to process..
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:unsignedShort">
+						<xs:minInclusive value="1" />
+						<xs:maxInclusive value="10" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="dataThreshold" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Amount of extracted data this queue stands for.
+						Requests those amount of extracted data is
+						beyond this value (in
+						MegaBytes) are not stored
+						in this queue.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:float">
+						<xs:minInclusive value="1.0" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="lowPriorityWaiting" minOccurs="1"
+				maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The waiting period admitted to the low priority
+						requests. Beyond this period, low requests have
+						high priority.
+						Value is stated in minutes.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:short">
+						<xs:minInclusive value="1" />
+						<xs:maxInclusive value="15" />
+					</xs:restriction>
+				</xs:simpleType>
+
+			</xs:element>
+		</xs:all>
+		<xs:attribute name="id" type="xs:string" use="required" />
+		<xs:attribute name="description" type="xs:string" />
+		<xs:attribute name="batch" type="xs:boolean" default="false">
+			<xs:annotation>
+				<xs:documentation>
+					Batch queue are used to undegrounded job.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<!-- ===================  -->
+	<!-- Queue server description   -->
+	<!-- ===================  -->
+
+	<xs:complexType name="queueServerType">
+		<xs:annotation>
+			<xs:documentation>Queue Server Settings</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element minOccurs="1" maxOccurs="unbounded" name="queues"
+				type="queueType">
+			</xs:element>
+		</xs:sequence>
+
+		<xs:attribute name="defaultPriority" default="2">
+			<xs:annotation>
+				<xs:documentation>
+					The default priority
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:short">
+					<xs:minInclusive value="1" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+
+		<xs:attribute name="maxPoolAnonymous" default="10">
+			<xs:annotation>
+				<xs:documentation>
+					The maximum requests number allowed for a same
+					anonymous user. A negative or zero value means
+					'unlimited'
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:short">
+					<xs:minInclusive value="-1" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="maxPoolAuth" default="1">
+			<xs:annotation>
+				<xs:documentation>
+					The maximum requests number allowed for a same
+					authenticated user. A negative or zero value means
+					'unlimited'
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:short">
+					<xs:minInclusive value="-1" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+
+	</xs:complexType>
+	
+</xs:schema>
