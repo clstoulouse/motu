@@ -17,7 +17,7 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
  * @author Sylvain MARTY
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class QueueJob implements IQueueJob {
+public class QueueJob implements IQueueJob, Comparable<IQueueJob> {
 
     private QueueJobListener queueJobListener;
     private ExtractionParameters extractionParameters;
@@ -71,6 +71,14 @@ public class QueueJob implements IQueueJob {
     @Override
     public ExtractionParameters getExtractionParameters() {
         return extractionParameters;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int compareTo(IQueueJob o) {
+        // In version 2.x Motu managed priorities, now it does not.
+        // But as a priority queue, is already used, we keep this comparable implementation
+        return 0;
     }
 
 }
