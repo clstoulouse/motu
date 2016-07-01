@@ -720,7 +720,7 @@ public class VelocityModelConverter {
 
             @Override
             public String getEndTimeCoverageAsUTCString() {
-                return productMetaData_.getGeoBBoxLatMaxAsString();
+                return productMetaData_.getEndTimeCoverageAsUTCString();
             }
 
             @Override
@@ -750,7 +750,87 @@ public class VelocityModelConverter {
 
             @Override
             public boolean hasGeoXYAxis() {
-                return productMetaData_.hasLatLonAxis();
+                return productMetaData_.hasGeoXYAxis();
+            }
+
+            @Override
+            public String getLonNormalAxisMinValue() {
+                return Double.toString(productMetaData_.getLonNormalAxisMinValue());
+            }
+
+            @Override
+            public String getLonNormalAxisMaxValue() {
+                return Double.toString(productMetaData_.getLonNormalAxisMaxValue());
+            }
+
+            @Override
+            public String getLatNormalAxisMinValue() {
+                return Double.toString(productMetaData_.getLatNormalAxisMinValue());
+            }
+
+            @Override
+            public String getLatNormalAxisMaxValue() {
+                return Double.toString(productMetaData_.getLatNormalAxisMaxValue());
+            }
+
+            @Override
+            public String getGeoXAxisMinValueAsLonNormal(Product p) {
+                try {
+                    return Double.toString(productMetaData_.getGeoXAxisMinValueAsLonNormal(p));
+                } catch (Exception e) {
+                    LOGGER.error("Converting Product metadata to be used in Velocity", e);
+                }
+                return "";
+            }
+
+            @Override
+            public String getGeoXAxisMaxValueAsLonNormal(Product p) {
+                try {
+                    return Double.toString(productMetaData_.getGeoXAxisMaxValueAsLonNormal(p));
+                } catch (Exception e) {
+                    LOGGER.error("Converting Product metadata to be used in Velocity", e);
+                }
+                return "";
+            }
+
+            @Override
+            public String getGeoYAxisMinValueAsLatNormal(Product p) {
+                try {
+                    return Double.toString(productMetaData_.getGeoYAxisMinValueAsLatNormal(p));
+                } catch (Exception e) {
+                    LOGGER.error("Converting Product metadata to be used in Velocity", e);
+                }
+                return "";
+            }
+
+            @Override
+            public String getGeoYAxisMaxValueAsLatNormal(Product p) {
+                try {
+                    return Double.toString(productMetaData_.getGeoYAxisMaxValueAsLatNormal(p));
+                } catch (Exception e) {
+                    LOGGER.error("Converting Product metadata to be used in Velocity", e);
+                }
+                return "";
+            }
+
+            @Override
+            public String getGeoXAxisMinValue() {
+                return Double.toString(productMetaData_.getGeoXAxisMinValue());
+            }
+
+            @Override
+            public String getGeoXAxisMaxValue() {
+                return Double.toString(productMetaData_.getGeoXAxisMaxValue());
+            }
+
+            @Override
+            public String getGeoYAxisMinValue() {
+                return Double.toString(productMetaData_.getGeoYAxisMinValue());
+            }
+
+            @Override
+            public String getGeoYAxisMaxValue() {
+                return Double.toString(productMetaData_.getGeoYAxisMaxValue());
             }
         };
     }
