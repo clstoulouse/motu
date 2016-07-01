@@ -103,7 +103,14 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         }
 
         StringBuffer location = new StringBuffer();
-        location.append(catalogRef.getUrlPath());
+        String catalogRefUrlPath = catalogRef.getUrlPath();
+        if (catalogRefUrlPath == null) {
+            catalogRefUrlPath = cd.getUrlSite();
+        }
+        location.append(catalogRefUrlPath);
+        if (!location.toString().endsWith("/")) {
+            location.append("/");
+        }
         for (String path : listCatalogRefSubPaths) {
             location.append(path);
             location.append("/");
