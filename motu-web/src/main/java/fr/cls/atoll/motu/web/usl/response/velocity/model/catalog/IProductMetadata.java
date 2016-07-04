@@ -2,6 +2,8 @@ package fr.cls.atoll.motu.web.usl.response.velocity.model.catalog;
 
 import java.util.List;
 
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+
 /**
  * <br>
  * <br>
@@ -121,5 +123,29 @@ public interface IProductMetadata {
     boolean hasGeographicalAxis();
 
     ITimeAxis getTimeAxis();
+
+    String getLonNormalAxisMinValue();
+
+    String getLonNormalAxisMaxValue();
+
+    String getLatNormalAxisMinValue();
+
+    String getLatNormalAxisMaxValue();
+
+    String getGeoXAxisMinValueAsLonNormal(Product p);
+
+    String getGeoXAxisMaxValueAsLonNormal(Product p);
+
+    String getGeoYAxisMinValueAsLatNormal(Product p);
+
+    String getGeoYAxisMaxValueAsLatNormal(Product p);
+
+    String getGeoXAxisMinValue();
+
+    String getGeoXAxisMaxValue();
+
+    String getGeoYAxisMinValue();
+
+    String getGeoYAxisMaxValue();
 
 }

@@ -491,8 +491,8 @@
 		<!-- <module>../motu-library-misc</module> -->
 		<module>../motu-web</module>
 		
-		<module>../motu-distribution</module>
 		<module>../motu-scripts</module>
+		<module>../motu-distribution</module>
 	</modules>
 
 	<build>
