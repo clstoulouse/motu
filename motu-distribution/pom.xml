@@ -28,7 +28,7 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>motu-scripts</artifactId>
 			<version>${project.version}</version>
-            <classifier>delivery</classifier>
+           <!-- <classifier>delivery</classifier>  -->
 			<type>tar.gz</type>
 		</dependency>
 	</dependencies>
