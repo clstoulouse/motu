@@ -1,6 +1,8 @@
 package fr.cls.atoll.motu.web.dal.request;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Set;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
@@ -103,15 +105,70 @@ public class DALRequestManager implements IDALRequestManager {
 
         // Create and initialize selection
         NetCdfSubsetService ncss = new NetCdfSubsetService();
-        ncss.setGeoSubset(latlon);
         ncss.setTimeSubset(time);
         ncss.setDepthSubset(depth);
         ncss.setVariablesSubset(var);
         ncss.setOutputFormat(dataOutputFormat);
-        ncss.setOutputDir(extractDirPath);
-        ncss.setOutputFile(fname);
         ncss.setncssURL(p.getLocationDataNCSS());
 
+        System.out.println("Right long : " + latlon.getLowerLeftLon());
+        System.out.println("Left long : " + latlon.getLowerRightLon());
+
+        // Check if the Left longitude is greater than the right longitude
+        if (latlon.getLowerLeftLon() > latlon.getLowerRightLon()) {
+            // In this case, thredds needs 2 requests to retrieve the data.
+            // one from the left longitude to 180 and the secund from -180 to the right longitude.
+            ExtractCriteriaLatLon leftLonReq = new ExtractCriteriaLatLon(
+                    latlon.getLowerLeftLat(),
+                    latlon.getLowerLeftLon(),
+                    latlon.getUpperRightLat(),
+                    180);
+            ExtractCriteriaLatLon rightLonReq = new ExtractCriteriaLatLon(
+                    latlon.getLowerLeftLat(),
+                    -180,
+                    latlon.getUpperRightLat(),
+                    latlon.getLowerRightLon());
+
+            // Create a temporary directory into tmp directory to save the 2 generated file
+            Path tempDirectory = Files.createTempDirectory("LeftAndRightRequest");
+            ncss.setOutputDir(tempDirectory.toString());
+            System.out.println("Temporary Directory : " + tempDirectory.toString());
+
+            System.out.println("product message error : " + p.getLastError());
+
+            ncss.setGeoSubset(leftLonReq);
+            ncss.setOutputFile("left-" + fname);
+            System.out.println("Left file name : " + ncss.getOutputFile());
+            ncssRequest(p, ncss);
+
+            System.out.println("product message error after left request: " + p.getLastError());
+
+            ncss.setGeoSubset(rightLonReq);
+            ncss.setOutputFile("right-" + fname);
+            System.out.println("right file name : " + ncss.getOutputFile());
+            ncssRequest(p, ncss);
+
+            System.out.println("product message error after right request: " + p.getLastError());
+
+            // Concatenate with NCO
+            String cmd = "cdo merge " + tempDirectory + "/* " + extractDirPath + "/" + fname;
+            System.out.println("Concat Request : " + cmd);
+            Process process = Runtime.getRuntime().exec(cmd);
+            process.waitFor();
+
+            // Cleanup directory and intermediate files (right away once concat)
+            // FileUtils.deleteDirectory(tempDirectory.toFile());
+
+        } else {
+            ncss.setOutputFile(fname);
+            ncss.setOutputDir(extractDirPath);
+            ncss.setGeoSubset(latlon);
+            ncssRequest(p, ncss);
+        }
+    }
+
+    private void ncssRequest(Product p, NetCdfSubsetService ncss)
+            throws MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, IOException, InterruptedException {
         // Run rest query (unitary or concat depths)
         Array zAxisData = null;
         if (p.getProductMetaData().hasZAxis() && p.isDatasetGrid()) {

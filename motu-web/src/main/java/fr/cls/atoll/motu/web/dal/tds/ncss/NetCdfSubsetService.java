@@ -349,6 +349,10 @@ public class NetCdfSubsetService {
         String west = String.valueOf(geoSubset.getUpperLeftLon());
         String east = String.valueOf(geoSubset.getUpperRightLon());
         String south = String.valueOf(geoSubset.getLowerLeftLat());
+        System.out.println("north : " + north);
+        System.out.println("west : " + west);
+        System.out.println("east : " + east);
+        System.out.println("south : " + south);
 
         // Temporal subset (W3C format supported by TDS)
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
