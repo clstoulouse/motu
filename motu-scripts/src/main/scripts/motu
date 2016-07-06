@@ -256,13 +256,24 @@ __setPathWithCdoTools() {
 __checkCDOToolAvailable() {
   cdoFilePath="$(which cdo)"
   if [ -z "$cdoFilePath" ] ; then
+     echo
      echo "ERROR: cdo tool is not available, please check that it has been installed"
-     exit 20;  
-  #else
-  #   echo "CDO tools path=$cdoFilePath"
+     echo
+     exit 20;
+  else
+     cdo --version &> /dev/null
+     local cdoVersionReturnCode=$?
+     if [ $cdoVersionReturnCode -ne 0 ]; then
+        echo
+        echo "ERROR: cdo tool does not run well: \$cdo --version"
+        cdo --version
+        echo
+        echo "CDO tools path=$cdoFilePath"
+        exit 21
+     fi
   fi
-
 }
+
 
 __setMotuBusinessEnvVar() {
   export JAVA_HOME=$MOTU_PRODUCTS_JAVA_DIR

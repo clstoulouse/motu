@@ -108,13 +108,9 @@ public class QueueManagement {
         // If queue is full, throws new MotuExceedingQueueCapacityException
         checkMaxQueueSize();
 
-        // runnableExtraction.setQueueId(queueConfig.getId());
-        // runnableExtraction.setQueueDesc(queueConfig.getDescription());
-
         try {
-            // runnableExtraction.setInQueue();
-            threadPoolExecutor.onNewRequestForUser(runnableExtraction.getExtractionParameters().getUserId());
-
+            threadPoolExecutor.onNewRequestForUser(runnableExtraction.getExtractionParameters().isAnonymousUser() ? null
+                    : runnableExtraction.getExtractionParameters().getUserId());
             threadPoolExecutor.execute(runnableExtraction);
         } catch (RejectedExecutionException e) {
             throw new MotuException("ERROR Execute request", e);
@@ -179,7 +175,7 @@ public class QueueManagement {
      * @return the int
      */
     public int countRequestUser(String userId) {
-        Integer nbRqtForuser = threadPoolExecutor.getUsersRequestNumberMap().get(userId);
+        Integer nbRqtForuser = threadPoolExecutor.getRequestCount(userId);
         return nbRqtForuser != null ? nbRqtForuser : 0;
     }
 

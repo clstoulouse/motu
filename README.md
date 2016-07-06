@@ -19,6 +19,9 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
 * [Packaging](#Packaging)
 * [Installation](#Installation)
 * [Configuration](#Configuration)
+  * [Configuration directory structure](#ConfigurationFolderStructure)
+  * [Business settings](#ConfigurationBusiness)
+  * [System settings](#ConfigurationSystem)
 * [Start, Stop and Motu commands](#SS)
 
 #<a name="Overview">Overview</a>
@@ -106,7 +109,7 @@ Three folders are built containing archives :
 
 #<a name="Installation">Installation</a>
 ## Install Motu from archives files  
-### Install Motu on a <a name="IntallDU">Distribution Unit</a>  
+### Install Motu on a <a name="IntallDU">Dissemination Unit</a>  
 
 Copy the installation archives and unzip them.  
 ```
@@ -188,27 +191,42 @@ The configuration is described for Apache2
 
 #<a name="Configuration">Configuration</a>
 
-This chapter describes the Motu configuration settings.
+This chapter describes the Motu configuration settings.  
+All the configuration files are set in the $installDir/motu/config folder.  
 
-## Configuration directory structure
+* [Configuration directory structure](#ConfigurationFolderStructure)
+* [Business settings](#ConfigurationBusiness)
+* [System settings](#ConfigurationSystem)
+  
+##<a name="ConfigurationFolderStructure">Configuration directory structure</a>
 cd $installDir/motu/config
   
 * __config:__ Folder which contains the motu configuration files.
   * __motu.properties:__ JVM memory, network ports of JVM (JMX, Debug) and Tomcat (HTTP, HTTPS, AJP, SHUTDOWN). CAS SSO server settings.
-  * __motuConfiguration.xml:__ Motu settings (Service, Catalog via Threads, Proxy, Queues, ....)
+  * __motuConfiguration.xml:__ Motu settings (Service, Catalog via Thredds, Proxy, Queues, ....)
   * __log4j.xml:__ Log4j v2 configuration file
   * __standardNames.xml:__ Contains the standard names [TBD]
   * __version-configuration.txt:__ Contains the version of the current Motu configuration.
   
-## Settings details  
-### motuConfiguration.xml: Motu settings  
+##<a name="ConfigurationBusiness">Business settings</a>
+### motuConfiguration.xml: Motu business settings  
 
-#### Attributes defined in motuConfig node
+You can configure 3 main categories:  
+
+* [MotuConfig node : general settings](#BSmotuConfig)
+* [ConfigService node : catalog settings](#BSconfigService)
+* [QueueServerConfig node : request queue settings](#BSqueueServerConfig)
+
+####<a name="BSmotuConfig">Attributes defined in motuConfig node</a>
 
 ##### defaultService  
 A string representing the default action in the URL /Motu?action=$defaultService  
 The default one is "listservices".  
 All values can be found in the method USLRequestManager#onNewRequest with the different ACTION_NAME.  
+
+##### logFormat  
+A string either "xml" or "cvs" to select the format in which log message are written.  
+If this attribute is not set, the default format is "xml".  
 
 ##### dataBlockSize
 Number of data in Ko that can be read in the same time. Default is 2048Kb.
@@ -223,15 +241,20 @@ Number of data in Megabytes that can be written and download for a Netcdf file. 
 ##### extractionPath
 The absolute path where files downloaded from TDS are stored.  
 For example: /opt/cmems-cis/motu/data/download
+It is recommended to have an hard drive with very good performances in write mode.
+It is recommended to have a dedicated partition disk to avoid freezing Motu if the hard drive is full.
 
 ##### downloadHttpUrl
-Http URL corresponding to the attribute <extractionPath>. It is used to allow users to download product files.
-String with format ${var} will be substituted with Java property variables. @See System.getProperty(var)
+Http URL used to download files stored in the "extractionPath" described above. It is used to allow users to download the result data files.  
+This URL is concatenated to the result data file name found in the folder "extractionPath".  
+When a frontal HTTPd server is used, it is this URL that shall be configured to access to the folder "extractionPath".  
+String with format ${var} will be substituted with Java property variables. @See System.getProperty(var)  
 
 ##### <a name="motuConfig-httpBaseRef">httpBaseRef</a>
 Http URL used to serve files from to the path where archive __motu-web-static-files-X.Y.Z-classifier-buildId.tar.gz__ has been extracted.  
 For example: This value http://resources.myocean.eu server a folder which contains motu/css/motu/motu.css.  
 It so enable to server http://resources.myocean.eu/motu/css/motu/motu.css
+
         
 ##### cleanExtractionFileInterval
 In minutes, the waiting period admitted to keep the file that results of an extraction data request.  
@@ -271,12 +294,10 @@ Document root of the servlet server.
         
 ##### useAuthentication
 @Deprecated from v3 This parameter is not used. It is redundant with parameter config/motu.properties#cas-activated.
-* __useAuthentication__
 
 
 ##### defaultActionIsListServices
-@Deprecated from v3 This parameter is not used.
-* __defaultActionIsListServices__  
+@Deprecated from v3 This parameter is not used.  
 
 ##### Configure the Proxy settings  
 @Deprecated from v3 This parameter is not used.
@@ -289,7 +310,7 @@ Proxy settings are not used on Motu:
 * __proxyPwd__
 
 
-#### Attributes defined in configService node
+#### <a name="BSconfigService">Attributes defined in configService node</a>
 
 ##### name
 String to set the config service name
@@ -309,7 +330,7 @@ In the frame of CMEMS, three profiles exist:
 * major: major accounts  
 * external: external users  
 
-Otherwise, it’s possible to configure as many profiles as needed.  
+Otherwise, it's possible to configure as many profiles as needed.  
 Profiles are configured in LDAP within the attribute "memberUid" of each user. This attribute is read by CAS and is sent to Motu 
 once a user is logged in, in order to check if it matches profiles configured in Motu to allow a user accessing the data.  
 In LDAP, "memberUid" attribute can be empty, contains one value or several values separated by a comma.  
@@ -346,7 +367,7 @@ TDS URL
 For example: http://$ip:$port/thredds/
 
 
-#### Attributes defined in queueServerConfig
+####<a name="BSqueueServerConfig">Attributes defined in queueServerConfig node</a>
 
 ##### maxPoolAnonymous
 Maximum number of request that an anonymous user can send to Motu before throwing an error message.  
@@ -392,6 +413,57 @@ If the request size if higher than the bigger queue dataThreshold, request is no
 ##### Child node: lowPriorityWaiting
 @Deprecated from v3 This parameter is not used.
 
+##<a name="ConfigurationSystem">System settings</a>
+
+### motu.properties: Motu system settings  
+
+#### Java options
+The three parameters below are used to tune the Java Virtual Machine:  
+   # -server: tells the Hostspot compiler to run the JVM in "server" mode (for performance)  
+tomcat-motu-jvm-javaOpts=-server -Xmx4096M -Xms512M -XX:PermSize=128M -XX:MaxPermSize=512M  
+tomcat-motu-jvm-port-jmx=9010  
+tomcat-motu-jvm-address-debug=9090  
+
+
+#### Tomcat network ports
+The parameters below are used to set the different network ports used by Apache Tomcat.  
+At startup, these ports are set in the file "$installdir/motu/tomcat-motu/conf/server.xml".  
+But if this file already exist, it won't be replaced. So in order to apply these parameters, remove the file "$installdir/motu/tomcat-motu/conf/server.xml".
+tomcat-motu-port-http=9080  
+  # HTTPs is in a common way managed from a frontal Apache HTTPd server. If you really need to use it from Tomcat, you have to tune the SSL certificates and the protocols directly in the file "$installdir/motu/tomcat-motu/conf/server.xml".
+tomcat-motu-port-https=9443  
+tomcat-motu-port-ajp=9009  
+tomcat-motu-port-shutdown=9005  
+
+
+
+#### CAS SSO server
+
+   # true or false to enable the SSO connection to a CAS server
+cas-activated=false
+  
+   # Cas server configuration to allow Motu to access to it  
+   # @see https://wiki.jasig.org/display/casc/configuring+the+jasig+cas+client+for+java+in+the+web.xml  
+     
+   # The Cas server URL
+cas-server-url=https://cas-cis.cls.fr/cas  
+   # The Motu HTTP server url: example: http://misgw-ddo-qt.cls.fr:9080 or http://motu.cls.fr   
+cas-auth-serverName=http://$motuServerIp:$motuServerPort 
+   # The proxy callback HTTP URL on the Motu server (this URL can be defined on the frontal Apache HTTPs server)
+cas-validationFilter-proxyCallbackUrl=http://$motuServerIp:$motuServerPort/motu-web/proxyCallback
+
+#### Supervision
+To enable the status supervision, set the parameter below:
+tomcat-motu-urlrewrite-statusEnabledOnHosts=localhost,*.cls.fr
+
+This parameter is used to set the property below in the WEB.XML file:
+        <init-param>
+            <param-name>statusEnabledOnHosts</param-name>
+            <param-value>${tomcat-motu-urlrewrite-statusEnabledOnHosts}</param-value>
+        </init-param>
+        
+For more detail read:
+org.tuckey UrlRewriteFilter FILTERS : see http://urlrewritefilter.googlecode.com/svn/trunk/src/doc/manual/3.1/index.html
 
 
 #<a name="SS">Start, Stop and Motu commands</a>  

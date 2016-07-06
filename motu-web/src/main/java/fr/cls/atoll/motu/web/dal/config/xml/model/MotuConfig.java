@@ -305,7 +305,7 @@ public class MotuConfig {
      */
     public String getLogFormat() {
         if (logFormat == null) {
-            return "csv";
+            return "xml";
         } else {
             return logFormat;
         }

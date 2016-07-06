@@ -29,6 +29,7 @@ import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
+import fr.cls.atoll.motu.web.dal.config.xml.model.QueueServerType;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
@@ -54,10 +55,13 @@ public class BLLRequestManager implements IBLLRequestManager {
     private IRequestIdManager requestIdManager;
     private Map<Long, RequestDownloadStatus> requestIdStatusMap;
     private IQueueServerManager queueServerManager;
+    private UserRequestCounter userRequestCounter;
 
     public BLLRequestManager() {
         requestIdManager = new RequestIdManager();
         requestIdStatusMap = new HashMap<Long, RequestDownloadStatus>();
+        userRequestCounter = new UserRequestCounter();
+
         queueServerManager = new QueueServerManager();
     }
 
@@ -135,13 +139,48 @@ public class BLLRequestManager implements IBLLRequestManager {
         return requestDownloadStatus;
     }
 
-    public void checkNumberOfRunningRequestForUser(String userId_) throws MotuException {
-        if (queueServerManager.isNumberOfRequestTooHighForUser(userId_)) {
+    /**
+     * .
+     * 
+     * @param userId
+     * @param queueManagement
+     * @return true if too much
+     */
+    private boolean isNumberOfRequestTooHighForUser(String userId) {
+        int countRequest = userRequestCounter.getRequestCount(userId);
+        countRequest++; // Add the current request
+        boolean isAnonymousUser = (userId == null);
+        LOGGER.info("isNumberOfRequestTooHighForUser " + countRequest);
+        LOGGER.info("isNumberOfRequestTooHighForUser " + ((isAnonymousUser && getQueueServerConfig().getMaxPoolAnonymous() > 0
+                && countRequest > getQueueServerConfig().getMaxPoolAnonymous())
+                || (!isAnonymousUser && getQueueServerConfig().getMaxPoolAuth() > 0 && countRequest >= getQueueServerConfig().getMaxPoolAuth())));
+        return (isAnonymousUser && getQueueServerConfig().getMaxPoolAnonymous() > 0 && countRequest > getQueueServerConfig().getMaxPoolAnonymous())
+                || (!isAnonymousUser && getQueueServerConfig().getMaxPoolAuth() > 0 && countRequest >= getQueueServerConfig().getMaxPoolAuth());
+    }
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    private QueueServerType getQueueServerConfig() {
+        return BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig();
+    }
+
+    public synchronized void checkNumberOfRunningRequestForUser(String userId_) throws MotuException {
+        if (isNumberOfRequestTooHighForUser(userId_)) {
+
+            String userIdMsg = "";
+            if (userId_ != null) {
+                userIdMsg = "for user: " + userId_;
+            }
             throw new MotuException(
-                    "Maximum number of running request reached for user: " + userId_ + ", "
+                    "Maximum number of running request reached" + userIdMsg + ", x"
                             + (userId_ == null
                                     ? BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig().getMaxPoolAnonymous()
                                     : BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig().getMaxPoolAuth()));
+        } else {
+            userRequestCounter.onNewRequestForUser(userId_);
         }
     }
 
@@ -152,33 +191,51 @@ public class BLLRequestManager implements IBLLRequestManager {
                           long requestId) {
         RequestDownloadStatus requestDownloadStatus = requestIdStatusMap.get(requestId);
 
+        // If too much request for this user, throws MotuExceedingUserCapacityException
+        String userId = extractionParameters.isAnonymousUser() ? null : extractionParameters.getUserId();
         try {
-            // If too much request for this user, throws MotuExceedingUserCapacityException
-            checkNumberOfRunningRequestForUser(extractionParameters.getUserId());
+            try {
+                checkNumberOfRunningRequestForUser(userId);
 
-            double requestSizeInByte = getRequestSizeInByte(extractionParameters, product_);
-            rds_.setSizeInBits(new Double(requestSizeInByte * 8).longValue());
-            double requestSizeInMB = UnitUtils.toMegaBytes(requestSizeInByte);
+                double requestSizeInByte = getRequestSizeInByte(extractionParameters, product_);
+                rds_.setSizeInBits(new Double(requestSizeInByte * 8).longValue());
+                double requestSizeInMB = UnitUtils.toMegaBytes(requestSizeInByte);
 
-            File extractionDirectory = new File(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath());
+                File extractionDirectory = new File(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath());
 
-            if (UnitUtils.toMegaBytes(extractionDirectory.getFreeSpace()) > requestSizeInMB) {
-
-                // Clear and update the product in case of the instance have already been used for other
-                // calculation.
-                clearAndUpdateProductDataSet(product_,
-                                             extractionParameters.getListVar(),
-                                             extractionParameters.getListTemporalCoverage(),
-                                             extractionParameters.getListLatLonCoverage(),
-                                             extractionParameters.getListDepthCoverage());
-                // The request download is delegated to a download request manager
-                queueServerManager.execute(requestDownloadStatus, cs_, product_, extractionParameters, requestSizeInMB);
-            } else {
-                throw new NotEnoughSpaceException("There is not enough disk space available to generate the file result and to satisfy this request");
+                if (UnitUtils.toMegaBytes(extractionDirectory.getFreeSpace()) > requestSizeInMB) {
+                    LOGGER.info("BEFORE downloadSafe");
+                    downloadSafe(requestDownloadStatus, requestSizeInMB, extractionParameters, cs_, product_);
+                    LOGGER.info("AFTER downloadSafe");
+                } else {
+                    throw new NotEnoughSpaceException(
+                            "There is not enough disk space available to generate the file result and to satisfy this request");
+                }
+            } finally {
+                userRequestCounter.onRequestStoppedForUser(userId);
             }
         } catch (MotuException e) {
             requestDownloadStatus.setRunningException(e);
         }
+    }
+
+    private void downloadSafe(RequestDownloadStatus requestDownloadStatus,
+                              double requestSizeInMB,
+                              ExtractionParameters extractionParameters,
+                              ConfigService cs_,
+                              Product product_) throws MotuException {
+        LOGGER.info("START downloadSafe");
+
+        // Clear and update the product in case of the instance have already been used for other
+        // calculation.
+        clearAndUpdateProductDataSet(product_,
+                                     extractionParameters.getListVar(),
+                                     extractionParameters.getListTemporalCoverage(),
+                                     extractionParameters.getListLatLonCoverage(),
+                                     extractionParameters.getListDepthCoverage());
+        // The request download is delegated to a download request manager
+        queueServerManager.execute(requestDownloadStatus, cs_, product_, extractionParameters, requestSizeInMB);
+        LOGGER.info("END downloadSafe");
     }
 
     private double getRequestSizeInByte(ExtractionParameters extractionParameters, Product product_) throws MotuException {
