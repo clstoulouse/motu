@@ -371,13 +371,15 @@ For example: http://$ip:$port/thredds/
 
 ##### maxPoolAnonymous
 Maximum number of request that an anonymous user can send to Motu before throwing an error message.  
-Value of -1 means no check is done.  
-Default value is 10
+Value of -1 means no check is done so an unlimited number of user can request the server.  
+Default value is 10  
+In case where an SSO server is used for authentication, this parameter is not used. In this you you will be able to fix a limit by setting "maxPoolAuth" parameter value.  
 
 ##### maxPoolAuth
 Maximum number of request that an authenticated user can send to Motu before throwing an error message.  
-Value of -1 means no check is done.  
+Value of -1 means no check is done so an unlimited number of user can request the server.  
 Default value is 1
+In case where no SSO server is used for authentication, this parameter is not used. In this you you will be able to fix a limit by setting "maxPoolAnonymous" parameter value.  
 
 ##### defaultPriority
 @Deprecated from v3 This parameter is not used.
@@ -396,6 +398,7 @@ Description of the queue.
 ##### Child node: maxThreads
 Use to build a java.util.concurrent.ThreadPoolExecutor an to set "corePoolSize" and "maximumPoolSize" values.  
 Default value is 1  
+The total number of threads should not be up to the total number of core of the processor on which Motu is running.  
 
 ##### Child node: maxPoolSize
 Request are put in a queue before being executed by the ThreadPoolExecutor. Before being put in the queue, the queue size
@@ -407,7 +410,10 @@ Default value is -1
 ##### Child node: dataThreshold
 Size in Mbytes. A request has a size. The queue in which this request will be processed is defined by the request size.
 All queues are sorted by size ascending. A request is put in the last queue which has a size lower than the request size.
-If the request size if higher than the bigger queue dataThreshold, request is not treated and an error message is returned.
+If the request size if higher than the bigger queue dataThreshold, request is not treated and an error message is returned.  
+This parameter is really useful when a Motu is used to server several kind of file size and you want to be sure that file with a specific size does no slow down request of small data size.  
+In this case you can configure two queues and set a number of threads for each in order to match the number of processors. The JVM, even if requests for high volume are running, will be able to
+process smallest requests by running the thread on the other processor core. Sp processing high volume requests will not block the smallest requests.  
 
 
 ##### Child node: lowPriorityWaiting

@@ -150,12 +150,13 @@ public class BLLRequestManager implements IBLLRequestManager {
         int countRequest = userRequestCounter.getRequestCount(userId);
         countRequest++; // Add the current request
         boolean isAnonymousUser = (userId == null);
-        LOGGER.info("isNumberOfRequestTooHighForUser " + countRequest);
-        LOGGER.info("isNumberOfRequestTooHighForUser " + ((isAnonymousUser && getQueueServerConfig().getMaxPoolAnonymous() > 0
+        boolean isNumberOfRequestTooHighForUser = (isAnonymousUser && getQueueServerConfig().getMaxPoolAnonymous() > 0
                 && countRequest > getQueueServerConfig().getMaxPoolAnonymous())
-                || (!isAnonymousUser && getQueueServerConfig().getMaxPoolAuth() > 0 && countRequest >= getQueueServerConfig().getMaxPoolAuth())));
-        return (isAnonymousUser && getQueueServerConfig().getMaxPoolAnonymous() > 0 && countRequest > getQueueServerConfig().getMaxPoolAnonymous())
                 || (!isAnonymousUser && getQueueServerConfig().getMaxPoolAuth() > 0 && countRequest >= getQueueServerConfig().getMaxPoolAuth());
+        String logUserId = isAnonymousUser ? "anonymous" : userId;
+        LOGGER.info("Check active request number for [userId=" + logUserId + "]: x" + countRequest + ", isNumberOfRequestTooHighForUser="
+                + isNumberOfRequestTooHighForUser);
+        return isNumberOfRequestTooHighForUser;
     }
 
     /**
@@ -172,7 +173,7 @@ public class BLLRequestManager implements IBLLRequestManager {
 
             String userIdMsg = "";
             if (userId_ != null) {
-                userIdMsg = "for user: " + userId_;
+                userIdMsg = " for user: " + userId_;
             }
             throw new MotuException(
                     "Maximum number of running request reached" + userIdMsg + ", x"

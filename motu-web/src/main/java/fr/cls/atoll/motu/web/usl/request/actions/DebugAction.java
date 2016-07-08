@@ -258,9 +258,9 @@ public class DebugAction extends AbstractAction {
                     .append(String.format("%8.2f Mo", BLLManager.getInstance().getRequestManager().getQueueServerManager().getMaxDataThreshold()));
             stringBuffer.append("</p>\n");
 
-            stringBuffer.append("<h2>\n");
-            stringBuffer.append("Non-Batch Queues");
-            stringBuffer.append("</h2>\n");
+            // stringBuffer.append("<h2>\n");
+            // stringBuffer.append("Non-Batch Queues");
+            // stringBuffer.append("</h2>\n");
             debugPendingRequest(stringBuffer, queueServerManagement); // , false
             stringBuffer.append("<h2>\n");
             // stringBuffer.append("Batch Queues");
