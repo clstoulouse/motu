@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 
 /**
@@ -31,7 +32,12 @@ public class CommonHTTPParameters {
     public static String getActionFromRequest(HttpServletRequest request) {
         String action = request.getParameter(MotuRequestParametersConstant.PARAM_ACTION);
         if (StringUtils.isNullOrEmpty(action)) {
-            action = MotuRequestParametersConstant.ACTION_LIST_SERVICES;
+            String defaultService = BLLManager.getInstance().getConfigManager().getMotuConfig().getDefaultService();
+            if (StringUtils.isNullOrEmpty(defaultService)) {
+                action = MotuRequestParametersConstant.ACTION_LIST_SERVICES;
+            } else {
+                action = defaultService;
+            }
         }
 
         return action;

@@ -257,15 +257,22 @@ It so enable to server http://resources.myocean.eu/motu/css/motu/motu.css
 
         
 ##### cleanExtractionFileInterval
-In minutes, the waiting period admitted to keep the file that results of an extraction data request.  
+In minutes, oldest result files from extraction request are deleted. This check is done each "runCleanInterval" minutes.    
 Default = 60min
 
 ##### cleanRequestInterval
-In minutes, the waiting period admitted to keep the status response of an extraction data request.  
+In minutes, oldest status than this time are removed from Motu. This check is done each "runCleanInterval" minutes.  
 Default = 60min
 
 ##### runCleanInterval
-In minutes, the waiting period admitted to clean request status in memory and extraction file.  
+In minutes, the waiting time between each clean process.   
+A clean process does:  
+
+* delete files inside java.io.tmpdir
+* delete all files found in extractionFolder bigger than extractionFileCacheSize is Mb
+* delete all files found in extractionFolder oldest than cleanExtractionFileInterval minutes
+* remove all status oldest than cleanRequestInterval minutes
+
 Default = 1min
 
 ##### extractionFilePatterns
