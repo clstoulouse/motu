@@ -33,8 +33,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
-import fr.cls.atoll.motu.web.bll.request.queueserver.RunnableExtraction;
-import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueLogInfo;
+import fr.cls.atoll.motu.web.bll.request.queueserver.queue.log.QueueLogInfo;
 
 /**
  * 
@@ -92,12 +91,18 @@ public class MotuCustomLayout extends AbstractStringLayout {
 
         if (event.getMessage() == null) {
             return "MotuXMLLayout : message object is null";
-        } else if (event.getMessage() instanceof RunnableExtraction) {
-            RunnableExtraction runnableExtraction = (RunnableExtraction) event.getMessage();
-            return formatLog(runnableExtraction.getQueueLogInfo());
-        } else if (event.getMessage() instanceof QueueLogInfo) {
-            return formatLog((QueueLogInfo) event.getMessage());
+        } else {
+            if (event.getMessage().getParameters() != null && event.getMessage().getParameters().length == 1
+                    && event.getMessage().getParameters()[0] instanceof QueueLogInfo) {
+                return formatLog((QueueLogInfo) event.getMessage().getParameters()[0]);
+            }
         }
+        // else if (event.getMessage() instanceof RunnableExtraction) {
+        // RunnableExtraction runnableExtraction = (RunnableExtraction) event.getMessage();
+        // return formatLog(runnableExtraction.getQueueLogInfo());
+        // } else if (event.getMessage() instanceof QueueLogInfo) {
+        // return formatLog((QueueLogInfo) event.getMessage());
+        // }
 
         return event.toString(); // super.toSerializable(event);
     }

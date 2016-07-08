@@ -25,6 +25,7 @@ import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.queueserver.IQueueServerManager;
 import fr.cls.atoll.motu.web.bll.request.queueserver.QueueServerManager;
+import fr.cls.atoll.motu.web.bll.request.queueserver.queue.log.QueueLogInfo;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 import fr.cls.atoll.motu.web.dal.DALManager;
@@ -129,7 +130,18 @@ public class BLLRequestManager implements IBLLRequestManager {
             }
         }
 
+        logQueueInfo(rds, product_, extractionParameters);
+
         return requestId;
+    }
+
+    /**
+     * .
+     */
+    private void logQueueInfo(RequestDownloadStatus rds, Product product_, ExtractionParameters extractionParameters) {
+        QueueLogInfo qli = new QueueLogInfo();
+        // TODO SMA set all qli fields
+        LOGGER.info(qli);
     }
 
     private RequestDownloadStatus initRequest(String userId, String userHost) {
@@ -205,9 +217,7 @@ public class BLLRequestManager implements IBLLRequestManager {
                 File extractionDirectory = new File(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath());
 
                 if (UnitUtils.toMegaBytes(extractionDirectory.getFreeSpace()) > requestSizeInMB) {
-                    LOGGER.info("BEFORE downloadSafe");
                     downloadSafe(requestDownloadStatus, requestSizeInMB, extractionParameters, cs_, product_);
-                    LOGGER.info("AFTER downloadSafe");
                 } else {
                     throw new NotEnoughSpaceException(
                             "There is not enough disk space available to generate the file result and to satisfy this request");
@@ -225,8 +235,6 @@ public class BLLRequestManager implements IBLLRequestManager {
                               ExtractionParameters extractionParameters,
                               ConfigService cs_,
                               Product product_) throws MotuException {
-        LOGGER.info("START downloadSafe");
-
         // Clear and update the product in case of the instance have already been used for other
         // calculation.
         clearAndUpdateProductDataSet(product_,
@@ -236,7 +244,6 @@ public class BLLRequestManager implements IBLLRequestManager {
                                      extractionParameters.getListDepthCoverage());
         // The request download is delegated to a download request manager
         queueServerManager.execute(requestDownloadStatus, cs_, product_, extractionParameters, requestSizeInMB);
-        LOGGER.info("END downloadSafe");
     }
 
     private double getRequestSizeInByte(ExtractionParameters extractionParameters, Product product_) throws MotuException {

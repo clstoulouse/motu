@@ -36,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingQueueCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidQueuePriorityException;
-import fr.cls.atoll.motu.web.bll.request.queueserver.RunnableExtraction;
+import fr.cls.atoll.motu.web.bll.request.queueserver.queue.log.RunnableExtraction;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
 
 /**
