@@ -3,6 +3,8 @@ package fr.cls.atoll.motu.web.dal.request;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
@@ -25,6 +27,8 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.DatasetGrid;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 import ucar.ma2.Array;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis;
 
 /**
  * <br>
@@ -92,6 +96,15 @@ public class DALRequestManager implements IDALRequestManager {
 
     private void downloadWithNCSS(Product p, OutputFormat dataOutputFormat)
             throws MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, IOException, InterruptedException {
+
+        List<CoordinateAxis> coordinateAxisList = p.getNetCdfReaderDataset().getCoordinateAxes();
+        for (CoordinateAxis coordinateAxis : coordinateAxisList) {
+            if (coordinateAxis.getAxisType() != null && coordinateAxis.getAxisType().name().equals(AxisType.Lon.name())) {
+                System.out.println("Max : " + coordinateAxis.getValidMax());
+                System.out.println("Min : " + coordinateAxis.getValidMin());
+            }
+        }
+
         // Extract criteria collect
         ExtractCriteriaDatetime time = p.getCriteriaDateTime();
         ExtractCriteriaLatLon latlon = p.getCriteriaLatLon();
@@ -113,21 +126,14 @@ public class DALRequestManager implements IDALRequestManager {
 
         System.out.println("Right long : " + latlon.getLowerLeftLon());
         System.out.println("Left long : " + latlon.getLowerRightLon());
+        System.out.println("Lon Max : " + p.getProductMetaData().getLonNormalAxisMaxValue());
+        System.out.println("Lon Min : " + p.getProductMetaData().getLonNormalAxisMinValue());
+        // System.out.println(p.getNetCdfReader().get);
 
         // Check if the Left longitude is greater than the right longitude
         if (latlon.getLowerLeftLon() > latlon.getLowerRightLon()) {
             // In this case, thredds needs 2 requests to retrieve the data.
-            // one from the left longitude to 180 and the secund from -180 to the right longitude.
-            ExtractCriteriaLatLon leftLonReq = new ExtractCriteriaLatLon(
-                    latlon.getLowerLeftLat(),
-                    latlon.getLowerLeftLon(),
-                    latlon.getUpperRightLat(),
-                    180);
-            ExtractCriteriaLatLon rightLonReq = new ExtractCriteriaLatLon(
-                    latlon.getLowerLeftLat(),
-                    -180,
-                    latlon.getUpperRightLat(),
-                    latlon.getLowerRightLon());
+            List<ExtractCriteriaLatLon> rangesToRequest = ComputeRangeOutOfLimit(p, latlon);
 
             // Create a temporary directory into tmp directory to save the 2 generated file
             Path tempDirectory = Files.createTempDirectory("LeftAndRightRequest");
@@ -136,17 +142,14 @@ public class DALRequestManager implements IDALRequestManager {
 
             System.out.println("product message error : " + p.getLastError());
 
-            ncss.setGeoSubset(leftLonReq);
-            ncss.setOutputFile("left-" + fname);
-            System.out.println("Left file name : " + ncss.getOutputFile());
-            ncssRequest(p, ncss);
-
-            System.out.println("product message error after left request: " + p.getLastError());
-
-            ncss.setGeoSubset(rightLonReq);
-            ncss.setOutputFile("right-" + fname);
-            System.out.println("right file name : " + ncss.getOutputFile());
-            ncssRequest(p, ncss);
+            int i = 0;
+            for (ExtractCriteriaLatLon currentRange : rangesToRequest) {
+                ncss.setGeoSubset(currentRange);
+                ncss.setOutputFile(i + "-" + fname);
+                System.out.println("Left file name : " + ncss.getOutputFile());
+                ncssRequest(p, ncss);
+                i++;
+            }
 
             System.out.println("product message error after right request: " + p.getLastError());
 
@@ -166,6 +169,54 @@ public class DALRequestManager implements IDALRequestManager {
             ncssRequest(p, ncss);
         }
     }
+
+    /**
+     * Compute the ranges of requests to do if leftLon is upper than rightlon .
+     * 
+     * @param p The product to request
+     * @param latLon the coordinates to request
+     * @return The different ranges to request
+     */
+    private List<ExtractCriteriaLatLon> ComputeRangeOutOfLimit(Product p, ExtractCriteriaLatLon latLon) {
+        List<ExtractCriteriaLatLon> ranges = new ArrayList<>();
+
+        double leftLon = latLon.getLowerLeftLon();
+        double rightLon = latLon.getLowerRightLon();
+
+        // If the leftLon value is negative
+        if (leftLon < 0) {
+            // The rightLon which is smaller than the leftLon is also negative.
+            // In this case the only possible alternative is 3 ranges (leftLon ; 0), (0 ; 180), (-180 ;
+            // rightLon)
+            ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), leftLon, latLon.getUpperRightLat(), 0));
+            ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), 0, latLon.getUpperRightLat(), 180));
+            ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), -180, latLon.getUpperRightLat(), rightLon));
+        } else {
+            // If the leftLon value is positive
+            if (rightLon > 0) {
+                // And the rightLon is positive also, so the alternative is (leftLon , 180), (-180 ; 0)
+                // (0 ; rightLon)
+                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), leftLon, latLon.getUpperRightLat(), 180));
+                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), -180, latLon.getUpperRightLat(), 0));
+                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), 0, latLon.getUpperRightLat(), rightLon));
+            } else {
+                // Or if the rightLon is negative also, so the alternative is (leftLon ; 180)
+                // (-180 ; rightLon)
+                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), leftLon, latLon.getUpperRightLat(), 180));
+                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), -180, latLon.getUpperRightLat(), rightLon));
+            }
+        }
+
+        return ranges;
+    }
+
+    // private boolean is360systemCoordinates(Product p) {
+    // if (p.getProductMetaData().getLonNormalAxisMinValue() < 0) {
+    // return false;
+    // } else {
+    // return true;
+    // }
+    // }
 
     private void ncssRequest(Product p, NetCdfSubsetService ncss)
             throws MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, IOException, InterruptedException {
