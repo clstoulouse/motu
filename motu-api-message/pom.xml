@@ -12,6 +12,7 @@
     <name>Motu Api Message</name>
     <description>This package holds the messages exchanged by the published services.</description>
     
+    <!-- Add for the JAXB generation (cf : /motu-api-message/src/main/schema/build.xml) -->
     <dependencies>
 		<dependency>
 		    <groupId>org.jvnet.jaxb2_commons</groupId>
