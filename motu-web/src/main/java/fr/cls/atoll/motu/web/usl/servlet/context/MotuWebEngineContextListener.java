@@ -99,13 +99,11 @@ public class MotuWebEngineContextListener implements ServletContextListener {
                 if (hasWait) {
                     Thread.sleep(500);
                 }
-            } catch (MotuException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (InterruptedException e) {
+                LOGGER.error("An error occured while waiting to stop motu", e);
             }
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (MotuException e) {
+            LOGGER.error("An error occured while waiting to stop motu", e);
         }
     }
 
