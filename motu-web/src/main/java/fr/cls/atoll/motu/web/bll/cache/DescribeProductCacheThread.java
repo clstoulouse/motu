@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Interval;
 
 import fr.cls.atoll.motu.api.message.xml.AvailableDepths;
@@ -55,15 +57,18 @@ import ucar.unidata.geoloc.LatLonRect;
  */
 public class DescribeProductCacheThread extends Thread {
 
+    private static final Logger LOGGER = LogManager.getLogger();
+
     private ConcurrentMap<String, ProductMetadataInfo> _describeProduct;
 
-    private int resfreshDelay = 3000;
+    private int resfreshDelay = 1000;
 
     /**
      * Constructeur.
      */
     public DescribeProductCacheThread() {
         setDaemon(true);
+        resfreshDelay = BLLManager.getInstance().getConfigManager().getMotuConfig().getDescribeProductCacheRefreshInMilliSec();
     }
 
     public ProductMetadataInfo getProductDescription(String productId) {
@@ -73,8 +78,10 @@ public class DescribeProductCacheThread extends Thread {
     /** {@inheritDoc} */
     @Override
     public void run() {
+        LOGGER.info("Start Describe Product cache Daemon");
         while (true) {
-            System.out.println("Refresh");
+            long startRefresh = System.currentTimeMillis();
+            LOGGER.info("Refresh Describe Product cache Daemon");
             _describeProduct = new ConcurrentHashMap<>();
             List<ConfigService> services = BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService();
             for (ConfigService configService : services) {
@@ -90,21 +97,29 @@ public class DescribeProductCacheThread extends Thread {
                     }
 
                 } catch (MotuException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    LOGGER.error("Error during refresh of the describe product cache", e);
                 } catch (MotuExceptionBase e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    LOGGER.error("Error during refresh of the describe product cache", e);
                 }
             }
-            System.out.println("EndRefresh");
+            LOGGER.info("Finish Refresh Describe Product cache Daemon in " + computeTime(System.currentTimeMillis() - startRefresh));
             try {
                 sleep(resfreshDelay);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOGGER.error("Error during refresh of the describe product cache", e);
             }
         }
+    }
+
+    private String computeTime(long timeInMilli) {
+        String result = "";
+
+        long min = timeInMilli / 60000;
+        long sec = (timeInMilli % 60000) / 1000;
+        long milli = (timeInMilli % 60000) % 1000;
+
+        result = min + "min " + sec + " sec " + milli + " milli";
+        return result;
     }
 
     /**
