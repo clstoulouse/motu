@@ -402,24 +402,18 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
      * Sets the ended.
      */
     public void setEnded() {
-        try {
-            if (product != null) {
-                queueLogInfo.setDownloadUrlPath(USLManager.getInstance().getRequestManager().getProductDownloadUrlPath(product));
-                queueLogInfo.setExtractLocationData(product.getExtractLocationData());
-                queueLogInfo.addReadingTime(product.getReadingTimeAsMilliSeconds());
-                queueLogInfo.addWritingTime(product.getWritingTimeAsMilliSeconds());
-                queueLogInfo.addCopyingTime(product.getCopyingTimeAsMilliSeconds());
-                queueLogInfo.addCompressingTime(product.getCompressingTimeAsMilliSeconds());
-            }
-            setEndTime();
-            if (LOGQUEUE.isInfoEnabled()) {
-                LOGQUEUE.info(this.queueLogInfo);
-            }
-
-        } catch (MotuException e) {
-            // Do nothing
+        if (product != null) {
+            queueLogInfo.setDownloadUrlPath(USLManager.getInstance().getRequestManager().getProductDownloadUrlPath(product));
+            queueLogInfo.setExtractLocationData(product.getExtractLocationData());
+            queueLogInfo.addReadingTime(product.getReadingTimeAsMilliSeconds());
+            queueLogInfo.addWritingTime(product.getWritingTimeAsMilliSeconds());
+            queueLogInfo.addCopyingTime(product.getCopyingTimeAsMilliSeconds());
+            queueLogInfo.addCompressingTime(product.getCompressingTimeAsMilliSeconds());
         }
-
+        setEndTime();
+        if (LOGQUEUE.isInfoEnabled()) {
+            LOGQUEUE.info(this.queueLogInfo);
+        }
     }
 
     /**

@@ -2,6 +2,7 @@ package fr.cls.atoll.motu.web.bll.request;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.queueserver.IQueueServerManager;
 import fr.cls.atoll.motu.web.bll.request.queueserver.QueueServerManager;
+import fr.cls.atoll.motu.web.bll.request.queueserver.queue.log.QueueLogError;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.log.QueueLogInfo;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
@@ -141,6 +143,44 @@ public class BLLRequestManager implements IBLLRequestManager {
     private void logQueueInfo(RequestDownloadStatus rds, Product product_, ExtractionParameters extractionParameters) {
         QueueLogInfo qli = new QueueLogInfo();
         // TODO SMA set all qli fields
+
+        qli.setAmountDataSize(UnitUtils.toMegaBytes(rds.getSizeInBits()));
+        qli.setCompressingTime(product_.getCompressingTimeAsMilliSeconds());
+        qli.setCopyingTime(product_.getCopyingTimeAsMilliSeconds());
+        qli.setReadingTime(product_.getReadingTimeAsMilliSeconds());
+        qli.setWritingTime(product_.getWritingTimeAsMilliSeconds());
+
+        qli.setDownloadUrlPath(BLLManager.getInstance().getCatalogManager().getProductManager()
+                .getProductDownloadHttpUrl(product_.getExtractFilename()));
+        // qli.setEncoding(""); Set by default
+        qli.setExtractionParameters(extractionParameters);
+        qli.setExtractLocationData(product_.getExtractLocationData());
+
+        Calendar c = Calendar.getInstance();
+
+        c.setTimeInMillis(rds.getCreationDateTime());
+        qli.setInQueueTime(c.getTime());
+
+        c.setTimeInMillis(rds.getStartProcessingDateTime());
+        qli.setStartTime(c.getTime());
+
+        c.setTimeInMillis(rds.getEndProcessingDateTime());
+        qli.setEndTime(c.getTime());
+        qli.setLogFormat(BLLManager.getInstance().getConfigManager().getMotuConfig().getLogFormat());
+
+        // SMA: Not sure that this field as a real sense, keep it for retro compatibility between Motu
+        // versions 2.x and 3.x
+        qli.setPreparingTime(product_.getReadingTimeAsMilliSeconds());
+
+        qli.setQueueId(rds.getQueueId());
+        qli.setQueueDesc(rds.getQueueDescription());
+
+        MotuException me = rds.getRunningException();
+        if (me != null) {
+            qli.setQueueLogError(new QueueLogError(me.getErrorType(), me.getMessage()));
+        }
+
+        qli.setRequestId(rds.getRequestId());
         LOGGER.info(qli);
     }
 

@@ -307,7 +307,7 @@ public class MotuConfig {
         if (logFormat == null) {
             return "xml";
         } else {
-            return logFormat;
+            return logFormat.toLowerCase();
         }
     }
 

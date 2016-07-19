@@ -1,7 +1,6 @@
 package fr.cls.atoll.motu.web.usl.request.parameter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -141,7 +140,11 @@ public class CommonHTTPParameters {
 
         List<String> listVar = new ArrayList<String>();
         if (variables != null) {
-            listVar = Arrays.asList(variables);
+            // Not an ArrayList type which cause issue while serializing to write xstream log messages
+            // listVar = Arrays.asList(variables);
+            for (String v : variables) {
+                listVar.add(v);
+            }
         }
         return listVar;
     }

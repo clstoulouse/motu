@@ -89,22 +89,22 @@ public class MotuCustomLayout extends AbstractStringLayout {
             buf.setLength(0);
         }
 
-        if (event.getMessage() == null) {
-            return "MotuXMLLayout : message object is null";
-        } else {
-            if (event.getMessage().getParameters() != null && event.getMessage().getParameters().length == 1
-                    && event.getMessage().getParameters()[0] instanceof QueueLogInfo) {
-                return formatLog((QueueLogInfo) event.getMessage().getParameters()[0]);
-            }
+        // if (event.getMessage() == null) {
+        // return "MotuXMLLayout : message object is null";
+        // } else {
+        if (event.getMessage().getParameters() != null && event.getMessage().getParameters().length == 1
+                && event.getMessage().getParameters()[0] instanceof QueueLogInfo) {
+            return formatLog((QueueLogInfo) event.getMessage().getParameters()[0]);
         }
+        // }
         // else if (event.getMessage() instanceof RunnableExtraction) {
         // RunnableExtraction runnableExtraction = (RunnableExtraction) event.getMessage();
         // return formatLog(runnableExtraction.getQueueLogInfo());
         // } else if (event.getMessage() instanceof QueueLogInfo) {
         // return formatLog((QueueLogInfo) event.getMessage());
         // }
-
-        return event.toString(); // super.toSerializable(event);
+        return "";
+        // return event.toString(); // super.toSerializable(event);
     }
 
     /** {@inheritDoc} */

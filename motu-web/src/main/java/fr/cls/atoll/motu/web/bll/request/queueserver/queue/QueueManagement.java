@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingQueueCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidQueuePriorityException;
@@ -206,7 +207,7 @@ public class QueueManagement {
                 threadPoolExecutor.awaitTermination(1, TimeUnit.SECONDS);
             }
         } catch (InterruptedException e) {
-            throw new MotuException("ERROR in QueueManagement.shutdown.", e);
+            throw new MotuException(ErrorType.SHUTTING_DOWN, "ERROR in QueueManagement.shutdown.", e);
         }
         LOG.info(String.format("Queue '%s %s' is shutdown.", this.getName(), this.queueConfig.getDescription()));
 
