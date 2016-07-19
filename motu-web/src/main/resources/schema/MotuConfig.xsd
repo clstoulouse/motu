@@ -606,6 +606,19 @@
 			-->
 			<xs:attribute name="defaultActionIsListServices"
 				type="xs:boolean" default="false" />
+			<xs:attribute name="describeProductCacheRefreshInMilliSec" default="1000">
+				<xs:annotation>
+					<xs:documentation>
+						The time between two refresh of the describe product cache.
+						This duration is in milli-second.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="10" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
 
 		</xs:complexType>
 
