@@ -24,6 +24,7 @@
  */
 package fr.cls.atoll.motu.web.usl.servlet.context;
 
+import java.util.List;
 import java.util.TimeZone;
 
 import javax.management.AttributeNotFoundException;
@@ -45,10 +46,13 @@ import org.apache.catalina.deploy.FilterMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
+import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.usl.USLManager;
+import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
 
 /**
  * <br>
@@ -74,6 +78,48 @@ public class MotuWebEngineContextListener implements ServletContextListener {
      */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
+        try {
+            // Check if the timeout is reached
+            boolean timeOut = false;
+            // Store the wait status
+            boolean hasWait = false;
+            // Store the time of the wait begin to check the timeout
+            long startWaiting = System.currentTimeMillis();
+            try {
+                // Wait until the request is finished or the timeout is reached
+                while (hasPendingOrInProgressRequest() && !timeOut) {
+                    // Store that the finish action have to wait.
+                    hasWait = true;
+                    // Sleep 1 second before another check
+                    Thread.sleep(1000);
+                    // Check if the 10 minutes timeout is reached
+                    timeOut = (System.currentTimeMillis() - startWaiting) > 10 * 60 * 1000;
+                }
+                // If the shutdown have wait, wait 500ms to finish correctly the request.
+                if (hasWait) {
+                    Thread.sleep(500);
+                }
+            } catch (InterruptedException e) {
+                LOGGER.error("An error occured while waiting to stop motu", e);
+            }
+        } catch (MotuException e) {
+            LOGGER.error("An error occured while waiting to stop motu", e);
+        }
+    }
+
+    private boolean hasPendingOrInProgressRequest() throws MotuException {
+        boolean hasRequest = false;
+        List<Long> requestIds = BLLManager.getInstance().getRequestManager().getRequestIds();
+        for (Long requestId : requestIds) {
+            StatusModeResponse statusModeResponse = XMLConverter
+                    .convertStatusModeResponse(BLLManager.getInstance().getRequestManager().getResquestStatus(requestId));
+            if (statusModeResponse.getStatus() == StatusModeType.PENDING || statusModeResponse.getStatus() == StatusModeType.INPROGRESS) {
+                hasRequest = true;
+                break;
+            }
+        }
+
+        return hasRequest;
     }
 
     private void initCommonTools() {

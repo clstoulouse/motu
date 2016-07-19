@@ -626,6 +626,7 @@
 			<xsd:attribute name="maxAllowedSize" type="xsd:double" />
 			<xsd:attribute name="size" type="xsd:double" />
 			<xsd:attributeGroup ref="codeMsg"/>
+			<xsd:attribute name="unit" type="xsd:string"/>
 
 		</xsd:complexType>
 
