@@ -293,6 +293,11 @@ A clean job runs each <runCleanInterval>. File with a size higher than this valu
 If value is zero: no delete.  
 Default value = 0.
 
+##### describeProductCacheRefreshInMilliSec
+Provide the delay between two refresh of the Describe product cache.
+This delay is provided in millisecond.
+The default value is 1000.
+
 
 ##### runGCInterval
 @Deprecated from v3 This parameter is not used. 
