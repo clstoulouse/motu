@@ -151,7 +151,11 @@ Once archives have been extracted, a "motu" folder is created and contains sever
 
 * __config:__ Folder which contains the motu configuration files. Refers to [Configuration](#Configuration) for more details.
 * __data:__ Folder used to managed Motu data.
-  * __download__:  Folder used to save the products downloaded. This folder is sometimes elsewhere, for example in Motu v2: /datalocal/atoll/mis-gateway/deliveries/.
+  * __public__: Folders which contain files exposed to public. It can be from a frontal Apache HTTPd Web server, from Motu Apache Tomcat or any other access.
+     * __download__: Folder used to save the products downloaded. This folder is sometimes elsewhere, for example in Motu v2: /datalocal/atoll/mis-gateway/deliveries/. A best practice is to create a symbolic link to a dedicated partition to avoid to freeze Motu when there is no space left.   
+     * __inventories__: [AD]  
+     * __transaction__: [AD]   
+     * __static-files__: Used to store public static files. This folder can be served by a frontal Apache HTTPd Web server or Motu Apache Tomcat. In the CMEMS-CIS context, it is not used as static files are deployed on a central web server.      
 * __log:__ Folder which contains all log files. Daily logging are suffixed by yyyy-MM-dd.
   * __errors.log:__ Motu application errors
   * __warnings.log:__ Motu application warnings
