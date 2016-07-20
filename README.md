@@ -111,7 +111,7 @@ Three folders are built containing archives :
 
 
 #<a name="Installation">Installation</a>
-## Install Motu from archives files  
+## Install Motu from scratch
 ### Install Motu on a <a name="IntallDU">Dissemination Unit</a>  
 
 Copy the installation archives and unzip them.  
@@ -296,7 +296,7 @@ Default value = 0.
 ##### describeProductCacheRefreshInMilliSec
 Provide the delay between two refresh of the Describe product cache.
 This delay is provided in millisecond.
-The default value is 1000.
+The default value is 60000 meaning 1 minute.
 
 
 ##### runGCInterval

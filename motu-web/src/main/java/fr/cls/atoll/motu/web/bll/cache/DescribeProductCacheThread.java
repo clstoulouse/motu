@@ -61,12 +61,13 @@ public class DescribeProductCacheThread extends Thread {
 
     private ConcurrentMap<String, ProductMetadataInfo> _describeProduct;
 
-    private int resfreshDelay = 1000;
+    private int resfreshDelay;
 
     /**
      * Constructeur.
      */
     public DescribeProductCacheThread() {
+        super("DescribeProduct Cache Thread Daemon");
         setDaemon(true);
         resfreshDelay = BLLManager.getInstance().getConfigManager().getMotuConfig().getDescribeProductCacheRefreshInMilliSec();
     }
@@ -81,7 +82,6 @@ public class DescribeProductCacheThread extends Thread {
         LOGGER.info("Start Describe Product cache Daemon");
         while (true) {
             long startRefresh = System.currentTimeMillis();
-            LOGGER.info("Refresh Describe Product cache Daemon");
             _describeProduct = new ConcurrentHashMap<>();
             List<ConfigService> services = BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService();
             for (ConfigService configService : services) {
@@ -102,24 +102,14 @@ public class DescribeProductCacheThread extends Thread {
                     LOGGER.error("Error during refresh of the describe product cache", e);
                 }
             }
-            LOGGER.info("Finish Refresh Describe Product cache Daemon in " + computeTime(System.currentTimeMillis() - startRefresh));
+            LOGGER.info("Describe product cache refreshed in "
+                    + fr.cls.atoll.motu.web.common.utils.DateUtils.getDurationMinSecMsec(System.currentTimeMillis() - startRefresh));
             try {
                 sleep(resfreshDelay);
             } catch (InterruptedException e) {
                 LOGGER.error("Error during refresh of the describe product cache", e);
             }
         }
-    }
-
-    private String computeTime(long timeInMilli) {
-        String result = "";
-
-        long min = timeInMilli / 60000;
-        long sec = (timeInMilli % 60000) / 1000;
-        long milli = (timeInMilli % 60000) % 1000;
-
-        result = min + "min " + sec + " sec " + milli + " milli";
-        return result;
     }
 
     /**
