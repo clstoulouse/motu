@@ -547,23 +547,31 @@ else
 fi
 
 initDirs $app
-
+exitCode=0
 case "$1" in
     start)
       onStartAction $app
+      exitCode=0
       ;;
     stop)
       onStopAction $app
+      exitCode=1
       ;;
     restart)
       onRestartAction $app
+      exitCode=1
       ;;
     status)
       onStatusAction $app
+      exitCode=2
       ;;
     clean)
       onCleanAction $app
+      exitCode=3
       ;;
     *) echo -e "\nUsage: ./motu start|stop|restart|status|clean|help $allApps\n"
+       exitCode=4
        ;;
 esac
+
+exit $exitCode

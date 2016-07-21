@@ -968,7 +968,7 @@ function closeScriptCmdWin() {
   }
   
   cmd += " -m " + q + motuUrl + q;
-  cmd += " -s " + q + "${service.getName()}" + q;
+  cmd += " -s " + q + "${service.getNameEncoded()}" + q;
   cmd += " -d " + q + "${product.getProductId()}" + q;
   
   if (x_lo != null) {

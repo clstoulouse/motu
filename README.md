@@ -2,6 +2,7 @@
 @author Project manager <rdedianous@cls.fr>  
 @author Product owner <tjolibois@cls.fr>  
 @author Scrum master, software architect <smarty@cls.fr>  
+@author Quality assurance, continuous integration manager <bpirrotta@cls.fr> 
 
 >How to read this file? 
 Use a markdown reader: 
@@ -18,6 +19,12 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
 * [Compilation](#COMPILATION)
 * [Packaging](#Packaging)
 * [Installation](#Installation)
+  * [Prerequisites](#InstallPrerequisites)
+  * [Install Motu from scratch](#InstallFromScratch)
+  * [Check installation](#InstallCheck)
+  * [CDO manual installation](#InstallCDO)
+  * [Installation folder structure](#InstallFolders)
+  * [Setup a front Apache HTTPd server](#InstallFrontal)
 * [Configuration](#Configuration)
   * [Configuration directory structure](#ConfigurationFolderStructure)
   * [Business settings](#ConfigurationBusiness)
@@ -111,10 +118,29 @@ Three folders are built containing archives :
 
 
 #<a name="Installation">Installation</a>
-## Install Motu from scratch
-### Install Motu on a <a name="IntallDU">Dissemination Unit</a>  
 
-Copy the installation archives and unzip them.  
+
+
+## <a name="InstallPrerequisites">Prerequisites</a>
+### Motu host
+Motu OS target is Linux 64bits.
+
+### External interfaces
+Motu is able to communicate with different external servers:  
+
+* __Unidata | THREDDS Data Server (TDS)__: The links to this server are set in the [Business settings](#ConfigurationBusiness) and are used to run OpenDap or subsetter interfaces. If Motu runs only with DGF, this server is not required.
+* __Single Sign-On - CAS__: The link to this server is set in the [System settings](#ConfigurationSystem). If Motu does not use SSO, this server is not required.
+
+The installation of these two servers is not detailed in this document. Refer to their official web site to know how to install them.
+
+## <a name="InstallFromScratch">Install Motu from scratch</a>
+
+Motu installation needs two main step: the software installation and optionally the theme installation.  
+The software installation brings by default the CLS theme. The theme installation is there to customize or change this default theme.  
+
+### Install Motu software, for example on a <a name="IntallDU">Dissemination Unit</a>  
+
+Copy the installation archives and extract them.  
 ```
 cd /opt/cmems-cis  
 cp motu-products-A.B.tar.gz .  
@@ -125,27 +151,117 @@ tar xzf motu-distribution-X.Y.Z.tar.gz
 tar xzf motu-config-X.Y.Z-$BUILDID-$TARGET-$PLATFORM.tar.gz  
 cd motu
 ```
- 
- 
-If you do not use a central entity to serve public static files, you can eventually  extract the archive below 
-and serve it directly by configuring motu:  
+
+At this step, Motu is able to start. But static files used for customizing the web theme can be installed.  
+In the CMEMS context, the installation on a dissemination unit is ended, static files are installed on a [central server](#IntallPublicFilesOnCentralServer).  
+
+Motu is installed and configured. Refers to [configuration](#Configuration) for check configuration before [starting Motu](#SS).
+
+
+### Install Motu theme (public static files)
+
+Public static files are used to customized Motu theme. When several Motu are installed, a central server eases the installation and the update by 
+referencing static files only once on a unique machine. This is the case in the CMEMS contact, where each dissemination unit host a Motu server, and 
+a central server hosts static files.  
+If you runs only one install of Motu, you can install static files directly on Motu Apache tomcat server.
+
+#### <a name="IntallPublicFilesOnCentralServer">On a central server</a>  
+Extract this archive on a server.
 ```
 tar xvzf motu-web-static-files-X.Y.Z-classifier-$timestamp-$target.tar.gz  
 ```
-Then edit conf/server.xml:  
+Then use a server to make these extracted folders and files accessible from an HTTP address.
+ 
+Example: The archive contains a motu folder at its root. Then a particular file is "motu/css/motu/motu.css" and this file is served by the URL   http://resources.myocean.eu/motu/css/motu/motu.css in the CMEMS CIS context.   
+
+
+
+#### <a name="IntallPublicFilesOnMotuTomcat">Directly on Motu Apache tomcat server</a>  
+ 
+If you do not use a central entity to serve public static files, you can optionally extract the archive 
+and serve files directly by configuring Motu.  
+First extract the archive:   
 ```
+tar xzf motu-web-static-files-X.Y.Z-classifier-$timestamp-$target.tar.gz -C /opt/cmems-cis/motu/data/public/static-files   
+```
+
+Then edit "motu/tomcat-motu/conf/server.xml" in order to server files from Motu:  
+```
+[...]  
 <Host appBase="webapps" [...]  
-        <!-- CLS#SMA: Used to serve public static files -->  
-        <Context docBase="${motu-config-dir}/../motu" path="/motu"/>  
+        <!-- Used to serve public static files -->  
+        <Context docBase="/opt/cmems-cis/motu/data/public/static-files/motu" path="/motu"/>  
  [...]  
 ```
+Finally in motuConfiguration.xml remove the attribute named: [httpBaseRef](#motuConfig-httpBaseRef).
 
-Otherwise refers to [Install Motu web public static files on a central server](#IntallPublicFilesOnCentralServer)
+
+If you want to set another path instead of "/motu", you have to set also the business configuration parameter named [httpBaseRef](#motuConfig-httpBaseRef).  
+
  
-Platform is installed and configured. Refers to [Configuration](#Configuration) for check configuration before [starting Motu](#SS).
+## <a name="InstallCheck">Check installation</a>
+
+When you start Motu, the only message shall be:  
+```
+tomcat-motu - start
+```
+
+If any other messages appear, you have to treat them.
+
+As Motu relies on binary software like CDO, error could be raised meaning that CDO does not runs well.  
+```
+ERROR: cdo tool does not run well: $cdo --version  
+[...]
+```  
+
+In this case, you have to install CDO manually.  
 
 
-__Installation folder structure__
+## <a name="InstallCDO">CDO manual installation</a>
+This section has to be read only if Motu does not start successfully.  
+  
+"cdo" command has to be available in the PATH when Motu starts.   
+By default, Motu provides a built of CDO and add the command to the PATH, but with some Linux distribution it is necessary to install it.  
+Motu provides some help in order to install CDO:  
+
+```
+cd /opt/cmems-cis/motu/products/cdo-group  
+vi install-cdo.sh  
+./install-cdo $MOTU_HOME
+```  
+
+Also in order to get full details about CDO installation, you can get details in:  
+
+```
+cd /opt/cmems-cis/motu/products/  
+vi README  
+  
+Search for 'Download CDO tools'  
+
+mkdir cdo-group  
+cd cdo-group  
+cp $PRODUCT_INSTALL_DIR/cdo-group/install-cdo.sh ./  
+[...]  
+```
+
+Note that without CDO some functionalities on depth requests or on download product won't work successfully.
+If any case, you can disable the CDO check by commented the check call:  
+
+* Disable check:  
+```
+cd /opt/cmems-cis/motu/  
+sed -i 's/  __checkCDOToolAvailable/#  __checkCDOToolAvailable/g' motu
+```  
+* Enable check:  
+```
+cd /opt/cmems-cis/motu/  
+sed -i 's/#  __checkCDOToolAvailable/  __checkCDOToolAvailable/g' motu
+```  
+  
+  
+
+
+## <a name="InstallFolders">Installation folder structure</a>
   
 Once archives have been extracted, a "motu" folder is created and contains several sub-folders and files:
 
@@ -176,18 +292,9 @@ Once archives have been extracted, a "motu" folder is created and contains sever
 
 
 
-### Install Motu public static files from a <a name="IntallPublicFilesOnCentralServer">central server</a>  
-Extract this archive on a server.
-```
-tar xvzf motu-web-static-files-X.Y.Z-classifier-$timestamp-$target.tar.gz  
-```
-Then use a server to make these extracted folders and files accessible from an HTTP address.
- 
-Example: The archive contains a motu folder at its root. Then a particular file is "motu/css/motu/motu.css" and this file is served by the URL   http://resources.myocean.eu/motu/css/motu/motu.css in the CMEMS CIS context.   
 
 
-
-## Setup a front Apache HTTPd server  
+## <a name="InstallFrontal">Setup a front Apache HTTPd server</a>  
 See sample of the Apache HTTPd configuration in the folder: config/apache-httpd-conf-sample  
 The configuration is described for Apache2  
 
@@ -259,8 +366,12 @@ String with format ${var} will be substituted with Java property variables. @See
 
 ##### <a name="motuConfig-httpBaseRef">httpBaseRef</a>
 Http URL used to serve files from to the path where archive __motu-web-static-files-X.Y.Z-classifier-buildId.tar.gz__ has been extracted.  
-For example: This value http://resources.myocean.eu server a folder which contains motu/css/motu/motu.css.  
-It so enable to server http://resources.myocean.eu/motu/css/motu/motu.css
+For example: 
+
+* Value http://resources.myocean.eu/motu serve a folder which contains ./css/motu/motu.css.  
+It so enable to server http://resources.myocean.eu/motu/css/motu/motu.css  
+* Value . is used to server statics files included by default in Motu application
+* Remove this value to serve a path accessible from $motuServer/motu
 
         
 ##### cleanExtractionFileInterval
