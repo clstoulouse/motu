@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.Formatter;
 import java.util.List;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatLonRangeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
@@ -836,7 +837,10 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                 }
             }
         } catch (InvalidRangeException e) {
-            throw new MotuException("ERROR in ExtractCriteriaLatLon - getRangesFromLatLonRect1D - while creating list of ranges", e);
+            throw new MotuException(
+                    ErrorType.INVALID_LAT_LON_RANGE,
+                    "ERROR in ExtractCriteriaLatLon - getRangesFromLatLonRect1D - while creating list of ranges",
+                    e);
 
         }
 
@@ -1059,6 +1063,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
 
                         } catch (InvalidRangeException e) {
                             throw new MotuException(
+                                    ErrorType.INVALID_LAT_LON_RANGE,
                                     "ERROR in ExtractCriteriaLatLon - getListRangesFromLatLonRect2D - while creating list of ranges",
                                     e);
                         }
@@ -1447,7 +1452,10 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                 list.add(new Range(Math.min(minyIndex, maxyIndex), Math.max(minyIndex, maxyIndex)));
                 list.add(new Range(Math.min(minxIndex, maxxIndex), Math.max(minxIndex, maxxIndex)));
             } catch (InvalidRangeException e) {
-                throw new MotuException("ERROR in ExtractCriteriaLatLon - getRangesFromLatLonRect - while creating list of ranges", e);
+                throw new MotuException(
+                        ErrorType.INVALID_LAT_LON_RANGE,
+                        "ERROR in ExtractCriteriaLatLon - getRangesFromLatLonRect - while creating list of ranges",
+                        e);
             }
             return list;
         } else if ((xaxis instanceof CoordinateAxis2D) && (yaxis instanceof CoordinateAxis2D) && gcs.isLatLon()) {

@@ -22,7 +22,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.web.bll.request.queueserver.queue;
+package fr.cls.atoll.motu.web.bll.request.queueserver.queue.log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.basic.DateConverter;
 
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 
@@ -64,10 +65,10 @@ public class QueueLogInfo {
     public static final String TYPE_CSV = "csv";
 
     /** Date format for log txt files */
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss.SSS");
 
     /** Log format (configuration) */
-    private String logFormat = "";
+    private transient String logFormat = "";
 
     /** The queue id. */
     private String queueId = "";
@@ -199,7 +200,7 @@ public class QueueLogInfo {
     public void initXStreamOptions() {
 
         // xStream.alias("priority", QueueLogPriority.class);
-
+        xStream.registerConverter(new DateConverter("yyyy-mm-dd HH:mm:ss.S", new String[] { "yyyy-mm-dd", "yyyy-mm-dd HH:mm:ss" }));
         xStream.useAttributeFor(Date.class);
         xStream.useAttributeFor(long.class);
         xStream.useAttributeFor(boolean.class);
@@ -337,25 +338,21 @@ public class QueueLogInfo {
             for (String v : extractionParameters.getListVar()) {
                 outputStream.write(v.concat(CSV_SEPARATOR).getBytes(encoding));
             }
-            outputStream.write((CSV_SEPARATOR).getBytes(encoding));
 
             // Temporal coverage
             for (String t : extractionParameters.getListTemporalCoverage()) {
                 outputStream.write(t.concat(CSV_SEPARATOR).getBytes(encoding));
             }
-            outputStream.write((CSV_SEPARATOR).getBytes(encoding));
 
             // Geographical coverage
             for (String g : extractionParameters.getListLatLonCoverage()) {
                 outputStream.write(g.concat(CSV_SEPARATOR).getBytes(encoding));
             }
-            outputStream.write((CSV_SEPARATOR).getBytes(encoding));
 
             // Depth coverage
             for (String d : extractionParameters.getListDepthCoverage()) {
                 outputStream.write(d.concat(CSV_SEPARATOR).getBytes(encoding));
             }
-            outputStream.write((CSV_SEPARATOR).getBytes(encoding));
 
             // Priorities
             // for (QueueLogPriority p : priorities) {
@@ -363,7 +360,7 @@ public class QueueLogInfo {
             // outputStream.write(Integer.toString(p.getRange()).concat(CSV_SEPARATOR).getBytes(encoding));
             // outputStream.write(DATE_FORMAT.format(p.getDate()).concat(CSV_SEPARATOR).getBytes(encoding));
             // }
-            outputStream.write((CSV_SEPARATOR).getBytes(encoding));
+            // outputStream.write((CSV_SEPARATOR).getBytes(encoding));
 
             // Return CSV line to String
             return outputStream.toString(encoding);

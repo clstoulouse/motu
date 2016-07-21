@@ -60,6 +60,7 @@ public class BLLProductManager implements IBLLProductManager {
         return productFound;
     }
 
+    @Override
     public Product getProductFromLocation(String URLPath) throws MotuException {
         Product productFound = null;
         for (ConfigService c : BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService()) {
@@ -94,6 +95,16 @@ public class BLLProductManager implements IBLLProductManager {
         Product p = cd.getProducts().get(productId);
 
         return p;
+    }
+
+    @Override
+    public String getProductDownloadHttpUrl(String productFileName_) {
+        String productDownloadHttpUrl = BLLManager.getInstance().getConfigManager().getProductDownloadHttpUrl();
+        if (!(productDownloadHttpUrl.endsWith("/"))) {
+            productDownloadHttpUrl += "/";
+        }
+        productDownloadHttpUrl += productFileName_;
+        return productDownloadHttpUrl;
     }
 
 }

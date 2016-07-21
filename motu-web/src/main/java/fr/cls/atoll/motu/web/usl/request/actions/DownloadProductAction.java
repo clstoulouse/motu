@@ -214,7 +214,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                     throw new MotuException("Error while using velocity template", e);
                 }
 
-                String productURL = getProductDownloadHttpUrl(pr);
+                String productURL = BLLManager.getInstance().getCatalogManager().getProductManager()
+                        .getProductDownloadHttpUrl(pr.getProductFileName());
 
                 // Synchronous mode
                 if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_CONSOLE)) {
@@ -275,16 +276,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         // Set assertion to manage CAS.
         extractionParameters.setAssertion(AssertionHolder.getAssertion());
         return extractionParameters;
-    }
-
-    /** {@inheritDoc} */
-    private String getProductDownloadHttpUrl(ProductResult p_) {
-        String productDownloadHttpUrl = BLLManager.getInstance().getConfigManager().getProductDownloadHttpUrl();
-        if (!(productDownloadHttpUrl.endsWith("/"))) {
-            productDownloadHttpUrl += "/";
-        }
-        productDownloadHttpUrl += p_.getProductFileName();
-        return productDownloadHttpUrl;
     }
 
     private StatusModeResponse createStatusModeResponse(long requestId) {

@@ -22,7 +22,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.web.bll.request.queueserver;
+package fr.cls.atoll.motu.web.bll.request.queueserver.queue.log;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -33,7 +33,6 @@ import org.apache.logging.log4j.Logger;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
-import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueLogInfo;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.USLManager;
@@ -403,24 +402,18 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
      * Sets the ended.
      */
     public void setEnded() {
-        try {
-            if (product != null) {
-                queueLogInfo.setDownloadUrlPath(USLManager.getInstance().getRequestManager().getProductDownloadUrlPath(product));
-                queueLogInfo.setExtractLocationData(product.getExtractLocationData());
-                queueLogInfo.addReadingTime(product.getReadingTimeAsMilliSeconds());
-                queueLogInfo.addWritingTime(product.getWritingTimeAsMilliSeconds());
-                queueLogInfo.addCopyingTime(product.getCopyingTimeAsMilliSeconds());
-                queueLogInfo.addCompressingTime(product.getCompressingTimeAsMilliSeconds());
-            }
-            setEndTime();
-            if (LOGQUEUE.isInfoEnabled()) {
-                LOGQUEUE.info(this.queueLogInfo);
-            }
-
-        } catch (MotuException e) {
-            // Do nothing
+        if (product != null) {
+            queueLogInfo.setDownloadUrlPath(USLManager.getInstance().getRequestManager().getProductDownloadUrlPath(product));
+            queueLogInfo.setExtractLocationData(product.getExtractLocationData());
+            queueLogInfo.addReadingTime(product.getReadingTimeAsMilliSeconds());
+            queueLogInfo.addWritingTime(product.getWritingTimeAsMilliSeconds());
+            queueLogInfo.addCopyingTime(product.getCopyingTimeAsMilliSeconds());
+            queueLogInfo.addCompressingTime(product.getCompressingTimeAsMilliSeconds());
         }
-
+        setEndTime();
+        if (LOGQUEUE.isInfoEnabled()) {
+            LOGQUEUE.info(this.queueLogInfo);
+        }
     }
 
     /**

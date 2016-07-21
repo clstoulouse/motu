@@ -55,4 +55,12 @@ public interface IBLLProductManager {
      */
     Product getProduct(String serviceName, String productId) throws MotuException;
 
+    /**
+     * .
+     * 
+     * @param productFileName_
+     * @return
+     */
+    String getProductDownloadHttpUrl(String productFileName_);
+
 }

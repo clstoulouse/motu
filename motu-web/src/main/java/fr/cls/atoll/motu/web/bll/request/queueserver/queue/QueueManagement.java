@@ -33,10 +33,11 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingQueueCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidQueuePriorityException;
-import fr.cls.atoll.motu.web.bll.request.queueserver.RunnableExtraction;
+import fr.cls.atoll.motu.web.bll.request.queueserver.queue.log.RunnableExtraction;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
 
 /**
@@ -108,13 +109,9 @@ public class QueueManagement {
         // If queue is full, throws new MotuExceedingQueueCapacityException
         checkMaxQueueSize();
 
-        // runnableExtraction.setQueueId(queueConfig.getId());
-        // runnableExtraction.setQueueDesc(queueConfig.getDescription());
-
         try {
-            // runnableExtraction.setInQueue();
-            threadPoolExecutor.onNewRequestForUser(runnableExtraction.getExtractionParameters().getUserId());
-
+            threadPoolExecutor.onNewRequestForUser(runnableExtraction.getExtractionParameters().isAnonymousUser() ? null
+                    : runnableExtraction.getExtractionParameters().getUserId());
             threadPoolExecutor.execute(runnableExtraction);
         } catch (RejectedExecutionException e) {
             throw new MotuException("ERROR Execute request", e);
@@ -179,7 +176,7 @@ public class QueueManagement {
      * @return the int
      */
     public int countRequestUser(String userId) {
-        Integer nbRqtForuser = threadPoolExecutor.getUsersRequestNumberMap().get(userId);
+        Integer nbRqtForuser = threadPoolExecutor.getRequestCount(userId);
         return nbRqtForuser != null ? nbRqtForuser : 0;
     }
 
@@ -210,7 +207,7 @@ public class QueueManagement {
                 threadPoolExecutor.awaitTermination(1, TimeUnit.SECONDS);
             }
         } catch (InterruptedException e) {
-            throw new MotuException("ERROR in QueueManagement.shutdown.", e);
+            throw new MotuException(ErrorType.SHUTTING_DOWN, "ERROR in QueueManagement.shutdown.", e);
         }
         LOG.info(String.format("Queue '%s %s' is shutdown.", this.getName(), this.queueConfig.getDescription()));
 

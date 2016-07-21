@@ -32,6 +32,10 @@ public class RequestDownloadStatus {
     private MotuException runningException;
     private String extractFilename;
 
+    // Queue server manager processing info
+    private String queueId;
+    private String queueDescription;
+
     /**
      * Constructeur.
      * 
@@ -226,6 +230,42 @@ public class RequestDownloadStatus {
      */
     public String getExtractFilename() {
         return extractFilename;
+    }
+
+    /**
+     * .
+     * 
+     * @param id
+     */
+    public void setQueueId(String queueId_) {
+        this.queueId = queueId_;
+    }
+
+    /**
+     * Valeur de queueDescription.
+     * 
+     * @return la valeur.
+     */
+    public String getQueueDescription() {
+        return queueDescription;
+    }
+
+    /**
+     * Valeur de queueDescription.
+     * 
+     * @param queueDescription nouvelle valeur.
+     */
+    public void setQueueDescription(String queueDescription) {
+        this.queueDescription = queueDescription;
+    }
+
+    /**
+     * Valeur de queueId.
+     * 
+     * @return la valeur.
+     */
+    public String getQueueId() {
+        return queueId;
     }
 
 }

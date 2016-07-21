@@ -27,6 +27,8 @@
  */
 package fr.cls.atoll.motu.web.bll.exception;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+
 /**
  * General exception class of Motu.
  * 
@@ -39,13 +41,23 @@ public class MotuException extends Exception {
 
     private static final long serialVersionUID = -1L;
 
+    private ErrorType errorType;
+
+    /**
+     * @param message message to post.
+     * @param cause native exception.
+     */
+    public MotuException(ErrorType errorType_, String message, Throwable cause) {
+        super(message, cause);
+        errorType = errorType_;
+    }
+
     /**
      * @param message message to post.
      * @param cause native exception.
      */
     public MotuException(String message, Throwable cause) {
-        super(message, cause);
-
+        this(ErrorType.SYSTEM, message, cause);
     }
 
     /**
@@ -53,6 +65,7 @@ public class MotuException extends Exception {
      */
     public MotuException(String message) {
         super(message);
+        errorType = ErrorType.SYSTEM;
     }
 
     /**
@@ -60,6 +73,16 @@ public class MotuException extends Exception {
      */
     public MotuException(Throwable cause) {
         super(cause);
+        errorType = ErrorType.SYSTEM;
+    }
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    public ErrorType getErrorType() {
+        return errorType;
     }
 
 }

@@ -56,7 +56,7 @@ public class DALCatalogManager implements IDALCatalogManager {
             cd = new TDSCatalogLoader().loadTdsCatalog(cs.getCatalog());
             break;
         default:
-            throw new MotuException(String.format("Unknown catalog type %d ", cs.getCatalog().getType()));
+            throw new MotuException(String.format("Unknown catalog type %s ", cs.getCatalog().getType()));
             // break;
         }
         return cd;

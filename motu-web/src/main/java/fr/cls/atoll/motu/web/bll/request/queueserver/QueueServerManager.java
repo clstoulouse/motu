@@ -116,6 +116,8 @@ public class QueueServerManager implements IQueueServerManager {
             throw new MotuException("Oops, the size of the data to download (" + (int) requestSizeInMB_
                     + " Megabyte) is not managed by the Motu queue management system.");
         }
+        rds_.setQueueId(queueManagement.getQueueConfig().getId());
+        rds_.setQueueDescription(queueManagement.getQueueConfig().getDescription());
 
         // Here we synchronize the execution of the request
         QueueJobListener qjl = createQueueJobListener(rds_);

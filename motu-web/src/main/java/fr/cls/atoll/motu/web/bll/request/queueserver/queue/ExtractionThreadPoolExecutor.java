@@ -51,6 +51,8 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
      */
     private ConcurrentMap<String, Integer> users;
 
+    public static final String ANONYMOUS_USERID = "anonymous";
+
     /**
      * The Constructor.
      *
@@ -83,6 +85,14 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
         return users;
     }
 
+    private String getUserIdWithAnonymousUserIdWhenUserIdIsNull(String userId_) {
+        String uid = userId_;
+        if (uid == null) {
+            uid = ANONYMOUS_USERID;
+        }
+        return uid;
+    }
+
     /**
      * Increment user.
      *
@@ -90,17 +100,14 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
      * @return the integer
      */
     public Integer onNewRequestForUser(String userId_) {
-        if (userId_ == null) {
-            return null;
-        }
+        String uid = getUserIdWithAnonymousUserIdWhenUserIdIsNull(userId_);
 
-        Integer nbRqtForUser = getUsersRequestNumberMap().get(userId_);
+        Integer nbRqtForUser = getUsersRequestNumberMap().get(uid);
         if (nbRqtForUser == null) {
             nbRqtForUser = 0;
-
         }
         nbRqtForUser++;
-        getUsersRequestNumberMap().put(userId_, nbRqtForUser);
+        getUsersRequestNumberMap().put(uid, nbRqtForUser);
 
         return nbRqtForUser;
     }
@@ -112,34 +119,19 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
      * @return the integer
      */
     public Integer onRequestStoppedForUser(String userId_) {
-        if (userId_ == null) {
-            return null;
-        }
-        Integer nbRqtForUser = getUsersRequestNumberMap().get(userId_);
+        String uid = getUserIdWithAnonymousUserIdWhenUserIdIsNull(userId_);
+        Integer nbRqtForUser = getUsersRequestNumberMap().get(uid);
         if (nbRqtForUser != null) {
             nbRqtForUser--;
             if (nbRqtForUser > 0) {
-                getUsersRequestNumberMap().put(userId_, nbRqtForUser);
+                getUsersRequestNumberMap().put(uid, nbRqtForUser);
             } else {
-                getUsersRequestNumberMap().remove(userId_);
+                getUsersRequestNumberMap().remove(uid);
             }
         }
 
         return nbRqtForUser;
     }
-
-    // /**
-    // * Before execute.
-    // *
-    // * @param t the t
-    // * @param r the r
-    // * @see {@link java.util.concurrent.ThreadPoolExecutor}
-    // */
-    // @Override
-    // protected void beforeExecute(Thread t, Runnable r) {
-    // ((IQueueJob) r).setStarted();
-    // super.beforeExecute(t, r);
-    // }
 
     /**
      * After execute.
@@ -162,7 +154,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
             qj.onJobException(e);
         }
 
-        onRequestStoppedForUser(qj.getExtractionParameters().getUserId());
+        onRequestStoppedForUser(qj.getExtractionParameters().isAnonymousUser() ? null : qj.getExtractionParameters().getUserId());
 
         // runnableExtraction.setEnded();
     }
@@ -183,5 +175,15 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
             total += num;
         }
         return total;
+    }
+
+    /**
+     * .
+     * 
+     * @param userId
+     * @return
+     */
+    public Integer getRequestCount(String userId_) {
+        return getUsersRequestNumberMap().get(getUserIdWithAnonymousUserIdWhenUserIdIsNull(userId_));
     }
 }

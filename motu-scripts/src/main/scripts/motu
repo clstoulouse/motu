@@ -11,6 +11,14 @@
 # variable RUN_ONLY_TOMCAT_MOTU=true. 
 # To accept both Motu and TDS, unset or comment this variable.
 #
+# Exit codes are:
+# 0: after start
+# 1: after stop
+# 2: after status
+# 3: after clean
+# 4: after any other action
+       
+       
 RUN_ONLY_TOMCAT_MOTU=true
 
 cd "$(dirname "$0")"
@@ -256,13 +264,24 @@ __setPathWithCdoTools() {
 __checkCDOToolAvailable() {
   cdoFilePath="$(which cdo)"
   if [ -z "$cdoFilePath" ] ; then
+     echo
      echo "ERROR: cdo tool is not available, please check that it has been installed"
-     exit 20;  
-  #else
-  #   echo "CDO tools path=$cdoFilePath"
+     echo
+     exit 20;
+  else
+     cdo --version &> /dev/null
+     local cdoVersionReturnCode=$?
+     if [ $cdoVersionReturnCode -ne 0 ]; then
+        echo
+        echo "ERROR: cdo tool does not run well: \$cdo --version"
+        cdo --version
+        echo
+        echo "CDO tools path=$cdoFilePath"
+        exit 21
+     fi
   fi
-
 }
+
 
 __setMotuBusinessEnvVar() {
   export JAVA_HOME=$MOTU_PRODUCTS_JAVA_DIR
@@ -536,23 +555,31 @@ else
 fi
 
 initDirs $app
-
+exitCode=0
 case "$1" in
     start)
       onStartAction $app
+      exitCode=0
       ;;
     stop)
       onStopAction $app
+      exitCode=1
       ;;
     restart)
       onRestartAction $app
+      exitCode=1
       ;;
     status)
       onStatusAction $app
+      exitCode=2
       ;;
     clean)
       onCleanAction $app
+      exitCode=3
       ;;
     *) echo -e "\nUsage: ./motu start|stop|restart|status|clean|help $allApps\n"
+       exitCode=4
        ;;
 esac
+
+exit $exitCode
