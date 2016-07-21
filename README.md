@@ -193,7 +193,7 @@ Then edit "motu/tomcat-motu/conf/server.xml" in order to server files from Motu:
         <Context docBase="/opt/cmems-cis/motu/data/public/static-files/motu" path="/motu"/>  
  [...]  
 ```
-Finally in motuConfiguration.xml remove the attribute named: [httpBaseRef](#motuConfig-httpBaseRef).
+Finally in motuConfiguration.xml remove the attribute named: [httpBaseRef](#motuConfig-httpBaseRef). (Do not set it empty, remove it).
 
 
 If you want to set another path instead of "/motu", you have to set also the business configuration parameter named [httpBaseRef](#motuConfig-httpBaseRef).  

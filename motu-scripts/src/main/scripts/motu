@@ -11,6 +11,14 @@
 # variable RUN_ONLY_TOMCAT_MOTU=true. 
 # To accept both Motu and TDS, unset or comment this variable.
 #
+# Exit codes are:
+# 0: after start
+# 1: after stop
+# 2: after status
+# 3: after clean
+# 4: after any other action
+       
+       
 RUN_ONLY_TOMCAT_MOTU=true
 
 cd "$(dirname "$0")"
