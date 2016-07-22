@@ -67,9 +67,6 @@ public class QueueLogInfo {
     /** Date format for log txt files */
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss.SSS");
 
-    /** Log format (configuration) */
-    private transient String logFormat = "";
-
     /** The queue id. */
     private String queueId = "";
 
@@ -154,30 +151,12 @@ public class QueueLogInfo {
     }
 
     /**
-     * Sets the log format.
-     * 
-     * @param encoding the log format
-     */
-    public void setLogFormat(String logF) {
-        this.logFormat = logF;
-    }
-
-    /**
      * Gets the encoding.
      * 
      * @return the encoding
      */
     public String getEncoding() {
         return encoding;
-    }
-
-    /**
-     * Gets the log Format.
-     * 
-     * @return the log format
-     */
-    public String getLogFormat() {
-        return logFormat;
     }
 
     /**

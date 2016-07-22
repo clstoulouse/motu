@@ -166,7 +166,6 @@ public class BLLRequestManager implements IBLLRequestManager {
 
         c.setTimeInMillis(rds.getEndProcessingDateTime());
         qli.setEndTime(c.getTime());
-        qli.setLogFormat(BLLManager.getInstance().getConfigManager().getMotuConfig().getLogFormat());
 
         // SMA: Not sure that this field as a real sense, keep it for retro compatibility between Motu
         // versions 2.x and 3.x
