@@ -33,7 +33,9 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
 * [Exploitation](#Exploitation)
   * [Start, Stop and other Motu commands](#SS)
   * [Logbooks](#Logbooks)
-
+  * [Debug view](#ExploitDebug)
+  
+  
 #<a name="Overview">Overview</a>
 Motu project is a robust web server used to distribute data. [To be completed]
 
@@ -259,7 +261,21 @@ sed -i 's/#  __checkCDOToolAvailable/  __checkCDOToolAvailable/g' motu
 ```  
   
   
-
+__ERROR GLIBC_2.14 is missing__
+In this case you have to install GLIBC 2.14:  
+```
+cd /opt/cmems-cis/motu/products/cdo-group
+wget http://ftp.gnu.org/gnu/glibc/glibc-2.14.tar.gz
+tar zxvf glibc-2.14.tar.gz
+cd glibc-2.14
+mkdir build
+cd build
+mkdir /opt/cmems-cis/motu/products/cdo-group/glibc-2.14-home
+../configure --prefix=/opt/cmems-cis/motu/products/cdo-group/glibc-2.14-home
+make -j4
+make install
+sed -i '15 a export LD_LIBRARY_PATH=/opt/cmems-cis/motu/products/cdo-group/glibc-2.14-home/lib:$LD_LIBRARY_PATH' /opt/cmems-cis/motu/motu
+```  
 
 ## <a name="InstallFolders">Installation folder structure</a>
   
@@ -452,7 +468,7 @@ String which describes the group
 String which describes the service
 
 ##### profiles
-Optional string containing one value, several values separated by a comma.  
+Optional string containing one value, several values separated by a comma or empty (meaning everybody can access).  
 Used to manage access right from a SSO cas server.  
 In the frame of CMEMS, three profiles exist:  
 
@@ -488,9 +504,9 @@ Example: m_HR_OBS.xml
 Example: tds
 
 ##### ncss
-Without this attribute, Motu connects to TDS with Opendap protocol. If this attribute is set to "enabled" connects to TDS with ncss protocol in order to improve performance.  
-We recommend to use "enabled".
-Values are: "enabled", "disable" or empty
+Without this attribute or when empty, Motu connects to TDS with Opendap protocol. If this attribute is set to "enabled" connects to TDS with ncss protocol in order to improve performance.   
+We recommend to use "enabled".   
+Values are: "enabled", "disable" or empty.
 
 ##### urlSite
 TDS URL  
@@ -644,7 +660,10 @@ Start the Motu process.
 ./motu start  
 ```
 
-### Stop Motu
+### Stop Motu  
+At the shutdown of Motu, the server waits that none of the pending or in progress request are in execution.  
+If it's the case, the server waits the end of the request before shutdown.  
+Note that after waiting 10 minutes server will automatically shutdown without waiting any running requests.  
 ``` 
 ./motu stop
 ``` 
@@ -730,7 +749,18 @@ By default, log files are created in the folder $motu-install-dir/log. This fold
   * __tomcat-motu-catalina.out__: Catalina output matching the environment variable CATALINA_OUT.
   * __tomcat-motu.log__: $CATALINA_HOME/bin/startup.sh and $CATALINA_HOME/bin/shutdown.sh outputs are redirected to this file.  
   
+  
+##<a name="ExploitDebug">Debug view</a>  
+From a web browser access to the Motu web site with the URL:  
+``` 
+/Motu?action=debug  
+``` 
 
-  
-  
+You can see the different requests and their status.  
+You change the status order by entering 4 parameters in the URL:  
+``` 
+/Motu?action=debug&order=DONE,ERROR,PENDING,INPROGRESS
+``` 
+
+
 

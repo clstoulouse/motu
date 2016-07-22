@@ -55,7 +55,7 @@ public class DALRequestManager implements IDALRequestManager {
 
     @Override
     public void downloadProduct(ConfigService cs, Product p, OutputFormat dataOutputFormat) throws MotuException {
-        boolean ncss = cs.getCatalog().getNcss().equalsIgnoreCase("enabled");
+        boolean ncss = cs.getCatalog().getNcss() != null && cs.getCatalog().getNcss().equalsIgnoreCase("enabled");
 
         // Detect NCSS or OpenDAP
         try {
