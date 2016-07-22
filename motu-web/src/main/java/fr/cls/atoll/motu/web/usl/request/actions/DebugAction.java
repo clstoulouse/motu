@@ -125,7 +125,6 @@ public class DebugAction extends AbstractAction {
         }
 
         stringBuffer.append("<h2>\n");
-        stringBuffer.append("Status: \n");
         stringBuffer.append(statusModeType.toString());
         stringBuffer.append("</h2>\n");
         stringBuffer.append("<table border=\"1\">\n");
@@ -237,8 +236,8 @@ public class DebugAction extends AbstractAction {
             return;
         }
 
-        stringBuffer.append("<h1 align=\"center\">\n");
-        stringBuffer.append("Pending requests\n");
+        stringBuffer.append("<hr/><h1 align=\"center\">\n");
+        stringBuffer.append("Queue server general configuration\n");
         stringBuffer.append("</h1>\n");
 
         try {
@@ -247,9 +246,6 @@ public class DebugAction extends AbstractAction {
                 stringBuffer.append("<p> Queue server is not active</p>");
                 return;
             }
-            stringBuffer.append("<h2>\n");
-            stringBuffer.append("Queue server general configuration");
-            stringBuffer.append("</h2>\n");
             stringBuffer.append("<p>\n");
             // stringBuffer.append(" Default priority: ");
             // stringBuffer.append(queueServerManagement.getDefaultPriority());
@@ -262,7 +258,7 @@ public class DebugAction extends AbstractAction {
             // stringBuffer.append("Non-Batch Queues");
             // stringBuffer.append("</h2>\n");
             debugPendingRequest(stringBuffer, queueServerManagement); // , false
-            stringBuffer.append("<h2>\n");
+            // stringBuffer.append("<h2>\n");
             // stringBuffer.append("Batch Queues");
             // stringBuffer.append("</h2>\n");
             // debugPendingRequest(stringBuffer, queueServerManagement, true);
