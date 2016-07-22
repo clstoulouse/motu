@@ -227,7 +227,17 @@ __initConfig() {
 
 __startCatalinaShell() {
   tomcatDirName=$1
-  $CATALINA_HOME/bin/startup.sh >> $MOTU_LOG_DIR/$tomcatDirName.log 2>&1
+  if [ -s $MOTU_PID_DIR/$tomcatDirName.pid ]; then
+    PID=`cat $MOTU_PID_DIR/$tomcatDirName.pid`
+    if ps -p $PID > /dev/null
+	then
+	  echo "Oops, Motu is already started, pid=$PID"
+	else
+	  $CATALINA_HOME/bin/startup.sh >> $MOTU_LOG_DIR/$tomcatDirName.log 2>&1
+	fi
+  else
+    $CATALINA_HOME/bin/startup.sh >> $MOTU_LOG_DIR/$tomcatDirName.log 2>&1
+  fi
 }
 
 

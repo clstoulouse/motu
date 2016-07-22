@@ -30,7 +30,6 @@ import java.util.Date;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
@@ -101,7 +100,6 @@ public class RunnableExtraction implements Runnable, Comparable<RunnableExtracti
         this.extractionParameters = extractionParameters;
 
         this.queueLogInfo.setExtractionParameters(extractionParameters);
-        this.queueLogInfo.setLogFormat(BLLManager.getInstance().getConfigManager().getMotuConfig().getLogFormat());
     }
 
     /**
