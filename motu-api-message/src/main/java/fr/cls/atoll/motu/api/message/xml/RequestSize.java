@@ -5,7 +5,6 @@
 // Generated on: 2016.07.13 at 08:52:53 AM CEST 
 //
 
-
 package fr.cls.atoll.motu.api.message.xml;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -14,17 +13,16 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
  * 
- * 					Réponse informations volume de donneés (en
- * 					octets)
- * 					d'une requête d'extraction.
- * 				
+ * RÃ©ponse informations volume de donnÃ©es (en octets) d'une requÃªte d'extraction.
  * 
- * <p>Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for anonymous complex type.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -60,10 +58,8 @@ public class RequestSize {
     /**
      * Gets the value of the maxAllowedSize property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
+     * @return possible object is {@link Double }
+     * 
      */
     public Double getMaxAllowedSize() {
         return maxAllowedSize;
@@ -72,10 +68,8 @@ public class RequestSize {
     /**
      * Sets the value of the maxAllowedSize property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
+     * @param value allowed object is {@link Double }
+     * 
      */
     public void setMaxAllowedSize(Double value) {
         this.maxAllowedSize = value;
@@ -84,10 +78,8 @@ public class RequestSize {
     /**
      * Gets the value of the size property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
+     * @return possible object is {@link Double }
+     * 
      */
     public Double getSize() {
         return size;
@@ -96,10 +88,8 @@ public class RequestSize {
     /**
      * Sets the value of the size property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
+     * @param value allowed object is {@link Double }
+     * 
      */
     public void setSize(Double value) {
         this.size = value;
@@ -108,10 +98,8 @@ public class RequestSize {
     /**
      * Gets the value of the unit property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getUnit() {
         return unit;
@@ -120,10 +108,8 @@ public class RequestSize {
     /**
      * Sets the value of the unit property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setUnit(String value) {
         this.unit = value;
@@ -132,10 +118,8 @@ public class RequestSize {
     /**
      * Gets the value of the msg property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getMsg() {
         return msg;
@@ -144,10 +128,8 @@ public class RequestSize {
     /**
      * Sets the value of the msg property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setMsg(String value) {
         this.msg = value;
@@ -156,10 +138,8 @@ public class RequestSize {
     /**
      * Gets the value of the code property.
      * 
-     * @return
-     *     possible object is
-     *     {@link ErrorType }
-     *     
+     * @return possible object is {@link ErrorType }
+     * 
      */
     public ErrorType getCode() {
         return code;
@@ -168,10 +148,8 @@ public class RequestSize {
     /**
      * Sets the value of the code property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link ErrorType }
-     *     
+     * @param value allowed object is {@link ErrorType }
+     * 
      */
     public void setCode(ErrorType value) {
         this.code = value;
