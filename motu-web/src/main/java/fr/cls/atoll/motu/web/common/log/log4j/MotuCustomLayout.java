@@ -32,15 +32,14 @@ import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 
-import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.log.QueueLogInfo;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 
 /**
  * 
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
- * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 @Plugin(name = "MotuCustomLayout", category = "Core", elementType = "layout", printObject = true)
 public class MotuCustomLayout extends AbstractStringLayout {
@@ -54,21 +53,24 @@ public class MotuCustomLayout extends AbstractStringLayout {
     private static final int UPPER_LIMIT = 2048;
 
     private StringBuffer buf = new StringBuffer(DEFAULT_SIZE);
+    private String fileFormat;
 
-    protected MotuCustomLayout(boolean locationInfo, boolean properties, boolean complete, Charset charset) {
+    protected MotuCustomLayout(boolean locationInfo, boolean properties, boolean complete, Charset charset, String fileFormat_) {
         super(charset);
+        fileFormat = StringUtils.isNullOrEmpty(fileFormat_) ? "xml" : fileFormat_;
     }
 
     @PluginFactory
     public static MotuCustomLayout createLayout(@PluginAttribute("locationInfo") boolean locationInfo,
                                                 @PluginAttribute("properties") boolean properties,
                                                 @PluginAttribute("complete") boolean complete,
-                                                @PluginAttribute(value = "charset", defaultString = "UTF-8") Charset charset) {
-        return new MotuCustomLayout(locationInfo, properties, complete, charset);
+                                                @PluginAttribute(value = "charset", defaultString = "UTF-8") Charset charset,
+                                                @PluginAttribute(value = "fileFormat", defaultString = "XML") String fileFormat) {
+        return new MotuCustomLayout(locationInfo, properties, complete, charset, fileFormat.toUpperCase());
     }
 
     private String formatLog(QueueLogInfo queueLogInfo) {
-        if (BLLManager.getInstance().getConfigManager().getMotuConfig().getLogFormat().contains(QueueLogInfo.TYPE_XML)) {
+        if (fileFormat.contains(QueueLogInfo.TYPE_XML)) {
             buf.append(queueLogInfo.toXML());
         } else {
             buf.append(queueLogInfo.toCSV());
@@ -89,33 +91,22 @@ public class MotuCustomLayout extends AbstractStringLayout {
             buf.setLength(0);
         }
 
-        // if (event.getMessage() == null) {
-        // return "MotuXMLLayout : message object is null";
-        // } else {
         if (event.getMessage().getParameters() != null && event.getMessage().getParameters().length == 1
                 && event.getMessage().getParameters()[0] instanceof QueueLogInfo) {
             return formatLog((QueueLogInfo) event.getMessage().getParameters()[0]);
         }
-        // }
-        // else if (event.getMessage() instanceof RunnableExtraction) {
-        // RunnableExtraction runnableExtraction = (RunnableExtraction) event.getMessage();
-        // return formatLog(runnableExtraction.getQueueLogInfo());
-        // } else if (event.getMessage() instanceof QueueLogInfo) {
-        // return formatLog((QueueLogInfo) event.getMessage());
-        // }
+
         return "";
-        // return event.toString(); // super.toSerializable(event);
     }
 
     /** {@inheritDoc} */
     @Override
     public String getContentType() {
-        if (BLLManager.getInstance().getConfigManager().getMotuConfig().getLogFormat().contains(QueueLogInfo.TYPE_XML)) {
+        if (fileFormat.contains(QueueLogInfo.TYPE_XML)) {
             return "text/xml; charset=UTF-8";
         } else {
             return "text/csv; charset=UTF-8";
         }
-
     }
 
 }
