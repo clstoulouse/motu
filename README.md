@@ -41,6 +41,7 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
 Motu project is a robust web server used to distribute data. [To be completed]
 
 
+
 #<a name="DEV">Development environment</a>
 
 ## Configure eclipse development environment
@@ -125,6 +126,10 @@ Three folders are built containing archives :
 
 
 ## <a name="InstallPrerequisites">Prerequisites</a>
+
+In this chapter some path are set. For example "/opt/cmems-cis" is often written to talk about the installation path.
+You are free to install Motu in any other folder, so in the case, replace "/opt/cmems-cis" by your installation folder.
+
 ### Motu host
 Motu OS target is Linux 64bits.
 
@@ -322,7 +327,8 @@ search for 'Download CDO tools'.
 
 ## <a name="InstallFolders">Installation folder structure</a>
   
-Once archives have been extracted, a "motu" folder is created and contains several sub-folders and files:
+Once archives have been extracted, a "motu" folder is created and contains several sub-folders and files:  
+__motu/__  
 
 * __config:__ Folder which contains the motu configuration files. Refers to [Configuration](#Configuration) for more details.
 * __data:__ Folder used to managed Motu data.
