@@ -163,7 +163,8 @@ cd motu
 At this step, Motu is able to start. But static files used for customizing the web theme can be installed.  
 In the CMEMS context, the installation on a dissemination unit is ended, static files are installed on a [central server](#IntallPublicFilesOnCentralServer).  
 
-Motu is installed and configured. Refers to [configuration](#Configuration) for check configuration before [starting Motu](#SS).
+Motu is installed and configured. Refers to [configuration](#Configuration) in order to check configuration before [starting Motu](#SS).
+Then you can [check installation](#InstallCheck).
 
 
 ### Install Motu theme (public static files)
