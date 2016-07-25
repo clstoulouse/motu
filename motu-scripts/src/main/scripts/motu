@@ -272,7 +272,6 @@ __setPathWithCdoTools() {
 }
 
 __checkCDOToolAvailable() {
-  source $MOTU_INSTALL_DIR/products/cdo-group/setLDLIBRARYPATH.sh $MOTU_INSTALL_DIR/products/cdo-group
   cdoFilePath="$(which cdo)"
   if [ -z "$cdoFilePath" ] ; then
      echo
@@ -280,7 +279,9 @@ __checkCDOToolAvailable() {
      echo
      exit 20;
   else
-     cdo --version &> /dev/null
+     #cdo --version &> /dev/null
+     #This script is a cdo wrapper which set the LD_LIBRARY_PATH before calling cdo
+     $MOTU_INSTALL_DIR/products/cdo-group/cdo.sh --version &> /dev/null
      local cdoVersionReturnCode=$?
      if [ $cdoVersionReturnCode -ne 0 ]; then
         echo

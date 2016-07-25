@@ -268,7 +268,9 @@ cd $MotuInstallDir/motu
 __Now check if "cdo" runs well__:  
 ```
 export MotuInstallDir=/opt/cmems-cis  
-$MotuInstallDir/motu/products/cdo-group/cdo-1.7.1-home/bin/cdo --version  
+$MotuInstallDir/motu/products/cdo-group/cdo.sh --version  
+Climate Data Operators version 1.7.1 (http://mpimet.mpg.de/cdo)  
+[...]  
 ```  
 
 If error appear like ones below, it certainly means that GLIC is not in the LD_LIBRARY_PATH.
@@ -281,7 +283,7 @@ cdo: /lib64/libc.so.6: version `GLIBC_2.14' not found (required by cdo)
 cdo: /lib64/libc.so.6: version `GLIBC_2.14' not found (required by /opt/cmems-cis-validation/motu/products/cdo-group/hdf5-1.8.17-home/lib/libhdf5.so.10)
 ```
 
-In this case, edit $MotuInstallDir/products/cdo-group/setLDLIBRARYPATH.sh and add "$GLIBC/lib" to LD_LIBRARY_PATH as set below:   
+In this case, edit $MotuInstallDir/products/cdo-group/cdo.sh and add "$GLIBC-home/lib" to LD\_LIBRARY\_PATH.   
 
 Now check again if "cdo" runs well.
 
