@@ -222,32 +222,81 @@ In this case, you have to install CDO manually.
 
 ## <a name="InstallCDO">CDO manual installation</a>
 This section has to be read only if Motu does not start successfully.  
-  
-"cdo" command has to be available in the PATH when Motu starts.   
-By default, Motu provides a built of CDO and add the command to the PATH, but with some Linux distribution it is necessary to install it.  
-Motu provides some help in order to install CDO:  
+Select one option below to install "cdo". If you have no idea about cdo installation, choose the Default option.
 
+* [Default option: Install cdo](#InstallCDOHelp)
+* [cdo is already installed on this machine](#InstallCDOAlreadyInstalled)
+* [Try MOTU without cdo installation](#InstallCDONoInstall)
+* [How cdo is built?](#InstallCDOUnderstand)  
+  
+### <a name="InstallCDOHelp">Install cdo</a>
+"cdo" (Climate Data operators) are commands which has to be available in the PATH when Motu starts.   
+By default, Motu provides a built of CDO and add the "cdo" command to the PATH, but with some Linux distribution it is necessary to install it.  
+Motu provides some help in order to install CDO.  
+
+First check your GLibC version:  
 ```
-cd /opt/cmems-cis/motu/products/cdo-group  
-vi install-cdo.sh  
-./install-cdo $MOTU_HOME
+ldd --version  
+ldd (GNU libc) 2.12  
+[...]  
 ```  
 
-Also in order to get full details about CDO installation, you can get details in:  
-
+If your GlibC is not 2.14, you have to install GLIBC 2.14:  
+__INSTALL GLIBC 2.14__  
 ```
-cd /opt/cmems-cis/motu/products/  
-vi README  
-  
-Search for 'Download CDO tools'  
+export MotuInstallDir=/opt/cmems-cis  
+cd $MotuInstallDir/motu/products/cdo-group  
+wget http://ftp.gnu.org/gnu/glibc/glibc-2.14.tar.gz  
+tar zxvf glibc-2.14.tar.gz  
+cd glibc-2.14  
+mkdir build  
+cd build  
+mkdir $MotuInstallDir/motu/products/cdo-group/glibc-2.14-home  
+../configure --prefix=$MotuInstallDir/motu/products/cdo-group/glibc-2.14-home  
+make -j4  
+make install  
+cd $MotuInstallDir/motu  
+```  
 
-mkdir cdo-group  
-cd cdo-group  
-cp $PRODUCT_INSTALL_DIR/cdo-group/install-cdo.sh ./  
-[...]  
+
+__Now check if "cdo" runs well__:  
+```
+export MotuInstallDir=/opt/cmems-cis  
+$MotuInstallDir/motu/products/cdo-group/cdo-1.7.1-home/bin/cdo --version  
+```  
+
+If error appear like ones below, it certainly means that GLIC is not in the LD_LIBRARY_PATH.
+```
+$MotuInstallDir/motu/products/cdo-group/cdo-1.7.1-home/bin/cdo: error while loading shared libraries: libhdf5.so.10: cannot open shared object file: No such file or directory
+```  
+or  
+```
+cdo: /lib64/libc.so.6: version `GLIBC_2.14' not found (required by cdo)
+cdo: /lib64/libc.so.6: version `GLIBC_2.14' not found (required by /opt/cmems-cis-validation/motu/products/cdo-group/hdf5-1.8.17-home/lib/libhdf5.so.10)
 ```
 
-Note that without CDO some functionalities on depth requests or on download product won't work successfully.
+In this case, edit $MotuInstallDir/products/cdo-group/setLDLIBRARYPATH.sh and add "$GLIBC/lib" to LD_LIBRARY_PATH as set below:   
+
+Now check again if "cdo" runs well.
+
+If it runs well, you can now start Motu.  
+
+
+### <a name="InstallCDOAlreadyInstalled">cdo is already installed on this machine</a>
+If "cdo" is installed in another folder on the machine, you can add its path in "$MotuInstallDir/motu/motu" script:  
+
+```  
+__setPathWithCdoTools() {  
+  PATH=$MOTU_PRODUCTS_CDO_HOME_DIR/bin:$PATH  
+}  
+```  
+
+Optionnaly set LD_LIBRAY_PATH in $MotuInstallDir/products/cdo-group/setLDLIBRARYPATH.sh  
+
+
+
+### <a name="InstallCDONoInstall">Try MOTU without cdo installation</a>
+Note that without CDO, some functionalities on depth requests or on download product won't work successfully.
 If any case, you can disable the CDO check by commented the check call:  
 
 * Disable check:  
@@ -262,21 +311,14 @@ sed -i 's/#  __checkCDOToolAvailable/  __checkCDOToolAvailable/g' motu
 ```  
   
   
-__ERROR GLIBC_2.14 is missing__
-In this case you have to install GLIBC 2.14:  
-```
-cd /opt/cmems-cis/motu/products/cdo-group
-wget http://ftp.gnu.org/gnu/glibc/glibc-2.14.tar.gz
-tar zxvf glibc-2.14.tar.gz
-cd glibc-2.14
-mkdir build
-cd build
-mkdir /opt/cmems-cis/motu/products/cdo-group/glibc-2.14-home
-../configure --prefix=/opt/cmems-cis/motu/products/cdo-group/glibc-2.14-home
-make -j4
-make install
-sed -i '15 a export LD_LIBRARY_PATH=/opt/cmems-cis/motu/products/cdo-group/glibc-2.14-home/lib:$LD_LIBRARY_PATH' /opt/cmems-cis/motu/motu
-```  
+  
+  
+### <a name="InstallCDOUnderstand">How cdo is built?</a>
+CDO is automaticcly build from the script $MotuInstallDir/motu/products/cdo-group/install-cdo.sh
+Also in order to get full details about CDO installation, you can get details in /opt/cmems-cis/motu/products/README and
+search for 'Download CDO tools'.  
+
+
 
 ## <a name="InstallFolders">Installation folder structure</a>
   
