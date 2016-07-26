@@ -70,7 +70,7 @@ public class MotuCustomLayout extends AbstractStringLayout {
     }
 
     private String formatLog(QueueLogInfo queueLogInfo) {
-        if (fileFormat.contains(QueueLogInfo.TYPE_XML)) {
+        if (fileFormat.equalsIgnoreCase(QueueLogInfo.TYPE_XML)) {
             buf.append(queueLogInfo.toXML());
         } else {
             buf.append(queueLogInfo.toCSV());
