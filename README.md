@@ -258,7 +258,8 @@ First extract the archive:
 tar xzf motu-web-static-files-X.Y.Z-classifier-$timestamp-$target.tar.gz -C /opt/cmems-cis/motu/data/public/static-files   
 ```
 
-Then edit "motu/tomcat-motu/conf/server.xml" in order to server files from Motu:  
+Then edit "motu/tomcat-motu/conf/server.xml" in order to server files from Motu.  
+Add then "Context" node below. Note that severals "Context" nodes can be there.  
 ```
 [...]  
 <Host appBase="webapps" [...]  
