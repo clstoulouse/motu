@@ -15,11 +15,13 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
 
 #Summary
 * [Overview](#Overview)
-* [Development environment](#DEV)
-* [Compilation](#COMPILATION)
-* [Packaging](#Packaging)
+* [Development](#Developement)
+  * [Development environment](#DEV)
+  * [Compilation](#COMPILATION)
+  * [Packaging](#Packaging)
 * [Installation](#Installation)
   * [Prerequisites](#InstallPrerequisites)
+  * [Upgrade from Motu v2.x](#UpgradeFromMotu2x)
   * [Install Motu from scratch](#InstallFromScratch)
   * [Check installation](#InstallCheck)
   * [CDO manual installation](#InstallCDO)
@@ -34,17 +36,21 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
 * [Exploitation](#Exploitation)
   * [Start, Stop and other Motu commands](#SS)
   * [Logbooks](#Logbooks)
+  * [Add a dataset](#AdminDataSetAdd)
   * [Debug view](#ExploitDebug)
-  
+  * [Clean files](#ExploitCleanDisk)
+
+
   
 #<a name="Overview">Overview</a>
 Motu project is a robust web server used to distribute data. [To be completed]
 
 
+#<a name="Developement">Developement</a>
 
-#<a name="DEV">Development environment</a>
+##<a name="DEV">Development environment</a>
 
-## Configure eclipse development environment
+### Configure Eclipse development environment
 * Add variable in order to run/debug Motu on your localhost:  
 From Eclipse menu bar: Run/Debug > String substitution  
 MOTU_HOME=J:\dev\cmems-cis-motu\motu-install-dir  
@@ -53,7 +59,7 @@ This variable represent the folder where Motu is installed.
 * From a file explorer, create folders:  
 $MOTU_HOME/log  
 $MOTU_HOME/config  
-$MOTU_HOME/data-deliveries  
+$MOTU_HOME/data/public/download  
 
 * Copy configuration files from Eclipse to configuration folder:  
 Note: If you do not have any motu-config folder available, default configuration files are folders are available in the "/motu-web/src/main/resources" folder  
@@ -79,7 +85,7 @@ just under the line:
 ```  
 Now Tomcat can serve downloaded files directly   
  
-## Run/Debug Motu
+### Run/Debug Motu
 
 Click Debug configurations...> Under Apache Tomcat, debug "Motu Tomcat v7.0 Server at localhost"
 
@@ -92,7 +98,7 @@ it displays "OK - response action=ping"
 For more details about Eclipse launchers, refers to /motu-parent/README-eclipseLaunchers.md.
 
 
-#<a name="COMPILATION">Compilation</a>
+##<a name="COMPILATION">Compilation</a>
 This step is used to generate Java ARchives (or war).
 ```
 cd /motu-parent  
@@ -103,7 +109,7 @@ All projects are built under target folder.
 The Motu war is built under "/motu-web/target/motu-web-X.Y.Z-classifier.war"  
 It embeds all necessary jar libraries.  
 
-#<a name="Packaging">Packaging</a>
+##<a name="Packaging">Packaging</a>
 This step includes the compilation step. Once all projects are compiled, it groups all archive in a same folder in order to easy the client delivery.  
 You have to set ANT script inputs parameter before running it. See /motu-distribution/build.xml header to get more details about inputs.
 ```
@@ -141,6 +147,62 @@ Motu is able to communicate with different external servers:
 
 The installation of these two servers is not detailed in this document. Refer to their official web site to know how to install them.
 
+
+## <a name="UpgradeFromMotu2x">Upgrade from Motu v2.x</a>  
+
+Check this section only if you have installed Motu v2.x and you want to install Motu 3.x.
+In this section we consider that your Motu installation folder of version 2.x is "/opt/atoll/misgw/".  
+
+### Upgrade the software
+First stop your Motu v2.x: /opt/atoll/misgw/stop-motu.  
+Then install the version 3.x of [Motu from scratch](#InstallFromScratch). Before starting the new Motu version, upgrade its configuration by ready section below.  
+Once the version 3.x of Motu runs well, you can fully remove the folder of version 2.x is "/opt/atoll/misgw/".  
+To avoid any issue, perhaps backup the folder of Motu v2.x before removing it definitively.  
+``` 
+motu2xInstallFolder=/opt/atoll/misgw  
+rm -rf $motu2xInstallFolder/deliveries  
+rm -rf $motu2xInstallFolder/motu-configuration-common-2.1.16  
+rm -rf $motu2xInstallFolder/motu-configuration-sample-misgw-1.0.5  
+rm -rf $motu2xInstallFolder/motu-web  
+rm -rf $motu2xInstallFolder/start-motu  
+rm -rf $motu2xInstallFolder/stop-motu  
+rm -rf $motu2xInstallFolder/tomcat7-motu  
+rm -rf $motu2xInstallFolder/tomcat-motu-cas  
+```  
+
+
+
+### Upgrade the configuration
+
+#### Business configuration, Product & dataset: motuConfiguration.xml  
+The new version of Motu is compatible with the motuConfiguration.xml file configured in Motu v3.x.  
+So you can use exactly the same file. But it is important to update this file in order to:
+* use the new [ncss protocol](#BSmotuConfigNCSS) to improve performance of product download 
+* remove @deprecated attributes to ease future migrations. You can check them [Business configuration](#ConfigurationBusiness).
+* Check the attribute [extractionPath](#motuConfig-extractionPath) to continue to serve downloaded dataset from a fontral Apache HTTPd server.
+
+
+#### Log files
+In CMEMS-CIS context the log file motuQSlog.xml is stored in a specific place in order to be shared.  
+You have so to check that with the new version this log file is well written in the share folder.
+Here is where this log files were written in Motu v2.x:  
+``` 
+grep -i "motuQSlog.xml" /opt/atoll/misgw/motu-configuration-sample-misgw-1.0.5/resources/log4j.xml
+<param name="file" value="/opt/atoll/misgw/tomcat-motu-cas/logs/motuQSlog.xml" />
+```  
+The folder set in the value attribute shall be the same as the one defined in new the Motu configuration file. Replace $path below by the folder path:  
+``` 
+grep -i "motuQSlog.xml" /opt/cmems-cis/motu/config/log4j.xml
+fileName="$path/motuQSlog.xml"
+filePattern="$path/motuQSlog.xml.%d{MM-yyyy}"
+``` 
+
+
+
+
+
+
+  
 ## <a name="InstallFromScratch">Install Motu from scratch</a>
 
 Motu installation needs two main step: the software installation and optionally the theme installation.  
@@ -168,6 +230,8 @@ Then you can [check installation](#InstallCheck).
 
 
 ### Install Motu theme (public static files)
+
+As a dissemination unit administrator, in CMEMS context, this section is not applicable.  
 
 Public static files are used to customized Motu theme. When several Motu are installed, a central server eases the installation and the update by 
 referencing static files only once on a unique machine. This is the case in the CMEMS contact, where each dissemination unit host a Motu server, and 
@@ -210,6 +274,8 @@ If you want to set another path instead of "/motu", you have to set also the bus
  
 ## <a name="InstallCheck">Check installation</a>
 
+### Check messages on the server console
+
 When you start Motu, the only message shall be:  
 ```
 tomcat-motu - start
@@ -225,6 +291,17 @@ ERROR: cdo tool does not run well: $cdo --version
 
 In this case, you have to install CDO manually.  
 
+### Check Motu web site available
+
+Open a Web browser, and enter:
+http://$motuUrl/motu-web/Motu?action=ping  
+Response has to be:   
+```  
+OK - response action=ping
+```  
+
+### Check Motu logs
+Check that no error appears in Motu [errors](#LogbooksErrors) log files.
 
 ## <a name="InstallCDO">CDO manual installation</a>
 This section has to be read only if Motu does not start successfully.  
@@ -418,11 +495,12 @@ Number of data in Megabytes that can be written and download for a Netcdf file. 
 ##### maxSizePerFileTDS
 Number of data in Megabytes that can be written and download for a Netcdf file. Default is 1024Mb. 
 
-##### extractionPath
+##### <a name="motuConfig-extractionPath">extractionPath</a>
 The absolute path where files downloaded from TDS are stored.  
-For example: /opt/cmems-cis/motu/data/download
-It is recommended to have an hard drive with very good performances in write mode.
+For example: /opt/cmems-cis/motu/data/public/download
+It is recommended to set this folder on an hard drive with very good performances in write mode.
 It is recommended to have a dedicated partition disk to avoid freezing Motu if the hard drive is full.
+By default value is $MOTU_HOME/data/public/download, this folder can be a symbolic link to another folder.  
 
 ##### downloadHttpUrl
 Http URL used to download files stored in the "extractionPath" described above. It is used to allow users to download the result data files.  
@@ -553,15 +631,18 @@ Example: m_HR_OBS.xml
 ##### type
 Example: tds
 
-##### ncss
-Without this attribute or when empty, Motu connects to TDS with Opendap protocol. If this attribute is set to "enabled" connects to TDS with ncss protocol in order to improve performance.   
+##### <a name="BSmotuConfigNCSS">ncss</a>
+Optional parameter used to enable or disable the use of NetCDF Subset Service (NCSS) in order to request the TDS server.
+Without this attribute or when empty, Motu connects to TDS with Opendap protocol. If this attribute is set to "enabled" Motu connects to TDS with NCSS protocol in order to improve performance.   
 We recommend to use "enabled".   
 Values are: "enabled", "disable" or empty.
 
 ##### urlSite
-TDS URL  
-For example: http://$ip:$port/thredds/
+* TDS URL  
+For example: http://$ip:$port/thredds/  
 
+* DGF URL  
+For example: file:///opt/publication/inventories
 
 ####<a name="BSqueueServerConfig">Attributes defined in queueServerConfig node</a>
 
@@ -670,14 +751,13 @@ org.tuckey UrlRewriteFilter FILTERS : see http://urlrewritefilter.googlecode.com
   
 ## <a name="LogSettings">Log settings</a>
 
-Log are configured by using log4j2 in file config/log4j2.xml
-
-
-This log files are used to compute statistics about Motu server usage.  
-Two format are managed by this log, either XML or CSV.
-To configure it, edit config/log4j.xml
+Log are configured by using log4j2 in file config/log4j2.xml  
 
 ### Motu queue server logs: motuQSlog.xml, motuQSlog.csv
+
+This log files are used to compute statistics about Motu server usage.  
+Two format are managed by this log, either XML or CSV.  
+To configure it, edit config/log4j.xml  
 
 ##### Log format: XML or CSV  
 Update the fileFormat attribute of the node "MotuCustomLayout": <MotuCustomLayout fileFormat="xml">
@@ -780,12 +860,12 @@ Status are the following:
 ##<a name="Logbooks">Logbooks</a>  
 
 Log messages are generated by Apache Log4j 2. The configuration file is "config/log4j.xml".  
-By default, log files are created in the folder $motu-install-dir/log. This folder contains:  
+By default, log files are created in the folder $MOTU_HOME/log. This folder contains:  
 
 * __Motu log messages__
   * __logbook.log__: All Motu log messages including WARN and ERROR(without stacktrace) messages.
   * __warnings.log__: Only Motu log messages with a WARN level
-  * __errors.log__: Only Motu log messages with an ERROR level. When this file is not empty, it means that at least an error has been generated by the Motu application.
+  * <a name="LogbooksErrors">__errors.log__</a>: Only Motu log messages with an ERROR level. When this file is not empty, it means that at least an error has been generated by the Motu application.
   * __motuQSlog.xml__, __motuQSlog.csv__: Either a "CSV" or "XML" format which logs all queue events.
      * CSV: On one unique line, writes:  
     [OK | ERR;ErrCode;ErrMsg;ErrDate];  
@@ -836,6 +916,31 @@ By default, log files are created in the folder $motu-install-dir/log. This fold
   * __tomcat-motu-catalina.out__: Catalina output matching the environment variable CATALINA_OUT.
   * __tomcat-motu.log__: $CATALINA_HOME/bin/startup.sh and $CATALINA_HOME/bin/shutdown.sh outputs are redirected to this file.  
 
+##<a name="AdminDataSetAdd">Add a dataset</a>  
+In order to add a new Dataset you have to add a new confiogService node in the Motu business configuration.  
+Example of a datasets served using:  
+
+* __TDS NCSS protocol__:  
+``` 
+<configService description="Free text to describe your dataSet" group="HR-Sample" httpBaseRef="" name="HR_MOD-TDS" veloTemplatePrefix="" profiles="external">  
+        <catalog name="m_HR_MOD.xml" type="tds" ncss="enabled" urlSite="http://$tdsUrl/thredds/"/>  
+</configService>  
+```  
+  
+* __TDS Opendap protocol__:  
+``` 
+<configService description="Free text to describe your dataSet" group="HR-Sample" httpBaseRef="" name="HR_MOD-TDS" veloTemplatePrefix="" profiles="external">  
+        <catalog name="m_HR_MOD.xml" type="tds" ncss="" urlSite="http://$tdsUrl/thredds/"/>  
+</configService>  
+```  
+
+* __DGF protocol__:  
+``` 
+<configService description="Free text to describe your dataSet" group="HR-Sample" profiles="internal, external, major" httpBaseRef="" name="HR_MOD-TDS" veloTemplatePrefix="">  
+           <catalog name="catalogFILE_GLOBAL_ANALYSIS_PHYS_001_016.xml" type="file" urlSite="file:///opt/atoll/hoa-armor/publication/inventories"/>  
+</configService>  
+```
+
 
 
 ##<a name="ExploitDebug">Debug view</a>  
@@ -850,5 +955,16 @@ You change the status order by entering 4 parameters in the URL:
 /Motu?action=debug&order=DONE,ERROR,PENDING,INPROGRESS
 ``` 
 
+##<a name="ExploitCleanDisk">Clean files</a>  
 
-
+##<a name="ExploitCleanDiskLogbook">Logbook files</a>  
+Logbook files are written in the folder configured in the log4j.xml configuration file.  
+All logs are generated daily except for motuQSLog (xml or csv) which are generated monthly.
+You can clean those files to avoid to fullfill the harddrive. 
+crontab -e
+0 * * * * find /opt/cmems-cis/motu/log/*.log* -type f -mmin +14400 -delete >/dev/null 2>&1  
+0 * * * * find /opt/cmems-cis/motu/log/*.out* -type f -mmin +14400 -delete >/dev/null 2>&1  
+0 * * * * find /opt/cmems-cis/motu/log/*.xml* -type f -mmin +144000 -delete >/dev/null 2>&1  
+0 * * * * find /opt/cmems-cis/motu/log/*.csv* -type f -mmin +144000 -delete >/dev/null 2>&1  
+  
+  
