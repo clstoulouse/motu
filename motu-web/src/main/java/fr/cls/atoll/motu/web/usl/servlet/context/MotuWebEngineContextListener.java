@@ -157,7 +157,7 @@ public class MotuWebEngineContextListener implements ServletContextListener {
      * .
      */
     private void setDefaultTimeZoneToGMT() {
-        TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 
     /**

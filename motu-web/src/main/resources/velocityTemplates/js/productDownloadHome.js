@@ -951,15 +951,12 @@ function closeScriptCmdWin() {
   var q = "";
   var qq = '"';
   var motu_client_py = "motu-client.py";
-  // use $$ to avoid velocity exception if $user is not a valid ref (null)
-  //var isCasAuth = "$${user.isCASAuthentication()}";
   var userName = "${user}";
 
   
   var cmd =  'python ';
   cmd +=  motu_client_py;
   
-  //if (isCasAuth == "true") {
   if (userName != "") {
 	  cmd += " -u " + q + userName + q;
 	  cmd += " -p " + q + "<i>your_password</i><i><b>(1)</b></i>" + q;
@@ -968,7 +965,7 @@ function closeScriptCmdWin() {
   }
   
   cmd += " -m " + q + motuUrl + q;
-  cmd += " -s " + q + "${service.getName()}" + q;
+  cmd += " -s " + q + "${service.getNameEncoded()}" + q;
   cmd += " -d " + q + "${product.getProductId()}" + q;
   
   if (x_lo != null) {

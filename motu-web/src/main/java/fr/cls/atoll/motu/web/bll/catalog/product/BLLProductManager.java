@@ -102,4 +102,14 @@ public class BLLProductManager implements IBLLProductManager {
         return matcher.group(matcher.groupCount());
     }
 
+    @Override
+    public String getProductDownloadHttpUrl(String productFileName_) {
+        String productDownloadHttpUrl = BLLManager.getInstance().getConfigManager().getProductDownloadHttpUrl();
+        if (!(productDownloadHttpUrl.endsWith("/"))) {
+            productDownloadHttpUrl += "/";
+        }
+        productDownloadHttpUrl += productFileName_;
+        return productDownloadHttpUrl;
+    }
+
 }

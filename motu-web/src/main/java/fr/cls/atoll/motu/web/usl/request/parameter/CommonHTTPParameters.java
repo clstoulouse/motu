@@ -1,12 +1,12 @@
 package fr.cls.atoll.motu.web.usl.request.parameter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 
 /**
@@ -31,7 +31,12 @@ public class CommonHTTPParameters {
     public static String getActionFromRequest(HttpServletRequest request) {
         String action = request.getParameter(MotuRequestParametersConstant.PARAM_ACTION);
         if (StringUtils.isNullOrEmpty(action)) {
-            action = MotuRequestParametersConstant.ACTION_LIST_SERVICES;
+            String defaultService = BLLManager.getInstance().getConfigManager().getMotuConfig().getDefaultService();
+            if (StringUtils.isNullOrEmpty(defaultService)) {
+                action = MotuRequestParametersConstant.ACTION_LIST_SERVICES;
+            } else {
+                action = defaultService;
+            }
         }
 
         return action;
@@ -135,7 +140,11 @@ public class CommonHTTPParameters {
 
         List<String> listVar = new ArrayList<String>();
         if (variables != null) {
-            listVar = Arrays.asList(variables);
+            // Not an ArrayList type which cause issue while serializing to write xstream log messages
+            // listVar = Arrays.asList(variables);
+            for (String v : variables) {
+                listVar.add(v);
+            }
         }
         return listVar;
     }

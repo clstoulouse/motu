@@ -63,4 +63,13 @@ public interface IBLLProductManager {
      * @return the tDS dataset id
      */
     String datasetIdFromProductLocation(String locationData);
+
+    /**
+     * .
+     * 
+     * @param productFileName_
+     * @return
+     */
+    String getProductDownloadHttpUrl(String productFileName_);
+
 }

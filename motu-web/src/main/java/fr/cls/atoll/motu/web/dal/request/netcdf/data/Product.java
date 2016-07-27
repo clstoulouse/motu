@@ -2545,9 +2545,8 @@ public class Product {
      * 
      * @return the output full file name (with path).
      * 
-     * @throws MotuException the motu exception
      */
-    public String getExtractLocationData() throws MotuException {
+    public String getExtractLocationData() {
         return Product.getExtractLocationData(extractFilename);
     }
 
@@ -2558,9 +2557,8 @@ public class Product {
      * 
      * @return the extract location data
      * 
-     * @throws MotuException the motu exception
      */
-    public static String getExtractLocationData(String fileName) throws MotuException {
+    public static String getExtractLocationData(String fileName) {
 
         if (fileName.length() <= 0) {
             return "";
@@ -2620,7 +2618,7 @@ public class Product {
      * 
      * @throws MotuException the motu exception
      */
-    public static String getExtractionPath() throws MotuException {
+    public static String getExtractionPath() {
 
         StringBuffer stringBuffer = new StringBuffer();
 

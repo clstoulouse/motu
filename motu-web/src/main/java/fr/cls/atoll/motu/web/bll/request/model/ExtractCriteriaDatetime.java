@@ -27,6 +27,7 @@ package fr.cls.atoll.motu.web.bll.request.model;
 import java.util.Date;
 import java.util.List;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateRangeException;
@@ -356,7 +357,7 @@ public class ExtractCriteriaDatetime extends ExtractCriteria {
         try {
             range = new Range(first, last);
         } catch (Exception e) {
-            throw new MotuException("Error in ExtractCriteriaDatatime toRange", e);
+            throw new MotuException(ErrorType.INVALID_DATE_RANGE, "Error in ExtractCriteriaDatatime toRange", e);
         }
         return range;
     }

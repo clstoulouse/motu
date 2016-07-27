@@ -35,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.validation.Assertion;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInconsistencyException;
@@ -586,10 +587,9 @@ public class ExtractionParameters implements Cloneable {
         try {
             uri = new URI(locationData.replace("\\", "/"));
         } catch (URISyntaxException e) {
-            throw new MotuException(String.format("ERROR: location data '%s' has not a valid syntax", locationData), e);
+            throw new MotuException(ErrorType.SYSTEM, String.format("ERROR: location data '%s' has not a valid syntax", locationData), e);
         }
         return uri.getScheme();
-
     }
 
     /**

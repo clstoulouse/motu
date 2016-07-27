@@ -140,5 +140,7 @@ public class DALRequestManager implements IDALRequestManager {
         } else {
             ncss.unitRequestNCSS(); // No depth axis -> request without depths
         }
+        p.addReadingTime(ncss.getReadingTimeInNanoSec());
+        p.addWritingTime(ncss.getWritingTimeInNanoSec());
     }
 }

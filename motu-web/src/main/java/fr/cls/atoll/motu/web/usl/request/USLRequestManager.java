@@ -55,7 +55,8 @@ public class USLRequestManager implements IUSLRequestManager {
 
     @Override
     public void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws MotuException, InvalidHTTPParameterException {
-        switch (CommonHTTPParameters.getActionFromRequest(request).toLowerCase()) {
+        String action = CommonHTTPParameters.getActionFromRequest(request).toLowerCase();
+        switch (action) {
         case PingAction.ACTION_NAME:
             new PingAction(request, response).doAction();
             break;
@@ -102,6 +103,27 @@ public class USLRequestManager implements IUSLRequestManager {
         case DescribeCoverageAction.ACTION_NAME:
             new DescribeCoverageAction(request, response, getSession(request)).doAction();
             break;
+
+        default:
+            LOGGER.info("Request an undefined action: " + action);
+            onUnkownAction(action, request, response, getSession(request));
+        }
+
+    }
+
+    /**
+     * .
+     * 
+     * @param request
+     * @param response
+     * @param session
+     * @throws MotuException
+     */
+    private void onUnkownAction(String action, HttpServletRequest request, HttpServletResponse response, HttpSession session) throws MotuException {
+        try {
+            response.getWriter().write("Oops, action is unknown: " + action);
+        } catch (IOException e) {
+            throw new MotuException(e);
         }
     }
 

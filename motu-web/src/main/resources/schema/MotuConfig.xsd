@@ -427,7 +427,6 @@
 				useAuthentication True if users have to be authenticated, false
 				otherwise. Default value is false.
 			-->
-			<xs:attribute name="logFormat" type="xs:string" default="xml"></xs:attribute>
 			<xs:attribute name="useAuthentication" type="xs:boolean"
 				default="false" />
 			<xs:attribute name="authFilePath" type="xs:string"
@@ -583,7 +582,7 @@
 				(distinct from service velocity template)
 			-->
 			<xs:attribute name="commonVeloTemplatePrefix"
-				type="xs:string" default="motu" />
+				type="xs:string" default="index" />
 
 			<!--
 				defaultLanguage: Common default language used (can be UK or FR)
@@ -594,9 +593,10 @@
 
 			<!-- httpBaseRef:
 				Http base reference of the service site.
+				CMEMS CIS default was: http://resources.myocean.eu
 			-->
 			<xs:attribute name="httpBaseRef" type="xs:string"
-				default="http://resources.myocean.eu" />
+				default="/motu" />
 
 			<!--
 				defaultActionIsListServices: If true and when no 'action' parameter
@@ -606,11 +606,11 @@
 			-->
 			<xs:attribute name="defaultActionIsListServices"
 				type="xs:boolean" default="false" />
-			<xs:attribute name="describeProductCacheRefreshInMilliSec" default="1000">
+			<xs:attribute name="describeProductCacheRefreshInMilliSec" default="60000">
 				<xs:annotation>
 					<xs:documentation>
 						The time between two refresh of the describe product cache.
-						This duration is in milli-second.
+						This duration unit is milliseconds.
 					</xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>

@@ -18,6 +18,7 @@ import javax.xml.bind.JAXBException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
@@ -669,7 +670,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
             try {
                 date = NetCdfReader.parseDate(dateTypeFormatted.getValue(), dateTypeFormatted.getFormat());
             } catch (MotuInvalidDateException e) {
-                throw new MotuException(String.format("Unable to get %s time (in loadTdsTimeCoverage)", xmlTagName), e);
+                throw new MotuException(ErrorType.INVALID_DATE, String.format("Unable to get %s time (in loadTdsTimeCoverage)", xmlTagName), e);
             }
         }
         return date;

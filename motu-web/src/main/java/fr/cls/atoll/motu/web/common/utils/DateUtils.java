@@ -42,4 +42,12 @@ public class DateUtils {
         return xmlGregorianCalendar;
     }
 
+    public static String getDurationMinSecMsec(long timeInMSec) {
+        long min = timeInMSec / 60000;
+        long sec = (timeInMSec % 60000) / 1000;
+        long milli = (timeInMSec % 60000) % 1000;
+
+        return min + "min " + sec + "sec " + milli + "msec";
+    }
+
 }

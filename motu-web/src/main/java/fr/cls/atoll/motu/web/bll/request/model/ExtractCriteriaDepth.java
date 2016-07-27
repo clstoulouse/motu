@@ -26,6 +26,7 @@ package fr.cls.atoll.motu.web.bll.request.model;
 
 import java.util.List;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthRangeException;
@@ -344,7 +345,7 @@ public class ExtractCriteriaDepth extends ExtractCriteriaGeo {
         try {
             range = new Range(first, last);
         } catch (Exception e) {
-            throw new MotuException("Error in ExtractCriteriaDepth toRange", e);
+            throw new MotuException(ErrorType.INVALID_DEPTH_RANGE, "Error in ExtractCriteriaDepth toRange", e);
         }
         return range;
     }

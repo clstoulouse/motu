@@ -15,7 +15,7 @@
 	<description>This package holds the motu web server.</description>
 
 	<properties>
-		<application.tomcat.context>atoll-motuservlet</application.tomcat.context>
+		<application.tomcat.context>motu-web</application.tomcat.context>
 	</properties>
 	<dependencies>
 		<dependency>

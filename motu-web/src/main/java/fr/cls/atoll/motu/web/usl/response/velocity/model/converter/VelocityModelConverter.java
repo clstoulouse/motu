@@ -214,6 +214,11 @@ public class VelocityModelConverter {
         IProduct ip = new IProduct() {
 
             @Override
+            public String getProductId() {
+                return product_.getProductId();
+            }
+
+            @Override
             public boolean isProductDownloadable() {
                 try {
                     return product_.isProductDownloadable();
