@@ -36,7 +36,8 @@ public class CatalogTypeParameterValidator extends AbstractHTTPParameterValidato
         if ((isParameterOptional() && StringUtils.isNullOrEmpty(getParameterValue())) || (!StringUtils.isNullOrEmpty(getParameterValue())
                 && (getParameterValue().equalsIgnoreCase(MotuRequestParametersConstant.PARAM_CATALOG_TYPE)
                         || getParameterValue().equalsIgnoreCase(MotuRequestParametersConstant.PARAM_CATALOG_TYPE_TDS)
-                        || getParameterValue().equalsIgnoreCase(MotuRequestParametersConstant.PARAM_CATALOG_TYPE_FTP)))) {
+                        || getParameterValue().equalsIgnoreCase(MotuRequestParametersConstant.PARAM_CATALOG_TYPE_FTP)
+                        || getParameterValue().equalsIgnoreCase(MotuRequestParametersConstant.PARAM_CATALOG_TYPE_FILE)))) {
             return getParameterValue();
         } else {
             throw new InvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());

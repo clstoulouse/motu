@@ -53,6 +53,8 @@ public interface IProduct {
 
     List<String> getTimeAxisDataAsString();
 
+    List<String> getTimeCoverageFromDataFiles();
+
     boolean hasLastError();
 
     String getLastError();

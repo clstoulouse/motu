@@ -1,6 +1,8 @@
 package fr.cls.atoll.motu.web.bll.catalog.product;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
@@ -28,9 +30,12 @@ public class BLLProductManager implements IBLLProductManager {
      * @throws MotuException
      */
     @Override
-    public ProductMetaData getProductMetaData(String productId, String locationData) throws MotuException {
+    public ProductMetaData getProductMetaData(String catalogType, String productId, String locationData) throws MotuException {
         return DALManager.getInstance().getCatalogManager().getProductManager()
-                .getMetadata(productId, locationData, BLLManager.getInstance().getConfigManager().getMotuConfig().getUseAuthentication());
+                .getMetadata(catalogType,
+                             productId,
+                             locationData,
+                             BLLManager.getInstance().getConfigManager().getMotuConfig().getUseAuthentication());
     }
 
     @Override
@@ -38,11 +43,8 @@ public class BLLProductManager implements IBLLProductManager {
         Product productFound = null;
         for (ConfigService c : BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService()) {
             String currentCatalogName = c.getCatalog().getName();
-            // System.out.println("CatalogName : " + currentCatalogName);
-            // System.out.println("providedCatalogName : " + catalogName);
             if (currentCatalogName.equals(catalogName)) {
                 CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(c);
-                // System.out.println("DataSetName : " + datasetName);
                 Map<String, Product> products = cd.getProducts();
                 for (Map.Entry<String, Product> product : products.entrySet()) {
                     if (product.getValue().getTdsUrlPath().equals(URLPath)) {
@@ -50,9 +52,6 @@ public class BLLProductManager implements IBLLProductManager {
                         break;
                     }
                 }
-                // System.out.println("MyProduct : " + myProduct);
-                // System.out.println("Product Id : " + myProduct.getProductId());
-                // System.out.println("Location Data : " + myProduct.getLocationData());
                 break;
             }
         }
@@ -60,13 +59,11 @@ public class BLLProductManager implements IBLLProductManager {
         return productFound;
     }
 
+    @Override
     public Product getProductFromLocation(String URLPath) throws MotuException {
         Product productFound = null;
         for (ConfigService c : BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService()) {
-            // System.out.println("CatalogName : " + currentCatalogName);
-            // System.out.println("providedCatalogName : " + catalogName);
             CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(c);
-            // System.out.println("DataSetName : " + datasetName);
             Map<String, Product> products = cd.getProducts();
             for (Map.Entry<String, Product> product : products.entrySet()) {
                 if (product.getValue().getTdsUrlPath().equals(URLPath)) {
@@ -74,9 +71,6 @@ public class BLLProductManager implements IBLLProductManager {
                     break;
                 }
             }
-            // System.out.println("MyProduct : " + myProduct);
-            // System.out.println("Product Id : " + myProduct.getProductId());
-            // System.out.println("Location Data : " + myProduct.getLocationData());
         }
 
         return productFound;
@@ -94,6 +88,18 @@ public class BLLProductManager implements IBLLProductManager {
         Product p = cd.getProducts().get(productId);
 
         return p;
+    }
+
+    @Override
+    public String datasetIdFromProductLocation(String locationData) {
+        String patternExpression = "(http://.*thredds/)(dodsC/)(.*)";
+
+        Pattern pattern = Pattern.compile(patternExpression);
+        Matcher matcher = pattern.matcher(locationData);
+
+        matcher.find();
+
+        return matcher.group(matcher.groupCount());
     }
 
 }

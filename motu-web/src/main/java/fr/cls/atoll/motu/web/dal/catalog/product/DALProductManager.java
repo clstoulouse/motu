@@ -22,8 +22,9 @@ import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.web.bll.request.ProductSizeRequest;
+import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.catalog.product.metadata.opendap.OpenDapProductMetadataReader;
+import fr.cls.atoll.motu.web.dal.request.ProductSizeRequest;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 
@@ -40,8 +41,12 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 public class DALProductManager implements IDALProductManager {
 
     @Override
-    public ProductMetaData getMetadata(String productId, String locationData, boolean useSSO) throws MotuException {
-        return new OpenDapProductMetadataReader(productId, locationData, useSSO).loadMetaData();
+    public ProductMetaData getMetadata(String catalogType, String productId, String locationData, boolean useSSO) throws MotuException {
+        if (!"FILE".equals(catalogType.toUpperCase())) {
+            return new OpenDapProductMetadataReader(productId, locationData, useSSO).loadMetaData();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -93,6 +98,7 @@ public class DALProductManager implements IDALProductManager {
         double productDataSize = -1d;
 
         try {
+            checkCatalogType(product);
             ProductSizeRequest.computeAmountDataSize(product, listVar, listTemporalCoverage, listLatLongCoverage, listDepthCoverage);
 
             productDataSize = product.getAmountDataSizeAsBytes();
@@ -104,5 +110,49 @@ public class DALProductManager implements IDALProductManager {
         // }
 
         return productDataSize;
+    }
+
+    /**
+     * Check catalog type.
+     * 
+     * @throws MotuException
+     * @throws MotuNotImplementedException
+     */
+    protected void checkCatalogType(Product product) throws MotuException, MotuNotImplementedException {
+        String catalogType = DALManager.getInstance().getCatalogManager().getCatalogType(product);
+        if (catalogType.toUpperCase().equals("FILE")) {
+
+            if (product != null) {
+                long d1 = System.nanoTime();
+                long d2 = System.nanoTime();
+
+                product.setMediaKey(catalogType);
+
+                updateFiles(product);
+                // Add time here (after updateFiles), because before updateFiles
+                // dataset is not still create
+                product.addReadingTime((d2 - d1));
+            }
+        }
+    }
+
+    /**
+     * Update files.
+     * 
+     * @param product the product
+     * 
+     * @throws MotuException the motu exception
+     * @throws MotuNotImplementedException the motu not implemented exception
+     */
+    private void updateFiles(Product product) throws MotuException, MotuNotImplementedException {
+        if (product == null) {
+            throw new MotuException("Error in updateFiles - product is null");
+        }
+
+        if (product.getDataFiles() == null) {
+            product.clearFiles();
+        } else {
+            product.updateFiles();
+        }
     }
 }

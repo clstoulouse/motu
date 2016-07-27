@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
@@ -78,7 +79,12 @@ public class VelocityModelConverter {
 
             @Override
             public String getCatalogType() {
-                return VelocityTemplateManager.encodeString(cs.getCatalog().getType());
+                try {
+                    return VelocityTemplateManager.encodeString(BLLManager.getInstance().getCatalogManager().getCatalogType(cs));
+                } catch (MotuException e) {
+                    LOGGER.error("Impossible to retrieve the type of the catalog for the service : " + cs.getName(), e);
+                }
+                return null;
             }
 
             @Override
@@ -310,6 +316,11 @@ public class VelocityModelConverter {
                     LOGGER.error("Error while converting Product", e);
                     return null;
                 }
+            }
+
+            @Override
+            public List<String> getTimeCoverageFromDataFiles() {
+                return product_.getTimeCoverageFromDataFiles();
             }
 
             @Override

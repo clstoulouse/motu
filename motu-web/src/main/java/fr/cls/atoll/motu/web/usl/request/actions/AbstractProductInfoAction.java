@@ -3,8 +3,6 @@ package fr.cls.atoll.motu.web.usl.request.actions;
 import java.io.IOException;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -180,8 +178,8 @@ public abstract class AbstractProductInfoAction extends AbstractAction {
 
         Product p = null;
         if (!StringUtils.isNullOrEmpty(locationData)) {
-            p = BLLManager.getInstance().getCatalogManager().getProductManager()
-                    .getProductFromLocation(AbstractProductInfoAction.datasetIdFromProductLocation(locationData));
+            p = BLLManager.getInstance().getCatalogManager().getProductManager().getProductFromLocation(BLLManager.getInstance().getCatalogManager()
+                    .getProductManager().datasetIdFromProductLocation(locationData));
         } else if (!AbstractHTTPParameterValidator.EMPTY_VALUE.equals(serviceName) && !StringUtils.isNullOrEmpty(productId)) {
             p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(serviceName, StringUtils.getDataSetName(productId));
         }
@@ -190,9 +188,13 @@ public abstract class AbstractProductInfoAction extends AbstractAction {
     }
 
     protected void initProductMetaData(Product product) throws MotuException {
-        ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager().getProductMetaData(product.getProductId(),
-                                                                                                                  product.getLocationData());
-        product.setProductMetaData(pmd);
+        String catalogType = BLLManager.getInstance().getCatalogManager().getCatalogType(product);
+
+        ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
+                .getProductMetaData(catalogType, product.getProductId(), product.getLocationData());
+        if (pmd != null) {
+            product.setProductMetaData(pmd);
+        }
     }
 
     /**
@@ -214,23 +216,5 @@ public abstract class AbstractProductInfoAction extends AbstractAction {
             throw new MotuException("ERROR in dateToXMLGregorianCalendar", e);
         }
         return xmlGregorianCalendar;
-    }
-
-    /**
-     * Gets the tDS dataset id.
-     * 
-     * @param locationData the location data
-     * 
-     * @return the tDS dataset id
-     */
-    public static String datasetIdFromProductLocation(String locationData) {
-        String patternExpression = "(http://.*thredds/)(dodsC/)(.*)";
-
-        Pattern pattern = Pattern.compile(patternExpression);
-        Matcher matcher = pattern.matcher(locationData);
-
-        matcher.find();
-
-        return matcher.group(matcher.groupCount());
     }
 }

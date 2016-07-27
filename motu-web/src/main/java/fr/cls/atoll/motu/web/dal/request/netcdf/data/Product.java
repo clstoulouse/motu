@@ -1108,18 +1108,11 @@ public class Product {
             throw new MotuException("Error in CreateDataset - Unable to create dataset - productMetaData is null");
         }
 
-        // if (isFtpMedia()) {
-        // dataset = new DatasetFtp(this);
-        // } else if (isProductAlongTrack()) {
-        // dataset = new DatasetAlongTrack(this);
-        // throw new MotuException("Extraction of 'Along Track' Product is not yet available.");
-        // } else
-        // if (getNetCdfReader().hasGeoXYAxisWithLonLatEquivalence()) {
-        dataset = new DatasetGrid(this);
-        // } else {
-        // dataset = new DatasetGrid(this);
-        // }
-
+        if (isFtpMedia()) {
+            dataset = new DatasetFtp(this);
+        } else {
+            dataset = new DatasetGrid(this);
+        }
     }
 
     /**
@@ -2639,6 +2632,5 @@ public class Product {
         }
         return stringBuffer.toString();
     }
-
 }
 // CSON: MultipleStringLiterals
