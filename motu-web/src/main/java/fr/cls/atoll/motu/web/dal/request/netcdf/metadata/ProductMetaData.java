@@ -171,7 +171,7 @@ public class ProductMetaData {
      * @return true, if is ftp media
      */
     public boolean isFtpMedia() {
-        return getProductMediaValue().equalsIgnoreCase(CatalogData.CatalogType.FTP.name());
+        return getProductMediaValue().equalsIgnoreCase(CatalogData.CatalogType.FILE.name());
     }
 
     /** product id or short name. */

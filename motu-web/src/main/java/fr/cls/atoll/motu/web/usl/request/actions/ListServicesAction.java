@@ -71,11 +71,11 @@ public class ListServicesAction extends AbstractAuthorizedAction {
         writeResponseWithVelocity(mc, filterConfigService(catalogType));
     }
 
-    private List<ConfigService> filterConfigService(String catalogType) {
+    private List<ConfigService> filterConfigService(String catalogType) throws MotuException {
         List<ConfigService> csList = new ArrayList<ConfigService>();
         for (ConfigService cs : BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService()) {
-            if (StringUtils.isNullOrEmpty(catalogType)
-                    || (!StringUtils.isNullOrEmpty(catalogType) && cs.getCatalog().getType().equalsIgnoreCase(catalogType))) {
+            if (StringUtils.isNullOrEmpty(catalogType) || (!StringUtils.isNullOrEmpty(catalogType)
+                    && BLLManager.getInstance().getCatalogManager().getCatalogType(cs).equalsIgnoreCase(catalogType))) {
                 csList.add(cs);
             }
         }

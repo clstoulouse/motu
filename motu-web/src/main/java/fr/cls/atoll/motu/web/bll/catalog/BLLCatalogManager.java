@@ -6,6 +6,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
  * <br>
@@ -45,6 +46,16 @@ public class BLLCatalogManager implements IBLLCatalogManager {
     @Override
     public void init() throws MotuException {
         // noop
+    }
+
+    @Override
+    public String getCatalogType(Product product) throws MotuException {
+        return DALManager.getInstance().getCatalogManager().getCatalogType(product);
+    }
+
+    @Override
+    public String getCatalogType(ConfigService service) throws MotuException {
+        return DALManager.getInstance().getCatalogManager().getCatalogType(service);
     }
 
 }

@@ -101,7 +101,7 @@ public class DescribeProductAction extends AbstractProductInfoAction {
 
         if (!StringUtils.isNullOrEmpty(locationData) && !StringUtils.isNullOrEmpty(xmlFile)) {
             String catalogName = xmlFile.substring(xmlFile.lastIndexOf("/") + 1, xmlFile.length());
-            String urlPath = AbstractProductInfoAction.datasetIdFromProductLocation(locationData);
+            String urlPath = BLLManager.getInstance().getCatalogManager().getProductManager().datasetIdFromProductLocation(locationData);
 
             IBLLProductManager productManager = BLLManager.getInstance().getCatalogManager().getProductManager();
             currentProduct = productManager.getProductFromLocation(catalogName, urlPath);

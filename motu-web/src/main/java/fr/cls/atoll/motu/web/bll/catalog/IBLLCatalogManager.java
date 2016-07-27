@@ -4,6 +4,7 @@ import fr.cls.atoll.motu.web.bll.catalog.product.IBLLProductManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
  * <br>
@@ -38,4 +39,22 @@ public interface IBLLCatalogManager {
      * .
      */
     void init() throws MotuException;
+
+    /**
+     * Return the catalog type of a product .
+     * 
+     * @param product the product for which the catalog type is needed
+     * @return The catalogType name.
+     * @throws MotuException
+     */
+    String getCatalogType(Product product) throws MotuException;
+
+    /**
+     * Return the catalog type of a service .
+     * 
+     * @param service the service for which the catalog type is needed
+     * @return The catalogType name.
+     * @throws MotuException
+     */
+    String getCatalogType(ConfigService service) throws MotuException;
 }

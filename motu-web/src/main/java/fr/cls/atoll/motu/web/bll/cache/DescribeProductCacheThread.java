@@ -90,9 +90,14 @@ public class DescribeProductCacheThread extends Thread {
                     Map<String, Product> products = cd.getProducts();
                     for (Map.Entry<String, Product> currentProductEntry : products.entrySet()) {
                         Product currentProduct = currentProductEntry.getValue();
+
                         ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
-                                .getProductMetaData(currentProduct.getProductId(), currentProduct.getLocationData());
-                        currentProduct.setProductMetaData(pmd);
+                                .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(configService),
+                                                    currentProduct.getProductId(),
+                                                    currentProduct.getLocationData());
+                        if (pmd != null) {
+                            currentProduct.setProductMetaData(pmd);
+                        }
                         _describeProduct.put(currentProduct.getProductId(), initProductMetadataInfo(currentProduct));
                     }
 

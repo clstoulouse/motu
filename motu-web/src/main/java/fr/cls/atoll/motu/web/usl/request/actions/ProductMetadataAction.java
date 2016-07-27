@@ -75,8 +75,11 @@ public class ProductMetadataAction extends AbstractAuthorizedAction {
         CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
         String productId = productHTTPParameterValidator.getParameterValueValidated();
         Product p = cd.getProducts().get(productId);
-        ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager().getProductMetaData(productId, p.getLocationData());
-        p.setProductMetaData(pmd);
+        ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
+                .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(p), productId, p.getLocationData());
+        if (pmd != null) {
+            p.setProductMetaData(pmd);
+        }
 
         writeResponseWithVelocity(mc, cs, cd, p);
     }

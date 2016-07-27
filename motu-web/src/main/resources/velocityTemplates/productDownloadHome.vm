@@ -247,12 +247,12 @@
 ## -------------------------------------------- product_downloadhome_uk_timeSelection --------------------------------
 #macro(product_downloadhome_uk_timeSelection)
 
-#if($catalogType != "FTP")	
+#if($catalogType != "FILE")	
 	#set ($listdate = $product.getTimeAxisDataAsString())
 #else
 	#set ($listdate = $product.getTimeCoverageFromDataFiles())
 #end
-	
+
 #set ($listdateSize = $listdate.size())
 #if($listdateSize > 0)
 	#set ($lastIndex = ${listdateSize} - 1)
@@ -391,7 +391,7 @@
 <form  method="get" name="${formName}">		
 <input type="hidden" name="action" value="productdownload" />
 <input type="hidden" name="service" value="$service.getNameEncoded()" />
-## #if($catalogType != "FTP")	
+## #if($catalogType != "FILE")	
 ##	<input type="hidden" name="data" value="$product.getLocationData()" />
 ## #else
 ##	<input type="hidden" name="product" value="$productMetaData.getProductIdEncoded()" />
@@ -420,7 +420,7 @@
 
 <table width="100%" cellpadding="1" cellspacing="5" border="0">
 	
-#if($catalogType != "FTP")
+#if($catalogType != "FILE")
     <tr><td>
     #product_downloadhome_uk_outputSelection()
     </td></tr>
@@ -432,7 +432,7 @@
 	</td></tr>
 #end
 
-#if($productMetaData.hasTimeAxis() || ($catalogType == "FTP"))
+#if($productMetaData.hasTimeAxis() || ($catalogType == "FILE"))
 	<tr><td>
 	#product_downloadhome_uk_timeSelection()
 	</td></tr>
@@ -445,7 +445,7 @@
 #end
 </table>
 
-#if($catalogType != "FTP")	
+#if($catalogType != "FILE")	
     <h2>Variable</h2>
     #set ($listParameterMetadata = $productMetaData.getParameterMetaDatasFiltered() )
     <table class="encadre" width="95%" border="0" cellspacing="0">
