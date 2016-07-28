@@ -114,7 +114,7 @@ public class CatalogData {
         TDS(1),
 
         /** Ftp catalog (ftp, scft, griFtp). */
-        FTP(2);
+        FILE(2);
 
         private final int value;
 
@@ -387,7 +387,7 @@ public class CatalogData {
      * 
      * @param currentProductSubTypes the currentProductSubTypes to set
      */
-    protected void setCurrentProductSubTypes(List<String> currentProductSubTypes) {
+    public void setCurrentProductSubTypes(List<String> currentProductSubTypes) {
         this.currentProductSubTypes = currentProductSubTypes;
     }
 
@@ -398,6 +398,15 @@ public class CatalogData {
      */
     public List<List<Product>> getListProductTypeDataset() {
         return this.listProductTypeDataset;
+    }
+
+    /**
+     * Sets the list product type dataset.
+     * 
+     * @param listProductTypeDataset the product list.
+     */
+    public void setListProductTypeDataset(List<List<Product>> listProductTypeDataset) {
+        this.listProductTypeDataset = listProductTypeDataset;
     }
 
     /**
@@ -663,6 +672,15 @@ public class CatalogData {
      */
     public List<String> getListCatalogRefSubPaths() {
         return listCatalogRefSubPaths;
+    }
+
+    /**
+     * Valeur de listCatalogRefSubPaths.
+     * 
+     * @param listCatalogRefSubPaths the listCatalogRefSubPaths
+     */
+    public void setListCatalogRefSubPaths(List<String> listCatalogRefSubPaths) {
+        this.listCatalogRefSubPaths = listCatalogRefSubPaths;
     }
 
     /**

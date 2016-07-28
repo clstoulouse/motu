@@ -211,7 +211,7 @@
 		#set($productMetaData = $product.getProductMetaData())
 		#if($printheaders == true)
 			#set($printheaders = false )			
-			#if ($catalogType != "FTP")
+			#if ($catalogType != "FILE")
 				#catalog_uk_printheader()	
 			#end
 		<table width="90%" border="0" cellspacing="0" cellpadding="0"><tr>
@@ -232,7 +232,7 @@
 ## ------------------------ print table of contents ---------------------
 #set ($catalogType = $service.getCatalogType().toString().toUpperCase())
 
-#if($printcatalogtoc && ($catalogType != "FTP"))
+#if($printcatalogtoc && ($catalogType != "FILE"))
 	#catalog_uk_table_of_contents()
 #end
 

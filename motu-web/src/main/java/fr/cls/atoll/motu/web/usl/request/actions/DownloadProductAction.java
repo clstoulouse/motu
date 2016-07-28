@@ -188,8 +188,12 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
         String productId = productHTTPParameterValidator.getParameterValueValidated();
         Product p = cd.getProducts().get(productId);
-        ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager().getProductMetaData(productId, p.getLocationData());
-        p.setProductMetaData(pmd);
+        ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
+                .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(p), productId, p.getLocationData());
+
+        if (pmd != null) {
+            p.setProductMetaData(pmd);
+        }
 
         String mode = modeHTTPParameterValidator.getParameterValueValidated();
 
@@ -214,7 +218,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                     throw new MotuException("Error while using velocity template", e);
                 }
 
-                String productURL = getProductDownloadHttpUrl(pr);
+                String productURL = BLLManager.getInstance().getCatalogManager().getProductManager()
+                        .getProductDownloadHttpUrl(pr.getProductFileName());
 
                 // Synchronous mode
                 if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_CONSOLE)) {
@@ -275,16 +280,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         // Set assertion to manage CAS.
         extractionParameters.setAssertion(AssertionHolder.getAssertion());
         return extractionParameters;
-    }
-
-    /** {@inheritDoc} */
-    private String getProductDownloadHttpUrl(ProductResult p_) {
-        String productDownloadHttpUrl = BLLManager.getInstance().getConfigManager().getProductDownloadHttpUrl();
-        if (!(productDownloadHttpUrl.endsWith("/"))) {
-            productDownloadHttpUrl += "/";
-        }
-        productDownloadHttpUrl += p_.getProductFileName();
-        return productDownloadHttpUrl;
     }
 
     private StatusModeResponse createStatusModeResponse(long requestId) {

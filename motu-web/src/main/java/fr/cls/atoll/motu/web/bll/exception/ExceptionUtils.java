@@ -15,7 +15,7 @@ import fr.cls.atoll.motu.api.message.xml.Variable;
 import fr.cls.atoll.motu.api.message.xml.VariableVocabulary;
 import fr.cls.atoll.motu.api.message.xml.Variables;
 import fr.cls.atoll.motu.api.message.xml.VariablesVocabulary;
-import fr.cls.atoll.motu.web.bll.request.queueserver.RunnableExtraction;
+import fr.cls.atoll.motu.web.bll.request.queueserver.queue.log.RunnableExtraction;
 
 /**
  * <br>

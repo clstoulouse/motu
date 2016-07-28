@@ -12,7 +12,7 @@
 			<!-- copy motu script -->
 			<outputDirectory>/</outputDirectory>
 			<includes>
-				<include>cls.motu:motu-scripts:tar.gz:delivery</include>
+				<include>cls.motu:motu-scripts:tar.gz</include>
 			</includes>
 			<useTransitiveDependencies>false</useTransitiveDependencies>
 			<unpack>true</unpack>

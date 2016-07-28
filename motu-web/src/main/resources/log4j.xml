@@ -27,26 +27,26 @@
 		<!-- ### logbook.log, warning.log, errors.log ################### -->
 		<!-- ############################################################ -->
 		<RollingFile name="log-file-logbook" fileName="${sys:motu-log-dir}/logbook.log"
-			filePattern="${sys:motu-log-dir}/logbook.log.%d{dd-MM-yyyy}"
+			filePattern="${sys:motu-log-dir}/logbook.log.%d{yyyy-MM-dd}"
 			append="true">
-			<PatternLayout pattern="%d{ISO8601} [%t] %-5p %c.%M %m%n" />
+			<PatternLayout pattern="%d{ISO8601} [%t] %-5p %c.%M %m%n%ex{0}" />
 			<Policies>
 				<TimeBasedTriggeringPolicy interval="1" modulate="true"/>
 			</Policies>
 		</RollingFile>
 
 		<RollingFile name="log-file-warning" fileName="${sys:motu-log-dir}/warnings.log"
-			filePattern="${sys:motu-log-dir}/warnings.log.%d{dd-MM-yyyy}"
+			filePattern="${sys:motu-log-dir}/warnings.log.%d{yyyy-MM-dd}"
 			append="true">
 			<PatternLayout pattern="%d{ISO8601} [%t] %-5p %c.%M %m%n" />
 			<Policies>
 				<TimeBasedTriggeringPolicy interval="1" modulate="true"/>
 			</Policies>
-
+			<ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="DENY"/>
 		</RollingFile>
 
 		<RollingFile name="log-file-errors" fileName="${sys:motu-log-dir}/errors.log"
-			filePattern="${sys:motu-log-dir}/errors.log.%d{dd-MM-yyyy}"
+			filePattern="${sys:motu-log-dir}/errors.log.%d{yyyy-MM-dd}"
 			append="true">
 			<PatternLayout pattern="%d{ISO8601} [%t] %-5p %c.%M %m%n" />
 			<Policies>
@@ -57,10 +57,13 @@
 		<!-- ############################################################ -->
 		<!-- ### Queue ##### -->
 		<!-- ############################################################ -->
-		<RollingFile name="log-file-infos.queue" fileName="${sys:motu-log-dir}/queue.log"
-			filePattern="${sys:motu-log-dir}/queue.log.%d{dd-MM-yyyy}"
+		<!-- To share this log, set fileName and filePattern to a folder accessible from a web server -->
+		<RollingFile name="log-file-infos.queue" 
+		    fileName="${sys:motu-log-dir}/motuQSlog.xml"
+			filePattern="${sys:motu-log-dir}/motuQSlog.xml.%d{MM-yyyy}"
 			append="true">
-			<MotuCustomLayout />
+			<!-- fileFormat=xml or csv -->
+			<MotuCustomLayout fileFormat="xml" />
 			<Policies>
 				<TimeBasedTriggeringPolicy interval="1" modulate="true"/>
 			</Policies>

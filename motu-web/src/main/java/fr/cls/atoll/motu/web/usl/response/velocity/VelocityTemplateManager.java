@@ -179,6 +179,7 @@ public class VelocityTemplateManager {
         // then if not found, load project src/main/resources folder
         conf.put("file.resource.loader.path", BLLManager.getInstance().getConfigManager().getMotuConfigurationFolderPath());
         conf.put("resource.loader", "file, class");
+        conf.put("velocimacro.library", "");
         conf.put("class.resource.loader.description", "Velocity Classpath Resource Loader");
         conf.put("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
 

@@ -16,6 +16,7 @@ import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidRequestIdException;
 import fr.cls.atoll.motu.web.bll.exception.MotuMarshallException;
+import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.RequestIdHTTPParameterValidator;
@@ -68,9 +69,12 @@ public class GetRequestStatusAction extends AbstractAction {
 
         try {
             if (requestId != null) {
-                marshallStatusModeResponse(XMLConverter
-                        .convertStatusModeResponse(BLLManager.getInstance().getRequestManager().getResquestStatus(requestId)),
-                                           getResponse().getWriter());
+                RequestDownloadStatus rds = BLLManager.getInstance().getRequestManager().getResquestStatus(requestId);
+                if (rds == null) {
+                    getResponse().getWriter().write("Oops, request id '" + requestId + "' does not exist.");
+                } else {
+                    marshallStatusModeResponse(XMLConverter.convertStatusModeResponse(rds), getResponse().getWriter());
+                }
             } else {
                 marshallStatusModeResponse(createStatusModeResponse(new MotuInvalidRequestIdException(-1L)), getResponse().getWriter());
             }

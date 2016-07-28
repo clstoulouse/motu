@@ -24,7 +24,7 @@ public interface IBLLProductManager {
      * @return
      * @throws MotuException
      */
-    ProductMetaData getProductMetaData(String productId, String locationData) throws MotuException;
+    ProductMetaData getProductMetaData(String catalogType, String productId, String locationData) throws MotuException;
 
     /**
      * Retrieve the product using the catalog name and the url path of the product. .
@@ -54,5 +54,22 @@ public interface IBLLProductManager {
      * @throws MotuException
      */
     Product getProduct(String serviceName, String productId) throws MotuException;
+
+    /**
+     * Gets the tDS dataset id.
+     * 
+     * @param locationData the location data
+     * 
+     * @return the tDS dataset id
+     */
+    String datasetIdFromProductLocation(String locationData);
+
+    /**
+     * .
+     * 
+     * @param productFileName_
+     * @return
+     */
+    String getProductDownloadHttpUrl(String productFileName_);
 
 }

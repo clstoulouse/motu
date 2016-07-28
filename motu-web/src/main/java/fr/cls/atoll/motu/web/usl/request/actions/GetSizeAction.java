@@ -104,7 +104,7 @@ public class GetSizeAction extends AbstractProductInfoAction {
                 "-90");
         latitudeHighHTTPParameterValidator = new LatitudeHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_HIGH_LAT,
-                CommonHTTPParameters.getLatitudeLowFromRequest(getRequest()),
+                CommonHTTPParameters.getLatitudeHighFromRequest(getRequest()),
                 "90");
         longitudeLowHTTPParameterValidator = new LongitudeHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_LOW_LON,
@@ -299,7 +299,6 @@ public class GetSizeAction extends AbstractProductInfoAction {
         requestSize.setSize(-1d);
         ExceptionUtils.setError(requestSize, new MotuException("If you see that message, the request has failed and the error has not been filled"));
         return requestSize;
-
     }
 
     /**
@@ -314,7 +313,6 @@ public class GetSizeAction extends AbstractProductInfoAction {
         RequestSize requestSize = createRequestSize();
         ExceptionUtils.setError(requestSize, e);
         return requestSize;
-
     }
 
     /**
@@ -336,6 +334,8 @@ public class GetSizeAction extends AbstractProductInfoAction {
         if (requestSize == null) {
             requestSize = initRequestSize(-1d, -1d);
         }
+
+        requestSize.setUnit("kb");
         JAXBWriter.getInstance().write(requestSize, writer);
         writer.flush();
         writer.close();

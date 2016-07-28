@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.web.bll.request;
+package fr.cls.atoll.motu.web.dal.request;
 
 import java.util.ArrayList;
 import java.util.List;

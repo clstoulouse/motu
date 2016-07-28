@@ -22,7 +22,7 @@
 		#end
 
 		<li>
-		#if($catalogType != "FTP")
+		#if($catalogType != "FILE")
 			<a href=?action=describeProduct&data=${product.getLocationData()}&xmlfile=${service.getCatalogLocation()}>
 		#else
 			<a href=?action=describeProduct&data=${product.getLocationMetaData()}>
@@ -31,7 +31,7 @@
 		</a>	
 		</li>
 		
-		#if (!$product.isProductAlongTrack() && $showOpendapLinks && ($catalogType != "FTP")) 
+		#if (!$product.isProductAlongTrack() && $showOpendapLinks && ($catalogType != "FILE")) 
 			<li>
 			Opendap direct access:&nbsp;&nbsp;&nbsp;
 			<a href=${product.getLocationData()}.dds>dds</a>&nbsp;&nbsp;&nbsp;
@@ -249,7 +249,7 @@
 		<tr>
 			<th>Standard name</th>
 			<th>Unit</th>
-			#if($catalogType != "FTP")
+			#if($catalogType != "FILE")
 				<th>Dimensions</th>
 			#end
 		</tr>
@@ -267,7 +267,7 @@
 				(${parameterMetadata.getUnitLong()})					
 			#end
 			</td>
-			#if($catalogType != "FTP")				
+			#if($catalogType != "FILE")				
 			<td>
     		#if($parameterMetadata.hasDimensions())
     			$parameterMetadata.getDimensionsAsString()

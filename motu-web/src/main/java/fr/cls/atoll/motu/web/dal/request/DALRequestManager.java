@@ -61,17 +61,21 @@ public class DALRequestManager implements IDALRequestManager {
 
     @Override
     public void downloadProduct(ConfigService cs, Product p, OutputFormat dataOutputFormat) throws MotuException {
-        boolean ncss = cs.getCatalog().getNCSS().equalsIgnoreCase("enabled");
+        boolean ncssStatus = false;
+        String ncssValue = cs.getCatalog().getNcss();
+        if (ncssValue != null || "enabled".equalsIgnoreCase(ncssValue)) {
+            ncssStatus = true;
+        }
 
         // Detect NCSS or OpenDAP
         try {
-            if (ncss) {
+            if (ncssStatus) {
                 downloadWithNCSS(p, dataOutputFormat);
             } else {
                 downloadWithOpenDap(p, dataOutputFormat);
             }
         } catch (Exception e) {
-            throw new MotuException("Error while downloading product ncss=" + ncss, e);
+            throw new MotuException("Error while downloading product ncss=" + ncssStatus, e);
         }
 
         // Product product = getProductInformation(locationData);
@@ -244,5 +248,7 @@ public class DALRequestManager implements IDALRequestManager {
         } else {
             ncss.unitRequestNCSS(); // No depth axis -> request without depths
         }
+        p.addReadingTime(ncss.getReadingTimeInNanoSec());
+        p.addWritingTime(ncss.getWritingTimeInNanoSec());
     }
 }

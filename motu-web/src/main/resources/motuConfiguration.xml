@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Default configuration file -->
-<motuConfig defaultService="" useProxy="false" proxyHost="" proxyPort="" proxyLogin="" proxyPwd="" 
+<motuConfig defaultService="" logFormat="xml" useProxy="false" proxyHost="" proxyPort="" proxyLogin="" proxyPwd="" 
 defaultActionIsListServices="true" useAuthentication="false" 
 dataBlockSize="1024000" maxSizePerFile="1024" 
 extractionPath="/data/motu/data-deliveries" 

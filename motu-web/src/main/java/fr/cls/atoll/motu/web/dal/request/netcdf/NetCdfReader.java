@@ -52,6 +52,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.util.datetime.FastDateFormat;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.library.cas.HttpClientCAS;
 import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
 import fr.cls.atoll.motu.library.cas.util.HttpUtil;
@@ -1217,7 +1218,7 @@ public class NetCdfReader {
             DateUnit dateUnit = new DateUnit(unitsString);
             date = dateUnit.makeDate(value);
         } catch (Exception e) {
-            throw new MotuException("Error in getDate", e);
+            throw new MotuException(ErrorType.INVALID_DATE, "Error in getDate", e);
         }
         return date;
     }
@@ -1238,7 +1239,7 @@ public class NetCdfReader {
             DateUnit dateUnit = new DateUnit(unitsString);
             value = dateUnit.makeValue(date);
         } catch (Exception e) {
-            throw new MotuException("Error in getDate", e);
+            throw new MotuException(ErrorType.INVALID_DATE, "Error in getDate", e);
         }
         return value;
     }

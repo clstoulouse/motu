@@ -29,6 +29,10 @@ import java.util.Comparator;
 import java.util.Formatter;
 import java.util.List;
 
+import javax.measure.DecimalMeasure;
+
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.library.inventory.GeospatialCoverage;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatLonRangeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
@@ -36,7 +40,6 @@ import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
-import fr.cls.atoll.motu.web.dal.tds.ncss.model.GeospatialCoverage;
 import fr.cls.atoll.motu.web.dal.tds.ncss.model.SpatialRange;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
@@ -130,6 +133,15 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      * @param geospatialCoverage the geospatial coverage
      */
     public ExtractCriteriaLatLon(GeospatialCoverage geospatialCoverage) {
+        setLatLonRect(geospatialCoverage);
+    }
+
+    /**
+     * Instantiates a new extract criteria lat lon.
+     * 
+     * @param geospatialCoverage the geospatial coverage
+     */
+    public ExtractCriteriaLatLon(fr.cls.atoll.motu.web.dal.tds.ncss.model.GeospatialCoverage geospatialCoverage) {
         setLatLonRect(geospatialCoverage);
     }
 
@@ -291,19 +303,14 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      * @param latHigh the lat high
      * @param lonHigh the lon high
      */
-    // public void setLatLonRect(DecimalMeasure<?> latLow, DecimalMeasure<?> lonLow, DecimalMeasure<?>
-    // latHigh, DecimalMeasure<?> lonHigh) {
-    // double latlowTemp = (latLow != null) ? latLow.getValue().doubleValue() :
-    // Double.parseDouble(LATITUDE_MIN);
-    // double lonLowTemp = (lonLow != null) ? lonLow.getValue().doubleValue() :
-    // Double.parseDouble(LONGITUDE_MIN);
-    // double latHighTemp = (latHigh != null) ? latHigh.getValue().doubleValue() :
-    // Double.parseDouble(LATITUDE_MAX);
-    // double lonHighTemp = (lonHigh != null) ? lonHigh.getValue().doubleValue() :
-    // Double.parseDouble(LONGITUDE_MAX);
-    //
-    // setLatLonRect(latlowTemp, lonLowTemp, latHighTemp, lonHighTemp);
-    // }
+    public void setLatLonRect(DecimalMeasure<?> latLow, DecimalMeasure<?> lonLow, DecimalMeasure<?> latHigh, DecimalMeasure<?> lonHigh) {
+        double latlowTemp = (latLow != null) ? latLow.getValue().doubleValue() : Double.parseDouble(LATITUDE_MIN);
+        double lonLowTemp = (lonLow != null) ? lonLow.getValue().doubleValue() : Double.parseDouble(LONGITUDE_MIN);
+        double latHighTemp = (latHigh != null) ? latHigh.getValue().doubleValue() : Double.parseDouble(LATITUDE_MAX);
+        double lonHighTemp = (lonHigh != null) ? lonHigh.getValue().doubleValue() : Double.parseDouble(LONGITUDE_MAX);
+
+        setLatLonRect(latlowTemp, lonLowTemp, latHighTemp, lonHighTemp);
+    }
 
     /**
      * Sets the lat lon rect.
@@ -311,6 +318,18 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      * @param geospatialCoverage the new lat lon rect
      */
     public void setLatLonRect(GeospatialCoverage geospatialCoverage) {
+        if (geospatialCoverage == null) {
+            return;
+        }
+        setLatLonRect(geospatialCoverage.getSouth(), geospatialCoverage.getWest(), geospatialCoverage.getNorth(), geospatialCoverage.getEast());
+    }
+
+    /**
+     * Sets the lat lon rect.
+     * 
+     * @param geospatialCoverage the new lat lon rect
+     */
+    public void setLatLonRect(fr.cls.atoll.motu.web.dal.tds.ncss.model.GeospatialCoverage geospatialCoverage) {
         if (geospatialCoverage == null) {
             return;
         }
@@ -836,7 +855,10 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                 }
             }
         } catch (InvalidRangeException e) {
-            throw new MotuException("ERROR in ExtractCriteriaLatLon - getRangesFromLatLonRect1D - while creating list of ranges", e);
+            throw new MotuException(
+                    ErrorType.INVALID_LAT_LON_RANGE,
+                    "ERROR in ExtractCriteriaLatLon - getRangesFromLatLonRect1D - while creating list of ranges",
+                    e);
 
         }
 
@@ -1059,6 +1081,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
 
                         } catch (InvalidRangeException e) {
                             throw new MotuException(
+                                    ErrorType.INVALID_LAT_LON_RANGE,
                                     "ERROR in ExtractCriteriaLatLon - getListRangesFromLatLonRect2D - while creating list of ranges",
                                     e);
                         }
@@ -1447,7 +1470,10 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                 list.add(new Range(Math.min(minyIndex, maxyIndex), Math.max(minyIndex, maxyIndex)));
                 list.add(new Range(Math.min(minxIndex, maxxIndex), Math.max(minxIndex, maxxIndex)));
             } catch (InvalidRangeException e) {
-                throw new MotuException("ERROR in ExtractCriteriaLatLon - getRangesFromLatLonRect - while creating list of ranges", e);
+                throw new MotuException(
+                        ErrorType.INVALID_LAT_LON_RANGE,
+                        "ERROR in ExtractCriteriaLatLon - getRangesFromLatLonRect - while creating list of ranges",
+                        e);
             }
             return list;
         } else if ((xaxis instanceof CoordinateAxis2D) && (yaxis instanceof CoordinateAxis2D) && gcs.isLatLon()) {

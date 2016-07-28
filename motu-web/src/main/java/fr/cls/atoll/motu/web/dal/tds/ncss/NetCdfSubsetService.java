@@ -126,6 +126,9 @@ public class NetCdfSubsetService {
     private String depthTempFname;
     private double depthSelected;
 
+    private long readingTimeInNanoSec = 0L;
+    private long writingTimeInNanoSec = 0L;
+
     /**
      * Setter of the time subset setup .
      * 
@@ -343,6 +346,7 @@ public class NetCdfSubsetService {
      * @throws MotuException
      */
     public void unitRequestNCSS() throws MotuException {
+        long readingTimeInNanoSecStartEvent = System.nanoTime();
 
         // Geographical subset
         String north = String.valueOf(geoSubset.getUpperLeftLat());
@@ -399,7 +403,10 @@ public class NetCdfSubsetService {
             // Read buffer response and detect response type
             ClientResponse response = webResource.get(ClientResponse.class);
 
+            readingTimeInNanoSec += (System.nanoTime() - readingTimeInNanoSecStartEvent);
+
             if (response.getType().toString().contains("application/x-netcdf")) {
+                long writingTimeInNanoSecStartEvent = System.nanoTime();
                 // Output file and directory depending on concatenation
                 InputStream is = response.getEntity(InputStream.class);
                 String extractFolder = outputDir;
@@ -429,6 +436,7 @@ public class NetCdfSubsetService {
                 // Close inputs/outputs
                 fos.close();
                 is.close();
+                writingTimeInNanoSec += (System.nanoTime() - writingTimeInNanoSecStartEvent);
             } else if (response.getType().toString().equals("text/plain")) {
                 // TDS error message handle (plain/text)
                 String msg = response.getEntity(String.class);
@@ -444,4 +452,21 @@ public class NetCdfSubsetService {
             throw new MotuException(msg);
         }
     }
+
+    public long getReadingTimeInNanoSec() {
+        return readingTimeInNanoSec;
+    }
+
+    public void setReadingTimeInNanoSec(long readingTimeInNanoSec) {
+        this.readingTimeInNanoSec = readingTimeInNanoSec;
+    }
+
+    public long getWritingTimeInNanoSec() {
+        return writingTimeInNanoSec;
+    }
+
+    public void setWritingTimeInNanoSec(long writingTimeInNanoSec) {
+        this.writingTimeInNanoSec = writingTimeInNanoSec;
+    }
+
 }

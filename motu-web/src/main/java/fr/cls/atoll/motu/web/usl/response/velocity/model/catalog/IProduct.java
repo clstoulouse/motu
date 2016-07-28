@@ -14,6 +14,8 @@ import java.util.List;
  */
 public interface IProduct {
 
+    String getProductId();
+
     //// Methods used only for the download part when a file has been extracted
     boolean hasDownloadUrlPath();
 
@@ -53,7 +55,10 @@ public interface IProduct {
 
     List<String> getTimeAxisDataAsString();
 
+    List<String> getTimeCoverageFromDataFiles();
+
     boolean hasLastError();
 
     String getLastError();
+
 }
