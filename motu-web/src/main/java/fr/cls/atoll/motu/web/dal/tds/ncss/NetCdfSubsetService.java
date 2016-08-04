@@ -1,9 +1,11 @@
 package fr.cls.atoll.motu.web.dal.tds.ncss;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
@@ -26,6 +28,8 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer;
+import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer.Type;
 import ucar.ma2.Array;
 import ucar.ma2.Range;
 
@@ -332,9 +336,15 @@ public class NetCdfSubsetService {
         }
 
         // Concatenate with NCO
-        String cmd = "cdo merge " + depthTempDir + "/* " + outputDir + "/" + outputFile;
+        String cmd = "cdo.sh merge " + depthTempDir + "/* " + outputDir + "/" + outputFile;
         Process p = Runtime.getRuntime().exec(cmd);
-        p.waitFor();
+        new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(p.getInputStream())), LOGGER, Type.INFO)).start();
+        new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(p.getErrorStream())), LOGGER, Type.ERROR)).start();
+        int exitValue = p.waitFor();
+
+        if (exitValue != 0) {
+            throw new MotuException("The generation of the NC file failled. See the log for more information.");
+        }
 
         // Cleanup directory and intermediate files (right away once concat)
         FileUtils.deleteDirectory(depthTempDir.toFile());
@@ -353,10 +363,6 @@ public class NetCdfSubsetService {
         String west = String.valueOf(geoSubset.getUpperLeftLon());
         String east = String.valueOf(geoSubset.getUpperRightLon());
         String south = String.valueOf(geoSubset.getLowerLeftLat());
-        System.out.println("north : " + north);
-        System.out.println("west : " + west);
-        System.out.println("east : " + east);
-        System.out.println("south : " + south);
 
         // Temporal subset (W3C format supported by TDS)
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");

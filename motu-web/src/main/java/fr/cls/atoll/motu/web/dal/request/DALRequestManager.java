@@ -1,11 +1,18 @@
 package fr.cls.atoll.motu.web.dal.request;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
@@ -21,6 +28,8 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer;
+import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer.Type;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DatasetGrid;
@@ -42,22 +51,7 @@ import ucar.nc2.dataset.CoordinateAxis;
  */
 public class DALRequestManager implements IDALRequestManager {
 
-    // /**
-    // * Product defered extract netcdf.
-    // *
-    // * @param organizer the organizer
-    // * @param extractionParameters the extraction parameters
-    // * @param mode the mode
-    // *
-    // * @return the status mode response
-    // *
-    // * @throws MotuException the motu exception
-    // */
-    // @Override
-    // public Product processRequest(RequestDownloadStatus requestDownloadStatus, ExtractionParameters
-    // extractionParameters) throws MotuException {
-    // return ProductDeferedExtractNetcdfThread.extractData(extractionParameters);
-    // }
+    private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
     public void downloadProduct(ConfigService cs, Product p, OutputFormat dataOutputFormat) throws MotuException {
@@ -128,12 +122,6 @@ public class DALRequestManager implements IDALRequestManager {
         ncss.setOutputFormat(dataOutputFormat);
         ncss.setncssURL(p.getLocationDataNCSS());
 
-        System.out.println("Right long : " + latlon.getLowerLeftLon());
-        System.out.println("Left long : " + latlon.getLowerRightLon());
-        System.out.println("Lon Max : " + p.getProductMetaData().getLonNormalAxisMaxValue());
-        System.out.println("Lon Min : " + p.getProductMetaData().getLonNormalAxisMinValue());
-        // System.out.println(p.getNetCdfReader().get);
-
         // Check if the Left longitude is greater than the right longitude
         if (latlon.getLowerLeftLon() > latlon.getLowerRightLon()) {
             // In this case, thredds needs 2 requests to retrieve the data.
@@ -142,30 +130,47 @@ public class DALRequestManager implements IDALRequestManager {
             // Create a temporary directory into tmp directory to save the 2 generated file
             Path tempDirectory = Files.createTempDirectory("LeftAndRightRequest");
             ncss.setOutputDir(tempDirectory.toString());
-            System.out.println("Temporary Directory : " + tempDirectory.toString());
 
-            System.out.println("product message error : " + p.getLastError());
+            List<String> filesPath = new ArrayList<>();
 
             int i = 0;
+            long rangesLength = 0;
             for (ExtractCriteriaLatLon currentRange : rangesToRequest) {
+                rangesLength += Math.abs(Math.abs(currentRange.getLatLonRect().getLatMax()) - Math.abs(currentRange.getLatLonRect().getLatMin()));
                 ncss.setGeoSubset(currentRange);
                 ncss.setOutputFile(i + "-" + fname);
-                System.out.println("Left file name : " + ncss.getOutputFile());
                 ncssRequest(p, ncss);
+                filesPath.add(Paths.get(tempDirectory.toString(), ncss.getOutputFile()).toString());
                 i++;
             }
 
-            System.out.println("product message error after right request: " + p.getLastError());
-
             // Concatenate with NCO
-            String cmd = "cdo merge " + tempDirectory + "/* " + extractDirPath + "/" + fname;
-            System.out.println("Concat Request : " + cmd);
-            Process process = Runtime.getRuntime().exec(cmd);
-            process.waitFor();
+            // Set the merge command
+            String cmd = "merge.sh ";
+            // Set the output file path
+            cmd += extractDirPath + "/" + fname;
+            // Set the start point
+            cmd += " " + latlon.getLowerLeftLon();
+            // Set the length
+            cmd += " " + rangesLength;
+
+            // Set the list of files to merge
+            for (String path : filesPath) {
+                cmd += " " + path;
+            }
+            final Process process = Runtime.getRuntime().exec(cmd);
+
+            new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getInputStream())), LOGGER, Type.INFO)).start();
+            new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getErrorStream())), LOGGER, Type.ERROR)).start();
+
+            int exitValue = process.waitFor();
+            
+            if(exitValue != 0){
+                throw new MotuException("The generation of the NC file failled. See the log for more information.");
+            }
 
             // Cleanup directory and intermediate files (right away once concat)
-            // FileUtils.deleteDirectory(tempDirectory.toFile());
-
+            FileUtils.deleteDirectory(tempDirectory.toFile());
         } else {
             ncss.setOutputFile(fname);
             ncss.setOutputDir(extractDirPath);
