@@ -80,7 +80,16 @@ public class VelocityModelConverter {
             @Override
             public String getCatalogType() {
                 try {
-                    return VelocityTemplateManager.encodeString(BLLManager.getInstance().getCatalogManager().getCatalogType(cs));
+                    String catalogType = VelocityTemplateManager.encodeString(BLLManager.getInstance().getCatalogManager().getCatalogType(cs));
+                    switch (catalogType.toUpperCase()) {
+                    case "FILE":
+                    case "FTP":
+                        return "DGF";
+                    case "TDS":
+                        return "Subsetter";
+                    default:
+                        return "";
+                    }
                 } catch (MotuException e) {
                     LOGGER.error("Impossible to retrieve the type of the catalog for the service : " + cs.getName(), e);
                 }
