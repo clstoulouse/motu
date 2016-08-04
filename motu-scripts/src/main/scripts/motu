@@ -26,7 +26,7 @@ MOTU_INSTALL_DIR=$(pwd)
 
 MOTU_PRODUCTS_JAVA_DIR=$MOTU_INSTALL_DIR/products/jdk1.7.0_79
 MOTU_PRODUCTS_TOMCAT_DIR=$MOTU_INSTALL_DIR/products/apache-tomcat-7.0.69
-MOTU_PRODUCTS_CDO_HOME_DIR=$MOTU_INSTALL_DIR/products/cdo-group/cdo-1.7.1-home
+MOTU_PRODUCTS_CDO_HOME_DIR=$MOTU_INSTALL_DIR/products/cdo-group/
 
 APP_NAME_MOTU=tomcat-motu
 APP_NAME_TDS=tomcat-tds
@@ -268,11 +268,11 @@ __showStatus() {
 ###  MOTU 
 ###########################################
 __setPathWithCdoTools() {
-  PATH=$MOTU_PRODUCTS_CDO_HOME_DIR/bin:$PATH
+  PATH=$MOTU_PRODUCTS_CDO_HOME_DIR:$PATH
 }
 
 __checkCDOToolAvailable() {
-  cdoFilePath="$(which cdo)"
+  cdoFilePath="$(which cdo.sh)"
   if [ -z "$cdoFilePath" ] ; then
      echo
      echo "ERROR: cdo tool is not available, please check that it has been installed"
