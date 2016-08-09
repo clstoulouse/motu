@@ -388,7 +388,7 @@
 
 #product_downloadhome_uk_printResult()
 
-<form  method="get" name="${formName}">		
+<form id="downloadForm"  method="get" name="${formName}">		
 <input type="hidden" name="action" value="productdownload" />
 <input type="hidden" name="service" value="$service.getNameEncoded()" />
 ## #if($catalogType != "FILE")	
@@ -396,6 +396,7 @@
 ## #else
 ##	<input type="hidden" name="product" value="$productMetaData.getProductIdEncoded()" />
 ## #end
+<div id="Loading" style="position:fixed;left:49%;top:49%;visibility:hidden"><img src="$httpSite/css/motu/screen/images/loader.gif"  alt="Loading" title="Wait until the requested file is generated!" /></div>
 <input type="hidden" name="product" value="$productMetaData.getProductIdEncoded()" />
 <input type="hidden" name="nexturl" value=" " />
 #if(($productMetaData.hasLatLonAxis()) || ($productMetaData.hasGeoXYAxis()))
@@ -465,8 +466,12 @@
 #end
 
 <p>&nbsp;</p>
-<input onClick="updateMap()" type="submit" value="Download" />
-<input onClick="openScriptCmdWin()" type="button" value="Script" />
+
+<!--div style="position:fixe;top:49%;left:49%">
+        <img src="css/motu/screen/images/logo-cls.png" alt="CLS" title="" />
+</div-->
+<input id="DownloadButton" onClick="this.disabled=true;this.value='Download in progress...';updateMap();this.form.submit();" type="submit" value="Download" />
+<input id="ScriptButton" onClick="openScriptCmdWin()" type="button" value="Script" />
 </form>
 
 

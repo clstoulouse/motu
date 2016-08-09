@@ -826,12 +826,14 @@ RegionWidget.prototype.onChange = function() {
 }
 
 function updateMap() {
-// var widxlot = new MapTextWidget(this,"lon", 'region',"xlo_text");
-// var widxhit = new MapTextWidget(this,"lon", 'region',"xhi_text");
-// var widylot = new MapTextWidget(this,"lat", 'region',"ylo_text");
-// var widyhit = new MapTextWidget(this,"lat", 'region',"yhi_text");
- // document.location.href="constrain?"+widxlot.getValue()+","+widxhit.getValue()+","+widylot.getValue()+","+widyhit.getValue();
+  var loadingDiv = document.getElementById("Loading");
+  loadingDiv.style.visibility="visible";
+  var scriptBtn = document.getElementById("ScriptButton");
+  scriptBtn.disabled = true;
+	
   var theForm = findForm();
+//var downloadBtn = document.getElementById("DownloadButton");
+//downloadBtn.disabled = true;
 
   if ((theForm.xlo_text != null) && (theForm.x_lo != null)) {
 	  theForm.x_lo.value = theForm.xlo_text.value;	
