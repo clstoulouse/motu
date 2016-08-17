@@ -36,7 +36,7 @@ public interface IBLLRequestManager {
      * @param requestId
      * @return
      */
-    RequestDownloadStatus getResquestStatus(Long requestId_);
+    RequestDownloadStatus getRequestStatus(Long requestId_);
 
     /**
      * .
