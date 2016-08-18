@@ -45,6 +45,7 @@ import org.dom4j.jaxb.JAXBWriter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 
@@ -200,7 +201,7 @@ public class XMLUtils {
             validator.validate(new DOMSource(document));
 
         } catch (Exception e) {
-            throw new MotuException(e);
+            throw new MotuException(ErrorType.SYSTEM, e);
             // instance document is invalid!
         }
 
@@ -242,7 +243,7 @@ public class XMLUtils {
             documentBuilder.parse(inXml);
 
         } catch (Exception e) {
-            throw new MotuException(e);
+            throw new MotuException(ErrorType.SYSTEM, e);
             // instance document is invalid!
         }
 
@@ -284,7 +285,7 @@ public class XMLUtils {
             documentBuilder.parse(inXml);
 
         } catch (Exception e) {
-            throw new MotuException(e);
+            throw new MotuException(ErrorType.SYSTEM, e);
             // instance document is invalid!
         }
 

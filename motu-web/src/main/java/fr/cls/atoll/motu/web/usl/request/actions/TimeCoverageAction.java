@@ -22,6 +22,7 @@ import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.MotuMarshallException;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
@@ -49,8 +50,8 @@ public class TimeCoverageAction extends AbstractProductInfoAction {
     private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
     private ProductHTTPParameterValidator productHTTPParameterValidator;
 
-    public TimeCoverageAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        super(ACTION_NAME, request, response, session);
+    public TimeCoverageAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        super(ACTION_NAME, actionCode_, request, response, session);
         serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_SERVICE,
                 CommonHTTPParameters.getServiceFromRequest(getRequest()),
@@ -83,7 +84,7 @@ public class TimeCoverageAction extends AbstractProductInfoAction {
 
                 getResponse().setContentType(null);
             } catch (MotuExceptionBase | JAXBException | IOException e) {
-                throw new MotuException(e);
+                throw new MotuException(ErrorType.SYSTEM, e);
             }
         }
     }
@@ -108,7 +109,7 @@ public class TimeCoverageAction extends AbstractProductInfoAction {
         writer.close();
     }
 
-    public static TimeCoverage initTimeCoverage(ProductMetaData productMetaData) throws MotuException {
+    public TimeCoverage initTimeCoverage(ProductMetaData productMetaData) throws MotuException {
         if (productMetaData == null) {
             return null;
         }
@@ -125,7 +126,7 @@ public class TimeCoverageAction extends AbstractProductInfoAction {
      * 
      * @throws MotuException the motu exception
      */
-    public static TimeCoverage initTimeCoverage(Interval datePeriod) throws MotuException {
+    public TimeCoverage initTimeCoverage(Interval datePeriod) throws MotuException {
         TimeCoverage timeCoverage = createTimeCoverage();
         if (datePeriod == null) {
             return timeCoverage;
@@ -136,7 +137,7 @@ public class TimeCoverageAction extends AbstractProductInfoAction {
 
         timeCoverage.setStart(dateToXMLGregorianCalendar(start));
         timeCoverage.setEnd(dateToXMLGregorianCalendar(end));
-        timeCoverage.setCode(ErrorType.OK);
+        timeCoverage.setCode(StringUtils.getErrorCode(getActionCode(), ErrorType.OK));
         timeCoverage.setMsg(ErrorType.OK.toString());
 
         return timeCoverage;
@@ -147,13 +148,16 @@ public class TimeCoverageAction extends AbstractProductInfoAction {
      * 
      * @return the time coverage
      */
-    public static TimeCoverage createTimeCoverage() {
+    public TimeCoverage createTimeCoverage() {
         ObjectFactory objectFactory = new ObjectFactory();
 
         TimeCoverage timeCoverage = objectFactory.createTimeCoverage();
         timeCoverage.setStart(null);
         timeCoverage.setEnd(null);
-        ExceptionUtils.setError(timeCoverage, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        ExceptionUtils
+                .setError(getActionCode(),
+                          timeCoverage,
+                          new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
         return timeCoverage;
 
     }

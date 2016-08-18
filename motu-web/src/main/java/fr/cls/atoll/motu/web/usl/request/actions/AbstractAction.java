@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
@@ -32,6 +33,8 @@ import fr.cls.atoll.motu.web.usl.request.session.SessionManager;
  */
 public abstract class AbstractAction {
 
+    public static final String UNDETERMINED_ACTION = "001";
+
     private static final Logger LOGGER = LogManager.getLogger();
 
     /** The Constant CONTENT_TYPE_PLAIN. */
@@ -47,13 +50,15 @@ public abstract class AbstractAction {
     private HttpServletRequest request;
     private HttpServletResponse response;
     private HttpSession session;
+    private String actionCode = "0001";
 
-    public AbstractAction(String actionName_, HttpServletRequest request_, HttpServletResponse response_) {
-        this(actionName_, request_, response_, null);
+    public AbstractAction(String actionName_, String actionCode_, HttpServletRequest request_, HttpServletResponse response_) {
+        this(actionName_, actionCode_, request_, response_, null);
     }
 
-    public AbstractAction(String actionName_, HttpServletRequest request_, HttpServletResponse response_, HttpSession session_) {
+    public AbstractAction(String actionName_, String actionCode_, HttpServletRequest request_, HttpServletResponse response_, HttpSession session_) {
         actionName = actionName_;
+        actionCode = actionCode_;
         request = request_;
         response = response_;
         session = session_;
@@ -277,6 +282,7 @@ public abstract class AbstractAction {
             format = OutputFormat.valueOf(dataFormat.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new MotuException(
+                    ErrorType.SYSTEM,
                     String.format("Parameter '%s': invalid value '%s' - Valid values are : %s",
                                   MotuRequestParametersConstant.PARAM_OUTPUT,
                                   dataFormat,
@@ -285,6 +291,19 @@ public abstract class AbstractAction {
         }
 
         return format;
+    }
+
+    public String getActionCode() {
+        return actionCode;
+    }
+
+    /**
+     * Valeur de actionCode.
+     * 
+     * @param actionCode nouvelle valeur.
+     */
+    public void setActionCode(String actionCode) {
+        this.actionCode = actionCode;
     }
 
 }

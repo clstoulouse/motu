@@ -23,6 +23,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
@@ -343,7 +344,7 @@ public class NetCdfSubsetService {
         int exitValue = p.waitFor();
 
         if (exitValue != 0) {
-            throw new MotuException("The generation of the NC file failled. See the log for more information.");
+            throw new MotuException(ErrorType.NETCDF_GENERATION, "The generation of the NC file failled. See the log for more information.");
         }
 
         // Cleanup directory and intermediate files (right away once concat)
@@ -446,16 +447,16 @@ public class NetCdfSubsetService {
             } else if (response.getType().toString().equals("text/plain")) {
                 // TDS error message handle (plain/text)
                 String msg = response.getEntity(String.class);
-                throw new MotuException(msg);
+                throw new MotuException(ErrorType.NETCDF_GENERATION, msg);
             } else {
                 // Other error handling
                 String msg = "Unkown response type -> " + response.getType().toString();
-                throw new MotuException(msg);
+                throw new MotuException(ErrorType.NETCDF_GENERATION, msg);
             }
 
         } catch (Exception e) {
             String msg = e.getMessage();
-            throw new MotuException(msg);
+            throw new MotuException(ErrorType.SYSTEM, msg);
         }
     }
 

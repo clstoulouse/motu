@@ -13,6 +13,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
@@ -46,8 +47,8 @@ public abstract class AbstractProductInfoAction extends AbstractAction {
      * @param request_
      * @param response_
      */
-    public AbstractProductInfoAction(String actionName_, HttpServletRequest request_, HttpServletResponse response_) {
-        this(actionName_, request_, response_, null);
+    public AbstractProductInfoAction(String actionName_, String actionCode_, HttpServletRequest request_, HttpServletResponse response_) {
+        this(actionName_, actionCode_, request_, response_, null);
         initValidator();
     }
 
@@ -59,8 +60,13 @@ public abstract class AbstractProductInfoAction extends AbstractAction {
      * @param response_
      * @param session_
      */
-    public AbstractProductInfoAction(String actionName_, HttpServletRequest request_, HttpServletResponse response_, HttpSession session_) {
-        super(actionName_, request_, response_, session_);
+    public AbstractProductInfoAction(
+        String actionName_,
+        String actionCode_,
+        HttpServletRequest request_,
+        HttpServletResponse response_,
+        HttpSession session_) {
+        super(actionName_, actionCode_, request_, response_, session_);
         initValidator();
     }
 
@@ -123,7 +129,7 @@ public abstract class AbstractProductInfoAction extends AbstractAction {
                 hasproductIdentifier = false;
             }
         } catch (IOException e) {
-            throw new MotuException(e);
+            throw new MotuException(ErrorType.SYSTEM, e);
         }
 
         return hasproductIdentifier;
@@ -213,7 +219,7 @@ public abstract class AbstractProductInfoAction extends AbstractAction {
         try {
             xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendar);
         } catch (DatatypeConfigurationException e) {
-            throw new MotuException("ERROR in dateToXMLGregorianCalendar", e);
+            throw new MotuException(ErrorType.INVALID_DATE, "ERROR in dateToXMLGregorianCalendar", e);
         }
         return xmlGregorianCalendar;
     }

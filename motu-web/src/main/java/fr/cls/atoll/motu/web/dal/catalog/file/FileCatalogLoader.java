@@ -15,6 +15,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.vfs2.FileObject;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.library.inventory.Access;
 import fr.cls.atoll.motu.library.inventory.CatalogOLA;
@@ -113,6 +114,7 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
                 stringBuffer.append("\n");
             }
             throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
                     String.format("ERROR - CatalogOLA file '%s' is not valid - See errors below:\n%s", xmlUri, stringBuffer.toString()));
         }
 
@@ -123,11 +125,11 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             catalogOLA = (CatalogOLA) unmarshaller.unmarshal(in);
         } catch (Exception e) {
-            throw new MotuException("Error in getCatalogOLA", e);
+            throw new MotuException(ErrorType.LOADING_CATALOG, "Error in getCatalogOLA", e);
         }
 
         if (catalogOLA == null) {
-            throw new MotuException("Unable to load Catalog OLA (CatalogOLA is null)");
+            throw new MotuException(ErrorType.LOADING_CATALOG, "Unable to load Catalog OLA (CatalogOLA is null)");
         }
 
         try {
@@ -254,7 +256,7 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
     public static Inventory getInventoryOLA(String xmlUri) throws MotuException {
 
         if (StringUtils.isNullOrEmpty(xmlUri)) {
-            throw new MotuException("ERROR - Organizer#getInventoryOLA - Inventory  url '%s' is null or empty");
+            throw new MotuException(ErrorType.LOADING_CATALOG, "ERROR - Organizer#getInventoryOLA - Inventory  url '%s' is null or empty");
         }
 
         Inventory inventoryOLA = null;
@@ -267,6 +269,7 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
                 stringBuffer.append("\n");
             }
             throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
                     String.format("ERROR - Inventory file '%s' is not valid - See errors below:\n%s", xmlUri, stringBuffer.toString()));
         }
 
@@ -277,11 +280,11 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             inventoryOLA = (Inventory) unmarshaller.unmarshal(in);
         } catch (Exception e) {
-            throw new MotuException("Error in getInventoryOLA", e);
+            throw new MotuException(ErrorType.LOADING_CATALOG, "Error in getInventoryOLA", e);
         }
 
         if (inventoryOLA == null) {
-            throw new MotuException("Unable to load Inventory (inventoryOLA is null)");
+            throw new MotuException(ErrorType.LOADING_CATALOG, "Unable to load Inventory (inventoryOLA is null)");
         }
 
         try {
@@ -306,13 +309,16 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
         InputStream inSchema = getUriAsInputStream(INVENTORY_CONFIG_SCHEMA);
         if (inSchema == null) {
             throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
                     String.format("ERROR in Organiser.validateInventoryOLA - InventoryOLA  schema ('%s') not found:", INVENTORY_CONFIG_SCHEMA));
         }
 
         InputStream inXml = getUriAsInputStream(xmlUri);
 
         if (inXml == null) {
-            throw new MotuException(String.format("ERROR in Organiser.validateInventoryOLA - InventoryOLA  xml ('%s') not found:", xmlUri));
+            throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
+                    String.format("ERROR in Organiser.validateInventoryOLA - InventoryOLA  xml ('%s') not found:", xmlUri));
         }
 
         XMLErrorHandler errorHandler = XMLUtils.validateXML(inSchema, inXml);
@@ -324,7 +330,9 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
         }
 
         if (errorHandler == null) {
-            throw new MotuException("ERROR in Organiser.validateInventoryOLA - InventoryOLA schema : XMLErrorHandler is null");
+            throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
+                    "ERROR in Organiser.validateInventoryOLA - InventoryOLA schema : XMLErrorHandler is null");
         }
         return errorHandler.getErrors();
 
@@ -351,7 +359,7 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
                 }
             }
         } catch (IOException e) {
-            throw new MotuException(String.format("'%s' uri file has not be found", uri), e);
+            throw new MotuException(ErrorType.LOADING_CATALOG, String.format("'%s' uri file has not be found", uri), e);
         }
         return in;
     }
@@ -427,6 +435,7 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
 
         } catch (URISyntaxException e) {
             throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
                     String.format("Invalid URI '%s' in inventory product '%s' at '%s.urlPath' tag.attribute",
                                   accessUri,
                                   productMetaData.getProductId(),
@@ -453,7 +462,7 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
         ProductMetaData productMetaData = product.getProductMetaData();
 
         if (product.getProductMetaData() == null) {
-            throw new MotuException("Error in loadInventoryGlobalMetaData - Unable to load - productMetaData is null");
+            throw new MotuException(ErrorType.LOADING_CATALOG, "Error in loadInventoryGlobalMetaData - Unable to load - productMetaData is null");
         }
 
         productMetaData.setProductId(inventoryOLA.getResource().getUrn().toString());
@@ -516,19 +525,24 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
         InputStream inSchema = getUriAsInputStream(CATALOG_CONFIG_SCHEMA);
         if (inSchema == null) {
             throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
                     String.format("ERROR in Organiser.validateInventoryOLA - CatalogOLA  schema ('%s') not found:", CATALOG_CONFIG_SCHEMA));
         }
 
         InputStream inXml = getUriAsInputStream(xmlUri);
 
         if (inXml == null) {
-            throw new MotuException(String.format("ERROR in Organiser.validateInventoryOLA - CatalogOLA  xml ('%s') not found:", xmlUri));
+            throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
+                    String.format("ERROR in Organiser.validateInventoryOLA - CatalogOLA  xml ('%s') not found:", xmlUri));
         }
 
         XMLErrorHandler errorHandler = XMLUtils.validateXML(inSchema, inXml);
 
         if (errorHandler == null) {
-            throw new MotuException("ERROR in Organiser.validateInventoryOLA - CatalogOLA schema : XMLErrorHandler is null");
+            throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
+                    "ERROR in Organiser.validateInventoryOLA - CatalogOLA schema : XMLErrorHandler is null");
         }
         return errorHandler.getErrors();
 

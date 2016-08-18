@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
@@ -36,7 +37,6 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.DatasetGrid;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 import ucar.ma2.Array;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 
 /**
@@ -69,7 +69,7 @@ public class DALRequestManager implements IDALRequestManager {
                 downloadWithOpenDap(p, dataOutputFormat);
             }
         } catch (Exception e) {
-            throw new MotuException("Error while downloading product ncss=" + ncssStatus, e);
+            throw new MotuException(ErrorType.SYSTEM, "Error while downloading product ncss=" + ncssStatus, e);
         }
 
         // Product product = getProductInformation(locationData);
@@ -96,12 +96,6 @@ public class DALRequestManager implements IDALRequestManager {
             throws MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, IOException, InterruptedException {
 
         List<CoordinateAxis> coordinateAxisList = p.getNetCdfReaderDataset().getCoordinateAxes();
-        for (CoordinateAxis coordinateAxis : coordinateAxisList) {
-            if (coordinateAxis.getAxisType() != null && coordinateAxis.getAxisType().name().equals(AxisType.Lon.name())) {
-                System.out.println("Max : " + coordinateAxis.getValidMax());
-                System.out.println("Min : " + coordinateAxis.getValidMin());
-            }
-        }
 
         // Extract criteria collect
         ExtractCriteriaDatetime time = p.getCriteriaDateTime();
@@ -164,9 +158,9 @@ public class DALRequestManager implements IDALRequestManager {
             new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getErrorStream())), LOGGER, Type.ERROR)).start();
 
             int exitValue = process.waitFor();
-            
-            if(exitValue != 0){
-                throw new MotuException("The generation of the NC file failled. See the log for more information.");
+
+            if (exitValue != 0) {
+                throw new MotuException(ErrorType.SYSTEM, "The generation of the NC file failled. See the log for more information.");
             }
 
             // Cleanup directory and intermediate files (right away once concat)

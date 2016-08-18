@@ -13,6 +13,7 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.PropertiesUtilities;
 import fr.cls.atoll.motu.web.dal.config.stdname.StdNameReader;
@@ -44,7 +45,7 @@ public class DALConfigManager implements IDALConfigManager {
         try {
             initMotuConfig();
         } catch (FileNotFoundException e) {
-            throw new MotuException("Error while initializing Motu configuration: ", e);
+            throw new MotuException(ErrorType.MOTU_CONFIG, "Error while initializing Motu configuration: ", e);
         }
 
         initStdNames();
@@ -109,11 +110,11 @@ public class DALConfigManager implements IDALConfigManager {
             motuConfig.setDownloadHttpUrl(PropertiesUtilities.replaceSystemVariable(motuConfig.getDownloadHttpUrl()));
             motuConfig.setHttpDocumentRoot(PropertiesUtilities.replaceSystemVariable(motuConfig.getHttpDocumentRoot()));
         } catch (Exception e) {
-            throw new MotuException("Error in getMotuConfigInstance", e);
+            throw new MotuException(ErrorType.SYSTEM, "Error in getMotuConfigInstance", e);
         }
 
         if (motuConfig == null) {
-            throw new MotuException("Unable to load Motu configuration (motuConfig is null)");
+            throw new MotuException(ErrorType.MOTU_CONFIG, "Unable to load Motu configuration (motuConfig is null)");
         }
 
         try {

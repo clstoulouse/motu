@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
@@ -228,6 +229,7 @@ public class BLLRequestManager implements IBLLRequestManager {
                 userIdMsg = " for user: " + userId_;
             }
             throw new MotuException(
+                    ErrorType.EXCEEDING_QUEUE_CAPACITY,
                     "Maximum number of running request reached" + userIdMsg + ", x"
                             + (userId_ == null
                                     ? BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig().getMaxPoolAnonymous()
@@ -333,7 +335,7 @@ public class BLLRequestManager implements IBLLRequestManager {
             product.updateCriteria(criteria);
         } catch (MotuNotImplementedException | MotuInvalidDateException | MotuInvalidDepthException | MotuInvalidLatitudeException
                 | MotuInvalidLongitudeException e) {
-            throw new MotuException(e);
+            throw new MotuException(ErrorType.SYSTEM, e);
         }
     }
 

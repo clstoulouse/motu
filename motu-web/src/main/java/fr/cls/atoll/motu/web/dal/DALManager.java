@@ -5,6 +5,8 @@ import fr.cls.atoll.motu.web.dal.catalog.DALCatalogManager;
 import fr.cls.atoll.motu.web.dal.catalog.IDALCatalogManager;
 import fr.cls.atoll.motu.web.dal.config.DALConfigManager;
 import fr.cls.atoll.motu.web.dal.config.IDALConfigManager;
+import fr.cls.atoll.motu.web.dal.messageserror.DALMessagesErrorManager;
+import fr.cls.atoll.motu.web.dal.messageserror.IDALMessagesErrorManager;
 import fr.cls.atoll.motu.web.dal.request.DALRequestManager;
 import fr.cls.atoll.motu.web.dal.request.IDALRequestManager;
 import fr.cls.atoll.motu.web.dal.users.DALUserManager;
@@ -28,6 +30,7 @@ public class DALManager implements IDALManager {
     private IDALRequestManager dalRequestManager;
     private IDALUserManager dalUserManager;
     private IDALCatalogManager dalCatalogManager;
+    private IDALMessagesErrorManager dalMessagesErrorManager;
 
     public static IDALManager getInstance() {
         if (s_instance == null) {
@@ -41,12 +44,14 @@ public class DALManager implements IDALManager {
         dalRequestManager = new DALRequestManager();
         dalUserManager = new DALUserManager();
         dalCatalogManager = new DALCatalogManager();
+        dalMessagesErrorManager = new DALMessagesErrorManager();
     }
 
     @Override
     public void init() throws MotuException {
         dalConfigManager.init();
         dalCatalogManager.init();
+        dalMessagesErrorManager.init();
     }
 
     @Override
@@ -69,6 +74,12 @@ public class DALManager implements IDALManager {
     @Override
     public IDALCatalogManager getCatalogManager() {
         return dalCatalogManager;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public IDALMessagesErrorManager getMessagesErrorManager() {
+        return dalMessagesErrorManager;
     }
 
 }

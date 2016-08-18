@@ -3,6 +3,7 @@ package fr.cls.atoll.motu.web.dal;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.catalog.IDALCatalogManager;
 import fr.cls.atoll.motu.web.dal.config.IDALConfigManager;
+import fr.cls.atoll.motu.web.dal.messageserror.IDALMessagesErrorManager;
 import fr.cls.atoll.motu.web.dal.request.IDALRequestManager;
 import fr.cls.atoll.motu.web.dal.users.IDALUserManager;
 
@@ -52,5 +53,12 @@ public interface IDALManager {
      * @return
      */
     IDALCatalogManager getCatalogManager();
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    IDALMessagesErrorManager getMessagesErrorManager();
 
 }

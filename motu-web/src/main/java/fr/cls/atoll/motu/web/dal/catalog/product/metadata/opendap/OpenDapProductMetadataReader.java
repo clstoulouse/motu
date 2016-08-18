@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
@@ -71,7 +72,7 @@ public class OpenDapProductMetadataReader {
             }
 
         } catch (Exception e) {
-            throw new MotuException("Error in loadOpendapGlobalMetaData", e);
+            throw new MotuException(ErrorType.LOADING_CATALOG, "Error in loadOpendapGlobalMetaData", e);
         }
 
         // Gets global attribute 'FileType'.
@@ -80,7 +81,7 @@ public class OpenDapProductMetadataReader {
             String fileType = netCdfReader.getStringValue("filetype");
             productMetaData.setProductCategory(fileType);
         } catch (NetCdfAttributeException e) {
-            throw new MotuException("Error in loadOpendapGlobalMetaData", e);
+            throw new MotuException(ErrorType.LOADING_CATALOG, "Error in loadOpendapGlobalMetaData", e);
         } catch (NetCdfAttributeNotFoundException e) {
             // Do nothing
         }
@@ -137,32 +138,13 @@ public class OpenDapProductMetadataReader {
                     }
                 }
             }
-            // Don't get cached variables
-            // if (variable.isCaching()) {
-            // continue;
-            // }
 
             boolean isUnusedVar = false;
             String[] unusedVariables = null;
-            // if (this.isProductAlongTrack()) {
-            // unusedVariables = UNUSED_VARIABLES_ATP;
-            // } else {
             unusedVariables = UNUSED_VARIABLES_GRIDS;
-            // }
             for (String unused : unusedVariables) {
                 if (variable.getName().equalsIgnoreCase(unused)) {
                     isUnusedVar = true;
-                    // try {
-                    // Array grid = readVariable(variable);
-                    // int rank = grid.getRank();
-                    // int[] shape = grid.getShape();
-                    // long size = grid.getSize();
-                    // System.out.println(rank);
-                    // System.out.println(shape);
-                    // System.out.println(size);
-                    // } catch (MotuExceptionBase e) {
-                    // System.out.println(e.notifyException());
-                    // }
                     break;
                 }
             }

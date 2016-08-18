@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 
 /**
@@ -147,6 +148,7 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
         IQueueJob qj = (IQueueJob) r;
         if (t != null) {
             MotuException e = new MotuException(
+                    ErrorType.SYSTEM,
                     String.format("An error occurs during extraction (detected from afterExecute): user id: '%s' - request parameters '%s'",
                                   qj.getExtractionParameters().getUserId(),
                                   qj.getExtractionParameters().toString()),

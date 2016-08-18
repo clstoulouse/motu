@@ -34,9 +34,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.web.bll.exception.MotuExceedingQueueCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidQueuePriorityException;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.log.RunnableExtraction;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
 
@@ -92,7 +90,7 @@ public class QueueManagement {
 
     private void checkMaxQueueSize() throws MotuException {
         if (isMaxQueueSizeReached()) {
-            throw new MotuException("Max queue size limit reached: " + priorityBlockingQueue.size());
+            throw new MotuException(ErrorType.EXCEEDING_QUEUE_DATA_CAPACITY, "Max queue size limit reached: " + priorityBlockingQueue.size());
         }
     }
 
@@ -102,8 +100,6 @@ public class QueueManagement {
      * @param runnableExtraction the runnable extraction
      * 
      * @throws MotuException the motu exception
-     * @throws MotuExceedingQueueCapacityException the motu exceeding queue capacity exception
-     * @throws MotuInvalidQueuePriorityException the motu invalid queue priority exception
      */
     public void execute(IQueueJob runnableExtraction) throws MotuException {
         // If queue is full, throws new MotuExceedingQueueCapacityException
@@ -114,7 +110,7 @@ public class QueueManagement {
                     : runnableExtraction.getExtractionParameters().getUserId());
             threadPoolExecutor.execute(runnableExtraction);
         } catch (RejectedExecutionException e) {
-            throw new MotuException("ERROR Execute request", e);
+            throw new MotuException(ErrorType.SYSTEM, "ERROR Execute request", e);
 
         }
     }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 
@@ -38,8 +39,8 @@ public class PingAction extends AbstractAction {
      * 
      * @param actionName_
      */
-    public PingAction(HttpServletRequest request, HttpServletResponse response) {
-        super(ACTION_NAME, request, response);
+    public PingAction(String actionCode_, HttpServletRequest request, HttpServletResponse response) {
+        super(ACTION_NAME, actionCode_, request, response);
     }
 
     @Override
@@ -48,7 +49,7 @@ public class PingAction extends AbstractAction {
         try {
             getResponse().getWriter().write("OK - response action=ping");
         } catch (IOException e) {
-            throw new MotuException("Error while writing response", e);
+            throw new MotuException(ErrorType.SYSTEM, "Error while writing response", e);
         }
     }
 

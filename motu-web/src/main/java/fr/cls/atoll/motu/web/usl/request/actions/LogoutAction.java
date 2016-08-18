@@ -32,8 +32,8 @@ public class LogoutAction extends AbstractAction {
      * @param response The response object used to return the response of the request
      * @param session The session object of the request
      */
-    public LogoutAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        super(ACTION_NAME, request, response, session);
+    public LogoutAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        super(ACTION_NAME, actionCode_, request, response, session);
     }
 
     /** {@inheritDoc} */

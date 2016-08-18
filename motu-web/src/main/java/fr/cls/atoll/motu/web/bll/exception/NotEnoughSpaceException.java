@@ -1,5 +1,7 @@
 package fr.cls.atoll.motu.web.bll.exception;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+
 /**
  * <br>
  * <br>
@@ -12,13 +14,15 @@ package fr.cls.atoll.motu.web.bll.exception;
  */
 public class NotEnoughSpaceException extends MotuException {
 
+    private static final long serialVersionUID = -1;
+
     /**
      * Constructeur.
      * 
      * @param message
      */
     public NotEnoughSpaceException(String message) {
-        super(message);
+        super(ErrorType.SYSTEM, message);
     }
 
 }

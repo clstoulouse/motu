@@ -37,6 +37,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateRangeException;
@@ -129,12 +130,6 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
 
         GridDataset gds = new GridDataset(product.getNetCdfReaderDataset());
 
-        // List <Variable> listVars = gds.getDataVariables();
-        // for (Variable v : listVars) {
-        // System.out.print("GDS Var:\t");
-        // System.out.print(v.getName());
-        // System.out.println(v.isCaching());
-        // }
         NetCdfWriter netCdfWriter = new NetCdfWriter();
 
         netCdfWriter.resetAmountDataSize();
@@ -143,10 +138,6 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
 
             GeoGrid geoGrid = gds.findGridByName(varData.getVarName());
             if (geoGrid == null) {
-                // throw new MotuNotImplementedException(String
-                // .format("Variable %s in not geo-referenced - Non-georeferenced data is not implemented
-                // (method: DatasetGrid.extractData)",
-                // varData.getVarName()));
                 continue;
             }
             List<GeoGrid> listGeoGridSubset = new ArrayList<GeoGrid>();
@@ -187,7 +178,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
                     // geoGridSubset = geoGrid.makeSubset(null, null, tRange, zRange, yxRange[0], yxRange[1]);
                 } catch (InvalidRangeException e) {
 
-                    throw new MotuException("Error in subsetting geo grid", e);
+                    throw new MotuException(ErrorType.BAD_PARAMETERS, "Error in subsetting geo grid", e);
                 }
             }
             // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get somme information
@@ -223,7 +214,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
         }
 
         if (product == null) {
-            throw new MotuException("Error in DatasetGrid - extractData product have not nbeen set (= null)");
+            throw new MotuException(ErrorType.SYSTEM, "Error in DatasetGrid - extractData product have not been set (= null)");
         }
 
         switch (dataOutputFormat) {
@@ -293,13 +284,6 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
         List<Attribute> globalFixedAttributes = initializeNetCdfFixedGlobalAttributes();
         List<Attribute> globalDynAttributes = initializeNetCdfDynGlobalAttributes();
 
-        // List <Variable> listVars = gds.getDataVariables();
-        // for (Variable v : listVars) {
-        // System.out.print("GDS Var:\t");
-        // System.out.print(v.getName());
-        // System.out.println(v.isCaching());
-        // }
-
         // NetCdfWriter netCdfWriter = new NetCdfWriter(product.getExtractLocationData(), true);
         NetCdfWriter netCdfWriter = new NetCdfWriter(product.getExtractLocationDataTemp(), true);
 
@@ -327,21 +311,11 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
             addGeoXYNeededVariables();
 
         }
-        // List<CoordinateAxis> listVariableXSubset = new ArrayList<CoordinateAxis>();
-        // List<CoordinateAxis> listVariableYSubset = new ArrayList<CoordinateAxis>();
-        // Map<String, Range> mapXRange = new HashMap<String, Range>();
-        // Map<String, Range> mapYRange = new HashMap<String, Range>();
-        //
-        // Map<String, List<Section>> mapVarOrgRanges = new HashMap<String, List<Section>>();
 
         for (VarData varData : variablesValues()) {
 
             GeoGrid geoGrid = gds.findGridByName(varData.getVarName());
             if (geoGrid == null) {
-                // throw new MotuNotImplementedException(String
-                // .format("Variable %s in not geo-referenced - Non-georeferenced data is not implemented
-                // (method: DatasetGrid.extractData)",
-                // varData.getVarName()));
                 continue;
             }
             List<GeoGrid> listGeoGridSubset = new ArrayList<GeoGrid>();
@@ -403,50 +377,16 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
                 } catch (InvalidRangeException e) {
                     LOG.error("extractDataIntoNetCdf()", e);
 
-                    throw new MotuException("Error in subsetting geo grid", e);
+                    throw new MotuException(ErrorType.BAD_PARAMETERS, "Error in subsetting geo grid", e);
                 }
             }
-            // for (GeoGrid g : listGeoGridSubset) {
-            // Variable v = g.getVariable();
-            // int[] sh = g.getShape();
-            // StringBuffer stringBuffer = new StringBuffer();
-            // for (int s : sh) {
-            // stringBuffer.append(s);
-            // stringBuffer.append(",");
-            // }
-            //
-            // Section section = v.getShapeAsSection();
-            //
-            // int p = 1;
-            // for (Range r : v.getRanges()) {
-            // p = p * r.length();
-            // }
-            // System.out.println(v.getName() + ":" + stringBuffer.toString() + " / " +
-            // v.getRanges().toString() + " / " + v.getRanges().size()
-            // + " / " + p + " / " + section);
-            // // Array array = v.read();
-            // // double[] vals = (double[]) array.get1DJavaArray(Double.class);
-            // // for (double val : vals) {
-            // // System.out.print(val);
-            // // System.out.print(" ");
-            // // }
-            // }
             if (isGeoXY) {
-                // //prepareLatLonWriting(listGeoGridSubset);
-                // prepareXYWriting();
-                //
-                // netCdfWriter.writeVariables(listVariableXSubset, mapXRange,
-                // product.getNetCdfReader().getOrignalVariables());
-                // netCdfWriter.writeVariables(listVariableYSubset, mapYRange,
-                // product.getNetCdfReader().getOrignalVariables());
-
                 // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get some information
                 // (lost
                 // in subsetting - See bug below) about the variable of the GeoGrid
                 netCdfWriter.writeVariablesWithGeoXY(listGeoGridSubset, geoGrid, gds, product.getNetCdfReader().getOrignalVariables());
 
             } else {
-
                 // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get some information
                 // (lost
                 // in subsetting - See bug below) about the variable of the GeoGrid
@@ -512,10 +452,14 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
         }
 
         if (xaxis.getAxisType() == null) {
-            throw new MotuException(String.format("ERROR in DatasetGrid#prepareLatLonWriting - axis type for '%s' axis is null", xaxis.getName()));
+            throw new MotuException(
+                    ErrorType.INVALID_LONGITUDE,
+                    String.format("ERROR in DatasetGrid#prepareLatLonWriting - axis type for '%s' axis is null", xaxis.getName()));
         }
         if (yaxis.getAxisType() == null) {
-            throw new MotuException(String.format("ERROR in DatasetGrid#prepareLatLonWriting - axis type for '%s' axis is null", yaxis.getName()));
+            throw new MotuException(
+                    ErrorType.INVALID_LATITUDE,
+                    String.format("ERROR in DatasetGrid#prepareLatLonWriting - axis type for '%s' axis is null", yaxis.getName()));
         }
 
         String xName = xaxis.getName();
@@ -565,16 +509,6 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
 
         }
 
-        // for (List<Range> yxRanges : listYXRanges) {
-        // // GridDatatype geoGridSubset = null;
-        // Range yRange = yxRanges.get(0);
-        // Range xRange = yxRanges.get(1);
-        // System.out.print(yRange.toString());
-        // System.out.print(" ");
-        // System.out.print(xRange.toString());
-        // System.out.println(" ");
-        // }
-
         RangeComparator rangeComparator = new RangeComparator();
 
         listDistinctXRange = new ArrayList<Range>(mapXRange.values());
@@ -613,30 +547,6 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
             Section section = new Section(lr);
             listVarOrgRanges.add(section);
         }
-
-        // for (Range r : listDistinctXRange) {
-        // // GridDatatype geoGridSubset = null;
-        // System.out.print(r.toString());
-        // System.out.println(" ");
-        // }
-        // for (Range r : listDistinctYRange) {
-        // // GridDatatype geoGridSubset = null;
-        // System.out.print(r.toString());
-        // System.out.println(" ");
-        // }
-        //
-        // for (Entry<String, List<Section>> entry : mapVarOrgRanges.entrySet()) {
-        // String key = entry.getKey();
-        // List<Section> sections = entry.getValue();
-        // System.out.print(key);
-        // System.out.print(" ");
-        // for (Section section : sections) {
-        // System.out.print(section);
-        // System.out.print(" / ");
-        // }
-        // System.out.println(" ");
-        // }
-
     }
 
     /**
@@ -814,7 +724,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
             }
 
         } catch (InvalidRangeException e) {
-            throw new MotuException("ERROR in DatasetGrid#addRange.", e);
+            throw new MotuException(ErrorType.BAD_PARAMETERS, "ERROR in DatasetGrid#addRange.", e);
         }
 
         if (!rangeIsAdded) {
@@ -837,7 +747,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
     public static CoordinateAxis subset(CoordinateAxis axis, Range range) throws MotuException, MotuNotImplementedException {
 
         if (axis == null) {
-            throw new MotuException("ERROR - in DatasetGrid#subset axis parameter is null");
+            throw new MotuException(ErrorType.INVALID_LAT_LON_RANGE, "ERROR - in DatasetGrid#subset axis parameter is null");
         }
 
         if (!(axis instanceof CoordinateAxis1D)) {
@@ -865,7 +775,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
         try {
             v_section = (VariableDS) axis.section(rangesList);
         } catch (InvalidRangeException e) {
-            throw new MotuException(String.format("ERROR - in DatasetGrid#subset with axis name '%s'", axis.getName()), e);
+            throw new MotuException(ErrorType.BAD_PARAMETERS, String.format("ERROR - in DatasetGrid#subset with axis name '%s'", axis.getName()), e);
         }
         List<Dimension> dims = v_section.getDimensions();
         for (Dimension dim : dims) {
@@ -874,6 +784,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
 
         if (!(v_section instanceof CoordinateAxis)) {
             throw new MotuException(
+                    ErrorType.INVALID_LAT_LON_RANGE,
                     String.format("ERROR - in DatasetGrid#subset: unexpected result after subsetting axis name '%s': new variable is not a 'CoordinateAxis' instance but a '%s'",
                                   axis.getName(),
                                   axis.getClass().getName()));
@@ -1021,6 +932,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
 
             if (listYXRanges.size() != rangesLonValue.size()) {
                 throw new MotuException(
+                        ErrorType.INCONSISTENCY,
                         String.format("Inconsistency between Longitude ranges list (%d items) and Longitude values list (%d items) - (%s)",
                                       listYXRanges.size(),
                                       rangesLonValue.size(),
@@ -1029,6 +941,7 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
 
             if (listYXRanges.size() != rangesLatValue.size()) {
                 throw new MotuException(
+                        ErrorType.INCONSISTENCY,
                         String.format("Inconsistency between Latitude ranges list (%d items) and Latitude values list (%d items) - (%s)",
                                       listYXRanges.size(),
                                       rangesLatValue.size(),
@@ -1043,16 +956,14 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
                 minMaxLon = extractCriteriaLatLon.getMinMaxXValue2D();
                 if (minMaxLat == null) {
                     throw new MotuException(
+                            ErrorType.INVALID_LATITUDE,
                             "Error in DatasetGrid#getAdjacentYXRange: Latitude/Longitude axes are 2D and min/max latitude values to extract are null");
                 }
                 if (minMaxLon == null) {
                     throw new MotuException(
+                            ErrorType.INVALID_LATITUDE,
                             "Error in DatasetGrid#getAdjacentYXRange: Latitude/Longitude axes are 2D and min/max longitude values to extract are null");
                 }
-                // System.out.println("extractCriteriaLatLon.minXValue2D");
-                // System.out.println(extractCriteriaLatLon.getMinMaxXValue2D().min);
-                // System.out.println("extractCriteriaLatLon.maxXValue2D");
-                // System.out.println(extractCriteriaLatLon.getMinMaxXValue2D().max);
                 yRangeValue[0] = minMaxLat.min;
                 yRangeValue[1] = minMaxLat.max;
 

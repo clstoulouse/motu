@@ -19,6 +19,8 @@ import fr.cls.atoll.motu.api.utils.JAXBWriter;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuMarshallException;
+import fr.cls.atoll.motu.web.bll.messageserror.BLLMessagesErrorManager;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 
@@ -44,8 +46,8 @@ public class DeleteAction extends AbstractAction {
      * @param response The response object used to return the response of the request
      * @param session The session object of the request
      */
-    public DeleteAction(HttpServletRequest request_, HttpServletResponse response_, HttpSession session_) {
-        super(ACTION_NAME, request_, response_, session_);
+    public DeleteAction(String actionCode_, HttpServletRequest request_, HttpServletResponse response_, HttpSession session_) {
+        super(ACTION_NAME, actionCode_, request_, response_, session_);
     }
 
     /** {@inheritDoc} */
@@ -102,21 +104,34 @@ public class DeleteAction extends AbstractAction {
             StatusModeResponse statusModeResponse = createStatusModeResponse();
 
             if (hasErrors) {
-                statusModeResponse.setCode(ErrorType.SYSTEM);
-                statusModeResponse.setStatus(StatusModeType.ERROR);
-            } else {
-                statusModeResponse.setCode(ErrorType.OK);
-                statusModeResponse.setStatus(StatusModeType.DONE);
-            }
+                try {
+                    statusModeResponse.setCode(StringUtils.getErrorCode(getActionCode(), ErrorType.SYSTEM));
+                    statusModeResponse.setStatus(StatusModeType.ERROR);
+                    statusModeResponse.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(ErrorType.SYSTEM));
+                    LOGGER.error(StringUtils.getLogMessage(getActionCode(), ErrorType.SYSTEM, messages.toString()));
+                } catch (MotuException e1) {
+                    statusModeResponse.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+                    statusModeResponse.setCode(StringUtils.getErrorCode(getActionCode(), BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
+                    LOGGER.error(StringUtils.getLogMessage(getActionCode(), BLLMessagesErrorManager.SYSTEM_ERROR_CODE, e1.getMessage()), e1);
+                }
 
-            statusModeResponse.setMsg(messages.toString());
+            } else {
+                statusModeResponse.setCode(StringUtils.getErrorCode(getActionCode(), ErrorType.OK));
+                statusModeResponse.setStatus(StatusModeType.DONE);
+                statusModeResponse.setMsg(messages.toString());
+            }
 
             marshallStatusModeResponse(statusModeResponse, writer);
 
         } catch (Exception e) {
             try {
                 marshallStatusModeResponse(e, writer);
+            } catch (MotuException e1) {
+                LOGGER.error(e1.getMessage());
+                LOGGER.error(e1);
             } catch (MotuMarshallException e2) {
+                LOGGER.error(e2.getMessage());
+                LOGGER.error(e2);
             }
         }
     }
@@ -153,8 +168,9 @@ public class DeleteAction extends AbstractAction {
      * @param writer the writer
      * 
      * @throws MotuMarshallException the motu marshall exception
+     * @throws MotuException
      */
-    public static void marshallStatusModeResponse(Exception ex, Writer writer) throws MotuMarshallException {
+    public void marshallStatusModeResponse(Exception ex, Writer writer) throws MotuMarshallException, MotuException {
 
         if (writer == null) {
             return;
@@ -177,11 +193,13 @@ public class DeleteAction extends AbstractAction {
      * Creates the status mode response.
      * 
      * @return the status mode response
+     * @throws MotuException
      */
-    public static StatusModeResponse createStatusModeResponse() {
+    public StatusModeResponse createStatusModeResponse() throws MotuException {
         ObjectFactory objectFactory = new ObjectFactory();
         StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
-        setError(statusModeResponse, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        setError(statusModeResponse,
+                 new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
         return statusModeResponse;
     }
 
@@ -190,11 +208,19 @@ public class DeleteAction extends AbstractAction {
      * 
      * @param e the e
      * @param statusModeResponse the status mode response
+     * @throws MotuException
      */
-    public static void setError(StatusModeResponse statusModeResponse, Exception e) {
-        ErrorType errorType = ErrorType.SYSTEM;
-        statusModeResponse.setStatus(StatusModeType.ERROR);
-        statusModeResponse.setMsg(e.getMessage());
-        statusModeResponse.setCode(errorType);
+    public void setError(StatusModeResponse statusModeResponse, Exception e) throws MotuException {
+        try {
+            ErrorType errorType = ErrorType.SYSTEM;
+            statusModeResponse.setStatus(StatusModeType.ERROR);
+            statusModeResponse.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType));
+            statusModeResponse.setCode(StringUtils.getErrorCode(getActionCode(), errorType));
+            LOGGER.error(StringUtils.getLogMessage(getActionCode(), errorType, e.getMessage()));
+        } catch (MotuException e1) {
+            statusModeResponse.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            statusModeResponse.setCode(StringUtils.getErrorCode(getActionCode(), BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
+            LOGGER.error(StringUtils.getLogMessage(getActionCode(), BLLMessagesErrorManager.SYSTEM_ERROR_CODE, e1.getMessage()), e1);
+        }
     }
 }

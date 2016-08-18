@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.ProductMetadataInfo;
 import fr.cls.atoll.motu.api.utils.JAXBWriter;
 import fr.cls.atoll.motu.web.bll.BLLManager;
@@ -53,8 +54,8 @@ public class DescribeProductAction extends AbstractProductInfoAction {
      * @param request_
      * @param response_
      */
-    public DescribeProductAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        super(ACTION_NAME, request, response, session);
+    public DescribeProductAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        super(ACTION_NAME, actionCode_, request, response, session);
         xmlFileParameterValidator = new XMLFileParameterValidator(
                 MotuRequestParametersConstant.PARAM_XML_FILE,
                 CommonHTTPParameters.getXmlFileFromRequest(getRequest()),
@@ -88,7 +89,7 @@ public class DescribeProductAction extends AbstractProductInfoAction {
 
                 getResponse().setContentType(null);
             } catch (MotuExceptionBase | JAXBException | IOException e) {
-                throw new MotuException(e);
+                throw new MotuException(ErrorType.SYSTEM, e);
             }
         }
     }
@@ -144,7 +145,7 @@ public class DescribeProductAction extends AbstractProductInfoAction {
                 hasproductIdentifier = false;
             }
         } catch (IOException e) {
-            throw new MotuException(e);
+            throw new MotuException(ErrorType.SYSTEM, e);
         }
 
         return hasproductIdentifier;

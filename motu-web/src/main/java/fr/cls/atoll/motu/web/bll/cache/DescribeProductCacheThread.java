@@ -33,6 +33,8 @@ import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
+import fr.cls.atoll.motu.web.bll.messageserror.BLLMessagesErrorManager;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataFile;
@@ -132,8 +134,9 @@ public class DescribeProductCacheThread extends Thread {
         productMetadataInfo.setTimeCoverage(null);
         productMetadataInfo.setVariables(null);
         productMetadataInfo.setVariablesVocabulary(null);
-        ExceptionUtils.setError(productMetadataInfo,
-                                new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        ExceptionUtils
+                .setError(productMetadataInfo,
+                          new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
         return productMetadataInfo;
 
     }
@@ -176,7 +179,7 @@ public class DescribeProductCacheThread extends Thread {
         productMetadataInfo.setAvailableDepths(initAvailableDepths(product));
         productMetadataInfo.setDataGeospatialCoverage(initDataGeospatialCoverage(product));
 
-        productMetadataInfo.setCode(ErrorType.OK);
+        productMetadataInfo.setCode(String.valueOf(ErrorType.OK));
         productMetadataInfo.setMsg(ErrorType.OK.toString());
 
         return productMetadataInfo;
@@ -192,8 +195,9 @@ public class DescribeProductCacheThread extends Thread {
 
         DataGeospatialCoverage dataGeospatialCoverage = objectFactory.createDataGeospatialCoverage();
 
-        ExceptionUtils.setError(dataGeospatialCoverage,
-                                new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        ExceptionUtils
+                .setError(dataGeospatialCoverage,
+                          new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
         return dataGeospatialCoverage;
 
     }
@@ -218,7 +222,7 @@ public class DescribeProductCacheThread extends Thread {
         Collection<CoordinateAxis> coordinateAxes = productMetaData.coordinateAxesValues();
 
         if (coordinateAxes == null) {
-            dataGeospatialCoverage.setCode(ErrorType.OK);
+            dataGeospatialCoverage.setCode(String.valueOf(ErrorType.OK));
             dataGeospatialCoverage.setMsg(ErrorType.OK.toString());
 
             return dataGeospatialCoverage;
@@ -227,7 +231,7 @@ public class DescribeProductCacheThread extends Thread {
         List<Axis> axisList = dataGeospatialCoverage.getAxis();
 
         if (axisList == null) {
-            dataGeospatialCoverage.setCode(ErrorType.OK);
+            dataGeospatialCoverage.setCode(String.valueOf(ErrorType.OK));
             dataGeospatialCoverage.setMsg(ErrorType.OK.toString());
 
             return dataGeospatialCoverage;
@@ -237,7 +241,7 @@ public class DescribeProductCacheThread extends Thread {
             axisList.add(initAxis(coordinateAxis, productMetaData));
         }
 
-        dataGeospatialCoverage.setCode(ErrorType.OK);
+        dataGeospatialCoverage.setCode(String.valueOf(ErrorType.OK));
         dataGeospatialCoverage.setMsg(ErrorType.OK.toString());
 
         return dataGeospatialCoverage;
@@ -278,13 +282,22 @@ public class DescribeProductCacheThread extends Thread {
                 axis.setLower(new BigDecimal(minMax.min));
                 axis.setUpper(new BigDecimal(minMax.max));
             }
-        } catch (Exception e) {
-            axis.setCode(ErrorType.SYSTEM);
-            axis.setMsg("Error while getting geospatial coverage (axes) from TDS dataset: " + e.getMessage() + ". Please, check your dataset");
-        }
 
-        axis.setCode(ErrorType.OK);
-        axis.setMsg(ErrorType.OK.toString());
+            axis.setCode(String.valueOf(ErrorType.OK));
+            axis.setMsg(ErrorType.OK.toString());
+        } catch (Exception e) {
+            try {
+                axis.setCode(String.valueOf(ErrorType.SYSTEM));
+                axis.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(ErrorType.SYSTEM));
+                LOGGER.error(StringUtils.getLogMessage(ErrorType.SYSTEM,
+                                                       "Error while getting geospatial coverage (axes) from TDS dataset: " + e.getMessage()
+                                                               + ". Please, check your dataset"));
+            } catch (MotuException e1) {
+                axis.setCode(String.valueOf(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
+                axis.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+                LOGGER.error(StringUtils.getLogMessage(BLLMessagesErrorManager.SYSTEM_ERROR_CODE, e.getMessage()), e);
+            }
+        }
 
         return axis;
     }
@@ -307,7 +320,9 @@ public class DescribeProductCacheThread extends Thread {
         axis.setStandardName(null);
         axis.setLongName(null);
 
-        ExceptionUtils.setError(axis, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        ExceptionUtils
+                .setError(axis,
+                          new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
         return axis;
 
     }
@@ -324,8 +339,9 @@ public class DescribeProductCacheThread extends Thread {
 
         availableDepths.setValue(null);
 
-        ExceptionUtils.setError(availableDepths,
-                                new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        ExceptionUtils
+                .setError(availableDepths,
+                          new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
         return availableDepths;
 
     }
@@ -374,7 +390,7 @@ public class DescribeProductCacheThread extends Thread {
 
         availableDepths.setValue(stringBuffer.toString());
 
-        availableDepths.setCode(ErrorType.OK);
+        availableDepths.setCode(String.valueOf(ErrorType.OK));
         availableDepths.setMsg(ErrorType.OK.toString());
 
         return availableDepths;
@@ -392,8 +408,9 @@ public class DescribeProductCacheThread extends Thread {
 
         availableTimes.setValue(null);
 
-        ExceptionUtils.setError(availableTimes,
-                                new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        ExceptionUtils
+                .setError(availableTimes,
+                          new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
         return availableTimes;
 
     }
@@ -451,7 +468,7 @@ public class DescribeProductCacheThread extends Thread {
         }
 
         availableTimes.setValue(stringBuffer.toString());
-        availableTimes.setCode(ErrorType.OK);
+        availableTimes.setCode(String.valueOf(ErrorType.OK));
         availableTimes.setMsg(ErrorType.OK.toString());
 
         return availableTimes;
@@ -476,7 +493,7 @@ public class DescribeProductCacheThread extends Thread {
         Collection<ParameterMetaData> parameterMetaDataList = productMetaData.parameterMetaDatasValues();
 
         if (parameterMetaDataList == null) {
-            variables.setCode(ErrorType.OK);
+            variables.setCode(String.valueOf(ErrorType.OK));
             variables.setMsg(ErrorType.OK.toString());
             return variables;
         }
@@ -487,7 +504,7 @@ public class DescribeProductCacheThread extends Thread {
             variableList.add(initVariable(parameterMetaData));
         }
 
-        variables.setCode(ErrorType.OK);
+        variables.setCode(String.valueOf(ErrorType.OK));
         variables.setMsg(ErrorType.OK.toString());
 
         return variables;
@@ -503,7 +520,9 @@ public class DescribeProductCacheThread extends Thread {
 
         Variables variables = objectFactory.createVariables();
 
-        ExceptionUtils.setError(variables, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        ExceptionUtils
+                .setError(variables,
+                          new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
         return variables;
 
     }
@@ -530,7 +549,7 @@ public class DescribeProductCacheThread extends Thread {
         variable.setStandardName(parameterMetaData.getStandardName());
         variable.setUnits(parameterMetaData.getUnit());
 
-        variable.setCode(ErrorType.OK);
+        variable.setCode(String.valueOf(ErrorType.OK));
         variable.setMsg(ErrorType.OK.toString());
 
         return variable;
@@ -552,7 +571,9 @@ public class DescribeProductCacheThread extends Thread {
         variable.setStandardName(null);
         variable.setUnits(null);
 
-        ExceptionUtils.setError(variable, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        ExceptionUtils
+                .setError(variable,
+                          new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
         return variable;
 
     }
@@ -594,7 +615,7 @@ public class DescribeProductCacheThread extends Thread {
 
         // timeCoverage.setStart(dateToXMLGregorianCalendar(start));
         // timeCoverage.setEnd(dateToXMLGregorianCalendar(end));
-        timeCoverage.setCode(ErrorType.OK);
+        timeCoverage.setCode(String.valueOf(ErrorType.OK));
         timeCoverage.setMsg(ErrorType.OK.toString());
 
         return timeCoverage;
@@ -618,14 +639,14 @@ public class DescribeProductCacheThread extends Thread {
 
         fr.cls.atoll.motu.web.dal.tds.ncss.model.Variables variables = productMetaData.getVariablesVocabulary();
         if (variables == null) {
-            variablesVocabulary.setCode(ErrorType.OK);
+            variablesVocabulary.setCode(String.valueOf(ErrorType.OK));
             variablesVocabulary.setMsg(ErrorType.OK.toString());
             return variablesVocabulary;
         }
         List<VariableDesc> variablesDescList = productMetaData.getVariablesVocabulary().getVariableDesc();
 
         if (variablesDescList == null) {
-            variablesVocabulary.setCode(ErrorType.OK);
+            variablesVocabulary.setCode(String.valueOf(ErrorType.OK));
             variablesVocabulary.setMsg(ErrorType.OK.toString());
             return variablesVocabulary;
         }
@@ -637,7 +658,7 @@ public class DescribeProductCacheThread extends Thread {
         }
 
         variablesVocabulary.setVocabulary(VariableNameVocabulary.fromValue(variables.getVocabulary()));
-        variablesVocabulary.setCode(ErrorType.OK);
+        variablesVocabulary.setCode(String.valueOf(ErrorType.OK));
         variablesVocabulary.setMsg(ErrorType.OK.toString());
 
         return variablesVocabulary;
@@ -655,8 +676,9 @@ public class DescribeProductCacheThread extends Thread {
 
         variablesVocabulary.setVocabulary(null);
 
-        ExceptionUtils.setError(variablesVocabulary,
-                                new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        ExceptionUtils
+                .setError(variablesVocabulary,
+                          new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
         return variablesVocabulary;
     }
 
@@ -681,7 +703,7 @@ public class DescribeProductCacheThread extends Thread {
         variableVocabulary.setValue(variableDesc.getContent());
         variableVocabulary.setVocabularyName(variableDesc.getVocabularyName());
 
-        variableVocabulary.setCode(ErrorType.OK);
+        variableVocabulary.setCode(String.valueOf(ErrorType.OK));
         variableVocabulary.setMsg(ErrorType.OK.toString());
 
         return variableVocabulary;
@@ -702,8 +724,9 @@ public class DescribeProductCacheThread extends Thread {
         variableVocabulary.setValue(null);
         variableVocabulary.setVocabularyName(null);
 
-        ExceptionUtils.setError(variableVocabulary,
-                                new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        ExceptionUtils
+                .setError(variableVocabulary,
+                          new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
         return variableVocabulary;
 
     }
@@ -719,7 +742,9 @@ public class DescribeProductCacheThread extends Thread {
         TimeCoverage timeCoverage = objectFactory.createTimeCoverage();
         timeCoverage.setStart(null);
         timeCoverage.setEnd(null);
-        ExceptionUtils.setError(timeCoverage, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        ExceptionUtils
+                .setError(timeCoverage,
+                          new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
         return timeCoverage;
 
     }
@@ -767,12 +792,20 @@ public class DescribeProductCacheThread extends Thread {
             }
             geospatialCoverage.setNorthSouthUnits(productMetaData.getNorthSouthUnits());
 
-            geospatialCoverage.setCode(ErrorType.OK);
+            geospatialCoverage.setCode(String.valueOf(ErrorType.OK));
             geospatialCoverage.setMsg(ErrorType.OK.toString());
         } catch (Exception e) {
-            geospatialCoverage.setCode(ErrorType.SYSTEM);
-            geospatialCoverage.setMsg("Error while getting geospatial coverage (N/S, E/W) from TDS configuration file: " + e.getMessage()
-                    + ". Please, check your configuration file");
+            try {
+                geospatialCoverage.setCode(String.valueOf(ErrorType.SYSTEM));
+                geospatialCoverage.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(ErrorType.SYSTEM));
+                LOGGER.error(StringUtils.getLogMessage(ErrorType.SYSTEM,
+                                                       "Error while getting geospatial coverage (N/S, E/W) from TDS configuration file: "
+                                                               + e.getMessage() + ". Please, check your configuration file"));
+            } catch (MotuException e1) {
+                geospatialCoverage.setCode(String.valueOf(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
+                geospatialCoverage.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+                LOGGER.error(StringUtils.getLogMessage(BLLMessagesErrorManager.SYSTEM_ERROR_CODE, e.getMessage()), e);
+            }
         }
 
         return geospatialCoverage;
@@ -800,8 +833,9 @@ public class DescribeProductCacheThread extends Thread {
         geospatialCoverage.setSouth(null);
         geospatialCoverage.setWest(null);
 
-        ExceptionUtils.setError(geospatialCoverage,
-                                new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        ExceptionUtils
+                .setError(geospatialCoverage,
+                          new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
         return geospatialCoverage;
 
     }
@@ -834,7 +868,7 @@ public class DescribeProductCacheThread extends Thread {
             propertyList.add(initProperty(tdsMetaDataProperty));
         }
 
-        properties.setCode(ErrorType.OK);
+        properties.setCode(String.valueOf(ErrorType.OK));
         properties.setMsg(ErrorType.OK.toString());
 
         return properties;
@@ -850,7 +884,9 @@ public class DescribeProductCacheThread extends Thread {
 
         fr.cls.atoll.motu.api.message.xml.Properties properties = objectFactory.createProperties();
 
-        ExceptionUtils.setError(properties, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        ExceptionUtils
+                .setError(properties,
+                          new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
         return properties;
     }
 
@@ -874,7 +910,7 @@ public class DescribeProductCacheThread extends Thread {
         property.setName(tdsProperty.getName());
         property.setValue(tdsProperty.getValue());
 
-        property.setCode(ErrorType.OK);
+        property.setCode(String.valueOf(ErrorType.OK));
         property.setMsg(ErrorType.OK.toString());
 
         return property;
@@ -892,7 +928,9 @@ public class DescribeProductCacheThread extends Thread {
 
         property.setName(null);
         property.setValue(null);
-        ExceptionUtils.setError(property, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        ExceptionUtils
+                .setError(property,
+                          new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
         return property;
 
     }

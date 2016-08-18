@@ -7,6 +7,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 
 /**
@@ -37,7 +38,7 @@ public class DateUtils {
         try {
             xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendar);
         } catch (DatatypeConfigurationException e) {
-            throw new MotuException("ERROR in dateToXMLGregorianCalendar", e);
+            throw new MotuException(ErrorType.INVALID_DATE, "ERROR in dateToXMLGregorianCalendar", e);
         }
         return xmlGregorianCalendar;
     }

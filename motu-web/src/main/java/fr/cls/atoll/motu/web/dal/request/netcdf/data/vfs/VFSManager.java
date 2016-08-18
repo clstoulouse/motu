@@ -51,6 +51,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Period;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
@@ -202,10 +203,10 @@ public class VFSManager {
             open = true;
         } catch (FileSystemException e) {
             LOG.fatal("Error in VFS initialisation - Unable to intiialize VFS", e);
-            throw new MotuException("Error in VFS initialisation - Unable to intiialize VFS", e);
+            throw new MotuException(ErrorType.NETCDF_LOADING, "Error in VFS initialisation - Unable to intiialize VFS", e);
         } catch (IOException e) {
             LOG.fatal("Error in VFS initialisation - Unable to intiialize VFS", e);
-            throw new MotuException("Error in VFS initialisation - Unable to intiialize VFS", e);
+            throw new MotuException(ErrorType.NETCDF_LOADING, "Error in VFS initialisation - Unable to intiialize VFS", e);
         }
 
         opts = new FileSystemOptions();
@@ -295,7 +296,7 @@ public class VFSManager {
         } catch (FileSystemException e) {
             LOG.error("setUserInfo(StaticUserAuthenticator)", e);
 
-            throw new MotuException("Error in VFSManager#setUserInfo", e);
+            throw new MotuException(ErrorType.NETCDF_LOADING, "Error in VFSManager#setUserInfo", e);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -363,6 +364,7 @@ public class VFSManager {
                     long value = dataTimeOut.toStandardDuration().getMillis();
                     if (value > Integer.MAX_VALUE) {
                         throw new MotuException(
+                                ErrorType.MOTU_CONFIG,
                                 String.format("Motu Configuration : sftp timeout value is too large '%ld' milliseconds. Max is '%d'",
                                               value,
                                               Integer.MAX_VALUE));
@@ -406,6 +408,7 @@ public class VFSManager {
                     long value = SftpSessionTimeOut.toStandardDuration().getMillis();
                     if (value > Integer.MAX_VALUE) {
                         throw new MotuException(
+                                ErrorType.MOTU_CONFIG,
                                 String.format("Motu Configuration : sftp timeout value is too large '%ld' milliseconds. Max is '%d'",
                                               value,
                                               Integer.MAX_VALUE));
@@ -428,7 +431,7 @@ public class VFSManager {
         } catch (FileSystemException e) {
             LOG.error("setSchemeOpts(String, String)", e);
 
-            throw new MotuException("Error in VFSManager#setScheme", e);
+            throw new MotuException(ErrorType.NETCDF_LOADING, "Error in VFSManager#setScheme", e);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -470,7 +473,7 @@ public class VFSManager {
         } catch (URISyntaxException e) {
             LOG.error("setSchemeOpts(URL)", e);
 
-            throw new MotuException(String.format("Unable to convert url '%s' to URI object ", url), e);
+            throw new MotuException(ErrorType.NETCDF_LOADING, String.format("Unable to convert url '%s' to URI object ", url), e);
         }
     }
 
@@ -546,7 +549,7 @@ public class VFSManager {
         } catch (IOException e) {
             LOG.error("getUriAsInputStream(String)", e);
 
-            throw new MotuException(String.format("'%s' uri file has not be found", uri), e);
+            throw new MotuException(ErrorType.NETCDF_LOADING, String.format("'%s' uri file has not be found", uri), e);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -624,13 +627,13 @@ public class VFSManager {
             try {
                 fileObject = standardFileSystemManager.resolveFile(uri, fileSystemOptions);
             } catch (FileSystemException e) {
-                throw new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
+                throw new MotuException(ErrorType.NETCDF_LOADING, String.format("Unable to resolve uri '%s' ", uri), e);
             }
 
         } catch (URISyntaxException e) {
             LOG.error("resolveFile(String, FileSystemOptions)", e);
 
-            throw new MotuException(String.format("Unable to resolve uri '%s' ", uri), e);
+            throw new MotuException(ErrorType.NETCDF_LOADING, String.format("Unable to resolve uri '%s' ", uri), e);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -669,7 +672,10 @@ public class VFSManager {
             fileObject = standardFileSystemManager.resolveFile(baseFile, file, opts);
 
         } catch (FileSystemException e) {
-            throw new MotuException(String.format("Unable to resolve uri '%s/%s' ", baseFile.getName().toString(), file), e);
+            throw new MotuException(
+                    ErrorType.NETCDF_LOADING,
+                    String.format("Unable to resolve uri '%s/%s' ", baseFile.getName().toString(), file),
+                    e);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -708,12 +714,12 @@ public class VFSManager {
             uri = String.format("%s://%s/%s", scheme, host, fileSrc);
             foSrc = resolveFile(uri);
             if (foSrc == null) {
-                throw new MotuException(String.format("Unable to resolve source uri '%s' ", uri));
+                throw new MotuException(ErrorType.NETCDF_LOADING, String.format("Unable to resolve source uri '%s' ", uri));
             }
 
             foDest = standardFileSystemManager.toFileObject(newFile);
             if (foDest == null) {
-                throw new MotuException(String.format("Unable to resolve dest uri '%s' ", fileDest));
+                throw new MotuException(ErrorType.NETCDF_LOADING, String.format("Unable to resolve dest uri '%s' ", fileDest));
             }
 
             this.copyFrom(foSrc, foDest, Selectors.SELECT_ALL);
@@ -727,7 +733,7 @@ public class VFSManager {
 
             // throw new MotuException(String.format("Unable to copy file '%s' to '%s'",
             // foSrc.getURL().toString(), foDest.getURL().toString()), e);
-            throw new MotuException(String.format("Unable to copy file '%s' to '%s'", uri.toString(), fileDest), e);
+            throw new MotuException(ErrorType.NETCDF_LOADING, String.format("Unable to copy file '%s' to '%s'", uri.toString(), fileDest), e);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -772,12 +778,12 @@ public class VFSManager {
 
             foSrc = resolveFile(uriSrc);
             if (foSrc == null) {
-                throw new MotuException(String.format("Unable to resolve source uri '%s' ", uriSrc));
+                throw new MotuException(ErrorType.NETCDF_LOADING, String.format("Unable to resolve source uri '%s' ", uriSrc));
             }
 
             foDest = standardFileSystemManager.toFileObject(newFile);
             if (foDest == null) {
-                throw new MotuException(String.format("Unable to resolve dest uri '%s' ", newFile.getAbsolutePath()));
+                throw new MotuException(ErrorType.NETCDF_LOADING, String.format("Unable to resolve dest uri '%s' ", newFile.getAbsolutePath()));
             }
 
             this.copyFrom(foSrc, foDest, Selectors.SELECT_ALL);
@@ -790,11 +796,14 @@ public class VFSManager {
             LOG.error("copyFileToLocalFile(String, String)", e);
 
             try {
-                throw new MotuException(String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()), e);
+                throw new MotuException(
+                        ErrorType.NETCDF_LOADING,
+                        String.format("Unable to copy file '%s' to '%s'", foSrc.getURL().toString(), foDest.getURL().toString()),
+                        e);
             } catch (FileSystemException e1) {
                 LOG.error("copyFileToLocalFile(String, String)", e1);
 
-                throw new MotuException(String.format("Unable to copy files", e1));
+                throw new MotuException(ErrorType.NETCDF_LOADING, String.format("Unable to copy files", e1));
             }
         }
 
@@ -950,7 +959,9 @@ public class VFSManager {
 
             if (file.exists()) {
                 if (file.getType() != FileType.FILE) {
-                    throw new MotuException(String.format("Delete file '%s' is rejected: it is a folder. ", file.getName().toString()));
+                    throw new MotuException(
+                            ErrorType.NETCDF_LOADING,
+                            String.format("Delete file '%s' is rejected: it is a folder. ", file.getName().toString()));
                 }
 
                 deleted = file.delete();
@@ -960,7 +971,7 @@ public class VFSManager {
 
             // throw new MotuException(String.format("Unable to copy file '%s' to '%s'",
             // foSrc.getURL().toString(), foDest.getURL().toString()), e);
-            throw new MotuException(String.format("Unable to delete '%s'", file.getName().toString()), e);
+            throw new MotuException(ErrorType.NETCDF_LOADING, String.format("Unable to delete '%s'", file.getName().toString()), e);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -993,7 +1004,7 @@ public class VFSManager {
 
             // throw new MotuException(String.format("Unable to copy file '%s' to '%s'",
             // foSrc.getURL().toString(), foDest.getURL().toString()), e);
-            throw new MotuException(String.format("Unable to delete '%s'", file.getName().toString()), e);
+            throw new MotuException(ErrorType.NETCDF_LOADING, String.format("Unable to delete '%s'", file.getName().toString()), e);
         }
         boolean returnboolean = (deleted > 0);
         if (LOG.isDebugEnabled()) {
@@ -1104,6 +1115,7 @@ public class VFSManager {
         try {
             if ((to.exists()) && (to.getType() == FileType.FOLDER)) {
                 throw new MotuException(
+                        ErrorType.NETCDF_LOADING,
                         String.format("File copy from '%s' to '%s' is rejected: the destination already exists and is a folder. You were about to loose all of the content of '%s' ",
                                       from.getName().toString(),
                                       to.getName().toString(),
@@ -1119,7 +1131,10 @@ public class VFSManager {
 
             // throw new MotuException(String.format("Unable to copy file '%s' to '%s'",
             // foSrc.getURL().toString(), foDest.getURL().toString()), e);
-            throw new MotuException(String.format("Unable to copy file '%s' to '%s'", from.getName().toString(), to.getName().toString()), e);
+            throw new MotuException(
+                    ErrorType.NETCDF_LOADING,
+                    String.format("Unable to copy file '%s' to '%s'", from.getName().toString(), to.getName().toString()),
+                    e);
         }
 
         if (LOG.isDebugEnabled()) {

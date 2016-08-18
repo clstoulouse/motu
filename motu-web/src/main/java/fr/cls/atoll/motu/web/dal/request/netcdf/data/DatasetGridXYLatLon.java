@@ -37,6 +37,7 @@ import java.util.TreeMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateRangeException;
@@ -229,68 +230,12 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         // get each adjacent Lat/Lon ranges
         getAdjacentYXRange();
 
-        /*
-         * int countPair = 0; int countPairLat = 0; int countPairLon = 0;
-         */
-        /*
-         * for (List<Range> ranges : listYXRanges) { Range rangeLat = ranges.get(0); Range rangeLon =
-         * ranges.get(1); System.out.print("Lat range: "); System.out.print(rangeLat.first());
-         * System.out.print("\t"); System.out.print(rangeLat.last()); System.out.print("\tLength\t");
-         * System.out.print(rangeLat.length()); System.out.print("\tLon range: ");
-         * System.out.print(rangeLon.first()); System.out.print("\t"); System.out.print(rangeLon.last());
-         * System.out.print("\tLength\t"); System.out.println(rangeLon.length()); countPair +=
-         * rangeLat.length() * rangeLon.length(); countPairLat += rangeLat.length(); countPairLon +=
-         * rangeLon.length(); } System.out.print("countPair\t"); System.out.println(countPair);
-         * System.out.print("countPairLat\t"); System.out.println(countPairLat);
-         * System.out.print("countPairLon\t"); System.out.println(countPairLon);
-         */
-
-        //
-        // if (hasYRangeValue) {
-        // System.out.print("dimLat: ");
-        // System.out.println(yxRange[0].length());
-        // }
-        // if (hasXRangeValue) {
-        // System.out.print("dimLon: ");
-        // System.out.println(yxRange[1].length());
-        // }
-        // if (hasTRangeValue) {
-        // System.out.print("dimTime: ");
-        // System.out.println(tRange.length());
-        // }
-        // if (hasZRangeValue) {
-        // System.out.print("dimZ: ");
-        // System.out.println(zRange.length());
-        // }
-        //
-        // for (double[] rangeVal : rangesLatValue) {
-        // System.out.print("Lat range value: ");
-        // System.out.print(rangeVal[0]);
-        // System.out.print("\t");
-        // System.out.println(rangeVal[1]);
-        // }
-        // for (double[] rangeVal : rangesLonValue) {
-        // System.out.print("Lon range value: ");
-        // System.out.print(rangeVal[0]);
-        // System.out.print("\t");
-        // System.out.println(rangeVal[1]);
-        // }
-        // define dimensions, including unlimited
-        // Dimension latDim = ncfile.addDimension("lat", 3);
-        // Dimension lonDim = ncfile.addDimension("lon", 4);
-        // Dimension timeDim = ncfile.addDimension("time", -1, true, true, false);
         if (hasOutputTimeDimension) {
             inputVarTime = productMetadata.getTimeAxis();
         }
         if (hasOutputZDimension) {
             inputVarZ = productMetadata.getZAxis();
         }
-        // if (productMetadata.hasGeoYAxis() && hasYRangeValue) {
-        // inputVarY = productMetadata.getGeoYAxis();
-        // }
-        // if (productMetadata.hasGeoXAxis() && hasXRangeValue) {
-        // inputVarX = productMetadata.getGeoXAxis();
-        // }
         if (hasOutputLatDimension) {
             inputVarLat = productMetadata.getLatAxis();
         }
@@ -373,7 +318,6 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         }
 
         System.out.print("WRITE :");
-        // System.out.println(cpt);
         try {
             if (outputVarLat != null) {
                 Array data = Array.factory(outputVarLat.getDataType(), outputVarLat.getShape());
@@ -629,25 +573,10 @@ public class DatasetGridXYLatLon extends DatasetGrid {
                 mapLat.put(value, index);
                 index++;
             }
-            // System.out.print("map size: ");
-            // System.out.println(mapLat.size());
-            // for (Integer i : mapLat.values()) {
-            // System.out.print(i);
-            // System.out.print(" ");
-            // }
-            // System.out.println("Map ");
-            // for (Double value : set) {
-            // // if ((value > 80d) && (value < 81d)) {
-            // // System.out.print(value);
-            // // }
-            // System.out.print(value);
-            // System.out.print(" ");
-            // }
-            // System.out.println(" ");
         } catch (Exception e) {
             LOG.error("storeLatitudeMap()", e);
 
-            throw new MotuException("ERROR encountered in DatasetGridXYLatLon - fillLatitudeMap", e);
+            throw new MotuException(ErrorType.BAD_PARAMETERS, "ERROR encountered in DatasetGridXYLatLon - fillLatitudeMap", e);
 
         }
 
@@ -709,22 +638,10 @@ public class DatasetGridXYLatLon extends DatasetGrid {
                 mapLon.put(value, index);
                 index++;
             }
-            // System.out.print("map size: ");
-            // System.out.println(mapLon.size());
-            // for (Integer i : mapLon.values()) {
-            // System.out.print(i);
-            // System.out.print(" ");
-            // }
-            // System.out.println(" ");
-            // for (Double value : set) {
-            // System.out.print(value);
-            // System.out.print(" ");
-            // }
-            // System.out.println(" ");
         } catch (Exception e) {
             LOG.error("storeLongitudeMap()", e);
 
-            throw new MotuException("ERROR encountered in DatasetGridXYLatLon - fillLongitudeMap", e);
+            throw new MotuException(ErrorType.BAD_PARAMETERS, "ERROR encountered in DatasetGridXYLatLon - fillLongitudeMap", e);
 
         }
         // -----------------------------
@@ -1056,7 +973,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
             try {
                 geoGridSubset = geoGrid.subset(tRange, zRange, listYXRange.get(0), listYXRange.get(1));
             } catch (InvalidRangeException e) {
-                throw new MotuException("Error in subsetting geo grid", e);
+                throw new MotuException(ErrorType.BAD_PARAMETERS, "Error in subsetting geo grid", e);
             }
             inputVarSubset = geoGridSubset.getVariable();
             MAMath.MinMax minMaxSubset = NetCdfWriter.getMinMaxSkipMissingData(geoGrid, inputVarSubset, null);
@@ -1069,25 +986,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
             if (minMaxSubset.min < minMax.min) {
                 minMax.min = minMaxSubset.min;
             }
-
-            // try {
-            // Array data = inputVarSubset.read();
-            // tempCountElement += data.getSize();
-            // } catch (IOException e) {
-            // e.printStackTrace();
-            // }
-            //
-            // tempCountY += listYXRange.get(0).length();
-            // tempCountX += listYXRange.get(1).length();
-
         }
-
-        // System.out.print("tempCountY:");
-        // System.out.println(tempCountY);
-        // System.out.print("tempCountX:");
-        // System.out.println(tempCountX);
-        // System.out.print("tempCountElement:");
-        // System.out.println(tempCountElement);
 
         if (minMax != null) {
             netCdfWriter.setValidMinMaxVarAttributes(outputVar, minMax);
@@ -1118,13 +1017,13 @@ public class DatasetGridXYLatLon extends DatasetGrid {
             origin = it.next();
 
             if (origin == null) {
-                throw new MotuException("Error in NetCfdWriter finish - unable to find origin - (origin is null)");
+                throw new MotuException(ErrorType.SYSTEM, "Error in NetCfdWriter finish - unable to find origin - (origin is null)");
             }
 
             shape = originAndShape.get(origin);
 
             if (shape == null) {
-                throw new MotuException("Error in NetCfdWriter finish - unable to find shape - (shape is null)");
+                throw new MotuException(ErrorType.SYSTEM, "Error in NetCfdWriter finish - unable to find shape - (shape is null)");
             }
 
             Array dataToFill = null;
@@ -1136,7 +1035,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
                 try {
                     geoGridSubset = geoGrid.subset(tRange, zRange, listYXRange.get(0), listYXRange.get(1));
                 } catch (InvalidRangeException e) {
-                    throw new MotuException("Error in subsetting geo grid", e);
+                    throw new MotuException(ErrorType.BAD_PARAMETERS, "Error in subsetting geo grid", e);
                 }
                 inputVarSubset = geoGridSubset.getVariable();
                 if (NetCdfWriter.isReadByBlock(inputVarSubset)) {
@@ -1204,13 +1103,17 @@ public class DatasetGridXYLatLon extends DatasetGrid {
                 origin = it.next();
 
                 if (origin == null) {
-                    throw new MotuException("Error in DatasetGridXYLatLon fillDataByBlock - unable to find origin - (origin is null)");
+                    throw new MotuException(
+                            ErrorType.SYSTEM,
+                            "Error in DatasetGridXYLatLon fillDataByBlock - unable to find origin - (origin is null)");
                 }
 
                 shape = originAndShape.get(origin);
 
                 if (shape == null) {
-                    throw new MotuException("Error in DatasetGridXYLatLon fillDataByBlock - unable to find shape - (shape is null)");
+                    throw new MotuException(
+                            ErrorType.SYSTEM,
+                            "Error in DatasetGridXYLatLon fillDataByBlock - unable to find shape - (shape is null)");
                 }
                 // CSOON: StrictDuplicateCode
 
@@ -1221,11 +1124,11 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         } catch (IOException e) {
             LOG.error("fillDataByBlock()", e);
 
-            throw new MotuException("Error IOException in DatasetGridXYLatLon fillDataByBlock", e);
+            throw new MotuException(ErrorType.BAD_PARAMETERS, "Error IOException in DatasetGridXYLatLon fillDataByBlock", e);
         } catch (InvalidRangeException e) {
             LOG.error("fillDataByBlock()", e);
 
-            throw new MotuException("Error InvalidRangeException in DatasetGridXYLatLon fillDataByBlock", e);
+            throw new MotuException(ErrorType.BAD_PARAMETERS, "Error InvalidRangeException in DatasetGridXYLatLon fillDataByBlock", e);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -1253,7 +1156,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         } catch (IOException e) {
             LOG.error("fillDataInOneGulp()", e);
 
-            throw new MotuException("Error in DatasetGridXYLatLon fillDataInOneGulp", e);
+            throw new MotuException(ErrorType.BAD_PARAMETERS, "Error in DatasetGridXYLatLon fillDataInOneGulp", e);
         }
 
         switch (dataRead.getRank()) {
@@ -1319,10 +1222,6 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         int fromLon = originDest[1];
         int toLon = fromLon + shapeDest[1] - 1;
 
-        System.out.print("fillData2D ");
-        System.out.print(String.format(" fromY %d - fromX %d ", fromY, fromX));
-        System.out.println(String.format(" fromLat %d toLat %d - fromLon %d toLon %d", fromLat, toLat, fromLon, toLon));
-
         Index imaIn = dataSrc.getIndex();
         Index imaLat = latArray.getIndex();
         Index imaLon = lonArray.getIndex();
@@ -1340,6 +1239,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
                     String idxLat = (indexLatOut == null) ? "null" : indexLatOut.toString();
                     String idxLon = (indexLonOut == null) ? "null" : indexLonOut.toString();
                     throw new MotuException(
+                            ErrorType.INVALID_LAT_LON_RANGE,
                             String.format("ERROR in DatasetGridXYLatLon - fillData2D - Unable to find latitude value: %f or longitude value: %f (Latitude map index %s, Longitude map index %s",
                                           latitudeValue,
                                           longitudeValue,
@@ -1352,27 +1252,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
                 }
                 int jDest = indexLatOut - fromLat;
                 int iDest = indexLonOut - fromLon;
-                System.out.println(String.format("Insert fromLat %d fromLon %d indexLatOut %d indexLonOut %d j %d i %d value %f",
-                                                 fromLat,
-                                                 fromLon,
-                                                 indexLatOut,
-                                                 indexLonOut,
-                                                 jDest,
-                                                 iDest,
-                                                 dataValue));
-                if (dataDest.getDouble(imaOut.set(jDest, iDest)) != fillValue) {
-                    System.out.println(String.format("Not fill value fromLat %d fromLon %d indexLatOut %d indexLonOut %d j %d i %d value %f",
-                                                     fromLat,
-                                                     fromLon,
-                                                     indexLatOut,
-                                                     indexLonOut,
-                                                     jDest,
-                                                     iDest,
-                                                     dataValue));
-
-                }
                 dataDest.setDouble(imaOut.set(jDest, iDest), dataValue);
-                // cpt++;
             }
         }
 

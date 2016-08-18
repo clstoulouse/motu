@@ -855,16 +855,4 @@ public class QueueLogInfo {
     public void setRequestId(long requestId) {
         this.requestId = requestId;
     }
-
-    // long startTime = System.currentTimeMillis();
-    // ....
-    //
-    // long currentTime = System.currentTimeMillis();
-    // SimpleDateFormat dateFormat =
-    // new SimpleDateFormat("HH:mm:ss");
-    //
-    // dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-    // elapsed = currentTime - startTime;
-    //
-    // System.out.println(dateFormat.format(new Date(elapsed)));
 }

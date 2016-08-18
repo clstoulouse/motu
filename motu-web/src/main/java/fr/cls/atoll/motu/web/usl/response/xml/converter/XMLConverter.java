@@ -35,6 +35,7 @@ import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 
 /**
@@ -53,8 +54,20 @@ public class XMLConverter {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static StatusModeResponse convertStatusModeResponse(RequestDownloadStatus requestDownloadStatus) throws MotuException {
+
+        return getResponse(String.valueOf(convertErrorCode(requestDownloadStatus.getRunningException())), requestDownloadStatus);
+    }
+
+    public static StatusModeResponse convertStatusModeResponse(String actionCode, RequestDownloadStatus requestDownloadStatus) throws MotuException {
         StatusModeResponse smr = new StatusModeResponse();
-        smr.setCode(convertErrorCode(requestDownloadStatus.getRunningException()));
+
+        return getResponse(StringUtils.getErrorCode(actionCode, convertErrorCode(requestDownloadStatus.getRunningException())),
+                           requestDownloadStatus);
+    }
+
+    private static StatusModeResponse getResponse(String ErrorCode, RequestDownloadStatus requestDownloadStatus) throws MotuException {
+        StatusModeResponse smr = new StatusModeResponse();
+        smr.setCode(ErrorCode);
         smr.setDateProc(dateToXMLGregorianCalendar(requestDownloadStatus.getStartProcessingDateTime()));
         smr.setDateSubmit(dateToXMLGregorianCalendar(requestDownloadStatus.getCreationDateTime()));
         String msg = "";
@@ -168,7 +181,7 @@ public class XMLConverter {
         try {
             xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendar);
         } catch (DatatypeConfigurationException e) {
-            throw new MotuException("ERROR in dateToXMLGregorianCalendar", e);
+            throw new MotuException(ErrorType.INVALID_DATE, "ERROR in dateToXMLGregorianCalendar", e);
         }
         return xmlGregorianCalendar;
     }

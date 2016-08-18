@@ -1,5 +1,6 @@
 package fr.cls.atoll.motu.web.bll.request.queueserver.queue;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
@@ -43,7 +44,7 @@ public class QueueJob implements IQueueJob, Comparable<IQueueJob> {
         } catch (MotuException e) {
             onJobException(e);
         } catch (Exception e) {
-            onJobException(new MotuException(e));
+            onJobException(new MotuException(ErrorType.SYSTEM, e));
         }
     }
 

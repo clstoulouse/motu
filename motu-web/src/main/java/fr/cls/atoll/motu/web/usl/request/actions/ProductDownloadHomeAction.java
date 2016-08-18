@@ -13,6 +13,7 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
@@ -59,8 +60,8 @@ public class ProductDownloadHomeAction extends AbstractAuthorizedAction {
      * 
      * @param actionName_
      */
-    public ProductDownloadHomeAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        super(ACTION_NAME, request, response, session);
+    public ProductDownloadHomeAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        super(ACTION_NAME, actionCode_, request, response, session);
 
         serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_SERVICE,
@@ -88,7 +89,7 @@ public class ProductDownloadHomeAction extends AbstractAuthorizedAction {
         try {
             writeResponseWithVelocity(mc, cs, cd, p, getResponse().getWriter());
         } catch (IOException e) {
-            throw new MotuException("Error while using velocity template", e);
+            throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
         }
     }
 
@@ -103,7 +104,7 @@ public class ProductDownloadHomeAction extends AbstractAuthorizedAction {
             Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null, cs_.getVeloTemplatePrefix());
             template.merge(context, w_);
         } catch (Exception e) {
-            throw new MotuException("Error while using velocity template", e);
+            throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
         }
     }
 

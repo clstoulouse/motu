@@ -4,6 +4,7 @@ import fr.cls.atoll.motu.web.bll.cache.IDescribeProductCacheManager;
 import fr.cls.atoll.motu.web.bll.catalog.IBLLCatalogManager;
 import fr.cls.atoll.motu.web.bll.config.IBLLConfigManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.messageserror.IBLLMessagesErrorManager;
 import fr.cls.atoll.motu.web.bll.request.IBLLRequestManager;
 import fr.cls.atoll.motu.web.bll.users.IBLLUserManager;
 
@@ -62,4 +63,11 @@ public interface IBLLManager {
      */
     IDescribeProductCacheManager getDescribeProductCacheManager();
 
+    /**
+     * 
+     * .
+     * 
+     * @return
+     */
+    IBLLMessagesErrorManager getMessagesErrorManager();
 }
