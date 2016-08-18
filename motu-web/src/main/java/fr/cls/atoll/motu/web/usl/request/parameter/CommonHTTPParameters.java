@@ -153,6 +153,10 @@ public class CommonHTTPParameters {
         return request.getParameter(MotuRequestParametersConstant.PARAM_PRIORITY);
     }
 
+    public static String getOutputFormatFromRequest(HttpServletRequest request) {
+        return request.getParameter(MotuRequestParametersConstant.PARAM_OUTPUT);
+    }
+
     public static String getCatalogTypeFromRequest(HttpServletRequest request) {
         return request.getParameter(MotuRequestParametersConstant.PARAM_CATALOG_TYPE);
     }
