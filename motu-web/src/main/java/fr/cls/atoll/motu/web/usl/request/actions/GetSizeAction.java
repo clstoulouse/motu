@@ -239,9 +239,9 @@ public class GetSizeAction extends AbstractProductInfoAction {
         requestSize.setMsg(ErrorType.OK.toString());
 
         if (size < 0) {
-            ExceptionUtils.setError(getActionCode(),
-                                    requestSize,
-                                    new MotuException(ErrorType.SYSTEM, "size can't be computed and the cause is unspecified"));
+            MotuException e = new MotuException(ErrorType.SYSTEM, "size can't be computed and the cause is unspecified");
+            ExceptionUtils.setError(getActionCode(), requestSize, e);
+            LOGGER.error(StringUtils.getLogMessage(getActionCode(), e.getErrorType(), e.getMessage()), e);
             return requestSize;
         }
 

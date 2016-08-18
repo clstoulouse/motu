@@ -119,7 +119,7 @@
 #end
 ## -------------------------------------------- printParameter --------------------------------
 #macro(product_describecoverage_uk_printParameter) 	
-#if (($catalogType == "FILE") || !$parameterMetadata.hasDimensions())
+#if (($catalogType == "DGF") || !$parameterMetadata.hasDimensions())
 #set($endTag = "/>")
 #else
 #set($endTag = ">")
@@ -128,12 +128,12 @@
 ##	#if(!$parameterMetadata.getUnitLong().equals(""))
 ##	unitDescription="${parameterMetadata.getUnitLong()}"${space}						
 ##	#end				
-## #if (($catalogType == "FILE") || !$parameterMetadata.hasDimensions())
+## #if (($catalogType == "DGF") || !$parameterMetadata.hasDimensions())
 ##		/>
 ## #else
 ##       >
 ## #end
-#if($catalogType != "FILE")				
+#if($catalogType != "DGF")				
 #if($parameterMetadata.hasDimensions())
 		      <dimensions>
 #foreach($dimension in $parameterMetadata.getDimensions())

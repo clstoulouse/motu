@@ -7,6 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
@@ -18,6 +21,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidRequestIdException;
 import fr.cls.atoll.motu.web.bll.exception.MotuMarshallException;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.RequestIdHTTPParameterValidator;
@@ -46,6 +50,8 @@ import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
 public class GetRequestStatusAction extends AbstractAction {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "getreqstatus";
 
@@ -77,7 +83,10 @@ public class GetRequestStatusAction extends AbstractAction {
                     marshallStatusModeResponse(XMLConverter.convertStatusModeResponse(getActionCode(), rds), getResponse().getWriter());
                 }
             } else {
-                marshallStatusModeResponse(createStatusModeResponse(new MotuInvalidRequestIdException(-1L)), getResponse().getWriter());
+                MotuInvalidRequestIdException e = new MotuInvalidRequestIdException(-1L);
+                StatusModeResponse response = createStatusModeResponse(e);
+                marshallStatusModeResponse(response, getResponse().getWriter());
+                LOGGER.error(StringUtils.getLogMessage(getActionCode(), ExceptionUtils.getErrorType(e), e.getMessage()), e);
             }
 
         } catch (Exception e) {
