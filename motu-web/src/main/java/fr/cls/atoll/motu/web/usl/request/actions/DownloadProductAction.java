@@ -3,8 +3,6 @@ package fr.cls.atoll.motu.web.usl.request.actions;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_END_DATE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_HIGH_Z;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_LOW_Z;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MAX_POOL_ANONYMOUS;
-import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_MAX_POOL_AUTHENTICATE;
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_START_DATE;
 
 import java.io.IOException;
@@ -41,6 +39,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.validator.DepthHTTPParameterV
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LatitudeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LongitudeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ModeHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.OutputFormatParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.PriorityHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ProductHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
@@ -120,6 +119,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
     private PriorityHTTPParameterValidator priorityHTTPParameterValidator;
 
+    private OutputFormatParameterValidator outputFormatParameterValidator;
+
     /**
      * 
      * @param actionName_
@@ -173,6 +174,12 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 MotuRequestParametersConstant.PARAM_PRIORITY,
                 CommonHTTPParameters.getPriorityFromRequest(getRequest()),
                 Short.toString(BLLManager.getInstance().getConfigManager().getQueueServerConfigManager().getRequestDefaultPriority()));
+
+        outputFormatParameterValidator = new OutputFormatParameterValidator(
+                MotuRequestParametersConstant.PARAM_OUTPUT,
+                CommonHTTPParameters.getOutputFormatFromRequest(getRequest()),
+                OutputFormat.NETCDF.name().toUpperCase());
+
     }
 
     @Override
@@ -180,8 +187,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         // Read parameter from request
         // TODO SMA those 3 var were set in the Organizer
         String requestLanguage = CommonHTTPParameters.getLanguageFromRequest(getRequest());
-        short maxPoolAnonymous = getMaxPoolAnonymous();
-        short maxPoolAuthenticate = getMaxPoolAuthenticate();
         int priority = priorityHTTPParameterValidator.getParameterValueValidated();
 
         MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
@@ -225,6 +230,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                                  errorMessageException);
                 }
                 onError(mc, cs, cd, p);
+                throw pr.getRunningException();
             } else {
                 try {
                     ProductDownloadHomeAction.writeResponseWithVelocity(mc, cs, cd, p, getResponse().getWriter());
@@ -286,7 +292,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 depthHighHTTPParameterValidator.getParameterValueValidated(),
 
                 productHTTPParameterValidator.getParameterValueValidated(),
-                OutputFormat.NETCDF,
+                OutputFormat.valueOf(outputFormatParameterValidator.getParameterValueValidated()),
                 getLoginOrUserHostname(),
                 isAnAnonymousUser());
         extractionParameters.setUserHost(getLoginOrUserHostname());
@@ -304,42 +310,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         statusModeResponse.setMsg("request in progress");
         statusModeResponse.setRequestId(requestId);
         return statusModeResponse;
-    }
-
-    /**
-     * Override max pool anonymous.
-     * 
-     * @param request the request
-     */
-    private short getMaxPoolAnonymous() {
-        String maxPoolAnonymousAsString = getRequest().getParameter(PARAM_MAX_POOL_ANONYMOUS);
-        short maxPoolAnonymousOverrided = -1;
-        try {
-            maxPoolAnonymousOverrided = Short.valueOf(maxPoolAnonymousAsString);
-            // TODO SMA remove comment
-            // getQueueServerManagement().setMaxPoolAnonymousOverrided(maxPoolAnonymousOverrided);
-        } catch (NumberFormatException e) {
-            // Do nothing
-        }
-        return maxPoolAnonymousOverrided;
-    }
-
-    /**
-     * Override max pool authenticate.
-     * 
-     * @param request the request
-     */
-    private short getMaxPoolAuthenticate() {
-        String maxPoolAuthOverridedAsString = getRequest().getParameter(PARAM_MAX_POOL_AUTHENTICATE);
-        short maxPoolAuthOverrided = -1;
-        try {
-            maxPoolAuthOverrided = Short.valueOf(maxPoolAuthOverridedAsString);
-            // TODO SMA remove comment
-            // getQueueServerManagement().setMaxPoolAnonymousOverrided(maxPoolAuthOverrided);
-        } catch (NumberFormatException e) {
-            // Do nothing
-        }
-        return maxPoolAuthOverrided;
     }
 
     /** {@inheritDoc} */
@@ -361,6 +331,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         endDateTemporalHighHTTPParameterValidator.validate();
 
         priorityHTTPParameterValidator.validate();
+
+        outputFormatParameterValidator.validate();
     }
 
 }

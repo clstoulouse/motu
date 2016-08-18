@@ -24,7 +24,8 @@
 		<property name="products.dir" location="V:/cmems-cis/06-livraison/61-livraison-de-CLS/611-FilesUsedToBuild" description="This folder contains motu-products-A.B.tar.gz"/>
 		<property name="products.version" value="3.0" description="The version A.B written in motu-products-A.B.tar.gz"/>
 		<property name="motu-config.dir" location="../../motu-config" description="This path contains 2 sub-folders motu-config and motu-web-static-files."/>
-						
+		<property name="motu-client-python.dir" location="../../motu-client-python" description="This path contains directly the motu client src folder."/>
+				
 		
 		<!-- ##### Init JAVA_HOME ##### -->
 		<condition property="JAVA_HOME" value="/usr/lib/jvm/jdk1.7.0_80">
@@ -94,6 +95,15 @@
 		</exec>
 	</target>
 	
+	<target name="build-motu-client-python" depends="init">
+		<!-- /motu-config -->
+		<exec executable="${mvn}" failonerror="true" dir="${motu-client-python.dir}">
+			<env key="JAVA_HOME" value="${JAVA_HOME}"/>
+			<env key="Path" value="${PathWithGoodJavaVersion}"/>
+			<arg line="clean install -Dmaven.test.skip=true -Dbuild-timestamp=${build-timestamp}" />
+		</exec>
+	</target>
+	
 	<!-- ###################################################
 	     ##### PACKAGE 
 	     ##### Put archive in the good delivery folder with the good name
@@ -102,9 +112,11 @@
 		<property name="delivery.distrib.dir" location="${delivery.now.dir}/${project.name}" />
 		<property name="delivery.config.dir" location="${delivery.now.dir}/config" />
 		<property name="delivery.src.dir" location="${delivery.now.dir}/src" />
+		<property name="delivery.motu-client.dir" location="${delivery.now.dir}/motu-client" />
 		
 		<mkdir dir="${delivery.distrib.dir}" />
 		<mkdir dir="${delivery.config.dir}" />
+		<mkdir dir="${delivery.motu-client.dir}" />
 		<mkdir dir="${delivery.src.dir}" />
 	</target>
 	
@@ -143,10 +155,27 @@
 		</copy>
 	</target>
 	
+	<target name="package-motu-client-python" depends="package-init">
+			<!-- motu-client-python -->
+			<copy todir="${delivery.motu-client.dir}" >
+				<fileset dir="${motu-client-python.dir}/${maven.target.dir.name}" casesensitive="yes">
+				  <include name="${project.name}-client-python-*bin.tar.gz"/>
+				</fileset>
+			</copy>
+			<copy todir="${delivery.src.dir}" >
+				<fileset dir="${motu-client-python.dir}/${maven.target.dir.name}" casesensitive="yes">
+				  <include name="${project.name}-client-python-*src.tar.gz"/>
+				</fileset>
+			</copy>
+	</target>
+	
 	<target name="package-config-all" depends="init, package-init, package-config">
 	</target>
 	
 	<target name="all-config" depends="init, build-config, package-config-all">
+	</target>
+	
+	<target name="all-motu-client-python" depends="init, build-motu-client-python, package-motu-client-python">
 	</target>
 
 	<target name="__echo-manual-package-operations">
@@ -231,7 +260,7 @@
 		</exec>
 	</target>
 	
-	<target name="all" depends="clean, all-soft, all-config, __echo-manual-package-operations">
+	<target name="all" depends="clean, all-soft, all-config, all-motu-client-python, __echo-manual-package-operations">
 	</target>
 	
 </project>
