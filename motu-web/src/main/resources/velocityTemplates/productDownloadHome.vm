@@ -247,7 +247,7 @@
 ## -------------------------------------------- product_downloadhome_uk_timeSelection --------------------------------
 #macro(product_downloadhome_uk_timeSelection)
 
-#if($catalogType != "FILE")	
+#if($catalogType != "DGF")	
 	#set ($listdate = $product.getTimeAxisDataAsString())
 #else
 	#set ($listdate = $product.getTimeCoverageFromDataFiles())
@@ -391,7 +391,7 @@
 <form id="downloadForm"  method="get" name="${formName}">		
 <input type="hidden" name="action" value="productdownload" />
 <input type="hidden" name="service" value="$service.getNameEncoded()" />
-## #if($catalogType != "FILE")	
+## #if($catalogType != "DGF")	
 ##	<input type="hidden" name="data" value="$product.getLocationData()" />
 ## #else
 ##	<input type="hidden" name="product" value="$productMetaData.getProductIdEncoded()" />
@@ -421,7 +421,7 @@
 
 <table width="100%" cellpadding="1" cellspacing="5" border="0">
 	
-#if($catalogType != "FILE")
+#if($catalogType != "DGF")
     <tr><td>
     #product_downloadhome_uk_outputSelection()
     </td></tr>
@@ -433,7 +433,7 @@
 	</td></tr>
 #end
 
-#if($productMetaData.hasTimeAxis() || ($catalogType == "FILE"))
+#if($productMetaData.hasTimeAxis() || ($catalogType == "DGF"))
 	<tr><td>
 	#product_downloadhome_uk_timeSelection()
 	</td></tr>
@@ -446,7 +446,7 @@
 #end
 </table>
 
-#if($catalogType != "FILE")	
+#if($catalogType != "DGF")	
     <h2>Variable</h2>
     #set ($listParameterMetadata = $productMetaData.getParameterMetaDatasFiltered() )
     <table class="encadre" width="95%" border="0" cellspacing="0">
