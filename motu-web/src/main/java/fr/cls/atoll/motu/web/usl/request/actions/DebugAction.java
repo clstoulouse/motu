@@ -158,8 +158,8 @@ public class DebugAction extends AbstractAction {
         for (Long requestId : requestIds) {
             StatusModeResponse statusModeResponse;
             try {
-                statusModeResponse = XMLConverter
-                        .convertStatusModeResponse(getActionCode(), BLLManager.getInstance().getRequestManager().getResquestStatus(requestId));
+                statusModeResponse = XMLConverter.convertStatusModeResponse(getActionCode(),
+                                                                            BLLManager.getInstance().getRequestManager().getRequestStatus(requestId));
                 if (statusModeResponse.getStatus() != statusModeType) {
                     continue;
                 }

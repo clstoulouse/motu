@@ -85,7 +85,7 @@ public class BLLRequestManager implements IBLLRequestManager {
 
     /** {@inheritDoc} */
     @Override
-    public RequestDownloadStatus getResquestStatus(Long requestId_) {
+    public RequestDownloadStatus getRequestStatus(Long requestId_) {
         return requestIdStatusMap.get(requestId_);
     }
 
@@ -95,7 +95,7 @@ public class BLLRequestManager implements IBLLRequestManager {
         long requestId = download(false, cs_, product_, extractionParameters);
 
         ProductResult p = new ProductResult();
-        RequestDownloadStatus rds = getResquestStatus(requestId);
+        RequestDownloadStatus rds = getRequestStatus(requestId);
         if (rds.getRunningException() != null) {
             p.setRunningException(rds.getRunningException());
         }
