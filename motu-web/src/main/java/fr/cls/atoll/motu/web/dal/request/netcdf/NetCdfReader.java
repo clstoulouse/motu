@@ -822,7 +822,10 @@ public class NetCdfReader {
             this.netcdfDataset = acquireDataset(locationData, enhanceVar, null);
             controlAxes();
         } catch (Exception e) {
-            throw new MotuException(String.format("Error in NetCdfReader open - Unable to aquire dataset - location data:'%s'", locationData), e);
+            throw new MotuException(
+                    ErrorType.NETCDF_LOADING,
+                    String.format("Error in NetCdfReader open - Unable to aquire dataset - location data:'%s'", locationData),
+                    e);
         }
 
         if (hasGeoXYAxisWithLonLatEquivalence()) {
@@ -833,7 +836,7 @@ public class NetCdfReader {
 
             if (conv.isAugmented()) {
                 if (ct.hasError()) {
-                    throw new MotuException(ct.getError());
+                    throw new MotuException(ErrorType.NETCDF_LOADING, ct.getError());
                 }
 
                 conv.buildCoordinateSystems(netcdfDataset);
@@ -923,18 +926,21 @@ public class NetCdfReader {
 
                 if ((httpClientNetcdfDataset != null) && !(httpClientNetcdfDataset instanceof HttpClientCAS)) {
                     throw new MotuException(
+                            ErrorType.SYSTEM,
                             String.format("Error in NetCdfReader acquireDataset - httpClientNetcdfDataset has been set but is no an HttpClientCAS object:'%s'",
                                           httpClientNetcdfDataset.getClass().getName()));
                 }
 
                 if ((httpClientDConnect2 != null) && !(httpClientDConnect2 instanceof HttpClientCAS)) {
                     throw new MotuException(
+                            ErrorType.SYSTEM,
                             String.format("Error in NetCdfReader acquireDataset - httpClientDConnect2 has been set but is no an HttpClientCAS object:'%s'",
                                           httpClientDConnect2.getClass().getName()));
                 }
 
                 if ((httpClientHTTPRandomAccessFile != null) && !(httpClientHTTPRandomAccessFile instanceof HttpClientCAS)) {
                     throw new MotuException(
+                            ErrorType.SYSTEM,
                             String.format("Error in NetCdfReader acquireDataset - httpClientHTTPRandomAccessFile has been set but is no an HttpClientCAS object:'%s'",
                                           httpClientHTTPRandomAccessFile.getClass().getName()));
                 }
@@ -943,7 +949,10 @@ public class NetCdfReader {
         } catch (MotuException e) {
             throw e;
         } catch (Exception e) {
-            throw new MotuException("Error in NetCdfReader initNetcdfHttpClient - Unable to initialize httpClient object", e);
+            throw new MotuException(
+                    ErrorType.NETCDF_LOADING,
+                    "Error in NetCdfReader initNetcdfHttpClient - Unable to initialize httpClient object",
+                    e);
         }
 
     }
@@ -1035,7 +1044,7 @@ public class NetCdfReader {
                 this.netcdfDataset = null;
             }
         } catch (Exception e) {
-            throw new MotuException(String.format("Enable to close NetCDF reader - location: %s", locationData), e);
+            throw new MotuException(ErrorType.NETCDF_LOADING, String.format("Enable to close NetCDF reader - location: %s", locationData), e);
         }
     }
 
@@ -1260,7 +1269,7 @@ public class NetCdfReader {
             DateUnit dateUnit = new DateUnit(unitsString);
             date = dateUnit.makeStandardDateString(value);
         } catch (Exception e) {
-            throw new MotuException("Error in getDateAsString", e);
+            throw new MotuException(ErrorType.NETCDF_LOADING, "Error in getDateAsString", e);
         }
         return date;
     }
@@ -2084,7 +2093,10 @@ public class NetCdfReader {
         try {
             variable = NetCdfReader.getVariable(dim.getName(), ds);
         } catch (NetCdfVariableNotFoundException e) {
-            throw new MotuException(String.format("Error in getCoordinateVariable - Unable to get variable '%s'", dim.getName()), e);
+            throw new MotuException(
+                    ErrorType.NETCDF_LOADING,
+                    String.format("Error in getCoordinateVariable - Unable to get variable '%s'", dim.getName()),
+                    e);
         }
 
         if (variable == null) {

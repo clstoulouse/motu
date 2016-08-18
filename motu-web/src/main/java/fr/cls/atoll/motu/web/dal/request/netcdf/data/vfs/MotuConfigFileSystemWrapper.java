@@ -30,6 +30,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.ObjectUtils;
@@ -120,6 +121,7 @@ public class MotuConfigFileSystemWrapper<K> extends ObjectUtils<K> {
             LOG.error("getFieldValue(String, String)", e);
 
             throw new MotuException(
+                    ErrorType.MOTU_CONFIG,
                     "ERROR in Organizer#isBooleanOptions: unable to convert the list of file system configurations to a map object.",
                     e);
         }

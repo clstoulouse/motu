@@ -25,6 +25,7 @@ import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.api.utils.JAXBWriter;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.messageserror.BLLMessagesErrorManager;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
@@ -123,8 +124,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      * 
      * @param actionName_
      */
-    public DownloadProductAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        super(ACTION_NAME, request, response, session);
+    public DownloadProductAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        super(ACTION_NAME, actionCode_, request, response, session);
 
         serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_SERVICE,
@@ -204,18 +205,31 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
             try {
                 JAXBWriter.getInstance().write(createStatusModeResponse(requestId), getResponse().getWriter());
             } catch (Exception e) {
-                throw new MotuException("JAXB error while writing createStatusModeResponse: ", e);
+                throw new MotuException(ErrorType.SYSTEM, "JAXB error while writing createStatusModeResponse: ", e);
             }
         } else {
             ProductResult pr = BLLManager.getInstance().getRequestManager().download(cs, p, createExtractionParameters());
             if (pr.getRunningException() != null) {
-                p.setLastError(pr.getRunningException().getMessage());
+                try {
+                    MotuException runningException = pr.getRunningException();
+                    ErrorType errorType = runningException.getErrorType();
+                    p.setLastError(StringUtils.getErrorCode(getActionCode(), errorType) + "=>"
+                            + BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType));
+                    LOGGER.error(StringUtils.getLogMessage(getActionCode(), errorType, runningException.getMessage()), runningException);
+                } catch (MotuException errorMessageException) {
+                    p.setLastError(StringUtils.getErrorCode(getActionCode(), BLLMessagesErrorManager.SYSTEM_ERROR_CODE) + "=>" + StringUtils
+                            .getLogMessage(getActionCode(), BLLMessagesErrorManager.SYSTEM_ERROR_CODE, BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE));
+                    LOGGER.error(StringUtils.getLogMessage(getActionCode(),
+                                                           BLLMessagesErrorManager.SYSTEM_ERROR_CODE,
+                                                           errorMessageException.getMessage()),
+                                 errorMessageException);
+                }
                 onError(mc, cs, cd, p);
             } else {
                 try {
                     ProductDownloadHomeAction.writeResponseWithVelocity(mc, cs, cd, p, getResponse().getWriter());
                 } catch (IOException e) {
-                    throw new MotuException("Error while using velocity template", e);
+                    throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
                 }
 
                 String productURL = BLLManager.getInstance().getCatalogManager().getProductManager()
@@ -226,7 +240,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                     try {
                         getResponse().sendRedirect(productURL);
                     } catch (IOException e) {
-                        throw new MotuException("Error while sending download redirection PARAM_MODE_CONSOLE", e);
+                        throw new MotuException(ErrorType.SYSTEM, "Error while sending download redirection PARAM_MODE_CONSOLE", e);
                     }
                 } else { // Default mode MotuRequestParametersConstant.PARAM_MODE_URL
 
@@ -234,7 +248,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                     try {
                         getResponse().getWriter().write(productURL);
                     } catch (IOException e) {
-                        throw new MotuException("Error while writing download result CONTENT_TYPE_PLAIN", e);
+                        throw new MotuException(ErrorType.SYSTEM, "Error while writing download result CONTENT_TYPE_PLAIN", e);
                     }
                 }
             }
@@ -250,7 +264,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         try {
             ProductDownloadHomeAction.writeResponseWithVelocity(mc_, cs, cd, p, getResponse().getWriter());
         } catch (IOException e) {
-            throw new MotuException("Error while using velocity template", e);
+            throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
         }
     }
 
@@ -285,7 +299,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     private StatusModeResponse createStatusModeResponse(long requestId) {
         ObjectFactory objectFactory = new ObjectFactory();
         StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
-        statusModeResponse.setCode(ErrorType.OK);
+        statusModeResponse.setCode(StringUtils.getErrorCode(getActionCode(), ErrorType.OK));
         statusModeResponse.setStatus(StatusModeType.INPROGRESS);
         statusModeResponse.setMsg("request in progress");
         statusModeResponse.setRequestId(requestId);

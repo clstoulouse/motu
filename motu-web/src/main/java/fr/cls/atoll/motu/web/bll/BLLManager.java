@@ -7,6 +7,8 @@ import fr.cls.atoll.motu.web.bll.catalog.IBLLCatalogManager;
 import fr.cls.atoll.motu.web.bll.config.BLLConfigManager;
 import fr.cls.atoll.motu.web.bll.config.IBLLConfigManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.messageserror.BLLMessagesErrorManager;
+import fr.cls.atoll.motu.web.bll.messageserror.IBLLMessagesErrorManager;
 import fr.cls.atoll.motu.web.bll.request.BLLRequestManager;
 import fr.cls.atoll.motu.web.bll.request.IBLLRequestManager;
 import fr.cls.atoll.motu.web.bll.users.BLLUserManager;
@@ -31,6 +33,7 @@ public class BLLManager implements IBLLManager {
     private IBLLUserManager userManager;
     private IBLLCatalogManager catalogManager;
     private IDescribeProductCacheManager describeProductCacheManager;
+    private IBLLMessagesErrorManager messagesErrorManager;
 
     public static IBLLManager getInstance() {
         if (s_instance == null) {
@@ -45,6 +48,7 @@ public class BLLManager implements IBLLManager {
         userManager = new BLLUserManager();
         catalogManager = new BLLCatalogManager();
         describeProductCacheManager = new DescribeProductCacheManager();
+        messagesErrorManager = new BLLMessagesErrorManager();
     }
 
     @Override
@@ -87,6 +91,12 @@ public class BLLManager implements IBLLManager {
     @Override
     public IDescribeProductCacheManager getDescribeProductCacheManager() {
         return describeProductCacheManager;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public IBLLMessagesErrorManager getMessagesErrorManager() {
+        return messagesErrorManager;
     }
 
 }

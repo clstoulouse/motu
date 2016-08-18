@@ -46,6 +46,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
@@ -129,7 +130,7 @@ public class Product {
         try {
             super.finalize();
         } catch (Throwable e) {
-            throw new MotuException("Error in Product.finalize", e);
+            throw new MotuException(ErrorType.SYSTEM, "Error in Product.finalize", e);
         }
     }
 
@@ -295,7 +296,7 @@ public class Product {
      */
     public boolean isProductAlongTrack() throws MotuException {
         if (productMetaData == null) {
-            throw new MotuException("Error in isProductAlongTrack - productMetaData is null");
+            throw new MotuException(ErrorType.SYSTEM, "Error in isProductAlongTrack - productMetaData is null");
         }
         return productMetaData.isProductAlongTrack();
     }
@@ -309,7 +310,7 @@ public class Product {
      */
     public boolean isFtpMedia() throws MotuException {
         if (productMetaData == null) {
-            throw new MotuException("Error in isFtpMedia - productMetaData is null");
+            throw new MotuException(ErrorType.SYSTEM, "Error in isFtpMedia - productMetaData is null");
         }
         return productMetaData.isFtpMedia();
     }
@@ -324,7 +325,7 @@ public class Product {
      */
     public boolean isProductDownloadable() throws MotuException {
         if (productMetaData == null) {
-            throw new MotuException("Error in isProductDownloadable - productMetaData is null");
+            throw new MotuException(ErrorType.SYSTEM, "Error in isProductDownloadable - productMetaData is null");
         }
 
         // return !(productMetaData.isProductAlongTrack() || hasGeoXYAxisWithLonLatEquivalence());
@@ -431,7 +432,9 @@ public class Product {
         }
 
         if (locationData.equals("")) {
-            throw new MotuException("Error in loadOpendapMetaData - Unable to open NetCdf dataset - url path is not set (is empty)");
+            throw new MotuException(
+                    ErrorType.NETCDF_LOADING,
+                    "Error in loadOpendapMetaData - Unable to open NetCdf dataset - url path is not set (is empty)");
         }
         // Loads global metadata from opendap
         loadOpendapGlobalMetaData();
@@ -475,7 +478,7 @@ public class Product {
         }
 
         if (productMetaData == null) {
-            throw new MotuException("Error in loadOpendapGlobalMetaData - Unable to load - productMetaData is null");
+            throw new MotuException(ErrorType.SYSTEM, "Error in loadOpendapGlobalMetaData - Unable to load - productMetaData is null");
         }
 
         openNetCdfReader();
@@ -491,7 +494,7 @@ public class Product {
 
         } catch (NetCdfAttributeException e) {
             LOG.error("loadOpendapGlobalMetaData()", e);
-            throw new MotuException("Error in loadOpendapGlobalMetaData", e);
+            throw new MotuException(ErrorType.LOADING_CATALOG, "Error in loadOpendapGlobalMetaData", e);
         } catch (NetCdfAttributeNotFoundException e) {
             // LOG.error("loadOpendapGlobalMetaData()", e);
 
@@ -505,7 +508,7 @@ public class Product {
             productMetaData.setProductCategory(fileType);
         } catch (NetCdfAttributeException e) {
             LOG.error("loadOpendapGlobalMetaData()", e);
-            throw new MotuException("Error in loadOpendapGlobalMetaData", e);
+            throw new MotuException(ErrorType.LOADING_CATALOG, "Error in loadOpendapGlobalMetaData", e);
 
         } catch (NetCdfAttributeNotFoundException e) {
             // LOG.error("loadOpendapGlobalMetaData()", e);
@@ -774,17 +777,6 @@ public class Product {
             for (String unused : unusedVariables) {
                 if (variable.getName().equalsIgnoreCase(unused)) {
                     isUnusedVar = true;
-                    // try {
-                    // Array grid = readVariable(variable);
-                    // int rank = grid.getRank();
-                    // int[] shape = grid.getShape();
-                    // long size = grid.getSize();
-                    // System.out.println(rank);
-                    // System.out.println(shape);
-                    // System.out.println(size);
-                    // } catch (MotuExceptionBase e) {
-                    // System.out.println(e.notifyException());
-                    // }
                     break;
                 }
             }
@@ -1105,7 +1097,7 @@ public class Product {
      */
     private void createDataset() throws MotuException, MotuNotImplementedException {
         if (productMetaData == null) {
-            throw new MotuException("Error in CreateDataset - Unable to create dataset - productMetaData is null");
+            throw new MotuException(ErrorType.SYSTEM, "Error in CreateDataset - Unable to create dataset - productMetaData is null");
         }
 
         if (isFtpMedia()) {
@@ -1129,12 +1121,14 @@ public class Product {
         }
 
         if (productMetaData == null) {
-            throw new MotuException("Error in getLatAxisData - productMetaData is null");
+            throw new MotuException(ErrorType.SYSTEM, "Error in getLatAxisData - productMetaData is null");
         }
 
         Variable variable = productMetaData.getLatAxis();
         if (variable == null) {
-            throw new MotuException(String.format("Error in getLatAxisData - No latitude axis found in this product '%s'", this.getProductId()));
+            throw new MotuException(
+                    ErrorType.INVALID_LATITUDE,
+                    String.format("Error in getLatAxisData - No latitude axis found in this product '%s'", this.getProductId()));
         }
 
         Array returnArray = readVariable(variable);
@@ -1157,12 +1151,14 @@ public class Product {
         }
 
         if (productMetaData == null) {
-            throw new MotuException("Error in getLonAxisData - productMetaData is null");
+            throw new MotuException(ErrorType.SYSTEM, "Error in getLonAxisData - productMetaData is null");
         }
 
         Variable variable = productMetaData.getLonAxis();
         if (variable == null) {
-            throw new MotuException(String.format("Error in getLonAxisData - No longitude axis found in this product '%s'", this.getProductId()));
+            throw new MotuException(
+                    ErrorType.INVALID_LONGITUDE,
+                    String.format("Error in getLonAxisData - No longitude axis found in this product '%s'", this.getProductId()));
         }
 
         Array returnArray = readVariable(variable);
@@ -1186,12 +1182,14 @@ public class Product {
         }
 
         if (productMetaData == null) {
-            throw new MotuException("Error in getGeoXAxisData - productMetaData is null");
+            throw new MotuException(ErrorType.SYSTEM, "Error in getGeoXAxisData - productMetaData is null");
         }
 
         Variable variable = productMetaData.getGeoXAxis();
         if (variable == null) {
-            throw new MotuException(String.format("Error in getGeoXAxisData - No geoX axis found in this product '%s'", this.getProductId()));
+            throw new MotuException(
+                    ErrorType.INVALID_LAT_LON_RANGE,
+                    String.format("Error in getGeoXAxisData - No geoX axis found in this product '%s'", this.getProductId()));
         }
 
         Array returnArray = readVariable(variable);
@@ -1214,12 +1212,14 @@ public class Product {
         }
 
         if (productMetaData == null) {
-            throw new MotuException("Error in getGeoYAxisData - productMetaData is null");
+            throw new MotuException(ErrorType.SYSTEM, "Error in getGeoYAxisData - productMetaData is null");
         }
 
         Variable variable = productMetaData.getGeoYAxis();
         if (variable == null) {
-            throw new MotuException(String.format("Error in getGeoYAxisData - No geoY axis found in this product '%s'", this.getProductId()));
+            throw new MotuException(
+                    ErrorType.INVALID_LAT_LON_RANGE,
+                    String.format("Error in getGeoYAxisData - No geoY axis found in this product '%s'", this.getProductId()));
         }
 
         Array returnArray = readVariable(variable);
@@ -1238,7 +1238,7 @@ public class Product {
      */
     public Array getTimeAxisData() throws MotuException {
         if (productMetaData == null) {
-            throw new MotuException("Error in getTimeAxisData - productMetaData is null");
+            throw new MotuException(ErrorType.SYSTEM, "Error in getTimeAxisData - productMetaData is null");
         }
 
         Variable variable = productMetaData.getTimeAxis();
@@ -1254,7 +1254,7 @@ public class Product {
         try {
             returnArray = readVariable(variable);
         } catch (NetCdfVariableException e) {
-            throw new MotuException("Error while reading variable " + variable, e);
+            throw new MotuException(ErrorType.NETCDF_VARIABLE, "Error while reading variable " + variable, e);
         }
         return returnArray;
     }
@@ -1283,7 +1283,9 @@ public class Product {
             try {
                 list.add(dateFormatter.parse(dateString));
             } catch (ParseException e) {
-                throw new MotuException("Failed to parse date '" + dateString + "'. Expected format '" + dateFormatter.toString() + "'");
+                throw new MotuException(
+                        ErrorType.INVALID_DATE,
+                        "Failed to parse date '" + dateString + "'. Expected format '" + dateFormatter.toString() + "'");
             }
         }
 
@@ -1327,19 +1329,21 @@ public class Product {
      */
     public Array getZAxisData() throws MotuException {
         if (productMetaData == null) {
-            throw new MotuException("Error in getZAxisData - productMetaData is null");
+            throw new MotuException(ErrorType.SYSTEM, "Error in getZAxisData - productMetaData is null");
         }
 
         Variable variable = productMetaData.getZAxis();
         if (variable == null) {
-            throw new MotuException(String.format("Error in getZAxisData - No Z (depth) axis found in this product '%s'", this.getProductId()));
+            throw new MotuException(
+                    ErrorType.INVALID_DEPTH,
+                    String.format("Error in getZAxisData - No Z (depth) axis found in this product '%s'", this.getProductId()));
         }
 
         Array returnArray;
         try {
             returnArray = readVariable(variable);
         } catch (NetCdfVariableException e) {
-            throw new MotuException("Error while reading variable " + variable, e);
+            throw new MotuException(ErrorType.BAD_PARAMETERS, "Error while reading variable " + variable, e);
         }
         return returnArray;
 
@@ -1674,7 +1678,7 @@ public class Product {
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
             NetCdfVariableNotFoundException {
         if (dataset == null) {
-            throw new MotuException("Error in getAmountDataSize - Nothing to get - dataset is null");
+            throw new MotuException(ErrorType.SYSTEM, "Error in getAmountDataSize - Nothing to get - dataset is null");
         }
 
         dataset.computeAmountDataSize();
@@ -1982,7 +1986,7 @@ public class Product {
         }
 
         if (dataset == null) {
-            throw new MotuException("Error in extractData - Nothing to extract - dataset is null");
+            throw new MotuException(ErrorType.SYSTEM, "Error in extractData - Nothing to extract - dataset is null");
         }
 
         dataset.extractData(dataOutputFormat);
@@ -2607,7 +2611,7 @@ public class Product {
         // Rename file
         boolean success = fileTemp.renameTo(fileFinal);
         if (!success) {
-            throw new MotuException(String.format("Unable to rename file '%s' to file '%s'.", locationTmp, locationFinal));
+            throw new MotuException(ErrorType.SYSTEM, String.format("Unable to rename file '%s' to file '%s'.", locationTmp, locationFinal));
         }
     }
 

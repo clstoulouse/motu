@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
@@ -58,8 +59,8 @@ public class DebugAction extends AbstractAction {
      * 
      * @param actionName_
      */
-    public DebugAction(HttpServletRequest request, HttpServletResponse response) {
-        super(ACTION_NAME, request, response);
+    public DebugAction(String actionCode_, HttpServletRequest request, HttpServletResponse response) {
+        super(ACTION_NAME, actionCode_, request, response);
 
         debugOrderHTTParameterValidator = new DebugOrderHTTParameterValidator(
                 MotuRequestParametersConstant.PARAM_DEBUG_ORDER,
@@ -85,7 +86,7 @@ public class DebugAction extends AbstractAction {
         try {
             getResponse().getWriter().write(stringBuffer.toString());
         } catch (IOException e) {
-            throw new MotuException("Error while wirting the response", e);
+            throw new MotuException(ErrorType.SYSTEM, "Error while wirting the response", e);
         }
     }
 
@@ -157,8 +158,8 @@ public class DebugAction extends AbstractAction {
         for (Long requestId : requestIds) {
             StatusModeResponse statusModeResponse;
             try {
-                statusModeResponse = XMLConverter
-                        .convertStatusModeResponse(BLLManager.getInstance().getRequestManager().getRequestStatus(requestId));
+                statusModeResponse = XMLConverter.convertStatusModeResponse(getActionCode(),
+                                                                            BLLManager.getInstance().getRequestManager().getRequestStatus(requestId));
                 if (statusModeResponse.getStatus() != statusModeType) {
                     continue;
                 }

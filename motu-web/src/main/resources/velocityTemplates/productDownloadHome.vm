@@ -467,9 +467,6 @@
 
 <p>&nbsp;</p>
 
-<!--div style="position:fixe;top:49%;left:49%">
-        <img src="css/motu/screen/images/logo-cls.png" alt="CLS" title="" />
-</div-->
 <input id="DownloadButton" onClick="this.disabled=true;this.value='Download in progress...';updateMap();this.form.submit();" type="submit" value="Download" />
 <input id="ScriptButton" onClick="openScriptCmdWin()" type="button" value="Script" />
 </form>

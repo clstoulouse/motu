@@ -153,7 +153,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
             // Remove products that are not anymore in the catalog
             cd.productsKeySet().retainAll(cd.getProductsLoaded());
         } catch (Exception e) {
-            throw new MotuException("Error while initializing TDS sub catalog", e);
+            throw new MotuException(ErrorType.LOADING_CATALOG, "Error while initializing TDS sub catalog", e);
         }
 
     }
@@ -273,13 +273,17 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      */
     private void initializeProductFromTds(DatasetType tdsDatasetType, Catalog tdsCatalogXml, boolean isSSO, CatalogData cd) throws MotuException {
         if (tdsDatasetType == null) {
-            throw new MotuException("Error in initializeProductFromTds - Tds dataset is null");
+            throw new MotuException(ErrorType.LOADING_CATALOG, "Error in initializeProductFromTds - Tds dataset is null");
         }
         if (tdsDatasetType.getUrlPath() == null) {
-            throw new MotuException("Error in initializeProductFromTds - Invalid dataset branch - Tds dataset has a null url path");
+            throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
+                    "Error in initializeProductFromTds - Invalid dataset branch - Tds dataset has a null url path");
         }
         if (tdsDatasetType.getUrlPath().equals("")) {
-            throw new MotuException("Error in initializeProductFromTds - Invalid dataset branch - Tds dataset has an empty url path");
+            throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
+                    "Error in initializeProductFromTds - Invalid dataset branch - Tds dataset has an empty url path");
         }
 
         String productId = "";
@@ -385,6 +389,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
 
         if (tdsServiceName.equals("")) {
             throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
                     String.format("Error in getUrlNCSSFromTds - No TDS service found in TDS catalog for dataset '%s' ", datasetType.getName()));
         }
 
@@ -402,6 +407,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
             opendapUri = new URI(uri.getScheme(), uri.getAuthority(), relativeUrl, null, null);
         } catch (URISyntaxException e) {
             throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
                     String.format("Error in getUrlNCSSFromTds - Uri creation: scheme='%s', authority='%s', path='%s'",
                                   uri.getScheme(),
                                   uri.getAuthority(),
@@ -534,6 +540,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
 
         if (tdsServiceName.equals("")) {
             throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
                     String.format("Error in getUrlOpendapFromTds - No TDS service found in TDS catalog for dataset '%s' ", tdsDatasetType.getName()));
         }
 
@@ -546,6 +553,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         // One of the two is mandatory
         if (tdsService == null) {
             throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
                     String.format("Error in getUrlOpendapFromTds - TDS service '%s' found in TDS catalog for dataset '%s' has neither 'opendap' nor 'dods' service type",
                                   tdsServiceName,
                                   tdsDatasetType.getName()));
@@ -559,6 +567,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
             opendapUri = new URI(uri.getScheme(), uri.getAuthority(), relativeUrl, null, null);
         } catch (URISyntaxException e) {
             throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
                     String.format("Error in getUrlOpendapFromTds - Uri creation: scheme='%s', authority='%s', path='%s'",
                                   uri.getScheme(),
                                   uri.getAuthority(),
@@ -903,7 +912,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
 
             return catalogData;
         } catch (Exception e) {
-            throw new MotuException("Error while reading catalog from TDS", e);
+            throw new MotuException(ErrorType.LOADING_CATALOG, "Error while reading catalog from TDS", e);
         }
 
     }

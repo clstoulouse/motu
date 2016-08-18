@@ -38,6 +38,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateRangeException;
@@ -407,7 +408,7 @@ public abstract class DatasetBase {
     public List<String> addVariables(List<String> listVar) throws MotuException {
         List<String> listVarNameResolved = new ArrayList<String>();
         if (listVar == null) {
-            throw new MotuException("Error in addVariables - List of variables to be added is null");
+            throw new MotuException(ErrorType.NO_VARIABLE, "Error in addVariables - List of variables to be added is null");
         }
 
         NetCdfReader netCdfReader = new NetCdfReader(product.getLocationData(), false);
@@ -423,7 +424,7 @@ public abstract class DatasetBase {
             try {
                 listVarName = netCdfReader.getNetcdfVarNameByStandardName(trimmedStandardName);
             } catch (NetCdfAttributeException e) {
-                throw new MotuException("Error in addVariables - Unable to get netcdf variable name", e);
+                throw new MotuException(ErrorType.NETCDF_VARIABLE, "Error in addVariables - Unable to get netcdf variable name", e);
             }
             for (String varName : listVarName) {
                 VarData varData = new VarData(varName);
@@ -562,7 +563,7 @@ public abstract class DatasetBase {
         }
 
         if (list == null) {
-            throw new MotuException("Error in addCriteria - List of listCriteria to be added is null");
+            throw new MotuException(ErrorType.BAD_PARAMETERS, "Error in addCriteria - List of listCriteria to be added is null");
         }
 
         if (listCriteria == null) {
@@ -658,10 +659,14 @@ public abstract class DatasetBase {
         }
 
         if (product == null) {
-            throw new MotuException("Error in DatasetBase - initializeNetCdfFixedGlobalAttributes product have not been set (= null)");
+            throw new MotuException(
+                    ErrorType.SYSTEM,
+                    "Error in DatasetBase - initializeNetCdfFixedGlobalAttributes product have not been set (= null)");
         }
         if (productMetadata == null) {
-            throw new MotuException("Error in DatasetBase - initializeNetCdfFixedGlobalAttributes productMetadata have not nbeen set (= null)");
+            throw new MotuException(
+                    ErrorType.SYSTEM,
+                    "Error in DatasetBase - initializeNetCdfFixedGlobalAttributes productMetadata have not nbeen set (= null)");
         }
 
         List<Attribute> globalAttributes = new ArrayList<Attribute>();
@@ -786,10 +791,14 @@ public abstract class DatasetBase {
         }
 
         if (product == null) {
-            throw new MotuException("Error in DatasetBase - initializeNetCdfDynGlobalAttributes product have not been set (= null)");
+            throw new MotuException(
+                    ErrorType.SYSTEM,
+                    "Error in DatasetBase - initializeNetCdfDynGlobalAttributes product have not been set (= null)");
         }
         if (productMetadata == null) {
-            throw new MotuException("Error in DatasetBase - initializeNetCdfDynGlobalAttributes productMetadata have not nbeen set (= null)");
+            throw new MotuException(
+                    ErrorType.SYSTEM,
+                    "Error in DatasetBase - initializeNetCdfDynGlobalAttributes productMetadata have not nbeen set (= null)");
         }
         // intialisation
         List<Attribute> globalAttributes = new ArrayList<Attribute>();
@@ -979,7 +988,7 @@ public abstract class DatasetBase {
         }
 
         if (product == null) {
-            throw new MotuException("Error in DatasetBase - initNetCdfExtraction product have not nbeen set (= null)");
+            throw new MotuException(ErrorType.SYSTEM, "Error in DatasetBase - initNetCdfExtraction product have not nbeen set (= null)");
         }
 
         if (variablesSize() <= 0) {
@@ -990,7 +999,7 @@ public abstract class DatasetBase {
 
         productMetadata = product.getProductMetaData();
         if (productMetadata == null) {
-            throw new MotuException("Error in DatasetBase - initNetCdfExtraction productMetadata have not nbeen set (= null)");
+            throw new MotuException(ErrorType.SYSTEM, "Error in DatasetBase - initNetCdfExtraction productMetadata have not nbeen set (= null)");
         }
 
         setHasOutputDimension();
@@ -1013,7 +1022,7 @@ public abstract class DatasetBase {
         }
 
         if (product == null) {
-            throw new MotuException("Error in DatasetBase - initNetCdfExtraction product have not nbeen set (= null)");
+            throw new MotuException(ErrorType.SYSTEM, "Error in DatasetBase - initNetCdfExtraction product have not nbeen set (= null)");
         }
 
         if (variablesSize() <= 0) {
@@ -1024,7 +1033,7 @@ public abstract class DatasetBase {
 
         productMetadata = product.getProductMetaData();
         if (productMetadata == null) {
-            throw new MotuException("Error in DatasetBase - initNetCdfExtraction productMetadata have not nbeen set (= null)");
+            throw new MotuException(ErrorType.SYSTEM, "Error in DatasetBase - initNetCdfExtraction productMetadata have not nbeen set (= null)");
         }
 
         // Create output NetCdf file

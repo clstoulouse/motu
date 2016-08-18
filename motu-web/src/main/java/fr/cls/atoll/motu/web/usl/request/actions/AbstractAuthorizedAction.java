@@ -28,12 +28,17 @@ public abstract class AbstractAuthorizedAction extends AbstractAction {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public AbstractAuthorizedAction(String actionName_, HttpServletRequest request_, HttpServletResponse response_) {
-        super(actionName_, request_, response_, null);
+    public AbstractAuthorizedAction(String actionName_, String actionCode_, HttpServletRequest request_, HttpServletResponse response_) {
+        super(actionName_, actionCode_, request_, response_, null);
     }
 
-    public AbstractAuthorizedAction(String actionName_, HttpServletRequest request_, HttpServletResponse response_, HttpSession session_) {
-        super(actionName_, request_, response_, session_);
+    public AbstractAuthorizedAction(
+        String actionName_,
+        String actionCode_,
+        HttpServletRequest request_,
+        HttpServletResponse response_,
+        HttpSession session_) {
+        super(actionName_, actionCode_, request_, response_, session_);
     }
 
     /**

@@ -14,6 +14,7 @@ import javax.xml.bind.JAXBException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.DocMetaData;
@@ -81,7 +82,7 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
 
             return catalogData;
         } catch (Exception e) {
-            throw new MotuException("Error while reading catalog from TDS", e);
+            throw new MotuException(ErrorType.LOADING_CATALOG, "Error while reading catalog from TDS", e);
         }
     }
 
@@ -152,13 +153,17 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
     private void initializeProductFromOpendap(Dataset dataset, CatalogData cd, boolean useSSO) throws MotuException {
 
         if (dataset == null) {
-            throw new MotuException("Error in intializeProductFromOpendap - Opendap dataset is null");
+            throw new MotuException(ErrorType.LOADING_CATALOG, "Error in intializeProductFromOpendap - Opendap dataset is null");
         }
         if (dataset.getUrlPath() == null) {
-            throw new MotuException("Error in intializeProductFromOpendap - Invalid dataset branch - Opendap dataset has a null url path");
+            throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
+                    "Error in intializeProductFromOpendap - Invalid dataset branch - Opendap dataset has a null url path");
         }
         if (dataset.getUrlPath().equals("")) {
-            throw new MotuException("Error in intializeProductFromOpendap - Invalid dataset branch - Opendap dataset has an empty url path");
+            throw new MotuException(
+                    ErrorType.LOADING_CATALOG,
+                    "Error in intializeProductFromOpendap - Invalid dataset branch - Opendap dataset has an empty url path");
         }
 
         String productId = "";

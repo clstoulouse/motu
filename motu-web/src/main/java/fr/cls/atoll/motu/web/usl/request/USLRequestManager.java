@@ -12,11 +12,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.utils.JAXBWriter;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DebugAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DeleteAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DescribeCoverageAction;
@@ -56,75 +58,89 @@ public class USLRequestManager implements IUSLRequestManager {
     @Override
     public void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws MotuException, InvalidHTTPParameterException {
         String action = CommonHTTPParameters.getActionFromRequest(request).toLowerCase();
+        AbstractAction actionInst = null;
+
         switch (action) {
         case PingAction.ACTION_NAME:
-            new PingAction(request, response).doAction();
+            actionInst = new PingAction("002", request, response);
             break;
         case DebugAction.ACTION_NAME:
         case DebugAction.ACTION_NAME_ALIAS_QUEUE_SERVER:
-            new DebugAction(request, response).doAction();
+            actionInst = new DebugAction("003", request, response);
             break;
         case GetRequestStatusAction.ACTION_NAME:
-            new GetRequestStatusAction(request, response).doAction();
+            actionInst = new GetRequestStatusAction("004", request, response);
             break;
         case GetSizeAction.ACTION_NAME:
-            new GetSizeAction(request, response, getSession(request)).doAction();
+            actionInst = new GetSizeAction("005", request, response, getSession(request));
             break;
         case DescribeProductAction.ACTION_NAME:
-            new DescribeProductAction(request, response, getSession(request)).doAction();
+            actionInst = new DescribeProductAction("006", request, response, getSession(request));
             break;
         case TimeCoverageAction.ACTION_NAME:
-            new TimeCoverageAction(request, response, getSession(request)).doAction();
+            actionInst = new TimeCoverageAction("007", request, response, getSession(request));
             break;
         case LogoutAction.ACTION_NAME:
-            new LogoutAction(request, response, getSession(request)).doAction();
+            actionInst = new LogoutAction("008", request, response, getSession(request));
             break;
         case DeleteAction.ACTION_NAME:
-            new DeleteAction(request, response, getSession(request)).doAction();
+            actionInst = new DeleteAction("009", request, response, getSession(request));
             break;
 
         // Authenticated actions
         case DownloadProductAction.ACTION_NAME:
-            new DownloadProductAction(request, response, getSession(request)).doAction();
+            actionInst = new DownloadProductAction("010", request, response, getSession(request));
             break;
         case ListCatalogAction.ACTION_NAME:
-            new ListCatalogAction(request, response, getSession(request)).doAction();
+            actionInst = new ListCatalogAction("011", request, response, getSession(request));
             break;
         case ProductMetadataAction.ACTION_NAME:
-            new ProductMetadataAction(request, response, getSession(request)).doAction();
+            actionInst = new ProductMetadataAction("012", request, response, getSession(request));
             break;
         case ProductDownloadHomeAction.ACTION_NAME:
-            new ProductDownloadHomeAction(request, response, getSession(request)).doAction();
+            actionInst = new ProductDownloadHomeAction("013", request, response, getSession(request));
             break;
         case ListServicesAction.ACTION_NAME:
-            new ListServicesAction(request, response, getSession(request)).doAction();
+            actionInst = new ListServicesAction("014", request, response, getSession(request));
             break;
         // TODO SMA Action Refresh ???
         case DescribeCoverageAction.ACTION_NAME:
-            new DescribeCoverageAction(request, response, getSession(request)).doAction();
+            actionInst = new DescribeCoverageAction("015", request, response, getSession(request));
             break;
 
         default:
-            LOGGER.info("Request an undefined action: " + action);
-            onUnkownAction(action, request, response, getSession(request));
+            // Nothing to do
         }
-
-    }
-
-    /**
-     * .
-     * 
-     * @param request
-     * @param response
-     * @param session
-     * @throws MotuException
-     */
-    private void onUnkownAction(String action, HttpServletRequest request, HttpServletResponse response, HttpSession session) throws MotuException {
         try {
-            response.getWriter().write("Oops, action is unknown: " + action);
-        } catch (IOException e) {
-            throw new MotuException(e);
+            if (actionInst != null) {
+                actionInst.doAction();
+            } else {
+                throw new MotuException(ErrorType.UNKNOWN_ACTION, "The requested action is unknown : " + action);
+            }
+        } catch (Exception e) {
+            ErrorType errorType = ErrorType.SYSTEM;
+            String actionCode = AbstractAction.UNDETERMINED_ACTION;
+            if (actionInst != null) {
+                actionCode = actionInst.getActionCode();
+            }
+            if (e instanceof MotuException) {
+                errorType = ((MotuException) e).getErrorType();
+            }
+            LOGGER.error(StringUtils.getLogMessage(actionCode,
+                                                   errorType,
+                                                   BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType)),
+                         e);
+            try {
+                response.getWriter().write(StringUtils
+                        .getLogMessage(actionCode, errorType, BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType)));
+            } catch (IOException e1) {
+                LOGGER.error(StringUtils.getLogMessage(actionCode,
+                                                       ErrorType.SYSTEM,
+                                                       BLLManager.getInstance().getMessagesErrorManager().getMessageError(ErrorType.SYSTEM)),
+                             e1);
+            }
         }
+
     }
 
     /**
@@ -228,7 +244,7 @@ public class USLRequestManager implements IUSLRequestManager {
         try {
             JAXBWriter.getInstance().init();
         } catch (JAXBException e) {
-            throw new MotuException(e);
+            throw new MotuException(ErrorType.SYSTEM, e);
         }
     }
 

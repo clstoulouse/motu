@@ -95,8 +95,8 @@ public class GetSizeAction extends AbstractProductInfoAction {
      * @param response The response object used to return the response of the request
      * @param session The session object of the request
      */
-    public GetSizeAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        super(ACTION_NAME, request, response, session);
+    public GetSizeAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        super(ACTION_NAME, actionCode_, request, response, session);
 
         latitudeLowHTTPParameterValidator = new LatitudeHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_LOW_LAT,
@@ -141,7 +141,7 @@ public class GetSizeAction extends AbstractProductInfoAction {
         try {
             getAmountDataSize(createExtractionParameters(), getResponse());
         } catch (IOException | JAXBException e) {
-            throw new MotuException("Error while computing getAmountDataSize", e);
+            throw new MotuException(ErrorType.SYSTEM, "Error while computing getAmountDataSize", e);
         }
     }
 
@@ -200,13 +200,24 @@ public class GetSizeAction extends AbstractProductInfoAction {
                 RequestSize requestSize = initRequestSize(productDataSize, productMaxAllowedDataSize);
                 marshallRequestSize(requestSize, getResponse().getWriter());
             } else {
-                throw new MotuException("Product not found : " + getProductHTTPParameterValidator().getParameterValue());
+                throw new MotuException(ErrorType.SYSTEM, "Product not found : " + getProductHTTPParameterValidator().getParameterValue());
             }
-        } catch (MotuExceptionBase e) {
+        } catch (MotuMarshallException e) {
             try {
-                marshallRequestSize(e, extractionParameters.getOut());
+                LOGGER.error(StringUtils.getLogMessage(getActionCode(),
+                                                       ErrorType.SYSTEM,
+                                                       BLLManager.getInstance().getMessagesErrorManager().getMessageError(ErrorType.SYSTEM)),
+                             e);
+                marshallRequestSize(e, getResponse().getWriter());
             } catch (MotuMarshallException e2) {
-                response.sendError(500, String.format("ERROR: %s", e2.getMessage()));
+                LOGGER.error(StringUtils.getLogMessage(getActionCode(),
+                                                       ErrorType.SYSTEM,
+                                                       BLLManager.getInstance().getMessagesErrorManager().getMessageError(ErrorType.SYSTEM)),
+                             e2);
+                getResponse().getWriter()
+                        .write(StringUtils.getLogMessage(getActionCode(),
+                                                         ErrorType.SYSTEM,
+                                                         BLLManager.getInstance().getMessagesErrorManager().getMessageError(ErrorType.SYSTEM)));
             }
         }
     }
@@ -220,15 +231,17 @@ public class GetSizeAction extends AbstractProductInfoAction {
      * 
      * @return the request size
      */
-    private static RequestSize initRequestSize(double size, double maxAllowedSize) {
+    private RequestSize initRequestSize(double size, double maxAllowedSize) {
         RequestSize requestSize = createRequestSize();
 
         requestSize.setSize(size);
-        requestSize.setCode(ErrorType.OK);
+        requestSize.setCode(StringUtils.getErrorCode(getActionCode(), ErrorType.OK));
         requestSize.setMsg(ErrorType.OK.toString());
 
         if (size < 0) {
-            ExceptionUtils.setError(requestSize, new MotuException("size can't be computed and the cause is unspecified"));
+            ExceptionUtils.setError(getActionCode(),
+                                    requestSize,
+                                    new MotuException(ErrorType.SYSTEM, "size can't be computed and the cause is unspecified"));
             return requestSize;
         }
 
@@ -239,7 +252,7 @@ public class GetSizeAction extends AbstractProductInfoAction {
         }
 
         if (exceptionBase != null) {
-            ExceptionUtils.setError(requestSize, exceptionBase);
+            ExceptionUtils.setError(getActionCode(), requestSize, exceptionBase);
         }
 
         requestSize.setMaxAllowedSize(maxAllowedSize);
@@ -279,7 +292,7 @@ public class GetSizeAction extends AbstractProductInfoAction {
      * @throws JAXBException
      * @throws IOException
      */
-    public static void marshallRequestSize(MotuExceptionBase ex, Writer writer) throws MotuMarshallException, JAXBException, IOException {
+    public void marshallRequestSize(Exception ex, Writer writer) throws MotuMarshallException, JAXBException, IOException {
         RequestSize requestSize = createRequestSize(ex);
         JAXBWriter.getInstance().write(requestSize, writer);
         writer.flush();
@@ -291,13 +304,16 @@ public class GetSizeAction extends AbstractProductInfoAction {
      * 
      * @return the request size
      */
-    public static RequestSize createRequestSize() {
+    public RequestSize createRequestSize() {
 
         ObjectFactory objectFactory = new ObjectFactory();
 
         RequestSize requestSize = objectFactory.createRequestSize();
         requestSize.setSize(-1d);
-        ExceptionUtils.setError(requestSize, new MotuException("If you see that message, the request has failed and the error has not been filled"));
+        ExceptionUtils
+                .setError(getActionCode(),
+                          requestSize,
+                          new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
         return requestSize;
     }
 
@@ -308,10 +324,10 @@ public class GetSizeAction extends AbstractProductInfoAction {
      * 
      * @return the request size
      */
-    public static RequestSize createRequestSize(MotuExceptionBase e) {
+    public RequestSize createRequestSize(Exception e) {
 
         RequestSize requestSize = createRequestSize();
-        ExceptionUtils.setError(requestSize, e);
+        ExceptionUtils.setError(getActionCode(), requestSize, e);
         return requestSize;
     }
 
@@ -326,7 +342,7 @@ public class GetSizeAction extends AbstractProductInfoAction {
      * @throws JAXBException
      * @throws IOException
      */
-    public static void marshallRequestSize(RequestSize requestSize, Writer writer) throws MotuMarshallException, JAXBException, IOException {
+    public void marshallRequestSize(RequestSize requestSize, Writer writer) throws MotuMarshallException, JAXBException, IOException {
         if (writer == null) {
             return;
         }

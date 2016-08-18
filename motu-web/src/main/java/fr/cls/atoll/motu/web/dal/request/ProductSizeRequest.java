@@ -3,6 +3,7 @@ package fr.cls.atoll.motu.web.dal.request;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
@@ -79,7 +80,7 @@ public class ProductSizeRequest {
                                                   MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException {
 
         if (criteria == null) {
-            throw new MotuException("Error in ServiceData createCriteriaList - criteria is null");
+            throw new MotuException(ErrorType.BAD_PARAMETERS, "Error in ServiceData createCriteriaList - criteria is null");
         }
 
         // distinct try/catch exception to add all correct criteria
@@ -136,7 +137,7 @@ public class ProductSizeRequest {
     public static void addCriteriaTemporal(List<String> listTemporalCoverage, List<ExtractCriteria> criteria)
             throws MotuInvalidDateException, MotuException {
         if (criteria == null) {
-            throw new MotuException("Error in ServiceData addCriteriaTemporal - criteria is null");
+            throw new MotuException(ErrorType.BAD_PARAMETERS, "Error in ServiceData addCriteriaTemporal - criteria is null");
         }
         if (listTemporalCoverage != null) {
             if (!listTemporalCoverage.isEmpty()) {
@@ -162,7 +163,7 @@ public class ProductSizeRequest {
     public static void addCriteriaLatLon(List<String> listLatLonCoverage, List<ExtractCriteria> criteria)
             throws MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException {
         if (criteria == null) {
-            throw new MotuException("Error in ServiceData addCriteriaLatLon - criteria is null");
+            throw new MotuException(ErrorType.BAD_PARAMETERS, "Error in ServiceData addCriteriaLatLon - criteria is null");
         }
 
         if (listLatLonCoverage != null) {
@@ -185,7 +186,7 @@ public class ProductSizeRequest {
     public static void addCriteriaDepth(List<String> listDepthCoverage, List<ExtractCriteria> criteria)
             throws MotuInvalidDepthException, MotuException {
         if (criteria == null) {
-            throw new MotuException("Error in ServiceData addCriteriaDepth - criteria is null");
+            throw new MotuException(ErrorType.BAD_PARAMETERS, "Error in ServiceData addCriteriaDepth - criteria is null");
         }
         if (listDepthCoverage != null) {
             if (!listDepthCoverage.isEmpty()) {
@@ -216,7 +217,7 @@ public class ProductSizeRequest {
             MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException, NetCdfVariableNotFoundException {
 
         if (product == null) {
-            throw new MotuException("Error in extractData - product is null");
+            throw new MotuException(ErrorType.SYSTEM, "Error in extractData - product is null");
         }
 
         // updates variables collection to download
@@ -240,7 +241,7 @@ public class ProductSizeRequest {
      */
     public static void updateVariables(Product product, List<String> listVar) throws MotuException, MotuNotImplementedException {
         if (product == null) {
-            throw new MotuException("Error in updateVariables - product is null");
+            throw new MotuException(ErrorType.SYSTEM, "Error in updateVariables - product is null");
         }
         product.updateVariables(listVar);
     }
@@ -256,7 +257,7 @@ public class ProductSizeRequest {
      */
     public static void updateCriteria(Product product, List<ExtractCriteria> criteria) throws MotuException, MotuNotImplementedException {
         if (product == null) {
-            throw new MotuException("Error in updateCriteria - product is null");
+            throw new MotuException(ErrorType.SYSTEM, "Error in updateCriteria - product is null");
         }
 
         if (criteria == null) {

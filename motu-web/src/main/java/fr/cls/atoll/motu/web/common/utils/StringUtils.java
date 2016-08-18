@@ -1,5 +1,7 @@
 package fr.cls.atoll.motu.web.common.utils;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+
 /**
  * <br>
  * <br>
@@ -77,4 +79,39 @@ public class StringUtils {
         return result.replace("M_", "");
     }
 
+    /**
+     * Return the string to log from error type and error message.
+     * 
+     * @param actionCode The action code
+     * @param errortype The error type
+     * @param message The message
+     * @return the error message to log
+     */
+    public static String getLogMessage(String actioncode, ErrorType errortype, String message) {
+        return getErrorCode(actioncode, errortype) + " : " + message;
+    }
+
+    /**
+     * Return the string to log from error type and error message.
+     * 
+     * @param actionCode The action code
+     * @param errortype The error type
+     * @param message The message
+     * @return the error message to log
+     */
+    public static String getLogMessage(ErrorType errortype, String message) {
+        return errortype.value() + " : " + message;
+    }
+
+    /**
+     * Return the error code string.
+     * 
+     * @param actioncode the action code
+     * @param errortype The error type
+     * @param message The message
+     * @return the error message to log
+     */
+    public static String getErrorCode(String actionCode, ErrorType errorType) {
+        return actionCode + "-" + errorType.value();
+    }
 }

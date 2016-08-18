@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
@@ -47,7 +48,7 @@ public class DALCatalogManager implements IDALCatalogManager {
         try {
             JAXBTDSModel.getInstance().init();
         } catch (JAXBException e) {
-            throw new MotuException("Error while initializing JAXB with TDS model", e);
+            throw new MotuException(ErrorType.LOADING_CATALOG, "Error while initializing JAXB with TDS model", e);
         }
     }
 
@@ -66,7 +67,7 @@ public class DALCatalogManager implements IDALCatalogManager {
             cd = new FileCatalogLoader().loadFtpCatalog(cs.getCatalog().getUrlSite() + File.separator + cs.getCatalog().getName());
             break;
         default:
-            throw new MotuException(String.format("Unknown catalog type %d ", cs.getCatalog().getType()));
+            throw new MotuException(ErrorType.LOADING_CATALOG, String.format("Unknown catalog type %d ", cs.getCatalog().getType()));
         }
         return cd;
     }

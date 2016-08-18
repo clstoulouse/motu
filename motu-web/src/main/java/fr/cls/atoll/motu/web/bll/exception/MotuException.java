@@ -56,24 +56,40 @@ public class MotuException extends Exception {
      * @param message message to post.
      * @param cause native exception.
      */
-    public MotuException(String message, Throwable cause) {
-        this(ErrorType.SYSTEM, message, cause);
+    // public MotuException(String message, Throwable cause) {
+    // this(ErrorType.SYSTEM, message, cause);
+    // }
+
+    /**
+     * @param message message to post.
+     */
+    public MotuException(ErrorType errorType, String message) {
+        super(message);
+        this.errorType = errorType;
     }
 
     /**
      * @param message message to post.
      */
-    public MotuException(String message) {
-        super(message);
-        errorType = ErrorType.SYSTEM;
-    }
+    // public MotuException(String message) {
+    // super(message);
+    // errorType = ErrorType.SYSTEM;
+    // }
 
     /**
      * @param cause native exception.
      */
-    public MotuException(Throwable cause) {
+    // public MotuException(Throwable cause) {
+    // super(cause);
+    // errorType = ErrorType.SYSTEM;
+    // }
+
+    /**
+     * @param cause native exception.
+     */
+    public MotuException(ErrorType errorType, Throwable cause) {
         super(cause);
-        errorType = ErrorType.SYSTEM;
+        this.errorType = errorType;
     }
 
     /**

@@ -32,6 +32,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
@@ -113,7 +114,7 @@ public class QueueServerManager implements IQueueServerManager {
                         double requestSizeInMB_) throws MotuException {
         QueueManagement queueManagement = findQueue(requestSizeInMB_);
         if (queueManagement == null) {
-            throw new MotuException("Oops, the size of the data to download (" + (int) requestSizeInMB_
+            throw new MotuException(ErrorType.EXCEEDING_QUEUE_DATA_CAPACITY, "Oops, the size of the data to download (" + (int) requestSizeInMB_
                     + " Megabyte) is not managed by the Motu queue management system.");
         }
         rds_.setQueueId(queueManagement.getQueueConfig().getId());

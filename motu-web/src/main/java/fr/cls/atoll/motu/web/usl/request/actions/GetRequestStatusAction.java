@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.utils.JAXBWriter;
@@ -55,8 +56,8 @@ public class GetRequestStatusAction extends AbstractAction {
      * 
      * @param actionName_
      */
-    public GetRequestStatusAction(HttpServletRequest request, HttpServletResponse response) {
-        super(ACTION_NAME, request, response);
+    public GetRequestStatusAction(String actionCode_, HttpServletRequest request, HttpServletResponse response) {
+        super(ACTION_NAME, actionCode_, request, response);
 
         rqtIdValidator = new RequestIdHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_REQUEST_ID,
@@ -73,7 +74,7 @@ public class GetRequestStatusAction extends AbstractAction {
                 if (rds == null) {
                     getResponse().getWriter().write("Oops, request id '" + requestId + "' does not exist.");
                 } else {
-                    marshallStatusModeResponse(XMLConverter.convertStatusModeResponse(rds), getResponse().getWriter());
+                    marshallStatusModeResponse(XMLConverter.convertStatusModeResponse(getActionCode(), rds), getResponse().getWriter());
                 }
             } else {
                 marshallStatusModeResponse(createStatusModeResponse(new MotuInvalidRequestIdException(-1L)), getResponse().getWriter());
@@ -83,7 +84,7 @@ public class GetRequestStatusAction extends AbstractAction {
             try {
                 getResponse().sendError(500, String.format("ERROR: %s", e.getMessage()));
             } catch (IOException e1) {
-                throw new MotuException("Error while writing response", e1);
+                throw new MotuException(ErrorType.SYSTEM, "Error while writing response", e1);
             }
         }
     }
@@ -124,7 +125,7 @@ public class GetRequestStatusAction extends AbstractAction {
     private StatusModeResponse createStatusModeResponse(Exception e) {
         ObjectFactory objectFactory = new ObjectFactory();
         StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
-        ExceptionUtils.setStatusModeResponseException(e, statusModeResponse);
+        ExceptionUtils.setStatusModeResponseException(getActionCode(), e, statusModeResponse);
         return statusModeResponse;
     }
 

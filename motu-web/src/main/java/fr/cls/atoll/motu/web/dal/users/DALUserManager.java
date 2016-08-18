@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import javax.servlet.ServletException;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
@@ -43,7 +44,7 @@ public class DALUserManager implements IDALUserManager {
                 in.close();
             }
         } catch (Exception e) {
-            throw new MotuException("Authentication initialisation failure ", e);
+            throw new MotuException(ErrorType.SYSTEM, "Authentication initialisation failure ", e);
         }
     }
 

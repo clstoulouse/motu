@@ -42,6 +42,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 
 /**
@@ -142,8 +143,6 @@ public class Zip {
                 if (ftemp.isDirectory()) {
                     continue;
                 }
-                // en afficher le nom
-                // System.out.println("Adding: " + files[i]);
 
                 // cr�ation d'un flux de lecture
                 FileInputStream fi = new FileInputStream(files[i]);
@@ -188,11 +187,9 @@ public class Zip {
             checksum.close();
             dest.close();
 
-            // System.out.println("checksum: " + checksum.getChecksum().getValue());
-
             // traitement de toute exception
         } catch (Exception e) {
-            throw new MotuException("Error in Zip#zip", e);
+            throw new MotuException(ErrorType.SYSTEM, "Error in Zip#zip", e);
         }
 
     }
@@ -227,13 +224,11 @@ public class Zip {
 
                 if (entry.isDirectory()) {
                     // Assume directories are stored parents first then children.
-                    // System.err.println("Extracting directory: " + entry.getName());
                     (new File(entry.getName())).mkdir();
                     continue;
                 }
 
                 // affichage du nom de l'entr�e
-                // System.out.println("Extracting: " +entry);
 
                 int count;
                 byte[] data = new byte[BUFFER];
@@ -260,7 +255,7 @@ public class Zip {
             zis.close();
 
         } catch (Exception e) {
-            throw new MotuException("Error in Zip#unzip", e);
+            throw new MotuException(ErrorType.SYSTEM, "Error in Zip#unzip", e);
         }
 
     }
@@ -340,7 +335,6 @@ public class Zip {
                 }
 
                 // affichage du nom de l'entr�e
-                // System.out.println("Extracting: " +entry);
 
                 int count;
                 byte[] data = new byte[BUFFER];
@@ -368,7 +362,7 @@ public class Zip {
             zis.close();
 
         } catch (Exception e) {
-            throw new MotuException("Error in Zip#unzip", e);
+            throw new MotuException(ErrorType.SYSTEM, "Error in Zip#unzip", e);
         }
 
     }
@@ -409,7 +403,7 @@ public class Zip {
             zipfile.close();
 
         } catch (Exception e) {
-            throw new MotuException("Error in Zip#getEntries", e);
+            throw new MotuException(ErrorType.SYSTEM, "Error in Zip#getEntries", e);
         }
 
         return files;

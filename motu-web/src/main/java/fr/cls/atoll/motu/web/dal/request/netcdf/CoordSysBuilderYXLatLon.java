@@ -254,19 +254,6 @@ public class CoordSysBuilderYXLatLon extends CF1Convention {
             // addCoordinateTransformVariable(ds, coordTransName, listOriginAxes, listOriginAxes);
 
         }
-
-        // for (VariableDS v : coordinateTransformValues()) {
-        // System.out.print("Transform Variable name and dims: ");
-        // System.out.println(v.getNameAndDimensions());
-        // System.out.print("\tisCaching:\t");
-        // System.out.print(v.isCaching());
-        // try {
-        // System.out.print("\t" + _Coordinate.Axes + ":\t");
-        // System.out.println(NetCdfReader.getAttribute(v, _Coordinate.Axes).getStringValue());
-        // } catch (NetCdfAttributeNotFoundException e) {
-        // e.printStackTrace();
-        // }
-        // }
     }
 
     /**

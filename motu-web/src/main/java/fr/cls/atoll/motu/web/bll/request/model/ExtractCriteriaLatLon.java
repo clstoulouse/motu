@@ -613,7 +613,9 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      */
     public static boolean hasRange(List<Range> ranges) throws MotuException {
         if (ranges.size() != 2) {
-            throw new MotuException(String.format("Inconsistency in list range (size %d) - (ExtractCriteriaLatLon.hasRanges)", ranges.size()));
+            throw new MotuException(
+                    ErrorType.INCONSISTENCY,
+                    String.format("Inconsistency in list range (size %d) - (ExtractCriteriaLatLon.hasRanges)", ranges.size()));
         }
         Range rangeLat = ranges.get(0);
         Range rangeLon = ranges.get(1);
@@ -968,52 +970,27 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                     continue;
                 }
                 if (lon < minx) {
-                    // if ((lon > 0)) {
-                    // System.out.print(lat);
-                    // System.out.print(" ");
-                    // System.out.print(lon);
-                    // System.out.println(" ");
-                    // }
 
                     double longitudeCenter = minx + 180;
                     lon = LatLonPointImpl.lonNormal(lon, longitudeCenter);
-                    // if (lon < 0d) {
-                    // String msg = "";
-                    // }
-                    // System.out.println(lon);
                 }
 
                 if ((lat >= miny) && (lat <= maxy) && (lon >= minx) && (lon <= maxx)) {
                     if (i > maxi) {
-                        // System.out.println("i > maxi -->" + "minj=" + minj + " maxj=" + maxj + " mini=" +
-                        // mini + " maxi=" + maxi + " lat=" + lat
-                        // + " lon=" + lon);
                         maxi = i;
                     }
                     if (i < mini) {
-                        // System.out.println("i < maxi -->" + "minj=" + minj + " maxj=" + maxj + " mini=" +
-                        // mini + " maxi=" + maxi + " lat=" + lat
-                        // + " lon=" + lon);
                         mini = i;
                     }
                     if (j > maxj) {
-                        // System.out.println("j > maxj -->" + "minj=" + minj + " maxj=" + maxj + " mini=" +
-                        // mini + " maxi=" + maxi + " lat=" + lat
-                        // + " lon=" + lon);
                         maxj = j;
                     }
                     if (j < minj) {
-                        // System.out.println("j < maxj -->" + "minj=" + minj + " maxj=" + maxj + " mini=" +
-                        // mini + " maxi=" + maxi + " lat=" + lat
-                        // + " lon=" + lon);
                         minj = j;
                     }
                     newRanges = true;
                 } else {
                     if (newRanges) {
-                        // System.out.println("Outside -->" + "minj=" + minj + " maxj=" + maxj + " mini=" +
-                        // mini + " maxi=" + maxi + " lat=" + lat
-                        // + " lon=" + lon);
                         List<Range> ranges = new ArrayList<Range>();
                         try {
                             Range rangeLat = new Range(minj, maxj);
@@ -1021,57 +998,8 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                             ranges.add(rangeLat);
                             ranges.add(rangeLon);
                             listRanges.add(ranges);
-                            // List<List<Range>> listRangesByLat = mapRangeByLatRange.get(rangeLat);
-                            // if (listRangesByLat == null) {
-                            // listRangesByLat = new ArrayList<List<Range>>();
-                            // mapRangeByLatRange.put(rangeLat, listRangesByLat);
-                            // }
-                            //
-                            // listRangesByLat.add(ranges);
-                            //
-                            // List<Double> listLonMin = mapLonMinValueByLatRange.get(rangeLat);
-                            // if (listLonMin == null) {
-                            // listLonMin = new ArrayList<Double>();
-                            // mapLonMinValueByLatRange.put(rangeLat, listLonMin);
-                            // }
-                            //
-                            // double longitudeCenter = (latLonRect.getLonMin() + latLonRect.getLonMax()) / 2;
-                            // double lonNorm = LatLonPointImpl.lonNormal(lon, longitudeCenter);
-                            //
-                            // listLonMin.add(lonNorm);
 
                             computeLatLonMinMax(latAxis, lonAxis, minj, mini, maxj, maxi, minx, maxx);
-                            // // System.out.println("-----------NEW RANGE---------------");
-                            // // System.out.println(minj + " " + maxj);
-                            // // System.out.println(mini + " " + maxi);
-                            // double lonMin = lonAxis.getCoordValue(minj, mini);
-                            // double lonMax = lonAxis.getCoordValue(maxj, maxi);
-                            // // System.out.println("LON BEFORE:" + lonMin + " " + lonMax);
-                            // if (lonMin < minx) {
-                            // double longitudeCenter = minx + 180;
-                            // lonMin = LatLonPointImpl.lonNormal(lonMin, longitudeCenter);
-                            // }
-                            // if (lonMax < minx) {
-                            // double longitudeCenter = minx + 180;
-                            // lonMax = LatLonPointImpl.lonNormal(lonMax, longitudeCenter);
-                            // }
-                            // // System.out.println("LON:" + lonMin + " " + lonMax);
-                            //
-                            // if (lonMin > lonMax) {
-                            // double temp = lonMin;
-                            // lonMin = lonMax;
-                            // lonMax = temp;
-                            // }
-                            // // System.out.println("LON AFTER:" + lonMin + " " + lonMax);
-                            // //
-                            // // System.out.println("-----------END NEW RANGE---------------");
-                            //
-                            // if (lonMin < minXValue2D) {
-                            // minXValue2D = lonMin;
-                            // }
-                            // if (lonMax > maxXValue2D) {
-                            // maxXValue2D = lonMax;
-                            // }
 
                             newRanges = false;
                             mini = Integer.MAX_VALUE;
@@ -1090,9 +1018,6 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
             }
 
             if (newRanges) {
-                // System.out.println("Outside -->" + "minj=" + minj + " maxj=" + maxj + " mini=" +
-                // mini + " maxi=" + maxi + " lat=" + lat
-                // + " lon=" + lon);
                 List<Range> ranges = new ArrayList<Range>();
                 try {
                     Range rangeLat = new Range(minj, maxj);
@@ -1100,24 +1025,6 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                     ranges.add(rangeLat);
                     ranges.add(rangeLon);
                     listRanges.add(ranges);
-                    // List<List<Range>> listRangesByLat = mapRangeByLatRange.get(rangeLat);
-                    // if (listRangesByLat == null) {
-                    // listRangesByLat = new ArrayList<List<Range>>();
-                    // mapRangeByLatRange.put(rangeLat, listRangesByLat);
-                    // }
-                    //
-                    // listRangesByLat.add(ranges);
-                    //
-                    // List<Double> listLonMin = mapLonMinValueByLatRange.get(rangeLat);
-                    // if (listLonMin == null) {
-                    // listLonMin = new ArrayList<Double>();
-                    // mapLonMinValueByLatRange.put(rangeLat, listLonMin);
-                    // }
-                    //
-                    // double longitudeCenter = (latLonRect.getLonMin() + latLonRect.getLonMax()) / 2;
-                    // double lonNorm = LatLonPointImpl.lonNormal(lon, longitudeCenter);
-                    //
-                    // listLonMin.add(lonNorm);
 
                     computeLatLonMinMax(latAxis, lonAxis, minj, mini, maxj, maxi, minx, maxx);
                     newRanges = false;
@@ -1127,14 +1034,15 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                     maxj = -1;
 
                 } catch (InvalidRangeException e) {
-                    throw new MotuException("ERROR in ExtractCriteriaLatLon - getListRangesFromLatLonRect2D - while creating list of ranges", e);
+                    throw new MotuException(
+                            ErrorType.BAD_PARAMETERS,
+                            "ERROR in ExtractCriteriaLatLon - getListRangesFromLatLonRect2D - while creating list of ranges",
+                            e);
                 }
             }
         }
 
         if (newRanges) {
-            // System.out.println("Outside -->" + "minj=" + minj + " maxj=" + maxj + " mini=" + mini + "
-            // maxi=" + maxi + " lat=" + lat + " lon=" + lon);
             List<Range> ranges = new ArrayList<Range>();
             try {
                 Range rangeLat = new Range(minj, maxj);
@@ -1142,52 +1050,15 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                 ranges.add(rangeLat);
                 ranges.add(rangeLon);
                 listRanges.add(ranges);
-                // List<List<Range>> listRangesByLat = mapRangeByLatRange.get(rangeLat);
-                // if (listRangesByLat == null) {
-                // listRangesByLat = new ArrayList<List<Range>>();
-                // mapRangeByLatRange.put(rangeLat, listRangesByLat);
-                // }
-                //
-                // listRangesByLat.add(ranges);
-                //
-                // List<Double> listLonMin = mapLonMinValueByLatRange.get(rangeLat);
-                // if (listLonMin == null) {
-                // listLonMin = new ArrayList<Double>();
-                // mapLonMinValueByLatRange.put(rangeLat, listLonMin);
-                // }
-                //
-                // double longitudeCenter = (latLonRect.getLonMin() + latLonRect.getLonMax()) / 2;
-                // double lonNorm = LatLonPointImpl.lonNormal(lon, longitudeCenter);
-                //
-                // listLonMin.add(lonNorm);
 
                 computeLatLonMinMax(latAxis, lonAxis, minj, mini, maxj, maxi, minx, maxx);
             } catch (InvalidRangeException e) {
-                throw new MotuException("ERROR in ExtractCriteriaLatLon - getListRangesFromLatLonRect2D - while creating list of ranges", e);
+                throw new MotuException(
+                        ErrorType.BAD_PARAMETERS,
+                        "ERROR in ExtractCriteriaLatLon - getListRangesFromLatLonRect2D - while creating list of ranges",
+                        e);
             }
         }
-
-        // for (Entry<Range, List<Double>> entry : mapLonMinValueByLatRange.entrySet()) {
-        // Range latitudeRange = entry.getKey();
-        // List<Double> longitudesMin = entry.getValue();
-        // List<List<Range>> rangesList = mapRangeByLatRange.get(latitudeRange);
-        // for (int i = 0 ; i < longitudesMin.size() - 1 ; i++) {
-        // double lon1 = longitudesMin.get(i);
-        // double lon2 = longitudesMin.get(i+1);
-        // if (lon1 > lon2) {
-        // List<Range> listTemp = rangesList.get(i+1);
-        // rangesList.set(i+1, rangesList.get(i));
-        // rangesList.set(i, listTemp);
-        // }
-        // }
-        // }
-        //
-        //
-        // for (Entry<Range, List<List<Range>>> entry : mapRangeByLatRange.entrySet()) {
-        // //Range latitudeRange = entry.getKey();
-        // List<List<Range>> rangesList = entry.getValue();
-        // listRanges.addAll(rangesList);
-        // }
 
         return listRanges;
 
@@ -1231,7 +1102,9 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
     public void computeLonMinMax(CoordinateAxis2D lonAxis, int minj, int mini, int maxj, int maxi, double minx, double maxx) throws MotuException {
 
         if (lonAxis == null) {
-            throw new MotuException("ERROR in ExtractCriteriaLatLon#computeLonMinMax for CoordinateAxis2D: axis is null");
+            throw new MotuException(
+                    ErrorType.INVALID_LONGITUDE,
+                    "ERROR in ExtractCriteriaLatLon#computeLonMinMax for CoordinateAxis2D: axis is null");
 
         }
         if (lonAxis.getAxisType() != AxisType.Lon) {
@@ -1240,11 +1113,8 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                                        lonAxis.getName(),
                                        lonAxis.getAxisType().name(),
                                        AxisType.Lon.name());
-            throw new MotuException(msg);
+            throw new MotuException(ErrorType.INVALID_LONGITUDE, msg);
         }
-        // System.out.println("-----------NEW RANGE---------------");
-        // System.out.println(minj + " " + maxj);
-        // System.out.println(mini + " " + maxi);
 
         double longitudeCenter = (minx + maxx) / 2;
 
@@ -1261,8 +1131,6 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                     lonMax = value;
                 }
 
-                // System.out.println("LON BEFORE:" + lonMin + " " + lonMax);
-
                 if (lonMin < minx) {
                     lonMin = LatLonPointImpl.lonNormal(lonMin, longitudeCenter);
                 }
@@ -1270,20 +1138,16 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                     lonMax = LatLonPointImpl.lonNormal(lonMax, longitudeCenter);
                 }
 
-                // System.out.println("LON:" + lonMin + " " + lonMax);
-
                 if (lonMin > lonMax) {
                     double temp = lonMin;
                     lonMin = lonMax;
                     lonMax = temp;
                 }
-                // System.out.println("LON AFTER:" + lonMin + " " + lonMax);
 
             }
 
         }
 
-        // System.out.println("-----------END NEW RANGE---------------");
         minMaxXValue2D = computeMinMax(minMaxXValue2D, new MinMax(lonMin, lonMax));
 
     }
@@ -1301,7 +1165,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
     public void computeLatMinMax(CoordinateAxis2D latAxis, int minj, int mini, int maxj, int maxi) throws MotuException {
 
         if (latAxis == null) {
-            throw new MotuException("ERROR in ExtractCriteriaLatLon#computeLatMinMax for CoordinateAxis2D: axis is null");
+            throw new MotuException(ErrorType.INVALID_LATITUDE, "ERROR in ExtractCriteriaLatLon#computeLatMinMax for CoordinateAxis2D: axis is null");
 
         }
         if (latAxis.getAxisType() != AxisType.Lat) {
@@ -1310,7 +1174,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                                        latAxis.getName(),
                                        latAxis.getAxisType().name(),
                                        AxisType.Lat.name());
-            throw new MotuException(msg);
+            throw new MotuException(ErrorType.INVALID_LATITUDE, msg);
         }
         double latMin = Double.MAX_VALUE;
         double latMax = -(Double.MAX_VALUE);
@@ -1324,7 +1188,6 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                 if (latMax < value) {
                     latMax = value;
                 }
-                // System.out.println("LAT:" + latMin + " " + latMax);
 
             }
 
@@ -1365,44 +1228,6 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
 
         return wantMin ? Math.min(lon1, lon2) : Math.max(lon1, lon2);
     }
-
-    // public void adjustLonRectBounds(GridCoordSys gcs) {
-    //
-    // if (getLowerLeftLon() == getUpperRightLon()) {
-    // return;
-    // }
-    //
-    // CoordinateAxis xAxis = gcs.getLonAxis();
-    // if (!(xAxis instanceof CoordinateAxis1D)) {
-    // return;
-    // }
-    //
-    // CoordinateAxis1D lonAxis = (CoordinateAxis1D) xAxis;
-    //
-    // boolean isAscending = false;
-    // if (lonAxis.getSize() < 2) {
-    // isAscending = true;
-    // } else {
-    // isAscending = lonAxis.getCoordValue(0) < lonAxis.getCoordValue(1);
-    // }
-    //
-    // int minxIndex = lonAxis.findCoordElementBounded(getLowerLeftLon());
-    // int maxxIndex = lonAxis.findCoordElementBounded(getUpperRightLon());
-    //
-    // if (minxIndex >= maxxIndex) {
-    // return;
-    // }
-    //
-    // int lonSize = (int) lonAxis.getSize();
-    // if (lonSize <= 0) {
-    // return;
-    // }
-    // double[] edges = lonAxis.getCoordEdges(lonSize - 1);
-    // double diff = Math.abs(edges[0] - edges[1]);
-    // double newLonHigh = ((edges[0] + edges[1]) / 2) - diff;
-    // setLatLonRect(getLowerLeftLat(), getLowerLeftLon(), getUpperRightLat(), newLonHigh);
-    //
-    // }
 
     /**
      * Get Index Ranges for the given lat, lon bounding box. For projection, only an approximation based on
@@ -1462,7 +1287,6 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
             CoordinateAxis1D yaxis1 = (CoordinateAxis1D) yaxis;
             int minxIndex = xaxis1.findCoordElementBounded(minx);
             int minyIndex = yaxis1.findCoordElementBounded(miny);
-            // int maxxIndex = xaxis1.findCoordElementBounded(maxx);
             int maxxIndex = findCoordElementBounded(xaxis1, maxx, minxIndex + 1);
             int maxyIndex = yaxis1.findCoordElementBounded(maxy);
             List<Range> list = new ArrayList<Range>();
@@ -1500,35 +1324,20 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
 
                     if ((lat >= miny) && (lat <= maxy) && (lon >= minx) && (lon <= maxx)) {
                         if (i > maxi) {
-                            // System.out.println("i > maxi -->" + "minj=" + minj + " maxj=" + maxj + " mini="
-                            // + mini + " maxi=" + maxi + " lat=" + lat
-                            // + " lon=" + lon);
                             maxi = i;
                         }
                         if (i < mini) {
-                            // System.out.println("i < maxi -->" + "minj=" + minj + " maxj=" + maxj + " mini="
-                            // + mini + " maxi=" + maxi + " lat=" + lat
-                            // + " lon=" + lon);
                             mini = i;
                         }
                         if (j > maxj) {
-                            // System.out.println("j > maxj -->" + "minj=" + minj + " maxj=" + maxj + " mini="
-                            // + mini + " maxi=" + maxi + " lat=" + lat
-                            // + " lon=" + lon);
                             maxj = j;
                         }
                         if (j < minj) {
-                            // System.out.println("j < maxj -->" + "minj=" + minj + " maxj=" + maxj + " mini="
-                            // + mini + " maxi=" + maxi + " lat=" + lat
-                            // + " lon=" + lon);
                             minj = j;
                         }
                         test = true;
                     } else {
                         if (test) {
-                            // System.out.println("Outside -->" + "minj=" + minj + " maxj=" + maxj + " mini="
-                            // + mini + " maxi=" + maxi + " lat=" + lat
-                            // + " lon=" + lon);
                             test = false;
                         }
                     }
@@ -1540,13 +1349,15 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                 maxi = -1;
                 maxj = -1;
             }
-            // System.out.println("\n" + minj + " " + mini + " " + maxi + " " + maxj);
             List<Range> list = new ArrayList<Range>();
             try {
                 list.add(new Range(minj, maxj));
                 list.add(new Range(mini, maxi));
             } catch (InvalidRangeException e) {
-                throw new MotuException("ERROR in ExtractCriteriaLatLon - getRangesFromLatLonRect - while creating list of ranges", e);
+                throw new MotuException(
+                        ErrorType.BAD_PARAMETERS,
+                        "ERROR in ExtractCriteriaLatLon - getRangesFromLatLonRect - while creating list of ranges",
+                        e);
             }
             return list;
         } else {

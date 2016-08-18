@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.joda.time.Interval;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
@@ -112,7 +113,9 @@ public class DatasetFtp extends DatasetBase {
             break;
 
         default:
-            throw new MotuException(String.format("Unknown data output format '%s' (%d) ", dataOutputFormat.name(), dataOutputFormat.value()));
+            throw new MotuException(
+                    ErrorType.BAD_PARAMETERS,
+                    String.format("Unknown data output format '%s' (%d) ", dataOutputFormat.name(), dataOutputFormat.value()));
 
         }
 
@@ -143,7 +146,10 @@ public class DatasetFtp extends DatasetBase {
             outputFile.close();
 
         } catch (IOException e) {
-            throw new MotuException(String.format("Data extraction - I/O error on file '%s'", product.getExtractLocationDataTemp()), e);
+            throw new MotuException(
+                    ErrorType.BAD_PARAMETERS,
+                    String.format("Data extraction - I/O error on file '%s'", product.getExtractLocationDataTemp()),
+                    e);
         }
 
         product.moveTempExtractFileToFinalExtractFile();
@@ -177,7 +183,7 @@ public class DatasetFtp extends DatasetBase {
             try {
                 uri = new URI(uriFile);
             } catch (URISyntaxException e) {
-                throw new MotuException(String.format("Data extraction - Invalid URI '%s'", uriFile), e);
+                throw new MotuException(ErrorType.BAD_PARAMETERS, String.format("Data extraction - Invalid URI '%s'", uriFile), e);
             }
             File srcFilePath = new File(uri.getPath());
 
@@ -299,6 +305,7 @@ public class DatasetFtp extends DatasetBase {
 
         if (ListUtils.isNullOrEmpty(dataFiles)) {
             throw new MotuException(
+                    ErrorType.BAD_PARAMETERS,
                     String.format("No data files corresponding to the selection criteria have been found for product '%s'", product.getProductId()));
         }
 
@@ -350,7 +357,7 @@ public class DatasetFtp extends DatasetBase {
             }
 
         } catch (URISyntaxException e) {
-            throw new MotuException(String.format("Data extraction - Invalid URI '%s'", locationData), e);
+            throw new MotuException(ErrorType.BAD_PARAMETERS, String.format("Data extraction - Invalid URI '%s'", locationData), e);
         }
 
         return listUrls;
