@@ -133,7 +133,7 @@ public class DatasetFtp extends DatasetBase {
         // Create output file
         product.setExtractFilename(StringUtils.getUniqueFileName(product.getProductId(), DatasetFtp.TXT_FILE_EXTENSION_FINAL));
 
-        List<String> uriFiles = extractPrepare(false, true, false);
+        List<String> uriFiles = extractPrepare(false, true, true);
 
         try {
             FileWriter outputFile = new FileWriter(product.getExtractLocationDataTemp());

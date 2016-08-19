@@ -35,6 +35,7 @@ import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueServerType;
 import fr.cls.atoll.motu.web.dal.request.ProductSizeRequest;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData.CatalogType;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
@@ -250,25 +251,41 @@ public class BLLRequestManager implements IBLLRequestManager {
         String userId = extractionParameters.isAnonymousUser() ? null : extractionParameters.getUserId();
         try {
             try {
-                checkNumberOfRunningRequestForUser(userId);
-
                 double requestSizeInByte = getRequestSizeInByte(extractionParameters, product_);
                 rds_.setSizeInBits(new Double(requestSizeInByte * 8).longValue());
                 double requestSizeInMB = UnitUtils.toMegaBytes(requestSizeInByte);
 
-                File extractionDirectory = new File(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath());
+                checkNumberOfRunningRequestForUser(userId);
+                checkMaxSizePerFile(cs_.getCatalog().getType(), requestSizeInMB);
+                checkFreeSpace(requestSizeInMB);
 
-                if (UnitUtils.toMegaBytes(extractionDirectory.getFreeSpace()) > requestSizeInMB) {
-                    downloadSafe(requestDownloadStatus, requestSizeInMB, extractionParameters, cs_, product_);
-                } else {
-                    throw new NotEnoughSpaceException(
-                            "There is not enough disk space available to generate the file result and to satisfy this request");
-                }
+                downloadSafe(requestDownloadStatus, requestSizeInMB, extractionParameters, cs_, product_);
             } finally {
                 userRequestCounter.onRequestStoppedForUser(userId);
             }
         } catch (MotuException e) {
             requestDownloadStatus.setRunningException(e);
+        }
+    }
+
+    private void checkFreeSpace(double fileSize) throws NotEnoughSpaceException {
+        File extractionDirectory = new File(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath());
+
+        if (UnitUtils.toMegaBytes(extractionDirectory.getFreeSpace()) > fileSize) {
+        } else {
+            throw new NotEnoughSpaceException("There is not enough disk space available to generate the file result and to satisfy this request");
+        }
+    }
+
+    private void checkMaxSizePerFile(String catalogType, double fileSize) throws MotuException {
+        double maxSizePerFile = -1;
+        if (CatalogType.FILE.name().toUpperCase().equals(catalogType.toUpperCase())) {
+            maxSizePerFile = BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFile().doubleValue();
+        } else {
+            maxSizePerFile = BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue();
+        }
+        if (maxSizePerFile < fileSize) {
+            throw new MotuException(ErrorType.EXCEEDING_CAPACITY, "The size of the result file is greater than the max size allowed per file");
         }
     }
 
