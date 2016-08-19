@@ -1023,9 +1023,9 @@ public class NetCdfWriter {
         Variable v = geoGridSubset.getVariable();
 
         amountDataSize += NetCdfWriter.countVarSize(v);
-        if (amountDataSize > BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileTDS().doubleValue()) {
+        if (amountDataSize > BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue()) {
             throw new MotuExceedingCapacityException(
-                    BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileTDS().doubleValue());
+                    BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue());
         }
 
         putVariables(v.getName(), v);
@@ -1139,9 +1139,9 @@ public class NetCdfWriter {
             Variable v = geoGridSubset.getVariable();
 
             amountDataSize += NetCdfWriter.countVarSize(v);
-            if (amountDataSize > BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileTDS().doubleValue()) {
+            if (amountDataSize > BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue()) {
                 throw new MotuExceedingCapacityException(
-                        BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileTDS().doubleValue());
+                        BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue());
             }
 
             putVariables(v.getName(), v);
@@ -1332,9 +1332,9 @@ public class NetCdfWriter {
             Variable v = geoGridSubset.getVariable();
 
             amountDataSize += NetCdfWriter.countVarSize(v);
-            if (amountDataSize > BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileTDS().doubleValue()) {
+            if (amountDataSize > BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue()) {
                 throw new MotuExceedingCapacityException(
-                        BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileTDS().doubleValue());
+                        BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue());
             }
 
             putVariables(v.getName(), v);
@@ -1512,9 +1512,9 @@ public class NetCdfWriter {
         }
 
         amountDataSize += NetCdfWriter.countVarSize(axis);
-        if (amountDataSize > BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileTDS().doubleValue()) {
+        if (amountDataSize > BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue()) {
             throw new MotuExceedingCapacityException(
-                    BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileTDS().doubleValue());
+                    BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue());
         }
 
         putVariables(axis.getName(), axis);
@@ -1856,7 +1856,7 @@ public class NetCdfWriter {
             }
             for (Variable v : listVar) {
                 amountDataSize += NetCdfWriter.countVarSize(v);
-                if (amountDataSize > BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileTDS().doubleValue()) {
+                if (amountDataSize > BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue()) {
                     break;
                 }
 
@@ -1896,9 +1896,9 @@ public class NetCdfWriter {
         // Add variables to file.
         // amountDataSize = writeVariables(varAttrToRemove);
         writeVariablesToFile(varAttrToRemove);
-        if (amountDataSize > BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileTDS().doubleValue()) {
+        if (amountDataSize > BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue()) {
             throw new MotuExceedingCapacityException(
-                    BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileTDS().doubleValue());
+                    BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue());
         }
 
         try {
