@@ -37,6 +37,7 @@
 
 		<dependencies.version.slf4j>1.7.21</dependencies.version.slf4j>
 		<dependencies.version.log4j>2.5</dependencies.version.log4j>
+		<dependencies.version.log4j-slf4j-impl>2.1</dependencies.version.log4j-slf4j-impl>
 		<dependencies.version.spring>2.5.6</dependencies.version.spring>
 		<dependencies.version.jersey>1.5</dependencies.version.jersey>
 		<dependencies.version.commons-io>1.4</dependencies.version.commons-io>
@@ -81,6 +82,11 @@
 			<version>${dependencies.version.log4j}</version>
 		</dependency>
 
+		<dependency>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-slf4j-impl</artifactId>
+		    <version>${dependencies.version.log4j-slf4j-impl}</version>
+		</dependency>
 
 		<!-- Test dependencies -->
 		<dependency>
@@ -269,6 +275,10 @@
 					<exclusion>
 						<groupId>javax.servlet</groupId>
 						<artifactId>servlet-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<artifactId>log4j</artifactId>
+						<groupId>log4j</groupId>
 					</exclusion>
 				</exclusions>
 			</dependency>
