@@ -39,8 +39,9 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
   * [Add a dataset](#AdminDataSetAdd)
   * [Debug view](#ExploitDebug)
   * [Clean files](#ExploitCleanDisk)
-
-
+  * [Log Errors](#LogCodeErrors)
+     * [Action codes](#LogCodeErrorsActionCode)  
+     * [Error types](#LogCodeErrorsErrorType)  
   
 #<a name="Overview">Overview</a>
 Motu project is a robust web server used to distribute data. [To be completed]
@@ -955,7 +956,7 @@ You change the status order by entering 4 parameters in the URL:
 ``` 
 /Motu?action=debug&order=DONE,ERROR,PENDING,INPROGRESS
 ``` 
-
+ 
 ##<a name="ExploitCleanDisk">Clean files</a>  
 
 ##<a name="ExploitCleanDiskLogbook">Logbook files</a>  
@@ -968,4 +969,71 @@ crontab -e
 0 * * * * find /opt/cmems-cis/motu/log/*.xml* -type f -mmin +144000 -delete >/dev/null 2>&1  
 0 * * * * find /opt/cmems-cis/motu/log/*.csv* -type f -mmin +144000 -delete >/dev/null 2>&1  
   
+
+##<a name="LogCodeErrors">Log Errors</a> 
+
+### The code pattern
+The error codes of Motu as the following format "XXXX-Y":
   
+* [XXXX](#LogCodeErrorsActionCode) code matching the action which is executed when the error is raised. This part is the "ActionCode".  The action is in general a HTTP request and matches the following HTTP parameter http://$server/motu-web/Motu?action=.
+* [Y](#LogCodeErrorsErrorType) code which identifies the part of the program from which the error was raised. This part is the "ErrorType".
+  
+  
+For example, the web brownser can display:  
+011-1 : A system error happend. Please contact the administrator of the site. 
+
+Here, we have the error code in order to understand better what happens. But the end user has a generic message and no details is given to him. THese end user messages are described in the file "/motu-web/src/main/resources/MessagesError.properties". This file can be tuned for specific purpose and put in the "config" folder. The file provided with the project is a default one.
+
+
+### <a name="LogCodeErrorsActionCode">Action codes</a>
+
+The Action Code		=>	The corresponding action
+
+001		=>	UNDETERMINED\_ACTION           
+002		=>	PING\_ACTION                   
+003		=>	DEBUG\_ACTION                  
+004		=>	GET\_REQUEST\_STATUS\_ACTION     
+005		=>	GET\_SIZE\_ACTION               
+006		=>	DESCRIBE\_PRODUCT\_ACTION       
+007		=>	TIME\_COVERAGE\_ACTION          
+008		=>	LOGOUT\_ACTION                 
+009		=>	DELETE\_ACTION                 
+010		=>	DOWNLOAD\_PRODUCT\_ACTION       
+011		=>	LIST\_CATALOG\_ACTION           
+012		=>	PRODUCT\_METADATA\_ACTION       
+013		=>	PRODUCT\_DOWNLOAD\_HOME\_ACTION  
+014		=>	LIST\_SERVICES\_ACTION              
+015		=>	DESCRIBE\_COVERAGE\_ACTION         
+016		=>	DESCRIBE\_PRODUCT\_DAEMON\_ACTION  
+
+### <a name="LogCodeErrorsErrorType">Error types</a>
+
+The Error Type Code	=>	The corresponding error type
+
+1		=>	There is a system error. Please contact the Administrator.    
+2		=>	There is an error with the parameters. There are inconsistent.         
+3		=>	The date provided into the parameters is invalid.         
+4		=>	The latitude provided into the parameters is invalid.  
+5		=>	The longitude provided into the parameters is invalid.         
+6		=>	The range defined by the provided dates is invalid.         
+7		=>	The memory capacity of the motu server is exceeded.         
+8		=>	The range defined by the provided latitude/longitude parameters is invalid.         
+9		=>	The range defined by the provided depth parameters is invalid.         
+10		=>	The functionality is not yet implemented.         
+11		=>	There is an error with the provided NetCDF variables.         
+12		=>	There is not variables into the variable parameter.         
+13		=>	The provided NetCDF variable doesn't exist.         
+14		=>	There is an error with the provided NetCDF variable. Have a look into the log file to have more information.         
+15		=>	The number of maximum request in the queue server pool is reached. it's necessary to wait that some requests are finished.         
+16		=>	The number of maximum request for the user is reached. It's necessary to wait that some requests are finished for the user.         
+18		=>	The priority of the request is invalid in the queue server manager. Have a look into the log file to have more information.         
+19		=>	The id of the request is not know by the server. Have a look into the log file to have more information.         
+20		=>	The size of the request is greater than the maximum data managed by the available queue. It's impossible to select a queue for this request. It's necessary to narrow the request.         
+21		=>	The application is shutting down. it's necessary to wait a while before the application is again available.         
+22		=>	There is a problem with the loading of the motu configuration file. Have a look into the log file to have more information.         
+23		=>	There is a problem with the loading of the catalog configuration file. Have a look into the log file to have more information.         
+24		=>	There is a problem with the loading of the error message configuration file. Have a look into the log file to have more information.         
+25		=>	There is a problem with the loading of the netcdf file. Have a look into the log file to have more information.         
+26		=>	There is a problem with the provided parameters. Have a look into the log file to have more information.         
+27		=>	There is a problem with the NetCDF generation engine. Have a look into the log file to have more information.         
+28		=>	The required action is unknown. Have a look into the log file to have more information.
