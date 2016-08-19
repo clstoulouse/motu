@@ -982,7 +982,7 @@ The error codes of Motu as the following format "XXXX-Y":
 For example, the web brownser can display:  
 011-1 : A system error happend. Please contact the administrator of the site. 
 
-Here, we have the error code in order to understand better what happens. But the end user has a generic message and no details is given to him. THese end user messages are described in the file "/motu-web/src/main/resources/MessagesError.properties". This file can be tuned for specific purpose and put in the "config" folder. The file provided with the project is a default one.
+Here, we have the error code in order to understand better what happens. But the end user has a generic message and no detail is given to him. These end user messages are described in the file "/motu-web/src/main/resources/MessagesError.properties". The file provided with the project is a default one and can be customized for specific purposes. Just put this file in the "config" folder, edit it and restart Motu to take it into account. So when a user has an error, it just have to tell you the error code and you can check the two numbers with the descriptions below.  
 
 
 ### <a name="LogCodeErrorsActionCode">Action codes</a>
