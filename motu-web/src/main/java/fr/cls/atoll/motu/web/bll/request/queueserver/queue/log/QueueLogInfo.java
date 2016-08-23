@@ -115,6 +115,9 @@ public class QueueLogInfo {
     /** The compressing time in milliseconds (ms). */
     protected long compressingTime = 0L;
 
+    /** The version of the script if provided */
+    protected String scriptVersion = "";
+
     /** The queue log error. */
     private QueueLogError queueLogError = null;
 
@@ -188,6 +191,7 @@ public class QueueLogInfo {
         xStream.useAttributeFor(this.getClass(), "queueDesc");
         xStream.useAttributeFor(this.getClass(), "extractLocationData");
         xStream.useAttributeFor(this.getClass(), "downloadUrlPath");
+        xStream.useAttributeFor(this.getClass(), "scriptVersion");
 
         // xStream.useAttributeFor("priority", int.class);
         // xStream.useAttributeFor("range", int.class);
@@ -332,6 +336,9 @@ public class QueueLogInfo {
             for (String d : extractionParameters.getListDepthCoverage()) {
                 outputStream.write(d.concat(CSV_SEPARATOR).getBytes(encoding));
             }
+
+            // ScriptVersion
+            outputStream.write(scriptVersion.concat(CSV_SEPARATOR).getBytes(encoding));
 
             // Priorities
             // for (QueueLogPriority p : priorities) {
@@ -781,7 +788,9 @@ public class QueueLogInfo {
      * @param queueDesc the queue desc
      */
     public void setQueueDesc(String queueDesc) {
-        this.queueDesc = queueDesc;
+        if (queueDesc != null) {
+            this.queueDesc = queueDesc;
+        }
     }
 
     /**
@@ -799,7 +808,27 @@ public class QueueLogInfo {
      * @param queueId the queue id
      */
     public void setQueueId(String queueId) {
-        this.queueId = queueId;
+        if (queueId != null) {
+            this.queueId = queueId;
+        }
+    }
+
+    /**
+     * Retrieves the script version.
+     * 
+     * @return The script version.
+     */
+    public String getScriptVersion() {
+        return scriptVersion;
+    }
+
+    /**
+     * Sets the script version.
+     * 
+     * @param scriptVersion The script version.
+     */
+    public void setScriptVersion(String scriptVersion) {
+        this.scriptVersion = scriptVersion;
     }
 
     /**

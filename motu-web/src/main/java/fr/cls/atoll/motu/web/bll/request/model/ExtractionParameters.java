@@ -71,7 +71,8 @@ public class ExtractionParameters implements Cloneable {
         String productId,
         OutputFormat dataOutputFormat_,
         String userId,
-        boolean anonymousUser) {
+        boolean anonymousUser,
+        String scriptVersion) {
         this(
             serviceName,
             locationData,
@@ -84,7 +85,8 @@ public class ExtractionParameters implements Cloneable {
             null,
             null,
             userId,
-            anonymousUser);
+            anonymousUser,
+            scriptVersion);
 
     }
 
@@ -152,7 +154,8 @@ public class ExtractionParameters implements Cloneable {
         List<String> listDepthCoverage,
         OutputFormat dataOutputFormat,
         Writer out,
-        OutputFormat responseFormat) {
+        OutputFormat responseFormat,
+        String scriptVersion) {
 
         this(
             null,
@@ -166,7 +169,8 @@ public class ExtractionParameters implements Cloneable {
             out,
             responseFormat,
             null,
-            true);
+            true,
+            scriptVersion);
 
     }
 
@@ -194,7 +198,8 @@ public class ExtractionParameters implements Cloneable {
         Writer out,
         OutputFormat responseFormat,
         String userId,
-        boolean anonymousUser) {
+        boolean anonymousUser,
+        String scriptVersion) {
 
         this(
             null,
@@ -208,7 +213,8 @@ public class ExtractionParameters implements Cloneable {
             out,
             responseFormat,
             userId,
-            anonymousUser);
+            anonymousUser,
+            scriptVersion);
 
     }
 
@@ -234,7 +240,8 @@ public class ExtractionParameters implements Cloneable {
         List<String> listDepthCoverage,
         OutputFormat dataOutputFormat,
         Writer out,
-        OutputFormat responseFormat) {
+        OutputFormat responseFormat,
+        String scriptVersion) {
 
         this(
             serviceName,
@@ -248,7 +255,8 @@ public class ExtractionParameters implements Cloneable {
             out,
             responseFormat,
             null,
-            true);
+            true,
+            scriptVersion);
 
     }
 
@@ -278,7 +286,8 @@ public class ExtractionParameters implements Cloneable {
         Writer out,
         OutputFormat responseFormat,
         String userId,
-        boolean anonymousUser) {
+        boolean anonymousUser,
+        String scriptVersion) {
 
         this(
             serviceName,
@@ -292,7 +301,8 @@ public class ExtractionParameters implements Cloneable {
             out,
             responseFormat,
             userId,
-            anonymousUser);
+            anonymousUser,
+            scriptVersion);
 
     }
 
@@ -318,7 +328,8 @@ public class ExtractionParameters implements Cloneable {
         String productId,
         OutputFormat dataOutputFormat,
         Writer out,
-        OutputFormat responseFormat) {
+        OutputFormat responseFormat,
+        String scriptVersion) {
 
         this(
             serviceName,
@@ -332,7 +343,8 @@ public class ExtractionParameters implements Cloneable {
             out,
             responseFormat,
             null,
-            true);
+            true,
+            scriptVersion);
 
     }
 
@@ -362,7 +374,8 @@ public class ExtractionParameters implements Cloneable {
         Writer out,
         OutputFormat responseFormat,
         String userId,
-        boolean anonymousUser) {
+        boolean anonymousUser,
+        String scriptVersion) {
 
         this(
             serviceName,
@@ -376,7 +389,8 @@ public class ExtractionParameters implements Cloneable {
             out,
             responseFormat,
             userId,
-            anonymousUser);
+            anonymousUser,
+            scriptVersion);
 
     }
 
@@ -408,7 +422,8 @@ public class ExtractionParameters implements Cloneable {
         Writer out,
         OutputFormat responseFormat,
         String userId,
-        boolean anonymousUser) {
+        boolean anonymousUser,
+        String scriptVersion) {
 
         setServiceName(serviceName);
         setLocationData(locationData);
@@ -422,6 +437,7 @@ public class ExtractionParameters implements Cloneable {
         setResponseFormat(responseFormat);
         setUserId(userId);
         setAnonymousUser(anonymousUser);
+        setScriptVersion(scriptVersion);
 
     }
 
@@ -478,6 +494,9 @@ public class ExtractionParameters implements Cloneable {
 
     /** The anonymous user. */
     private boolean anonymousUser = true;
+
+    /** The script version */
+    private String scriptVersion = "";
 
     /** The batch queue. */
     // protected boolean batchQueue = false;
@@ -765,6 +784,24 @@ public class ExtractionParameters implements Cloneable {
         if (serviceName != null) {
             this.serviceName = serviceName.trim();
         }
+    }
+
+    /**
+     * Retrieves the script version
+     * 
+     * @return The script version
+     */
+    public String getScriptVersion() {
+        return scriptVersion;
+    }
+
+    /**
+     * Sets the script version
+     * 
+     * @param scriptVersion The script version.
+     */
+    public void setScriptVersion(String scriptVersion) {
+        this.scriptVersion = scriptVersion;
     }
 
     /**

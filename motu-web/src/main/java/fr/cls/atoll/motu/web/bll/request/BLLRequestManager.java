@@ -113,7 +113,9 @@ public class BLLRequestManager implements IBLLRequestManager {
     }
 
     private long download(boolean isAsynchronous, final ConfigService cs_, final Product product_, final ExtractionParameters extractionParameters) {
-        final RequestDownloadStatus rds = initRequest(extractionParameters.getUserId(), extractionParameters.getUserHost());
+        final RequestDownloadStatus rds = initRequest(extractionParameters.getUserId(),
+                                                      extractionParameters.getUserHost(),
+                                                      extractionParameters.getScriptVersion());
         final long requestId = rds.getRequestId();
 
         Thread t = new Thread("download isAsynchRqt=" + Boolean.toString(isAsynchronous) + " - " + requestId) {
@@ -183,12 +185,14 @@ public class BLLRequestManager implements IBLLRequestManager {
         }
 
         qli.setRequestId(rds.getRequestId());
+
+        qli.setScriptVersion(rds.getScriptVersion());
         LOGGER.info(qli);
     }
 
-    private RequestDownloadStatus initRequest(String userId, String userHost) {
+    private RequestDownloadStatus initRequest(String userId, String userHost, String scriptVersion) {
         final long requestId = getNewRequestId();
-        RequestDownloadStatus requestDownloadStatus = new RequestDownloadStatus(requestId, userId, userHost);
+        RequestDownloadStatus requestDownloadStatus = new RequestDownloadStatus(requestId, userId, userHost, scriptVersion);
         requestIdStatusMap.put(requestId, requestDownloadStatus);
         return requestDownloadStatus;
     }

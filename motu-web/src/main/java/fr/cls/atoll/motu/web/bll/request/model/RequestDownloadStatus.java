@@ -36,6 +36,8 @@ public class RequestDownloadStatus {
     private String queueId;
     private String queueDescription;
 
+    private String scriptVersion;
+
     /**
      * Constructeur.
      * 
@@ -43,12 +45,31 @@ public class RequestDownloadStatus {
      * @param userId
      * @param userHost
      */
-    public RequestDownloadStatus(long requestId, String userId, String userHost) {
+    public RequestDownloadStatus(long requestId, String userId, String userHost, String scriptVersion) {
         super();
         setRequestId(requestId);
         setUserId(userId);
         setUserHost(userHost);
         setCreationDateTime(System.currentTimeMillis());
+        setScriptVersion(scriptVersion);
+    }
+
+    /**
+     * Retrieves the script version
+     * 
+     * @return The script version.
+     */
+    public String getScriptVersion() {
+        return scriptVersion;
+    }
+
+    /**
+     * Sets the script version
+     * 
+     * @param scriptVersion The script version
+     */
+    public void setScriptVersion(String scriptVersion) {
+        this.scriptVersion = scriptVersion;
     }
 
     /**

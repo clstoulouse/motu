@@ -193,4 +193,8 @@ public class CommonHTTPParameters {
         return request.getParameter(MotuRequestParametersConstant.PARAM_DEBUG_ORDER);
     }
 
+    public static String getScriptVersionFromRequest(HttpServletRequest request) {
+        return request.getParameter(MotuRequestParametersConstant.PARAM_SCRIPT_VERSION);
+    }
+
 }

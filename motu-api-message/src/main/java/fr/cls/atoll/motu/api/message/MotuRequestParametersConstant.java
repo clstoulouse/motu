@@ -99,6 +99,9 @@ public interface MotuRequestParametersConstant {
     /** The PARAM output. */
     final String PARAM_OUTPUT = "output";
 
+    /** The PARAM script version. */
+    final String PARAM_SCRIPT_VERSION = "scriptVersion";
+
     /** The PARA m_ ca s_ res t_ suffi x_ url. */
     final String PARAM_CAS_REST_SUFFIX_URL = "cas_rest_suff_url";
 
