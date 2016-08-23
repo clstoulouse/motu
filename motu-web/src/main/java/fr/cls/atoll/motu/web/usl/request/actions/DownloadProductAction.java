@@ -42,6 +42,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.validator.ModeHTTPParameterVa
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.OutputFormatParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.PriorityHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ProductHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.ScriptVersionParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.TemporalHTTPParameterValidator;
 
@@ -121,6 +122,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
     private OutputFormatParameterValidator outputFormatParameterValidator;
 
+    private ScriptVersionParameterValidator scriptVersionParameterValidator;
+
     /**
      * 
      * @param actionName_
@@ -180,6 +183,10 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 CommonHTTPParameters.getOutputFormatFromRequest(getRequest()),
                 OutputFormat.NETCDF.name().toUpperCase());
 
+        scriptVersionParameterValidator = new ScriptVersionParameterValidator(
+                MotuRequestParametersConstant.PARAM_SCRIPT_VERSION,
+                CommonHTTPParameters.getScriptVersionFromRequest(getRequest()),
+                "");
     }
 
     @Override
@@ -294,7 +301,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 productHTTPParameterValidator.getParameterValueValidated(),
                 OutputFormat.valueOf(outputFormatParameterValidator.getParameterValueValidated()),
                 getLoginOrUserHostname(),
-                isAnAnonymousUser());
+                isAnAnonymousUser(),
+                scriptVersionParameterValidator.getParameterValueValidated());
         extractionParameters.setUserHost(getLoginOrUserHostname());
 
         // Set assertion to manage CAS.
@@ -333,6 +341,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         priorityHTTPParameterValidator.validate();
 
         outputFormatParameterValidator.validate();
+        scriptVersionParameterValidator.validate();
     }
 
 }

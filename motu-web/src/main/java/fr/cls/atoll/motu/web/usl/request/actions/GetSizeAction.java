@@ -38,6 +38,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.DepthHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LatitudeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LongitudeHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.ScriptVersionParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.TemporalHTTPParameterValidator;
 
 /**
@@ -87,6 +88,8 @@ public class GetSizeAction extends AbstractProductInfoAction {
     private TemporalHTTPParameterValidator startDateTemporalHTTPParameterValidator;
     private TemporalHTTPParameterValidator endDateTemporalHighHTTPParameterValidator;
 
+    private ScriptVersionParameterValidator scriptVersionParameterValidator;
+
     /**
      * 
      * Constructor of the GetSizeAction class.
@@ -128,6 +131,11 @@ public class GetSizeAction extends AbstractProductInfoAction {
         endDateTemporalHighHTTPParameterValidator = new TemporalHTTPParameterValidator(
                 PARAM_END_DATE,
                 CommonHTTPParameters.getEndDateFromRequest(getRequest()));
+
+        scriptVersionParameterValidator = new ScriptVersionParameterValidator(
+                MotuRequestParametersConstant.PARAM_SCRIPT_VERSION,
+                CommonHTTPParameters.getScriptVersionFromRequest(getRequest()),
+                "");
     }
 
     /**
@@ -165,7 +173,8 @@ public class GetSizeAction extends AbstractProductInfoAction {
                 getProductHTTPParameterValidator().getParameterValueValidated(),
                 OutputFormat.NETCDF,
                 getLoginOrUserHostname(),
-                isAnAnonymousUser());
+                isAnAnonymousUser(),
+                scriptVersionParameterValidator.getParameterValueValidated());
 
         // Set assertion to manage CAS.
         extractionParameters.setAssertion(AssertionHolder.getAssertion());
@@ -372,6 +381,7 @@ public class GetSizeAction extends AbstractProductInfoAction {
 
         getStartDateTemporalHTTPParameterValidator().validate();
         getEndDateTemporalHighHTTPParameterValidator().validate();
+        scriptVersionParameterValidator.validate();
     }
 
     /**
