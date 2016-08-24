@@ -264,6 +264,7 @@ public class BLLRequestManager implements IBLLRequestManager {
                 checkFreeSpace(requestSizeInMB);
 
                 downloadSafe(requestDownloadStatus, requestSizeInMB, extractionParameters, cs_, product_);
+                requestDownloadStatus.setProductFileName(product_.getExtractFilename());
             } finally {
                 userRequestCounter.onRequestStoppedForUser(userId);
             }

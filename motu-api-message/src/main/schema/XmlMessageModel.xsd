@@ -401,6 +401,7 @@
 			<xsd:attribute name="dateSubmit" type="xsd:dateTime" />
 			<xsd:attribute name="userId" type="xsd:string" />
 			<xsd:attribute name="userHost" type="xsd:string" />
+			<xsd:attribute name="scriptVersion" type="xsd:string" />
 		</xsd:complexType>
 	</xsd:element>
 

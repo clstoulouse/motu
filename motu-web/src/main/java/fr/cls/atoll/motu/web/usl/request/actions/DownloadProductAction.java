@@ -317,6 +317,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         statusModeResponse.setStatus(StatusModeType.INPROGRESS);
         statusModeResponse.setMsg("request in progress");
         statusModeResponse.setRequestId(requestId);
+        statusModeResponse.setScriptVersion(scriptVersionParameterValidator.getParameterValueValidated());
         return statusModeResponse;
     }
 

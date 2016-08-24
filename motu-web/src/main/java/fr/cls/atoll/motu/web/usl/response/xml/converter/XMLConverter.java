@@ -85,6 +85,7 @@ public class XMLConverter {
         smr.setStatus(convertStatusModeResponse(requestDownloadStatus.getRequestStatus()));
         smr.setUserHost(requestDownloadStatus.getUserHost());
         smr.setUserId(requestDownloadStatus.getUserId());
+        smr.setScriptVersion(requestDownloadStatus.getScriptVersion());
         return smr;
     }
 
