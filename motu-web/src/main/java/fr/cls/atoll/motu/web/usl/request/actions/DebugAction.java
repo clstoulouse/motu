@@ -198,6 +198,9 @@ public class DebugAction extends AbstractAction {
                         stringBuffer.append(lastModified.toString());
                     }
                 }
+                if (!StringUtils.isNullOrEmpty(statusModeResponse.getScriptVersion())) {
+                    stringBuffer.append("<BR> ScriptVersion:" + statusModeResponse.getScriptVersion());
+                }
                 stringBuffer.append("</td>\n");
                 stringBuffer.append("<td>\n");
                 if (statusModeResponse.getRemoteUri().endsWith("/")) {
