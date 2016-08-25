@@ -76,7 +76,7 @@ public class GetRequestStatusAction extends AbstractAction {
 
         try {
             if (requestId != null) {
-                RequestDownloadStatus rds = BLLManager.getInstance().getRequestManager().getRequestStatus(requestId);
+                RequestDownloadStatus rds = BLLManager.getInstance().getRequestManager().getDownloadRequestStatus(requestId);
                 if (rds == null) {
                     getResponse().getWriter().write("Oops, request id '" + requestId + "' does not exist.");
                 } else {

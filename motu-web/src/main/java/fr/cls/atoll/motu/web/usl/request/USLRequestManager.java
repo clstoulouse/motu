@@ -13,9 +13,11 @@ import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.api.utils.JAXBWriter;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.request.IBLLRequestManager;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
@@ -111,13 +113,25 @@ public class USLRequestManager implements IUSLRequestManager {
         default:
             // Nothing to do
         }
+        IBLLRequestManager requestManager = BLLManager.getInstance().getRequestManager();
+        Long requestId = -1L;
         try {
             if (actionInst != null) {
-                actionInst.doAction();
+                if (!(actionInst instanceof DownloadProductAction)) {
+                    requestId = requestManager.initRequest(actionInst.getLoginFromRequest(), actionInst.getUserHostName(), actionInst);
+                    requestManager.setActionStatus(requestId, StatusModeType.INPROGRESS);
+                    actionInst.doAction();
+                    requestManager.setActionStatus(requestId, StatusModeType.DONE);
+                } else {
+                    actionInst.doAction();
+                }
             } else {
                 throw new MotuException(ErrorType.UNKNOWN_ACTION, "The requested action is unknown : " + action);
             }
         } catch (Exception e) {
+            if (requestId != -1L) {
+                requestManager.setActionStatus(requestId, StatusModeType.ERROR);
+            }
             ErrorType errorType = ErrorType.SYSTEM;
             String actionCode = AbstractAction.UNDETERMINED_ACTION;
             if (actionInst != null) {

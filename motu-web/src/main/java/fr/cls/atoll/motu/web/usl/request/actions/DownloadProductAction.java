@@ -212,7 +212,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
         if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_STATUS)) {
             // Asynchronous mode
-            long requestId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(cs, p, createExtractionParameters());
+            long requestId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(cs, p, createExtractionParameters(), this);
             getResponse().setContentType(CONTENT_TYPE_XML);
             try {
                 JAXBWriter.getInstance().write(createStatusModeResponse(requestId), getResponse().getWriter());
@@ -220,7 +220,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 throw new MotuException(ErrorType.SYSTEM, "JAXB error while writing createStatusModeResponse: ", e);
             }
         } else {
-            ProductResult pr = BLLManager.getInstance().getRequestManager().download(cs, p, createExtractionParameters());
+            ProductResult pr = BLLManager.getInstance().getRequestManager().download(cs, p, createExtractionParameters(), this);
             if (pr.getRunningException() != null) {
                 try {
                     MotuException runningException = pr.getRunningException();

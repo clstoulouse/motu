@@ -112,7 +112,7 @@ public class MotuWebEngineContextListener implements ServletContextListener {
         List<Long> requestIds = BLLManager.getInstance().getRequestManager().getRequestIds();
         for (Long requestId : requestIds) {
             StatusModeResponse statusModeResponse = XMLConverter
-                    .convertStatusModeResponse(BLLManager.getInstance().getRequestManager().getRequestStatus(requestId));
+                    .convertStatusModeResponse(BLLManager.getInstance().getRequestManager().getDownloadRequestStatus(requestId));
             if (statusModeResponse.getStatus() == StatusModeType.PENDING || statusModeResponse.getStatus() == StatusModeType.INPROGRESS) {
                 hasRequest = true;
                 break;
