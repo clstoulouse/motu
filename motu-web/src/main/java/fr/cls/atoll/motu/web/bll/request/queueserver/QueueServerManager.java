@@ -111,7 +111,8 @@ public class QueueServerManager implements IQueueServerManager {
                         ConfigService cs_,
                         Product product_,
                         ExtractionParameters extractionParameters_,
-                        double requestSizeInMB_) throws MotuException {
+                        double requestSizeInMB_,
+                        Long requestId) throws MotuException {
         QueueManagement queueManagement = findQueue(requestSizeInMB_);
         if (queueManagement == null) {
             throw new MotuException(ErrorType.EXCEEDING_QUEUE_DATA_CAPACITY, "Oops, the size of the data to download (" + (int) requestSizeInMB_
@@ -122,7 +123,7 @@ public class QueueServerManager implements IQueueServerManager {
 
         // Here we synchronize the execution of the request
         QueueJobListener qjl = createQueueJobListener(rds_);
-        queueManagement.execute(new QueueJob(cs_, product_, extractionParameters_, qjl));
+        queueManagement.execute(new QueueJob(cs_, product_, extractionParameters_, qjl, requestId));
 
         synchronized (this) {
             if (!qjl.isJobEnded()) {

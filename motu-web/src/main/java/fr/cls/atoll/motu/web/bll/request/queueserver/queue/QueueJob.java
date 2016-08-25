@@ -25,13 +25,20 @@ public class QueueJob implements IQueueJob, Comparable<IQueueJob> {
     private Product product;
     private ConfigService cs;
     private OutputFormat dataOutputFormat;
+    private Long requestId;
 
-    public QueueJob(ConfigService cs_, Product product_, ExtractionParameters extractionParameters_, QueueJobListener queueJobListener_) {
+    public QueueJob(
+        ConfigService cs_,
+        Product product_,
+        ExtractionParameters extractionParameters_,
+        QueueJobListener queueJobListener_,
+        Long requestId_) {
         cs = cs_;
         product = product_;
         extractionParameters = extractionParameters_;
         dataOutputFormat = extractionParameters.getDataOutputFormat();
         queueJobListener = queueJobListener_;
+        requestId = requestId_;
     }
 
     /** {@inheritDoc} */
@@ -52,7 +59,7 @@ public class QueueJob implements IQueueJob, Comparable<IQueueJob> {
      * .
      */
     private void processJob() throws MotuException {
-        DALManager.getInstance().getRequestManager().downloadProduct(cs, product, dataOutputFormat);
+        DALManager.getInstance().getRequestManager().downloadProduct(cs, product, dataOutputFormat, requestId);
     }
 
     private void onJobStarted() {

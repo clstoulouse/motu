@@ -55,7 +55,8 @@ public interface IQueueServerManager {
                  ConfigService cs_,
                  Product product_,
                  ExtractionParameters extractionParameters,
-                 double requestSizeInMB) throws MotuException;
+                 double requestSizeInMB,
+                 Long requestId) throws MotuException;
 
     /**
      * .

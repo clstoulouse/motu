@@ -299,7 +299,7 @@ public class BLLRequestManager implements IBLLRequestManager {
                 checkMaxSizePerFile(cs_.getCatalog().getType(), requestSizeInMB);
                 checkFreeSpace(requestSizeInMB);
 
-                downloadSafe(requestDownloadStatus, requestSizeInMB, extractionParameters, cs_, product_);
+                downloadSafe(requestDownloadStatus, requestSizeInMB, extractionParameters, cs_, product_, requestId);
                 requestDownloadStatus.setProductFileName(product_.getExtractFilename());
             } finally {
                 userRequestCounter.onRequestStoppedForUser(userId);
@@ -334,7 +334,8 @@ public class BLLRequestManager implements IBLLRequestManager {
                               double requestSizeInMB,
                               ExtractionParameters extractionParameters,
                               ConfigService cs_,
-                              Product product_) throws MotuException {
+                              Product product_,
+                              Long requestId) throws MotuException {
         // Clear and update the product in case of the instance have already been used for other
         // calculation.
         clearAndUpdateProductDataSet(product_,
@@ -343,7 +344,7 @@ public class BLLRequestManager implements IBLLRequestManager {
                                      extractionParameters.getListLatLonCoverage(),
                                      extractionParameters.getListDepthCoverage());
         // The request download is delegated to a download request manager
-        queueServerManager.execute(requestDownloadStatus, cs_, product_, extractionParameters, requestSizeInMB);
+        queueServerManager.execute(requestDownloadStatus, cs_, product_, extractionParameters, requestSizeInMB, requestId);
     }
 
     private double getRequestSizeInByte(ExtractionParameters extractionParameters, Product product_) throws MotuException {
