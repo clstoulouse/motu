@@ -3,6 +3,7 @@ package fr.cls.atoll.motu.web.usl.request.actions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +48,8 @@ public abstract class AbstractAction {
     public static final String CONTENT_TYPE_HTML = "text/html";
 
     private String actionName;
+    private String parameters;
+    private String userId;
     private HttpServletRequest request;
     private HttpServletResponse response;
     private HttpSession session;
@@ -62,6 +65,8 @@ public abstract class AbstractAction {
         request = request_;
         response = response_;
         session = session_;
+        userId = getLoginFromRequest();
+        generateParameterString();
     }
 
     public void doAction() throws MotuException, InvalidHTTPParameterException {
@@ -304,6 +309,52 @@ public abstract class AbstractAction {
      */
     public void setActionCode(String actionCode) {
         this.actionCode = actionCode;
+    }
+
+    public String getActionName() {
+        return actionName;
+    }
+
+    /**
+     * Valeur de parameters.
+     * 
+     * @return la valeur.
+     */
+    public String getParameters() {
+        return parameters;
+    }
+
+    /**
+     * Valeur de userId.
+     * 
+     * @return la valeur.
+     */
+    public String getUserId() {
+        return userId;
+    }
+
+    /**
+     * This method save the parameters of the request into a unic string. .
+     */
+    private void generateParameterString() {
+        StringBuffer parameterStr = new StringBuffer();
+        for (Map.Entry<String, String[]> parameter : request.getParameterMap().entrySet()) {
+            parameterStr.append(parameter.getKey());
+            parameterStr.append("=");
+            String[] values = parameter.getValue();
+            StringBuffer valueStr = new StringBuffer();
+            for (String value : values) {
+                valueStr.append(value);
+                valueStr.append(",");
+            }
+            if (valueStr.length() > 0) {
+                valueStr = valueStr.delete(valueStr.length() - 1, valueStr.length());
+            }
+            parameterStr.append(valueStr);
+
+            parameterStr.append(" ");
+        }
+        parameters = parameterStr.toString();
     }
 
 }

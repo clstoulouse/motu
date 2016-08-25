@@ -2,6 +2,7 @@ package fr.cls.atoll.motu.web.bll.request;
 
 import java.util.List;
 
+import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
@@ -10,6 +11,7 @@ import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.queueserver.IQueueServerManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 
 /**
  * <br>
@@ -36,7 +38,23 @@ public interface IBLLRequestManager {
      * @param requestId
      * @return
      */
-    RequestDownloadStatus getRequestStatus(Long requestId_);
+    RequestDownloadStatus getDownloadRequestStatus(Long requestId_);
+
+    /**
+     * Return the status of the request associated with the provided request id.
+     * 
+     * @param requestId_ The id of the request
+     * @return The status of the request.
+     */
+    StatusModeType getRequestStatus(Long requestId_);
+
+    /**
+     * Return the action of the request associated with the provided request id.
+     * 
+     * @param requestId_ The id of the request
+     * @return The action of the request.
+     */
+    AbstractAction getRequestAction(Long requestId_);
 
     /**
      * .
@@ -60,7 +78,7 @@ public interface IBLLRequestManager {
      * @param extractionParameters
      * @return
      */
-    ProductResult download(ConfigService cs_, Product product_, ExtractionParameters extractionParameters);
+    ProductResult download(ConfigService cs_, Product product_, ExtractionParameters extractionParameters, AbstractAction action);
 
     /**
      * .
@@ -70,7 +88,7 @@ public interface IBLLRequestManager {
      * @param extractionParameters
      * @return
      */
-    long downloadAsynchonously(ConfigService cs_, Product product_, ExtractionParameters extractionParameters);
+    long downloadAsynchonously(ConfigService cs_, Product product_, ExtractionParameters extractionParameters, AbstractAction action);
 
     /**
      * Delete the files associated to the provided URL. .
@@ -119,4 +137,22 @@ public interface IBLLRequestManager {
      * @param requestId
      */
     void deleteRequest(Long requestId);
+
+    /**
+     * Initialize the maps which manage the requests.
+     * 
+     * @param userId The id of the user
+     * @param userHost The host if the user
+     * @param action The action object associated to the request
+     * @return The computed id of the current new request.
+     */
+    Long initRequest(String userId, String userHost, AbstractAction action);
+
+    /**
+     * Sets the new status of the request associated with the provided request Id.
+     * 
+     * @param requestId The id of the request to update the status
+     * @param status The new status of the request.
+     */
+    void setActionStatus(Long requestId, StatusModeType status);
 }

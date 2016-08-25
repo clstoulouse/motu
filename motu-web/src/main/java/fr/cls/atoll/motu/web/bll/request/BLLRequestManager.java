@@ -6,11 +6,13 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
@@ -37,6 +39,7 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.QueueServerType;
 import fr.cls.atoll.motu.web.dal.request.ProductSizeRequest;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData.CatalogType;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 
 /**
  * <br>
@@ -60,12 +63,16 @@ public class BLLRequestManager implements IBLLRequestManager {
 
     private IRequestIdManager requestIdManager;
     private Map<Long, RequestDownloadStatus> requestIdStatusMap;
+    private ConcurrentHashMap<Long, AbstractAction> actionMap;
+    private ConcurrentHashMap<Long, StatusModeType> actionStatus;
     private IQueueServerManager queueServerManager;
     private UserRequestCounter userRequestCounter;
 
     public BLLRequestManager() {
         requestIdManager = new RequestIdManager();
         requestIdStatusMap = new HashMap<Long, RequestDownloadStatus>();
+        actionMap = new ConcurrentHashMap<>();
+        actionStatus = new ConcurrentHashMap<>();
         userRequestCounter = new UserRequestCounter();
 
         queueServerManager = new QueueServerManager();
@@ -81,22 +88,31 @@ public class BLLRequestManager implements IBLLRequestManager {
     /** {@inheritDoc} */
     @Override
     public List<Long> getRequestIds() {
-        return new ArrayList<Long>(requestIdStatusMap.keySet());
+        return new ArrayList<Long>(actionMap.keySet());
     }
 
-    /** {@inheritDoc} */
     @Override
-    public RequestDownloadStatus getRequestStatus(Long requestId_) {
+    public RequestDownloadStatus getDownloadRequestStatus(Long requestId_) {
         return requestIdStatusMap.get(requestId_);
     }
 
+    @Override
+    public StatusModeType getRequestStatus(Long requestId_) {
+        return actionStatus.get(requestId_);
+    }
+
+    @Override
+    public AbstractAction getRequestAction(Long requestId_) {
+        return actionMap.get(requestId_);
+    }
+
     /** {@inheritDoc} */
     @Override
-    public ProductResult download(ConfigService cs_, Product product_, ExtractionParameters extractionParameters) {
-        long requestId = download(false, cs_, product_, extractionParameters);
+    public ProductResult download(ConfigService cs_, Product product_, ExtractionParameters extractionParameters, AbstractAction action) {
+        long requestId = download(false, cs_, product_, extractionParameters, action);
 
         ProductResult p = new ProductResult();
-        RequestDownloadStatus rds = getRequestStatus(requestId);
+        RequestDownloadStatus rds = getDownloadRequestStatus(requestId);
         if (rds.getRunningException() != null) {
             p.setRunningException(rds.getRunningException());
         }
@@ -108,14 +124,19 @@ public class BLLRequestManager implements IBLLRequestManager {
 
     /** {@inheritDoc} */
     @Override
-    public long downloadAsynchonously(ConfigService cs_, Product product_, ExtractionParameters extractionParameters) {
-        return download(true, cs_, product_, extractionParameters);
+    public long downloadAsynchonously(ConfigService cs_, Product product_, ExtractionParameters extractionParameters, AbstractAction action) {
+        return download(true, cs_, product_, extractionParameters, action);
     }
 
-    private long download(boolean isAsynchronous, final ConfigService cs_, final Product product_, final ExtractionParameters extractionParameters) {
+    private long download(boolean isAsynchronous,
+                          final ConfigService cs_,
+                          final Product product_,
+                          final ExtractionParameters extractionParameters,
+                          AbstractAction action) {
         final RequestDownloadStatus rds = initRequest(extractionParameters.getUserId(),
                                                       extractionParameters.getUserHost(),
-                                                      extractionParameters.getScriptVersion());
+                                                      extractionParameters.getScriptVersion(),
+                                                      action);
         final long requestId = rds.getRequestId();
 
         Thread t = new Thread("download isAsynchRqt=" + Boolean.toString(isAsynchronous) + " - " + requestId) {
@@ -190,11 +211,26 @@ public class BLLRequestManager implements IBLLRequestManager {
         LOGGER.info(qli);
     }
 
-    private RequestDownloadStatus initRequest(String userId, String userHost, String scriptVersion) {
-        final long requestId = getNewRequestId();
+    private RequestDownloadStatus initRequest(String userId, String userHost, String scriptVersion, AbstractAction action) {
+        Long requestId = initRequest(userId, userHost, action);
         RequestDownloadStatus requestDownloadStatus = new RequestDownloadStatus(requestId, userId, userHost, scriptVersion);
         requestIdStatusMap.put(requestId, requestDownloadStatus);
         return requestDownloadStatus;
+    }
+
+    @Override
+    public Long initRequest(String userId, String userHost, AbstractAction action) {
+        final long requestId = getNewRequestId();
+        actionMap.putIfAbsent(requestId, action);
+        actionStatus.putIfAbsent(requestId, StatusModeType.PENDING);
+        return requestId;
+    }
+
+    @Override
+    public void setActionStatus(Long requestId, StatusModeType status) {
+        if (actionMap.containsKey(requestId) && actionStatus.containsKey(requestId)) {
+            actionStatus.put(requestId, status);
+        }
     }
 
     /**
@@ -407,6 +443,8 @@ public class BLLRequestManager implements IBLLRequestManager {
     @Override
     public void deleteRequest(Long requestId) {
         requestIdStatusMap.remove(requestId);
+        actionMap.remove(requestId);
+        actionStatus.remove(requestId);
     }
 
 }
