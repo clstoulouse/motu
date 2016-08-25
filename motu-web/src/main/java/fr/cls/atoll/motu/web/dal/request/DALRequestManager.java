@@ -31,8 +31,9 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer.Type;
+import fr.cls.atoll.motu.web.dal.DALManager;
+import fr.cls.atoll.motu.web.dal.config.DALConfigManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
-import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DatasetGrid;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
@@ -54,7 +55,7 @@ public class DALRequestManager implements IDALRequestManager {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
-    public void downloadProduct(ConfigService cs, Product p, OutputFormat dataOutputFormat) throws MotuException {
+    public void downloadProduct(ConfigService cs, Product p, OutputFormat dataOutputFormat, Long requestId) throws MotuException {
         boolean ncssStatus = false;
         String ncssValue = cs.getCatalog().getNcss();
         if (ncssValue != null || "enabled".equalsIgnoreCase(ncssValue)) {
@@ -64,7 +65,7 @@ public class DALRequestManager implements IDALRequestManager {
         // Detect NCSS or OpenDAP
         try {
             if (ncssStatus) {
-                downloadWithNCSS(p, dataOutputFormat);
+                downloadWithNCSS(p, dataOutputFormat, requestId);
             } else {
                 downloadWithOpenDap(p, dataOutputFormat);
             }
@@ -92,7 +93,7 @@ public class DALRequestManager implements IDALRequestManager {
         p.getDataset().extractData(dataOutputFormat);
     }
 
-    private void downloadWithNCSS(Product p, OutputFormat dataOutputFormat)
+    private void downloadWithNCSS(Product p, OutputFormat dataOutputFormat, Long requestId)
             throws MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, IOException, InterruptedException {
 
         List<CoordinateAxis> coordinateAxisList = p.getNetCdfReaderDataset().getCoordinateAxes();
@@ -104,7 +105,8 @@ public class DALRequestManager implements IDALRequestManager {
         Set<String> var = p.getDataset().getVariables().keySet();
 
         // Create output NetCdf file to deliver to the user (equivalent to opendap)
-        String fname = NetCdfWriter.getUniqueNetCdfFileName(p.getProductId());
+        // String fname = NetCdfWriter.getUniqueNetCdfFileName(p.getProductId());
+        String fname = computeDownloadFileName(p.getProductId(), requestId);
         p.setExtractFilename(fname);
         String extractDirPath = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath();
 
@@ -171,6 +173,13 @@ public class DALRequestManager implements IDALRequestManager {
             ncss.setGeoSubset(latlon);
             ncssRequest(p, ncss);
         }
+    }
+
+    private String computeDownloadFileName(String productId, Long requestId) {
+        String fileName = DALManager.getInstance().getConfigManager().getMotuConfig().getDownloadFileNameFormat();
+        fileName = fileName.replace(DALConfigManager.FILENAME_FORMAT_PRODUCT_ID, productId);
+        fileName = fileName.replace(DALConfigManager.FILENAME_FORMAT_REQUESTID, requestId.toString());
+        return fileName;
     }
 
     /**

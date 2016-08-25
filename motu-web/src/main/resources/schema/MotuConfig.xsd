@@ -474,6 +474,11 @@
 			-->
 			<xs:attribute name="httpDocumentRoot" type="xs:string"
 				use="required" />
+			<!--
+				downloadFileNameFormat : The format of the downloaded file name.
+			-->
+			<xs:attribute name="downloadFileNameFormat" type="xs:string"
+				use="required" />
 
 			<!-- WARNING - Within proxyOptions, only http proxy options are used - The others are declared for future developpment  -->
 			<xs:attributeGroup ref="proxyOptions" />

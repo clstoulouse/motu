@@ -39,6 +39,9 @@ public class DALConfigManager implements IDALConfigManager {
     private List<StandardName> standardNameList;
     private static final Logger LOGGER = LogManager.getLogger();
 
+    public static final String FILENAME_FORMAT_REQUESTID = "@@requestId@@";
+    public static final String FILENAME_FORMAT_PRODUCT_ID = "@@productId@@";
+
     /** {@inheritDoc} */
     @Override
     public void init() throws MotuException {

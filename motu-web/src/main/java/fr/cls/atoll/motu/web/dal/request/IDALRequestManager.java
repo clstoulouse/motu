@@ -25,5 +25,5 @@ public interface IDALRequestManager {
      * @param dataOutputFormat
      * @throws MotuException
      */
-    void downloadProduct(ConfigService cs, Product p, OutputFormat dataOutputFormat) throws MotuException;
+    void downloadProduct(ConfigService cs, Product p, OutputFormat dataOutputFormat, Long requestId) throws MotuException;
 }
