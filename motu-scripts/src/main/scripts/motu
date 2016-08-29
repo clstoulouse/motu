@@ -242,6 +242,7 @@ __startCatalinaShell() {
 
 
 __stopCatalinaShell() {
+  __setMotuBusinessEnvVar
   tomcatDirName=$1
   $CATALINA_HOME/bin/shutdown.sh >> $MOTU_LOG_DIR/$tomcatDirName.log 2>&1
 }
@@ -286,7 +287,7 @@ __checkCDOToolAvailable() {
      if [ $cdoVersionReturnCode -ne 0 ]; then
         echo
         echo "ERROR: cdo tool does not run well: \$cdo --version"
-        cdo --version
+        $MOTU_INSTALL_DIR/products/cdo-group/cdo.sh --version
         echo
         echo "CDO tools path=$cdoFilePath"
         exit 21
