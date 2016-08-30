@@ -227,19 +227,31 @@ __initConfig() {
 
 __startCatalinaShell() {
   tomcatDirName=$1
+  # $2 webapp name
+  # $3 optional: suffix message if version is checked
   if [ -s $MOTU_PID_DIR/$tomcatDirName.pid ]; then
     PID=`cat $MOTU_PID_DIR/$tomcatDirName.pid`
     if ps -p $PID > /dev/null
 	then
 	  echo "Oops, Motu is already started, pid=$PID"
 	else
-	  $CATALINA_HOME/bin/startup.sh >> $MOTU_LOG_DIR/$tomcatDirName.log 2>&1
+	  __startCatalinaShellAction $@
 	fi
   else
-    $CATALINA_HOME/bin/startup.sh >> $MOTU_LOG_DIR/$tomcatDirName.log 2>&1
+    __startCatalinaShellAction $@
   fi
 }
 
+__startCatalinaShellAction() {
+  # $1 tomcatDirName
+  # $2 webapp name
+  # $3 optional: suffix message if version is checked
+  __checkWarUpdated $@
+  $CATALINA_HOME/bin/startup.sh >> $MOTU_LOG_DIR/$tomcatDirName.log 2>&1
+}
+   
+  
+  
 
 __stopCatalinaShell() {
   tomcatDirName=$1
@@ -258,10 +270,16 @@ __showStatus() {
 }
 
 
-
-
-
-
+__checkWarUpdated() {
+  #Used to delete the war folder if the war file is newer than the matching folder to ease updates
+  tomcatDirName=$1
+  webappName=$2
+  infoMsgSuffix=$3
+  if [ "$tomcatDirName/webapps/$webappName" -ot "$tomcatDirName/webapps/$webappName.war" ]; then
+    rm -rf $tomcatDirName/webapps/$webappName
+    echo "INFO: War updated: $tomcatDirName/webapps/$webappName.war $infoMsgSuffix"
+  fi
+}
 
 
 
@@ -343,7 +361,8 @@ startApacheTomcatMotu() {
   # delete the context (for deploying)
   # rm $CATALINA_BASE/conf/Catalina/localhost/mis-gateway-servlet.xml
 
-  __startCatalinaShell $TOMCAT_MOTU_DIR_NAME
+  versionInfo=`cat version-distribution.txt`
+  __startCatalinaShell $TOMCAT_MOTU_DIR_NAME motu-web "[$versionInfo]"
 }
 
 stopApacheTomcatMotu() {
@@ -397,7 +416,7 @@ startApacheTomcatTDS() {
   __setApacheTomcatTDSCatalinaEnvVar
   __initConfig $TOMCAT_TDS_DIR_NAME
   
-  __startCatalinaShell $TOMCAT_TDS_DIR_NAME
+  __startCatalinaShell $TOMCAT_TDS_DIR_NAME tds
 }
 
 stopApacheTomcatTDS() {
