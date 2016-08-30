@@ -242,9 +242,10 @@ __startCatalinaShell() {
 
 
 __stopCatalinaShell() {
-  __setMotuBusinessEnvVar
   tomcatDirName=$1
-  $CATALINA_HOME/bin/shutdown.sh >> $MOTU_LOG_DIR/$tomcatDirName.log 2>&1
+  # Can wait 10min (60*10) until Tomcat stop (used to process pending requests)
+  # @See /motu-web/src/main/java/fr/cls/atoll/motu/web/usl/servlet/context/MotuWebEngineContextListener
+  $CATALINA_HOME/bin/shutdown.sh 600 -force >> $MOTU_LOG_DIR/$tomcatDirName.log 2>&1
 }
 
 __showStatus() {
@@ -296,22 +297,6 @@ __checkCDOToolAvailable() {
 }
 
 
-__setMotuBusinessEnvVar() {
-  export JAVA_HOME=$MOTU_PRODUCTS_JAVA_DIR
-  
-  export MOTU_CONFIGURATION_COMMON="$MOTU_INSTALL_DIR/motu-configuration-common"
-  export MOTU_CONFIGURATION_CUSTOM="$MOTU_INSTALL_DIR/motu-configuration-sample-misgw"
-
-  export MOTU_CONFIGURATION_COMMON_ASSETS="$MOTU_CONFIGURATION_COMMON/assets"
-  export MOTU_CONFIGURATION_COMMON_RESOURCES="$MOTU_CONFIGURATION_COMMON/resources"
-
-  export MOTU_CONFIGURATION_CUSTOM_ASSETS="$MOTU_CONFIGURATION_CUSTOM/assets"
-  export MOTU_CONFIGURATION_CUSTOM_RESOURCES="$MOTU_CONFIGURATION_CUSTOM/resources"
-
-  export MOTU_CONFIGURATIONS_ASSETS="$MOTU_CONFIGURATION_COMMON_ASSETS;$MOTU_CONFIGURATION_CUSTOM_ASSETS"
-  export MOTU_CONFIGURATIONS_RESOURCES="$MOTU_CONFIGURATION_COMMON_RESOURCES;$MOTU_CONFIGURATION_CUSTOM_RESOURCES"
-}
-
 __setApacheTomcatMotuCatalinaEnvVar() {
   __setApacheTomcatCatalinaEnvVar $TOMCAT_MOTU_DIR_NAME
 }
@@ -340,7 +325,6 @@ __initMotuJavaOpt() {
    __addCatalinaOpt "$MOTU_CONF_DIR" "-Dlog4j.configurationFile=$MOTU_CONF_DIR/log4j.xml"
    export MOTU_LOG_DIR=$MOTU_LOG_DIR
    export JAVA_OPTS=$JAVA_OPTS_ORIG
-
 }
 
 startApacheTomcatMotu() {
@@ -350,13 +334,8 @@ startApacheTomcatMotu() {
   __checkCDOToolAvailable
   #HERE can exit if CDO has not been found
 
-
-  __setMotuBusinessEnvVar
+  export JAVA_HOME=$MOTU_PRODUCTS_JAVA_DIR
     
-  # sets the motu configuration
-  # MotuOpts="-DMOTU_CONFIGURATIONS_ASSETS=\"$MOTU_CONFIGURATIONS_ASSETS\" -DMOTU_CONFIGURATIONS_RESOURCES=\"$MOTU_CONFIGURATIONS_RESOURCES\""
-  # __addCatalinaOpt "$MotuOpts" "$MotuOpts"
-  
   __setApacheTomcatMotuCatalinaEnvVar
   __initConfig $TOMCAT_MOTU_DIR_NAME
   __initMotuJavaOpt $TOMCAT_MOTU_DIR_NAME
@@ -370,8 +349,12 @@ startApacheTomcatMotu() {
 stopApacheTomcatMotu() {
   echo "$TOMCAT_MOTU_DIR_NAME - stop"
 
-  __setApacheTomcatMotuCatalinaEnvVar
+  export JAVA_HOME=$MOTU_PRODUCTS_JAVA_DIR
   
+  __setApacheTomcatMotuCatalinaEnvVar
+  __initMotuJavaOpt $TOMCAT_MOTU_DIR_NAME 
+  export JAVA_OPTS="$JAVA_OPTS $CATALINA_OPTS" 
+
   __stopCatalinaShell $TOMCAT_MOTU_DIR_NAME
 }
 
