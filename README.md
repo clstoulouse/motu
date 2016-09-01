@@ -195,14 +195,14 @@ You are free to install Motu in any other folder, so in the case, replace "/opt/
 ### Motu host
 OS target: Linux 64bits (Tested on centos-7.2.1511)
 
-For __high performance usage__ we recommend:  
+Minimal configuration for an __operational usage__:  
 
 * __CPU__: 4 CPU, 2,4GHz
-* __RAM__: 32 Gb RAM
+* __RAM__: 16 Gb RAM
 * __Storage__: 
   * Motu installation folder 15Gb
   * Motu download folder 200Gb: by default [motu/data/public/download](#InstallFolders)  
-Note that the available space of the download folde has to be tuned depending of the number of user which runs requests at the same time on the server.
+Note that the available space of the download folder has to be tuned depending of the number of user which runs requests at the same time on the server.
    
    
 For __test usage__ we recommend:  
