@@ -503,6 +503,8 @@
 		
 		<module>../motu-scripts</module>
 		<module>../motu-distribution</module>
+		
+		<module>../motu-products</module>
 	</modules>
 
 	<build>

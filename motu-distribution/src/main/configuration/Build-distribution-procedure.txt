@@ -11,7 +11,7 @@ Pre-requisites:
 --------------------
 
 - maven shall be available
-- jdk 1.7.0_71 installed 
+- jdk 1.7.0_80 installed 
 
 We are considering that $PROJECT_TAG is the version of the release.
 - $PROJECT_NAME-$PROJECT_TAG.tar.gz is the archive which contains source code
@@ -30,13 +30,24 @@ In the rest of the procedure $srcdir reference the directory in which the source
 export srcdir=$PWD/$PROJECT_NAME-$PROJECT_TAG
 
 
-Project build:
+Motu server build:
 ----------------------------------------
-
 cd $srcdir/$PROJECT_NAME-parent
 mvn install -Dmaven.test.skip=true -Dmaven.javadoc.skip=true
 
 
 ==> the generated distribution is under your local maven repository : 
 $srcdir/$PROJECT_NAME-distribution/target/$PROJECT_NAME-distribution.tar.gz
+
+
+
+Motu client build:
+----------------------------------------
+$PROJECT_NAME=motu-client-python
+cd $srcdir/$PROJECT_NAME
+mvn install -Dmaven.test.skip=true -Dmaven.javadoc.skip=true
+
+
+==> the generated distribution is under your local maven repository : 
+$srcdir/$PROJECT_NAME/target/$PROJECT_NAME.tar.gz
 

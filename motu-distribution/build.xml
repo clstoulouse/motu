@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ANT File
      
-     Build under /motu-distribution/target-ant/delivery/YYYYmmDDhhMMssSSS 3 folders:
+     Build under /motu-distribution/target-ant/delivery/YYYYmmDDhhMMssSSS 4 folders:
        - config : All configuration archives, plus Motu web static files
-       - motu: The products and the distribution
+       - motu: The products and the server distribution
+       - motu-client: The motu-client-python distribution
        - src: The distribution source files and build procedures
      
      Before running the default target you have to set the properties below defined in the "init" target:
@@ -21,24 +22,17 @@
 		<property name="project.name" value="motu"></property>
 		
 		<!-- ##### External folders ##### -->
-		<property name="products.dir" location="V:/cmems-cis/06-livraison/61-livraison-de-CLS/611-FilesUsedToBuild" description="This folder contains motu-products-A.B.tar.gz"/>
-		<property name="products.version" value="3.0" description="The version A.B written in motu-products-A.B.tar.gz"/>
-		<property name="motu-config.dir" location="../../motu-config" description="This path contains 2 sub-folders motu-config and motu-web-static-files."/>
-		<property name="motu-client-python.dir" location="../../motu-client-python" description="This path contains directly the motu client src folder."/>
-				
+		<property file="buildConfig.properties"/>
 		
 		<!-- ##### Init JAVA_HOME ##### -->
-		<condition property="JAVA_HOME" value="/usr/lib/jvm/jdk1.7.0_80">
+		<condition property="JAVA_HOME" value="${JAVA_HOME_UNIX}">
 			<os family="unix" />
 		</condition>
-		<condition property="JAVA_HOME" value="C:/dvlt/java/jdk/jdk1.7.0_80">
+		<condition property="JAVA_HOME" value="${JAVA_HOME_WIN}">
 			<os family="windows" />
 		</condition>
 		
-		<!-- ##### Init SCM Tag version ##### -->
-		<property name="${project.name}.tag.version" value="1.4" />
-		
-		
+		<antcall target="init-echoUserConfig" />
 		
 		<!-- ##### Init common: env var, windows/unix, timestamp ##### -->
 		<property environment="env"/>
@@ -75,6 +69,18 @@
 		<!-- Need to build in order to get pom version, and also to be able to clean child maven projects -->
         <antcall target="build-parent-project"> </antcall>
 		<artifact:pom id="pom" file="./pom.xml" />
+	</target>
+	
+	<target name="init-echoUserConfig">
+		<echo message=" " />
+		<echo message="=== USER CONFIGURATION ===" />
+		<echo message="products.version=${products.version}" />
+		<echo message="products.dir=${products.dir}" />
+		<echo message="motu-config.dir=${motu-config.dir}" />
+		<echo message="motu-client-python.dir=${motu-client-python.dir}" />
+		<echo message="JAVA_HOME=${JAVA_HOME}" />
+		<echo message="==========================" />
+		<echo message=" " />
 	</target>
 	
 	<!-- ###################################################
@@ -195,8 +201,6 @@
 	</target>
 	
 	<target name="build-src" depends="init">
-		<echo>current directory: ${basedir}</echo>
-		<echo>current directory: ${user.dir}</echo>
 		<!-- TAR SOURCE FILES -->
 		<tar destfile="../${project.name}-${pom.version}-src.tar.gz" compression="gzip">
 		  <tarfileset dir="../">
