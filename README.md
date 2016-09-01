@@ -15,7 +15,10 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
 
 #Summary
 * [Overview](#Overview)
-* [Development](#Developement)
+* [Architecture](#Architecture)
+  * [Interfaces](#ArchitectureInterfaces)
+  * [Design](#ArchitectureDesign)
+* [Development](#Development)
   * [Development environment](#DEV)
   * [Compilation](#COMPILATION)
   * [Packaging](#Packaging)
@@ -42,12 +45,64 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
   * [Log Errors](#LogCodeErrors)
      * [Action codes](#LogCodeErrorsActionCode)  
      * [Error types](#LogCodeErrorsErrorType)  
+* [Motu clients](#Clients)
   
 #<a name="Overview">Overview</a>
-Motu project is a robust web server used to distribute data. [To be completed]
+Motu is a robust web server allowing the distribution of met/ocean gridded data files through the web. 
+Subsetter allows user to extract the data of a dataset, with geospatial, temporal and variable criterias. 
+Thus, user download only the data of interest.  
+A graphic web interface and machine to machine interfaces allow to access data and information on data (metadata).
+The machine-to-machine interface can be used through a client written in python, freely available here https://sourceforge.net/projects/cls-motu/files/client/motu-client-python/.
+Output data files format can be netCDF3 or netCDF4.  
+An important characteristic of Motu is its robustness: in order to be able to answer many users without crashing, Motu manages its incoming requests in a queue server.  
+The aim is to obtain complete control over the requests processing by balancing the processing load according to criteria (volume of data to extract, number of requests to fulfill 
+for a user at a given time, number of requests to process simultaneously).  
+Moreover, Motu implements a request size threshold. Motu masters the amount of data to extract per request by computing, without any data processing, the result data size of the request.  
+Beyond the allowed threshold, every request is rejected. The threshold is set in the configuration file.
+Motu can be secured behing an authentication server and thus implements authorization. A CAS server can implement the authentication. 
+Motu receives with authentication process user information, including a user profile associated with the account. 
+Motu is configured to authorize or not the user to access the dataset or group of datasets which user is trying to access.  
+For administrators, Motu allows to monitor the usage of the server: the logs produced by Motu allow to know who (login) requests what (dataset) and when, with extraction criterias.
 
 
-#<a name="Developement">Developement</a>
+
+
+#<a name="Architecture">Architecture</a>
+Motu is a web application running inside the HTTPd Apache Tomcat application server.
+
+#<a name="ArchitectureInterfaces">Interfaces</a>
+Motu provides server interfaces:  
+
+* __HTTP__: Port defined in motu.properties, used for user incoming requests
+* __HTTPs__: Port defined in motu.properties, used for user incoming requests
+* __AJP__: Port defined in motu.properties, used to communicate with an Apache HTTPd frontal server
+* __JMX__: Port defined in motu.properties, used to monitor the application
+* __Debug__: Port defined in motu.properties, in development mode, used to remotely debug the application
+* __Socket for Shutdown__: Port defined in motu.properties, port opened by Tomcat to shutdown the server
+  
+  
+Motu has interfaces with other systems:  
+
+* __DGF__: Direct Get File: Read data from the file system
+* __Unidata Thredds HTTP server__: It connects with the NCSS or OpenDap HTTP REST API to run download request for example.
+* __HTTP CAS Server__: Use for Single Sign On (SSO) in order to manager user authentication.
+* __CDO command line tool__: used to merge request done on the anti-meridian because TDS server does not manage it.
+
+#<a name="ArchitectureDesign">Design</a>
+The Motu application has been designed by implementing the Three-Layered Services Application design. It takes many advantages
+in maintenance cost efficiency et in the ease of its future evolutivity.  
+Three layers are set in the core "motu-web" project:  
+
+* __USL__: User Service Layer: This layer manages all incoming actions throught HTTP request
+* __BLL__: Business Logic Layer: This layer manages all Motu business
+* __DAL__: Data Access Layer: This layer manages all access to Motu external interfaces: DGF, Unidata server, CDO, ...
+
+Each layer is an entry point of the application designed with a singleton. These three singletons gives access to high level managers which provides services by implementing a Java interface.
+High level managers handle for example the configuration, the request, the catalog, the users.
+
+A common package is also defined to provide utilities: log4j custom format, XML, String ...
+
+#<a name="Development">Development</a>
 
 ##<a name="DEV">Development environment</a>
 
@@ -100,19 +155,19 @@ For more details about Eclipse launchers, refers to /motu-parent/README-eclipseL
 
 
 ##<a name="COMPILATION">Compilation</a>
-This step is used to generate Java ARchives (or war).
+This step is used to generate JAR (Java ARchives) and WAR (Web application ARchive).  
 ```
 cd /motu-parent  
 mvn clean install -Dmaven.test.skip=true  
 ```  
 
 All projects are built under target folder.  
-The Motu war is built under "/motu-web/target/motu-web-X.Y.Z-classifier.war"  
+The Motu war is built under "/motu-web/target/motu-web-X.Y.Z-classifier.war".  
 It embeds all necessary jar libraries.  
 
 ##<a name="Packaging">Packaging</a>
 This step includes the compilation step. Once all projects are compiled, it groups all archive in a same folder in order to easy the client delivery.  
-You have to set ANT script inputs parameter before running it. See /motu-distribution/build.xml header to get more details about inputs.
+You have to set ANT script inputs parameter before running it. See /motu-distribution/build.xml header to get more details about inputs.  
 ```
 cd /motu-distribution  
 ant  
@@ -134,16 +189,39 @@ Three folders are built containing archives :
 
 ## <a name="InstallPrerequisites">Prerequisites</a>
 
-In this chapter some path are set. For example "/opt/cmems-cis" is often written to talk about the installation path.
+In this chapter some paths are set. For example "/opt/cmems-cis" is often written to talk about the installation path.
 You are free to install Motu in any other folder, so in the case, replace "/opt/cmems-cis" by your installation folder.
 
 ### Motu host
-Motu OS target is Linux 64bits.
+OS target: Linux 64bits (Tested on centos-7.2.1511)
 
+For __high performance usage__ we recommend:  
+
+* __CPU__: 4 CPU, 2,4GHz
+* __RAM__: 32 Gb RAM
+* __Storage__: 
+  * Motu installation folder 15Gb
+  * Motu download folder 200Gb: by default [motu/data/public/download](#InstallFolders)  
+Note that the available space of the download folde has to be tuned depending of the number of user which runs requests at the same time on the server.
+   
+   
+For __test usage__ we recommend:  
+
+* __CPU__: 2 CPU, 2,4GHz
+* __RAM__: 10 Gb RAM
+* __Storage__: 
+  * Motu installation folder 15Gb
+  * Motu download folder 50Gb: by default [motu/data/public/download](#InstallFolders)  
+
+
+
+
+
+  
 ### External interfaces
 Motu is able to communicate with different external servers:  
 
-* __Unidata | THREDDS Data Server (TDS)__: The links to this server are set in the [Business settings](#ConfigurationBusiness) and are used to run OpenDap or subsetter interfaces. If Motu runs only with DGF, this server is not required.
+* __Unidata | THREDDS Data Server (TDS)__: Motu has been only tested with TDS v4.6.6 2016-06-13. The links to this server are set in the [Business settings](#ConfigurationBusiness) and are used to run OpenDap or subsetter interfaces. If Motu runs only with DGF, this server is not required.
 * __Single Sign-On - CAS__: The link to this server is set in the [System settings](#ConfigurationSystem). If Motu does not use SSO, this server is not required.
 
 The installation of these two servers is not detailed in this document. Refer to their official web site to know how to install them.
@@ -326,7 +404,7 @@ ldd (GNU libc) 2.12
 [...]  
 ```  
 
-If your GlibC is not 2.14, you have to install GLIBC 2.14:  
+If your GlibC lower than 2.14, you have to install GLIBC 2.14, but to highly recommend to upgrade your Linux operating system to get an up to date GLIBC version:  
 __INSTALL GLIBC 2.14__  
 ```
 export MotuInstallDir=/opt/cmems-cis  
@@ -919,10 +997,13 @@ By default, log files are created in the folder $MOTU_HOME/log. This folder cont
   * __tomcat-motu.log__: $CATALINA_HOME/bin/startup.sh and $CATALINA_HOME/bin/shutdown.sh outputs are redirected to this file.  
 
 ##<a name="AdminDataSetAdd">Add a dataset</a>  
-In order to add a new Dataset you have to add a new confiogService node in the Motu business configuration.  
-Example of a datasets served using:  
+In order to add a new Dataset, you have to add a new confiogService node in the [Motu business configuration](#ConfigurationBusiness).  
+  
+Examples of a datasets served using:  
 
 * __TDS NCSS protocol__:  
+This is the fastest protocol implemented by Motu. Motu select this protocol because type is set to "tds" and ncss is set to "enabled".  
+
 ``` 
 <configService description="Free text to describe your dataSet" group="HR-Sample" httpBaseRef="" name="HR_MOD-TDS" veloTemplatePrefix="" profiles="external">  
         <catalog name="m_HR_MOD.xml" type="tds" ncss="enabled" urlSite="http://$tdsUrl/thredds/"/>  
@@ -930,13 +1011,16 @@ Example of a datasets served using:
 ```  
   
 * __TDS Opendap protocol__:  
+Here OpenDap is used because it is the default protocol when tds type is set and ncss is not set or is disable.  
+
 ``` 
 <configService description="Free text to describe your dataSet" group="HR-Sample" httpBaseRef="" name="HR_MOD-TDS" veloTemplatePrefix="" profiles="external">  
         <catalog name="m_HR_MOD.xml" type="tds" ncss="" urlSite="http://$tdsUrl/thredds/"/>  
 </configService>  
 ```  
 
-* __DGF protocol__:  
+* __DGF protocol__:   
+This protocol is used to access to local files on the current machine of done with a NFS mount. With this protocol user download the full file and can run any specific extraction.  
 ``` 
 <configService description="Free text to describe your dataSet" group="HR-Sample" profiles="internal, external, major" httpBaseRef="" name="HR_MOD-TDS" veloTemplatePrefix="">  
            <catalog name="catalogFILE_GLOBAL_ANALYSIS_PHYS_001_016.xml" type="file" urlSite="file:///opt/atoll/hoa-armor/publication/inventories"/>  
@@ -987,7 +1071,7 @@ Here, we have the error code in order to understand better what happens. But the
 
 ### <a name="LogCodeErrorsActionCode">Action codes</a>
 
-The Action Code		=>	The corresponding action
+The Action Code		=>	A number matching the HTTP request with the action parameter.
 
 001		=>	UNDETERMINED\_ACTION           
 002		=>	PING\_ACTION                   
@@ -1008,7 +1092,7 @@ The Action Code		=>	The corresponding action
 
 ### <a name="LogCodeErrorsErrorType">Error types</a>
 
-The Error Type Code	=>	The corresponding error type
+The Error Type Code	=>	A number defining a specific error on the server.
 
 1		=>	There is a system error. Please contact the Administrator.    
 2		=>	There is an error with the parameters. There are inconsistent.         
@@ -1037,3 +1121,9 @@ The Error Type Code	=>	The corresponding error type
 26		=>	There is a problem with the provided parameters. Have a look into the log file to have more information.         
 27		=>	There is a problem with the NetCDF generation engine. Have a look into the log file to have more information.         
 28		=>	The required action is unknown. Have a look into the log file to have more information.
+  
+  
+#<a name="Clients">Motu clients</a>  
+You can connect to Motu by using a web browser or a [Python client](https://github.com/clstoulouse/motu-client-python).
+
+

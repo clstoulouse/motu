@@ -38,7 +38,6 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.DatasetGrid;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 import ucar.ma2.Array;
-import ucar.nc2.dataset.CoordinateAxis;
 
 /**
  * <br>
@@ -58,7 +57,7 @@ public class DALRequestManager implements IDALRequestManager {
     public void downloadProduct(ConfigService cs, Product p, OutputFormat dataOutputFormat, Long requestId) throws MotuException {
         boolean ncssStatus = false;
         String ncssValue = cs.getCatalog().getNcss();
-        if (ncssValue != null || "enabled".equalsIgnoreCase(ncssValue)) {
+        if ("enabled".equalsIgnoreCase(ncssValue)) {
             ncssStatus = true;
         }
 
@@ -72,19 +71,6 @@ public class DALRequestManager implements IDALRequestManager {
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while downloading product ncss=" + ncssStatus, e);
         }
-
-        // Product product = getProductInformation(locationData);
-        // // Update ID
-        //
-        // if (!StringUtils.isNullOrEmpty(productId)) {
-        // product.setProductId(productId);
-        // }
-        // // Update NCSS link
-        // product.setLocationDataNCSS(locationDataNCSS);
-        //
-        // extractData(product, listVar, listTemporalCoverage, listLatLonCoverage, listDepthCoverage,
-        // selectData, dataOutputFormat, out, responseFormat);
-
     }
 
     private void downloadWithOpenDap(Product p, OutputFormat dataOutputFormat) throws MotuInvalidDateRangeException, MotuExceedingCapacityException,
@@ -95,9 +81,6 @@ public class DALRequestManager implements IDALRequestManager {
 
     private void downloadWithNCSS(Product p, OutputFormat dataOutputFormat, Long requestId)
             throws MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, IOException, InterruptedException {
-
-        List<CoordinateAxis> coordinateAxisList = p.getNetCdfReaderDataset().getCoordinateAxes();
-
         // Extract criteria collect
         ExtractCriteriaDatetime time = p.getCriteriaDateTime();
         ExtractCriteriaLatLon latlon = p.getCriteriaLatLon();
@@ -132,7 +115,7 @@ public class DALRequestManager implements IDALRequestManager {
             int i = 0;
             long rangesLength = 0;
             for (ExtractCriteriaLatLon currentRange : rangesToRequest) {
-                rangesLength += Math.abs(Math.abs(currentRange.getLatLonRect().getLatMax()) - Math.abs(currentRange.getLatLonRect().getLatMin()));
+                rangesLength += Math.abs(Math.abs(currentRange.getLatLonRect().getLonMax()) - Math.abs(currentRange.getLatLonRect().getLonMin()));
                 ncss.setGeoSubset(currentRange);
                 ncss.setOutputFile(i + "-" + fname);
                 ncssRequest(p, ncss);
@@ -154,19 +137,21 @@ public class DALRequestManager implements IDALRequestManager {
             for (String path : filesPath) {
                 cmd += " " + path;
             }
+            LOGGER.info("Start: " + cmd);
             final Process process = Runtime.getRuntime().exec(cmd);
 
             new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getInputStream())), LOGGER, Type.INFO)).start();
             new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getErrorStream())), LOGGER, Type.ERROR)).start();
 
             int exitValue = process.waitFor();
+            LOGGER.info("END [Exit code=" + exitValue + "] : " + cmd);
+
+            // Cleanup directory and intermediate files (right away once concat)
+            FileUtils.deleteDirectory(tempDirectory.toFile());
 
             if (exitValue != 0) {
                 throw new MotuException(ErrorType.SYSTEM, "The generation of the NC file failled. See the log for more information.");
             }
-
-            // Cleanup directory and intermediate files (right away once concat)
-            FileUtils.deleteDirectory(tempDirectory.toFile());
         } else {
             ncss.setOutputFile(fname);
             ncss.setOutputDir(extractDirPath);

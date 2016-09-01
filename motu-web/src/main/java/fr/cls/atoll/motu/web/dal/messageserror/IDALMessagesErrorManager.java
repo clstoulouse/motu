@@ -17,7 +17,7 @@ public interface IDALMessagesErrorManager {
 
     public static final String MESSAGES_ERROR_FILE_NAME = "MessagesError.properties";
     public static final ErrorType SYSTEM_ERROR_CODE = ErrorType.SYSTEM;
-    public static final String SYSTEM_ERROR_MESSAGE = "A system error happend. Please contact the administrator of the site.";
+    public static final String SYSTEM_ERROR_MESSAGE = "An error on the server occurred: Please contact the administrator of the site.";
 
     /**
      * .

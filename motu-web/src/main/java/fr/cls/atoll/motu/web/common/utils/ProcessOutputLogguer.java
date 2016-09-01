@@ -29,10 +29,10 @@ public class ProcessOutputLogguer extends ReaderThread {
      * 
      * @param reader
      */
-    public ProcessOutputLogguer(BufferedReader reader, Logger logger, Type type) {
+    public ProcessOutputLogguer(BufferedReader reader, Logger logger_, Type type_) {
         super(reader);
-        this.logger = logger;
-        this.type = type;
+        this.logger = logger_;
+        this.type = type_;
     }
 
     /** {@inheritDoc} */
