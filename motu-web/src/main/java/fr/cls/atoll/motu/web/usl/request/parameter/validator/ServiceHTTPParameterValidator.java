@@ -2,6 +2,7 @@ package fr.cls.atoll.motu.web.usl.request.parameter.validator;
 
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
+import fr.cls.atoll.motu.web.usl.request.parameter.exception.NullOrEmptyInvalidHTTPParameterException;
 
 /**
  * <br>
@@ -33,7 +34,7 @@ public class ServiceHTTPParameterValidator extends AbstractHTTPParameterValidato
     @Override
     public String onValidateAction() throws InvalidHTTPParameterException {
         if (StringUtils.isNullOrEmpty(getParameterValue())) {
-            throw new InvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
+            throw new NullOrEmptyInvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
         }
 
         return getParameterValue();

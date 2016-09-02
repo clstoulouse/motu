@@ -137,16 +137,22 @@ public class USLRequestManager implements IUSLRequestManager {
             if (actionInst != null) {
                 actionCode = actionInst.getActionCode();
             }
+
+            String errMessage = "";
             if (e instanceof MotuException) {
                 errorType = ((MotuException) e).getErrorType();
+                errMessage = BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType);
+            } else if (e instanceof InvalidHTTPParameterException) {
+                errorType = ErrorType.BAD_PARAMETERS;
+                errMessage = e.getMessage();
             }
-            LOGGER.error(StringUtils.getLogMessage(actionCode,
-                                                   errorType,
-                                                   BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType)),
-                         e);
+
+            if (errorType == ErrorType.SYSTEM) {
+                LOGGER.error(StringUtils.getLogMessage(actionCode, errorType, errMessage), e);
+            }
+
             try {
-                response.getWriter().write(StringUtils
-                        .getLogMessage(actionCode, errorType, BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType)));
+                response.getWriter().write(StringUtils.getLogMessage(actionCode, errorType, errMessage));
             } catch (IOException e1) {
                 LOGGER.error(StringUtils.getLogMessage(actionCode,
                                                        ErrorType.SYSTEM,

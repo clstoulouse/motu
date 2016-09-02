@@ -33,9 +33,16 @@ public class InvalidHTTPParameterException extends Exception {
      *            [value1;value2;value3]
      */
     public InvalidHTTPParameterException(String parameterName_, String parameterValue_, String parameterBoundaries_) {
-        super(
+        this(
             "Parameter '" + parameterName_ + "' has not a valid value '" + parameterValue_ + "'. It should be in the following boundaries: "
-                    + parameterBoundaries_);
+                    + parameterBoundaries_,
+            parameterName_,
+            parameterValue_,
+            parameterBoundaries_);
+    }
+
+    public InvalidHTTPParameterException(String errMsg_, String parameterName_, String parameterValue_, String parameterBoundaries_) {
+        super(errMsg_);
         setParameterName(parameterName_);
         setParameterValue(parameterValue_);
         setParameterBoundaries(parameterBoundaries_);

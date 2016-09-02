@@ -1107,21 +1107,22 @@ The Error Type Code	=>	A number defining a specific error on the server.
 11		=>	There is an error with the provided NetCDF variables.         
 12		=>	There is not variables into the variable parameter.         
 13		=>	The provided NetCDF variable doesn't exist.         
-14		=>	There is an error with the provided NetCDF variable. Have a look into the log file to have more information.         
+14		=>	There is an error with the provided NetCDF variable. Have a look at the log file to have more information.         
 15		=>	The number of maximum request in the queue server pool is reached. it's necessary to wait that some requests are finished.         
 16		=>	The number of maximum request for the user is reached. It's necessary to wait that some requests are finished for the user.         
-18		=>	The priority of the request is invalid in the queue server manager. Have a look into the log file to have more information.         
-19		=>	The id of the request is not know by the server. Have a look into the log file to have more information.         
+18		=>	The priority of the request is invalid in the queue server manager. Have a look at the log file to have more information.         
+19		=>	The id of the request is not know by the server. Have a look at the log file to have more information.         
 20		=>	The size of the request is greater than the maximum data managed by the available queue. It's impossible to select a queue for this request. It's necessary to narrow the request.         
 21		=>	The application is shutting down. it's necessary to wait a while before the application is again available.         
-22		=>	There is a problem with the loading of the motu configuration file. Have a look into the log file to have more information.         
-23		=>	There is a problem with the loading of the catalog configuration file. Have a look into the log file to have more information.         
-24		=>	There is a problem with the loading of the error message configuration file. Have a look into the log file to have more information.         
-25		=>	There is a problem with the loading of the netcdf file. Have a look into the log file to have more information.         
-26		=>	There is a problem with the provided parameters. Have a look into the log file to have more information.         
-27		=>	There is a problem with the NetCDF generation engine. Have a look into the log file to have more information.         
-28		=>	The required action is unknown. Have a look into the log file to have more information.
-  
+22		=>	There is a problem with the loading of the motu configuration file. Have a look at the log file to have more information.         
+23		=>	There is a problem with the loading of the catalog configuration file. Have a look at the log file to have more information.         
+24		=>	There is a problem with the loading of the error message configuration file. Have a look at the log file to have more information.         
+25		=>	There is a problem with the loading of the netcdf file. Have a look at the log file to have more information.         
+26		=>	There is a problem with the provided parameters. Have a look at the log file to have more information.         
+27		=>	There is a problem with the NetCDF generation engine. Have a look at the log file to have more information.         
+28		=>	The required action is unknown. Have a look at the log file to have more information.
+29		=>	The product is unknown.
+30		=>	The service is unknown.
   
 #<a name="Clients">Motu clients</a>  
 You can connect to Motu by using a web browser or a [Python client](https://github.com/clstoulouse/motu-client-python).

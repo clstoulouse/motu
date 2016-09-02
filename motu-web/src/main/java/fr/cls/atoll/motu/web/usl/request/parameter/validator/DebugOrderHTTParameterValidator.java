@@ -7,6 +7,7 @@ import java.util.List;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
+import fr.cls.atoll.motu.web.usl.request.parameter.exception.NullOrEmptyInvalidHTTPParameterException;
 
 /**
  * <br>
@@ -65,7 +66,7 @@ public class DebugOrderHTTParameterValidator extends AbstractHTTPParameterValida
                 }
 
                 if (!StringUtils.isNullOrEmpty(notExistingItem)) {
-                    throw new InvalidHTTPParameterException(
+                    throw new NullOrEmptyInvalidHTTPParameterException(
                             getParameterName(),
                             getParameterValue(),
                             "The parameter(s) value(s) " + notExistingItem + " is not valid.\n" + getParameterBoundaries());

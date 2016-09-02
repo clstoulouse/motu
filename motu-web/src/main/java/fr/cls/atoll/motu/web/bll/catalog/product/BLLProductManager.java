@@ -85,8 +85,7 @@ public class BLLProductManager implements IBLLProductManager {
     public Product getProduct(String serviceName, String productId) throws MotuException {
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceName);
         CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
-        Product p = cd.getProducts().get(productId);
-
+        Product p = cd.getProducts(productId);
         return p;
     }
 

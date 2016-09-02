@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -505,7 +506,16 @@ public class CatalogData {
         if (key == null) {
             return null;
         }
-        return this.productsMap.get(key.trim());
+        String keyTrimmed = key.trim();
+        Product p = null;
+        Iterator<String> keysIt = this.productsMap.keySet().iterator();
+        while (p == null && keysIt.hasNext()) {
+            String k = keysIt.next();
+            if (k.equalsIgnoreCase(keyTrimmed)) {
+                p = this.productsMap.get(k);
+            }
+        }
+        return p;
     }
 
     /**

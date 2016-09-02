@@ -2,6 +2,7 @@ package fr.cls.atoll.motu.web.usl.request.parameter.validator;
 
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
+import fr.cls.atoll.motu.web.usl.request.parameter.exception.NullOrEmptyInvalidHTTPParameterException;
 
 /**
  * <br>
@@ -37,7 +38,7 @@ public class XMLFileParameterValidator extends AbstractHTTPParameterValidator<St
     protected String onValidateAction() throws InvalidHTTPParameterException {
         if (!AbstractHTTPParameterValidator.EMPTY_VALUE.equals(getParameterValue())
                 && (StringUtils.isNullOrEmpty(getParameterValue()) || !getParameterValue().endsWith(".xml"))) {
-            throw new InvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
+            throw new NullOrEmptyInvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
         }
 
         return getParameterValue();

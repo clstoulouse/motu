@@ -1,5 +1,5 @@
 <?xml version="1.0" standalone="yes"?>
-<project basedir="." default="generate">
+<project name="API XML" basedir="." default="generate">
 
 	<!-- =================================================================== -->
 	<!-- Initialisation de toutes les variables                              -->

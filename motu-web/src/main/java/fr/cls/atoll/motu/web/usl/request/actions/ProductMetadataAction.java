@@ -33,12 +33,13 @@ import fr.cls.atoll.motu.web.usl.response.velocity.model.converter.VelocityModel
  * <br>
  * Société : CLS (Collecte Localisation Satellites) <br>
  * <br>
- * This interface is used to download data with subsetting.<br>
+ * This interface is used to list product metadata.<br>
  * Operation invocation consists in performing an HTTP GET request.<br>
  * Input parameters are the following: [x,y] is the cardinality<br>
  * <ul>
  * <li><b>action</b>: [1]: {@link #ACTION_NAME}</li>
- * <li><b>catalogtype</b>: [0,1]: Catalog type: TDS, FTP.</li>
+ * <li><b>service</b>:</li>
+ * <li><b>product</b>:</li>
  * </ul>
  * 
  * @author Sylvain MARTY
@@ -72,17 +73,26 @@ public class ProductMetadataAction extends AbstractAuthorizedAction {
     @Override
     public void process() throws MotuException {
         MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
-        ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
-        CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
-        String productId = productHTTPParameterValidator.getParameterValueValidated();
-        Product p = cd.getProducts().get(productId);
-        ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
-                .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(p), productId, p.getLocationData());
-        if (pmd != null) {
-            p.setProductMetaData(pmd);
-        }
+        String service = serviceHTTPParameterValidator.getParameterValueValidated();
+        ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(service);
+        if (cs != null) {
+            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
+            String productId = productHTTPParameterValidator.getParameterValueValidated();
+            Product p = cd.getProducts().get(productId);
+            if (p != null) {
+                ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
+                        .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(p), productId, p.getLocationData());
+                if (pmd != null) {
+                    p.setProductMetaData(pmd);
+                }
 
-        writeResponseWithVelocity(mc, cs, cd, p);
+                writeResponseWithVelocity(mc, cs, cd, p);
+            } else {
+                throw new MotuException(ErrorType.UNKNOWN_PRODUCT, "Product '" + productId + "' is unknown.");
+            }
+        } else {
+            throw new MotuException(ErrorType.UNKNOWN_SERVICE, "Service '" + service + "' is unknown.");
+        }
     }
 
     private void writeResponseWithVelocity(MotuConfig mc, ConfigService cs_, CatalogData cd_, Product product_) throws MotuException {
