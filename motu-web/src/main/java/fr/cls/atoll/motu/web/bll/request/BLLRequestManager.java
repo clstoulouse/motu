@@ -168,8 +168,6 @@ public class BLLRequestManager implements IBLLRequestManager {
      */
     private void logQueueInfo(RequestDownloadStatus rds, Product product_, ExtractionParameters extractionParameters) {
         QueueLogInfo qli = new QueueLogInfo();
-        // TODO SMA set all qli fields
-
         qli.setAmountDataSize(UnitUtils.toMegaBytes(rds.getSizeInBits()));
         qli.setCompressingTime(product_.getCompressingTimeAsMilliSeconds());
         qli.setCopyingTime(product_.getCopyingTimeAsMilliSeconds());

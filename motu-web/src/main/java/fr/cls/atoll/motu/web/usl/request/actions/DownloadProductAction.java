@@ -79,8 +79,8 @@ import fr.cls.atoll.motu.web.usl.request.parameter.validator.TemporalHTTPParamet
  * is processed in a synchronous mode.</li>
  * <li><b>console</b>: the delivery file is directly returned in the HTTP response as a binary stream. The
  * request is processed in a synchronous mode.</li>
- * <li><b>status</b>: then request is submitted and the status of the request processing is immediately
- * returned. The request is processed in an asynchronous mode.<br>
+ * <li><b>status</b>: request is submitted and the status of the request processing is immediately returned.
+ * The request is processed in an asynchronous mode.<br>
  * Web Portal submits the request to the Dissemination Unit Subsetter and gets an immediate response of the
  * Subsetter. This response contains the identifier and the status of the order (pending, in progress, done,
  * error).<br>
