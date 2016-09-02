@@ -75,10 +75,10 @@ import fr.cls.atoll.motu.web.usl.request.parameter.validator.TemporalHTTPParamet
  * <li><b>mode</b>: [0,1]: Specify the desired result mode. Enumeration value from [url, console, status]
  * represented as a string. If no mode, "url" value is the default mode.<br>
  * <ul>
- * <li><b>url</b>: the delivery file is directly returned in the HTTP response as a binary stream. The request
- * is processed in a synchronous mode.</li>
- * <li><b>console</b>: the delivery file is directly returned in the HTTP response as a binary stream. The
- * request is processed in a synchronous mode.</li>
+ * <li><b>url</b>: URL of the delivery file is directly returned in the HTTP response as an HTML web page.
+ * Then Javascript read this URL to download file. The request is processed in a synchronous mode.</li>
+ * <li><b>console</b>: the response is a 302 HTTP redirection to the delivery file to be returned as a binary
+ * stream. The request is processed in a synchronous mode.</li>
  * <li><b>status</b>: request is submitted and the status of the request processing is immediately returned.
  * The request is processed in an asynchronous mode.<br>
  * Web Portal submits the request to the Dissemination Unit Subsetter and gets an immediate response of the
@@ -239,15 +239,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 onError(mc, cs, cd, p);
                 throw pr.getRunningException();
             } else {
-                try {
-                    ProductDownloadHomeAction.writeResponseWithVelocity(mc, cs, cd, p, getResponse().getWriter());
-                } catch (IOException e) {
-                    throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
-                }
-
                 String productURL = BLLManager.getInstance().getCatalogManager().getProductManager()
                         .getProductDownloadHttpUrl(pr.getProductFileName());
-
                 // Synchronous mode
                 if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_CONSOLE)) {
                     try {
@@ -256,12 +249,10 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                         throw new MotuException(ErrorType.SYSTEM, "Error while sending download redirection PARAM_MODE_CONSOLE", e);
                     }
                 } else { // Default mode MotuRequestParametersConstant.PARAM_MODE_URL
-
-                    getResponse().setContentType(CONTENT_TYPE_PLAIN);
                     try {
-                        getResponse().getWriter().write(productURL);
+                        ProductDownloadHomeAction.writeResponseWithVelocity(mc, cs, cd, p, getResponse().getWriter());
                     } catch (IOException e) {
-                        throw new MotuException(ErrorType.SYSTEM, "Error while writing download result CONTENT_TYPE_PLAIN", e);
+                        throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
                     }
                 }
             }
