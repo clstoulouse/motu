@@ -88,8 +88,6 @@ public class USLRequestManager implements IUSLRequestManager {
         case DeleteAction.ACTION_NAME:
             actionInst = new DeleteAction("009", request, response, getSession(request));
             break;
-
-        // Authenticated actions
         case DownloadProductAction.ACTION_NAME:
             actionInst = new DownloadProductAction("010", request, response, getSession(request));
             break;
@@ -105,7 +103,6 @@ public class USLRequestManager implements IUSLRequestManager {
         case ListServicesAction.ACTION_NAME:
             actionInst = new ListServicesAction("014", request, response, getSession(request));
             break;
-        // TODO SMA Action Refresh ???
         case DescribeCoverageAction.ACTION_NAME:
             actionInst = new DescribeCoverageAction("015", request, response, getSession(request));
             break;

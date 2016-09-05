@@ -1094,6 +1094,7 @@ The Action Code		=>	A number matching the HTTP request with the action parameter
 
 The Error Type Code	=>	A number defining a specific error on the server.
 
+0       =>  No error.  
 1		=>	There is a system error. Please contact the Administrator.    
 2		=>	There is an error with the parameters. There are inconsistent.         
 3		=>	The date provided into the parameters is invalid.         

@@ -59,8 +59,6 @@ public class XMLConverter {
     }
 
     public static StatusModeResponse convertStatusModeResponse(String actionCode, RequestDownloadStatus requestDownloadStatus) throws MotuException {
-        StatusModeResponse smr = new StatusModeResponse();
-
         return getResponse(StringUtils.getErrorCode(actionCode, convertErrorCode(requestDownloadStatus.getRunningException())),
                            requestDownloadStatus);
     }
