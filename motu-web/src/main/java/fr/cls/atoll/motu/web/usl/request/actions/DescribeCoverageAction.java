@@ -48,7 +48,7 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static final String ACTION_NAME = "describeCoverage";
+    public static final String ACTION_NAME = "describecoverage";
 
     private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
     private ProductHTTPParameterValidator productHTTPParameterValidator;
