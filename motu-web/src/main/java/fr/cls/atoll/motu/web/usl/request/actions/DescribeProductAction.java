@@ -36,6 +36,10 @@ import fr.cls.atoll.motu.web.usl.request.parameter.validator.XMLFileParameterVal
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
+ * Request example: Motu?action=describeProduct
+ * &data=http://misgw-ddo-qt.cls.fr:61080/thredds/dodsC/path_HR_MOD
+ * &xmlfile=http://misgw-ddo-qt.cls.fr:61080/thredds/m_HR_MOD.xml
+ * 
  * @author Pierre LACOSTE
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
