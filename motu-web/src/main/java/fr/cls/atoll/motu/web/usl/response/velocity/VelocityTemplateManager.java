@@ -82,7 +82,7 @@ public class VelocityTemplateManager {
 
         String xmlDir = "";
         if (isXMLTemplate_) {
-            xmlDir = "/xml";
+            xmlDir = "xml/";
         }
         return VELOCITY_TEMPLATE_DIR + xmlDir + getTemplateFileNameFromActionName(actionName) + langSuffix + ".vm";
     }

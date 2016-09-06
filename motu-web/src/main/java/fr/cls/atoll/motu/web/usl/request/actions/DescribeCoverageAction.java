@@ -65,7 +65,7 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
                 CommonHTTPParameters.getServiceFromRequest(getRequest()));
         productHTTPParameterValidator = new ProductHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_DATASET_ID,
-                CommonHTTPParameters.getProductFromRequest(getRequest()));
+                CommonHTTPParameters.getDatasetIdFromRequest(getRequest()));
 
     }
 
@@ -87,12 +87,13 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
 
     private void writeResponseWithVelocity(MotuConfig mc_, ConfigService cs_, CatalogData cd, Product p) throws MotuException {
         VelocityContext context = VelocityTemplateManager.getPrepopulatedVelocityContext();
-        context.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG, true));
+        // This action is different because it returns an XML result file built from a velocity template
         context.put("service", VelocityModelConverter.convertToService(mc_, cs_, cd));
         context.put("product", VelocityModelConverter.convertToProduct(p));
 
         try {
-            Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null, cs_.getVeloTemplatePrefix());
+            Template template = VelocityTemplateManager.getInstance().getVelocityEngine()
+                    .getTemplate(VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG, true));
             template.merge(context, getResponse().getWriter());
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
