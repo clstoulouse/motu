@@ -71,7 +71,6 @@ public class DALRequestManager implements IDALRequestManager {
         } catch (MotuException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new MotuException(ErrorType.SYSTEM, "Error while downloading product ncss=" + ncssStatus, e);
         }
     }

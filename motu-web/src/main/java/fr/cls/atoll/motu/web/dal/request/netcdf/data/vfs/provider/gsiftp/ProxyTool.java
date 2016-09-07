@@ -293,17 +293,4 @@ public class ProxyTool {
         }
     }
 
-    /**
-     * @param args
-     */
-    // public static void main(String[] args) {
-    // try {
-    // ProxyTool tool = new ProxyTool();
-    // tool.createProxy("2p2dkdt");
-    //
-    // } catch (Exception e) {
-    // e.printStackTrace();
-    // }
-    // }
-
 }

@@ -270,10 +270,6 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
         // Is this dataset a Geo X/Y with Lat/Lon whose dimensions depend on X/Y ?
         boolean isGeoXY = product.hasGeoXYAxisWithLonLatEquivalence();
 
-        /*
-         * try { NetCdfReader.toNcML(product.getNetCdfReaderDataset(), "c:\\temp\\test.xml"); } catch
-         * (IOException e1) { // TODO Auto-generated catch block e1.printStackTrace(); }
-         */
         String locationData = product.getNetCdfReaderDataset().getLocation();
         NetCdfReader netCdfReader = new NetCdfReader(locationData, product.isCasAuthentication());
         this.readingTime += netCdfReader.open(false);

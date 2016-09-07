@@ -141,17 +141,5 @@ public class QueueLogError {
         return buffer.toString();
 
     }
-    // public String toXML() {
-    // XStreamer streamer = new XStreamer();
-    // StringBuffer stringBuffer = new StringBuffer();
-    // try {
-    // stringBuffer.append(streamer.toXML(xStream, this));
-    // // stringBuffer.append(streamer.toXML(queueLogInfo.getXStream(), queueLogInfo));
-    // } catch (ObjectStreamException e) {
-    // e.printStackTrace();
-    // }
-    // return stringBuffer.toString();
-    //
-    // }
 
 }

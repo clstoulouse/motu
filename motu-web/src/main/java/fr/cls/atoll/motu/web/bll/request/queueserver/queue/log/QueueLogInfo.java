@@ -246,7 +246,6 @@ public class QueueLogInfo {
             return outputStream.toString(encoding);
         } catch (UnsupportedEncodingException e) {
             LOG.error("toXML()", e);
-            e.printStackTrace(System.err);
         }
         return "";
     }
@@ -353,10 +352,8 @@ public class QueueLogInfo {
 
         } catch (UnsupportedEncodingException e) {
             LOG.error("toCSV()", e);
-            e.printStackTrace(System.err);
         } catch (IOException e) {
             LOG.error("toCSV()", e);
-            e.printStackTrace(System.err);
         }
 
         // Empty return

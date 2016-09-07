@@ -313,31 +313,26 @@ public class DebugAction extends AbstractAction {
         stringBuffer.append("Queue server general configuration\n");
         stringBuffer.append("</h1>\n");
 
-        try {
-            IQueueServerManager queueServerManagement = BLLManager.getInstance().getRequestManager().getQueueServerManager();
-            if (queueServerManagement == null) {
-                stringBuffer.append("<p> Queue server is not active</p>");
-                return;
-            }
-            stringBuffer.append("<p>\n");
-            // stringBuffer.append(" Default priority: ");
-            // stringBuffer.append(queueServerManagement.getDefaultPriority());
-            stringBuffer.append(" Max. data threshold: ");
-            stringBuffer
-                    .append(String.format("%8.2f Mo", BLLManager.getInstance().getRequestManager().getQueueServerManager().getMaxDataThreshold()));
-            stringBuffer.append("</p>\n");
-
-            // stringBuffer.append("<h2>\n");
-            // stringBuffer.append("Non-Batch Queues");
-            // stringBuffer.append("</h2>\n");
-            debugPendingRequest(stringBuffer, queueServerManagement); // , false
-            // stringBuffer.append("<h2>\n");
-            // stringBuffer.append("Batch Queues");
-            // stringBuffer.append("</h2>\n");
-            // debugPendingRequest(stringBuffer, queueServerManagement, true);
-        } catch (Exception e) {
-            e.printStackTrace();
+        IQueueServerManager queueServerManagement = BLLManager.getInstance().getRequestManager().getQueueServerManager();
+        if (queueServerManagement == null) {
+            stringBuffer.append("<p> Queue server is not active</p>");
+            return;
         }
+        stringBuffer.append("<p>\n");
+        // stringBuffer.append(" Default priority: ");
+        // stringBuffer.append(queueServerManagement.getDefaultPriority());
+        stringBuffer.append(" Max. data threshold: ");
+        stringBuffer.append(String.format("%8.2f Mo", BLLManager.getInstance().getRequestManager().getQueueServerManager().getMaxDataThreshold()));
+        stringBuffer.append("</p>\n");
+
+        // stringBuffer.append("<h2>\n");
+        // stringBuffer.append("Non-Batch Queues");
+        // stringBuffer.append("</h2>\n");
+        debugPendingRequest(stringBuffer, queueServerManagement); // , false
+        // stringBuffer.append("<h2>\n");
+        // stringBuffer.append("Batch Queues");
+        // stringBuffer.append("</h2>\n");
+        // debugPendingRequest(stringBuffer, queueServerManagement, true);
     }
 
     /**

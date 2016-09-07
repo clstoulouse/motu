@@ -343,9 +343,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
             }
             netCdfWriter.getNcfile().close();
         } catch (IOException e) {
-            LOG.error("extractDataIntoNetCdf()", e);
-
-            e.printStackTrace();
+            throw new MotuException(ErrorType.SYSTEM, e);
         }
         // netCdfWriter.finish(VAR_ATTR_TO_REMOVE);
 

@@ -3,6 +3,11 @@ package fr.cls.atoll.motu.web.common.utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
+
 /**
  * <br>
  * <br>
@@ -16,6 +21,8 @@ import java.io.IOException;
 public abstract class ReaderThread implements Runnable {
 
     private BufferedReader reader = null;
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public ReaderThread(BufferedReader reader) {
         this.reader = reader;
@@ -34,7 +41,7 @@ public abstract class ReaderThread implements Runnable {
                     reader.close();
                 }
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+                LOGGER.error(ErrorType.SYSTEM, ioe);
             }
         }
     }

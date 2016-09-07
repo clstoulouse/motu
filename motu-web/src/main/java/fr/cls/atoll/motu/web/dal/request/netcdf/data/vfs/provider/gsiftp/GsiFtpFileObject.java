@@ -187,8 +187,6 @@ public class GsiFtpFileObject extends AbstractFileObject {
                 }
             }
         } catch (ServerException se) {
-            se.printStackTrace();
-            // System.err.println("GsiFtpFileObject " + se);
             throw new IOException(se.getMessage());
         } catch (ClientException ce) {
             throw new IOException(ce.getMessage());

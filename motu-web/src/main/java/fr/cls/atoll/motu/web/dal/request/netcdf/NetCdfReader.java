@@ -2573,7 +2573,7 @@ public class NetCdfReader {
     // try {
     // d = dateFormat.parse(stringDate);
     // } catch (ParseException e) {
-    // e.printStackTrace();
+    // noop
     // }
     //
     // //dateFormat.applyPattern("yyyyMMdd_HHmmss");
