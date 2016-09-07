@@ -71,7 +71,11 @@ public class DALRequestManager implements IDALRequestManager {
         } catch (MotuException e) {
             throw e;
         } catch (Exception e) {
-            throw new MotuException(ErrorType.SYSTEM, "Error while downloading product ncss=" + ncssStatus, e);
+            if (e instanceof MotuException) {
+                throw (MotuException) e;
+            } else {
+                throw new MotuException(ErrorType.SYSTEM, "Error while downloading product ncss=" + ncssStatus, e);
+            }
         }
     }
 
@@ -105,54 +109,63 @@ public class DALRequestManager implements IDALRequestManager {
 
         // Check if the Left longitude is greater than the right longitude
         if (latlon.getLowerLeftLon() > latlon.getLowerRightLon()) {
-            // In this case, thredds needs 2 requests to retrieve the data.
-            List<ExtractCriteriaLatLon> rangesToRequest = ComputeRangeOutOfLimit(p, latlon);
+            // Check if only one depth is requested. This is because the merge of two netcdf file needs a lot
+            // of resources.
 
-            // Create a temporary directory into tmp directory to save the 2 generated file
-            Path tempDirectory = Files.createTempDirectory("LeftAndRightRequest");
-            ncss.setOutputDir(tempDirectory.toString());
+            int fromDepthIndex = searchDepthIndex(p.getZAxisRoundedDownDataAsString(2), depth.getFrom());
+            int toDepthIndex = searchDepthIndex(p.getZAxisRoundedUpDataAsString(2), depth.getTo());
+            if (fromDepthIndex != -1 && toDepthIndex != -1 && fromDepthIndex == toDepthIndex) {
+                // In this case, thredds needs 2 requests to retrieve the data.
+                List<ExtractCriteriaLatLon> rangesToRequest = ComputeRangeOutOfLimit(p, latlon);
 
-            List<String> filesPath = new ArrayList<>();
+                // Create a temporary directory into tmp directory to save the 2 generated file
+                Path tempDirectory = Files.createTempDirectory("LeftAndRightRequest");
+                ncss.setOutputDir(tempDirectory.toString());
 
-            int i = 0;
-            long rangesLength = 0;
-            for (ExtractCriteriaLatLon currentRange : rangesToRequest) {
-                rangesLength += Math.abs(Math.abs(currentRange.getLatLonRect().getLonMax()) - Math.abs(currentRange.getLatLonRect().getLonMin()));
-                ncss.setGeoSubset(currentRange);
-                ncss.setOutputFile(i + "-" + fname);
-                ncssRequest(p, ncss);
-                filesPath.add(Paths.get(tempDirectory.toString(), ncss.getOutputFile()).toString());
-                i++;
-            }
+                List<String> filesPath = new ArrayList<>();
 
-            // Concatenate with NCO
-            // Set the merge command
-            String cmd = "merge.sh ";
-            // Set the output file path
-            cmd += extractDirPath + "/" + fname;
-            // Set the start point
-            cmd += " " + latlon.getLowerLeftLon();
-            // Set the length
-            cmd += " " + rangesLength;
+                int i = 0;
+                long rangesLength = 0;
+                for (ExtractCriteriaLatLon currentRange : rangesToRequest) {
+                    rangesLength += Math.abs(Math.abs(currentRange.getLatLonRect().getLonMax()) - Math.abs(currentRange.getLatLonRect().getLonMin()));
+                    ncss.setGeoSubset(currentRange);
+                    ncss.setOutputFile(i + "-" + fname);
+                    ncssRequest(p, ncss);
+                    filesPath.add(Paths.get(tempDirectory.toString(), ncss.getOutputFile()).toString());
+                    i++;
+                }
 
-            // Set the list of files to merge
-            for (String path : filesPath) {
-                cmd += " " + path;
-            }
-            LOGGER.info("Start: " + cmd);
-            final Process process = Runtime.getRuntime().exec(cmd);
+                // Concatenate with NCO
+                // Set the merge command
+                String cmd = "merge.sh ";
+                // Set the output file path
+                cmd += extractDirPath + "/" + fname;
+                // Set the start point
+                cmd += " " + latlon.getLowerLeftLon();
+                // Set the length
+                cmd += " " + rangesLength;
 
-            new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getInputStream())), LOGGER, Type.INFO)).start();
-            new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getErrorStream())), LOGGER, Type.ERROR)).start();
+                // Set the list of files to merge
+                for (String path : filesPath) {
+                    cmd += " " + path;
+                }
+                LOGGER.info("Start: " + cmd);
+                final Process process = Runtime.getRuntime().exec(cmd);
 
-            int exitValue = process.waitFor();
-            LOGGER.info("END [Exit code=" + exitValue + "] : " + cmd);
+                new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getInputStream())), LOGGER, Type.INFO)).start();
+                new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getErrorStream())), LOGGER, Type.ERROR)).start();
 
-            // Cleanup directory and intermediate files (right away once concat)
-            FileUtils.deleteDirectory(tempDirectory.toFile());
+                int exitValue = process.waitFor();
+                LOGGER.info("END [Exit code=" + exitValue + "] : " + cmd);
 
-            if (exitValue != 0) {
-                throw new MotuException(ErrorType.SYSTEM, "The generation of the NC file failled. See the log for more information.");
+                // Cleanup directory and intermediate files (right away once concat)
+                FileUtils.deleteDirectory(tempDirectory.toFile());
+
+                if (exitValue != 0) {
+                    throw new MotuException(ErrorType.SYSTEM, "The generation of the NC file failled. See the log for more information.");
+                }
+            } else {
+                throw new MotuException(ErrorType.TOO_DEPTH_REQUESTED, "There is more than one depth in this request which needs merge procedure.");
             }
         } else {
             ncss.setOutputFile(fname);
@@ -160,6 +173,17 @@ public class DALRequestManager implements IDALRequestManager {
             ncss.setGeoSubset(latlon);
             ncssRequest(p, ncss);
         }
+    }
+
+    private int searchDepthIndex(List<String> listOfDepth, double depthToSearch) {
+        int i = -1;
+        for (String currentDepth : listOfDepth) {
+            i++;
+            if (Double.valueOf(currentDepth).equals(depthToSearch)) {
+                return i;
+            }
+        }
+        return i;
     }
 
     private String computeDownloadFileName(String productId, Long requestId) {
