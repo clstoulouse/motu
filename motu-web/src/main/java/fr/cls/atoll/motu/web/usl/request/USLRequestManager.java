@@ -138,7 +138,7 @@ public class USLRequestManager implements IUSLRequestManager {
             String errMessage = "";
             if (e instanceof MotuException) {
                 errorType = ((MotuException) e).getErrorType();
-                errMessage = BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType);
+                errMessage = BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, e);
             } else if (e instanceof InvalidHTTPParameterException) {
                 errorType = ErrorType.BAD_PARAMETERS;
                 errMessage = e.getMessage();

@@ -25,4 +25,9 @@ public class BLLMessagesErrorManager implements IBLLMessagesErrorManager {
     public String getMessageError(ErrorType errorCode) throws MotuException {
         return DALManager.getInstance().getMessagesErrorManager().getMessageError(errorCode);
     }
+
+    @Override
+    public String getMessageError(ErrorType errorCode, Exception e) throws MotuException {
+        return DALManager.getInstance().getMessagesErrorManager().getMessageError(errorCode, e);
+    }
 }

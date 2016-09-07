@@ -68,7 +68,10 @@ public class DALRequestManager implements IDALRequestManager {
             } else {
                 downloadWithOpenDap(p, dataOutputFormat);
             }
+        } catch (MotuException e) {
+            throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new MotuException(ErrorType.SYSTEM, "Error while downloading product ncss=" + ncssStatus, e);
         }
     }

@@ -226,7 +226,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                     MotuException runningException = pr.getRunningException();
                     ErrorType errorType = runningException.getErrorType();
                     p.setLastError(StringUtils.getErrorCode(getActionCode(), errorType) + "=>"
-                            + BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType));
+                            + BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, runningException));
                     LOGGER.error(StringUtils.getLogMessage(getActionCode(), errorType, runningException.getMessage()), runningException);
                 } catch (MotuException errorMessageException) {
                     p.setLastError(StringUtils.getErrorCode(getActionCode(), BLLMessagesErrorManager.SYSTEM_ERROR_CODE) + "=>" + StringUtils
@@ -237,7 +237,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                                  errorMessageException);
                 }
                 onError(mc, cs, cd, p);
-                throw pr.getRunningException();
             } else {
                 String productURL = BLLManager.getInstance().getCatalogManager().getProductManager()
                         .getProductDownloadHttpUrl(pr.getProductFileName());

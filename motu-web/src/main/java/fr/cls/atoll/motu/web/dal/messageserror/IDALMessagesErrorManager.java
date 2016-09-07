@@ -32,4 +32,14 @@ public interface IDALMessagesErrorManager {
      * @return
      */
     String getMessageError(ErrorType errorCode) throws MotuException;
+
+    /**
+     * .
+     * 
+     * @param errorCode
+     * @param e
+     * @return
+     * @throws MotuException
+     */
+    String getMessageError(ErrorType errorCode, Exception e) throws MotuException;
 }

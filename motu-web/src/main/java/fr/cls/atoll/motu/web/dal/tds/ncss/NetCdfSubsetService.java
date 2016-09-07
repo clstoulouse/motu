@@ -454,9 +454,10 @@ public class NetCdfSubsetService {
                 throw new MotuException(ErrorType.NETCDF_GENERATION, msg);
             }
 
+        } catch (MotuException e) {
+            throw e;
         } catch (Exception e) {
-            String msg = e.getMessage();
-            throw new MotuException(ErrorType.SYSTEM, msg);
+            throw new MotuException(ErrorType.SYSTEM, e);
         }
     }
 

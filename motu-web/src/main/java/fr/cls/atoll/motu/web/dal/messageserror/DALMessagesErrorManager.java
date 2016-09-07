@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
@@ -67,18 +68,26 @@ public class DALMessagesErrorManager implements IDALMessagesErrorManager {
         }
     }
 
+    @Override
+    public String getMessageError(ErrorType errorCode) throws MotuException {
+        return getMessageError(errorCode, null);
+    }
+
     /**
      * {@inheritDoc}
      * 
      * @throws MotuException
      */
     @Override
-    public String getMessageError(ErrorType errorCode) throws MotuException {
+    public String getMessageError(ErrorType errorCode, Exception e) throws MotuException {
         if (SYSTEM_ERROR_CODE.equals(errorCode)) {
             return SYSTEM_ERROR_MESSAGE;
         } else {
             if (messagesError != null) {
                 String messageError = messagesError.getProperty(String.valueOf(errorCode.value()));
+                if (e != null) {
+                    messageError = MessageFormat.format(messageError, e.getMessage());
+                }
                 if (messageError == null) {
                     throw new MotuException(
                             ErrorType.LOADING_MESSAGE_ERROR,
