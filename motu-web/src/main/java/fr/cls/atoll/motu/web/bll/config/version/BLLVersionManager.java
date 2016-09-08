@@ -3,7 +3,9 @@ package fr.cls.atoll.motu.web.bll.config.version;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.version.IDALVersionManager;
 
@@ -76,6 +78,17 @@ public class BLLVersionManager implements IBLLVersionManager {
     @Override
     public String getProductsVersion() {
         return productsVersion;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getStaticFilesVersion() {
+        String httpBaseRef = BLLManager.getInstance().getConfigManager().getMotuConfig().getHttpBaseRef();
+        if (StringUtils.isNullOrEmpty(httpBaseRef)) {
+            return null;
+        } else {
+            return httpBaseRef + "/version-static-files.txt";
+        }
     }
 
 }

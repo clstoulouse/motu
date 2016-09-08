@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 
 /**
@@ -46,17 +47,45 @@ public class AboutAction extends AbstractAction {
 
     @Override
     public void process() throws MotuException {
-        getResponse().setContentType(CONTENT_TYPE_PLAIN);
+        getResponse().setContentType(CONTENT_TYPE_HTML);
         try {
+            getResponse().getWriter().write("<!DOCTYPE html><html><body>");
+            getResponse().getWriter().write("Motu-distribution: "
+                    + BLLManager.getInstance().getConfigManager().getVersionManager().getDistributionVersion() + "<BR/>");
+            getResponse().getWriter().write("Motu-configuration: "
+                    + BLLManager.getInstance().getConfigManager().getVersionManager().getConfigurationVersion() + "<BR/>");
             getResponse().getWriter()
-                    .write("Motu-distribution: " + BLLManager.getInstance().getConfigManager().getVersionManager().getDistributionVersion() + "\n");
-            getResponse().getWriter()
-                    .write("Motu-configuration: " + BLLManager.getInstance().getConfigManager().getVersionManager().getConfigurationVersion() + "\n");
-            getResponse().getWriter()
-                    .write("Motu-products: " + BLLManager.getInstance().getConfigManager().getVersionManager().getProductsVersion() + "\n");
-        } catch (IOException e) {
+                    .write("Motu-products: " + BLLManager.getInstance().getConfigManager().getVersionManager().getProductsVersion() + "<BR/>");
+            String urlStaticFiles = BLLManager.getInstance().getConfigManager().getVersionManager().getStaticFilesVersion();
+            String urlStaticFilesContent = "";
+            if (StringUtils.isNullOrEmpty(urlStaticFiles)) {
+                urlStaticFilesContent = "Default version";
+            } else {
+                urlStaticFilesContent = "<span id=\"staticFilesVersion\">loading...</span>";
+            }
+
+            getResponse().getWriter().write("Motu-static-files (Graphic chart): " + urlStaticFilesContent);
+            if (!StringUtils.isNullOrEmpty(urlStaticFiles)) {
+                // Load view AJAX the version of static files from the Web server
+                getResponse().getWriter()
+                        .write("\n<script>" + "\n" + "  var xhttp = new XMLHttpRequest();\n" + "  xhttp.onreadystatechange = function() {\n"
+                                + "    if (this.readyState == 4 ) {\n      var versionSpan = document.getElementById('staticFilesVersion');\n      if (this.status == 200) {\n"
+                                + "        if (versionSpan.innerText) {\n" + "           versionSpan.innerText = this.responseText;\n"
+                                + "        } else if (versionSpan.textContent) {\n" + "           versionSpan.textContent = this.responseText;   \n"
+                                + "        }\n" + "      } else {\n        if (versionSpan.innerText) {\n"
+                                + "          versionSpan.innerText = \"Unknown\"\n" + "        } else if (versionSpan.textContent) {\n"
+                                + "          versionSpan.textContent = \"Unknown\";   \n" + "        }\n      }\n    }\n" + "  };\n"
+                                + "  xhttp.open('GET', '" + urlStaticFiles + "', true);\n" + "  xhttp.send();\n" + "\n" + "</script>\n");
+            }
+
+        } catch (
+
+        IOException e)
+
+        {
             throw new MotuException(ErrorType.SYSTEM, "Error while writing response", e);
         }
+
     }
 
     /** {@inheritDoc} */

@@ -38,4 +38,11 @@ public interface IBLLVersionManager {
      */
     void init();
 
+    /**
+     * .
+     * 
+     * @return
+     */
+    String getStaticFilesVersion();
+
 }
