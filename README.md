@@ -1088,7 +1088,7 @@ The Action Code		=>	A number matching the HTTP request with the action parameter
 013		=>	PRODUCT\_DOWNLOAD\_HOME\_ACTION  
 014		=>	LIST\_SERVICES\_ACTION              
 015		=>	DESCRIBE\_COVERAGE\_ACTION         
-016		=>	DESCRIBE\_PRODUCT\_DAEMON\_ACTION  
+016		=>	ABOUT\_ACTION  
 
 ### <a name="LogCodeErrorsErrorType">Error types</a>
 

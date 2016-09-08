@@ -20,6 +20,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.IBLLRequestManager;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.usl.request.actions.AboutAction;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DebugAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DeleteAction;
@@ -106,7 +107,9 @@ public class USLRequestManager implements IUSLRequestManager {
         case DescribeCoverageAction.ACTION_NAME:
             actionInst = new DescribeCoverageAction("015", request, response, getSession(request));
             break;
-
+        case AboutAction.ACTION_NAME:
+            actionInst = new AboutAction("016", request, response);
+            break;
         default:
             // Nothing to do
         }

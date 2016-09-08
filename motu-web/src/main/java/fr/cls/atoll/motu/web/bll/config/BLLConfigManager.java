@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import fr.cls.atoll.motu.web.bll.config.version.BLLVersionManager;
+import fr.cls.atoll.motu.web.bll.config.version.IBLLVersionManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.IDALConfigManager;
@@ -25,15 +27,18 @@ public class BLLConfigManager implements IBLLConfigManager {
 
     private IDALConfigManager dalConfigManager;
     private IBLLQueueServerConfigManager bllQueueServerConfigManager;
+    private IBLLVersionManager bllVersionManager;
 
     public BLLConfigManager() {
         dalConfigManager = DALManager.getInstance().getConfigManager();
         bllQueueServerConfigManager = new BLLQueueServerConfigManager();
+        bllVersionManager = new BLLVersionManager();
     }
 
     @Override
     public void init() throws MotuException {
         dalConfigManager.init();
+        bllVersionManager.init();
     }
 
     /** {@inheritDoc} */
@@ -124,6 +129,12 @@ public class BLLConfigManager implements IBLLConfigManager {
     @Override
     public String getMotuConfigurationFolderPath() {
         return dalConfigManager.getMotuConfigurationFolderPath();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public IBLLVersionManager getVersionManager() {
+        return bllVersionManager;
     }
 
 }
