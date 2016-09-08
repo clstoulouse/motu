@@ -19,6 +19,8 @@ import fr.cls.atoll.motu.web.common.utils.PropertiesUtilities;
 import fr.cls.atoll.motu.web.dal.config.stdname.StdNameReader;
 import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardName;
 import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardNames;
+import fr.cls.atoll.motu.web.dal.config.version.DALVersionManager;
+import fr.cls.atoll.motu.web.dal.config.version.IDALVersionManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 
 /**
@@ -33,6 +35,7 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
  */
 public class DALConfigManager implements IDALConfigManager {
 
+    private IDALVersionManager dalVersionManager;
     /** Application configuration. */
     private MotuConfig motuConfig = null;
 
@@ -41,6 +44,10 @@ public class DALConfigManager implements IDALConfigManager {
 
     public static final String FILENAME_FORMAT_REQUESTID = "@@requestId@@";
     public static final String FILENAME_FORMAT_PRODUCT_ID = "@@productId@@";
+
+    public DALConfigManager() {
+        dalVersionManager = new DALVersionManager();
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -130,5 +137,11 @@ public class DALConfigManager implements IDALConfigManager {
     @Override
     public MotuConfig getMotuConfig() {
         return motuConfig;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public IDALVersionManager getVersionManager() {
+        return dalVersionManager;
     }
 }

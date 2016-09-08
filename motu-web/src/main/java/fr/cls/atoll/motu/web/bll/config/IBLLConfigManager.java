@@ -2,6 +2,7 @@ package fr.cls.atoll.motu.web.bll.config;
 
 import java.util.List;
 
+import fr.cls.atoll.motu.web.bll.config.version.IBLLVersionManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardName;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
@@ -84,4 +85,11 @@ public interface IBLLConfigManager {
      * @return
      */
     String getMotuConfigurationFolderPath();
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    IBLLVersionManager getVersionManager();
 }
