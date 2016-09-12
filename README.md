@@ -783,49 +783,52 @@ process smallest requests by running the thread on the other processor core. Sp 
 #### Java options
 The three parameters below are used to tune the Java Virtual Machine:  
    # -server: tells the Hostspot compiler to run the JVM in "server" mode (for performance)  
-tomcat-motu-jvm-javaOpts=-server -Xmx4096M -Xms512M -XX:PermSize=128M -XX:MaxPermSize=512M  
-tomcat-motu-jvm-port-jmx=9010  
-tomcat-motu-jvm-address-debug=9090  
+__tomcat-motu-jvm-javaOpts__=-server -Xmx4096M -Xms512M -XX:PermSize=128M -XX:MaxPermSize=512M  
+__tomcat-motu-jvm-port-jmx__=9010  
+__tomcat-motu-jvm-address-debug__=9090  
 
 
 #### Tomcat network ports
 The parameters below are used to set the different network ports used by Apache Tomcat.  
-At startup, these ports are set in the file "$installdir/motu/tomcat-motu/conf/server.xml".  
-But if this file already exist, it won't be replaced. So in order to apply these parameters, remove the file "$installdir/motu/tomcat-motu/conf/server.xml".
-tomcat-motu-port-http=9080  
-  # HTTPs is in a common way managed from a frontal Apache HTTPd server. If you really need to use it from Tomcat, you have to tune the SSL certificates and the protocols directly in the file "$installdir/motu/tomcat-motu/conf/server.xml".
-tomcat-motu-port-https=9443  
-tomcat-motu-port-ajp=9009  
-tomcat-motu-port-shutdown=9005  
+At startup, these ports are set in the file "$installdir/motu/tomcat-motu/conf/server.xml".    
+But if this file already exist, it won't be replaced. So in order to apply these parameters, remove the file "$installdir/motu/tomcat-motu/conf/server.xml".  
+  
+__tomcat-motu-port-http__=9080  
+  # HTTPs is in a common way managed from a frontal Apache HTTPd server. If you really need to use it from Tomcat, you have to tune the SSL certificates and the protocols directly in the file "$installdir/motu/tomcat-motu/conf/server.xml".  
+__tomcat-motu-port-https__=9443  
+__tomcat-motu-port-ajp__=9009  
+__tomcat-motu-port-shutdown__=9005  
 
 
 
 #### CAS SSO server
 
-   # true or false to enable the SSO connection to a CAS server
-cas-activated=false
+   # true or false to enable the SSO connection to a CAS server  
+__cas-activated__=false  
   
    # Cas server configuration to allow Motu to access to it  
    # @see https://wiki.jasig.org/display/casc/configuring+the+jasig+cas+client+for+java+in+the+web.xml  
      
-   # The Cas server URL
-cas-server-url=https://cas-cis.cls.fr/cas  
+   # The Cas server URL  
+__cas-server-url__=https://cas-cis.cls.fr/cas  
    # The Motu HTTP server url: example: http://misgw-ddo-qt.cls.fr:9080 or http://motu.cls.fr   
-cas-auth-serverName=http://$motuServerIp:$motuServerPort 
-   # The proxy callback HTTP URL on the Motu server (this URL can be defined on the frontal Apache HTTPs server)
-cas-validationFilter-proxyCallbackUrl=http://$motuServerIp:$motuServerPort/motu-web/proxyCallback
+__cas-auth-serverName__=http://$motuServerIp:$motuServerPort  
+   # The proxy callback HTTP URL on the Motu server (this URL can be defined on the frontal Apache HTTPs server)  
+__cas-validationFilter-proxyCallbackUrl__=http://$motuServerIp:$motuServerPort/motu-web/proxyCallback  
 
 #### Supervision
-To enable the status supervision, set the parameter below:
-tomcat-motu-urlrewrite-statusEnabledOnHosts=localhost,*.cls.fr
+To enable the status supervision, set the parameter below:  
+__tomcat-motu-urlrewrite-statusEnabledOnHosts__=localhost,*.cls.fr
 
-This parameter is used to set the property below in the WEB.XML file:
-        <init-param>
-            <param-name>statusEnabledOnHosts</param-name>
-            <param-value>${tomcat-motu-urlrewrite-statusEnabledOnHosts}</param-value>
-        </init-param>
-        
-For more detail read:
+This parameter is used to set the property below in the WEB.XML file:  
+```
+        <init-param>  
+            <param-name>statusEnabledOnHosts</param-name>  
+            <param-value>${tomcat-motu-urlrewrite-statusEnabledOnHosts}</param-value>  
+        </init-param>  
+```  
+
+For more detail read:  
 org.tuckey UrlRewriteFilter FILTERS : see http://urlrewritefilter.googlecode.com/svn/trunk/src/doc/manual/3.1/index.html  
 
   
