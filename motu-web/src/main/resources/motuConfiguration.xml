@@ -18,18 +18,47 @@ runGCInterval="0"
 >
 
 	<!--======================================================================================-->
-	<!--                  All TDS Services (OpenDAP or NCSS)                   					  -->
+	<!--                  All TDS Services (OpenDAP or NCSS)                   			      -->
 	<!--======================================================================================-->	
-	<!-- <configService defaultLanguage="UK" description="TEST_HR_MOD-TDS" group="TEST Performance" 
-							httpBaseRef="" name="HR_MOD-TDS" 
-							veloTemplatePrefix="" profiles="external">
-		<catalog name="m_HR_MOD.xml" type="tds" ncss="enabled" urlSite="http://misgw-ddo-qt.cls.fr:61080/thredds/"/>
-	</configService>	 -->
+	<!-- This section contains an unlimited number of configService node used to declare each dataset.
+	     Here you can found examples of the three type of dataset that you can declare.
+	
+	
+	1) TDS NCSS protocol: 
+	This is the fastest protocol implemented by Motu. Motu select this protocol because type is set to "tds" and ncss is set to "enabled".
+	
+	<configService description="Free text to describe your dataSet" group="HR-Sample" httpBaseRef="" name="HR_MOD-TDS" veloTemplatePrefix="" profiles="external"> 
+		<catalog name="m_HR_MOD.xml" type="tds" ncss="enabled" urlSite="http://$tdsUrl/thredds/"/> 
+	</configService>
+
+
+
+    2) TDS Opendap protocol: 
+    OpenDap is used because it is the default protocol when tds type is set and ncss is not set or is disable.
+    
+	<configService description="Free text to describe your dataSet" group="HR-Sample" httpBaseRef="" name="HR_MOD-TDS" veloTemplatePrefix="" profiles="external"> 
+		<catalog name="m_HR_MOD.xml" type="tds" ncss="" urlSite="http://$tdsUrl/thredds/"/> 
+	</configService>
+
+
+
+    3) DGF protocol: 
+    This protocol is used to access to local files on the current machine of done with a NFS mount. With this protocol user download the full file and can run any specific extraction. 
+    
+    <configService description="Free text to describe your dataSet" group="HR-Sample" profiles="internal, external, major" httpBaseRef="" name="HR_MOD-TDS" veloTemplatePrefix=""> 
+		<catalog name="catalogFILE_GLOBAL_ANALYSIS_PHYS_001_016.xml" type="file" urlSite="file:///opt/atoll/hoa-armor/publication/inventories"/> 
+	</configService>
+	
+	
+	-->
+	<!--======================================================================================-->	
+	
 	
 	
 	<!--======================================================================================-->
 	<!--                  queueServerConfig                      							  -->
 	<!--======================================================================================-->
+	<!-- Refer to the documentation README.md for more detail about how to tune this queue server to manage download requests -->	
 	<queueServerConfig maxPoolAnonymous="-1" maxPoolAuth="-1" defaultPriority="2">
 		<queues id="queue1" description="light queue" batch="false">
 			<maxThreads>2</maxThreads>
