@@ -29,6 +29,11 @@ public interface IBLLManager {
 
     /**
      * .
+     */
+    void stop();
+
+    /**
+     * .
      * 
      * @return
      */
@@ -70,4 +75,5 @@ public interface IBLLManager {
      * @return
      */
     IBLLMessagesErrorManager getMessagesErrorManager();
+
 }

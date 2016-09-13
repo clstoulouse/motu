@@ -34,6 +34,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.messageserror.BLLMessagesErrorManager;
+import fr.cls.atoll.motu.web.common.thread.StoppableDaemonThread;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
@@ -57,11 +58,11 @@ import ucar.unidata.geoloc.LatLonRect;
  * @author Pierre LACOSTE
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class DescribeProductCacheThread extends Thread {
+public class DescribeProductCacheThread extends StoppableDaemonThread {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private ConcurrentMap<String, ProductMetadataInfo> _describeProduct;
+    private ConcurrentMap<String, ProductMetadataInfo> describeProduct;
 
     private int resfreshDelay;
 
@@ -70,52 +71,66 @@ public class DescribeProductCacheThread extends Thread {
      */
     public DescribeProductCacheThread() {
         super("DescribeProduct Cache Thread Daemon");
-        setDaemon(true);
         resfreshDelay = BLLManager.getInstance().getConfigManager().getMotuConfig().getDescribeProductCacheRefreshInMilliSec();
     }
 
     public ProductMetadataInfo getProductDescription(String productId) {
-        return _describeProduct.get(productId);
+        return describeProduct.get(productId);
     }
 
     /** {@inheritDoc} */
     @Override
     public void run() {
         LOGGER.info("Start Describe Product cache Daemon");
-        while (true) {
+        while (!isDaemonStoppedASAP()) {
             long startRefresh = System.currentTimeMillis();
-            _describeProduct = new ConcurrentHashMap<>();
+            describeProduct = new ConcurrentHashMap<>();
             List<ConfigService> services = BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService();
-            for (ConfigService configService : services) {
-                try {
-                    CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(configService);
-                    Map<String, Product> products = cd.getProducts();
-                    for (Map.Entry<String, Product> currentProductEntry : products.entrySet()) {
-                        Product currentProduct = currentProductEntry.getValue();
-
-                        ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
-                                .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(configService),
-                                                    currentProduct.getProductId(),
-                                                    currentProduct.getLocationData());
-                        if (pmd != null) {
-                            currentProduct.setProductMetaData(pmd);
-                        }
-                        _describeProduct.put(currentProduct.getProductId(), initProductMetadataInfo(currentProduct));
-                    }
-
-                } catch (MotuException e) {
-                    LOGGER.error("Error during refresh of the describe product cache", e);
-                } catch (MotuExceptionBase e) {
-                    LOGGER.error("Error during refresh of the describe product cache", e);
-                }
+            int i = 0;
+            while (!isDaemonStoppedASAP() && i < services.size()) {
+                ConfigService configService = services.get(i);
+                processConfigService(configService);
+                i++;
             }
             LOGGER.info("Describe product cache refreshed in "
                     + fr.cls.atoll.motu.web.common.utils.DateUtils.getDurationMinSecMsec(System.currentTimeMillis() - startRefresh));
-            try {
-                sleep(resfreshDelay);
-            } catch (InterruptedException e) {
-                LOGGER.error("Error during refresh of the describe product cache", e);
+
+            if (!isDaemonStoppedASAP()) {
+                try {
+                    sleep(resfreshDelay);
+                } catch (InterruptedException e) {
+                    LOGGER.error("Error during refresh of the describe product cache", e);
+                }
             }
+        }
+    }
+
+    /**
+     * .
+     * 
+     * @param configService
+     */
+    private void processConfigService(ConfigService configService) {
+        try {
+            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(configService);
+            Map<String, Product> products = cd.getProducts();
+            for (Map.Entry<String, Product> currentProductEntry : products.entrySet()) {
+                Product currentProduct = currentProductEntry.getValue();
+
+                ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
+                        .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(configService),
+                                            currentProduct.getProductId(),
+                                            currentProduct.getLocationData());
+                if (pmd != null) {
+                    currentProduct.setProductMetaData(pmd);
+                }
+                describeProduct.put(currentProduct.getProductId(), initProductMetadataInfo(currentProduct));
+            }
+
+        } catch (MotuException e) {
+            LOGGER.error("Error during refresh of the describe product cache", e);
+        } catch (MotuExceptionBase e) {
+            LOGGER.error("Error during refresh of the describe product cache", e);
         }
     }
 
@@ -932,7 +947,6 @@ public class DescribeProductCacheThread extends Thread {
                 .setError(property,
                           new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
         return property;
-
     }
 
 }

@@ -12,7 +12,6 @@
 
 	<artifactId>motu-scripts</artifactId>
 	<name>Motu scripts</name>
-	<version>2.6.00-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>Artefact containing the scripts to start/stop Motu
     </description>

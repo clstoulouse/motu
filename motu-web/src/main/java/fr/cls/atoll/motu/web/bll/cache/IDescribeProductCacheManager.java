@@ -17,4 +17,9 @@ public interface IDescribeProductCacheManager {
     void init();
 
     ProductMetadataInfo getDescribeProduct(String productId);
+
+    /**
+     * .
+     */
+    void stop();
 }

@@ -17,6 +17,8 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
 * [Overview](#Overview)
 * [Architecture](#Architecture)
   * [Interfaces](#ArchitectureInterfaces)
+     * [Server interfaces](#ArchitectureInterfacesServer)  
+     * [External interfaces with other systems or tools](#ArchitectureInterfacesExternal)  
   * [Design](#ArchitectureDesign)
 * [Development](#Development)
   * [Development environment](#DEV)
@@ -71,22 +73,25 @@ For administrators, Motu allows to monitor the usage of the server: the logs pro
 Motu is a web application running inside the HTTPd Apache Tomcat application server.
 
 #<a name="ArchitectureInterfaces">Interfaces</a>
-Motu provides server interfaces:  
+##<a name="ArchitectureInterfacesServer">Server interfaces</a>
+All ports are defined in [motu.properties](#ConfigurationSystem) configuration file.
 
-* __HTTP__: Port defined in motu.properties, used for user incoming requests
-* __HTTPs__: Port defined in motu.properties, used for user incoming requests
-* __AJP__: Port defined in motu.properties, used to communicate with an Apache HTTPd frontal server
-* __JMX__: Port defined in motu.properties, used to monitor the application
-* __Debug__: Port defined in motu.properties, in development mode, used to remotely debug the application
-* __Socket for Shutdown__: Port defined in motu.properties, port opened by Tomcat to shutdown the server
+* __HTTP__: Used to manage HTTP incoming requests
+* __HTTPs__: Used to manage HTTPs incoming requests
+* __AJP__: Used to communicate with an Apache HTTPd frontal server
+* __JMX__: Used to monitor the application
+* __Debug__: In development mode, used to remotely debug the application
+* __Socket for Shutdown__: Port opened by Tomcat to shutdown the server
   
-  
+##<a name="ArchitectureInterfacesExternal">External interfaces with other systems or tools</a>
 Motu has interfaces with other systems:  
 
-* __DGF__: Direct Get File: Read data from the file system
-* __Unidata Thredds HTTP server__: It connects with the NCSS or OpenDap HTTP REST API to run download request for example.
-* __HTTP CAS Server__: Use for Single Sign On (SSO) in order to manager user authentication.
-* __CDO command line tool__: used to merge request done on the anti-meridian because TDS server does not manage it.
+* __DGF__: Direct Get File: Read dataset from the file system. (See how to [configure it](#AdminDataSetAdd).)
+* __Unidata Thredds HTTP server__: It connects with the NCSS or OpenDap HTTP REST API to run download request for example. (See how to [configure it](#AdminDataSetAdd).)
+* __HTTP CAS Server__: Use for Single Sign On (SSO) in order to manager user authentication. (See how to [configure it](#ConfigurationSystem) "CAS SSO server" and check [profiles](#BSconfigService) attribute set on the dataset.)
+* __CDO command line tool__: [CDO](#InstallCDO) is used to deal with 2 types of download requests, which are not covered by NCSS service of Thredds Data Server:  
+  * a download request on a __range of depths__,  
+  * a download request that come __across the boundary__ of the datasets (for global datasets)  
 
 #<a name="ArchitectureDesign">Design</a>
 The Motu application has been designed by implementing the Three-Layered Services Application design. It takes many advantages
@@ -255,7 +260,14 @@ rm -rf $motu2xInstallFolder/tomcat-motu-cas
 
 #### Business configuration, Product & dataset: motuConfiguration.xml  
 The new version of Motu is compatible with the motuConfiguration.xml file configured in Motu v3.x.  
-So you can use exactly the same file. But it is important to update this file in order to:
+So you can use exactly the same file. 
+Copy your old motuConfiguration.xml file to the folder /opt/cmems-cis/motu/config, for example:  
+```
+cp  /opt/atoll/misgw/motu-configuration-sample-misgw/resources/motuConfiguration.xml /opt/cmems-cis/motu/config
+```  
+
+It is important to update this file in order to:  
+
 * use the new [ncss protocol](#BSmotuConfigNCSS) to improve performance of product download 
 * remove @deprecated attributes to ease future migrations. You can check them [Business configuration](#ConfigurationBusiness).
 * Check the attribute [extractionPath](#motuConfig-extractionPath) to continue to serve downloaded dataset from a fontral Apache HTTPd server.
@@ -304,7 +316,14 @@ cd motu
 At this step, Motu is able to start. But static files used for customizing the web theme can be installed.  
 In the CMEMS context, the installation on a dissemination unit is ended, static files are installed on a [central server](#IntallPublicFilesOnCentralServer).  
 
-Motu is installed and configured. Refers to [configuration](#Configuration) in order to check configuration before [starting Motu](#SS).
+Now you can configure the server:  
+* Set the [system properties](#ConfigurationSystem): http port, ...
+* Configure [dataset](#ConfigurationBusiness)
+* Configure the [logs](#LogSettings)
+  
+Refer to [configuration](#Configuration) in order to check your configuration settings.  
+
+Motu is installed and configured. You can [start Motu server](#SS).  
 Then you can [check installation](#InstallCheck).
 
 
@@ -337,16 +356,17 @@ First extract the archive:
 tar xzf motu-web-static-files-X.Y.Z-classifier-$timestamp-$target.tar.gz -C /opt/cmems-cis/motu/data/public/static-files   
 ```
 
-Then edit "motu/tomcat-motu/conf/server.xml" in order to server files from Motu.  
-Add then "Context" node below. Note that severals "Context" nodes can be there.  
+Then edit "motu/tomcat-motu/conf/server.xml" in order to serve files from Motu.  
+Add then "Context" node as shown below. Note that severals "Context" nodes can be declared under the Host node.  
 ```
 [...]  
 <Host appBase="webapps" [...]  
         <!-- Used to serve public static files -->  
-        <Context docBase="/opt/cmems-cis/motu/data/public/static-files/motu" path="/motu"/>  
+        <Context docBase="/opt/cmems-cis/motu/data/public/static-files/motu" path="/motu"/>    
  [...]  
-```
-Finally in motuConfiguration.xml remove the attribute named: [httpBaseRef](#motuConfig-httpBaseRef). (Do not set it empty, remove it).
+```  
+  
+Finally in motuConfiguration.xml, remove all occurrences of the attribute named: [httpBaseRef](#motuConfig-httpBaseRef) in motuConfig and configService nodes. (Do not set it empty, remove it).
 
 
 If you want to set another path instead of "/motu", you have to set also the business configuration parameter named [httpBaseRef](#motuConfig-httpBaseRef).  
@@ -361,6 +381,12 @@ When you start Motu, the only message shall be:
 tomcat-motu - start
 ```
 
+Optionaly, when this is your first installation or when a software update is done, an INFO message is displayed:  
+```
+INFO: War updated: tomcat-motu/webapps/motu-web.war [$version]  
+```  
+  
+  
 If any other messages appear, you have to treat them.
 
 As Motu relies on binary software like CDO, error could be raised meaning that CDO does not runs well.  
@@ -378,7 +404,12 @@ http://$motuUrl/motu-web/Motu?action=ping
 Response has to be:   
 ```  
 OK - response action=ping
-```  
+```   
+
+Open a Web browser, and enter:
+http://$motuUrl/motu-web/Motu  
+If nothing appears, it is because you have to [add dataset](#AdminDataSetAdd).  
+
 
 ### Check Motu logs
 Check that no error appears in Motu [errors](#LogbooksErrors) log files.
@@ -557,6 +588,20 @@ You can configure 3 main categories:
 * [MotuConfig node : general settings](#BSmotuConfig)
 * [ConfigService node : catalog settings](#BSconfigService)
 * [QueueServerConfig node : request queue settings](#BSqueueServerConfig)
+  
+  
+If you have not this file, you can extract it (set the good version motu-web-X.Y.Z.jar):  
+```
+/opt/cmems-cis/motu/products/jdk1.7.0_79/bin/jar xf /opt/cmems-cis/motu/tomcat-motu/webapps/motu-web/WEB-INF/lib/motu-web-X.Y.Z.jar motuConfiguration.xml
+```   
+    
+  
+If you have this file from a version anterior to Motu v3.x, you can reuse it. In order to improve global performance, you have to upgrade some fields:  
+* [ncss](#BSmotuConfigNCSS) Set it to "enabled" to use a faster protocol named subsetter rather than OpenDap to communicate with TDS server.  
+* [httpBaseRef](#motuConfig-httpBaseRef) shall be set to the ULR of the central repository to display the new theme  
+* [ExtractionFilePatterns](#BSmotuConfigExtractionFilePatterns) to give a custom name to the downloaded dataset file  
+  
+  
 
 ####<a name="BSmotuConfig">Attributes defined in motuConfig node</a>
 
@@ -617,7 +662,7 @@ A clean process does:
 
 Default = 1min
 
-##### extractionFilePatterns
+##### <a name="BSmotuConfigExtractionFilePatterns">extractionFilePatterns</a>
 Patterns (as regular expression) that match extraction file name to delete in folders:
 
 * java.io.tmpdir
@@ -708,7 +753,10 @@ Optional, used to override [motuConfig httpBaseRef](#motuConfig-httpBaseRef) att
 This catalog name refers a TDS catalog name available from the URL: http://$ip:$port/thredds/m_HR_MOD.xml
 Example: m_HR_OBS.xml 
 
-##### type
+##### type  
+* tds: Dataset is downloaded from TDS server. In this case, you can use [Opendap or NCSS protocol](#BSmotuConfigNCSS).
+* file: Dataset is downloaded from DGF
+
 Example: tds
 
 ##### <a name="BSmotuConfigNCSS">ncss</a>
@@ -1000,7 +1048,7 @@ By default, log files are created in the folder $MOTU_HOME/log. This folder cont
   * __tomcat-motu.log__: $CATALINA_HOME/bin/startup.sh and $CATALINA_HOME/bin/shutdown.sh outputs are redirected to this file.  
 
 ##<a name="AdminDataSetAdd">Add a dataset</a>  
-In order to add a new Dataset, you have to add a new confiogService node in the [Motu business configuration](#ConfigurationBusiness).  
+In order to add a new Dataset, you have to add a new configService node in the [Motu business configuration](#ConfigurationBusiness).  
   
 Examples of a datasets served using:  
 

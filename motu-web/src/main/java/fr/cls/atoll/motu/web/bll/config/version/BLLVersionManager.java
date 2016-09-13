@@ -84,7 +84,7 @@ public class BLLVersionManager implements IBLLVersionManager {
     @Override
     public String getStaticFilesVersion() {
         String httpBaseRef = BLLManager.getInstance().getConfigManager().getMotuConfig().getHttpBaseRef();
-        if (StringUtils.isNullOrEmpty(httpBaseRef)) {
+        if (StringUtils.isNullOrEmpty(httpBaseRef) || httpBaseRef.equalsIgnoreCase(".")) {
             return null;
         } else {
             return httpBaseRef + "/version-static-files.txt";

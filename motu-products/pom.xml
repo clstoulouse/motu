@@ -12,7 +12,6 @@
 
 	<artifactId>motu-products</artifactId>
 	<name>Motu scripts</name>
-	<version>2.6.00-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>Artefact containing the source code to build the product archive
     </description>

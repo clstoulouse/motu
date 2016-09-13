@@ -79,6 +79,7 @@ public class MotuWebEngineContextListener implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         try {
+            BLLManager.getInstance().stop();
             // Check if the timeout is reached
             boolean timeOut = false;
             // Store the wait status
@@ -102,7 +103,7 @@ public class MotuWebEngineContextListener implements ServletContextListener {
             } catch (InterruptedException e) {
                 LOGGER.error("An error occured while waiting to stop motu", e);
             }
-        } catch (MotuException e) {
+        } catch (Exception e) {
             LOGGER.error("An error occured while waiting to stop motu", e);
         }
     }

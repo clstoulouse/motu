@@ -60,6 +60,12 @@ public class BLLManager implements IBLLManager {
         describeProductCacheManager.init();
     }
 
+    @Override
+    public void stop() {
+        describeProductCacheManager.stop();
+        requestManager.stop();
+    }
+
     /** {@inheritDoc} */
     @Override
     public IBLLConfigManager getConfigManager() {
