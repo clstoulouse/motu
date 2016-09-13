@@ -23,6 +23,11 @@ public class DescribeProductCacheManager implements IDescribeProductCacheManager
     }
 
     @Override
+    public void stop() {
+        daemonRefresh.setDaemonStoppingASAP(true);
+    }
+
+    @Override
     public ProductMetadataInfo getDescribeProduct(String productId) {
         return daemonRefresh.getProductDescription(productId);
     }

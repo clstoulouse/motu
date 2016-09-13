@@ -67,6 +67,7 @@ public class BLLRequestManager implements IBLLRequestManager {
     private ConcurrentHashMap<Long, StatusModeType> actionStatus;
     private IQueueServerManager queueServerManager;
     private UserRequestCounter userRequestCounter;
+    private RequestCleanerDaemonThread requestCleanerDaemonThread;
 
     public BLLRequestManager() {
         requestIdManager = new RequestIdManager();
@@ -74,7 +75,6 @@ public class BLLRequestManager implements IBLLRequestManager {
         actionMap = new ConcurrentHashMap<>();
         actionStatus = new ConcurrentHashMap<>();
         userRequestCounter = new UserRequestCounter();
-
         queueServerManager = new QueueServerManager();
     }
 
@@ -82,7 +82,15 @@ public class BLLRequestManager implements IBLLRequestManager {
     public void init() throws MotuException {
         queueServerManager.init();
 
-        new RequestCleanerDaemonThread().start();
+        // requestCleanerDaemonThread must be instantiated here because it uses BLLRequestManager instance in
+        // its constructor. It so avoid a infinite stack loop (StackOverflowError).
+        requestCleanerDaemonThread = new RequestCleanerDaemonThread();
+        requestCleanerDaemonThread.start();
+    }
+
+    @Override
+    public void stop() {
+        requestCleanerDaemonThread.setDaemonStoppingASAP(true);
     }
 
     /** {@inheritDoc} */

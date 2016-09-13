@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.common.thread.StoppableDaemonThread;
 
 /**
  * <br>
@@ -15,7 +16,7 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
  * @author Sylvain MARTY
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class RequestCleanerDaemonThread extends Thread {
+public class RequestCleanerDaemonThread extends StoppableDaemonThread {
 
     /** Logger for this class. */
     private static final Logger LOGGER = LogManager.getLogger();
@@ -24,7 +25,6 @@ public class RequestCleanerDaemonThread extends Thread {
 
     public RequestCleanerDaemonThread() {
         super("Request cleaner daemon");
-        setDaemon(true);
         runCleanIntervalInMs = BLLManager.getInstance().getConfigManager().getMotuConfig().getRunCleanInterval() * 60 * 1000;
         requestCleaner = new RequestCleaner();
     }
@@ -33,17 +33,19 @@ public class RequestCleanerDaemonThread extends Thread {
     @Override
     public void run() {
         LOGGER.info("Start request cleaner daemon thread, trigerred each " + runCleanIntervalInMs + "ms");
-        while (true) {
+        while (!isDaemonStoppedASAP()) {
             try {
                 Thread.sleep(runCleanIntervalInMs);
             } catch (InterruptedException e) {
                 LOGGER.error("Error while waiting RequestCleanerDaemonThread", e);
             }
 
-            LOGGER.info("RequestCleanerDaemonThread triggered: cleanRequestStatus, cleanExtractedFile, cleanJavaTempFile");
-            requestCleaner.cleanRequestStatus();
-            requestCleaner.cleanExtractedFile();
-            requestCleaner.cleanJavaTempFile();
+            if (!isDaemonStoppedASAP()) {
+                LOGGER.info("RequestCleanerDaemonThread triggered: cleanRequestStatus, cleanExtractedFile, cleanJavaTempFile");
+                requestCleaner.cleanRequestStatus();
+                requestCleaner.cleanExtractedFile();
+                requestCleaner.cleanJavaTempFile();
+            }
         }
     }
 

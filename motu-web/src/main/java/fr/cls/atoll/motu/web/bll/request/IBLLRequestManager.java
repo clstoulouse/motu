@@ -155,4 +155,9 @@ public interface IBLLRequestManager {
      * @param status The new status of the request.
      */
     void setActionStatus(Long requestId, StatusModeType status);
+
+    /**
+     * .
+     */
+    void stop();
 }
