@@ -6,13 +6,12 @@
 	<parent>
 		<groupId>cls.motu</groupId>
 		<artifactId>motu-parent</artifactId>
-		<version>2.6.00-SNAPSHOT</version>
+		<version>3.0.00-RC1</version>
         <relativePath>../motu-parent</relativePath>
 	</parent>
 
 	<artifactId>motu-scripts</artifactId>
 	<name>Motu scripts</name>
-	<version>2.6.00-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>Artefact containing the scripts to start/stop Motu
     </description>
