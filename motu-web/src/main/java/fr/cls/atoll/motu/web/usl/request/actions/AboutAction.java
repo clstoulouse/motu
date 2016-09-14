@@ -49,9 +49,9 @@ public class AboutAction extends AbstractAction {
             getResponse().getWriter().write("<!DOCTYPE html><html><body>");
 
             IBLLVersionManager versionMgr = BLLManager.getInstance().getConfigManager().getVersionManager();
+            displayVersion("Motu-products: ", versionMgr.getProductsVersion());
             displayVersion("Motu-distribution: ", versionMgr.getDistributionVersion());
             displayVersion("Motu-configuration: ", versionMgr.getConfigurationVersion());
-            displayVersion("Motu-products: ", versionMgr.getProductsVersion());
 
             displayStaticFilesVersion("Motu-static-files (Graphic chart): ");
 
