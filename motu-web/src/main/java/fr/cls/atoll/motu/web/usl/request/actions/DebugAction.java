@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
@@ -70,32 +71,25 @@ public class DebugAction extends AbstractAction {
 
     @Override
     public void process() throws MotuException {
+        StringBuffer stringBuffer = new StringBuffer();
+
+        stringBuffer.append("<html>\n");
+        stringBuffer.append("<head>\n");
+        stringBuffer.append("</head>\n");
+        stringBuffer.append("<body>\n");
+
+        debugRequestAllStatus(stringBuffer);
+        debugPendingRequest(stringBuffer);
+
+        stringBuffer.append("</body>\n");
+        stringBuffer.append("<html>\n");
+
+        getResponse().setContentType(CONTENT_TYPE_HTML);
         try {
-            getResponse().sendError(403);
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            getResponse().getWriter().write(stringBuffer.toString());
+        } catch (IOException e) {
+            throw new MotuException(ErrorType.SYSTEM, "Error while wirting the response", e);
         }
-        return;
-        // StringBuffer stringBuffer = new StringBuffer();
-        //
-        // stringBuffer.append("<html>\n");
-        // stringBuffer.append("<head>\n");
-        // stringBuffer.append("</head>\n");
-        // stringBuffer.append("<body>\n");
-        //
-        // debugRequestAllStatus(stringBuffer);
-        // debugPendingRequest(stringBuffer);
-        //
-        // stringBuffer.append("</body>\n");
-        // stringBuffer.append("<html>\n");
-        //
-        // getResponse().setContentType(CONTENT_TYPE_HTML);
-        // try {
-        // getResponse().getWriter().write(stringBuffer.toString());
-        // } catch (IOException e) {
-        // throw new MotuException(ErrorType.SYSTEM, "Error while wirting the response", e);
-        // }
     }
 
     /**
