@@ -1,5 +1,7 @@
 package fr.cls.atoll.motu.web.usl.user;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * <br>
  * <br>
@@ -12,14 +14,23 @@ package fr.cls.atoll.motu.web.usl.user;
  */
 public interface IUSLUserManager {
 
-    String getLogin();
-
     boolean isUserAnonymous();
+
+    String getUserName();
 
     /**
      * .
      * 
+     * @param request_
      * @return
      */
-    String getUserName();
+    String getLoginOrUserHostname(HttpServletRequest request_);
+
+    /**
+     * .
+     * 
+     * @param request
+     * @return
+     */
+    String getUserHostName(HttpServletRequest request);
 }

@@ -33,6 +33,7 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.DepthHTTPParameterValidator;
@@ -172,8 +173,8 @@ public class GetSizeAction extends AbstractProductInfoAction {
 
                 getProductHTTPParameterValidator().getParameterValueValidated(),
                 OutputFormat.NETCDF,
-                getLoginOrUserHostname(),
-                isAnAnonymousUser(),
+                USLManager.getInstance().getUserManager().getLoginOrUserHostname(getRequest()),
+                USLManager.getInstance().getUserManager().isUserAnonymous(),
                 scriptVersionParameterValidator.getParameterValueValidated());
 
         // Set assertion to manage CAS.

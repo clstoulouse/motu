@@ -21,6 +21,7 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.request.actions.AboutAction;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DebugAction;
@@ -58,6 +59,44 @@ public class USLRequestManager implements IUSLRequestManager {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public USLRequestManager() {
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void init() throws MotuException {
+        try {
+            JAXBWriter.getInstance().init();
+        } catch (JAXBException e) {
+            throw new MotuException(ErrorType.SYSTEM, e);
+        }
+    }
+
+    @Override
+    public void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws MotuException, InvalidHTTPParameterException {
+        String action = CommonHTTPParameters.getActionFromRequest(request).toLowerCase();
+        AbstractAction actionInst = retrieveActionFromHTTPParameters(action, request, response);
+
+        Long requestId = -1L;
+        try {
+            if (actionInst != null) {
+                if (!(actionInst instanceof DownloadProductAction)) {
+                    requestId = BLLManager.getInstance().getRequestManager()
+                            .initRequest(USLManager.getInstance().getUserManager().getUserName(),
+                                         USLManager.getInstance().getUserManager().getUserHostName(request),
+                                         actionInst);
+                    BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.INPROGRESS);
+                    actionInst.doAction();
+                    BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.DONE);
+                } else {
+                    actionInst.doAction();
+                }
+            } else {
+                throw new MotuException(ErrorType.UNKNOWN_ACTION, "The requested action is unknown : " + action);
+            }
+        } catch (Exception e) {
+            onException(requestId, actionInst, e, response);
+        }
 
     }
 
@@ -117,33 +156,6 @@ public class USLRequestManager implements IUSLRequestManager {
             // Nothing to do
         }
         return actionInst;
-    }
-
-    @Override
-    public void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws MotuException, InvalidHTTPParameterException {
-        String action = CommonHTTPParameters.getActionFromRequest(request).toLowerCase();
-        AbstractAction actionInst = retrieveActionFromHTTPParameters(action, request, response);
-
-        Long requestId = -1L;
-        try {
-            if (actionInst != null) {
-                if (!(actionInst instanceof DownloadProductAction)) {
-                    requestId = BLLManager.getInstance().getRequestManager().initRequest(actionInst.getLoginFromRequest(),
-                                                                                         actionInst.getUserHostName(),
-                                                                                         actionInst);
-                    BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.INPROGRESS);
-                    actionInst.doAction();
-                    BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.DONE);
-                } else {
-                    actionInst.doAction();
-                }
-            } else {
-                throw new MotuException(ErrorType.UNKNOWN_ACTION, "The requested action is unknown : " + action);
-            }
-        } catch (Exception e) {
-            onException(requestId, actionInst, e, response);
-        }
-
     }
 
     private void onException(Long requestId, AbstractAction actionInst, Exception e, HttpServletResponse response) throws MotuException {
@@ -280,16 +292,6 @@ public class USLRequestManager implements IUSLRequestManager {
         stringBuffer.append(product.getExtractFilename());
 
         return stringBuffer.toString();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void init() throws MotuException {
-        try {
-            JAXBWriter.getInstance().init();
-        } catch (JAXBException e) {
-            throw new MotuException(ErrorType.SYSTEM, e);
-        }
     }
 
 }

@@ -33,6 +33,7 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
+import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.DepthHTTPParameterValidator;
@@ -290,10 +291,10 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
                 productHTTPParameterValidator.getParameterValueValidated(),
                 OutputFormat.valueOf(outputFormatParameterValidator.getParameterValueValidated()),
-                getLoginOrUserHostname(),
-                isAnAnonymousUser(),
+                USLManager.getInstance().getUserManager().getLoginOrUserHostname(getRequest()),
+                USLManager.getInstance().getUserManager().isUserAnonymous(),
                 scriptVersionParameterValidator.getParameterValueValidated());
-        extractionParameters.setUserHost(getLoginOrUserHostname());
+        extractionParameters.setUserHost(USLManager.getInstance().getUserManager().getLoginOrUserHostname(getRequest()));
 
         // Set assertion to manage CAS.
         extractionParameters.setAssertion(AssertionHolder.getAssertion());

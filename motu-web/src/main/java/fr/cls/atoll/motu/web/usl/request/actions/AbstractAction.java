@@ -17,7 +17,7 @@ import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
-import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
+import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.session.SessionManager;
@@ -65,7 +65,7 @@ public abstract class AbstractAction {
         request = request_;
         response = response_;
         session = session_;
-        userId = getLoginFromRequest();
+        userId = USLManager.getInstance().getUserManager().getUserName();// getLoginFromRequest();
         generateParameterString();
     }
 
@@ -156,82 +156,6 @@ public abstract class AbstractAction {
             userId = SessionManager.getInstance().getUserId(getSession());
         }
         return userId;
-    }
-
-    public String getLoginOrUserHostname() {
-        String userLoginOrHostName = getLoginFromRequest();
-        if (userLoginOrHostName == null || userLoginOrHostName.trim().length() <= 0) {
-            String userHost = getUserHostName();
-            userLoginOrHostName = userHost;
-        }
-        return userLoginOrHostName;
-    }
-
-    private boolean isAnonymousParameter() {
-        String anonymousUserAsString = CommonHTTPParameters.getAnonymousParameterFromRequest(getRequest());
-        return anonymousUserAsString != null && (anonymousUserAsString.equalsIgnoreCase("true") || anonymousUserAsString.equalsIgnoreCase("1"));
-    }
-
-    /**
-     * Checks if is anonymous user.
-     *
-     * @param request the request
-     * @param userId the user id
-     * @return true, if is anonymous user
-     */
-    public boolean isAnAnonymousUser() {
-        String userId = getLoginFromRequest();
-        return (userId == null || userId.trim().length() <= 0 || userId.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_ANONYMOUS_USER_VALUE)
-                || isAnonymousParameter());
-    }
-
-    /**
-     * Gets the forwarded for.
-     * 
-     * @param request the request
-     * 
-     * @return the forwarded for
-     */
-    private String getForwardedForHostnameFromRequest() {
-        String forwardedFor = getRequest().getParameter(MotuRequestParametersConstant.PARAM_FORWARDED_FOR);
-        return HTTPUtils.getHostName(forwardedFor);
-    }
-
-    /** The Constant proxyHeaders. */
-    private static final List<String> PROXY_HEADERS = new ArrayList<String>();
-
-    static {
-        PROXY_HEADERS.add("x-forwarded-for");
-        PROXY_HEADERS.add("HTTP_X_FORWARDED_FOR");
-        PROXY_HEADERS.add("HTTP_FORWARDED");
-        PROXY_HEADERS.add("HTTP_CLIENT_IP");
-    }
-
-    public String getHostFromRequestHeader() {
-        String hostName = getRequest().getRemoteAddr();
-        for (String ph : PROXY_HEADERS) {
-            String v = getRequest().getHeader(ph);
-            if (v != null) {
-                hostName = v;
-                break;
-            }
-        }
-        return hostName;
-    }
-
-    /**
-     * Gets the user remote host.
-     * 
-     * @param request the request
-     * 
-     * @return the remote host
-     */
-    public String getUserHostName() {
-        String hostName = getForwardedForHostnameFromRequest();
-        if (hostName == null || hostName.trim().length() <= 0) {
-            hostName = getHostFromRequestHeader();
-        }
-        return HTTPUtils.getHostName(hostName);
     }
 
     protected String getDataFromParameter() {
