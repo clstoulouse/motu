@@ -1,0 +1,8 @@
+## Used to manage HTTP errors @See web.xml / /motu-web/src/main/java/fr/cls/atoll/motu/web/usl/request/actions/HttpErrorAction.java
+
+#if($httpErrorCode == "403")	
+  Access is forbidden to the desired service.
+#else
+  ## Default error message: Manage 404 http error for example
+  The requested page was not found.
+#end

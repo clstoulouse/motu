@@ -113,6 +113,12 @@ public class VelocityTemplateManager {
         case "listproductmetadata":
             templateFileName = "listProductMetadata";
             break;
+        case "httperror":
+            templateFileName = "httpError";
+            break;
+        case "exception":
+            templateFileName = "exception";
+            break;
         case "listservices":
         default:
             templateFileName = "listServices";

@@ -197,4 +197,8 @@ public class CommonHTTPParameters {
         return request.getParameter(MotuRequestParametersConstant.PARAM_SCRIPT_VERSION);
     }
 
+    public static String getHttpErrorCodeFromRequest(HttpServletRequest request) {
+        return request.getParameter(MotuRequestParametersConstant.PARAM_HTTP_ERROR_CODE);
+    }
+
 }

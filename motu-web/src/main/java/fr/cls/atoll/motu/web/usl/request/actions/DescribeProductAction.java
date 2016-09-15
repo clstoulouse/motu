@@ -27,7 +27,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.AbstractHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ExtraMetaDataHTTPParameterValidator;
-import fr.cls.atoll.motu.web.usl.request.parameter.validator.XMLFileParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.XMLFileHTTPParameterValidator;
 
 /**
  * <br>
@@ -48,7 +48,7 @@ public class DescribeProductAction extends AbstractProductInfoAction {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "describeproduct";
-    private XMLFileParameterValidator xmlFileParameterValidator;
+    private XMLFileHTTPParameterValidator xmlFileParameterValidator;
     private ExtraMetaDataHTTPParameterValidator extraMetaDataHTTPParameterValidator;
 
     /**
@@ -60,7 +60,7 @@ public class DescribeProductAction extends AbstractProductInfoAction {
      */
     public DescribeProductAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         super(ACTION_NAME, actionCode_, request, response, session);
-        xmlFileParameterValidator = new XMLFileParameterValidator(
+        xmlFileParameterValidator = new XMLFileHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_XML_FILE,
                 CommonHTTPParameters.getXmlFileFromRequest(getRequest()),
                 AbstractHTTPParameterValidator.EMPTY_VALUE);

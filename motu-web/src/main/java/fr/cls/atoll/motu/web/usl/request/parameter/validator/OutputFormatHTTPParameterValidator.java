@@ -14,13 +14,13 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
  * @author Sylvain MARTY
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class OutputFormatParameterValidator extends AbstractHTTPParameterValidator<String> {
+public class OutputFormatHTTPParameterValidator extends AbstractHTTPParameterValidator<String> {
 
-    public OutputFormatParameterValidator(String parameterName_, String parameterValue_) {
+    public OutputFormatHTTPParameterValidator(String parameterName_, String parameterValue_) {
         super(parameterName_, parameterValue_);
     }
 
-    public OutputFormatParameterValidator(String parameterName_, String parameterValue_, String defaultValue_) {
+    public OutputFormatHTTPParameterValidator(String parameterName_, String parameterValue_, String defaultValue_) {
         this(parameterName_, parameterValue_);
         if (StringUtils.isNullOrEmpty(parameterValue_)) {
             setParameterValue(defaultValue_);

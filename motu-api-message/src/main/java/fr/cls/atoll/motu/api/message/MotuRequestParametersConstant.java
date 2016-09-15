@@ -214,4 +214,6 @@ public interface MotuRequestParametersConstant {
     /** The order of section into debug page */
     final String PARAM_DEBUG_ORDER = "order";
 
+    final String PARAM_HTTP_ERROR_CODE = "code";
+
 }

@@ -84,13 +84,33 @@ public class BLLRequestManager implements IBLLRequestManager {
 
         // requestCleanerDaemonThread must be instantiated here because it uses BLLRequestManager instance in
         // its constructor. It so avoid a infinite stack loop (StackOverflowError).
-        requestCleanerDaemonThread = new RequestCleanerDaemonThread();
+        requestCleanerDaemonThread = new RequestCleanerDaemonThread() {
+
+            /** {@inheritDoc} */
+            @Override
+            public void onThreadStopped() {
+                super.onThreadStopped();
+                synchronized (BLLRequestManager.this) {
+                    BLLRequestManager.this.notify();
+                }
+            }
+
+        };
         requestCleanerDaemonThread.start();
     }
 
     @Override
     public void stop() {
         requestCleanerDaemonThread.setDaemonStoppingASAP(true);
+        synchronized (this) {
+            if (!requestCleanerDaemonThread.isDaemonStopped()) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    LOGGER.error("Error during wait while stopping daemon: " + requestCleanerDaemonThread.getName());
+                }
+            }
+        }
     }
 
     /** {@inheritDoc} */

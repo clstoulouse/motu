@@ -97,19 +97,10 @@
 	<link rel="stylesheet" href="$httpSite/css/motu/motu.css" type="text/css" />
 	<link rel="stylesheet" href="$httpSite/css/motu/screen/nav_services.css" type="text/css" />
 	<!--[if lte IE 7]>
-	<link 
-href="$httpSite/css/motu/patches/patch_motu.css"
- rel="stylesheet" type="text/css" />
+	<link href="$httpSite/css/motu/patches/patch_motu.css" rel="stylesheet" type="text/css" />
 	<![endif]-->
-	<style><!--
-
-	
-	
-	-->
-	</style>
-  <link rel="stylesheet" type="text/css" href="$httpSite/css/motu/screen/content_cc.css" media="all">
-  <link rel="stylesheet" type="text/css" href="$httpSite/css/motu/screen/mis-gw.css" media="all">
-
+    <link rel="stylesheet" type="text/css" href="$httpSite/css/motu/screen/content_cc.css" media="all">
+    <link rel="stylesheet" type="text/css" href="$httpSite/css/motu/screen/mis-gw.css" media="all">
 </head>
 
 <body>

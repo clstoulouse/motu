@@ -21,7 +21,7 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
-import fr.cls.atoll.motu.web.usl.request.parameter.validator.CatalogTypeParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.CatalogTypeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.response.velocity.VelocityTemplateManager;
 import fr.cls.atoll.motu.web.usl.response.velocity.model.converter.VelocityModelConverter;
 
@@ -49,7 +49,7 @@ public class ListServicesAction extends AbstractAuthorizedAction {
 
     public static final String ACTION_NAME = "listservices";
 
-    private CatalogTypeParameterValidator catalogTypeParameterValidator;
+    private CatalogTypeHTTPParameterValidator catalogTypeParameterValidator;
 
     /**
      * 
@@ -58,7 +58,7 @@ public class ListServicesAction extends AbstractAuthorizedAction {
     public ListServicesAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         super(ACTION_NAME, actionCode_, request, response, session);
 
-        catalogTypeParameterValidator = new CatalogTypeParameterValidator(
+        catalogTypeParameterValidator = new CatalogTypeHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_CATALOG_TYPE,
                 CommonHTTPParameters.getCatalogTypeFromRequest(getRequest()),
                 "");

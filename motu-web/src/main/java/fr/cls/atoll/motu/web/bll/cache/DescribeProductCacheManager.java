@@ -1,5 +1,8 @@
 package fr.cls.atoll.motu.web.bll.cache;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import fr.cls.atoll.motu.api.message.xml.ProductMetadataInfo;
 
 /**
@@ -14,22 +17,43 @@ import fr.cls.atoll.motu.api.message.xml.ProductMetadataInfo;
  */
 public class DescribeProductCacheManager implements IDescribeProductCacheManager {
 
-    private DescribeProductCacheThread daemonRefresh;
+    private static final Logger LOGGER = LogManager.getLogger();
+    private DescribeProductCacheThread describeProductCacheDaemonThread;
 
     @Override
     public void init() {
-        daemonRefresh = new DescribeProductCacheThread();
-        daemonRefresh.start();
+        describeProductCacheDaemonThread = new DescribeProductCacheThread() {
+
+            /** {@inheritDoc} */
+            @Override
+            public void onThreadStopped() {
+                super.onThreadStopped();
+                synchronized (DescribeProductCacheManager.this) {
+                    DescribeProductCacheManager.this.notify();
+                }
+            }
+
+        };
+        describeProductCacheDaemonThread.start();
     }
 
     @Override
     public void stop() {
-        daemonRefresh.setDaemonStoppingASAP(true);
+        describeProductCacheDaemonThread.setDaemonStoppingASAP(true);
+        synchronized (this) {
+            if (!describeProductCacheDaemonThread.isDaemonStopped()) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    LOGGER.error("Error during wait while stopping daemon: " + describeProductCacheDaemonThread.getName());
+                }
+            }
+        }
     }
 
     @Override
     public ProductMetadataInfo getDescribeProduct(String productId) {
-        return daemonRefresh.getProductDescription(productId);
+        return describeProductCacheDaemonThread.getProductDescription(productId);
     }
 
 }

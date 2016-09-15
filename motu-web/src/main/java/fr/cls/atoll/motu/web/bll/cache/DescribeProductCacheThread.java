@@ -2,7 +2,6 @@ package fr.cls.atoll.motu.web.bll.cache;
 
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -64,14 +63,13 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
 
     private ConcurrentMap<String, ProductMetadataInfo> describeProduct;
 
-    private int resfreshDelay;
-
     /**
      * Constructeur.
      */
     public DescribeProductCacheThread() {
-        super("DescribeProduct Cache Thread Daemon");
-        resfreshDelay = BLLManager.getInstance().getConfigManager().getMotuConfig().getDescribeProductCacheRefreshInMilliSec();
+        super(
+            "DescribeProduct Cache Thread Daemon",
+            BLLManager.getInstance().getConfigManager().getMotuConfig().getDescribeProductCacheRefreshInMilliSec());
     }
 
     public ProductMetadataInfo getProductDescription(String productId) {
@@ -80,29 +78,18 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
 
     /** {@inheritDoc} */
     @Override
-    public void run() {
-        LOGGER.info("Start Describe Product cache Daemon");
-        while (!isDaemonStoppedASAP()) {
-            long startRefresh = System.currentTimeMillis();
-            describeProduct = new ConcurrentHashMap<>();
-            List<ConfigService> services = BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService();
-            int i = 0;
-            while (!isDaemonStoppedASAP() && i < services.size()) {
-                ConfigService configService = services.get(i);
-                processConfigService(configService);
-                i++;
-            }
-            LOGGER.info("Describe product cache refreshed in "
-                    + fr.cls.atoll.motu.web.common.utils.DateUtils.getDurationMinSecMsec(System.currentTimeMillis() - startRefresh));
-
-            if (!isDaemonStoppedASAP()) {
-                try {
-                    sleep(resfreshDelay);
-                } catch (InterruptedException e) {
-                    LOGGER.error("Error during refresh of the describe product cache", e);
-                }
-            }
+    public void runProcess() {
+        long startRefresh = System.currentTimeMillis();
+        describeProduct = new ConcurrentHashMap<>();
+        List<ConfigService> services = BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService();
+        int i = 0;
+        while (!isDaemonStoppedASAP() && i < services.size()) {
+            ConfigService configService = services.get(i);
+            processConfigService(configService);
+            i++;
         }
+        LOGGER.info("Describe product cache refreshed in "
+                + fr.cls.atoll.motu.web.common.utils.DateUtils.getDurationMinSecMsec(System.currentTimeMillis() - startRefresh));
     }
 
     /**
@@ -625,8 +612,8 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
             return timeCoverage;
         }
 
-        Date start = datePeriod.getStart().toDate();
-        Date end = datePeriod.getEnd().toDate();
+        // Date start = datePeriod.getStart().toDate();
+        // Date end = datePeriod.getEnd().toDate();
 
         // timeCoverage.setStart(dateToXMLGregorianCalendar(start));
         // timeCoverage.setEnd(dateToXMLGregorianCalendar(end));

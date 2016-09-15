@@ -13,7 +13,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
  * @author Pierre LACOSTE
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class ScriptVersionParameterValidator extends AbstractHTTPParameterValidator<String> {
+public class HttpErrorCodeHTTPParameterValidator extends AbstractHTTPParameterValidator<String> {
 
     /**
      * Constructor.
@@ -21,11 +21,11 @@ public class ScriptVersionParameterValidator extends AbstractHTTPParameterValida
      * @param parameterName_
      * @param parameterValue_
      */
-    private ScriptVersionParameterValidator(String parameterName_, String parameterValue_) {
+    private HttpErrorCodeHTTPParameterValidator(String parameterName_, String parameterValue_) {
         super(parameterName_, parameterValue_);
     }
 
-    public ScriptVersionParameterValidator(String parameterName_, String parameterValue_, String defaultValue_) {
+    public HttpErrorCodeHTTPParameterValidator(String parameterName_, String parameterValue_, String defaultValue_) {
         this(parameterName_, parameterValue_);
         if (StringUtils.isNullOrEmpty(parameterValue_)) {
             setParameterValue(defaultValue_);

@@ -10,6 +10,8 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
@@ -17,7 +19,6 @@ import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.api.utils.JAXBWriter;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.request.IBLLRequestManager;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.request.actions.AboutAction;
@@ -29,6 +30,7 @@ import fr.cls.atoll.motu.web.usl.request.actions.DescribeProductAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DownloadProductAction;
 import fr.cls.atoll.motu.web.usl.request.actions.GetRequestStatusAction;
 import fr.cls.atoll.motu.web.usl.request.actions.GetSizeAction;
+import fr.cls.atoll.motu.web.usl.request.actions.HttpErrorAction;
 import fr.cls.atoll.motu.web.usl.request.actions.ListCatalogAction;
 import fr.cls.atoll.motu.web.usl.request.actions.ListServicesAction;
 import fr.cls.atoll.motu.web.usl.request.actions.LogoutAction;
@@ -38,6 +40,7 @@ import fr.cls.atoll.motu.web.usl.request.actions.ProductMetadataAction;
 import fr.cls.atoll.motu.web.usl.request.actions.TimeCoverageAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
+import fr.cls.atoll.motu.web.usl.response.velocity.VelocityTemplateManager;
 
 /**
  * <br>
@@ -58,11 +61,8 @@ public class USLRequestManager implements IUSLRequestManager {
 
     }
 
-    @Override
-    public void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws MotuException, InvalidHTTPParameterException {
-        String action = CommonHTTPParameters.getActionFromRequest(request).toLowerCase();
+    private AbstractAction retrieveActionFromHTTPParameters(String action, HttpServletRequest request, HttpServletResponse response) {
         AbstractAction actionInst = null;
-
         switch (action) {
         case PingAction.ACTION_NAME:
             actionInst = new PingAction("002", request, response);
@@ -110,18 +110,30 @@ public class USLRequestManager implements IUSLRequestManager {
         case AboutAction.ACTION_NAME:
             actionInst = new AboutAction("016", request, response);
             break;
+        case HttpErrorAction.ACTION_NAME:
+            actionInst = new HttpErrorAction("017", request, response);
+            break;
         default:
             // Nothing to do
         }
-        IBLLRequestManager requestManager = BLLManager.getInstance().getRequestManager();
+        return actionInst;
+    }
+
+    @Override
+    public void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws MotuException, InvalidHTTPParameterException {
+        String action = CommonHTTPParameters.getActionFromRequest(request).toLowerCase();
+        AbstractAction actionInst = retrieveActionFromHTTPParameters(action, request, response);
+
         Long requestId = -1L;
         try {
             if (actionInst != null) {
                 if (!(actionInst instanceof DownloadProductAction)) {
-                    requestId = requestManager.initRequest(actionInst.getLoginFromRequest(), actionInst.getUserHostName(), actionInst);
-                    requestManager.setActionStatus(requestId, StatusModeType.INPROGRESS);
+                    requestId = BLLManager.getInstance().getRequestManager().initRequest(actionInst.getLoginFromRequest(),
+                                                                                         actionInst.getUserHostName(),
+                                                                                         actionInst);
+                    BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.INPROGRESS);
                     actionInst.doAction();
-                    requestManager.setActionStatus(requestId, StatusModeType.DONE);
+                    BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.DONE);
                 } else {
                     actionInst.doAction();
                 }
@@ -129,38 +141,50 @@ public class USLRequestManager implements IUSLRequestManager {
                 throw new MotuException(ErrorType.UNKNOWN_ACTION, "The requested action is unknown : " + action);
             }
         } catch (Exception e) {
-            if (requestId != -1L) {
-                requestManager.setActionStatus(requestId, StatusModeType.ERROR);
-            }
-            ErrorType errorType = ErrorType.SYSTEM;
-            String actionCode = AbstractAction.UNDETERMINED_ACTION;
-            if (actionInst != null) {
-                actionCode = actionInst.getActionCode();
-            }
-
-            String errMessage = "";
-            if (e instanceof MotuException) {
-                errorType = ((MotuException) e).getErrorType();
-                errMessage = BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, e);
-            } else if (e instanceof InvalidHTTPParameterException) {
-                errorType = ErrorType.BAD_PARAMETERS;
-                errMessage = e.getMessage();
-            }
-
-            if (errorType == ErrorType.SYSTEM) {
-                LOGGER.error(StringUtils.getLogMessage(actionCode, errorType, errMessage), e);
-            }
-
-            try {
-                response.getWriter().write(StringUtils.getLogMessage(actionCode, errorType, errMessage));
-            } catch (IOException e1) {
-                LOGGER.error(StringUtils.getLogMessage(actionCode,
-                                                       ErrorType.SYSTEM,
-                                                       BLLManager.getInstance().getMessagesErrorManager().getMessageError(ErrorType.SYSTEM)),
-                             e1);
-            }
+            onException(requestId, actionInst, e, response);
         }
 
+    }
+
+    private void onException(Long requestId, AbstractAction actionInst, Exception e, HttpServletResponse response) throws MotuException {
+        if (requestId != -1L) {
+            BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.ERROR);
+        }
+        ErrorType errorType = ErrorType.SYSTEM;
+        String actionCode = AbstractAction.UNDETERMINED_ACTION;
+        if (actionInst != null) {
+            actionCode = actionInst.getActionCode();
+        }
+
+        String errMessage = "";
+        if (e instanceof MotuException) {
+            errorType = ((MotuException) e).getErrorType();
+            errMessage = BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, e);
+        } else if (e instanceof InvalidHTTPParameterException) {
+            errorType = ErrorType.BAD_PARAMETERS;
+            errMessage = e.getMessage();
+        }
+
+        if (errorType == ErrorType.SYSTEM) {
+            LOGGER.error(StringUtils.getLogMessage(actionCode, errorType, errMessage), e);
+        }
+
+        writeErrorMessage(actionCode, errorType, errMessage, response);
+    }
+
+    private void writeErrorMessage(String actionCode, ErrorType errorType, String errMessage, HttpServletResponse response) throws MotuException {
+        response.setContentType(AbstractAction.CONTENT_TYPE_HTML);
+
+        VelocityContext context = VelocityTemplateManager.getPrepopulatedVelocityContext();
+        context.put("body_template", VelocityTemplateManager.getTemplatePath("exception", VelocityTemplateManager.DEFAULT_LANG));
+        context.put("message", StringUtils.getLogMessage(actionCode, errorType, errMessage));
+
+        try {
+            Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null, null);
+            template.merge(context, response.getWriter());
+        } catch (Exception e2_) {
+            throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e2_);
+        }
     }
 
     /**

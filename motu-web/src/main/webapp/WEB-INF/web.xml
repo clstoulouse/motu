@@ -263,13 +263,17 @@ ${project.name} - v. ${project.version}
 		<url-pattern>/supervision/*</url-pattern>
 	</servlet-mapping>
 
+	<!-- %26 is the & encoding -->
 	<error-page>
 		<error-code>403</error-code>
-		<location>/403.html</location>
+		<location>/Motu?action=httperror%26code=403</location>
 	</error-page>
 	<error-page>
 		<error-code>404</error-code>
-		<location>/404.html</location>
+		<location>/Motu?action=httperror%26code=404</location>
+	</error-page>
+    <error-page>
+		<location>/Motu?action=httperror%26code=404</location>
 	</error-page>
 	
 	<welcome-file-list>

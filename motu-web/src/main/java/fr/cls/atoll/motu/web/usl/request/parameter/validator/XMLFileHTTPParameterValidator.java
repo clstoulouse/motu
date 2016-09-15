@@ -14,7 +14,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.NullOrEmptyInvalidH
  * @author Pierre LACOSTE
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class XMLFileParameterValidator extends AbstractHTTPParameterValidator<String> {
+public class XMLFileHTTPParameterValidator extends AbstractHTTPParameterValidator<String> {
 
     /**
      * Constructeur.
@@ -22,11 +22,11 @@ public class XMLFileParameterValidator extends AbstractHTTPParameterValidator<St
      * @param parameterName_
      * @param parameterValue_
      */
-    public XMLFileParameterValidator(String parameterName_, String parameterValue_) {
+    public XMLFileHTTPParameterValidator(String parameterName_, String parameterValue_) {
         super(parameterName_, parameterValue_);
     }
 
-    public XMLFileParameterValidator(String parameterName_, String parameterValue_, String defaultValue_) {
+    public XMLFileHTTPParameterValidator(String parameterName_, String parameterValue_, String defaultValue_) {
         this(parameterName_, parameterValue_);
         if (StringUtils.isNullOrEmpty(parameterValue_)) {
             setParameterValue(defaultValue_);

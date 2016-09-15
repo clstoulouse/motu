@@ -39,10 +39,10 @@ import fr.cls.atoll.motu.web.usl.request.parameter.validator.DepthHTTPParameterV
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LatitudeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LongitudeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ModeHTTPParameterValidator;
-import fr.cls.atoll.motu.web.usl.request.parameter.validator.OutputFormatParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.OutputFormatHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.PriorityHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ProductHTTPParameterValidator;
-import fr.cls.atoll.motu.web.usl.request.parameter.validator.ScriptVersionParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.ScriptVersionHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.TemporalHTTPParameterValidator;
 
@@ -120,9 +120,9 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
     private PriorityHTTPParameterValidator priorityHTTPParameterValidator;
 
-    private OutputFormatParameterValidator outputFormatParameterValidator;
+    private OutputFormatHTTPParameterValidator outputFormatParameterValidator;
 
-    private ScriptVersionParameterValidator scriptVersionParameterValidator;
+    private ScriptVersionHTTPParameterValidator scriptVersionParameterValidator;
 
     /**
      * 
@@ -178,12 +178,12 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 CommonHTTPParameters.getPriorityFromRequest(getRequest()),
                 Short.toString(BLLManager.getInstance().getConfigManager().getQueueServerConfigManager().getRequestDefaultPriority()));
 
-        outputFormatParameterValidator = new OutputFormatParameterValidator(
+        outputFormatParameterValidator = new OutputFormatHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_OUTPUT,
                 CommonHTTPParameters.getOutputFormatFromRequest(getRequest()),
                 OutputFormat.NETCDF.name().toUpperCase());
 
-        scriptVersionParameterValidator = new ScriptVersionParameterValidator(
+        scriptVersionParameterValidator = new ScriptVersionHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_SCRIPT_VERSION,
                 CommonHTTPParameters.getScriptVersionFromRequest(getRequest()),
                 "");

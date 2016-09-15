@@ -20,32 +20,21 @@ public class RequestCleanerDaemonThread extends StoppableDaemonThread {
 
     /** Logger for this class. */
     private static final Logger LOGGER = LogManager.getLogger();
-    private long runCleanIntervalInMs;
     private IRequestCleaner requestCleaner;
 
     public RequestCleanerDaemonThread() {
-        super("Request cleaner daemon");
-        runCleanIntervalInMs = BLLManager.getInstance().getConfigManager().getMotuConfig().getRunCleanInterval() * 60 * 1000;
+        super("Request cleaner daemon", BLLManager.getInstance().getConfigManager().getMotuConfig().getRunCleanInterval() * 60 * 1000);
         requestCleaner = new RequestCleaner();
     }
 
     /** {@inheritDoc} */
     @Override
-    public void run() {
-        LOGGER.info("Start request cleaner daemon thread, trigerred each " + runCleanIntervalInMs + "ms");
-        while (!isDaemonStoppedASAP()) {
-            try {
-                Thread.sleep(runCleanIntervalInMs);
-            } catch (InterruptedException e) {
-                LOGGER.error("Error while waiting RequestCleanerDaemonThread", e);
-            }
-
-            if (!isDaemonStoppedASAP()) {
-                LOGGER.info("RequestCleanerDaemonThread triggered: cleanRequestStatus, cleanExtractedFile, cleanJavaTempFile");
-                requestCleaner.cleanRequestStatus();
-                requestCleaner.cleanExtractedFile();
-                requestCleaner.cleanJavaTempFile();
-            }
+    public void runProcess() {
+        if (!isDaemonStoppedASAP()) {
+            LOGGER.info("RequestCleanerDaemonThread triggered: cleanRequestStatus, cleanExtractedFile, cleanJavaTempFile");
+            requestCleaner.cleanRequestStatus();
+            requestCleaner.cleanExtractedFile();
+            requestCleaner.cleanJavaTempFile();
         }
     }
 
