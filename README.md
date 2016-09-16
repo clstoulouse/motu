@@ -87,7 +87,7 @@ All ports are defined in [motu.properties](#ConfigurationSystem) configuration f
 Motu has interfaces with other systems:  
 
 * __DGF__: Direct Get File: Read dataset from the file system. (See how to [configure it](#AdminDataSetAdd).)
-* __Unidata Thredds HTTP server__: It connects with the NCSS or OpenDap HTTP REST API to run download request for example. (See how to [configure it](#AdminDataSetAdd).)
+* __Unidata Thredds Data Server__: It connects with the NCSS or OpenDap HTTP REST API to run download request for example. (See how to [configure it](#AdminDataSetAdd).)
 * __HTTP CAS Server__: Use for Single Sign On (SSO) in order to manager user authentication. (See how to [configure it](#ConfigurationSystem) "CAS SSO server" and check [profiles](#BSconfigService) attribute set on the dataset.)
 * __CDO command line tool__: [CDO](#InstallCDO) is used to deal with 2 types of download requests, which are not covered by NCSS service of Thredds Data Server:  
   * a download request on a __range of depths__,  
@@ -207,7 +207,9 @@ Minimal configuration for an __operational usage__:
 * __Storage__: 
   * Motu installation folder 15Gb
   * Motu download folder 200Gb: by default [motu/data/public/download](#InstallFolders)  
-Note that the available space of the download folder has to be tuned depending of the number of user which runs requests at the same time on the server.
+Note that the available space of the download folder has to be tuned, depending on:
+  * The number of user which runs requests at the same time on the server
+  * The size of the data distributed
    
    
 For __test usage__ we recommend:  
@@ -374,6 +376,11 @@ If you want to set another path instead of "/motu", you have to set also the bus
  
 ## <a name="InstallCheck">Check installation</a>
 
+### Start motu
+```
+./motu start 
+```
+
 ### Check messages on the server console
 
 When you start Motu, the only message shall be:  
@@ -401,10 +408,13 @@ In this case, you have to install CDO manually.
 
 Open a Web browser, and enter:
 http://$motuUrl/motu-web/Motu?action=ping  
+Where $motuUrl is: ip adress of the server:tomcat port
+Refer to [configuration](#Configuration) regarding the tomcat port
+
 Response has to be:   
 ```  
 OK - response action=ping
-```   
+```  
 
 Open a Web browser, and enter:
 http://$motuUrl/motu-web/Motu  
@@ -523,7 +533,7 @@ __motu/__
 
 * __config:__ Folder which contains the motu configuration files. Refers to [Configuration](#Configuration) for more details.
 * __data:__ Folder used to managed Motu data.
-  * __public__: Folders which contain files exposed to public. It can be from a frontal Apache HTTPd Web server, from Motu Apache Tomcat or any other access.
+  * __public__: Folders which contain files exposed to public. It can be published through a frontal Apache HTTPd Web server, through Motu Apache Tomcat or any other access.
      * __download__: Folder used to save the products downloaded. This folder is sometimes elsewhere, for example in Motu v2: /datalocal/atoll/mis-gateway/deliveries/. A best practice is to create a symbolic link to a dedicated partition to avoid to freeze Motu when there is no space left.   
      * __inventories__: [AD]  
      * __transaction__: [AD]   
@@ -534,7 +544,7 @@ __motu/__
   * __logbook.log:__ Motu application logs (errors and warning are included)
   * __tomcat-motu.log:__ Apache tomcat console output and errors
   * __tomcat-motu-catalina.out:__ CATALINA_OUT environment variable used by catalina engine to write its logs.
-  * __queue.log:__ Motu queue server logs messages
+  * __queue.log:__ Motu queue server logs messages (transaction accounting logs)
 * __motu file:__ Script used to start, stop Motu application.  Refers to [Start & Stop Motu](#SS) for more details.
 * __pid:__ Folder which contains pid files of the running Motu application.
   * __tomcat-motu.pid:__ Contains the UNIX PID of the Motu process.
@@ -854,7 +864,7 @@ __tomcat-motu-port-shutdown__=9005
    # true or false to enable the SSO connection to a CAS server  
 __cas-activated__=false  
   
-   # Cas server configuration to allow Motu to access to it  
+   # Cas server configuration to allow Motu to access it  
    # @see https://wiki.jasig.org/display/casc/configuring+the+jasig+cas+client+for+java+in+the+web.xml  
      
    # The Cas server URL  
@@ -1049,8 +1059,9 @@ By default, log files are created in the folder $MOTU_HOME/log. This folder cont
 
 ##<a name="AdminDataSetAdd">Add a dataset</a>  
 In order to add a new Dataset, you have to add a new configService node in the [Motu business configuration](#ConfigurationBusiness).  
+When Motu read data through TDS (Opendap or NCSS service), the data shall be configured in TDS before this configuration in Motu. The TDS configuration is not explained here.
   
-Examples of a datasets served using:  
+Examples:  
 
 * __TDS NCSS protocol__:  
 This is the fastest protocol implemented by Motu. Motu select this protocol because type is set to "tds" and ncss is set to "enabled".  
