@@ -43,12 +43,16 @@ public class DepthHTTPParameterValidator extends AbstractHTTPParameterValidator<
         try {
             return Double.parseDouble(longitudeStr);
         } catch (Exception e) {
-            throw new InvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
+            if (longitudeStr.equalsIgnoreCase("Surface")) {
+                return 0.0;
+            } else {
+                throw new InvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
+            }
         }
     }
 
     @Override
     protected String getParameterBoundaries() {
-        return "[-" + Double.MAX_VALUE + ";" + Double.MAX_VALUE + "]";
+        return "A double [-" + Double.MAX_VALUE + ";" + Double.MAX_VALUE + "] or a string named \"Surface\" which value is equals to 0.0";
     }
 }
