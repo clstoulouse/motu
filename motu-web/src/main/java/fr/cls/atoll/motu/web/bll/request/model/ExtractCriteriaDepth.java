@@ -318,14 +318,6 @@ public class ExtractCriteriaDepth extends ExtractCriteriaGeo {
             throw new MotuInvalidDepthRangeException(from, to, minmax[0], minmax[1]);
         }
 
-        // if (from == to) {
-        // first = ExtractCriteria.findMaxIndex(array, from);
-        // last = first;
-        // } else {
-        // first = ExtractCriteria.findMinIndex(array, from);
-        // last = ExtractCriteria.findMaxIndex(array, to);
-        // }
-
         first = ExtractCriteria.findMinIndex(array, from);
         last = ExtractCriteria.findMaxIndex(array, to);
 

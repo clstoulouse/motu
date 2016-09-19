@@ -24,6 +24,7 @@
  */
 package fr.cls.atoll.motu.web.bll.exception;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
@@ -38,6 +39,9 @@ import java.util.Date;
  */
 public class MotuInvalidDateRangeException extends MotuExceptionBase {
 
+    /** Date/time format. */
+    public final static String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -1L;
 
@@ -50,17 +54,7 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
      * @param validRangeMax valid Date range max. representation
      */
     public MotuInvalidDateRangeException(Date invalidRangeMin, Date invalidRangeMax, Date validRangeMin, Date validRangeMax) {
-        super("Invalid date range.");
-        // CSOFF: StrictDuplicateCode : normal duplication code.
-
-        this.invalidRange = new Date[2];
-        this.invalidRange[0] = invalidRangeMin;
-        this.invalidRange[1] = invalidRangeMax;
-
-        this.validRange = new Date[2];
-        this.validRange[0] = validRangeMin;
-        this.validRange[1] = validRangeMax;
-
+        this(invalidRangeMin, invalidRangeMax, validRangeMin, validRangeMax, null);
     }
 
     /**
@@ -73,7 +67,7 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
      * @param cause native exception.
      */
     public MotuInvalidDateRangeException(Date invalidRangeMin, Date invalidRangeMax, Date validRangeMin, Date validRangeMax, Throwable cause) {
-        super("Invalid date range.", cause);
+        super(getErrorMessage(invalidRangeMin, invalidRangeMax, validRangeMin, validRangeMax), cause);
 
         this.invalidRange = new Date[2];
         this.invalidRange[0] = invalidRangeMin;
@@ -82,6 +76,21 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
         this.validRange = new Date[2];
         this.validRange[0] = validRangeMin;
         this.validRange[1] = validRangeMax;
+    }
+
+    public static String getErrorMessage(Date invalidRangeMin, Date invalidRangeMax, Date validRangeMin, Date validRangeMax) {
+        StringBuffer stringBuffer = new StringBuffer();
+
+        stringBuffer.append("Invalid date range: ");
+        stringBuffer.append(getInvalidRangeAsString(invalidRangeMin, invalidRangeMax));
+        stringBuffer.append(". ");
+        stringBuffer.append("Valid range is: ");
+        stringBuffer.append(getValidRangeAsString(validRangeMin, validRangeMax));
+        stringBuffer.append(". ");
+
+        // stringBuffer.append(getNearestValidValuesMessage());
+
+        return stringBuffer.toString();
     }
 
     /**
@@ -178,5 +187,48 @@ public class MotuInvalidDateRangeException extends MotuExceptionBase {
         this.nearestValidValues = nearestValidRange;
     }
 
+    /**
+     * Gets the valid range as string.
+     *
+     * @return the validRange as a string interval representation
+     */
+    private static String getValidRangeAsString(Date validRangeMin, Date validRangeMax) {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("[");
+        stringBuffer.append(new SimpleDateFormat(DATETIME_FORMAT).format(validRangeMin));
+        stringBuffer.append(",");
+        stringBuffer.append(new SimpleDateFormat(DATETIME_FORMAT).format(validRangeMax));
+        stringBuffer.append("]");
+        return stringBuffer.toString();
+    }
+
+    /**
+     * Gets the invalid range as string.
+     *
+     * @return the invalidRange as a string interval representation
+     */
+    private static String getInvalidRangeAsString(Date inValidRangeMin, Date inValidRangeMax) {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("[");
+        stringBuffer.append(new SimpleDateFormat(DATETIME_FORMAT).format(inValidRangeMin));
+        stringBuffer.append(",");
+        stringBuffer.append(new SimpleDateFormat(DATETIME_FORMAT).format(inValidRangeMax));
+        stringBuffer.append("]");
+        return stringBuffer.toString();
+    }
+
+    /**
+     * Gets the nearest valid values as string.
+     *
+     * @return the nearest valid values as string
+     */
+    public static String getNearestValidValuesAsString(Date nearestValidValuesMin, Date nearestValidValuesMax) {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("values <= ");
+        stringBuffer.append(new SimpleDateFormat(DATETIME_FORMAT).format(nearestValidValuesMin));
+        stringBuffer.append(", values >= ");
+        stringBuffer.append(new SimpleDateFormat(DATETIME_FORMAT).format(nearestValidValuesMax));
+        return stringBuffer.toString();
+    }
+
 }
-// CSON: MultipleStringLiterals

@@ -40,6 +40,19 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
     private static final long serialVersionUID = -1L;
 
     /**
+     * Depth range representation which causes the exception.
+     */
+    private double[] invalidRange;
+
+    /**
+     * Valid Depth range representation.
+     */
+    private double[] validRange;
+
+    /** The nearest valid values. */
+    private double[] nearestValidValues;
+
+    /**
      * The Constructor.
      *
      * @param invalidRangeMin invalid depth range min. representation which causes the exception
@@ -48,19 +61,8 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
      * @param validRangeMax valid depth range max. representation
      */
     public MotuInvalidDepthRangeException(double invalidRangeMin, double invalidRangeMax, double validRangeMin, double validRangeMax) {
-        super("Invalid depth range.");
-        // CSOFF: StrictDuplicateCode : normal duplication code.
-
-        this.invalidRange = new double[2];
-        this.invalidRange[0] = invalidRangeMin;
-        this.invalidRange[1] = invalidRangeMax;
-
-        this.validRange = new double[2];
-        this.validRange[0] = validRangeMin;
-        this.validRange[1] = validRangeMax;
+        this(invalidRangeMin, invalidRangeMax, validRangeMin, validRangeMax, null);
     }
-
-    // CSOFF: StrictDuplicateCode
 
     /**
      * The Constructor.
@@ -77,7 +79,7 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
         double validRangeMin,
         double validRangeMax,
         Throwable cause) {
-        super("Invalid depth range.", cause);
+        super(getErrorMessage(invalidRangeMin, invalidRangeMax, validRangeMin, validRangeMax), cause);
 
         this.invalidRange = new double[2];
         this.invalidRange[0] = invalidRangeMin;
@@ -88,43 +90,22 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
         this.validRange[1] = validRangeMax;
     }
 
-    /**
-     * The Constructor.
-     *
-     * @param invalidRange invalid depth range representation which causes the exception
-     * @param validRange valid depth range representation
-     * @param cause native exception.
-     */
-    public MotuInvalidDepthRangeException(double[] invalidRange, double[] validRange, Throwable cause) {
-        super("Invalid depth range.", cause);
+    private static String getErrorMessage(double invalidRangeMin, double invalidRangeMax, double validRangeMin, double validRangeMax) {
+        StringBuffer stringBuffer = new StringBuffer();
 
-        assert invalidRange.length == 2;
-        assert validRange.length == 2;
+        stringBuffer.append("\nInvalid depth range:");
+        stringBuffer.append(getInvalidRangeAsString(invalidRangeMin, invalidRangeMax));
+        stringBuffer.append(" Valid range is:[");
+        stringBuffer.append(getValidRangeAsString(validRangeMin, validRangeMax));
+        stringBuffer.append(". ");
 
-        this.invalidRange = invalidRange;
-        this.validRange = validRange;
+        // if (nearestValidValues != null) {
+        // stringBuffer.append(getNearestValidValuesMessage(nearestValidValues[0], nearestValidValues[1],
+        // invalidRangeMin, invalidRangeMax));
+        // }
+
+        return stringBuffer.toString();
     }
-
-    /**
-     * The Constructor.
-     *
-     * @param invalidRange invalid depth range representation which causes the exception
-     * @param validRange valid depth range representation
-     */
-    public MotuInvalidDepthRangeException(double[] invalidRange, double[] validRange) {
-        super("Invalid depth range.");
-
-        assert invalidRange.length == 2;
-        assert validRange.length == 2;
-
-        this.invalidRange = invalidRange;
-        this.validRange = validRange;
-    }
-
-    /**
-     * Depth range representation which causes the exception.
-     */
-    final private double[] invalidRange;
 
     /**
      * Gets the invalid range.
@@ -140,20 +121,15 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
      *
      * @return the invalidRange as a string interval representation
      */
-    public String getInvalidRangeAsString() {
+    public static String getInvalidRangeAsString(double invalidRangeMin, double invalidRangeMax) {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append("[");
-        stringBuffer.append(Double.toString(invalidRange[0]));
+        stringBuffer.append(Double.toString(invalidRangeMin));
         stringBuffer.append(",");
-        stringBuffer.append(Double.toString(invalidRange[1]));
+        stringBuffer.append(Double.toString(invalidRangeMax));
         stringBuffer.append("]");
         return stringBuffer.toString();
     }
-
-    /**
-     * Valid Depth range representation.
-     */
-    final private double[] validRange;
 
     /**
      * Gets the valid range.
@@ -169,18 +145,15 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
      *
      * @return the validRange as a string interval representation
      */
-    public String getValidRangeAsString() {
+    public static String getValidRangeAsString(double validRangeMin, double validRangeMax) {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append("[");
-        stringBuffer.append(Double.toString(validRange[0]));
+        stringBuffer.append(Double.toString(validRangeMin));
         stringBuffer.append(",");
-        stringBuffer.append(Double.toString(validRange[1]));
+        stringBuffer.append(Double.toString(validRangeMax));
         stringBuffer.append("]");
         return stringBuffer.toString();
     }
-
-    /** The nearest valid values. */
-    private double[] nearestValidValues = null;
 
     /**
      * Gets the nearest valid values.
@@ -217,15 +190,12 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
      *
      * @return the nearest valid values as string
      */
-    public String getNearestValidValuesAsString() {
-        if (nearestValidValues == null) {
-            return "";
-        }
+    public static String getNearestValidValuesAsString(double nearestValidValuesMin, double nearestValidValuesMax) {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append("values <= ");
-        stringBuffer.append(Double.toString(nearestValidValues[0]));
+        stringBuffer.append(Double.toString(nearestValidValuesMin));
         stringBuffer.append(", values >= ");
-        stringBuffer.append(Double.toString(nearestValidValues[1]));
+        stringBuffer.append(Double.toString(nearestValidValuesMax));
         return stringBuffer.toString();
     }
 
@@ -234,19 +204,18 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
      *
      * @return the nearest valid values message
      */
-    public String getNearestValidValuesMessage() {
+    public static String getNearestValidValuesMessage(double nearestValidValuesMin,
+                                                      double nearestValidValuesMax,
+                                                      double invalidRangeMin,
+                                                      double invalidRangeMax) {
         StringBuffer stringBuffer = new StringBuffer();
-
-        if (nearestValidValues != null) {
-            stringBuffer.append("The nearest valid range against ");
-            stringBuffer.append(getInvalidRangeAsString());
-            stringBuffer.append(" is: ");
-            stringBuffer.append(getNearestValidValuesAsString());
-            stringBuffer.append(". ");
-        }
+        stringBuffer.append("The nearest valid range against ");
+        stringBuffer.append(getInvalidRangeAsString(invalidRangeMin, invalidRangeMax));
+        stringBuffer.append(" is: ");
+        stringBuffer.append(getNearestValidValuesAsString(nearestValidValuesMin, nearestValidValuesMax));
+        stringBuffer.append(". ");
 
         return stringBuffer.toString();
     }
 
 }
-// CSON: MultipleStringLiterals

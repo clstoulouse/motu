@@ -353,6 +353,16 @@
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
+			<xsd:enumeration value="32">
+				<xsd:annotation>
+					<xsd:documentation>
+						You're requesting a netCDF4 output file. Due to a known bug in Thredds Data Server, your request cannot be satisfied. Please request a netCDF3 output file.
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember name="NETCDF4_NOT_SUPPORTED_BY_TDS" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
 

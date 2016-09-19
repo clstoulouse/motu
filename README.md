@@ -1187,6 +1187,7 @@ The Error Type Code	=>	A number defining a specific error on the server.
 29		=>	The product is unknown.
 30		=>	The service is unknown.
 31		=>	The request cut the ante meridian. In this case, it's not possible to request more than one depth. It's necessary to change the depth selection and to select in the "from" and the "to" the values that have the same index into the depth list.
+32      =>  Due to a known bug in Thredds Data Server, a request cannot be satisfied wit netCDF4. User has to request a netCDF3 output file.
   
 #<a name="Clients">Motu clients</a>  
 You can connect to Motu by using a web browser or a [Python client](https://github.com/clstoulouse/motu-client-python).

@@ -70,7 +70,13 @@ public class XMLConverter {
         smr.setDateSubmit(dateToXMLGregorianCalendar(requestDownloadStatus.getCreationDateTime()));
         String msg = "";
         if (requestDownloadStatus.getRunningException() != null) {
-            msg = requestDownloadStatus.getRunningException().getMessage();
+            if (requestDownloadStatus.getRunningException() instanceof MotuException) {
+                if (requestDownloadStatus.getRunningException().getCause() instanceof MotuExceptionBase) {
+                    msg = requestDownloadStatus.getRunningException().getCause().getMessage();
+                } else {
+                    msg = requestDownloadStatus.getRunningException().getMessage();
+                }
+            }
         }
         smr.setMsg(msg);
         smr.setLocalUri(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath() + "/"

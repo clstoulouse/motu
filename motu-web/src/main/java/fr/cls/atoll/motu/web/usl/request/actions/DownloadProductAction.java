@@ -223,20 +223,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         } else {
             ProductResult pr = BLLManager.getInstance().getRequestManager().download(cs, p, createExtractionParameters(), this);
             if (pr.getRunningException() != null) {
-                try {
-                    MotuException runningException = pr.getRunningException();
-                    ErrorType errorType = runningException.getErrorType();
-                    p.setLastError(StringUtils.getErrorCode(getActionCode(), errorType) + "=>"
-                            + BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, runningException));
-                    LOGGER.error(StringUtils.getLogMessage(getActionCode(), errorType, runningException.getMessage()), runningException);
-                } catch (MotuException errorMessageException) {
-                    p.setLastError(StringUtils.getErrorCode(getActionCode(), BLLMessagesErrorManager.SYSTEM_ERROR_CODE) + "=>" + StringUtils
-                            .getLogMessage(getActionCode(), BLLMessagesErrorManager.SYSTEM_ERROR_CODE, BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE));
-                    LOGGER.error(StringUtils.getLogMessage(getActionCode(),
-                                                           BLLMessagesErrorManager.SYSTEM_ERROR_CODE,
-                                                           errorMessageException.getMessage()),
-                                 errorMessageException);
-                }
+                setProductException(p, pr.getRunningException());
                 onError(mc, cs, cd, p);
             } else {
                 String productURL = BLLManager.getInstance().getCatalogManager().getProductManager()
@@ -256,6 +243,26 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                     }
                 }
             }
+        }
+    }
+
+    private void setProductException(Product p, MotuException runningException) {
+        try {
+            ErrorType errorType = runningException.getErrorType();
+            String errMsg = StringUtils.getErrorCode(getActionCode(), errorType) + "=>"
+                    + BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, runningException);
+            if (outputFormatParameterValidator.getParameterValueValidated().equalsIgnoreCase(OutputFormat.NETCDF4.name())) {
+                errMsg = StringUtils.getErrorCode(getActionCode(), errorType) + " (" + OutputFormat.NETCDF4.name() + " - "
+                        + StringUtils.getErrorCode(getActionCode(), ErrorType.NETCDF4_NOT_SUPPORTED_BY_TDS) + ") =>" + BLLManager.getInstance()
+                                .getMessagesErrorManager().getMessageError(ErrorType.NETCDF4_NOT_SUPPORTED_BY_TDS, runningException);
+            }
+            p.setLastError(errMsg);
+            LOGGER.error(StringUtils.getLogMessage(getActionCode(), errorType, runningException.getMessage()), runningException);
+        } catch (MotuException errorMessageException) {
+            p.setLastError(StringUtils.getErrorCode(getActionCode(), BLLMessagesErrorManager.SYSTEM_ERROR_CODE) + "=>" + StringUtils
+                    .getLogMessage(getActionCode(), BLLMessagesErrorManager.SYSTEM_ERROR_CODE, BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE));
+            LOGGER.error(StringUtils.getLogMessage(getActionCode(), BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
+                         errorMessageException);
         }
     }
 
