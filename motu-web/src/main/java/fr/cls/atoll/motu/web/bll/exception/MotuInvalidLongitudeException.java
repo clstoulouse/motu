@@ -39,22 +39,47 @@ public class MotuInvalidLongitudeException extends MotuExceptionBase {
     private static final long serialVersionUID = -1L;
 
     /**
+     * Longitude representation which causes the exception..
+     */
+    final private double lon;
+
+    /**
+     * String Longitude representation which causes the exception..
+     */
+    final private String lonString;
+
+    public MotuInvalidLongitudeException(String lonStr, Double lon, Throwable cause) {
+        super(getErrorMessage(lonStr, lon), cause);
+        this.lonString = lonStr == null ? "?" : lonStr;
+        this.lon = lon == null ? Double.MAX_VALUE : lon;
+
+    }
+
+    public static String getErrorMessage(String lonString, Double lon) {
+        StringBuffer stringBuffer = new StringBuffer("Invalid longitude. ");
+
+        stringBuffer.append("Longitude:");
+        if (lon != Double.MAX_VALUE) {
+            stringBuffer.append(Double.toString(lon));
+        } else {
+            stringBuffer.append(lonString);
+        }
+        return stringBuffer.toString();
+    }
+
+    /**
      * @param lon longitude representation which causes the exception
      * @param cause native exception.
      */
     public MotuInvalidLongitudeException(String lon, Throwable cause) {
-        super("Invalid longitude.", cause);
-        this.lonString = lon;
-        this.lon = Double.MAX_VALUE;
+        this(lon, null, cause);
     }
 
     /**
      * @param lon longitude representation which causes the exception
      */
     public MotuInvalidLongitudeException(String lon) {
-        super("Invalid longitude.");
-        this.lonString = lon;
-        this.lon = Double.MAX_VALUE;
+        this(lon, null, null);
     }
 
     /**
@@ -62,24 +87,15 @@ public class MotuInvalidLongitudeException extends MotuExceptionBase {
      * @param cause native exception.
      */
     public MotuInvalidLongitudeException(double lon, Throwable cause) {
-        super("Invalid longitude.", cause);
-        this.lonString = "?";
-        this.lon = lon;
+        this(null, lon, cause);
     }
 
     /**
      * @param lon longitude representation which causes the exception
      */
     public MotuInvalidLongitudeException(double lon) {
-        super("Invalid longitude.");
-        this.lonString = "?";
-        this.lon = lon;
+        this(null, lon, null);
     }
-
-    /**
-     * String Longitude representation which causes the exception..
-     */
-    final private String lonString;
 
     /**
      * @return the lonString
@@ -87,11 +103,6 @@ public class MotuInvalidLongitudeException extends MotuExceptionBase {
     public String getLonString() {
         return this.lonString;
     }
-
-    /**
-     * Longitude representation which causes the exception..
-     */
-    final private double lon;
 
     /**
      * @return the lon

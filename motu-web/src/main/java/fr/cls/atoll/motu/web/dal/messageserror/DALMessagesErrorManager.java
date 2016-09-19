@@ -27,7 +27,7 @@ import fr.cls.atoll.motu.web.dal.DALManager;
  */
 public class DALMessagesErrorManager implements IDALMessagesErrorManager {
 
-    Properties messagesError = null;
+    private Properties messagesError = null;
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -68,11 +68,6 @@ public class DALMessagesErrorManager implements IDALMessagesErrorManager {
         }
     }
 
-    @Override
-    public String getMessageError(ErrorType errorCode) throws MotuException {
-        return getMessageError(errorCode, null);
-    }
-
     /**
      * {@inheritDoc}
      * 
@@ -87,6 +82,33 @@ public class DALMessagesErrorManager implements IDALMessagesErrorManager {
                 String messageError = messagesError.getProperty(String.valueOf(errorCode.value()));
                 if (e != null) {
                     messageError = MessageFormat.format(messageError, e.getMessage());
+                }
+                if (messageError == null) {
+                    throw new MotuException(
+                            ErrorType.LOADING_MESSAGE_ERROR,
+                            "Impossible to find the error code " + errorCode + " into the file " + MESSAGES_ERROR_FILE_NAME);
+                }
+                return messageError;
+            } else {
+                throw new MotuException(ErrorType.LOADING_MESSAGE_ERROR, "The messages error file reader is not initialized");
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws MotuException
+     */
+    @Override
+    public String getMessageError(ErrorType errorCode, Object... messageArguments) throws MotuException {
+        if (SYSTEM_ERROR_CODE.equals(errorCode)) {
+            return SYSTEM_ERROR_MESSAGE;
+        } else {
+            if (messagesError != null) {
+                String messageError = messagesError.getProperty(String.valueOf(errorCode.value()));
+                if (messageArguments != null) {
+                    messageError = MessageFormat.format(messageError, messageArguments);
                 }
                 if (messageError == null) {
                     throw new MotuException(

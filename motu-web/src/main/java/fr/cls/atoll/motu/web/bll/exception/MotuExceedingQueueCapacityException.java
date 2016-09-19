@@ -36,18 +36,30 @@ public class MotuExceedingQueueCapacityException extends MotuExceptionBase {
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
+    /** The max. */
+    final private int max;
+
     /**
      * The Constructor.
      * 
      * @param max the max
      */
     public MotuExceedingQueueCapacityException(int max) {
-        super("Exceeding queue capacity.");
+        super(getErrorMessage(max));
         this.max = max;
     }
 
-    /** The max. */
-    final private int max;
+    public static String getErrorMessage(int max) {
+        StringBuffer stringBuffer = new StringBuffer("Exceeding queue capacity.");
+
+        stringBuffer.append("The maximum number of requests is reached for the time being. Please, submit the request later.");
+        if (max != Integer.MAX_VALUE) {
+            stringBuffer.append("(Maximum is ");
+            stringBuffer.append(getMaxAsString(max));
+            stringBuffer.append(", a negative value means 'unlimited').");
+        }
+        return stringBuffer.toString();
+    }
 
     /**
      * Gets the max.
@@ -63,7 +75,7 @@ public class MotuExceedingQueueCapacityException extends MotuExceptionBase {
      * 
      * @return the max as a string representation
      */
-    public String getMaxAsString() {
+    public static String getMaxAsString(int max) {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(Integer.toString(max));
         stringBuffer.append(" request(s)");

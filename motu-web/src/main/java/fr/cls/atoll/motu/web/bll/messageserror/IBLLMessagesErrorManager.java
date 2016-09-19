@@ -35,4 +35,14 @@ public interface IBLLMessagesErrorManager {
      * @throws MotuException
      */
     String getMessageError(ErrorType errorCode, Exception e) throws MotuException;
+
+    /**
+     * .
+     * 
+     * @param errorCode
+     * @param messageArguments
+     * @return
+     * @throws MotuException
+     */
+    String getMessageError(ErrorType errorCode, Object... messageArguments) throws MotuException;
 }

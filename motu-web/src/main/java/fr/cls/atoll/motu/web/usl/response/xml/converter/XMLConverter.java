@@ -54,27 +54,33 @@ public class XMLConverter {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static StatusModeResponse convertStatusModeResponse(RequestDownloadStatus requestDownloadStatus) throws MotuException {
-
         return getResponse(String.valueOf(convertErrorCode(requestDownloadStatus.getRunningException())), requestDownloadStatus);
     }
 
     public static StatusModeResponse convertStatusModeResponse(String actionCode, RequestDownloadStatus requestDownloadStatus) throws MotuException {
-        return getResponse(StringUtils.getErrorCode(actionCode, convertErrorCode(requestDownloadStatus.getRunningException())),
-                           requestDownloadStatus);
+        return getResponse(actionCode, requestDownloadStatus);
     }
 
-    private static StatusModeResponse getResponse(String ErrorCode, RequestDownloadStatus requestDownloadStatus) throws MotuException {
+    private static StatusModeResponse getResponse(String actionCode, RequestDownloadStatus requestDownloadStatus) throws MotuException {
         StatusModeResponse smr = new StatusModeResponse();
-        smr.setCode(ErrorCode);
+        smr.setCode(StringUtils.getErrorCode(actionCode, requestDownloadStatus.getRunningException().getErrorType()));
         smr.setDateProc(dateToXMLGregorianCalendar(requestDownloadStatus.getStartProcessingDateTime()));
         smr.setDateSubmit(dateToXMLGregorianCalendar(requestDownloadStatus.getCreationDateTime()));
         String msg = "";
         if (requestDownloadStatus.getRunningException() != null) {
             if (requestDownloadStatus.getRunningException() instanceof MotuException) {
                 if (requestDownloadStatus.getRunningException().getCause() instanceof MotuExceptionBase) {
-                    msg = requestDownloadStatus.getRunningException().getCause().getMessage();
+                    msg = StringUtils.getLogMessage(actionCode,
+                                                    requestDownloadStatus.getRunningException().getErrorType(),
+                                                    BLLManager.getInstance().getMessagesErrorManager()
+                                                            .getMessageError(requestDownloadStatus.getRunningException().getErrorType(),
+                                                                             requestDownloadStatus.getRunningException().getCause().getMessage()));
                 } else {
-                    msg = requestDownloadStatus.getRunningException().getMessage();
+                    msg = StringUtils.getLogMessage(actionCode,
+                                                    requestDownloadStatus.getRunningException().getErrorType(),
+                                                    BLLManager.getInstance().getMessagesErrorManager()
+                                                            .getMessageError(requestDownloadStatus.getRunningException().getErrorType(),
+                                                                             requestDownloadStatus.getRunningException().getMessage()));
                 }
             }
         }

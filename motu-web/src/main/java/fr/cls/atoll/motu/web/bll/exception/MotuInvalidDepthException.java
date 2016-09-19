@@ -38,22 +38,34 @@ public class MotuInvalidDepthException extends MotuExceptionBase {
     private static final long serialVersionUID = -1L;
 
     /**
+     * Dpth representation which causes the exception.
+     */
+    final private double depth;
+
+    /**
+     * String depth representation which causes the exception..
+     */
+    final private String depthString;
+
+    public MotuInvalidDepthException(String depthStr, Double depth, Throwable cause) {
+        super(getErrorMessage(depthStr, depth), cause);
+        this.depthString = depthStr == null ? "?" : depthStr;
+        this.depth = depth == null ? Double.MAX_VALUE : depth;
+    }
+
+    /**
      * @param depth depth representation which causes the exception
      * @param cause native exception.
      */
     public MotuInvalidDepthException(String depth, Throwable cause) {
-        super("Invalid depth.", cause);
-        this.depthString = depth;
-        this.depth = Double.MAX_VALUE;
+        this(depth, null, cause);
     }
 
     /**
      * @param depth depth representation which causes the exception
      */
     public MotuInvalidDepthException(String depth) {
-        super("Invalid depth.");
-        this.depthString = depth;
-        this.depth = Double.MAX_VALUE;
+        this(depth, null, null);
     }
 
     /**
@@ -61,24 +73,26 @@ public class MotuInvalidDepthException extends MotuExceptionBase {
      * @param cause native exception.
      */
     public MotuInvalidDepthException(double depth, Throwable cause) {
-        super("Invalid depth.", cause);
-        this.depth = depth;
-        this.depthString = "?";
+        this(null, depth, cause);
     }
 
     /**
      * @param depth depth representation which causes the exception
      */
     public MotuInvalidDepthException(double depth) {
-        super("Invalid depth.");
-        this.depth = depth;
-        this.depthString = "?";
+        this(null, depth, null);
     }
 
-    /**
-     * String depth representation which causes the exception..
-     */
-    final private String depthString;
+    public static String getErrorMessage(String depthString, Double depth) {
+        StringBuffer stringBuffer = new StringBuffer("Invalid depth. ");
+        stringBuffer.append("Depth:");
+        if (depth != Double.MAX_VALUE) {
+            stringBuffer.append(Double.toString(depth));
+        } else {
+            stringBuffer.append(depthString);
+        }
+        return stringBuffer.toString();
+    }
 
     /**
      * @return the depthString
@@ -86,11 +100,6 @@ public class MotuInvalidDepthException extends MotuExceptionBase {
     public String getDepthString() {
         return this.depthString;
     }
-
-    /**
-     * Dpth representation which causes the exception.
-     */
-    final private double depth;
 
     /**
      * @return the depth

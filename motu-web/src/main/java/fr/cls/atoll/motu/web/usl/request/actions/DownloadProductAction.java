@@ -41,7 +41,6 @@ import fr.cls.atoll.motu.web.usl.request.parameter.validator.LatitudeHTTPParamet
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LongitudeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ModeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.OutputFormatHTTPParameterValidator;
-import fr.cls.atoll.motu.web.usl.request.parameter.validator.PriorityHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ProductHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ScriptVersionHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
@@ -119,8 +118,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     private TemporalHTTPParameterValidator startDateTemporalHTTPParameterValidator;
     private TemporalHTTPParameterValidator endDateTemporalHighHTTPParameterValidator;
 
-    private PriorityHTTPParameterValidator priorityHTTPParameterValidator;
-
     private OutputFormatHTTPParameterValidator outputFormatParameterValidator;
 
     private ScriptVersionHTTPParameterValidator scriptVersionParameterValidator;
@@ -174,11 +171,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 PARAM_END_DATE,
                 CommonHTTPParameters.getEndDateFromRequest(getRequest()));
 
-        priorityHTTPParameterValidator = new PriorityHTTPParameterValidator(
-                MotuRequestParametersConstant.PARAM_PRIORITY,
-                CommonHTTPParameters.getPriorityFromRequest(getRequest()),
-                Short.toString(BLLManager.getInstance().getConfigManager().getQueueServerConfigManager().getRequestDefaultPriority()));
-
         outputFormatParameterValidator = new OutputFormatHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_OUTPUT,
                 CommonHTTPParameters.getOutputFormatFromRequest(getRequest()),
@@ -192,16 +184,37 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
     @Override
     public void process() throws MotuException {
-        // Read parameter from request
-        // TODO SMA those 3 var were set in the Organizer
-        String requestLanguage = CommonHTTPParameters.getLanguageFromRequest(getRequest());
-        int priority = priorityHTTPParameterValidator.getParameterValueValidated();
-
         MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
-        CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
-        String productId = productHTTPParameterValidator.getParameterValueValidated();
-        Product p = cd.getProducts().get(productId);
+        if (cs == null) {
+            onArgumentError(new MotuException(ErrorType.UNKNOWN_SERVICE, serviceHTTPParameterValidator.getParameterValue()));
+        } else {
+            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
+            String productId = productHTTPParameterValidator.getParameterValueValidated();
+            Product p = cd.getProducts().get(productId);
+            if (p == null) {
+                onArgumentError(new MotuException(ErrorType.UNKNOWN_PRODUCT, productId));
+            } else {
+                downloadProduct(mc, cs, cd, productId, p);
+            }
+        }
+    }
+
+    private void onArgumentError(MotuException motuException) throws MotuException {
+        getResponse().setContentType(CONTENT_TYPE_XML);
+        try {
+            JAXBWriter.getInstance().write(createStatusModeResponseInError(motuException), getResponse().getWriter());
+        } catch (Exception e) {
+            throw new MotuException(ErrorType.SYSTEM, "JAXB error while writing createStatusModeResponse: ", e);
+        }
+    }
+
+    /**
+     * .
+     * 
+     * @throws MotuException
+     */
+    private void downloadProduct(MotuConfig mc, ConfigService cs, CatalogData cd, String productId, Product p) throws MotuException {
         ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
                 .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(p), productId, p.getLocationData());
 
@@ -249,18 +262,26 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     private void setProductException(Product p, MotuException runningException) {
         try {
             ErrorType errorType = runningException.getErrorType();
-            String errMsg = StringUtils.getErrorCode(getActionCode(), errorType) + "=>"
-                    + BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, runningException);
+            String errMsg = StringUtils
+                    .getLogMessage(getActionCode(),
+                                   errorType,
+                                   BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, runningException));
             if (outputFormatParameterValidator.getParameterValueValidated().equalsIgnoreCase(OutputFormat.NETCDF4.name())) {
-                errMsg = StringUtils.getErrorCode(getActionCode(), errorType) + " (" + OutputFormat.NETCDF4.name() + " - "
-                        + StringUtils.getErrorCode(getActionCode(), ErrorType.NETCDF4_NOT_SUPPORTED_BY_TDS) + ") =>" + BLLManager.getInstance()
-                                .getMessagesErrorManager().getMessageError(ErrorType.NETCDF4_NOT_SUPPORTED_BY_TDS, runningException);
+                errMsg = StringUtils.getLogMessage(getActionCode(),
+                                                   errorType,
+                                                   " (" + OutputFormat.NETCDF4.name() + " - "
+                                                           + StringUtils.getErrorCode(getActionCode(), ErrorType.NETCDF4_NOT_SUPPORTED_BY_TDS) + ") "
+                                                           + BLLManager.getInstance().getMessagesErrorManager()
+                                                                   .getMessageError(ErrorType.NETCDF4_NOT_SUPPORTED_BY_TDS, runningException));
             }
             p.setLastError(errMsg);
             LOGGER.error(StringUtils.getLogMessage(getActionCode(), errorType, runningException.getMessage()), runningException);
         } catch (MotuException errorMessageException) {
-            p.setLastError(StringUtils.getErrorCode(getActionCode(), BLLMessagesErrorManager.SYSTEM_ERROR_CODE) + "=>" + StringUtils
-                    .getLogMessage(getActionCode(), BLLMessagesErrorManager.SYSTEM_ERROR_CODE, BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE));
+            p.setLastError(StringUtils.getLogMessage(getActionCode(),
+                                                     BLLMessagesErrorManager.SYSTEM_ERROR_CODE,
+                                                     StringUtils.getLogMessage(getActionCode(),
+                                                                               BLLMessagesErrorManager.SYSTEM_ERROR_CODE,
+                                                                               BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE)));
             LOGGER.error(StringUtils.getLogMessage(getActionCode(), BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
         }
@@ -308,6 +329,20 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         return extractionParameters;
     }
 
+    private StatusModeResponse createStatusModeResponseInError(MotuException motuException) throws MotuException {
+        ObjectFactory objectFactory = new ObjectFactory();
+        StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
+        statusModeResponse.setCode(StringUtils.getErrorCode(getActionCode(), ErrorType.OK));
+        statusModeResponse.setStatus(StatusModeType.ERROR);
+        statusModeResponse.setMsg(StringUtils.getLogMessage(getActionCode(),
+                                                            motuException.getErrorType(),
+                                                            BLLManager.getInstance().getMessagesErrorManager()
+                                                                    .getMessageError(motuException.getErrorType(), motuException.getMessage())));
+        statusModeResponse.setRequestId(-1L);
+        statusModeResponse.setScriptVersion(scriptVersionParameterValidator.getParameterValueValidated());
+        return statusModeResponse;
+    }
+
     private StatusModeResponse createStatusModeResponse(long requestId) {
         ObjectFactory objectFactory = new ObjectFactory();
         StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
@@ -336,8 +371,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
         startDateTemporalHTTPParameterValidator.validate();
         endDateTemporalHighHTTPParameterValidator.validate();
-
-        priorityHTTPParameterValidator.validate();
 
         outputFormatParameterValidator.validate();
         scriptVersionParameterValidator.validate();

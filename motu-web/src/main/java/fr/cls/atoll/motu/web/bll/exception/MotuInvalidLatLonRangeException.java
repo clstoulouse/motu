@@ -41,14 +41,21 @@ public class MotuInvalidLatLonRangeException extends MotuExceptionBase {
     private static final long serialVersionUID = -1L;
 
     /**
+     * Depth range representation which causes the exception.
+     */
+    final private LatLonRect invalidRect;
+
+    /**
+     * Valid Depth range representation.
+     */
+    final private LatLonRect validRect;
+
+    /**
      * @param invalidRect invalid lat/lon bounding box representation which causes the exception
      * @param validRect valid lat/lon bounding representation
      */
     public MotuInvalidLatLonRangeException(LatLonRect invalidRect, LatLonRect validRect) {
-        super("Invalid latitude/longitude bounding box point.");
-
-        this.invalidRect = new LatLonRect(invalidRect);
-        this.validRect = new LatLonRect(validRect);
+        this(invalidRect, validRect, null);
     }
 
     /**
@@ -57,16 +64,42 @@ public class MotuInvalidLatLonRangeException extends MotuExceptionBase {
      * @param cause native exception.
      */
     public MotuInvalidLatLonRangeException(LatLonRect invalidRect, LatLonRect validRect, Throwable cause) {
-        super("Invalid latitude/longitude bounding box point.", cause);
+        super(getErrorMessage(invalidRect, validRect), cause);
 
         this.invalidRect = new LatLonRect(invalidRect);
         this.validRect = new LatLonRect(validRect);
     }
 
-    /**
-     * Depth range representation which causes the exception.
-     */
-    final private LatLonRect invalidRect;
+    public static String getErrorMessage(LatLonRect invalidRect, LatLonRect validRect) {
+        StringBuffer stringBuffer = new StringBuffer("Invalid latitude/longitude bounding box point. ");
+
+        if (invalidRect != null) {
+            stringBuffer.append("Invalid bounding box: ");
+            stringBuffer.append(getInvalidRectAsString(invalidRect));
+        }
+        if (validRect != null) {
+            stringBuffer.append("\nValid bounding box: lower/left point [");
+            stringBuffer.append(getValidRectAsString(validRect));
+        }
+
+        stringBuffer.append("\n1) Either Latitude/Longitude bounding box doesn't intersect: ");
+
+        if (validRect != null) {
+            stringBuffer.append(getValidRectAsString(validRect));
+        } else {
+            stringBuffer.append("null");
+        }
+
+        stringBuffer.append("\n2) Or intersection is not empty, but there is no data for the requested bounding box: ");
+
+        if (invalidRect != null) {
+            stringBuffer.append(getInvalidRectAsString(invalidRect));
+        } else {
+            stringBuffer.append("null");
+        }
+
+        return stringBuffer.toString();
+    }
 
     /**
      * @return the invalidRect
@@ -78,7 +111,7 @@ public class MotuInvalidLatLonRangeException extends MotuExceptionBase {
     /**
      * @return the validRect as a string interval representation
      */
-    public String getInvalidRectAsString() {
+    public static String getInvalidRectAsString(LatLonRect invalidRect) {
         if (invalidRect == null) {
             return "";
         }
@@ -92,11 +125,6 @@ public class MotuInvalidLatLonRangeException extends MotuExceptionBase {
     }
 
     /**
-     * Valid Depth range representation.
-     */
-    final private LatLonRect validRect;
-
-    /**
      * @return the validRect
      */
     public LatLonRect getValidRect() {
@@ -106,7 +134,7 @@ public class MotuInvalidLatLonRangeException extends MotuExceptionBase {
     /**
      * @return the validRect as a string interval representation
      */
-    public String getValidRectAsString() {
+    public static String getValidRectAsString(LatLonRect validRect) {
         if (validRect == null) {
             return "";
         }

@@ -41,25 +41,6 @@ public class NetCdfAttributeNotFoundException extends MotuExceptionBase {
     private static final long serialVersionUID = -1;
 
     /**
-     * @param attrName name of the 'not found' attribute.
-     */
-    public NetCdfAttributeNotFoundException(String attrName) {
-        super("NetCdf attribute not found.");
-        this.attrName = attrName;
-        this.netCdfVariable = null;
-    }
-
-    /**
-     * @param netCdfVariable NetCDF variable that causes the exception
-     * @param attrName name of the 'not found' attribute.
-     */
-    public NetCdfAttributeNotFoundException(Variable netCdfVariable, String attrName) {
-        super("NetCdf attribute not found.");
-        this.netCdfVariable = netCdfVariable;
-        this.attrName = attrName;
-    }
-
-    /**
      * NetCDF variable whose attribute is not found.
      */
     final private Variable netCdfVariable;
@@ -68,6 +49,33 @@ public class NetCdfAttributeNotFoundException extends MotuExceptionBase {
      * NetCDF attribute which causes the exception.
      */
     final private String attrName;
+
+    /**
+     * @param attrName name of the 'not found' attribute.
+     */
+    public NetCdfAttributeNotFoundException(String attrName) {
+        this(null, attrName);
+    }
+
+    /**
+     * @param netCdfVariable NetCDF variable that causes the exception
+     * @param attrName name of the 'not found' attribute.
+     */
+    public NetCdfAttributeNotFoundException(Variable netCdfVariable, String attrName) {
+        super(getErrorMessage(netCdfVariable, attrName));
+        this.netCdfVariable = netCdfVariable;
+        this.attrName = attrName;
+    }
+
+    public static String getErrorMessage(Variable netCdfVariable, String attrName) {
+        StringBuffer stringBuffer = new StringBuffer("NetCdf attribute not found.");
+
+        if (netCdfVariable != null) {
+            stringBuffer.append(String.format("\nNetCdf variable name: %s\n", netCdfVariable.getName()));
+        }
+        stringBuffer.append(String.format("\nAttribute name: %s\n", attrName));
+        return stringBuffer.toString();
+    }
 
 }
 // CSON: MultipleStringLiterals

@@ -37,16 +37,23 @@ public class NetCdfVariableNotFoundException extends MotuExceptionBase {
     private static final long serialVersionUID = -1;
 
     /**
-     * @param varName name of the 'not found' variable.
-     */
-    public NetCdfVariableNotFoundException(String varName) {
-        super("NetCdf variable not found.");
-        this.varName = varName;
-    }
-
-    /**
      * NetCDF attribute which causes the exception.
      */
     final private String varName;
+
+    /**
+     * @param varName name of the 'not found' variable.
+     */
+    public NetCdfVariableNotFoundException(String varName) {
+        super(getErrorMessage(varName));
+        this.varName = varName;
+    }
+
+    public static String getErrorMessage(String varName) {
+        StringBuffer stringBuffer = new StringBuffer("NetCdf variable not found. ");
+
+        stringBuffer.append(String.format("Variable name: %s\n", varName));
+        return stringBuffer.toString();
+    }
 
 }

@@ -36,6 +36,9 @@ public class MotuInvalidRequestIdException extends MotuExceptionBase {
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
+    /** The id. */
+    final private long id;
+
     /**
      * The Constructor.
      */
@@ -49,12 +52,18 @@ public class MotuInvalidRequestIdException extends MotuExceptionBase {
      * @param id the id
      */
     public MotuInvalidRequestIdException(long id) {
-        super("Invalid request Id.");
+        super(getErrorMessage(id));
         this.id = id;
     }
 
-    /** The id. */
-    final private long id;
+    public static String getErrorMessage(long id) {
+        StringBuffer stringBuffer = new StringBuffer("Invalid request Id. ");
+
+        stringBuffer.append("The request id '.");
+        stringBuffer.append(getIdAsString(id));
+        stringBuffer.append(" ' (or null if negative value) is not valid or unknown.");
+        return stringBuffer.toString();
+    }
 
     /**
      * Gets the id.
@@ -70,7 +79,7 @@ public class MotuInvalidRequestIdException extends MotuExceptionBase {
      * 
      * @return the id as string
      */
-    public String getIdAsString() {
+    public static String getIdAsString(long id) {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(Long.toString(id));
         return stringBuffer.toString();

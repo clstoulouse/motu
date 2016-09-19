@@ -38,63 +38,26 @@ public class NetCdfVariableException extends MotuExceptionBase {
     private static final long serialVersionUID = -1;
 
     /**
-     * @param message message to post.
-     * @param cause native exception.
-     */
-    public NetCdfVariableException(String message, Throwable cause) {
-        super(message, cause);
-        this.netCdfVariable = null;
-    }
-
-    /**
-     * @param message message to post.
-     */
-    public NetCdfVariableException(String message) {
-        super(message);
-        this.netCdfVariable = null;
-    }
-
-    /**
-     * @param cause
-     * @param cause native exception.
-     */
-    public NetCdfVariableException(Throwable cause) {
-        super(cause);
-        this.netCdfVariable = null;
-    }
-
-    /**
-     * @param netCdfVariable NetCDF variable that causes the exception
-     * @param message message to post.
-     * @param cause native exception.
-     */
-    public NetCdfVariableException(Variable netCdfVariable, String message, Throwable cause) {
-        super(message, cause);
-        this.netCdfVariable = netCdfVariable;
-    }
-
-    /**
-     * @param netCdfVariable NetCDF variable that causes the exception
-     * @param message message to post.
-     */
-    public NetCdfVariableException(Variable netCdfVariable, String message) {
-        super(message);
-        this.netCdfVariable = netCdfVariable;
-    }
-
-    /**
-     * @param netCdfVariable NetCDF variable that causes the exception
-     * @param cause native exception.
-     */
-    public NetCdfVariableException(Variable netCdfVariable, Throwable cause) {
-        super(cause);
-        this.netCdfVariable = netCdfVariable;
-    }
-
-    /**
      * NetCDF variable which causes the exception.
      */
     final private Variable netCdfVariable;
+
+    /**
+     * @param message message to post.
+     */
+    public NetCdfVariableException(Variable netCdfVariable, String message, Exception e) {
+        super(getErrorMessage(netCdfVariable, message), e);
+        this.netCdfVariable = netCdfVariable;
+    }
+
+    public static String getErrorMessage(Variable netCdfVariable, String message) {
+        StringBuffer stringBuffer = new StringBuffer(message + " ");
+
+        if (netCdfVariable != null) {
+            stringBuffer.append(String.format("NetCdf variable name: %s\n", netCdfVariable.getName()));
+        }
+        return stringBuffer.toString();
+    }
 
     /**
      * @return the netCdfVariable

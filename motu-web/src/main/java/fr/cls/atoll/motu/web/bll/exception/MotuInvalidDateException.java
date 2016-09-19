@@ -24,6 +24,7 @@
  */
 package fr.cls.atoll.motu.web.bll.exception;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
@@ -41,25 +42,29 @@ public class MotuInvalidDateException extends MotuExceptionBase {
     private static final long serialVersionUID = -1L;
 
     /**
+     * String date representation which causes the exception..
+     */
+    final private String dateString;
+
+    public MotuInvalidDateException(String dateStr, Date date, Throwable cause) {
+        super(getErrorMessage(dateStr, date), cause);
+        this.dateString = dateStr == null ? "?" : dateStr;
+        this.date = date;
+    }
+
+    /**
      * @param date string date representation which causes the exception
      * @param cause native exception.
      */
     public MotuInvalidDateException(String date, Throwable cause) {
-        super("Invalid date.", cause);
-        this.dateString = date;
-        this.date = null;
-        // notifyLogException();
-
+        this(date, null, cause);
     }
 
     /**
      * @param date string date representation which causes the exception
      */
     public MotuInvalidDateException(String date) {
-        super("Invalid date.");
-        this.dateString = date;
-        this.date = null;
-        // notifyLogException();
+        this(date, null, null);
     }
 
     /**
@@ -67,26 +72,27 @@ public class MotuInvalidDateException extends MotuExceptionBase {
      * @param cause native exception.
      */
     public MotuInvalidDateException(Date date, Throwable cause) {
-        super("Invalid date.", cause);
-        this.dateString = "?";
-        this.date = date;
-        // notifyLogException();
+        this(null, date, cause);
     }
 
     /**
      * @param date Date representation which causes the exception
      */
     public MotuInvalidDateException(Date date) {
-        super("Invalid date.");
-        this.dateString = "?";
-        this.date = date;
-        // notifyLogException();
+        this(null, date, null);
     }
 
-    /**
-     * String date representation which causes the exception..
-     */
-    final private String dateString;
+    public static String getErrorMessage(String dateString, Date date) {
+        StringBuffer stringBuffer = new StringBuffer("Invalid date. ");
+
+        stringBuffer.append("Date:");
+        if (date != null) {
+            stringBuffer.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
+        } else {
+            stringBuffer.append(dateString);
+        }
+        return stringBuffer.toString();
+    }
 
     /**
      * @return the dateString

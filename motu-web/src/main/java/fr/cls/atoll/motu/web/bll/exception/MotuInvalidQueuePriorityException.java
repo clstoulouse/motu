@@ -36,20 +36,6 @@ public class MotuInvalidQueuePriorityException extends MotuExceptionBase {
     /** . */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * The Constructor.
-     * 
-     * @param min the min
-     * @param max the max
-     * @param value the value
-     */
-    public MotuInvalidQueuePriorityException(int value, int min, int max) {
-        super("Invalid queue priority.");
-        this.max = max;
-        this.min = min;
-        this.value = value;
-    }
-
     /** The max. */
     final private int max;
 
@@ -58,6 +44,33 @@ public class MotuInvalidQueuePriorityException extends MotuExceptionBase {
 
     /** The value. */
     final private int value;
+
+    /**
+     * The Constructor.
+     * 
+     * @param min the min
+     * @param max the max
+     * @param value the value
+     */
+    public MotuInvalidQueuePriorityException(int value, int min, int max) {
+        super(getErrorMessage(value, min, max));
+        this.max = max;
+        this.min = min;
+        this.value = value;
+    }
+
+    public static String getErrorMessage(int value, int min, int max) {
+        StringBuffer stringBuffer = new StringBuffer("Invalid queue priority. ");
+
+        stringBuffer.append("The priotity value ");
+        stringBuffer.append(getValueAsString(value));
+        stringBuffer.append(" is not a valid value ");
+        stringBuffer.append("(Minimum is ");
+        stringBuffer.append(getMinAsString(min));
+        stringBuffer.append("(Maximum is ");
+        stringBuffer.append(getMaxAsString(max));
+        return stringBuffer.toString();
+    }
 
     /**
      * Gets the max.
@@ -91,7 +104,7 @@ public class MotuInvalidQueuePriorityException extends MotuExceptionBase {
      * 
      * @return the max as a string representation
      */
-    public String getMinAsString() {
+    public static String getMinAsString(int min) {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(Integer.toString(min));
         return stringBuffer.toString();
@@ -102,7 +115,7 @@ public class MotuInvalidQueuePriorityException extends MotuExceptionBase {
      * 
      * @return the max as string
      */
-    public String getMaxAsString() {
+    public static String getMaxAsString(int max) {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(Integer.toString(max));
         return stringBuffer.toString();
@@ -113,7 +126,7 @@ public class MotuInvalidQueuePriorityException extends MotuExceptionBase {
      * 
      * @return the value as string
      */
-    public String getValueAsString() {
+    public static String getValueAsString(double value) {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(Double.toString(value));
         return stringBuffer.toString();

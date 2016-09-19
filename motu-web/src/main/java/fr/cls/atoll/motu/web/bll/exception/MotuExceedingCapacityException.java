@@ -39,12 +39,24 @@ public class MotuExceedingCapacityException extends MotuExceptionBase {
     private static final long serialVersionUID = -1L;
 
     /**
+     * Actual capacity value in Megabytes.
+     * 
+     * @uml.property name="actual"
+     */
+    final private double actual;
+
+    /**
+     * Max capacity allowed value in Megabytes.
+     * 
+     * @uml.property name="max"
+     */
+    final private double max;
+
+    /**
      * @param max max capacity allowed in Megabytes.
      */
     public MotuExceedingCapacityException(double max) {
-        super("Exceeding capacity.");
-        this.actual = Double.MAX_VALUE;
-        this.max = max;
+        this(Double.MAX_VALUE, max);
     }
 
     /**
@@ -52,17 +64,23 @@ public class MotuExceedingCapacityException extends MotuExceptionBase {
      * @param max max capacity allowed in Megabytes.
      */
     public MotuExceedingCapacityException(double actual, double max) {
-        super("Exceeding capacity.");
+        super(getErrorMessage(actual, max));
         this.actual = actual;
         this.max = max;
     }
 
-    /**
-     * Actual capacity value in Megabytes.
-     * 
-     * @uml.property name="actual"
-     */
-    final private double actual;
+    private static String getErrorMessage(double actual, double max) {
+        StringBuffer stringBuffer = new StringBuffer("Exceeding capacity.");
+
+        if (actual != Double.MAX_VALUE) {
+            stringBuffer.append("\nActual is ");
+            stringBuffer.append(getActualAsString(actual));
+            stringBuffer.append(".");
+        }
+        stringBuffer.append("\nMaximum is ");
+        stringBuffer.append(getMaxAsString(max));
+        return stringBuffer.toString();
+    }
 
     /**
      * Getter of the property <tt>actual</tt>.
@@ -77,7 +95,7 @@ public class MotuExceedingCapacityException extends MotuExceptionBase {
     /**
      * @return the actual as a string representation
      */
-    public String getActualAsString() {
+    public static String getActualAsString(double actual) {
         StringBuffer stringBuffer = new StringBuffer();
         if (actual != Double.MAX_VALUE) {
             stringBuffer.append(String.format("%8.2f", actual));
@@ -87,13 +105,6 @@ public class MotuExceedingCapacityException extends MotuExceptionBase {
         stringBuffer.append(" Megabyte(s)");
         return stringBuffer.toString();
     }
-
-    /**
-     * Max capacity allowed value in Megabytes.
-     * 
-     * @uml.property name="max"
-     */
-    final private double max;
 
     /**
      * Getter of the property <tt>max</tt>.
@@ -108,7 +119,7 @@ public class MotuExceedingCapacityException extends MotuExceptionBase {
     /**
      * @return the max as a string representation
      */
-    public String getMaxAsString() {
+    public static String getMaxAsString(double max) {
         StringBuffer stringBuffer = new StringBuffer();
         if (max != Double.MAX_VALUE) {
             stringBuffer.append(String.format("%8.2f", max));

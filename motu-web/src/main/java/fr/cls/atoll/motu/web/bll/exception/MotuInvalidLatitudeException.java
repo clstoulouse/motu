@@ -39,22 +39,34 @@ public class MotuInvalidLatitudeException extends MotuExceptionBase {
     private static final long serialVersionUID = -1L;
 
     /**
+     * Latitude representation which causes the exception..
+     */
+    final private double lat;
+
+    /**
+     * String Latitude representation which causes the exception..
+     */
+    final private String latString;
+
+    public MotuInvalidLatitudeException(String latStr, Double lat, Throwable cause) {
+        super(getErrorMessage(latStr, lat), cause);
+        this.latString = latStr == null ? "?" : latStr;
+        this.lat = lat == null ? Double.MAX_VALUE : lat;
+    }
+
+    /**
      * @param lat latitude representation which causes the exception
      * @param cause native exception.
      */
     public MotuInvalidLatitudeException(String lat, Throwable cause) {
-        super("Invalid latitude.", cause);
-        this.latString = lat;
-        this.lat = Double.MAX_VALUE;
+        this(lat, null, cause);
     }
 
     /**
      * @param lat latitude representation which causes the exception
      */
     public MotuInvalidLatitudeException(String lat) {
-        super("Invalid latitude.");
-        this.latString = lat;
-        this.lat = Double.MAX_VALUE;
+        this(lat, null, null);
     }
 
     /**
@@ -62,24 +74,27 @@ public class MotuInvalidLatitudeException extends MotuExceptionBase {
      * @param cause native exception.
      */
     public MotuInvalidLatitudeException(double lat, Throwable cause) {
-        super("Invalid latitude.", cause);
-        this.latString = "?";
-        this.lat = lat;
+        this(null, lat, cause);
     }
 
     /**
      * @param lat latitdue representation which causes the exception
      */
     public MotuInvalidLatitudeException(double lat) {
-        super("Invalid latitude.");
-        this.latString = "?";
-        this.lat = lat;
+        this(null, lat, null);
     }
 
-    /**
-     * String Latitude representation which causes the exception..
-     */
-    final private String latString;
+    public static String getErrorMessage(String latString, Double lat) {
+        StringBuffer stringBuffer = new StringBuffer("Invalid latitude. ");
+
+        stringBuffer.append("Latitude:");
+        if (lat != Double.MAX_VALUE) {
+            stringBuffer.append(Double.toString(lat));
+        } else {
+            stringBuffer.append(latString);
+        }
+        return stringBuffer.toString();
+    }
 
     /**
      * @return the latString
@@ -87,11 +102,6 @@ public class MotuInvalidLatitudeException extends MotuExceptionBase {
     public String getLatString() {
         return this.latString;
     }
-
-    /**
-     * Latitude representation which causes the exception..
-     */
-    final private double lat;
 
     /**
      * @return the lat

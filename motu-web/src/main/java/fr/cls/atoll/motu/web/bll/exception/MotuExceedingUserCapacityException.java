@@ -35,6 +35,15 @@ public class MotuExceedingUserCapacityException extends MotuExceptionBase {
 
     private static final long serialVersionUID = 1L;
 
+    /** The user id. */
+    final private String userId;
+
+    /** The is anonymous. */
+    final private boolean isAnmonymous;
+
+    /** The max. */
+    final private int max;
+
     /**
      * The Constructor.
      * 
@@ -43,20 +52,26 @@ public class MotuExceedingUserCapacityException extends MotuExceptionBase {
      * @param isAnonymous the is anonymous
      */
     public MotuExceedingUserCapacityException(String userId, boolean isAnonymous, int max) {
-        super("Exceeding user capacity.");
+        super(getErrorMessage(userId, isAnonymous, max));
         this.userId = userId;
         this.isAnmonymous = isAnonymous;
         this.max = max;
     }
 
-    /** The user id. */
-    final private String userId;
+    public static String getErrorMessage(String userId, boolean isAnonymous, int max) {
+        StringBuffer stringBuffer = new StringBuffer("Exceeding user capacity.");
 
-    /** The is anmonymous. */
-    final private boolean isAnmonymous;
-
-    /** The max. */
-    final private int max;
+        stringBuffer.append("The maximum number of requests is reached for the user '");
+        stringBuffer.append(userId);
+        stringBuffer.append("' (");
+        stringBuffer.append(getUserCategory(isAnonymous));
+        stringBuffer.append(").\n");
+        stringBuffer.append("Please, submit the request later.");
+        stringBuffer.append("(Maximum is ");
+        stringBuffer.append(getMaxAsString(max));
+        stringBuffer.append(", a negative value means 'unlimited').");
+        return stringBuffer.toString();
+    }
 
     /**
      * Checks if is anmonymous.
@@ -90,7 +105,7 @@ public class MotuExceedingUserCapacityException extends MotuExceptionBase {
      * 
      * @return the max as string
      */
-    public String getMaxAsString() {
+    public static String getMaxAsString(int max) {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(Integer.toString(max));
         stringBuffer.append(" request(s).");
@@ -102,7 +117,7 @@ public class MotuExceedingUserCapacityException extends MotuExceptionBase {
      * 
      * @return the user category
      */
-    public String getUserCategory() {
+    public static String getUserCategory(boolean isAnmonymous) {
         if (isAnmonymous) {
             return "anonymous";
         } else {

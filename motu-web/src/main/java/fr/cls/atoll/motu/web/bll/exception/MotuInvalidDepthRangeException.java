@@ -95,7 +95,7 @@ public class MotuInvalidDepthRangeException extends MotuExceptionBase {
 
         stringBuffer.append("\nInvalid depth range:");
         stringBuffer.append(getInvalidRangeAsString(invalidRangeMin, invalidRangeMax));
-        stringBuffer.append(" Valid range is:[");
+        stringBuffer.append(" Valid range is: ");
         stringBuffer.append(getValidRangeAsString(validRangeMin, validRangeMax));
         stringBuffer.append(". ");
 

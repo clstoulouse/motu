@@ -40,134 +40,49 @@ public class NetCdfAttributeException extends MotuExceptionBase {
     private static final long serialVersionUID = -1;
 
     /**
-     * @param message message to post.
-     * @param cause native exception.
-     */
-    public NetCdfAttributeException(String message, Throwable cause) {
-        super(message, cause);
-        this.netCdfAttribute = null;
-        this.netCdfVariable = null;
-    }
-
-    /**
-     * @param message message to post.
-     */
-    public NetCdfAttributeException(String message) {
-        super(message);
-        this.netCdfAttribute = null;
-        this.netCdfVariable = null;
-    }
-
-    /**
-     * @param cause
-     * @param cause native exception.
-     */
-    public NetCdfAttributeException(Throwable cause) {
-        super(cause);
-        this.netCdfAttribute = null;
-        this.netCdfVariable = null;
-    }
-
-    /**
-     * @param netCdfAttribute NetCDF attribute that causes the exception
-     * @param message message to post.
-     * @param cause native exception.
-     */
-    public NetCdfAttributeException(Attribute netCdfAttribute, String message, Throwable cause) {
-        super(message, cause);
-        this.netCdfAttribute = netCdfAttribute;
-        this.netCdfVariable = null;
-    }
-
-    /**
-     * @param netCdfAttribute NetCDF attribute that causes the exception
-     * @param message message to post.
-     */
-    public NetCdfAttributeException(Attribute netCdfAttribute, String message) {
-        super(message);
-        this.netCdfAttribute = netCdfAttribute;
-        this.netCdfVariable = null;
-    }
-
-    /**
-     * @param netCdfAttribute NetCDF attribute that causes the exception
-     * @param cause native exception.
-     */
-    public NetCdfAttributeException(Attribute netCdfAttribute, Throwable cause) {
-        super(cause);
-        this.netCdfAttribute = netCdfAttribute;
-        this.netCdfVariable = null;
-    }
-
-    /**
-     * @param netCdfVariable NetCDF variable that causes the exception
-     * @param netCdfAttribute NetCDF attribute that causes the exception
-     * @param message message to post.
-     * @param cause native exception.
-     */
-    public NetCdfAttributeException(Variable netCdfVariable, Attribute netCdfAttribute, String message, Throwable cause) {
-        super(message, cause);
-        this.netCdfVariable = netCdfVariable;
-        this.netCdfAttribute = netCdfAttribute;
-    }
-
-    /**
-     * @param netCdfVariable NetCDF variable that causes the exception
-     * @param netCdfAttribute NetCDF attribute that causes the exception
-     * @param message message to post.
-     */
-    public NetCdfAttributeException(Variable netCdfVariable, Attribute netCdfAttribute, String message) {
-        super(message);
-        this.netCdfVariable = netCdfVariable;
-        this.netCdfAttribute = netCdfAttribute;
-    }
-
-    /**
-     * @param netCdfVariable NetCDF variable that causes the exception
-     * @param netCdfAttribute NetCDF attribute that causes the exception
-     * @param cause native exception.
-     */
-    public NetCdfAttributeException(Variable netCdfVariable, Attribute netCdfAttribute, Throwable cause) {
-        super(cause);
-        this.netCdfVariable = netCdfVariable;
-        this.netCdfAttribute = netCdfAttribute;
-    }
-
-    /**
-     * @param netCdfVariable NetCDF variable that causes the exception
-     * @param message message to post.
-     * @param cause native exception.
-     */
-    public NetCdfAttributeException(Variable netCdfVariable, String message, Throwable cause) {
-        super(message, cause);
-        this.netCdfAttribute = null;
-        this.netCdfVariable = netCdfVariable;
-    }
-
-    /**
-     * @param netCdfVariable NetCDF variable that causes the exception
-     * @param message message to post.
-     */
-    public NetCdfAttributeException(Variable netCdfVariable, String message) {
-        super(message);
-        this.netCdfAttribute = null;
-        this.netCdfVariable = netCdfVariable;
-    }
-
-    /**
-     * @param netCdfVariable NetCDF variable that causes the exception
-     * @param cause native exception.
-     */
-    public NetCdfAttributeException(Variable netCdfVariable, Throwable cause) {
-        super(cause);
-        this.netCdfAttribute = null;
-        this.netCdfVariable = netCdfVariable;
-    }
-
-    /**
      * NetCDF attribute which causes the exception.
      */
     final private Attribute netCdfAttribute;
+
+    /**
+     * NetCDF variable whose attribute causes the exception.
+     */
+    final private Variable netCdfVariable;
+
+    /**
+     * Constructeur.
+     * 
+     * @param variable
+     * @param attribute
+     * @param string
+     */
+    public NetCdfAttributeException(Variable netCdfVariable, Attribute netCdfAttribute, String message) {
+        super(getErrorMessage(netCdfVariable, netCdfAttribute, message));
+        this.netCdfVariable = netCdfVariable;
+        this.netCdfAttribute = netCdfAttribute;
+    }
+
+    /**
+     * Constructeur.
+     * 
+     * @param attribute
+     * @param format
+     */
+    public NetCdfAttributeException(Attribute netCdfAttribute, String message) {
+        this(null, netCdfAttribute, message);
+    }
+
+    public static String getErrorMessage(Variable netCdfVariable, Attribute netCdfAttribute, String message) {
+        StringBuffer stringBuffer = new StringBuffer(message);
+
+        if (netCdfVariable != null) {
+            stringBuffer.append(String.format("\nNetCdf variable name: %s\n", netCdfVariable.getName()));
+        }
+        if (netCdfAttribute != null) {
+            stringBuffer.append(String.format("\nNetCdf attribute name: %s\n", netCdfAttribute.getName()));
+        }
+        return stringBuffer.toString();
+    }
 
     /**
      * @return the netCdfAttribute
@@ -175,11 +90,6 @@ public class NetCdfAttributeException extends MotuExceptionBase {
     public Attribute getNetCdfAttribute() {
         return this.netCdfAttribute;
     }
-
-    /**
-     * NetCDF variable whose attribute causes the exception.
-     */
-    final private Variable netCdfVariable;
 
     /**
      * @return the neCdfVariable
