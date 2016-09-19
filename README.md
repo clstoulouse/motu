@@ -1214,6 +1214,9 @@ __Summary of all actions:__
 * [Debug](#ClientAPI_Debug>)  
 * [Describe coverage](#ClientAPI_DescribeCoverage>)  
 * [Describe product](#ClientAPI_DescribeProduct>)  
+* [Download product](#ClientAPI_DownloadProduct>)  
+* [Request status](#ClientAPI_RequestStatus>)  
+* [Get size](#ClientAPI_GetSize>)  
 
  
 ### <a name="ClientAPI_About">About</a>  
@@ -1286,7 +1289,7 @@ __Parameters__:
 * __data__ [1]: The Thredds data, example http://$tdsServer/thredds/dodsC/path_HR_MOD  
   
   
-__Return__: An XML document  
+__Return__: An XML document  7
 
 ```   
 <productMetadataInfo code="OK" msg="OK" lastUpdate="Not Available" title="HR_MOD" id="HR_MOD">  
@@ -1312,4 +1315,45 @@ __Return__: An XML document
 <axis code="OK" msg="OK" description="Depth" units="m" name="depth" upper="5727.9169921875" lower="0.4940249919891357421875" axisType="Height"/>  
 </dataGeospatialCoverage>  
 </productMetadataInfo>  
+```  
+
+
+ 
+### <a name="ClientAPI_DownloadProduct">Download product</a>  
+Request used to download a product  
+__URL__: http://localhost:8080/motu-web/Motu?action=productdownload 
+__Parameters__: TBD.  
+__Return__: Severals ways  
+Example:  
 ```
+
+```  
+
+
+ 
+### <a name="ClientAPI_RequestStatus">Request status</a>  
+Get a request status to get more details about a download state.  
+__URL__: http://localhost:8080/motu-web/Motu?action=getreqstatus&requestid=123456789
+__Parameters__:  
+* __requestid__ [1]: A request id.
+__Return__: An XML document or an HTML page if requestId does not exists.    
+Validated by the schema /motu-api-message/src/main/schema/XmlMessageModel.xsd#StatusModeResponse  
+Example:  
+```
+<statusModeResponse code="004-0" msg="" scriptVersion="" userHost="" userId="" dateSubmit="2016-09-19T16:56:22.184Z" localUri="/$pathTo/HR_MOD_1474304182183.nc" remoteUri="http://localhost:8080/motu/deliveries/HR_MOD_1474304182183.nc" size="0.0" dateProc="2016-09-19T16:56:22.566Z" requestId="1474304182183" status="1"/>
+```  
+
+ 
+### <a name="ClientAPI_GetSize">Get size</a>  
+Get a request status to get more details about a download state.  
+__URL__: http://localhost:8080/motu-web/Motu?action=getreqstatus&requestid=123456789
+__Parameters__:  
+Parameters are exactly the same as for [Download product](#ClientAPI_DownloadProduct)  
+__Return__: An XML document.    
+Validated by the schema /motu-api-message/src/main/schema/XmlMessageModel.xsd#RequestSize  
+Example:  
+```
+
+```  
+
+

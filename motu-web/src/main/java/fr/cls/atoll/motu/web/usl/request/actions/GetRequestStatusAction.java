@@ -78,7 +78,7 @@ public class GetRequestStatusAction extends AbstractAction {
             if (requestId != null) {
                 RequestDownloadStatus rds = BLLManager.getInstance().getRequestManager().getDownloadRequestStatus(requestId);
                 if (rds == null) {
-                    getResponse().getWriter().write("Oops, request id '" + requestId + "' does not exist.");
+                    throw new MotuException(ErrorType.UNKNOWN_REQUEST_ID, "Oops, request id '" + requestId + "' does not exist.");
                 } else {
                     marshallStatusModeResponse(XMLConverter.convertStatusModeResponse(getActionCode(), rds), getResponse().getWriter());
                 }
@@ -89,6 +89,8 @@ public class GetRequestStatusAction extends AbstractAction {
                 LOGGER.error(StringUtils.getLogMessage(getActionCode(), ExceptionUtils.getErrorType(e), e.getMessage()), e);
             }
 
+        } catch (MotuException e) {
+            throw e;
         } catch (Exception e) {
             try {
                 getResponse().sendError(500, String.format("ERROR: %s", e.getMessage()));

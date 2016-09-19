@@ -63,7 +63,9 @@ public class XMLConverter {
 
     private static StatusModeResponse getResponse(String actionCode, RequestDownloadStatus requestDownloadStatus) throws MotuException {
         StatusModeResponse smr = new StatusModeResponse();
-        smr.setCode(StringUtils.getErrorCode(actionCode, requestDownloadStatus.getRunningException().getErrorType()));
+        smr.setCode(StringUtils.getErrorCode(actionCode,
+                                             requestDownloadStatus.getRunningException() == null ? ErrorType.OK
+                                                     : requestDownloadStatus.getRunningException().getErrorType()));
         smr.setDateProc(dateToXMLGregorianCalendar(requestDownloadStatus.getStartProcessingDateTime()));
         smr.setDateSubmit(dateToXMLGregorianCalendar(requestDownloadStatus.getCreationDateTime()));
         String msg = "";
