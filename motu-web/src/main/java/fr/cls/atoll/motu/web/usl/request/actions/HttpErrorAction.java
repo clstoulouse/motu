@@ -57,6 +57,7 @@ public class HttpErrorAction extends AbstractAction {
         VelocityContext context = VelocityTemplateManager.getPrepopulatedVelocityContext();
         context.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
         context.put("httpErrorCode", httpErrorCodeHTTPParameterValidator.getParameterValueValidated());
+        context.put("httpErrorCodeStatus", getResponse().getStatus());
 
         try {
             Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null, null);

@@ -1213,6 +1213,7 @@ __Summary of all actions:__
 * [About](#ClientAPI_About>)  
 * [Debug](#ClientAPI_Debug>)  
 * [Describe coverage](#ClientAPI_DescribeCoverage>)  
+* [Describe product](#ClientAPI_DescribeProduct>)  
 
  
 ### <a name="ClientAPI_About">About</a>  
@@ -1238,13 +1239,77 @@ Without this parameter, default order is: INPROGRESS,PENDING,ERROR,DONE
 __Return__: An HTML page  
 
 ### <a name="ClientAPI_DescribeCoverage">Describe coverage</a>  
-
+Display coverage data in relationship with a dataset.  
 __URL__: http://localhost:8080/motu-web/Motu?action=describecoverage&service=HR_MOD-TDS&datasetID=HR_MOD  
 __Parameters__:  
-* __service__ [1]: The [service name](#BSconfigServiceName)
-* __datesetID__ [1]: The [dataset ID](#BSconfigServiceDatasetName)
-__Return__: An XML page 
-```
+* __service__ [1]: The [service name](#BSconfigServiceName)  
+* __datesetID__ [1]: The [dataset ID](#BSconfigServiceDatasetName)  
+__Return__: An XML document  
+```   
+<dataset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:noNamespaceSchemaLocation="describeDataset.xsd" name="HR_MOD" id="HR_MOD">  
+<boundingBox>  
+  <lon min="-180.0" max="179.91668701171875" units="degrees_east"/>
+  <lat min="-80.0" max="-80.0" units="degrees_north"/>
+</boundingBox>
+<dimension name="time" start="2012-12-26T12:00:00.000+00:00" end="2016-06-12T12:00:00.000+00:00" units="ISO8601"/>  
+<dimension name="z" start="" end="" units="m"/>  
+<variables>  
+<variable id="northward_sea_water_velocity" name="v" description="Northward velocity" standardName="northward_sea_water_velocity" units="m s-1">  
+<dimensions></dimensions>  
+</variable>  
+...  
+</variables>  
+</dataset>  
+
+```  
+  
+### <a name="ClientAPI_DescribeProduct">Describe product</a>  
+Display the product meaning dataset description.  
+There is 2 ways to call describe product, both returning a same response.
 
 
+#### Way 1   
+  
+__URL__:   
+* http://localhost:8080/motu-web/Motu?action=describeproduct&service=serviceId&product=datasetId  
+__Parameters__:  
+* __service__ [1]: The [service name](#BSconfigServiceName)  
+* __product__ [1]: The product id  
+  
+  
+#### Way 2   
+
+__URL__:   
+* http://localhost:8080/motu-web/Motu?action=describeproduct&data=http://$tdsServer/thredds/dodsC/path_HR_MOD&xmlfile=http://$tdsServer/thredds/m_HR_MOD.xml 
+__Parameters__:  
+* __xmlfile__ [1]: The Thredds dataset, example: http://$tdsServer/thredds/m_HR_MOD.xml  
+* __data__ [1]: The Thredds data, example http://$tdsServer/thredds/dodsC/path_HR_MOD  
+  
+  
+__Return__: An XML document  
+
+```   
+<productMetadataInfo code="OK" msg="OK" lastUpdate="Not Available" title="HR_MOD" id="HR_MOD">  
+<timeCoverage code="OK" msg="OK"/>  
+<availableTimes code="OK" msg="OK">  
+2012-12-26 12:00:00;2012-12-27 12:00:00;   
+...  
+</availableTimes>  
+<availableDepths code="OK" msg="OK">  
+0.49402;1.54138;2.64567;...  
+</availableDepths>  
+<geospatialCoverage code="OK" msg="OK"/>  
+<variablesVocabulary code="OK" msg="OK"/>  
+<variables code="OK" msg="OK">  
+<variable description="Northward velocity" units="m s-1" longName="Northward velocity" standardName="northward_sea_water_velocity" name="v" code="OK" msg="OK"/>  
+<variable description="Eastward velocity" units="m s-1" longName="Eastward velocity" standardName="eastward_sea_water_velocity" name="u" code="OK" msg="OK"/>  
+...  
+</variables>  
+<dataGeospatialCoverage code="OK" msg="OK">  
+<axis code="OK" msg="OK" description="Time (hours since 1950-01-01)" units="hours since 1950-01-01 00:00:00" name="time_counter" upper="582468" lower="552132" axisType="Time"/>  
+<axis code="OK" msg="OK" description="Longitude" units="degrees_east" name="longitude" upper="179.91668701171875" lower="-180" axisType="Lon"/>  
+<axis code="OK" msg="OK" description="Latitude" units="degrees_north" name="latitude" upper="90" lower="-80" axisType="Lat"/>  
+<axis code="OK" msg="OK" description="Depth" units="m" name="depth" upper="5727.9169921875" lower="0.4940249919891357421875" axisType="Height"/>  
+</dataGeospatialCoverage>  
+</productMetadataInfo>  
 ```

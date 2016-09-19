@@ -60,11 +60,13 @@ public class DescribeProductAction extends AbstractProductInfoAction {
      */
     public DescribeProductAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         super(ACTION_NAME, actionCode_, request, response, session);
+
         xmlFileParameterValidator = new XMLFileHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_XML_FILE,
                 CommonHTTPParameters.getXmlFileFromRequest(getRequest()),
                 AbstractHTTPParameterValidator.EMPTY_VALUE);
         xmlFileParameterValidator.setOptional(true);
+
         extraMetaDataHTTPParameterValidator = new ExtraMetaDataHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_EXTRA_METADATA,
                 CommonHTTPParameters.getExtraMetaDataFromRequest(getRequest()),
@@ -78,12 +80,36 @@ public class DescribeProductAction extends AbstractProductInfoAction {
         super.checkHTTPParameters();
         xmlFileParameterValidator.validate();
         extraMetaDataHTTPParameterValidator.validate();
+
+        try {
+            String hasProductIdentifierErrMsg = hasProductIdentifier();
+            if (hasProductIdentifierErrMsg != null) {
+                throw new InvalidHTTPParameterException(hasProductIdentifierErrMsg, null, null, null);
+            }
+        } catch (MotuException e) {
+            LOGGER.error("Error while calling hasProductIdentifier", e);
+        }
+
+        String locationData = CommonHTTPParameters.getDataFromParameter(getRequest());
+        String xmlFile = xmlFileParameterValidator.getParameterValueValidated();
+
+        if (!StringUtils.isNullOrEmpty(locationData) && !StringUtils.isNullOrEmpty(xmlFile)) {
+            String urlPath = BLLManager.getInstance().getCatalogManager().getProductManager().datasetIdFromProductLocation(locationData);
+            if (urlPath == null) {
+                throw new InvalidHTTPParameterException(
+                        "Parameter " + MotuRequestParametersConstant.PARAM_DATA + " value " + locationData
+                                + " does not exists. Its pattern is an HTTP URL to thredds server.",
+                        MotuRequestParametersConstant.PARAM_DATA,
+                        locationData,
+                        null);
+            }
+        }
     }
 
     @Override
     protected void process() throws MotuException {
-
-        if (hasProductIdentifier()) {
+        String hasProductIdentifierErrMsg = hasProductIdentifier();
+        if (hasProductIdentifierErrMsg == null) {
             ProductMetadataInfo pmdi = null;
             try {
                 Product currentProduct = getProduct();
@@ -95,6 +121,8 @@ public class DescribeProductAction extends AbstractProductInfoAction {
             } catch (MotuExceptionBase | JAXBException | IOException e) {
                 throw new MotuException(ErrorType.SYSTEM, e);
             }
+        } else {
+            throw new MotuException(ErrorType.BAD_PARAMETERS, new InvalidHTTPParameterException(hasProductIdentifierErrMsg, null, null, null));
         }
     }
 
@@ -107,7 +135,11 @@ public class DescribeProductAction extends AbstractProductInfoAction {
         if (!StringUtils.isNullOrEmpty(locationData) && !StringUtils.isNullOrEmpty(xmlFile)) {
             String catalogName = xmlFile.substring(xmlFile.lastIndexOf("/") + 1, xmlFile.length());
             String urlPath = BLLManager.getInstance().getCatalogManager().getProductManager().datasetIdFromProductLocation(locationData);
-
+            if (urlPath == null) {
+                throw new MotuException(
+                        ErrorType.BAD_PARAMETERS,
+                        "Parameter " + MotuRequestParametersConstant.PARAM_DATA + " value " + locationData + " does not exists.");
+            }
             IBLLProductManager productManager = BLLManager.getInstance().getCatalogManager().getProductManager();
             currentProduct = productManager.getProductFromLocation(catalogName, urlPath);
         } else {
@@ -117,42 +149,31 @@ public class DescribeProductAction extends AbstractProductInfoAction {
         return currentProduct;
     }
 
-    @Override
-    protected boolean hasProductIdentifier() throws MotuException {
-        boolean hasproductIdentifier = true;
+    protected String hasProductIdentifier() throws MotuException {
         String productId = getProductId();
         String locationData = CommonHTTPParameters.getDataFromParameter(getRequest());
         String serviceName = getServiceHTTPParameterValidator().getParameterValueValidated();
-        try {
-            if (StringUtils.isNullOrEmpty(locationData) && StringUtils.isNullOrEmpty(productId)) {
-                getResponse().sendError(400,
-                                        String.format("ERROR: neither '%s' nor '%s' parameters are filled - Choose one of them",
-                                                      MotuRequestParametersConstant.PARAM_DATA,
-                                                      MotuRequestParametersConstant.PARAM_PRODUCT));
-                hasproductIdentifier = false;
+        String hasProductIdentifierErrMsg = null;
+        if (StringUtils.isNullOrEmpty(locationData) && StringUtils.isNullOrEmpty(productId)) {
+            hasProductIdentifierErrMsg = String.format("ERROR: Parameter '%s' or '%s' has to be set",
+                                                       MotuRequestParametersConstant.PARAM_DATA,
+                                                       MotuRequestParametersConstant.PARAM_PRODUCT);
 
-            }
-
-            if (!StringUtils.isNullOrEmpty(locationData) && !StringUtils.isNullOrEmpty(productId)) {
-                getResponse().sendError(400,
-                                        String.format("ERROR: '%s' and '%s' parameters are not compatible - Choose only one of them",
-                                                      MotuRequestParametersConstant.PARAM_DATA,
-                                                      MotuRequestParametersConstant.PARAM_PRODUCT));
-                hasproductIdentifier = false;
-            }
-
-            if (AbstractHTTPParameterValidator.EMPTY_VALUE.equals(serviceName) && !StringUtils.isNullOrEmpty(productId)) {
-                getResponse().sendError(400,
-                                        String.format("ERROR: '%s' parameter is filled but '%s' is empty. You have to fill it.",
-                                                      MotuRequestParametersConstant.PARAM_PRODUCT,
-                                                      MotuRequestParametersConstant.PARAM_SERVICE));
-                hasproductIdentifier = false;
-            }
-        } catch (IOException e) {
-            throw new MotuException(ErrorType.SYSTEM, e);
         }
 
-        return hasproductIdentifier;
+        if (!StringUtils.isNullOrEmpty(locationData) && !StringUtils.isNullOrEmpty(productId)) {
+            hasProductIdentifierErrMsg = String.format("ERROR: Parameters '%s' and '%s' are not compatible - Set only one of them",
+                                                       MotuRequestParametersConstant.PARAM_DATA,
+                                                       MotuRequestParametersConstant.PARAM_PRODUCT);
+        }
+
+        if (AbstractHTTPParameterValidator.EMPTY_VALUE.equals(serviceName) && !StringUtils.isNullOrEmpty(productId)) {
+            hasProductIdentifierErrMsg = String.format("ERROR: '%s' parameter is present but '%s' is empty. You have to set it.",
+                                                       MotuRequestParametersConstant.PARAM_PRODUCT,
+                                                       MotuRequestParametersConstant.PARAM_SERVICE);
+        }
+
+        return hasProductIdentifierErrMsg;
     }
 
     /**
@@ -169,7 +190,7 @@ public class DescribeProductAction extends AbstractProductInfoAction {
     @Override
     protected String getProductId() throws MotuException {
         String paramId = getProductHTTPParameterValidator().getParameterValueValidated();
-        String serviceName = CommonHTTPParameters.getServiceFromRequest(getRequest());
+        String serviceName = getServiceHTTPParameterValidator().getParameterValueValidated();
 
         if (!AbstractHTTPParameterValidator.EMPTY_VALUE.equals(paramId)) {
             if ((StringUtils.isNullOrEmpty(serviceName)) || (StringUtils.isNullOrEmpty(paramId))) {

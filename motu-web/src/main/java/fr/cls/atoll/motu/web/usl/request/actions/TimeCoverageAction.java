@@ -68,12 +68,51 @@ public class TimeCoverageAction extends AbstractProductInfoAction {
     @Override
     protected void checkHTTPParameters() throws InvalidHTTPParameterException {
         super.checkHTTPParameters();
+        serviceHTTPParameterValidator.validate();
+        productHTTPParameterValidator.validate();
+
+        try {
+            String hasProductIdentifierErrMsg = hasProductIdentifier();
+            if (hasProductIdentifierErrMsg != null) {
+                throw new InvalidHTTPParameterException(hasProductIdentifierErrMsg, null, null, null);
+            }
+        } catch (MotuException e) {
+            LOGGER.error("Error while calling hasProductIdentifier", e);
+        }
+    }
+
+    protected String hasProductIdentifier() throws MotuException {
+        String productId = getProductId();
+        String locationData = CommonHTTPParameters.getDataFromParameter(getRequest());
+        String serviceName = serviceHTTPParameterValidator.getParameterValueValidated();
+        String hasProductIdentifierErrMsg = null;
+        if (StringUtils.isNullOrEmpty(locationData) && StringUtils.isNullOrEmpty(productId)) {
+            hasProductIdentifierErrMsg = String.format("ERROR: neither '%s' nor '%s' parameters are filled - Choose one of them",
+                                                       MotuRequestParametersConstant.PARAM_DATA,
+                                                       MotuRequestParametersConstant.PARAM_PRODUCT);
+
+        }
+
+        if (!StringUtils.isNullOrEmpty(locationData) && !StringUtils.isNullOrEmpty(productId)) {
+            hasProductIdentifierErrMsg = String.format("ERROR: '%s' and '%s' parameters are not compatible - Choose only one of them",
+                                                       MotuRequestParametersConstant.PARAM_DATA,
+                                                       MotuRequestParametersConstant.PARAM_PRODUCT);
+        }
+
+        if (AbstractHTTPParameterValidator.EMPTY_VALUE.equals(serviceName) && !StringUtils.isNullOrEmpty(productId)) {
+            hasProductIdentifierErrMsg = String.format("ERROR: '%s' parameter is filled but '%s' is empty. You have to fill it.",
+                                                       MotuRequestParametersConstant.PARAM_PRODUCT,
+                                                       MotuRequestParametersConstant.PARAM_SERVICE);
+        }
+
+        return hasProductIdentifierErrMsg;
     }
 
     /** {@inheritDoc} */
     @Override
     protected void process() throws MotuException {
-        if (hasProductIdentifier()) {
+        String hasProductIdentifierErrMsg = hasProductIdentifier();
+        if (hasProductIdentifierErrMsg == null) {
             TimeCoverage timeCoverage;
             try {
                 Product product = getProduct();
@@ -86,6 +125,8 @@ public class TimeCoverageAction extends AbstractProductInfoAction {
             } catch (MotuExceptionBase | JAXBException | IOException e) {
                 throw new MotuException(ErrorType.SYSTEM, e);
             }
+        } else {
+            throw new MotuException(ErrorType.BAD_PARAMETERS, new InvalidHTTPParameterException(hasProductIdentifierErrMsg, null, null, null));
         }
     }
 

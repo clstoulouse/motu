@@ -76,6 +76,7 @@ public abstract class AbstractProductInfoAction extends AbstractAction {
                 CommonHTTPParameters.getServiceFromRequest(getRequest()),
                 AbstractHTTPParameterValidator.EMPTY_VALUE);
         serviceHTTPParameterValidator.setOptional(true);
+
         productHTTPParameterValidator = new ProductHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_PRODUCT,
                 CommonHTTPParameters.getProductFromRequest(getRequest()),
@@ -96,43 +97,6 @@ public abstract class AbstractProductInfoAction extends AbstractAction {
     protected void checkHTTPParameters() throws InvalidHTTPParameterException {
         serviceHTTPParameterValidator.validate();
         productHTTPParameterValidator.validate();
-    }
-
-    protected boolean hasProductIdentifier() throws MotuException {
-        boolean hasproductIdentifier = true;
-        String productId = getProductId();
-        String locationData = CommonHTTPParameters.getDataFromParameter(getRequest());
-        String serviceName = serviceHTTPParameterValidator.getParameterValueValidated();
-        try {
-            if (StringUtils.isNullOrEmpty(locationData) && StringUtils.isNullOrEmpty(productId)) {
-                getResponse().sendError(400,
-                                        String.format("ERROR: neither '%s' nor '%s' parameters are filled - Choose one of them",
-                                                      MotuRequestParametersConstant.PARAM_DATA,
-                                                      MotuRequestParametersConstant.PARAM_PRODUCT));
-                hasproductIdentifier = false;
-
-            }
-
-            if (!StringUtils.isNullOrEmpty(locationData) && !StringUtils.isNullOrEmpty(productId)) {
-                getResponse().sendError(400,
-                                        String.format("ERROR: '%s' and '%s' parameters are not compatible - Choose only one of them",
-                                                      MotuRequestParametersConstant.PARAM_DATA,
-                                                      MotuRequestParametersConstant.PARAM_PRODUCT));
-                hasproductIdentifier = false;
-            }
-
-            if (AbstractHTTPParameterValidator.EMPTY_VALUE.equals(serviceName) && !StringUtils.isNullOrEmpty(productId)) {
-                getResponse().sendError(400,
-                                        String.format("ERROR: '%s' parameter is filled but '%s' is empty. You have to fill it.",
-                                                      MotuRequestParametersConstant.PARAM_PRODUCT,
-                                                      MotuRequestParametersConstant.PARAM_SERVICE));
-                hasproductIdentifier = false;
-            }
-        } catch (IOException e) {
-            throw new MotuException(ErrorType.SYSTEM, e);
-        }
-
-        return hasproductIdentifier;
     }
 
     /** {@inheritDoc} */

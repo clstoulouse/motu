@@ -265,6 +265,10 @@ ${project.name} - v. ${project.version}
 
 	<!-- %26 is the & encoding -->
 	<error-page>
+		<error-code>400</error-code>
+		<location>/Motu?action=httperror%26code=400</location>
+	</error-page>
+	<error-page>
 		<error-code>403</error-code>
 		<location>/Motu?action=httperror%26code=403</location>
 	</error-page>
@@ -273,7 +277,7 @@ ${project.name} - v. ${project.version}
 		<location>/Motu?action=httperror%26code=404</location>
 	</error-page>
     <error-page>
-		<location>/Motu?action=httperror%26code=404</location>
+		<location>/Motu?action=httperror%26code=000</location>
 	</error-page>
 	
 	<welcome-file-list>

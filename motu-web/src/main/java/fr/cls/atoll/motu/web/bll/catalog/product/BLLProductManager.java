@@ -96,9 +96,7 @@ public class BLLProductManager implements IBLLProductManager {
         Pattern pattern = Pattern.compile(patternExpression);
         Matcher matcher = pattern.matcher(locationData);
 
-        matcher.find();
-
-        return matcher.group(matcher.groupCount());
+        return matcher.find() ? matcher.group(matcher.groupCount()) : null;
     }
 
     @Override
