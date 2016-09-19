@@ -25,7 +25,6 @@ import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.request.actions.AboutAction;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DebugAction;
-import fr.cls.atoll.motu.web.usl.request.actions.DeleteAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DescribeCoverageAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DescribeProductAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DownloadProductAction;
@@ -124,9 +123,6 @@ public class USLRequestManager implements IUSLRequestManager {
             break;
         case LogoutAction.ACTION_NAME:
             actionInst = new LogoutAction("008", request, response, getSession(request));
-            break;
-        case DeleteAction.ACTION_NAME:
-            actionInst = new DeleteAction("009", request, response, getSession(request));
             break;
         case DownloadProductAction.ACTION_NAME:
             actionInst = new DownloadProductAction("010", request, response, getSession(request));

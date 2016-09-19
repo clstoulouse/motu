@@ -47,7 +47,7 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
   * [Log Errors](#LogCodeErrors)
      * [Action codes](#LogCodeErrorsActionCode)  
      * [Error types](#LogCodeErrorsErrorType)  
-* [Motu clients](#Clients)
+* [Motu clients & API](#ClientsAPI)
   
 #<a name="Overview">Overview</a>
 Motu is a robust web server allowing the distribution of met/ocean gridded data files through the web. 
@@ -657,7 +657,7 @@ It so enable to server http://resources.myocean.eu/motu/css/motu/motu.css
 In minutes, oldest result files from extraction request are deleted. This check is done each "runCleanInterval" minutes.    
 Default = 60min
 
-##### cleanRequestInterval
+##### <a name="BScleanRequestInterval">cleanRequestInterval</a>
 In minutes, oldest status than this time are removed from Motu. This check is done each "runCleanInterval" minutes.  
 Default = 60min
 
@@ -668,7 +668,7 @@ A clean process does:
 * delete files inside java.io.tmpdir
 * delete all files found in extractionFolder bigger than extractionFileCacheSize is Mb
 * delete all files found in extractionFolder oldest than cleanExtractionFileInterval minutes
-* remove all status oldest than cleanRequestInterval minutes
+* remove all status oldest than [cleanRequestInterval](#BScleanRequestInterval) minutes
 
 Default = 1min
 
@@ -1143,7 +1143,6 @@ The Action Code		=>	A number matching the HTTP request with the action parameter
 006		=>	DESCRIBE\_PRODUCT\_ACTION       
 007		=>	TIME\_COVERAGE\_ACTION          
 008		=>	LOGOUT\_ACTION                 
-009		=>	DELETE\_ACTION                 
 010		=>	DOWNLOAD\_PRODUCT\_ACTION       
 011		=>	LIST\_CATALOG\_ACTION           
 012		=>	PRODUCT\_METADATA\_ACTION       
@@ -1189,7 +1188,58 @@ The Error Type Code	=>	A number defining a specific error on the server.
 31		=>	The request cut the ante meridian. In this case, it's not possible to request more than one depth. It's necessary to change the depth selection and to select in the "from" and the "to" the values that have the same index into the depth list.
 32      =>  Due to a known bug in Thredds Data Server, a request cannot be satisfied wit netCDF4. User has to request a netCDF3 output file.
   
-#<a name="Clients">Motu clients</a>  
-You can connect to Motu by using a web browser or a [Python client](https://github.com/clstoulouse/motu-client-python).
+#<a name="ClientsAPI">Motu clients & API</a>  
 
+You can connect to Motu by using a web browser or a client.
+
+## <a name="ClientPython">Python client</a> 
+Motu offers an easy to use [Python client](https://github.com/clstoulouse/motu-client-python).
+
+## <a name="ClientAPI">MOTU REST API</a> 
+__MOTU REST API__ lets you use Motu server services.  
+All URLs have always the same pattern: http://motuServer/${context}/Motu?action=$actionName  
+__$actionName__ is an action in the list below:
+Other parameters are used. They are described with their cardinality [x,y].  
+
+* [0,1] is an optional parameter.   
+* [1] is a mandatory parameter.  
+* [0,n] is an optional parameter which can be set several times.  
+* [1,n] is a mandatory parameter which can be set several times.  
+
+
+  
+__Summary of all actions:__   
+  
+* [About](#ClientAPI_About>) 
+* [Debug](#ClientAPI_Debug>) 
+
+ 
+### <a name="ClientAPI_About">About</a>  
+Display version of the archives installed on Motu server  
+__URL__: http://localhost:8080/motu-web/Motu?action=about  
+__Parameters__: No parameter.  
+__Return__: An HTML page:  
+Example:  
+```
+Motu-products: 3.0  
+Motu-distribution: 2.6.00-SNAPSHOT  
+Motu-configuration: 2.6.00-SNAPSHOT-20160623173246403  
+Motu-static-files (Graphic chart): 3.0.00-RC1-20160914162955422  
+```
+
+### <a name="ClientAPI_Debug">Debug</a>  
+Display all requests status managed by Motu server in the last [cleanRequestInterval](#BScleanRequestInterval] minutes
+__URL__: http://localhost:8080/motu-web/Motu?action=debug  
+__Parameters__:  
+* __order__ [0-1]: Change the order of items INPROGRESS,PENDING,ERROR,DONE. All items shall be set.  
+example: http://localhost:8080/motu-web/Motu?action=Debug&order=DONE,ERROR,PENDING,INPROGRESS  
+Without this parameter, default order is: INPROGRESS,PENDING,ERROR,DONE  
+__Return__: Display all requests  
+Example:  
+```
+Motu-products: 3.0  
+Motu-distribution: 2.6.00-SNAPSHOT  
+Motu-configuration: 2.6.00-SNAPSHOT-20160623173246403  
+Motu-static-files (Graphic chart): 3.0.00-RC1-20160914162955422  
+```
 
