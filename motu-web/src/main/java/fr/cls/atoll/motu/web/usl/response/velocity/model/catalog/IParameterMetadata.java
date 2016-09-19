@@ -12,6 +12,8 @@ package fr.cls.atoll.motu.web.usl.response.velocity.model.catalog;
  */
 public interface IParameterMetadata {
 
+    String getId();
+
     String getName();
 
     String getLabel();

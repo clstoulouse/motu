@@ -44,6 +44,10 @@ public interface IProductMetadata {
 
     String getEndTimeCoverageAsUTCString();
 
+    String getTimeAxisMinValueAsUTCString(String datePattern);
+
+    String getTimeAxisMaxValueAsUTCString(String datePattern);
+
     String getLastUpdate();
 
     boolean hasLatLonAxis();

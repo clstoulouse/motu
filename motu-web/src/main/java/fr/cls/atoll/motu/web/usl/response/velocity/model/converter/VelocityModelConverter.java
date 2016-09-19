@@ -857,6 +857,26 @@ public class VelocityModelConverter {
             public String getGeoYAxisMaxValue() {
                 return Double.toString(productMetaData_.getGeoYAxisMaxValue());
             }
+
+            @Override
+            public String getTimeAxisMinValueAsUTCString(String datePattern) {
+                try {
+                    return productMetaData_.getTimeAxisMinValueAsUTCString(datePattern);
+                } catch (Exception e) {
+                    LOGGER.error("Converting Product metadata to be used in Velocity", e);
+                }
+                return "";
+            }
+
+            @Override
+            public String getTimeAxisMaxValueAsUTCString(String datePattern) {
+                try {
+                    return productMetaData_.getTimeAxisMaxValueAsUTCString(datePattern);
+                } catch (Exception e) {
+                    LOGGER.error("Converting Product metadata to be used in Velocity", e);
+                }
+                return "";
+            }
         };
     }
 
@@ -919,6 +939,11 @@ public class VelocityModelConverter {
             @Override
             public String getDimensionsAsString() {
                 return pmd.getDimensionsAsString();
+            }
+
+            @Override
+            public String getId() {
+                return pmd.getId();
             }
 
         };

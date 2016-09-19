@@ -721,7 +721,7 @@ Proxy settings are not used on Motu:
 
 #### <a name="BSconfigService">Attributes defined in configService node</a>
 
-##### name
+##### <a name="BSconfigServiceName">name</a>
 String to set the config service name
 
 ##### group
@@ -759,7 +759,7 @@ Optional, used to override [motuConfig httpBaseRef](#motuConfig-httpBaseRef) att
 
 #### Attributes defined in catalog node
 
-##### name
+##### <a name="BSconfigServiceDatasetName">name</a>
 This catalog name refers a TDS catalog name available from the URL: http://$ip:$port/thredds/m_HR_MOD.xml
 Example: m_HR_OBS.xml 
 
@@ -1210,8 +1210,9 @@ Other parameters are used. They are described with their cardinality [x,y].
   
 __Summary of all actions:__   
   
-* [About](#ClientAPI_About>) 
-* [Debug](#ClientAPI_Debug>) 
+* [About](#ClientAPI_About>)  
+* [Debug](#ClientAPI_Debug>)  
+* [Describe coverage](#ClientAPI_DescribeCoverage>)  
 
  
 ### <a name="ClientAPI_About">About</a>  
@@ -1234,12 +1235,16 @@ __Parameters__:
 * __order__ [0-1]: Change the order of items INPROGRESS,PENDING,ERROR,DONE. All items shall be set.  
 example: http://localhost:8080/motu-web/Motu?action=Debug&order=DONE,ERROR,PENDING,INPROGRESS  
 Without this parameter, default order is: INPROGRESS,PENDING,ERROR,DONE  
-__Return__: Display all requests  
-Example:  
-```
-Motu-products: 3.0  
-Motu-distribution: 2.6.00-SNAPSHOT  
-Motu-configuration: 2.6.00-SNAPSHOT-20160623173246403  
-Motu-static-files (Graphic chart): 3.0.00-RC1-20160914162955422  
+__Return__: An HTML page  
+
+### <a name="ClientAPI_DescribeCoverage">Describe coverage</a>  
+
+__URL__: http://localhost:8080/motu-web/Motu?action=describecoverage&service=HR_MOD-TDS&datasetID=HR_MOD  
+__Parameters__:  
+* __service__ [1]: The [service name](#BSconfigServiceName)
+* __datesetID__ [1]: The [dataset ID](#BSconfigServiceDatasetName)
+__Return__: An XML page 
 ```
 
+
+```
