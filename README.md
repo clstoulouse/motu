@@ -1196,7 +1196,7 @@ You can connect to Motu by using a web browser or a client.
 Motu offers an easy to use Python client. Very useful in machine to machine context, it enables to download data by running a python script. Project and all its documentation is available at [https://github.com/clstoulouse/motu-client-python](https://github.com/clstoulouse/motu-client-python).
   
   
-## <a name="ClientAPI">MOTU REST API</a>   
+## <a name="ClientRESTAPI">MOTU REST API</a>   
 __MOTU REST API__ lets you use Motu server services.  
 All URLs have always the same pattern: http://motuServer/${context}/Motu?action=$actionName  
 __$actionName__ is an action in the list below:
