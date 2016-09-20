@@ -47,7 +47,7 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
   * [Log Errors](#LogCodeErrors)
      * [Action codes](#LogCodeErrorsActionCode)  
      * [Error types](#LogCodeErrorsErrorType)  
-* [Motu clients & API](#ClientsAPI)
+* [Motu clients & REST API](#ClientsAPI)
   
 #<a name="Overview">Overview</a>
 Motu is a robust web server allowing the distribution of met/ocean gridded data files through the web. 
@@ -1188,12 +1188,12 @@ The Error Type Code	=>	A number defining a specific error on the server.
 31		=>	The request cut the ante meridian. In this case, it's not possible to request more than one depth. It's necessary to change the depth selection and to select in the "from" and the "to" the values that have the same index into the depth list.
 32      =>  Due to a known bug in Thredds Data Server, a request cannot be satisfied wit netCDF4. User has to request a netCDF3 output file.
   
-#<a name="ClientsAPI">Motu clients & API</a>  
+#<a name="ClientsAPI">Motu clients & REST API</a>  
 
 You can connect to Motu by using a web browser or a client.
 
 ## <a name="ClientPython">Python client</a> 
-Motu offers an easy to use [Python client](https://github.com/clstoulouse/motu-client-python).
+Motu offers an easy to use Python client. Very useful in machine to machine context, it enables to download data by running a python script. Project and all its documentation is available at [https://github.com/clstoulouse/motu-client-python](https://github.com/clstoulouse/motu-client-python).
   
   
 ## <a name="ClientAPI">MOTU REST API</a> 
@@ -1234,7 +1234,7 @@ __Summary of all actions:__
 Display version of the archives installed on Motu server  
 __URL__: http://localhost:8080/motu-web/Motu?action=about  
 __Parameters__: No parameter.  
-__Return__: An HTML page. Motu-static-files (Graphic chart) is refresh thanks to Ajax.   
+__Return__: An HTML page. Motu-static-files (Graphic chart) is refreshed thanks to Ajax because its version file can be installed on a distinct server.   
 Example:  
 ```
 Motu-products: 3.0  
@@ -1261,7 +1261,7 @@ __Parameters__:
 * __service__ [1]: The [service name](#BSconfigServiceName)  
 * __datesetID__ [1]: The [dataset ID](#BSconfigServiceDatasetName)  
 __Return__: A XML document  
-```   
+```
 <dataset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:noNamespaceSchemaLocation="describeDataset.xsd" name="HR_MOD" id="HR_MOD">  
 <boundingBox>  
   <lon min="-180.0" max="179.91668701171875" units="degrees_east"/>
@@ -1276,8 +1276,7 @@ __Return__: A XML document
 ...  
 </variables>  
 </dataset>  
-
-```  
+```
   
   
 ### <a name="ClientAPI_DescribeProduct">Describe product</a>  
@@ -1288,7 +1287,7 @@ There is 2 ways to call describe product, both returning a same response.
 #### Way 1   
   
 __URL__:   
-* http://localhost:8080/motu-web/Motu?action=describeproduct&service=serviceId&product=datasetId  
+* http://localhost:8080/motu-web/Motu?action=describeproduct&service=HR_MOD-TDS&product=HR_MOD
 __Parameters__:  
 * __service__ [1]: The [service name](#BSconfigServiceName)  
 * __product__ [1]: The product id  
@@ -1305,7 +1304,7 @@ __Parameters__:
   
 __Return__: An XML document  7
 
-```   
+```
 <productMetadataInfo code="OK" msg="OK" lastUpdate="Not Available" title="HR_MOD" id="HR_MOD">  
 <timeCoverage code="OK" msg="OK"/>  
 <availableTimes code="OK" msg="OK">  
@@ -1329,19 +1328,38 @@ __Return__: An XML document  7
 <axis code="OK" msg="OK" description="Depth" units="m" name="depth" upper="5727.9169921875" lower="0.4940249919891357421875" axisType="Height"/>  
 </dataGeospatialCoverage>  
 </productMetadataInfo>  
-```  
+```
 
 
  
 ### <a name="ClientAPI_DownloadProduct">Download product</a>  
 Request used to download a product  
-__URL__: http://localhost:8080/motu-web/Motu?action=productdownload 
-__Parameters__: TBD.  
-__Return__: Severals ways  
-Example:  
-```
+__URL__: http://localhost:8080/motu-web/Motu?action=productdownload  
+example:  
+http://localhost:8080/motu-web/Motu?action=productdownload&service=HR_MOD-TDS&product=HR_MOD&x_lo=-2&x_hi=2&y_lo=-2&y_hi=2&output=netcdf&t_lo=2016-06-12+12%3A00%3A00&t_hi=2016-06-12+12%3A00%3A00&z_lo=0.49&z_hi=5727.92
+__Parameters__:  
 
-```  
+* __service__ [1]: The [service name](#BSconfigServiceName)  
+* __product__ [1]: The product id  
+* __variable__ [0,n]: physical variables to be extracted from the product. When no variable is set, all the variables of the dataset are extracted.  
+* __y_lo__ [0,1]: low latitude of a geographic extraction. Default value is -90.  
+* __y_hi__ [0,1]: high latitude of a geographic extraction. Default value is 90.  
+* __x_lo__ [0,1]: low longitude of a geographic extraction. Default value is -180.  
+* __x_hi__ [0,1]: high longitude of a geographic extraction. Default value is 180.  
+* __z_lo__ [0,1]: low vertical depth . Default value is 0.  
+* __z_hi__ [0,1]: high vertical depth. Default value is 180.  
+* __t_lo__ [0,1]: Start date of a temporal extraction. If not set, the default value is the first date/time available for the dataset. Format is yyy-mm-dd or yyyy-dd h:m:s or yyyy-ddTh:m:s.  
+* __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is yyy-mm-dd or yyyy-dd h:m:s or yyyy-ddTh:m:s.  
+* __output__ [0,1]: netcdf. Due to a TDS issue, only netcdf is available. netcdf4 will be available as soon as TDS will have resolved its issue.
+* __mode__ [0,1]: Specify the desired result mode. Enumeration value from [url, console, status] represented as a string. If no mode, "url" value is the default mode.  
+
+   * mode=__url__: URL of the delivery file is directly returned in the HTTP response as an HTML web page. Then Javascript read this URL to download file. The request is processed in a synchronous mode.  
+   * mode=__console__: the response is a 302 HTTP redirection to the delivery file to be returned as a binary stream. The request is processed in a synchronous mode.  
+   * mode=__status__: request is submitted and the status of the request processing is immediately returned.  The request is processed in an asynchronous mode.  
+   Web Portal submits the request to the Dissemination Unit Subsetter and gets an immediate response of the Subsetter. This response contains the identifier and the status of the order (pending, in progress, done, error).   So long as the order is not completed (done or error), Web Portal requests the status of the order at regular and fair intervals (> 5 seconds) and gets an immediate response. When the status is “done”, Web Portal retrieves the url of the file to download, from the status response. Then Web Portal redirects response to this url. The Web Browser opens a binary stream of the file to download and shows a dialog box to allow the user saving it as a local file.  
+
+__Return__: Severals ways depending of the selected http parameter mode.  
+
 
 
  
@@ -1355,7 +1373,8 @@ Validated by the schema /motu-api-message/src/main/schema/XmlMessageModel.xsd#St
 Example:  
 ```
 <statusModeResponse code="004-0" msg="" scriptVersion="" userHost="" userId="" dateSubmit="2016-09-19T16:56:22.184Z" localUri="/$pathTo/HR_MOD_1474304182183.nc" remoteUri="http://localhost:8080/motu/deliveries/HR_MOD_1474304182183.nc" size="1152.0"dateProc="2016-09-19T16:56:22.566Z" requestId="1474304182183" status="1"/>
-```  
+```
+  
 Size is in MegaBits.
 
 
@@ -1365,7 +1384,19 @@ Size is in MegaBits.
 Get the size of a download request.  
 __URL__: http://localhost:8080/motu-web/Motu?action=getsize
 __Parameters__:  
-Parameters are exactly the same as for [Download product](#ClientAPI_DownloadProduct)  
+Parameters below are exactly the same as for [Download product](#ClientAPI_DownloadProduct)  
+* __service__ [1]: The [service name](#BSconfigServiceName)  
+* __product__ [1]: The product id  
+* __variable__ [0,n]: physical variables to be extracted from the product. When no variable is set, all the variables of the dataset are extracted.  
+* __y_lo__ [0,1]: low latitude of a geographic extraction. Default value is -90.  
+* __y_hi__ [0,1]: high latitude of a geographic extraction. Default value is 90.  
+* __x_lo__ [0,1]: low longitude of a geographic extraction. Default value is -180.  
+* __x_hi__ [0,1]: high longitude of a geographic extraction. Default value is 180.  
+* __z_lo__ [0,1]: low vertical depth . Default value is 0.  
+* __z_hi__ [0,1]: high vertical depth. Default value is 180.  
+* __t_lo__ [0,1]: Start date of a temporal extraction. If not set, the default value is the first date/time available for the dataset. Format is yyy-mm-dd or yyyy-dd h:m:s or yyyy-ddTh:m:s.  
+* __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is yyy-mm-dd or yyyy-dd h:m:s or yyyy-ddTh:m:s.  
+  
 __Return__: An XML document.    
 Validated by the schema /motu-api-message/src/main/schema/XmlMessageModel.xsd#RequestSize  
 Example:  

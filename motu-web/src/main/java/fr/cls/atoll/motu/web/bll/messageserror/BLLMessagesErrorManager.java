@@ -22,17 +22,17 @@ public class BLLMessagesErrorManager implements IBLLMessagesErrorManager {
      * @throws MotuException
      */
     @Override
-    public String getMessageError(ErrorType errorCode) throws MotuException {
+    public String getMessageError(ErrorType errorCode) {
         return getMessageError(errorCode, new Object[0]);
     }
 
     @Override
-    public String getMessageError(ErrorType errorCode, Exception e) throws MotuException {
+    public String getMessageError(ErrorType errorCode, Exception e) {
         return DALManager.getInstance().getMessagesErrorManager().getMessageError(errorCode, e);
     }
 
     @Override
-    public String getMessageError(ErrorType errorCode, Object... messageArguments) throws MotuException {
+    public String getMessageError(ErrorType errorCode, Object... messageArguments) {
         return DALManager.getInstance().getMessagesErrorManager().getMessageError(errorCode, messageArguments);
     }
 }

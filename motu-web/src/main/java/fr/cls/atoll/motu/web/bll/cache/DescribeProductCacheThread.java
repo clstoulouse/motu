@@ -33,7 +33,6 @@ import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.web.bll.messageserror.BLLMessagesErrorManager;
 import fr.cls.atoll.motu.web.common.thread.StoppableDaemonThread;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
@@ -289,17 +288,11 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
             axis.setCode(String.valueOf(ErrorType.OK));
             axis.setMsg(ErrorType.OK.toString());
         } catch (Exception e) {
-            try {
-                axis.setCode(String.valueOf(ErrorType.SYSTEM));
-                axis.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(ErrorType.SYSTEM));
-                LOGGER.error(StringUtils.getLogMessage(ErrorType.SYSTEM,
-                                                       "Error while getting geospatial coverage (axes) from TDS dataset: " + e.getMessage()
-                                                               + ". Please, check your dataset"));
-            } catch (MotuException e1) {
-                axis.setCode(String.valueOf(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
-                axis.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
-                LOGGER.error(StringUtils.getLogMessage(BLLMessagesErrorManager.SYSTEM_ERROR_CODE, e.getMessage()), e);
-            }
+            axis.setCode(String.valueOf(ErrorType.SYSTEM));
+            axis.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(ErrorType.SYSTEM));
+            LOGGER.error(StringUtils.getLogMessage(ErrorType.SYSTEM,
+                                                   "Error while getting geospatial coverage (axes) from TDS dataset: " + e.getMessage()
+                                                           + ". Please, check your dataset"));
         }
 
         return axis;
@@ -798,17 +791,11 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
             geospatialCoverage.setCode(String.valueOf(ErrorType.OK));
             geospatialCoverage.setMsg(ErrorType.OK.toString());
         } catch (Exception e) {
-            try {
-                geospatialCoverage.setCode(String.valueOf(ErrorType.SYSTEM));
-                geospatialCoverage.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(ErrorType.SYSTEM));
-                LOGGER.error(StringUtils.getLogMessage(ErrorType.SYSTEM,
-                                                       "Error while getting geospatial coverage (N/S, E/W) from TDS configuration file: "
-                                                               + e.getMessage() + ". Please, check your configuration file"));
-            } catch (MotuException e1) {
-                geospatialCoverage.setCode(String.valueOf(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
-                geospatialCoverage.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
-                LOGGER.error(StringUtils.getLogMessage(BLLMessagesErrorManager.SYSTEM_ERROR_CODE, e.getMessage()), e);
-            }
+            geospatialCoverage.setCode(String.valueOf(ErrorType.SYSTEM));
+            geospatialCoverage.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(ErrorType.SYSTEM));
+            LOGGER.error(StringUtils.getLogMessage(ErrorType.SYSTEM,
+                                                   "Error while getting geospatial coverage (N/S, E/W) from TDS configuration file: " + e.getMessage()
+                                                           + ". Please, check your configuration file"));
         }
 
         return geospatialCoverage;

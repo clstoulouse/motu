@@ -17,9 +17,12 @@ import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.session.SessionManager;
 
 /**
@@ -279,6 +282,27 @@ public abstract class AbstractAction {
             parameterStr.append(" ");
         }
         parameters = parameterStr.toString();
+    }
+
+    protected boolean checkProduct(Product p, String productId) throws MotuException {
+        boolean isValid = (p != null);
+        if (!isValid) {
+            onArgumentError(new MotuException(ErrorType.UNKNOWN_PRODUCT, productId));
+        }
+        return isValid;
+    }
+
+    protected boolean checkConfigService(ConfigService cs, ServiceHTTPParameterValidator serviceHTTPParameterValidator) throws MotuException {
+        boolean isValid = (cs != null);
+        if (!isValid) {
+            onArgumentError(new MotuException(ErrorType.UNKNOWN_SERVICE, serviceHTTPParameterValidator.getParameterValue()));
+        }
+        return isValid;
+
+    }
+
+    protected void onArgumentError(MotuException motuException) throws MotuException {
+        throw motuException;
     }
 
 }

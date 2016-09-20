@@ -113,11 +113,13 @@ public class DescribeProductAction extends AbstractProductInfoAction {
             ProductMetadataInfo pmdi = null;
             try {
                 Product currentProduct = getProduct();
-                pmdi = BLLManager.getInstance().getDescribeProductCacheManager().getDescribeProduct(currentProduct.getProductId());
+                if (checkProduct(currentProduct, getProductId())) {
+                    pmdi = BLLManager.getInstance().getDescribeProductCacheManager().getDescribeProduct(currentProduct.getProductId());
 
-                marshallProductMetadata(pmdi, getResponse().getWriter());
+                    marshallProductMetadata(pmdi, getResponse().getWriter());
 
-                getResponse().setContentType(null);
+                    getResponse().setContentType(null);
+                }
             } catch (MotuExceptionBase | JAXBException | IOException e) {
                 throw new MotuException(ErrorType.SYSTEM, e);
             }

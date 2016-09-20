@@ -75,11 +75,11 @@ public class ProductMetadataAction extends AbstractAuthorizedAction {
         MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
         String service = serviceHTTPParameterValidator.getParameterValueValidated();
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(service);
-        if (cs != null) {
+        if (checkConfigService(cs, serviceHTTPParameterValidator)) {
             CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
             String productId = productHTTPParameterValidator.getParameterValueValidated();
             Product p = cd.getProducts().get(productId);
-            if (p != null) {
+            if (checkProduct(p, productId)) {
                 ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
                         .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(p), productId, p.getLocationData());
                 if (pmd != null) {
@@ -87,11 +87,7 @@ public class ProductMetadataAction extends AbstractAuthorizedAction {
                 }
 
                 writeResponseWithVelocity(mc, cs, cd, p);
-            } else {
-                throw new MotuException(ErrorType.UNKNOWN_PRODUCT, "Product '" + productId + "' is unknown.");
             }
-        } else {
-            throw new MotuException(ErrorType.UNKNOWN_SERVICE, "Service '" + service + "' is unknown.");
         }
     }
 

@@ -73,16 +73,19 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
     public void process() throws MotuException {
         MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
-        CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
-        String productId = productHTTPParameterValidator.getParameterValueValidated();
-        Product p = cd.getProducts().get(productId);
-        ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
-                .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(p), productId, p.getLocationData());
-        if (pmd != null) {
-            p.setProductMetaData(pmd);
+        if (checkConfigService(cs, serviceHTTPParameterValidator)) {
+            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
+            String productId = productHTTPParameterValidator.getParameterValueValidated();
+            Product p = cd.getProducts().get(productId);
+            if (checkProduct(p, productId)) {
+                ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
+                        .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(p), productId, p.getLocationData());
+                if (pmd != null) {
+                    p.setProductMetaData(pmd);
+                }
+                writeResponseWithVelocity(mc, cs, cd, p);
+            }
         }
-
-        writeResponseWithVelocity(mc, cs, cd, p);
     }
 
     private void writeResponseWithVelocity(MotuConfig mc_, ConfigService cs_, CatalogData cd, Product p) throws MotuException {

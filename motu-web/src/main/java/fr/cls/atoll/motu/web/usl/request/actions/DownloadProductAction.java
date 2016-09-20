@@ -23,7 +23,6 @@ import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.api.utils.JAXBWriter;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.messageserror.BLLMessagesErrorManager;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
@@ -186,27 +185,38 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     public void process() throws MotuException {
         MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
-        if (cs == null) {
-            onArgumentError(new MotuException(ErrorType.UNKNOWN_SERVICE, serviceHTTPParameterValidator.getParameterValue()));
-        } else {
+        if (checkConfigService(cs, serviceHTTPParameterValidator)) {
             CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
             String productId = productHTTPParameterValidator.getParameterValueValidated();
             Product p = cd.getProducts().get(productId);
-            if (p == null) {
-                onArgumentError(new MotuException(ErrorType.UNKNOWN_PRODUCT, productId));
-            } else {
+            if (checkProduct(p, productId)) {
                 downloadProduct(mc, cs, cd, productId, p);
             }
         }
     }
 
-    private void onArgumentError(MotuException motuException) throws MotuException {
+    @Override
+    protected void onArgumentError(MotuException motuException) throws MotuException {
         getResponse().setContentType(CONTENT_TYPE_XML);
         try {
             JAXBWriter.getInstance().write(createStatusModeResponseInError(motuException), getResponse().getWriter());
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "JAXB error while writing createStatusModeResponse: ", e);
         }
+    }
+
+    private StatusModeResponse createStatusModeResponseInError(MotuException motuException) throws MotuException {
+        ObjectFactory objectFactory = new ObjectFactory();
+        StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
+        statusModeResponse.setCode(StringUtils.getErrorCode(getActionCode(), ErrorType.OK));
+        statusModeResponse.setStatus(StatusModeType.ERROR);
+        statusModeResponse.setMsg(StringUtils.getLogMessage(getActionCode(),
+                                                            motuException.getErrorType(),
+                                                            BLLManager.getInstance().getMessagesErrorManager()
+                                                                    .getMessageError(motuException.getErrorType(), motuException.getMessage())));
+        statusModeResponse.setRequestId(-1L);
+        statusModeResponse.setScriptVersion(scriptVersionParameterValidator.getParameterValueValidated());
+        return statusModeResponse;
     }
 
     /**
@@ -259,32 +269,21 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         }
     }
 
-    private void setProductException(Product p, MotuException runningException) {
-        try {
-            ErrorType errorType = runningException.getErrorType();
-            String errMsg = StringUtils
-                    .getLogMessage(getActionCode(),
-                                   errorType,
-                                   BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, runningException));
-            if (outputFormatParameterValidator.getParameterValueValidated().equalsIgnoreCase(OutputFormat.NETCDF4.name())) {
-                errMsg = StringUtils.getLogMessage(getActionCode(),
-                                                   errorType,
-                                                   " (" + OutputFormat.NETCDF4.name() + " - "
-                                                           + StringUtils.getErrorCode(getActionCode(), ErrorType.NETCDF4_NOT_SUPPORTED_BY_TDS) + ") "
-                                                           + BLLManager.getInstance().getMessagesErrorManager()
-                                                                   .getMessageError(ErrorType.NETCDF4_NOT_SUPPORTED_BY_TDS, runningException));
-            }
-            p.setLastError(errMsg);
-            LOGGER.error(StringUtils.getLogMessage(getActionCode(), errorType, runningException.getMessage()), runningException);
-        } catch (MotuException errorMessageException) {
-            p.setLastError(StringUtils.getLogMessage(getActionCode(),
-                                                     BLLMessagesErrorManager.SYSTEM_ERROR_CODE,
-                                                     StringUtils.getLogMessage(getActionCode(),
-                                                                               BLLMessagesErrorManager.SYSTEM_ERROR_CODE,
-                                                                               BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE)));
-            LOGGER.error(StringUtils.getLogMessage(getActionCode(), BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
-                         errorMessageException);
+    private void setProductException(Product p, MotuException runningException) throws MotuException {
+        ErrorType errorType = runningException.getErrorType();
+        String errMsg = StringUtils.getLogMessage(getActionCode(),
+                                                  errorType,
+                                                  BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, runningException));
+        if (outputFormatParameterValidator.getParameterValueValidated().equalsIgnoreCase(OutputFormat.NETCDF4.name())) {
+            errMsg = StringUtils.getLogMessage(getActionCode(),
+                                               errorType,
+                                               " (" + OutputFormat.NETCDF4.name() + " - "
+                                                       + StringUtils.getErrorCode(getActionCode(), ErrorType.NETCDF4_NOT_SUPPORTED_BY_TDS) + ") "
+                                                       + BLLManager.getInstance().getMessagesErrorManager()
+                                                               .getMessageError(ErrorType.NETCDF4_NOT_SUPPORTED_BY_TDS, runningException));
         }
+        p.setLastError(errMsg);
+        LOGGER.error(StringUtils.getLogMessage(getActionCode(), errorType, runningException.getMessage()), runningException);
     }
 
     /**
@@ -327,20 +326,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         // Set assertion to manage CAS.
         extractionParameters.setAssertion(AssertionHolder.getAssertion());
         return extractionParameters;
-    }
-
-    private StatusModeResponse createStatusModeResponseInError(MotuException motuException) throws MotuException {
-        ObjectFactory objectFactory = new ObjectFactory();
-        StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
-        statusModeResponse.setCode(StringUtils.getErrorCode(getActionCode(), ErrorType.OK));
-        statusModeResponse.setStatus(StatusModeType.ERROR);
-        statusModeResponse.setMsg(StringUtils.getLogMessage(getActionCode(),
-                                                            motuException.getErrorType(),
-                                                            BLLManager.getInstance().getMessagesErrorManager()
-                                                                    .getMessageError(motuException.getErrorType(), motuException.getMessage())));
-        statusModeResponse.setRequestId(-1L);
-        statusModeResponse.setScriptVersion(scriptVersionParameterValidator.getParameterValueValidated());
-        return statusModeResponse;
     }
 
     private StatusModeResponse createStatusModeResponse(long requestId) {

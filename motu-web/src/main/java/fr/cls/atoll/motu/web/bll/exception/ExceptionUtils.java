@@ -49,7 +49,7 @@ public class ExceptionUtils {
             statusModeResponse.setMsg(getErrorMessage(errorType));
             statusModeResponse.setCode(StringUtils.getErrorCode(actionCode, errorType));
         } catch (MotuException errorMessageException) {
-            statusModeResponse.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            statusModeResponse.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             statusModeResponse.setCode(StringUtils.getErrorCode(actionCode, BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             LOGGER.error(StringUtils.getLogMessage(actionCode, BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
@@ -125,7 +125,7 @@ public class ExceptionUtils {
             requestSize.setMsg(getErrorMessage(errorType));
             requestSize.setCode(StringUtils.getErrorCode(actionCode, errorType));
         } catch (MotuException errorMessageException) {
-            requestSize.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            requestSize.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             requestSize.setCode(StringUtils.getErrorCode(actionCode, BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             LOGGER.error(StringUtils.getLogMessage(actionCode, BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
@@ -151,7 +151,7 @@ public class ExceptionUtils {
             statusModeResponse.setCode(StringUtils.getErrorCode(actionCode, errorType));
             LOGGER.error(StringUtils.getLogMessage(actionCode, errorType, message));
         } catch (MotuException errorMessageException) {
-            statusModeResponse.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            statusModeResponse.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             statusModeResponse.setCode(StringUtils.getErrorCode(actionCode, BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             LOGGER.error(StringUtils.getLogMessage(actionCode, BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
@@ -171,7 +171,7 @@ public class ExceptionUtils {
             timeCoverage.setMsg(getErrorMessage(errorType));
             timeCoverage.setCode(String.valueOf(errorType));
         } catch (MotuException errorMessageException) {
-            timeCoverage.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            timeCoverage.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             timeCoverage.setCode(String.valueOf(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             LOGGER.error(StringUtils.getLogMessage(BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
@@ -190,7 +190,7 @@ public class ExceptionUtils {
             timeCoverage.setMsg(getErrorMessage(errorType));
             timeCoverage.setCode(StringUtils.getErrorCode(actionCode, errorType));
         } catch (MotuException errorMessageException) {
-            timeCoverage.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            timeCoverage.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             timeCoverage.setCode(StringUtils.getErrorCode(actionCode, BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             LOGGER.error(StringUtils.getLogMessage(actionCode, BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
@@ -209,7 +209,7 @@ public class ExceptionUtils {
             productMetadataInfo.setMsg(getErrorMessage(errorType));
             productMetadataInfo.setCode(String.valueOf(errorType.value()));
         } catch (MotuException errorMessageException) {
-            productMetadataInfo.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            productMetadataInfo.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             productMetadataInfo.setCode(String.valueOf(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             LOGGER.error(StringUtils.getLogMessage(BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
@@ -228,7 +228,7 @@ public class ExceptionUtils {
             geospatialCoverage.setMsg(getErrorMessage(errorType));
             geospatialCoverage.setCode(String.valueOf(errorType));
         } catch (MotuException errorMessageException) {
-            geospatialCoverage.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            geospatialCoverage.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             geospatialCoverage.setCode(String.valueOf(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             LOGGER.error(StringUtils.getLogMessage(BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
@@ -247,7 +247,8 @@ public class ExceptionUtils {
             dataGeospatialCoverage.setMsg(getErrorMessage(errorType));
             dataGeospatialCoverage.setCode(String.valueOf(errorType));
         } catch (MotuException errorMessageException) {
-            dataGeospatialCoverage.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            dataGeospatialCoverage
+                    .setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             dataGeospatialCoverage.setCode(String.valueOf(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             LOGGER.error(StringUtils.getLogMessage(BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
@@ -266,7 +267,7 @@ public class ExceptionUtils {
             axis.setMsg(getErrorMessage(errorType));
             axis.setCode(String.valueOf(errorType));
         } catch (MotuException errorMessageException) {
-            axis.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            axis.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             axis.setCode(String.valueOf(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             LOGGER.error(StringUtils.getLogMessage(BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
@@ -285,7 +286,7 @@ public class ExceptionUtils {
             availableDepths.setMsg(getErrorMessage(errorType));
             availableDepths.setCode(String.valueOf(errorType));
         } catch (MotuException errorMessageException) {
-            availableDepths.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            availableDepths.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             availableDepths.setCode(String.valueOf(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             LOGGER.error(StringUtils.getLogMessage(BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
@@ -304,7 +305,7 @@ public class ExceptionUtils {
             properties.setMsg(getErrorMessage(errorType));
             properties.setCode(String.valueOf(errorType));
         } catch (MotuException errorMessageException) {
-            properties.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            properties.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             properties.setCode(String.valueOf(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             LOGGER.error(StringUtils.getLogMessage(BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
@@ -323,7 +324,7 @@ public class ExceptionUtils {
             property.setMsg(getErrorMessage(errorType));
             property.setCode(String.valueOf(errorType));
         } catch (MotuException errorMessageException) {
-            property.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            property.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             property.setCode(String.valueOf(IBLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             LOGGER.error(StringUtils.getLogMessage(BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
@@ -342,7 +343,7 @@ public class ExceptionUtils {
             variablesVocabulary.setMsg(getErrorMessage(errorType));
             variablesVocabulary.setCode(String.valueOf(errorType));
         } catch (MotuException errorMessageException) {
-            variablesVocabulary.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            variablesVocabulary.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             variablesVocabulary.setCode(String.valueOf(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             LOGGER.error(StringUtils.getLogMessage(BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
@@ -361,7 +362,7 @@ public class ExceptionUtils {
             variableVocabulary.setMsg(getErrorMessage(errorType));
             variableVocabulary.setCode(String.valueOf(errorType));
         } catch (MotuException errorMessageException) {
-            variableVocabulary.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            variableVocabulary.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             variableVocabulary.setCode(String.valueOf(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             LOGGER.error(StringUtils.getLogMessage(BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
@@ -380,7 +381,7 @@ public class ExceptionUtils {
             variables.setMsg(getErrorMessage(errorType));
             variables.setCode(String.valueOf(errorType));
         } catch (MotuException errorMessageException) {
-            variables.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            variables.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             variables.setCode(String.valueOf(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             LOGGER.error(StringUtils.getLogMessage(BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
@@ -399,7 +400,7 @@ public class ExceptionUtils {
             variable.setMsg(getErrorMessage(errorType));
             variable.setCode(String.valueOf(errorType));
         } catch (MotuException errorMessageException) {
-            variable.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            variable.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             variable.setCode(String.valueOf(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             LOGGER.error(StringUtils.getLogMessage(BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
@@ -418,7 +419,7 @@ public class ExceptionUtils {
             availableTimes.setMsg(getErrorMessage(errorType));
             availableTimes.setCode(String.valueOf(errorType));
         } catch (MotuException errorMessageException) {
-            availableTimes.setMsg(BLLMessagesErrorManager.SYSTEM_ERROR_MESSAGE);
+            availableTimes.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             availableTimes.setCode(String.valueOf(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
             LOGGER.error(StringUtils.getLogMessage(BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);

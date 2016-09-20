@@ -171,6 +171,8 @@ public class USLRequestManager implements IUSLRequestManager {
         } else if (e instanceof InvalidHTTPParameterException) {
             errorType = ErrorType.BAD_PARAMETERS;
             errMessage = e.getMessage();
+        } else {
+            errMessage = BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, e);
         }
 
         if (errorType == ErrorType.SYSTEM) {
