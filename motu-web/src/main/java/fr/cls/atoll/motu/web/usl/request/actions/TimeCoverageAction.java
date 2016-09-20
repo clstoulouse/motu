@@ -115,12 +115,14 @@ public class TimeCoverageAction extends AbstractProductInfoAction {
         if (hasProductIdentifierErrMsg == null) {
             try {
                 Product product = getProduct();
-                initProductMetaData(product);
-                TimeCoverage timeCoverage = initTimeCoverage(product.getProductMetaData());
+                if (checkProduct(product, getProductId())) {
+                    initProductMetaData(product);
+                    TimeCoverage timeCoverage = initTimeCoverage(product.getProductMetaData());
 
-                marshallTimeCoverage(timeCoverage, getResponse().getWriter());
+                    marshallTimeCoverage(timeCoverage, getResponse().getWriter());
 
-                getResponse().setContentType(null);
+                    getResponse().setContentType(null);
+                }
             } catch (MotuExceptionBase | JAXBException | IOException e) {
                 throw new MotuException(ErrorType.SYSTEM, e);
             }

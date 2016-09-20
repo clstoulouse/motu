@@ -47,9 +47,9 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
   * [Log Errors](#LogCodeErrors)
      * [Action codes](#LogCodeErrorsActionCode)  
      * [Error types](#LogCodeErrorsErrorType)  
-* [Motu clients & API](#ClientsAPI)
+* [Motu clients & REST API](#ClientsAPI)
   
-#<a name="Overview">Overview</a>
+# <a name="Overview">Overview</a>  
 Motu is a robust web server allowing the distribution of met/ocean gridded data files through the web. 
 Subsetter allows user to extract the data of a dataset, with geospatial, temporal and variable criterias. 
 Thus, user download only the data of interest.  
@@ -69,11 +69,11 @@ For administrators, Motu allows to monitor the usage of the server: the logs pro
 
 
 
-#<a name="Architecture">Architecture</a>
+# <a name="Architecture">Architecture</a>  
 Motu is a web application running inside the HTTPd Apache Tomcat application server.
 
-#<a name="ArchitectureInterfaces">Interfaces</a>
-##<a name="ArchitectureInterfacesServer">Server interfaces</a>
+# <a name="ArchitectureInterfaces">Interfaces</a>  
+## <a name="ArchitectureInterfacesServer">Server interfaces</a>  
 All ports are defined in [motu.properties](#ConfigurationSystem) configuration file.
 
 * __HTTP__: Used to manage HTTP incoming requests
@@ -83,7 +83,7 @@ All ports are defined in [motu.properties](#ConfigurationSystem) configuration f
 * __Debug__: In development mode, used to remotely debug the application
 * __Socket for Shutdown__: Port opened by Tomcat to shutdown the server
   
-##<a name="ArchitectureInterfacesExternal">External interfaces with other systems or tools</a>
+## <a name="ArchitectureInterfacesExternal">External interfaces with other systems or tools</a>  
 Motu has interfaces with other systems:  
 
 * __DGF__: Direct Get File: Read dataset from the file system. (See how to [configure it](#AdminDataSetAdd).)
@@ -93,7 +93,7 @@ Motu has interfaces with other systems:
   * a download request on a __range of depths__,  
   * a download request that come __across the boundary__ of the datasets (for global datasets)  
 
-#<a name="ArchitectureDesign">Design</a>
+# <a name="ArchitectureDesign">Design</a>  
 The Motu application has been designed by implementing the Three-Layered Services Application design. It takes many advantages
 in maintenance cost efficiency et in the ease of its future evolutivity.  
 Three layers are set in the core "motu-web" project:  
@@ -107,9 +107,9 @@ High level managers handle for example the configuration, the request, the catal
 
 A common package is also defined to provide utilities: log4j custom format, XML, String ...
 
-#<a name="Development">Development</a>
+# <a name="Development">Development</a>  
 
-##<a name="DEV">Development environment</a>
+## <a name="DEV">Development environment</a>  
 
 ### Configure Eclipse development environment
 * Add variable in order to run/debug Motu on your localhost:  
@@ -159,7 +159,7 @@ it displays "OK - response action=ping"
 For more details about Eclipse launchers, refers to /motu-parent/README-eclipseLaunchers.md.
 
 
-##<a name="COMPILATION">Compilation</a>
+## <a name="COMPILATION">Compilation</a>  
 This step is used to generate JAR (Java ARchives) and WAR (Web application ARchive).  
 ```
 cd /motu-parent  
@@ -170,7 +170,7 @@ All projects are built under target folder.
 The Motu war is built under "/motu-web/target/motu-web-X.Y.Z-classifier.war".  
 It embeds all necessary jar libraries.  
 
-##<a name="Packaging">Packaging</a>
+## <a name="Packaging">Packaging</a>  
 This step includes the compilation step. Once all projects are compiled, it groups all archive in a same folder in order to easy the client delivery.  
 You have to set ANT script inputs parameter before running it. See /motu-distribution/build.xml header to get more details about inputs.  
 ```
@@ -188,11 +188,11 @@ Three folders are built containing archives :
   * motu-web-static-files-X.Y.Z-classifier-$timestamp-$target.tar.gz: The public static files (css, js) for each target platform 
 
 
-#<a name="Installation">Installation</a>
+# <a name="Installation">Installation</a>  
 
 
 
-## <a name="InstallPrerequisites">Prerequisites</a>
+## <a name="InstallPrerequisites">Prerequisites</a>  
 
 In this chapter some paths are set. For example "/opt/cmems-cis" is often written to talk about the installation path.
 You are free to install Motu in any other folder, so in the case, replace "/opt/cmems-cis" by your installation folder.
@@ -234,7 +234,7 @@ Motu is able to communicate with different external servers:
 The installation of these two servers is not detailed in this document. Refer to their official web site to know how to install them.
 
 
-## <a name="UpgradeFromMotu2x">Upgrade from Motu v2.x</a>  
+## <a name="UpgradeFromMotu2x">Upgrade from Motu v2.x</a>    
 
 Check this section only if you have installed Motu v2.x and you want to install Motu 3.x.
 In this section we consider that your Motu installation folder of version 2.x is "/opt/atoll/misgw/".  
@@ -296,12 +296,12 @@ filePattern="$path/motuQSlog.xml.%d{MM-yyyy}"
 
 
   
-## <a name="InstallFromScratch">Install Motu from scratch</a>
+## <a name="InstallFromScratch">Install Motu from scratch</a>  
 
 Motu installation needs two main step: the software installation and optionally the theme installation.  
 The software installation brings by default the CLS theme. The theme installation is there to customize or change this default theme.  
 
-### Install Motu software, for example on a <a name="IntallDU">Dissemination Unit</a>  
+### Install Motu software, for example on a <a name="IntallDU">Dissemination Unit</a>    
 
 Copy the installation archives and extract them.  
 ```
@@ -338,7 +338,7 @@ referencing static files only once on a unique machine. This is the case in the 
 a central server hosts static files.  
 If you runs only one install of Motu, you can install static files directly on Motu Apache tomcat server.
 
-#### <a name="IntallPublicFilesOnCentralServer">On a central server</a>  
+#### <a name="IntallPublicFilesOnCentralServer">On a central server</a>    
 Extract this archive on a server.
 ```
 tar xvzf motu-web-static-files-X.Y.Z-classifier-$timestamp-$target.tar.gz  
@@ -349,7 +349,7 @@ Example: The archive contains a motu folder at its root. Then a particular file 
 
 
 
-#### <a name="IntallPublicFilesOnMotuTomcat">Directly on Motu Apache tomcat server</a>  
+#### <a name="IntallPublicFilesOnMotuTomcat">Directly on Motu Apache tomcat server</a>    
  
 If you do not use a central entity to serve public static files, you can optionally extract the archive 
 and serve files directly by configuring Motu.  
@@ -374,7 +374,7 @@ Finally in motuConfiguration.xml, remove all occurrences of the attribute named:
 If you want to set another path instead of "/motu", you have to set also the business configuration parameter named [httpBaseRef](#motuConfig-httpBaseRef).  
 
  
-## <a name="InstallCheck">Check installation</a>
+## <a name="InstallCheck">Check installation</a>  
 
 ### Start motu
 ```
@@ -424,7 +424,7 @@ If nothing appears, it is because you have to [add dataset](#AdminDataSetAdd).
 ### Check Motu logs
 Check that no error appears in Motu [errors](#LogbooksErrors) log files.
 
-## <a name="InstallCDO">CDO manual installation</a>
+## <a name="InstallCDO">CDO manual installation</a>  
 This section has to be read only if Motu does not start successfully.  
 Select one option below to install "cdo". If you have no idea about cdo installation, choose the Default option.
 
@@ -433,7 +433,7 @@ Select one option below to install "cdo". If you have no idea about cdo installa
 * [Try MOTU without cdo installation](#InstallCDONoInstall)
 * [How cdo is built?](#InstallCDOUnderstand)  
   
-### <a name="InstallCDOHelp">Install cdo</a>
+### <a name="InstallCDOHelp">Install cdo</a>  
 "cdo" (Climate Data operators) are commands which has to be available in the PATH when Motu starts.   
 By default, Motu provides a built of CDO and add the "cdo" command to the PATH, but with some Linux distribution it is necessary to install it.  
 Motu provides some help in order to install CDO.  
@@ -488,7 +488,7 @@ Now check again if "cdo" runs well.
 If it runs well, you can now start Motu.  
 
 
-### <a name="InstallCDOAlreadyInstalled">cdo is already installed on this machine</a>
+### <a name="InstallCDOAlreadyInstalled">cdo is already installed on this machine</a>  
 If "cdo" is installed in another folder on the machine, you can add its path in "$MotuInstallDir/motu/motu" script:  
 
 ```  
@@ -501,7 +501,7 @@ Optionnaly set LD_LIBRAY_PATH in $MotuInstallDir/products/cdo-group/setLDLIBRARY
 
 
 
-### <a name="InstallCDONoInstall">Try MOTU without cdo installation</a>
+### <a name="InstallCDONoInstall">Try MOTU without cdo installation</a>  
 Note that without CDO, some functionalities on depth requests or on download product won't work successfully.
 If any case, you can disable the CDO check by commented the check call:  
 
@@ -519,14 +519,14 @@ sed -i 's/#  __checkCDOToolAvailable/  __checkCDOToolAvailable/g' motu
   
   
   
-### <a name="InstallCDOUnderstand">How cdo is built?</a>
+### <a name="InstallCDOUnderstand">How cdo is built?</a>  
 CDO is automaticcly build from the script $MotuInstallDir/motu/products/cdo-group/install-cdo.sh
 Also in order to get full details about CDO installation, you can get details in /opt/cmems-cis/motu/products/README and
 search for 'Download CDO tools'.  
 
 
 
-## <a name="InstallFolders">Installation folder structure</a>
+## <a name="InstallFolders">Installation folder structure</a>  
   
 Once archives have been extracted, a "motu" folder is created and contains several sub-folders and files:  
 __motu/__  
@@ -560,7 +560,7 @@ __motu/__
 
 
 
-## <a name="InstallFrontal">Setup a front Apache HTTPd server</a>  
+## <a name="InstallFrontal">Setup a front Apache HTTPd server</a>    
 See sample of the Apache HTTPd configuration in the folder: config/apache-httpd-conf-sample  
 The configuration is described for Apache2  
 
@@ -569,7 +569,7 @@ The configuration is described for Apache2
 * __enableApacheModules.sh__ Describe the Apache modules to enable
 
 
-#<a name="Configuration">Configuration</a>
+# <a name="Configuration">Configuration</a>  
 
 This chapter describes the Motu configuration settings.  
 All the configuration files are set in the $installDir/motu/config folder.  
@@ -580,7 +580,7 @@ All the configuration files are set in the $installDir/motu/config folder.
 * [Log settings](#LogSettings)
 
   
-##<a name="ConfigurationFolderStructure">Configuration directory structure</a>
+## <a name="ConfigurationFolderStructure">Configuration directory structure</a>  
 cd $installDir/motu/config
   
 * __config:__ Folder which contains the motu configuration files.
@@ -590,7 +590,7 @@ cd $installDir/motu/config
   * __standardNames.xml:__ Contains the standard names [TBD]
   * __version-configuration.txt:__ Contains the version of the current Motu configuration.
   
-##<a name="ConfigurationBusiness">Business settings</a>
+## <a name="ConfigurationBusiness">Business settings</a>  
 ### motuConfiguration.xml: Motu business settings  
 
 You can configure 3 main categories:  
@@ -613,7 +613,7 @@ If you have this file from a version anterior to Motu v3.x, you can reuse it. In
   
   
 
-####<a name="BSmotuConfig">Attributes defined in motuConfig node</a>
+#### <a name="BSmotuConfig">Attributes defined in motuConfig node</a>  
 
 ##### defaultService  
 A string representing the default action in the URL /Motu?action=$defaultService  
@@ -630,7 +630,7 @@ Number of data in Megabytes that can be written and download for a Netcdf file. 
 ##### maxSizePerFileTDS
 Number of data in Megabytes that can be written and download for a Netcdf file. Default is 1024Mb. 
 
-##### <a name="motuConfig-extractionPath">extractionPath</a>
+##### <a name="motuConfig-extractionPath">extractionPath</a>  
 The absolute path where files downloaded from TDS are stored.  
 For example: /opt/cmems-cis/motu/data/public/download
 It is recommended to set this folder on an hard drive with very good performances in write mode.
@@ -643,7 +643,7 @@ This URL is concatenated to the result data file name found in the folder "extra
 When a frontal HTTPd server is used, it is this URL that shall be configured to access to the folder "extractionPath".  
 String with format ${var} will be substituted with Java property variables. @See System.getProperty(var)  
 
-##### <a name="motuConfig-httpBaseRef">httpBaseRef</a>
+##### <a name="motuConfig-httpBaseRef">httpBaseRef</a>  
 Http URL used to serve files from to the path where archive __motu-web-static-files-X.Y.Z-classifier-buildId.tar.gz__ has been extracted.  
 For example: 
 
@@ -657,7 +657,7 @@ It so enable to server http://resources.myocean.eu/motu/css/motu/motu.css
 In minutes, oldest result files from extraction request are deleted. This check is done each "runCleanInterval" minutes.    
 Default = 60min
 
-##### <a name="BScleanRequestInterval">cleanRequestInterval</a>
+##### <a name="BScleanRequestInterval">cleanRequestInterval</a>  
 In minutes, oldest status than this time are removed from Motu. This check is done each "runCleanInterval" minutes.  
 Default = 60min
 
@@ -672,7 +672,7 @@ A clean process does:
 
 Default = 1min
 
-##### <a name="BSmotuConfigExtractionFilePatterns">extractionFilePatterns</a>
+##### <a name="BSmotuConfigExtractionFilePatterns">extractionFilePatterns</a>  
 Patterns (as regular expression) that match extraction file name to delete in folders:
 
 * java.io.tmpdir
@@ -719,9 +719,9 @@ Proxy settings are not used on Motu:
 * __proxyPwd__
 
 
-#### <a name="BSconfigService">Attributes defined in configService node</a>
+#### <a name="BSconfigService">Attributes defined in configService node</a>  
 
-##### <a name="BSconfigServiceName">name</a>
+##### <a name="BSconfigServiceName">name</a>  
 String to set the config service name
 
 ##### group
@@ -759,17 +759,17 @@ Optional, used to override [motuConfig httpBaseRef](#motuConfig-httpBaseRef) att
 
 #### Attributes defined in catalog node
 
-##### <a name="BSconfigServiceDatasetName">name</a>
+##### <a name="BSconfigServiceDatasetName">name</a>  
 This catalog name refers a TDS catalog name available from the URL: http://$ip:$port/thredds/m_HR_MOD.xml
 Example: m_HR_OBS.xml 
 
-##### <a name="BSconfigServiceDatasetType">type</a>  
+##### <a name="BSconfigServiceDatasetType">type</a>    
 * tds: Dataset is downloaded from TDS server. In this case, you can use [Opendap or NCSS protocol](#BSmotuConfigNCSS).
 * file: Dataset is downloaded from DGF
 
 Example: tds
 
-##### <a name="BSmotuConfigNCSS">ncss</a>
+##### <a name="BSmotuConfigNCSS">ncss</a>  
 Optional parameter used to enable or disable the use of NetCDF Subset Service (NCSS) in order to request the TDS server.
 Without this attribute or when empty, Motu connects to TDS with Opendap protocol. If this attribute is set to "enabled" Motu connects to TDS with NCSS protocol in order to improve performance.   
 We recommend to use "enabled".   
@@ -782,7 +782,7 @@ For example: http://$ip:$port/thredds/
 * DGF URL  
 For example: file:///opt/publication/inventories
 
-####<a name="BSqueueServerConfig">Attributes defined in queueServerConfig node</a>
+#### <a name="BSqueueServerConfig">Attributes defined in queueServerConfig node</a>  
 
 ##### maxPoolAnonymous
 Maximum number of request that an anonymous user can send to Motu before throwing an error message.  
@@ -834,7 +834,7 @@ process smallest requests by running the thread on the other processor core. Sp 
 ##### Child node: lowPriorityWaiting
 @Deprecated from v3 This parameter is not used.
 
-##<a name="ConfigurationSystem">System settings</a>
+## <a name="ConfigurationSystem">System settings</a>  
 
 ### motu.properties: Motu system settings  
 
@@ -890,7 +890,7 @@ For more detail read:
 org.tuckey UrlRewriteFilter FILTERS : see http://urlrewritefilter.googlecode.com/svn/trunk/src/doc/manual/3.1/index.html  
 
   
-## <a name="LogSettings">Log settings</a>
+## <a name="LogSettings">Log settings</a>  
 
 Log are configured by using log4j2 in file config/log4j2.xml  
 
@@ -926,7 +926,7 @@ Set the absolute path in the "fileName" and "filePattern" attributes. This path 
 
 
 
-##<a name="ThemeStyle">Theme and Style</a>
+## <a name="ThemeStyle">Theme and Style</a>  
 In Motu you can update the theme of the website. There is 2 mains things in order to understand how it works?  
 
 * [Template] velocity: The velocity templates are used to generated HTML pages from Java objects.  
@@ -953,9 +953,9 @@ service.getHttpBaseRef()/css/motu/screen/images/favicon.ico"
 
 
 
-#<a name="Exploitation">Exploitation</a>  
+# <a name="Exploitation">Exploitation</a>    
 
-##<a name="SS">Start, Stop and other Motu commands</a>  
+## <a name="SS">Start, Stop and other Motu commands</a>    
 All operations are done from the Motu installation folder.  
 For example:  
 ``` 
@@ -998,7 +998,7 @@ Status are the following:
 ./motu ?
 ``` 
 
-##<a name="Logbooks">Logbooks</a>  
+## <a name="Logbooks">Logbooks</a>    
 
 Log messages are generated by Apache Log4j 2. The configuration file is "config/log4j.xml".  
 By default, log files are created in the folder $MOTU_HOME/log. This folder contains:  
@@ -1057,7 +1057,7 @@ By default, log files are created in the folder $MOTU_HOME/log. This folder cont
   * __tomcat-motu-catalina.out__: Catalina output matching the environment variable CATALINA_OUT.
   * __tomcat-motu.log__: $CATALINA_HOME/bin/startup.sh and $CATALINA_HOME/bin/shutdown.sh outputs are redirected to this file.  
 
-##<a name="AdminDataSetAdd">Add a dataset</a>  
+## <a name="AdminDataSetAdd">Add a dataset</a>    
 In order to add a new Dataset, you have to add a new configService node in the [Motu business configuration](#ConfigurationBusiness).  
 When Motu read data through TDS (Opendap or NCSS service), the data shall be configured in TDS before this configuration in Motu. The TDS configuration is not explained here.
   
@@ -1091,7 +1091,7 @@ This protocol is used to access to local files on the current machine of done wi
 
 
 
-##<a name="ExploitDebug">Debug view</a>  
+## <a name="ExploitDebug">Debug view</a>  
 From a web browser access to the Motu web site with the URL:  
 ``` 
 /Motu?action=debug  
@@ -1103,9 +1103,9 @@ You change the status order by entering 4 parameters in the URL:
 /Motu?action=debug&order=DONE,ERROR,PENDING,INPROGRESS
 ``` 
  
-##<a name="ExploitCleanDisk">Clean files</a>  
+## <a name="ExploitCleanDisk">Clean files</a>  
 
-##<a name="ExploitCleanDiskLogbook">Logbook files</a>  
+## <a name="ExploitCleanDiskLogbook">Logbook files</a>  
 Logbook files are written in the folder configured in the log4j.xml configuration file.  
 All logs are generated daily except for motuQSLog (xml or csv) which are generated monthly.
 You can clean those files to avoid to fullfill the harddrive. 
@@ -1116,7 +1116,7 @@ crontab -e
 0 * * * * find /opt/cmems-cis/motu/log/*.csv* -type f -mmin +144000 -delete >/dev/null 2>&1  
   
 
-##<a name="LogCodeErrors">Log Errors</a> 
+## <a name="LogCodeErrors">Log Errors</a>   
 
 ### The code pattern
 The error codes of Motu as the following format "XXXX-Y":
@@ -1131,7 +1131,7 @@ For example, the web browser can display:
 Here, we have the error code in order to understand better what happens. But the end user has a generic message and no detail is given to him. These end user messages are described in the file "/motu-web/src/main/resources/MessagesError.properties". The file provided with the project is a default one and can be customized for specific purposes. Just put this file in the "config" folder, edit it and restart Motu to take it into account. So when a user has an error, it just have to tell you the error code and you can check the two numbers with the descriptions below.  
 
 
-### <a name="LogCodeErrorsActionCode">Action codes</a>
+### <a name="LogCodeErrorsActionCode">Action codes</a>  
 
 The Action Code		=>	A number matching the HTTP request with the action parameter.
 
@@ -1151,7 +1151,7 @@ The Action Code		=>	A number matching the HTTP request with the action parameter
 015		=>	DESCRIBE\_COVERAGE\_ACTION         
 016		=>	ABOUT\_ACTION  
 
-### <a name="LogCodeErrorsErrorType">Error types</a>
+### <a name="LogCodeErrorsErrorType">Error types</a>  
 
 The Error Type Code	=>	A number defining a specific error on the server.
 
@@ -1188,15 +1188,15 @@ The Error Type Code	=>	A number defining a specific error on the server.
 31		=>	The request cut the ante meridian. In this case, it's not possible to request more than one depth. It's necessary to change the depth selection and to select in the "from" and the "to" the values that have the same index into the depth list.
 32      =>  Due to a known bug in Thredds Data Server, a request cannot be satisfied wit netCDF4. User has to request a netCDF3 output file.
   
-#<a name="ClientsAPI">Motu clients & API</a>  
+# <a name="ClientsAPI">Motu clients & REST API</a>    
 
 You can connect to Motu by using a web browser or a client.
 
-## <a name="ClientPython">Python client</a> 
-Motu offers an easy to use [Python client](https://github.com/clstoulouse/motu-client-python).
+## <a name="ClientPython">Python client</a>   
+Motu offers an easy to use Python client. Very useful in machine to machine context, it enables to download data by running a python script. Project and all its documentation is available at [https://github.com/clstoulouse/motu-client-python](https://github.com/clstoulouse/motu-client-python).
   
   
-## <a name="ClientAPI">MOTU REST API</a> 
+## <a name="ClientAPI">MOTU REST API</a>   
 __MOTU REST API__ lets you use Motu server services.  
 All URLs have always the same pattern: http://motuServer/${context}/Motu?action=$actionName  
 __$actionName__ is an action in the list below:
@@ -1230,11 +1230,11 @@ __Summary of all actions:__
 
 
  
-### <a name="ClientAPI_About">About</a>  
+### <a name="ClientAPI_About">About</a>    
 Display version of the archives installed on Motu server  
 __URL__: http://localhost:8080/motu-web/Motu?action=about  
 __Parameters__: No parameter.  
-__Return__: An HTML page. Motu-static-files (Graphic chart) is refresh thanks to Ajax.   
+__Return__: An HTML page. Motu-static-files (Graphic chart) is refreshed thanks to Ajax because its version file can be installed on a distinct server.   
 Example:  
 ```
 Motu-products: 3.0  
@@ -1243,7 +1243,7 @@ Motu-configuration: 2.6.00-SNAPSHOT-20160623173246403
 Motu-static-files (Graphic chart): 3.0.00-RC1-20160914162955422  
 ```
 
-### <a name="ClientAPI_Debug">Debug</a>  
+### <a name="ClientAPI_Debug">Debug</a>    
 Display all requests status managed by Motu server in the last [cleanRequestInterval](#BScleanRequestInterval] minutes.
 Tables are sorted by time ascending.
 __URL__: http://localhost:8080/motu-web/Motu?action=debug  
@@ -1254,14 +1254,14 @@ Without this parameter, default order is: INPROGRESS,PENDING,ERROR,DONE
 __Return__: An HTML page  
   
   
-### <a name="ClientAPI_DescribeCoverage">Describe coverage</a>  
+### <a name="ClientAPI_DescribeCoverage">Describe coverage</a>    
 Get coverage data in relationship with a dataset.  
 __URL__: http://localhost:8080/motu-web/Motu?action=describecoverage&service=HR_MOD-TDS&datasetID=HR_MOD  
 __Parameters__:  
 * __service__ [1]: The [service name](#BSconfigServiceName)  
 * __datesetID__ [1]: The [dataset ID](#BSconfigServiceDatasetName)  
 __Return__: A XML document  
-```   
+```
 <dataset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:noNamespaceSchemaLocation="describeDataset.xsd" name="HR_MOD" id="HR_MOD">  
 <boundingBox>  
   <lon min="-180.0" max="179.91668701171875" units="degrees_east"/>
@@ -1276,11 +1276,10 @@ __Return__: A XML document
 ...  
 </variables>  
 </dataset>  
-
-```  
+```
   
   
-### <a name="ClientAPI_DescribeProduct">Describe product</a>  
+### <a name="ClientAPI_DescribeProduct">Describe product</a>    
 Display the product meaning dataset description.  
 There is 2 ways to call describe product, both returning a same response.
 
@@ -1288,7 +1287,7 @@ There is 2 ways to call describe product, both returning a same response.
 #### Way 1   
   
 __URL__:   
-* http://localhost:8080/motu-web/Motu?action=describeproduct&service=serviceId&product=datasetId  
+* http://localhost:8080/motu-web/Motu?action=describeproduct&service=HR_MOD-TDS&product=HR_MOD
 __Parameters__:  
 * __service__ [1]: The [service name](#BSconfigServiceName)  
 * __product__ [1]: The product id  
@@ -1305,7 +1304,7 @@ __Parameters__:
   
 __Return__: An XML document  7
 
-```   
+```
 <productMetadataInfo code="OK" msg="OK" lastUpdate="Not Available" title="HR_MOD" id="HR_MOD">  
 <timeCoverage code="OK" msg="OK"/>  
 <availableTimes code="OK" msg="OK">  
@@ -1329,23 +1328,42 @@ __Return__: An XML document  7
 <axis code="OK" msg="OK" description="Depth" units="m" name="depth" upper="5727.9169921875" lower="0.4940249919891357421875" axisType="Height"/>  
 </dataGeospatialCoverage>  
 </productMetadataInfo>  
-```  
-
-
- 
-### <a name="ClientAPI_DownloadProduct">Download product</a>  
-Request used to download a product  
-__URL__: http://localhost:8080/motu-web/Motu?action=productdownload 
-__Parameters__: TBD.  
-__Return__: Severals ways  
-Example:  
 ```
 
-```  
+
+ 
+### <a name="ClientAPI_DownloadProduct">Download product</a>    
+Request used to download a product  
+__URL__: http://localhost:8080/motu-web/Motu?action=productdownload  
+example:  
+http://localhost:8080/motu-web/Motu?action=productdownload&service=HR_MOD-TDS&product=HR_MOD&x_lo=-2&x_hi=2&y_lo=-2&y_hi=2&output=netcdf&t_lo=2016-06-12+12%3A00%3A00&t_hi=2016-06-12+12%3A00%3A00&z_lo=0.49&z_hi=5727.92
+__Parameters__:  
+
+* __service__ [1]: The [service name](#BSconfigServiceName)  
+* __product__ [1]: The product id  
+* __variable__ [0,n]: physical variables to be extracted from the product. When no variable is set, all the variables of the dataset are extracted.  
+* __y_lo__ [0,1]: low latitude of a geographic extraction. Default value is -90.  
+* __y_hi__ [0,1]: high latitude of a geographic extraction. Default value is 90.  
+* __x_lo__ [0,1]: low longitude of a geographic extraction. Default value is -180.  
+* __x_hi__ [0,1]: high longitude of a geographic extraction. Default value is 180.  
+* __z_lo__ [0,1]: low vertical depth . Default value is 0.  
+* __z_hi__ [0,1]: high vertical depth. Default value is 180.  
+* __t_lo__ [0,1]: Start date of a temporal extraction. If not set, the default value is the first date/time available for the dataset. Format is yyy-mm-dd or yyyy-dd h:m:s or yyyy-ddTh:m:s.  
+* __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is yyy-mm-dd or yyyy-dd h:m:s or yyyy-ddTh:m:s.  
+* __output__ [0,1]: netcdf. Due to a TDS issue, only netcdf is available. netcdf4 will be available as soon as TDS will have resolved its issue.
+* __mode__ [0,1]: Specify the desired result mode. Enumeration value from [url, console, status] represented as a string. If no mode, "url" value is the default mode.  
+
+   * mode=__url__: URL of the delivery file is directly returned in the HTTP response as an HTML web page. Then Javascript read this URL to download file. The request is processed in a synchronous mode.  
+   * mode=__console__: the response is a 302 HTTP redirection to the delivery file to be returned as a binary stream. The request is processed in a synchronous mode.  
+   * mode=__status__: request is submitted and the status of the request processing is immediately returned.  The request is processed in an asynchronous mode.  
+   Web Portal submits the request to the Dissemination Unit Subsetter and gets an immediate response of the Subsetter. This response contains the identifier and the status of the order (pending, in progress, done, error).   So long as the order is not completed (done or error), Web Portal requests the status of the order at regular and fair intervals (> 5 seconds) and gets an immediate response. When the status is “done”, Web Portal retrieves the url of the file to download, from the status response. Then Web Portal redirects response to this url. The Web Browser opens a binary stream of the file to download and shows a dialog box to allow the user saving it as a local file.  
+
+__Return__: Severals ways depending of the selected http parameter mode.  
+
 
 
  
-### <a name="ClientAPI_RequestStatus">Request status</a>  
+### <a name="ClientAPI_RequestStatus">Request status</a>    
 Get a request status to get more details about a download state.  
 __URL__: http://localhost:8080/motu-web/Motu?action=getreqstatus&requestid=123456789
 __Parameters__:  
@@ -1355,17 +1373,30 @@ Validated by the schema /motu-api-message/src/main/schema/XmlMessageModel.xsd#St
 Example:  
 ```
 <statusModeResponse code="004-0" msg="" scriptVersion="" userHost="" userId="" dateSubmit="2016-09-19T16:56:22.184Z" localUri="/$pathTo/HR_MOD_1474304182183.nc" remoteUri="http://localhost:8080/motu/deliveries/HR_MOD_1474304182183.nc" size="1152.0"dateProc="2016-09-19T16:56:22.566Z" requestId="1474304182183" status="1"/>
-```  
+```
+  
 Size is in MegaBits.
 
 
 
  
-### <a name="ClientAPI_GetSize">Get size</a>  
+### <a name="ClientAPI_GetSize">Get size</a>    
 Get the size of a download request.  
 __URL__: http://localhost:8080/motu-web/Motu?action=getsize
 __Parameters__:  
-Parameters are exactly the same as for [Download product](#ClientAPI_DownloadProduct)  
+Parameters below are exactly the same as for [Download product](#ClientAPI_DownloadProduct)  
+* __service__ [1]: The [service name](#BSconfigServiceName)  
+* __product__ [1]: The product id  
+* __variable__ [0,n]: physical variables to be extracted from the product. When no variable is set, all the variables of the dataset are extracted.  
+* __y_lo__ [0,1]: low latitude of a geographic extraction. Default value is -90.  
+* __y_hi__ [0,1]: high latitude of a geographic extraction. Default value is 90.  
+* __x_lo__ [0,1]: low longitude of a geographic extraction. Default value is -180.  
+* __x_hi__ [0,1]: high longitude of a geographic extraction. Default value is 180.  
+* __z_lo__ [0,1]: low vertical depth . Default value is 0.  
+* __z_hi__ [0,1]: high vertical depth. Default value is 180.  
+* __t_lo__ [0,1]: Start date of a temporal extraction. If not set, the default value is the first date/time available for the dataset. Format is yyy-mm-dd or yyyy-dd h:m:s or yyyy-ddTh:m:s.  
+* __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is yyy-mm-dd or yyyy-dd h:m:s or yyyy-ddTh:m:s.  
+  
 __Return__: An XML document.    
 Validated by the schema /motu-api-message/src/main/schema/XmlMessageModel.xsd#RequestSize  
 Example:  
@@ -1373,7 +1404,7 @@ Example:
 <requestSize code="005-0" msg="OK" unit="kb" size="1.5104933E8" maxAllowedSize="9.961472E8"/>  
 ```  
 
-### <a name="ClientAPI_ListCatalog">List catalog</a>  
+### <a name="ClientAPI_ListCatalog">List catalog</a>    
 Get the size of a download request.  
 __URL__: http://localhost:8080/motu-web/Motu?action=listcatalog&service=HR_MOD-TDS
 __Parameters__:  
@@ -1381,7 +1412,7 @@ __Parameters__:
 __Return__: An HTML page   
 
 
-### <a name="ClientAPI_ListServices">List services</a>  
+### <a name="ClientAPI_ListServices">List services</a>    
 Display the service web page 
 __URL__: http://localhost:8080/motu-web/Motu?action=listcatalog&service=HR_MOD-TDS
 __Parameters__:  
@@ -1389,7 +1420,7 @@ __Parameters__:
 __Return__: An HTML page   
 
 
-### <a name="ClientAPI_Ping">Ping</a>  
+### <a name="ClientAPI_Ping">Ping</a>    
 Used to be sure that server is up. 
 __URL__: http://localhost:8080/motu-web/Motu?action=ping
 __Parameters__: No parameter.
@@ -1398,7 +1429,7 @@ __Return__: An plain text
 OK - response action=ping    
 ```  
 
-### <a name="ClientAPI_ProductDownloadHome">Product download home</a>  
+### <a name="ClientAPI_ProductDownloadHome">Product download home</a>    
 Display an HTML page in order to set the download parameters. 
 __URL__: http://localhost:8080/motu-web/Motu?action=productdownloadhome&service=HR_OBS-TDS&product=HR_OBS
 __Parameters__:  
@@ -1410,7 +1441,7 @@ __Return__: An HTML page
 
 
 
-### <a name="ClientAPI_ProductMetadata">Product metadata Home</a>  
+### <a name="ClientAPI_ProductMetadata">Product metadata Home</a>    
 Display an HTML page with the geographical and temporal coverage, the last dataset update and the variables metadata. 
 __URL__: http://localhost:8080/motu-web/Motu?action=listproductmetadata&service=HR_OBS-TDS&product=HR_OBS
 __Parameters__:  
@@ -1422,7 +1453,7 @@ __Return__: An HTML page
 
 
 
-### <a name="ClientAPI_GetTimeCov">Time coverage</a>  
+### <a name="ClientAPI_GetTimeCov">Time coverage</a>    
 Display an HTML page with the geographical and temporal coverage, the last dataset update and the variables metadata. 
 __URL__: http://localhost:8080/motu-web/Motu?action=listproductmetadata&service=HR_OBS-TDS&product=HR_OBS
 __Parameters__:  

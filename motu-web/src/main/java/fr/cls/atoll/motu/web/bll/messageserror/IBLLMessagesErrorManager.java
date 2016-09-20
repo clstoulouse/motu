@@ -17,14 +17,13 @@ import fr.cls.atoll.motu.web.dal.messageserror.IDALMessagesErrorManager;
 public interface IBLLMessagesErrorManager {
 
     public static final ErrorType SYSTEM_ERROR_CODE = IDALMessagesErrorManager.SYSTEM_ERROR_CODE;
-    public static final String SYSTEM_ERROR_MESSAGE = IDALMessagesErrorManager.SYSTEM_ERROR_MESSAGE;
 
     /**
      * .
      * 
      * @return
      */
-    String getMessageError(ErrorType errorCode) throws MotuException;
+    String getMessageError(ErrorType errorCode);
 
     /**
      * .
@@ -34,7 +33,7 @@ public interface IBLLMessagesErrorManager {
      * @return
      * @throws MotuException
      */
-    String getMessageError(ErrorType errorCode, Exception e) throws MotuException;
+    String getMessageError(ErrorType errorCode, Exception e);
 
     /**
      * .
@@ -44,5 +43,5 @@ public interface IBLLMessagesErrorManager {
      * @return
      * @throws MotuException
      */
-    String getMessageError(ErrorType errorCode, Object... messageArguments) throws MotuException;
+    String getMessageError(ErrorType errorCode, Object... messageArguments);
 }

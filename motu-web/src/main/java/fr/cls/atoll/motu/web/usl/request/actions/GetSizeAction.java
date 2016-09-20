@@ -197,9 +197,8 @@ public class GetSizeAction extends AbstractProductInfoAction {
 
         try {
             Product p = getProduct();
-            initProductMetaData(p);
-
-            if (p != null) {
+            if (checkProduct(p, getProductId())) {
+                initProductMetaData(p);
                 double productDataSize = BLLManager.getInstance().getRequestManager()
                         .getProductDataSizeIntoByte(p,
                                                     extractionParameters.getListVar(),
@@ -209,8 +208,6 @@ public class GetSizeAction extends AbstractProductInfoAction {
                 double productMaxAllowedDataSize = BLLManager.getInstance().getRequestManager().getProductMaxAllowedDataSizeIntoByte(p);
                 RequestSize requestSize = initRequestSize(productDataSize, productMaxAllowedDataSize);
                 marshallRequestSize(requestSize, getResponse().getWriter());
-            } else {
-                throw new MotuException(ErrorType.SYSTEM, "Product not found : " + getProductHTTPParameterValidator().getParameterValue());
             }
         } catch (MotuMarshallException e) {
             try {
