@@ -50,6 +50,7 @@ import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
@@ -112,11 +113,13 @@ public class MotuWebEngineContextListener implements ServletContextListener {
         boolean hasRequest = false;
         List<Long> requestIds = BLLManager.getInstance().getRequestManager().getRequestIds();
         for (Long requestId : requestIds) {
-            StatusModeResponse statusModeResponse = XMLConverter
-                    .convertStatusModeResponse(BLLManager.getInstance().getRequestManager().getDownloadRequestStatus(requestId));
-            if (statusModeResponse.getStatus() == StatusModeType.PENDING || statusModeResponse.getStatus() == StatusModeType.INPROGRESS) {
-                hasRequest = true;
-                break;
+            RequestDownloadStatus rds = BLLManager.getInstance().getRequestManager().getDownloadRequestStatus(requestId);
+            if (rds != null) {
+                StatusModeResponse statusModeResponse = XMLConverter.convertStatusModeResponse(rds);
+                if (statusModeResponse.getStatus() == StatusModeType.PENDING || statusModeResponse.getStatus() == StatusModeType.INPROGRESS) {
+                    hasRequest = true;
+                    break;
+                }
             }
         }
 
