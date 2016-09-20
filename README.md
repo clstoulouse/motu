@@ -763,7 +763,7 @@ Optional, used to override [motuConfig httpBaseRef](#motuConfig-httpBaseRef) att
 This catalog name refers a TDS catalog name available from the URL: http://$ip:$port/thredds/m_HR_MOD.xml
 Example: m_HR_OBS.xml 
 
-##### type  
+##### <a name="BSconfigServiceDatasetType">type</a>  
 * tds: Dataset is downloaded from TDS server. In this case, you can use [Opendap or NCSS protocol](#BSmotuConfigNCSS).
 * file: Dataset is downloaded from DGF
 
@@ -1194,7 +1194,8 @@ You can connect to Motu by using a web browser or a client.
 
 ## <a name="ClientPython">Python client</a> 
 Motu offers an easy to use [Python client](https://github.com/clstoulouse/motu-client-python).
-
+  
+  
 ## <a name="ClientAPI">MOTU REST API</a> 
 __MOTU REST API__ lets you use Motu server services.  
 All URLs have always the same pattern: http://motuServer/${context}/Motu?action=$actionName  
@@ -1210,20 +1211,30 @@ Other parameters are used. They are described with their cardinality [x,y].
   
 __Summary of all actions:__   
   
-* [About](#ClientAPI_About>)  
-* [Debug](#ClientAPI_Debug>)  
-* [Describe coverage](#ClientAPI_DescribeCoverage>)  
-* [Describe product](#ClientAPI_DescribeProduct>)  
-* [Download product](#ClientAPI_DownloadProduct>)  
-* [Request status](#ClientAPI_RequestStatus>)  
-* [Get size](#ClientAPI_GetSize>)  
+* XML API
+   * [Describe coverage](#ClientAPI_DescribeCoverage>)  
+   * [Describe product](#ClientAPI_DescribeProduct>)  
+   * [Request status](#ClientAPI_RequestStatus>)  
+   * [Get size](#ClientAPI_GetSize>)  
+   * [Time coverage](#ClientAPI_GetTimeCov>)  
+* HTML Web pages
+   * [About](#ClientAPI_About>)  
+   * [Debug](#ClientAPI_Debug>)  
+   * [Download product](#ClientAPI_DownloadProduct>)  
+   * [List catalog](#ClientAPI_ListCatalog>)  
+   * [List services](#ClientAPI_ListServices>)  
+   * [Product download home](#ClientAPI_ProductDownloadHome>)  
+   * [Product medatata](#ClientAPI_ProductMetadata>)  
+* Plain Text 
+   * [Ping](#ClientAPI_Ping>)  
+
 
  
 ### <a name="ClientAPI_About">About</a>  
 Display version of the archives installed on Motu server  
 __URL__: http://localhost:8080/motu-web/Motu?action=about  
 __Parameters__: No parameter.  
-__Return__: An HTML page:  
+__Return__: An HTML page. Motu-static-files (Graphic chart) is refresh thanks to Ajax.   
 Example:  
 ```
 Motu-products: 3.0  
@@ -1233,21 +1244,23 @@ Motu-static-files (Graphic chart): 3.0.00-RC1-20160914162955422
 ```
 
 ### <a name="ClientAPI_Debug">Debug</a>  
-Display all requests status managed by Motu server in the last [cleanRequestInterval](#BScleanRequestInterval] minutes
+Display all requests status managed by Motu server in the last [cleanRequestInterval](#BScleanRequestInterval] minutes.
+Tables are sorted by time ascending.
 __URL__: http://localhost:8080/motu-web/Motu?action=debug  
 __Parameters__:  
 * __order__ [0-1]: Change the order of items INPROGRESS,PENDING,ERROR,DONE. All items shall be set.  
 example: http://localhost:8080/motu-web/Motu?action=Debug&order=DONE,ERROR,PENDING,INPROGRESS  
 Without this parameter, default order is: INPROGRESS,PENDING,ERROR,DONE  
 __Return__: An HTML page  
-
+  
+  
 ### <a name="ClientAPI_DescribeCoverage">Describe coverage</a>  
-Display coverage data in relationship with a dataset.  
+Get coverage data in relationship with a dataset.  
 __URL__: http://localhost:8080/motu-web/Motu?action=describecoverage&service=HR_MOD-TDS&datasetID=HR_MOD  
 __Parameters__:  
 * __service__ [1]: The [service name](#BSconfigServiceName)  
 * __datesetID__ [1]: The [dataset ID](#BSconfigServiceDatasetName)  
-__Return__: An XML document  
+__Return__: A XML document  
 ```   
 <dataset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:noNamespaceSchemaLocation="describeDataset.xsd" name="HR_MOD" id="HR_MOD">  
 <boundingBox>  
@@ -1265,6 +1278,7 @@ __Return__: An XML document
 </dataset>  
 
 ```  
+  
   
 ### <a name="ClientAPI_DescribeProduct">Describe product</a>  
 Display the product meaning dataset description.  
@@ -1340,20 +1354,83 @@ __Return__: An XML document or an HTML page if requestId does not exists.
 Validated by the schema /motu-api-message/src/main/schema/XmlMessageModel.xsd#StatusModeResponse  
 Example:  
 ```
-<statusModeResponse code="004-0" msg="" scriptVersion="" userHost="" userId="" dateSubmit="2016-09-19T16:56:22.184Z" localUri="/$pathTo/HR_MOD_1474304182183.nc" remoteUri="http://localhost:8080/motu/deliveries/HR_MOD_1474304182183.nc" size="0.0" dateProc="2016-09-19T16:56:22.566Z" requestId="1474304182183" status="1"/>
+<statusModeResponse code="004-0" msg="" scriptVersion="" userHost="" userId="" dateSubmit="2016-09-19T16:56:22.184Z" localUri="/$pathTo/HR_MOD_1474304182183.nc" remoteUri="http://localhost:8080/motu/deliveries/HR_MOD_1474304182183.nc" size="1152.0"dateProc="2016-09-19T16:56:22.566Z" requestId="1474304182183" status="1"/>
 ```  
+Size is in MegaBits.
+
+
 
  
 ### <a name="ClientAPI_GetSize">Get size</a>  
-Get a request status to get more details about a download state.  
-__URL__: http://localhost:8080/motu-web/Motu?action=getreqstatus&requestid=123456789
+Get the size of a download request.  
+__URL__: http://localhost:8080/motu-web/Motu?action=getsize
 __Parameters__:  
 Parameters are exactly the same as for [Download product](#ClientAPI_DownloadProduct)  
 __Return__: An XML document.    
 Validated by the schema /motu-api-message/src/main/schema/XmlMessageModel.xsd#RequestSize  
 Example:  
 ```
-
+<requestSize code="005-0" msg="OK" unit="kb" size="1.5104933E8" maxAllowedSize="9.961472E8"/>  
 ```  
 
+### <a name="ClientAPI_ListCatalog">List catalog</a>  
+Get the size of a download request.  
+__URL__: http://localhost:8080/motu-web/Motu?action=listcatalog&service=HR_MOD-TDS
+__Parameters__:  
+* __service__ [1]: The [service name](#BSconfigServiceName)  
+__Return__: An HTML page   
 
+
+### <a name="ClientAPI_ListServices">List services</a>  
+Display the service web page 
+__URL__: http://localhost:8080/motu-web/Motu?action=listcatalog&service=HR_MOD-TDS
+__Parameters__:  
+* __catalogtype__ [0,1]: The [catalog type](#BSconfigServiceDatasetType) used to filter by type.  
+__Return__: An HTML page   
+
+
+### <a name="ClientAPI_Ping">Ping</a>  
+Used to be sure that server is up. 
+__URL__: http://localhost:8080/motu-web/Motu?action=ping
+__Parameters__: No parameter.
+__Return__: An plain text
+```  
+OK - response action=ping    
+```  
+
+### <a name="ClientAPI_ProductDownloadHome">Product download home</a>  
+Display an HTML page in order to set the download parameters. 
+__URL__: http://localhost:8080/motu-web/Motu?action=productdownloadhome&service=HR_OBS-TDS&product=HR_OBS
+__Parameters__:  
+
+* __service__ [1]: The [service name](#BSconfigServiceName)  
+* __product__ [1]: The product id  
+  
+__Return__: An HTML page
+
+
+
+### <a name="ClientAPI_ProductMetadata">Product metadata Home</a>  
+Display an HTML page with the geographical and temporal coverage, the last dataset update and the variables metadata. 
+__URL__: http://localhost:8080/motu-web/Motu?action=listproductmetadata&service=HR_OBS-TDS&product=HR_OBS
+__Parameters__:  
+
+* __service__ [1]: The [service name](#BSconfigServiceName)  
+* __product__ [1]: The product id  
+  
+__Return__: An HTML page
+
+
+
+### <a name="ClientAPI_GetTimeCov">Time coverage</a>  
+Display an HTML page with the geographical and temporal coverage, the last dataset update and the variables metadata. 
+__URL__: http://localhost:8080/motu-web/Motu?action=listproductmetadata&service=HR_OBS-TDS&product=HR_OBS
+__Parameters__:  
+
+* __service__ [1]: The [service name](#BSconfigServiceName)  
+* __product__ [1]: The product id  
+  
+__Return__: A XML document
+```  
+<timeCoverage code="007-0" msg="OK" end="2016-09-17T00:00:00.000Z" start="2007-05-13T00:00:00.000Z"/>
+```  

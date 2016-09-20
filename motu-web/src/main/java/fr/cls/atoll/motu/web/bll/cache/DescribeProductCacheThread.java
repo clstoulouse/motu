@@ -2,6 +2,7 @@ package fr.cls.atoll.motu.web.bll.cache;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +62,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private ConcurrentMap<String, ProductMetadataInfo> describeProduct;
+    private ConcurrentMap<String, ProductMetadataInfo> describeProductMap;
 
     /**
      * Constructeur.
@@ -73,14 +74,14 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
     }
 
     public ProductMetadataInfo getProductDescription(String productId) {
-        return describeProduct.get(productId);
+        return describeProductMap.get(productId);
     }
 
     /** {@inheritDoc} */
     @Override
     public void runProcess() {
         long startRefresh = System.currentTimeMillis();
-        describeProduct = new ConcurrentHashMap<>();
+        describeProductMap = new ConcurrentHashMap<>();
         List<ConfigService> services = BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService();
         int i = 0;
         while (!isDaemonStoppedASAP() && i < services.size()) {
@@ -111,7 +112,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
                 if (pmd != null) {
                     currentProduct.setProductMetaData(pmd);
                 }
-                describeProduct.put(currentProduct.getProductId(), initProductMetadataInfo(currentProduct));
+                describeProductMap.put(currentProduct.getProductId(), initProductMetadataInfo(currentProduct));
             }
 
         } catch (MotuException e) {
@@ -612,11 +613,11 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
             return timeCoverage;
         }
 
-        // Date start = datePeriod.getStart().toDate();
-        // Date end = datePeriod.getEnd().toDate();
+        Date start = datePeriod.getStart().toDate();
+        Date end = datePeriod.getEnd().toDate();
 
-        // timeCoverage.setStart(dateToXMLGregorianCalendar(start));
-        // timeCoverage.setEnd(dateToXMLGregorianCalendar(end));
+        timeCoverage.setStart(fr.cls.atoll.motu.web.common.utils.DateUtils.dateToXMLGregorianCalendar(start));
+        timeCoverage.setEnd(fr.cls.atoll.motu.web.common.utils.DateUtils.dateToXMLGregorianCalendar(end));
         timeCoverage.setCode(String.valueOf(ErrorType.OK));
         timeCoverage.setMsg(ErrorType.OK.toString());
 

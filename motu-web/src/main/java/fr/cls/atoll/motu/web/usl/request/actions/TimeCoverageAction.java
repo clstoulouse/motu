@@ -52,16 +52,16 @@ public class TimeCoverageAction extends AbstractProductInfoAction {
 
     public TimeCoverageAction(String actionCode_, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         super(ACTION_NAME, actionCode_, request, response, session);
+
         serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_SERVICE,
                 CommonHTTPParameters.getServiceFromRequest(getRequest()),
                 AbstractHTTPParameterValidator.EMPTY_VALUE);
-        serviceHTTPParameterValidator.setOptional(true);
+
         productHTTPParameterValidator = new ProductHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_PRODUCT,
                 CommonHTTPParameters.getProductFromRequest(getRequest()),
                 AbstractHTTPParameterValidator.EMPTY_VALUE);
-        productHTTPParameterValidator.setOptional(true);
     }
 
     /** {@inheritDoc} */
@@ -113,11 +113,10 @@ public class TimeCoverageAction extends AbstractProductInfoAction {
     protected void process() throws MotuException {
         String hasProductIdentifierErrMsg = hasProductIdentifier();
         if (hasProductIdentifierErrMsg == null) {
-            TimeCoverage timeCoverage;
             try {
                 Product product = getProduct();
                 initProductMetaData(product);
-                timeCoverage = initTimeCoverage(product.getProductMetaData());
+                TimeCoverage timeCoverage = initTimeCoverage(product.getProductMetaData());
 
                 marshallTimeCoverage(timeCoverage, getResponse().getWriter());
 
