@@ -61,6 +61,8 @@ public class BLLRequestManager implements IBLLRequestManager {
     /** Logger for this class. */
     private static final Logger LOGGER = LogManager.getLogger();
 
+    public static final long REQUEST_TIMEOUT_MSEC = 3600000; // 1hour
+
     private IRequestIdManager requestIdManager;
     private Map<Long, RequestDownloadStatus> requestIdStatusMap;
     private ConcurrentHashMap<Long, AbstractAction> actionMap;
@@ -105,7 +107,7 @@ public class BLLRequestManager implements IBLLRequestManager {
         synchronized (this) {
             if (!requestCleanerDaemonThread.isDaemonStopped()) {
                 try {
-                    this.wait();
+                    this.wait(REQUEST_TIMEOUT_MSEC);
                 } catch (InterruptedException e) {
                     LOGGER.error("Error during wait while stopping daemon: " + requestCleanerDaemonThread.getName());
                 }
@@ -141,10 +143,15 @@ public class BLLRequestManager implements IBLLRequestManager {
 
         ProductResult p = new ProductResult();
         RequestDownloadStatus rds = getDownloadRequestStatus(requestId);
-        if (rds.getRunningException() != null) {
-            p.setRunningException(rds.getRunningException());
+        if (rds != null) {
+            if (rds.getRunningException() != null) {
+                p.setRunningException(rds.getRunningException());
+            }
+            rds.setProductFileName(product_.getExtractFilename());
+        } else {
+            LOGGER.error("RequestDownloadStatus is null for requestId=" + requestId
+                    + ". The parameter \"cleanRequestInterval\" in motuConfig is certainly to low for the current request which has certainly takes more times. So cleaner has remove the request status whereas the request was currently in progress. Solution is to set a value greater for \"cleanRequestInterval\" or understand why this request takes so much time to end.");
         }
-        rds.setProductFileName(product_.getExtractFilename());
         p.setProductFileName(product_.getExtractFilename());
 
         return p;
@@ -182,7 +189,7 @@ public class BLLRequestManager implements IBLLRequestManager {
             try {
                 t.join();
             } catch (InterruptedException e) {
-                LOGGER.error(e);
+                LOGGER.error("InterruptedException download thread join inteeruption, requestId=" + requestId, e);
             }
         }
 

@@ -2,6 +2,7 @@ package fr.cls.atoll.motu.web.bll.request.cleaner;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,7 +13,9 @@ import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.request.BLLRequestManager;
 import fr.cls.atoll.motu.web.bll.request.IBLLRequestManager;
+import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 
 /**
@@ -173,13 +176,31 @@ public class RequestCleaner implements IRequestCleaner {
      */
     @Override
     public void cleanRequestStatus() {
-        List<Long> requestIds = bllRequestManager.getRequestIds();
-        for (Long requestId : requestIds) {
-            if ((requestId + cleanRequestIntervalInMs) > System.currentTimeMillis()) {
-                bllRequestManager.deleteRequest(requestId);
-                LOGGER.info("cleanRequestStatus - requestId=" + requestId);
+        for (Long requestId : getAllNonRunningRequestIds()) {
+            bllRequestManager.deleteRequest(requestId);
+            LOGGER.info("cleanRequestStatus - requestId=" + requestId);
+        }
+    }
+
+    /**
+     * A request is not running if it has no RequestDownloadStatus or its end processing time plus the
+     * cleanRequestIntervalInMs is greater than current time or its creation time plus 1 hour is greater than
+     * current time
+     * 
+     * @return
+     */
+    private List<Long> getAllNonRunningRequestIds() {
+        List<Long> allNonRunningRequestIdList = new ArrayList<Long>();
+        for (long id : bllRequestManager.getRequestIds()) {
+            RequestDownloadStatus rds = BLLManager.getInstance().getRequestManager().getDownloadRequestStatus(id);
+            if (rds == null
+                    || (rds.getEndProcessingDateTime() > 0
+                            && (rds.getEndProcessingDateTime() + cleanRequestIntervalInMs) > System.currentTimeMillis())
+                    || ((rds.getCreationDateTime() + BLLRequestManager.REQUEST_TIMEOUT_MSEC) > System.currentTimeMillis())) {
+                allNonRunningRequestIdList.add(id);
             }
         }
+        return allNonRunningRequestIdList;
     }
 
 }

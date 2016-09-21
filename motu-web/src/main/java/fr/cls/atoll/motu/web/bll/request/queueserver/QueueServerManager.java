@@ -36,6 +36,7 @@ import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
+import fr.cls.atoll.motu.web.bll.request.BLLRequestManager;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueJob;
@@ -128,9 +129,9 @@ public class QueueServerManager implements IQueueServerManager {
         synchronized (this) {
             if (!qjl.isJobEnded()) {
                 try {
-                    wait();
-                } catch (InterruptedException e1) {
-                    LOGGER.error(e1);
+                    wait(BLLRequestManager.REQUEST_TIMEOUT_MSEC);
+                } catch (InterruptedException e) {
+                    LOGGER.error("Error in download execution while waiting the job ended notification", e);
                 }
             }
         }

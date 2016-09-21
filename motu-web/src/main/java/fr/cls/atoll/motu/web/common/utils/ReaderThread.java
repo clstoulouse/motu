@@ -40,8 +40,8 @@ public abstract class ReaderThread implements Runnable {
                 } finally {
                     reader.close();
                 }
-            } catch (IOException ioe) {
-                LOGGER.error(ErrorType.SYSTEM, ioe);
+            } catch (IOException e) {
+                LOGGER.error(ErrorType.SYSTEM, e);
             }
         }
     }

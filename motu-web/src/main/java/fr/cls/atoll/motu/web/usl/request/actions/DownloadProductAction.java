@@ -283,7 +283,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                                                                .getMessageError(ErrorType.NETCDF4_NOT_SUPPORTED_BY_TDS, runningException));
         }
         p.setLastError(errMsg);
-        LOGGER.error(StringUtils.getLogMessage(getActionCode(), errorType, runningException.getMessage()), runningException);
     }
 
     /**

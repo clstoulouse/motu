@@ -43,7 +43,7 @@ public class StoppableDaemonThread extends Thread {
                     sleep(getRefreshDelayInMSec());
                 } catch (InterruptedException e) {
                     if (!isDaemonStoppedASAP()) {
-                        LOGGER.error("Error during refresh of daemlon" + getName(), e);
+                        LOGGER.error("Error during refresh of daemon" + getName(), e);
                     }
                 }
             }
