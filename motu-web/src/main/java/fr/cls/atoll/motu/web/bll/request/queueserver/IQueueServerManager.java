@@ -72,4 +72,9 @@ public interface IQueueServerManager {
      */
     Map<QueueType, QueueManagement> getQueueManagementMap();
 
+    /**
+     * .
+     */
+    void stop();
+
 }

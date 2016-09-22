@@ -289,10 +289,16 @@ public class QueueServerManager implements IQueueServerManager {
      * @throws MotuException the motu exception
      */
     @Override
-    public void shutdown() throws MotuException {
+    public void shutdown() {
         for (QueueManagement queueManagement : getQueueManagement().values()) {
             queueManagement.shutdown();
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void stop() {
+        shutdown();
     }
 
 }

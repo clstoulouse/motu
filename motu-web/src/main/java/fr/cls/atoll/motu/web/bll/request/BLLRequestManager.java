@@ -113,6 +113,7 @@ public class BLLRequestManager implements IBLLRequestManager {
                 }
             }
         }
+        queueServerManager.stop();
     }
 
     /** {@inheritDoc} */

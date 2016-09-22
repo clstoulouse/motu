@@ -195,8 +195,8 @@ public class RequestCleaner implements IRequestCleaner {
             RequestDownloadStatus rds = BLLManager.getInstance().getRequestManager().getDownloadRequestStatus(id);
             if (rds == null
                     || (rds.getEndProcessingDateTime() > 0
-                            && (rds.getEndProcessingDateTime() + cleanRequestIntervalInMs) > System.currentTimeMillis())
-                    || ((rds.getCreationDateTime() + BLLRequestManager.REQUEST_TIMEOUT_MSEC) > System.currentTimeMillis())) {
+                            && (rds.getEndProcessingDateTime() + cleanRequestIntervalInMs) < System.currentTimeMillis())
+                    || ((rds.getCreationDateTime() + BLLRequestManager.REQUEST_TIMEOUT_MSEC) < System.currentTimeMillis())) {
                 allNonRunningRequestIdList.add(id);
             }
         }

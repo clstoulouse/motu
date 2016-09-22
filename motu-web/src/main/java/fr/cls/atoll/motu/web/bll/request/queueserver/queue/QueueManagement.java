@@ -181,7 +181,7 @@ public class QueueManagement {
      * 
      * @throws MotuException the motu exception
      */
-    public void shutdown() throws MotuException {
+    public void shutdown() {
         try {
             // Remove pending Runnable from the pool
             Collection<Runnable> removedRunnableList = new ArrayList<Runnable>();
@@ -203,10 +203,9 @@ public class QueueManagement {
                 threadPoolExecutor.awaitTermination(1, TimeUnit.SECONDS);
             }
         } catch (InterruptedException e) {
-            throw new MotuException(ErrorType.SHUTTING_DOWN, "ERROR in QueueManagement.shutdown.", e);
+            LOG.error("ERROR in QueueManagement.shutdown.", e);
         }
         LOG.info(String.format("Queue '%s %s' is shutdown.", this.getName(), this.queueConfig.getDescription()));
-
     }
 
     /**

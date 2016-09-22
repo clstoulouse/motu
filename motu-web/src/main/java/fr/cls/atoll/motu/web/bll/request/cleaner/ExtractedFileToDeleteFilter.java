@@ -37,7 +37,7 @@ public class ExtractedFileToDeleteFilter implements FileFilter {
     public boolean accept(File file) {
         boolean acceptFile = false;
         if (file.isFile() && filePattern != null && timeInMsfAfterWhichFileIsAccepted > 0 && file.getName().matches(filePattern)) {
-            acceptFile = ((file.lastModified() + timeInMsfAfterWhichFileIsAccepted) > System.currentTimeMillis());
+            acceptFile = ((file.lastModified() + timeInMsfAfterWhichFileIsAccepted) < System.currentTimeMillis());
         }
 
         return acceptFile;
