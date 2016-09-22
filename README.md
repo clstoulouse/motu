@@ -646,10 +646,13 @@ String with format ${var} will be substituted with Java property variables. @See
 Http URL used to serve files from to the path where archive __motu-web-static-files-X.Y.Z-classifier-buildId.tar.gz__ has been extracted.  
 For example: 
 
-* Value http://resources.myocean.eu/motu serve a folder which contains ./css/motu/motu.css.  
-It so enable to server http://resources.myocean.eu/motu/css/motu/motu.css  
-* Value . is used to server statics files included by default in Motu application
-* Remove this value to serve a path accessible from $motuServer/motu
+* When __httpBaseRef__ is set to an __URL__, for example __"http://resources.myocean.eu/motu"__, this URL serves a folder which contains ./css/motu/motu.css.  
+For example, it enables to serve the file http://resources.myocean.eu/motu/css/motu/motu.css  
+* When __httpBaseRef__ is set to __"."__, it serves static files which are included by default in Motu application
+* When __httpBaseRef__ is __removed__ (not just empty but attribute is removed), it serves a path accessible from URL $motuIP/${motuContext}/motu
+
+__IMPORTANT__: When Motu URL starts with "HTTPS", if you set an URL in __httpBaseRef__, this URL has also to start with "HTTPS". On the contrary, 
+when Motu URL starts with "HTTP", if you set an URL in __httpBaseRef__, this URL can start with "HTTP" or "HTTPS".
 
         
 ##### cleanExtractionFileInterval
