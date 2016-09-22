@@ -83,7 +83,7 @@ public class ListServicesAction extends AbstractAuthorizedAction {
         velocityContext.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
         velocityContext.put("serviceList", VelocityModelConverter.converServiceList(mc, csList_));
 
-        String response = VelocityTemplateManager.getResponseWithVelocity(velocityContext, null, null);
+        String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, null);
         try {
             getResponse().getWriter().write(response);
         } catch (Exception e) {

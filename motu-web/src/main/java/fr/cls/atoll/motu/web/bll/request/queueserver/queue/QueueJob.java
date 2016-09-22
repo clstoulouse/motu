@@ -89,4 +89,11 @@ public class QueueJob implements IQueueJob, Comparable<IQueueJob> {
         return 0;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void stop() {
+        // Here there is nothing to do, we let this request ends in a normal way
+
+    }
+
 }

@@ -15,10 +15,6 @@ import org.jasig.cas.client.util.AssertionHolder;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
-import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
-import fr.cls.atoll.motu.api.message.xml.StatusModeType;
-import fr.cls.atoll.motu.api.utils.JAXBWriter;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
@@ -42,6 +38,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.validator.ProductHTTPParamete
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ScriptVersionHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.TemporalHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
 
 /**
  * <br>
@@ -193,26 +190,13 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
     @Override
     protected void onArgumentError(MotuException motuException) throws MotuException {
-        getResponse().setContentType(CONTENT_TYPE_XML);
         try {
-            JAXBWriter.getInstance().write(createStatusModeResponseInError(motuException), getResponse().getWriter());
-        } catch (Exception e) {
-            throw new MotuException(ErrorType.SYSTEM, "JAXB error while writing createStatusModeResponse: ", e);
+            getResponse().setContentType(CONTENT_TYPE_XML);
+            String response = XMLConverter.toXMLString(motuException, getActionCode(), scriptVersionParameterValidator.getParameterValueValidated());
+            getResponse().getWriter().write(response);
+        } catch (IOException e) {
+            throw new MotuException(ErrorType.SYSTEM, "Error while writing HTTP response ", e);
         }
-    }
-
-    private StatusModeResponse createStatusModeResponseInError(MotuException motuException) throws MotuException {
-        ObjectFactory objectFactory = new ObjectFactory();
-        StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
-        statusModeResponse.setCode(StringUtils.getErrorCode(getActionCode(), ErrorType.OK));
-        statusModeResponse.setStatus(StatusModeType.ERROR);
-        statusModeResponse.setMsg(StringUtils.getLogMessage(getActionCode(),
-                                                            motuException.getErrorType(),
-                                                            BLLManager.getInstance().getMessagesErrorManager()
-                                                                    .getMessageError(motuException.getErrorType(), motuException.getMessage())));
-        statusModeResponse.setRequestId(-1L);
-        statusModeResponse.setScriptVersion(scriptVersionParameterValidator.getParameterValueValidated());
-        return statusModeResponse;
     }
 
     /**
@@ -233,11 +217,12 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_STATUS)) {
             // Asynchronous mode
             long requestId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(cs, p, createExtractionParameters(), this);
-            getResponse().setContentType(CONTENT_TYPE_XML);
             try {
-                JAXBWriter.getInstance().write(createStatusModeResponse(requestId), getResponse().getWriter());
-            } catch (Exception e) {
-                throw new MotuException(ErrorType.SYSTEM, "JAXB error while writing createStatusModeResponse: ", e);
+                getResponse().setContentType(CONTENT_TYPE_XML);
+                String response = XMLConverter.toXMLString(requestId, getActionCode(), scriptVersionParameterValidator.getParameterValueValidated());
+                getResponse().getWriter().write(response);
+            } catch (IOException e) {
+                throw new MotuException(ErrorType.SYSTEM, "Error while writing HTTP response ", e);
             }
         } else {
             ProductResult pr = BLLManager.getInstance().getRequestManager().download(cs, p, createExtractionParameters(), this);
@@ -321,17 +306,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         // Set assertion to manage CAS.
         extractionParameters.setAssertion(AssertionHolder.getAssertion());
         return extractionParameters;
-    }
-
-    private StatusModeResponse createStatusModeResponse(long requestId) {
-        ObjectFactory objectFactory = new ObjectFactory();
-        StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
-        statusModeResponse.setCode(StringUtils.getErrorCode(getActionCode(), ErrorType.OK));
-        statusModeResponse.setStatus(StatusModeType.INPROGRESS);
-        statusModeResponse.setMsg("request in progress");
-        statusModeResponse.setRequestId(requestId);
-        statusModeResponse.setScriptVersion(scriptVersionParameterValidator.getParameterValueValidated());
-        return statusModeResponse;
     }
 
     /** {@inheritDoc} */

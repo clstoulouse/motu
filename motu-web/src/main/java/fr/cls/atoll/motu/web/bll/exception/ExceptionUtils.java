@@ -21,7 +21,6 @@ import fr.cls.atoll.motu.api.message.xml.VariablesVocabulary;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.messageserror.BLLMessagesErrorManager;
 import fr.cls.atoll.motu.web.bll.messageserror.IBLLMessagesErrorManager;
-import fr.cls.atoll.motu.web.bll.request.queueserver.queue.log.RunnableExtraction;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 
 /**
@@ -141,12 +140,7 @@ public class ExceptionUtils {
     public static void setError(String actionCode, StatusModeResponse statusModeResponse, ErrorType errorType) {
         try {
             statusModeResponse.setStatus(StatusModeType.ERROR);
-            String message = "";
-            if (errorType.equals(ErrorType.SHUTTING_DOWN)) {
-                message = RunnableExtraction.SHUTDOWN_MSG;
-            } else {
-                message = errorType.toString();
-            }
+            String message = errorType.toString();
             statusModeResponse.setMsg(getErrorMessage(errorType));
             statusModeResponse.setCode(StringUtils.getErrorCode(actionCode, errorType));
             LOGGER.error(StringUtils.getLogMessage(actionCode, errorType, message));

@@ -1,13 +1,11 @@
 package fr.cls.atoll.motu.web.usl.request.actions;
 
 import java.io.IOException;
-import java.io.Writer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.bind.JAXBException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,12 +13,9 @@ import org.apache.logging.log4j.Logger;
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.ProductMetadataInfo;
-import fr.cls.atoll.motu.api.utils.JAXBWriter;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.catalog.product.IBLLProductManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.web.bll.exception.MotuMarshallException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
@@ -28,6 +23,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.AbstractHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ExtraMetaDataHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.XMLFileHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
 
 /**
  * <br>
@@ -112,15 +108,17 @@ public class DescribeProductAction extends AbstractProductInfoAction {
         if (hasProductIdentifierErrMsg == null) {
             ProductMetadataInfo pmdi = null;
             try {
+                String httpParameterProductId = getProductId();
                 Product currentProduct = getProduct();
-                if (checkProduct(currentProduct, getProductId())) {
+                if (checkProduct(currentProduct, httpParameterProductId)) {
                     pmdi = BLLManager.getInstance().getDescribeProductCacheManager().getDescribeProduct(currentProduct.getProductId());
-
-                    marshallProductMetadata(pmdi, getResponse().getWriter());
-
-                    getResponse().setContentType(null);
+                    if (checkProductMetaDataInfo(pmdi, httpParameterProductId)) {
+                        getResponse().setContentType(CONTENT_TYPE_XML);
+                        String response = XMLConverter.toXMLString(pmdi);
+                        getResponse().getWriter().write(response);
+                    }
                 }
-            } catch (MotuExceptionBase | JAXBException | IOException e) {
+            } catch (IOException e) {
                 throw new MotuException(ErrorType.SYSTEM, e);
             }
         } else {
@@ -210,24 +208,4 @@ public class DescribeProductAction extends AbstractProductInfoAction {
         }
     }
 
-    /**
-     * Marshall Product MetaData.
-     * 
-     * @param batchQueue the batch queue
-     * @param productMetatData the request size
-     * @param writer the writer
-     * 
-     * @throws MotuMarshallException the motu marshall exception
-     * @throws JAXBException
-     * @throws IOException
-     */
-    public static void marshallProductMetadata(ProductMetadataInfo productMetatData, Writer writer)
-            throws MotuMarshallException, JAXBException, IOException {
-        if (writer == null) {
-            return;
-        }
-        JAXBWriter.getInstance().write(productMetatData, writer);
-        writer.flush();
-        writer.close();
-    }
 }

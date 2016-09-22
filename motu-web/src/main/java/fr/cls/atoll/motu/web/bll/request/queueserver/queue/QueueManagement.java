@@ -35,7 +35,6 @@ import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.request.queueserver.queue.log.RunnableExtraction;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
 
 /**
@@ -215,8 +214,8 @@ public class QueueManagement {
      */
     public void shutdown(Collection<Runnable> removedRunnableList) {
         for (Runnable r : removedRunnableList) {
-            if (r instanceof RunnableExtraction) {
-                ((RunnableExtraction) r).shutdown();
+            if (r instanceof IQueueJob) {
+                ((IQueueJob) r).stop();
             }
         }
     }

@@ -201,7 +201,7 @@ public class USLRequestManager implements IUSLRequestManager {
         velocityContext.put("body_template", VelocityTemplateManager.getTemplatePath("exception", VelocityTemplateManager.DEFAULT_LANG));
         velocityContext.put("message", StringUtils.getLogMessage(actionCode, errorType, errMessage));
 
-        String response = VelocityTemplateManager.getResponseWithVelocity(velocityContext, null, null);
+        String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, null);
         try {
             response_.getWriter().write(response);
         } catch (Exception e) {

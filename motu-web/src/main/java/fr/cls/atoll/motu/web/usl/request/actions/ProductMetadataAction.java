@@ -94,7 +94,7 @@ public class ProductMetadataAction extends AbstractAuthorizedAction {
         velocityContext.put("user", USLManager.getInstance().getUserManager().getUserName());
         velocityContext.put("product", VelocityModelConverter.convertToProduct(product_));
 
-        String response = VelocityTemplateManager.getResponseWithVelocity(velocityContext, null, cs_.getVeloTemplatePrefix());
+        String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, cs_.getVeloTemplatePrefix());
         try {
             getResponse().getWriter().write(response);
         } catch (Exception e) {

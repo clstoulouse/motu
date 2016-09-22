@@ -221,11 +221,15 @@ public class BLLRequestManager implements IBLLRequestManager {
         c.setTimeInMillis(rds.getCreationDateTime());
         qli.setInQueueTime(c.getTime());
 
-        c.setTimeInMillis(rds.getStartProcessingDateTime());
-        qli.setStartTime(c.getTime());
+        if (rds.getStartProcessingDateTime() > 0) {
+            c.setTimeInMillis(rds.getStartProcessingDateTime());
+            qli.setStartTime(c.getTime());
+        }
 
-        c.setTimeInMillis(rds.getEndProcessingDateTime());
-        qli.setEndTime(c.getTime());
+        if (rds.getEndProcessingDateTime() > 0) {
+            c.setTimeInMillis(rds.getEndProcessingDateTime());
+            qli.setEndTime(c.getTime());
+        }
 
         // SMA: Not sure that this field as a real sense, keep it for retro compatibility between Motu
         // versions 2.x and 3.x

@@ -58,7 +58,6 @@ public class QueueLogError {
     private String message = null;
 
     /** The date error. */
-    @SuppressWarnings("unused")
     private Date dateError = null;
 
     /**

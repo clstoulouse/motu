@@ -74,7 +74,7 @@ public class ListCatalogAction extends AbstractAuthorizedAction {
         velocityContext.put("service", VelocityModelConverter.convertToService(mc_, cs_, cd));
         velocityContext.put("user", USLManager.getInstance().getUserManager().getUserName());
 
-        String response = VelocityTemplateManager.getResponseWithVelocity(velocityContext, null, cs_.getVeloTemplatePrefix());
+        String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, cs_.getVeloTemplatePrefix());
         try {
             getResponse().getWriter().write(response);
         } catch (Exception e) {

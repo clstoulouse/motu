@@ -10,10 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuMsgConstant;
-import fr.cls.atoll.motu.api.message.xml.ProductMetadataInfo;
-import fr.cls.atoll.motu.api.message.xml.RequestSize;
-import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
-import fr.cls.atoll.motu.api.message.xml.TimeCoverage;
 
 /**
  * <br>
@@ -80,41 +76,8 @@ public class JAXBWriter {
      * @param writer
      * @throws JAXBException
      */
-    public synchronized void write(TimeCoverage timeCoverage, Writer writer) throws JAXBException {
-        marshallerMotuMsg.marshal(timeCoverage, writer);
-    }
-
-    /**
-     * .
-     * 
-     * @param statusModeResponse
-     * @param writer
-     * @throws JAXBException
-     */
-    public synchronized void write(StatusModeResponse statusModeResponse, Writer writer) throws JAXBException {
-        marshallerMotuMsg.marshal(statusModeResponse, writer);
-    }
-
-    /**
-     * .
-     * 
-     * @param requestSize
-     * @param writer
-     * @throws JAXBException
-     */
-    public synchronized void write(RequestSize requestSize, Writer writer) throws JAXBException {
-        marshallerMotuMsg.marshal(requestSize, writer);
-    }
-
-    /**
-     * .
-     * 
-     * @param statusModeResponse
-     * @param writer
-     * @throws JAXBException
-     */
-    public synchronized void write(ProductMetadataInfo productMetaDataInfo, Writer writer) throws JAXBException {
-        marshallerMotuMsg.marshal(productMetaDataInfo, writer);
+    public synchronized void write(Object jaxbObject, Writer writer) throws JAXBException {
+        marshallerMotuMsg.marshal(jaxbObject, writer);
     }
 
 }

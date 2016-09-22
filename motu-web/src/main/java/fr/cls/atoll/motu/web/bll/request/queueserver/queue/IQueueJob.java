@@ -23,4 +23,9 @@ public interface IQueueJob extends Runnable {
      * @param e
      */
     void onJobException(MotuException e);
+
+    /**
+     * .
+     */
+    void stop();
 }

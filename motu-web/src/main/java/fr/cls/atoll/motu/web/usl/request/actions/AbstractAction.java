@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.message.xml.ProductMetadataInfo;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
@@ -288,6 +289,14 @@ public abstract class AbstractAction {
         boolean isValid = (p != null);
         if (!isValid) {
             onArgumentError(new MotuException(ErrorType.UNKNOWN_PRODUCT, productId));
+        }
+        return isValid;
+    }
+
+    protected boolean checkProductMetaDataInfo(ProductMetadataInfo productMetadataInfo, String productId) throws MotuException {
+        boolean isValid = (productMetadataInfo != null);
+        if (!isValid) {
+            onArgumentError(new MotuException(ErrorType.SYSTEM, "Unable to load product medata info for product id=" + productId));
         }
         return isValid;
     }

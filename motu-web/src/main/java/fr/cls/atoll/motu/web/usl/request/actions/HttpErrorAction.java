@@ -59,7 +59,7 @@ public class HttpErrorAction extends AbstractAction {
         velocityContext.put("httpErrorCode", httpErrorCodeHTTPParameterValidator.getParameterValueValidated());
         velocityContext.put("httpErrorCodeStatus", getResponse().getStatus());
 
-        String response = VelocityTemplateManager.getResponseWithVelocity(velocityContext, null, null);
+        String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, null);
         try {
             getResponse().getWriter().write(response);
         } catch (Exception e) {

@@ -7,8 +7,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -34,22 +32,20 @@ import fr.cls.atoll.motu.web.usl.response.velocity.model.ICommonService;
  * @author Sylvain MARTY
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class VelocityTemplateManager {
+public class VelocityTemplateManager implements IVelocityTemplateManager {
 
     public final static String VELOCITY_TEMPLATE_DIR = "velocityTemplates/";
     public final static String DEFAULT_LANG = "uk";
     public final static String DEFAULT_CHARSET_ENCODING = "UTF-8";
 
-    private final static Logger LOGGER = LogManager.getLogger();
-
     private VelocityEngine velocityEngine;
 
-    private static VelocityTemplateManager s_instance;
+    private static IVelocityTemplateManager s_instance;
 
     private VelocityTemplateManager() {
     }
 
-    public static VelocityTemplateManager getInstance() {
+    public static IVelocityTemplateManager getInstance() {
         if (s_instance == null) {
             s_instance = new VelocityTemplateManager();
         }
@@ -204,6 +200,7 @@ public class VelocityTemplateManager {
      * 
      * @return la valeur.
      */
+    @Override
     public VelocityEngine getVelocityEngine() {
         return velocityEngine;
     }
@@ -213,6 +210,7 @@ public class VelocityTemplateManager {
      * 
      * @throws Exception
      */
+    @Override
     public void init() throws Exception {
         initVelocityEngine();
     }
@@ -260,7 +258,9 @@ public class VelocityTemplateManager {
         return buffer.toString();
     }
 
-    public static String getResponseWithVelocity(Map<String, Object> velocityContext_, Template template_) throws MotuException {
+    @Override
+    public String getResponseWithVelocity(Map<String, Object> velocityContext_, Template template_) throws MotuException {
+        String response = null;
         VelocityContext context = VelocityTemplateManager.getPrepopulatedVelocityContext();
         if (velocityContext_ != null && velocityContext_.size() > 0) {
             for (String k : velocityContext_.keySet()) {
@@ -268,19 +268,20 @@ public class VelocityTemplateManager {
             }
         }
 
-        try {
-            StringWriter sw = new StringWriter();
+        try (StringWriter sw = new StringWriter()) {
             template_.merge(context, sw);
-            return sw.getBuffer().toString();
+            response = sw.getBuffer().toString();
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
         }
+
+        return response;
     }
 
-    public static String getResponseWithVelocity(Map<String, Object> velocityContext_, String lang, String velocityTemplateName_)
-            throws MotuException {
+    @Override
+    public String getResponseWithVelocity(Map<String, Object> velocityContext_, String lang, String velocityTemplateName_) throws MotuException {
         try {
-            Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(lang, velocityTemplateName_);
+            Template template = initVelocityEngineWithGenericTemplate(lang, velocityTemplateName_);
             return getResponseWithVelocity(velocityContext_, template);
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);

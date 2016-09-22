@@ -1,18 +1,29 @@
 package fr.cls.atoll.motu.web.usl.response.xml.converter;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Interval;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
+import fr.cls.atoll.motu.api.message.xml.ProductMetadataInfo;
+import fr.cls.atoll.motu.api.message.xml.RequestSize;
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
+import fr.cls.atoll.motu.api.message.xml.TimeCoverage;
+import fr.cls.atoll.motu.api.utils.JAXBWriter;
 import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingQueueCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingQueueDataCapacityException;
@@ -52,6 +63,190 @@ public class XMLConverter {
 
     /** Logger for this class. */
     private static final Logger LOGGER = LogManager.getLogger();
+
+    private static String convertToStringWithJAXBtoString(Object objTowWrite) throws MotuException {
+        String xmlResult = null;
+        try (StringWriter sw = new StringWriter()) {
+            JAXBWriter.getInstance().write(objTowWrite, sw);
+            xmlResult = sw.getBuffer().toString();
+        } catch (IOException | JAXBException e) {
+            throw new MotuException(ErrorType.SYSTEM, "Error during JAXB serialisation", e);
+        }
+        return xmlResult;
+    }
+
+    /**
+     * .
+     * 
+     * @param requestSize
+     * @param actionCode
+     * @return
+     * @throws MotuException
+     */
+    public static String toXMLString(RequestSize requestSize, String actionCode) throws MotuException {
+        return convertToStringWithJAXBtoString(requestSize);
+    }
+
+    /**
+     * .
+     * 
+     * @param rds
+     * @param actionCode
+     * @return
+     * @throws MotuException
+     */
+    public static String toXMLString(RequestDownloadStatus rds, String actionCode) throws MotuException {
+        return convertToStringWithJAXBtoString(convertStatusModeResponse(actionCode, rds));
+    }
+
+    /**
+     * .
+     * 
+     * @param motuInvalidRequestIdException
+     * @param actionCode
+     * @return
+     * @throws MotuException
+     */
+    public static String toXMLString(MotuInvalidRequestIdException motuInvalidRequestIdException, String actionCode) throws MotuException {
+        return convertToStringWithJAXBtoString(createStatusModeResponse(motuInvalidRequestIdException, actionCode));
+    }
+
+    /**
+     * Creates the status mode response.
+     * 
+     * @param e the e
+     * 
+     * @return the status mode response
+     */
+    private static StatusModeResponse createStatusModeResponse(Exception e, String actionCode) {
+        ObjectFactory objectFactory = new ObjectFactory();
+        StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
+        ExceptionUtils.setStatusModeResponseException(actionCode, e, statusModeResponse);
+        return statusModeResponse;
+    }
+
+    /**
+     * .
+     * 
+     * @param timeCoverage
+     * @param actionCode
+     * @return
+     * @throws MotuException
+     */
+    public static String toXMLString(Interval interval, String actionCode) throws MotuException {
+        return convertToStringWithJAXBtoString(getTimeCoverage(interval, actionCode));
+    }
+
+    /**
+     * Inits the time coverage.
+     * 
+     * @param datePeriod the date period
+     * 
+     * @return the time coverage
+     * 
+     * @throws MotuException the motu exception
+     */
+    private static TimeCoverage getTimeCoverage(Interval datePeriod, String actionCode) throws MotuException {
+        TimeCoverage timeCoverage = createTimeCoverage(actionCode);
+        if (datePeriod == null) {
+            return timeCoverage;
+        }
+
+        Date start = datePeriod.getStart().toDate();
+        Date end = datePeriod.getEnd().toDate();
+
+        timeCoverage.setStart(dateToXMLGregorianCalendar(start));
+        timeCoverage.setEnd(dateToXMLGregorianCalendar(end));
+        timeCoverage.setCode(StringUtils.getErrorCode(actionCode, ErrorType.OK));
+        timeCoverage.setMsg(ErrorType.OK.toString());
+
+        return timeCoverage;
+    }
+
+    /**
+     * Date to XML gregorian calendar.
+     * 
+     * @param date the date
+     * 
+     * @return the XML gregorian calendar
+     * 
+     * @throws MotuException the motu exception
+     */
+    private static XMLGregorianCalendar dateToXMLGregorianCalendar(Date date) throws MotuException {
+        GregorianCalendar gCalendar = new GregorianCalendar();
+        gCalendar.setTime(date);
+        XMLGregorianCalendar xmlGregorianCalendar;
+        try {
+            xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendar);
+        } catch (DatatypeConfigurationException e) {
+            throw new MotuException(ErrorType.INVALID_DATE, "ERROR in dateToXMLGregorianCalendar", e);
+        }
+        return xmlGregorianCalendar;
+    }
+
+    /**
+     * Creates the time coverage.
+     * 
+     * @return the time coverage
+     */
+    private static TimeCoverage createTimeCoverage(String actionCode) {
+        ObjectFactory objectFactory = new ObjectFactory();
+
+        TimeCoverage timeCoverage = objectFactory.createTimeCoverage();
+        timeCoverage.setStart(null);
+        timeCoverage.setEnd(null);
+        ExceptionUtils
+                .setError(actionCode,
+                          timeCoverage,
+                          new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
+        return timeCoverage;
+
+    }
+
+    public static String toXMLString(ProductMetadataInfo productMetaDataInfo) throws MotuException {
+        return convertToStringWithJAXBtoString(productMetaDataInfo);
+    }
+
+    public static String toXMLString(long requestId, String actionCode, String scriptVersion) throws MotuException {
+        return convertToStringWithJAXBtoString(createStatusModeResponse(requestId, actionCode, scriptVersion));
+    }
+
+    private static StatusModeResponse createStatusModeResponse(long requestId, String actionCode, String scriptVersion) {
+        ObjectFactory objectFactory = new ObjectFactory();
+        StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
+        statusModeResponse.setCode(StringUtils.getErrorCode(actionCode, ErrorType.OK));
+        statusModeResponse.setStatus(StatusModeType.INPROGRESS);
+        statusModeResponse.setMsg("request in progress");
+        statusModeResponse.setRequestId(requestId);
+        statusModeResponse.setScriptVersion(scriptVersion);
+        return statusModeResponse;
+    }
+
+    /**
+     * .
+     * 
+     * @param motuException
+     * @return
+     * @throws MotuException
+     */
+    public static String toXMLString(MotuException motuException, String actionCode, String scriptVersion) throws MotuException {
+        return convertToStringWithJAXBtoString(createStatusModeResponseInError(motuException, actionCode, scriptVersion));
+    }
+
+    private static StatusModeResponse createStatusModeResponseInError(MotuException motuException, String actionCode, String scriptVersion)
+            throws MotuException {
+        ObjectFactory objectFactory = new ObjectFactory();
+        StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
+        statusModeResponse.setCode(StringUtils.getErrorCode(actionCode, ErrorType.OK));
+        statusModeResponse.setStatus(StatusModeType.ERROR);
+        statusModeResponse.setMsg(StringUtils.getLogMessage(actionCode,
+                                                            motuException.getErrorType(),
+                                                            BLLManager.getInstance().getMessagesErrorManager()
+                                                                    .getMessageError(motuException.getErrorType(), motuException.getMessage())));
+        statusModeResponse.setRequestId(-1L);
+        statusModeResponse.setScriptVersion(scriptVersion);
+        return statusModeResponse;
+    }
 
     public static StatusModeResponse convertStatusModeResponse(RequestDownloadStatus requestDownloadStatus) throws MotuException {
         return getResponse(String.valueOf(convertErrorCode(requestDownloadStatus.getRunningException())), requestDownloadStatus);
@@ -198,4 +393,5 @@ public class XMLConverter {
         }
         return xmlGregorianCalendar;
     }
+
 }

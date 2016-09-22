@@ -1,13 +1,10 @@
 package fr.cls.atoll.motu.web.usl.request.actions;
 
 import java.io.IOException;
-import java.io.Writer;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.bind.JAXBException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,21 +12,15 @@ import org.joda.time.Interval;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
-import fr.cls.atoll.motu.api.message.xml.TimeCoverage;
-import fr.cls.atoll.motu.api.utils.JAXBWriter;
-import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.web.bll.exception.MotuMarshallException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
-import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.AbstractHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ProductHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
 
 /**
  * <br>
@@ -117,91 +108,24 @@ public class TimeCoverageAction extends AbstractProductInfoAction {
                 Product product = getProduct();
                 if (checkProduct(product, getProductId())) {
                     initProductMetaData(product);
-                    TimeCoverage timeCoverage = initTimeCoverage(product.getProductMetaData());
-
-                    marshallTimeCoverage(timeCoverage, getResponse().getWriter());
-
-                    getResponse().setContentType(null);
+                    Interval datePeriod = null;
+                    if (product.getProductMetaData() != null) {
+                        datePeriod = product.getProductMetaData().getTimeCoverage();
+                        getResponse().setContentType(CONTENT_TYPE_XML);
+                        String response = XMLConverter.toXMLString(datePeriod, getActionCode());
+                        getResponse().getWriter().write(response);
+                    } else {
+                        throw new MotuException(
+                                ErrorType.BAD_PARAMETERS,
+                                new InvalidHTTPParameterException("Product Metadata not found", null, null, null));
+                    }
                 }
-            } catch (MotuExceptionBase | JAXBException | IOException e) {
+            } catch (IOException e) {
                 throw new MotuException(ErrorType.SYSTEM, e);
             }
         } else {
             throw new MotuException(ErrorType.BAD_PARAMETERS, new InvalidHTTPParameterException(hasProductIdentifierErrMsg, null, null, null));
         }
-    }
-
-    /**
-     * Marshall time coverage.
-     * 
-     * @param timeCoverage the time coverage
-     * @param writer the writer
-     * 
-     * @throws MotuMarshallException the motu marshall exception
-     * @throws JAXBException
-     * @throws IOException
-     */
-    public static void marshallTimeCoverage(TimeCoverage timeCoverage, Writer writer) throws MotuMarshallException, JAXBException, IOException {
-        if (writer == null) {
-            return;
-        }
-
-        JAXBWriter.getInstance().write(timeCoverage, writer);
-        writer.flush();
-        writer.close();
-    }
-
-    public TimeCoverage initTimeCoverage(ProductMetaData productMetaData) throws MotuException {
-        if (productMetaData == null) {
-            return null;
-        }
-        Interval datePeriod = productMetaData.getTimeCoverage();
-        return initTimeCoverage(datePeriod);
-    }
-
-    /**
-     * Inits the time coverage.
-     * 
-     * @param datePeriod the date period
-     * 
-     * @return the time coverage
-     * 
-     * @throws MotuException the motu exception
-     */
-    public TimeCoverage initTimeCoverage(Interval datePeriod) throws MotuException {
-        TimeCoverage timeCoverage = createTimeCoverage();
-        if (datePeriod == null) {
-            return timeCoverage;
-        }
-
-        Date start = datePeriod.getStart().toDate();
-        Date end = datePeriod.getEnd().toDate();
-
-        timeCoverage.setStart(dateToXMLGregorianCalendar(start));
-        timeCoverage.setEnd(dateToXMLGregorianCalendar(end));
-        timeCoverage.setCode(StringUtils.getErrorCode(getActionCode(), ErrorType.OK));
-        timeCoverage.setMsg(ErrorType.OK.toString());
-
-        return timeCoverage;
-    }
-
-    /**
-     * Creates the time coverage.
-     * 
-     * @return the time coverage
-     */
-    public TimeCoverage createTimeCoverage() {
-        ObjectFactory objectFactory = new ObjectFactory();
-
-        TimeCoverage timeCoverage = objectFactory.createTimeCoverage();
-        timeCoverage.setStart(null);
-        timeCoverage.setEnd(null);
-        ExceptionUtils
-                .setError(getActionCode(),
-                          timeCoverage,
-                          new MotuException(ErrorType.SYSTEM, "If you see that message, the request has failed and the error has not been filled"));
-        return timeCoverage;
-
     }
 
 }

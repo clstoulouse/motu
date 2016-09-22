@@ -41,6 +41,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.validator.LatitudeHTTPParamet
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.LongitudeHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ScriptVersionHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.TemporalHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
 
 /**
  * <br>
@@ -146,10 +147,25 @@ public class GetSizeAction extends AbstractProductInfoAction {
      */
     @Override
     protected void process() throws MotuException {
-        LOGGER.debug("GetSize in progress");
         try {
-            getAmountDataSize(createExtractionParameters(), getResponse());
-        } catch (IOException | JAXBException e) {
+            Product p = getProduct();
+            if (checkProduct(p, getProductId())) {
+                initProductMetaData(p);
+                ExtractionParameters extractionParameters = createExtractionParameters();
+                double productDataSize = BLLManager.getInstance().getRequestManager()
+                        .getProductDataSizeIntoByte(p,
+                                                    extractionParameters.getListVar(),
+                                                    extractionParameters.getListTemporalCoverage(),
+                                                    extractionParameters.getListLatLonCoverage(),
+                                                    extractionParameters.getListDepthCoverage());
+                double productMaxAllowedDataSize = BLLManager.getInstance().getRequestManager().getProductMaxAllowedDataSizeIntoByte(p);
+                RequestSize requestSize = getRequestSize(productDataSize, productMaxAllowedDataSize);
+
+                getResponse().setContentType(CONTENT_TYPE_XML);
+                String response = XMLConverter.toXMLString(requestSize, getActionCode());
+                getResponse().getWriter().write(response);
+            }
+        } catch (IOException e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while computing getAmountDataSize", e);
         }
     }
@@ -183,53 +199,6 @@ public class GetSizeAction extends AbstractProductInfoAction {
     }
 
     /**
-     * Gets the amount data size.
-     *
-     * @param extractionParameters the extraction parameters
-     * @param response the response
-     * @return the amount data size
-     * @throws ServletException the servlet exception
-     * @throws IOException the IO exception
-     * @throws JAXBException
-     */
-    private void getAmountDataSize(ExtractionParameters extractionParameters, HttpServletResponse response)
-            throws MotuException, JAXBException, IOException {
-
-        try {
-            Product p = getProduct();
-            if (checkProduct(p, getProductId())) {
-                initProductMetaData(p);
-                double productDataSize = BLLManager.getInstance().getRequestManager()
-                        .getProductDataSizeIntoByte(p,
-                                                    extractionParameters.getListVar(),
-                                                    extractionParameters.getListTemporalCoverage(),
-                                                    extractionParameters.getListLatLonCoverage(),
-                                                    extractionParameters.getListDepthCoverage());
-                double productMaxAllowedDataSize = BLLManager.getInstance().getRequestManager().getProductMaxAllowedDataSizeIntoByte(p);
-                RequestSize requestSize = initRequestSize(productDataSize, productMaxAllowedDataSize);
-                marshallRequestSize(requestSize, getResponse().getWriter());
-            }
-        } catch (MotuMarshallException e) {
-            try {
-                LOGGER.error(StringUtils.getLogMessage(getActionCode(),
-                                                       ErrorType.SYSTEM,
-                                                       BLLManager.getInstance().getMessagesErrorManager().getMessageError(ErrorType.SYSTEM)),
-                             e);
-                marshallRequestSize(e, getResponse().getWriter());
-            } catch (MotuMarshallException e2) {
-                LOGGER.error(StringUtils.getLogMessage(getActionCode(),
-                                                       ErrorType.SYSTEM,
-                                                       BLLManager.getInstance().getMessagesErrorManager().getMessageError(ErrorType.SYSTEM)),
-                             e2);
-                getResponse().getWriter()
-                        .write(StringUtils.getLogMessage(getActionCode(),
-                                                         ErrorType.SYSTEM,
-                                                         BLLManager.getInstance().getMessagesErrorManager().getMessageError(ErrorType.SYSTEM)));
-            }
-        }
-    }
-
-    /**
      * Inits the request size.
      * 
      * @param batchQueue the batch queue
@@ -238,7 +207,7 @@ public class GetSizeAction extends AbstractProductInfoAction {
      * 
      * @return the request size
      */
-    private RequestSize initRequestSize(double size, double maxAllowedSize) {
+    private RequestSize getRequestSize(double size, double maxAllowedSize) {
         RequestSize requestSize = createRequestSize();
 
         requestSize.setSize(size);
@@ -263,6 +232,8 @@ public class GetSizeAction extends AbstractProductInfoAction {
         }
 
         requestSize.setMaxAllowedSize(maxAllowedSize);
+
+        requestSize.setUnit("kb");
 
         return requestSize;
     }
@@ -332,36 +303,9 @@ public class GetSizeAction extends AbstractProductInfoAction {
      * @return the request size
      */
     public RequestSize createRequestSize(Exception e) {
-
         RequestSize requestSize = createRequestSize();
         ExceptionUtils.setError(getActionCode(), requestSize, e);
         return requestSize;
-    }
-
-    /**
-     * Marshall request size.
-     * 
-     * @param batchQueue the batch queue
-     * @param requestSize the request size
-     * @param writer the writer
-     * 
-     * @throws MotuMarshallException the motu marshall exception
-     * @throws JAXBException
-     * @throws IOException
-     */
-    public void marshallRequestSize(RequestSize requestSize, Writer writer) throws MotuMarshallException, JAXBException, IOException {
-        if (writer == null) {
-            return;
-        }
-
-        if (requestSize == null) {
-            requestSize = initRequestSize(-1d, -1d);
-        }
-
-        requestSize.setUnit("kb");
-        JAXBWriter.getInstance().write(requestSize, writer);
-        writer.flush();
-        writer.close();
     }
 
     /** {@inheritDoc} */

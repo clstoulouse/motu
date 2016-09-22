@@ -1,27 +1,16 @@
 package fr.cls.atoll.motu.web.usl.request.actions;
 
 import java.io.IOException;
-import java.io.Writer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBException;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.api.message.xml.ObjectFactory;
-import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
-import fr.cls.atoll.motu.api.utils.JAXBWriter;
 import fr.cls.atoll.motu.web.bll.BLLManager;
-import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidRequestIdException;
-import fr.cls.atoll.motu.web.bll.exception.MotuMarshallException;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
-import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.RequestIdHTTPParameterValidator;
@@ -51,8 +40,6 @@ import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
  */
 public class GetRequestStatusAction extends AbstractAction {
 
-    private static final Logger LOGGER = LogManager.getLogger();
-
     public static final String ACTION_NAME = "getreqstatus";
 
     private RequestIdHTTPParameterValidator rqtIdValidator;
@@ -80,18 +67,16 @@ public class GetRequestStatusAction extends AbstractAction {
                 if (rds == null) {
                     throw new MotuException(ErrorType.UNKNOWN_REQUEST_ID, "Oops, request id '" + requestId + "' does not exist.");
                 } else {
-                    marshallStatusModeResponse(XMLConverter.convertStatusModeResponse(getActionCode(), rds), getResponse().getWriter());
+                    getResponse().setContentType(CONTENT_TYPE_XML);
+                    String response = XMLConverter.toXMLString(rds, getActionCode());
+                    getResponse().getWriter().write(response);
                 }
             } else {
-                MotuInvalidRequestIdException e = new MotuInvalidRequestIdException(-1L);
-                StatusModeResponse response = createStatusModeResponse(e);
-                marshallStatusModeResponse(response, getResponse().getWriter());
-                LOGGER.error(StringUtils.getLogMessage(getActionCode(), ExceptionUtils.getErrorType(e), e.getMessage()), e);
+                getResponse().setContentType(CONTENT_TYPE_XML);
+                String response = XMLConverter.toXMLString(new MotuInvalidRequestIdException(-1L), getActionCode());
+                getResponse().getWriter().write(response);
             }
-
-        } catch (MotuException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (IOException e) {
             try {
                 getResponse().sendError(500, String.format("ERROR: %s", e.getMessage()));
             } catch (IOException e1) {
@@ -105,39 +90,6 @@ public class GetRequestStatusAction extends AbstractAction {
     protected void checkHTTPParameters() throws InvalidHTTPParameterException {
         // No parameter to check
         rqtIdValidator.validate();
-    }
-
-    /**
-     * Marshall status mode response.
-     * 
-     * @param writer the writer
-     * @param statusModeResponse the status mode response
-     * @throws JAXBException
-     * @throws IOException
-     * 
-     * @throws MotuMarshallException the motu marshall exception
-     */
-    public void marshallStatusModeResponse(StatusModeResponse statusModeResponse, Writer writer) throws JAXBException, IOException {
-        if (statusModeResponse == null) {
-            return;
-        }
-        JAXBWriter.getInstance().write(statusModeResponse, writer);
-        writer.flush();
-        writer.close();
-    }
-
-    /**
-     * Creates the status mode response.
-     * 
-     * @param e the e
-     * 
-     * @return the status mode response
-     */
-    private StatusModeResponse createStatusModeResponse(Exception e) {
-        ObjectFactory objectFactory = new ObjectFactory();
-        StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
-        ExceptionUtils.setStatusModeResponseException(getActionCode(), e, statusModeResponse);
-        return statusModeResponse;
     }
 
 }

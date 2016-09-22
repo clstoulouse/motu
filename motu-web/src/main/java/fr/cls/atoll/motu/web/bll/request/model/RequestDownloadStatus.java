@@ -48,9 +48,14 @@ public class RequestDownloadStatus {
     public RequestDownloadStatus(long requestId, String userId, String userHost, String scriptVersion) {
         super();
         setRequestId(requestId);
+
         setUserId(userId);
         setUserHost(userHost);
+
         setCreationDateTime(System.currentTimeMillis());
+        setStartProcessingDateTime(0L);
+        setEndProcessingDateTime(0L);
+
         setScriptVersion(scriptVersion);
     }
 
