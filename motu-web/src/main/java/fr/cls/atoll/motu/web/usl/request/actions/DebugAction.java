@@ -259,7 +259,7 @@ public class DebugAction extends AbstractAction {
             stringBuffer.append("Length : ");
             if (statusModeResponse.getSize() != null) {
                 stringBuffer.append(statusModeResponse.getSize());
-                stringBuffer.append("Mb");
+                stringBuffer.append("Mbits");
             }
             stringBuffer.append("<BR>Last modified: ");
             if (statusModeResponse.getDateProc() != null) {
