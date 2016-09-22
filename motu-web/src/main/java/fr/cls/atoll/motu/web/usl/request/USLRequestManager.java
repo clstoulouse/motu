@@ -175,11 +175,23 @@ public class USLRequestManager implements IUSLRequestManager {
             errMessage = BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, e);
         }
 
-        if (errorType == ErrorType.SYSTEM) {
+        if (isErrorTypeToLog(errorType)) {
             LOGGER.error(StringUtils.getLogMessage(actionCode, errorType, errMessage), e);
         }
 
         writeErrorMessage(actionCode, errorType, errMessage, response);
+    }
+
+    private boolean isErrorTypeToLog(ErrorType errorType_) {
+        boolean isErrorTypeToLog = false;
+        switch (errorType_) {
+        case SYSTEM:
+        case NETCDF_GENERATION:
+            isErrorTypeToLog = true;
+            break;
+        }
+
+        return isErrorTypeToLog;
     }
 
     private void writeErrorMessage(String actionCode, ErrorType errorType, String errMessage, HttpServletResponse response_) throws MotuException {
