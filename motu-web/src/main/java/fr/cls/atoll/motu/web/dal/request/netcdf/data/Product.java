@@ -2460,10 +2460,7 @@ public class Product {
      */
     public void setExtractFilename(String extractFilename) {
         this.extractFilename = extractFilename;
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(this.extractFilename);
-        stringBuffer.append(NetCdfWriter.NETCDF_FILE_EXTENSION_EXTRACT);
-        this.extractFilenameTemp = stringBuffer.toString();
+        this.extractFilenameTemp = this.extractFilename + NetCdfWriter.NETCDF_FILE_EXTENSION_EXTRACT;
     }
 
     /** The temporary output location path and file name. */
