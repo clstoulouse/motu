@@ -272,8 +272,7 @@
 		</td>
 	    <td align="left"><font size="2">
 	  		<select name="t_lo_0" >
-		  	#set ($selected = "")			
-##		  	#set ($selected = "selected")
+		  	#set ($selected = "")
 			#foreach( $date in $listdate )	
                 #if($date.equalsIgnoreCase($lastdate))
                     #set ($selected = "selected")
@@ -286,11 +285,16 @@
 			</select>
 			<input type="text" name="t_lo" size="12" value="${timeLowValue}"/>
 			<script language="JavaScript">
-			var widget30 = new MultiWidget("${formName}", ["t_lo_0","t_lo"], "rtime");widget30.onChange();
-			widget30.setValue("${timeLowValue}");
-			widget30.mWidgets[0].setSelected("${timeLowValue}");
+			  var widget30 = new MultiWidget("${formName}", ["t_lo_0","t_lo"], "rtime"); 
+			  widget30.onChange();
+			  widget30.setValue("${timeLowValue}");
+			  widget30.mWidgets[0].setSelected("${timeLowValue}");
 			</script>		
+		      
+		      
 		       to <br/>
+		       
+		       
 		    <select name="t_hi_0" >
 			#set ($selected = "")			
 			#foreach( $date in $listdate )	
