@@ -1502,7 +1502,7 @@ __Return__: An HTML page
 ### <a name="ClientAPI_GetTimeCov">Time coverage</a>    
 Display an HTML page with the geographical and temporal coverage, the last dataset update and the variables metadata.   
 
-__URL__: http://localhost:8080/motu-web/Motu?action=gettimecov&service=HR_OBS-TDS&product=HR_OBS  
+__URL__: http://localhost:8080/motu-web/Motu?action=gettimecov&service=HR_MOD-TDS&product=HR_MOD  
 
 __Parameters__:  
 
