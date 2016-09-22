@@ -11,8 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.util.AssertionHolder;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
@@ -96,8 +94,6 @@ import fr.cls.atoll.motu.web.usl.request.parameter.validator.TemporalHTTPParamet
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
 public class DownloadProductAction extends AbstractAuthorizedAction {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "productdownload";
 

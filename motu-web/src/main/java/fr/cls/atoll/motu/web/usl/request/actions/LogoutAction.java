@@ -4,9 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 
@@ -21,7 +18,6 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
 public class LogoutAction extends AbstractAction {
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "logout";
 

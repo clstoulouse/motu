@@ -1,13 +1,11 @@
 package fr.cls.atoll.motu.web.usl.request.actions;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
@@ -43,8 +41,6 @@ import fr.cls.atoll.motu.web.usl.response.velocity.model.converter.VelocityModel
  */
 public class ListCatalogAction extends AbstractAuthorizedAction {
 
-    private static final Logger LOGGER = LogManager.getLogger();
-
     public static final String ACTION_NAME = "listcatalog";
 
     private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
@@ -73,14 +69,14 @@ public class ListCatalogAction extends AbstractAuthorizedAction {
     }
 
     private void writeResponseWithVelocity(MotuConfig mc_, ConfigService cs_, CatalogData cd) throws MotuException {
-        VelocityContext context = VelocityTemplateManager.getPrepopulatedVelocityContext();
-        context.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
-        context.put("service", VelocityModelConverter.convertToService(mc_, cs_, cd));
-        context.put("user", USLManager.getInstance().getUserManager().getUserName());
+        Map<String, Object> velocityContext = new HashMap<String, Object>(2);
+        velocityContext.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
+        velocityContext.put("service", VelocityModelConverter.convertToService(mc_, cs_, cd));
+        velocityContext.put("user", USLManager.getInstance().getUserManager().getUserName());
 
+        String response = VelocityTemplateManager.getResponseWithVelocity(velocityContext, null, cs_.getVeloTemplatePrefix());
         try {
-            Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null, cs_.getVeloTemplatePrefix());
-            template.merge(context, getResponse().getWriter());
+            getResponse().getWriter().write(response);
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
         }

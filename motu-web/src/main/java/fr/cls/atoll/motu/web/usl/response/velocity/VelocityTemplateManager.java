@@ -1,8 +1,10 @@
 package fr.cls.atoll.motu.web.usl.response.velocity;
 
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +18,7 @@ import org.apache.velocity.tools.generic.DateTool;
 import org.apache.velocity.tools.generic.MathTool;
 import org.apache.velocity.tools.generic.NumberTool;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
@@ -186,6 +189,10 @@ public class VelocityTemplateManager {
         conf.put("file.resource.loader.path", BLLManager.getInstance().getConfigManager().getMotuConfigurationFolderPath());
         conf.put("resource.loader", "file, class");
         conf.put("velocimacro.library", "");
+        conf.put("directive.foreach.maxloops", "-1");
+        conf.put("velocimacro.permissions.allow.inline", "true");
+        conf.put("velocimacro.permissions.allow.inline.to.replace.global", "true");
+        conf.put("velocimacro.permissions.allow.inline.local.scope", "true");
         conf.put("class.resource.loader.description", "Velocity Classpath Resource Loader");
         conf.put("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
 
@@ -251,5 +258,32 @@ public class VelocityTemplateManager {
         }
         buffer.append(".vm");
         return buffer.toString();
+    }
+
+    public static String getResponseWithVelocity(Map<String, Object> velocityContext_, Template template_) throws MotuException {
+        VelocityContext context = VelocityTemplateManager.getPrepopulatedVelocityContext();
+        if (velocityContext_ != null && velocityContext_.size() > 0) {
+            for (String k : velocityContext_.keySet()) {
+                context.put(k, velocityContext_.get(k));
+            }
+        }
+
+        try {
+            StringWriter sw = new StringWriter();
+            template_.merge(context, sw);
+            return sw.getBuffer().toString();
+        } catch (Exception e) {
+            throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
+        }
+    }
+
+    public static String getResponseWithVelocity(Map<String, Object> velocityContext_, String lang, String velocityTemplateName_)
+            throws MotuException {
+        try {
+            Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(lang, velocityTemplateName_);
+            return getResponseWithVelocity(velocityContext_, template);
+        } catch (Exception e) {
+            throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
+        }
     }
 }

@@ -1,13 +1,13 @@
 package fr.cls.atoll.motu.web.usl.request.actions;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
@@ -45,8 +45,6 @@ import fr.cls.atoll.motu.web.usl.response.velocity.model.converter.VelocityModel
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
 public class DescribeCoverageAction extends AbstractAuthorizedAction {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "describecoverage";
 
@@ -89,15 +87,16 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
     }
 
     private void writeResponseWithVelocity(MotuConfig mc_, ConfigService cs_, CatalogData cd, Product p) throws MotuException {
-        VelocityContext context = VelocityTemplateManager.getPrepopulatedVelocityContext();
-        // This action is different because it returns an XML result file built from a velocity template
-        context.put("service", VelocityModelConverter.convertToService(mc_, cs_, cd));
-        context.put("product", VelocityModelConverter.convertToProduct(p));
+        Map<String, Object> velocityContext = new HashMap<String, Object>(2);
+        velocityContext.put("service", VelocityModelConverter.convertToService(mc_, cs_, cd));
+        velocityContext.put("product", VelocityModelConverter.convertToProduct(p));
 
         try {
             Template template = VelocityTemplateManager.getInstance().getVelocityEngine()
                     .getTemplate(VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG, true));
-            template.merge(context, getResponse().getWriter());
+            String response = VelocityTemplateManager.getResponseWithVelocity(velocityContext, template);
+
+            getResponse().getWriter().write(response);
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
         }

@@ -94,8 +94,7 @@ Motu has interfaces with other systems:
   * a download request that come __across the boundary__ of the datasets (for global datasets)  
 
 # <a name="ArchitectureDesign">Design</a>  
-The Motu application has been designed by implementing the Three-Layered Services Application design. It takes many advantages
-in maintenance cost efficiency et in the ease of its future evolutivity.  
+The Motu application has been designed by implementing the Three-Layered Services Application design. It takes many advantages in maintenance cost efficiency and in the ease of its future evolutivity.  
 Three layers are set in the core "motu-web" project:  
 
 * __USL__: User Service Layer: This layer manages all incoming actions throught HTTP request
@@ -1097,11 +1096,14 @@ From a web browser access to the Motu web site with the URL:
 /Motu?action=debug  
 ``` 
 
-You can see the different requests and their status.  
+You can see the different requests and their [status](#ClientAPI_Debug).  
 You change the status order by entering 4 parameters in the URL:  
 ``` 
 /Motu?action=debug&order=DONE,ERROR,PENDING,INPROGRESS
 ``` 
+
+
+ 
  
 ## <a name="ExploitCleanDisk">Clean files</a>  
 
@@ -1248,7 +1250,15 @@ Motu-static-files (Graphic chart): 3.0.00-RC1-20160914162955422
 
 ### <a name="ClientAPI_Debug">Debug</a>    
 Display all requests status managed by Motu server in the last [cleanRequestInterval](#BScleanRequestInterval] minutes.
-Tables are sorted by time ascending.
+Tables are sorted by time ascending.  
+4 status are defined:
+
+* __DONE__: Request has been processed successfully. Result file can be downloaded.  
+* __ERROR__: Request has not been processed successfully. No result file is available.  
+* __PENDING__: Request has been received by the server. Server computes its size and runs some checks, it can take a while.  
+* __INPROGRESS__: Request has been delegated to the queue server which is currently processing it.  
+
+
 __URL__: http://localhost:8080/motu-web/Motu?action=debug  
 
 __Parameters__:  

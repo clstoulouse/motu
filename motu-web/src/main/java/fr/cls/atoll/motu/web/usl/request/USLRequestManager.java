@@ -1,6 +1,8 @@
 package fr.cls.atoll.motu.web.usl.request;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -10,8 +12,6 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
@@ -182,18 +182,18 @@ public class USLRequestManager implements IUSLRequestManager {
         writeErrorMessage(actionCode, errorType, errMessage, response);
     }
 
-    private void writeErrorMessage(String actionCode, ErrorType errorType, String errMessage, HttpServletResponse response) throws MotuException {
-        response.setContentType(AbstractAction.CONTENT_TYPE_HTML);
+    private void writeErrorMessage(String actionCode, ErrorType errorType, String errMessage, HttpServletResponse response_) throws MotuException {
+        response_.setContentType(AbstractAction.CONTENT_TYPE_HTML);
 
-        VelocityContext context = VelocityTemplateManager.getPrepopulatedVelocityContext();
-        context.put("body_template", VelocityTemplateManager.getTemplatePath("exception", VelocityTemplateManager.DEFAULT_LANG));
-        context.put("message", StringUtils.getLogMessage(actionCode, errorType, errMessage));
+        Map<String, Object> velocityContext = new HashMap<String, Object>(2);
+        velocityContext.put("body_template", VelocityTemplateManager.getTemplatePath("exception", VelocityTemplateManager.DEFAULT_LANG));
+        velocityContext.put("message", StringUtils.getLogMessage(actionCode, errorType, errMessage));
 
+        String response = VelocityTemplateManager.getResponseWithVelocity(velocityContext, null, null);
         try {
-            Template template = VelocityTemplateManager.getInstance().initVelocityEngineWithGenericTemplate(null, null);
-            template.merge(context, response.getWriter());
-        } catch (Exception e2_) {
-            throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e2_);
+            response_.getWriter().write(response);
+        } catch (Exception e) {
+            throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
         }
     }
 
