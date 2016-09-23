@@ -561,7 +561,16 @@ __motu/__
 
 
 
-## <a name="InstallFrontal">Setup a front Apache HTTPd server</a>    
+## <a name="InstallFrontal">Setup a front Apache HTTPd server</a>  
+Apache HTTPd is used as a frontal HTTP server in front of Motu Http server.
+It has several aims:
+* Delegate HTTP requests to Motu HTTP server   
+* Serve directly extracted dataset files written after a download action. The folder in which requests are written is [configurable](#motuConfig-extractionPath). URL used to download those files is "http://$ipMotuServer/mis-gateway/deliveries". This URL is [configurable](#motuConfig-downloadHttpUrl).
+* Serve the download transaction logbook files. The folder in which log files are written is [configurable](#LogSettings).
+* Manage errors like 403, 404. Motu server manages errors web page by displaying a custom message. Redirect to the URL "http://$ipMotuServer/motu-web/Motu?action=httperror&code=$errorCode" by replacing $errorCode with the HTTP error code.
+* Acts as a load balancer when several instances of Motu.
+
+
 See sample of the Apache HTTPd configuration in the folder: config/apache-httpd-conf-sample  
 The configuration is described for Apache2  
 
@@ -638,7 +647,7 @@ It is recommended to set this folder on an hard drive with very good performance
 It is recommended to have a dedicated partition disk to avoid freezing Motu if the hard drive is full.
 By default value is $MOTU_HOME/data/public/download, this folder can be a symbolic link to another folder.  
 
-##### downloadHttpUrl
+##### <a name="motuConfig-downloadHttpUrl">downloadHttpUrl</a>
 Http URL used to download files stored in the "extractionPath" described above. It is used to allow users to download the result data files.  
 This URL is concatenated to the result data file name found in the folder "extractionPath".  
 When a frontal HTTPd server is used, it is this URL that shall be configured to access to the folder "extractionPath".  
@@ -1261,6 +1270,8 @@ __Summary of all actions:__
    * [Product medatata](#ClientAPI_ProductMetadata)  
 * Plain Text 
    * [Ping](#ClientAPI_Ping)  
+* JSON
+   * [Supervision](#ClientAPI_supervision)  
 
 
  
@@ -1491,7 +1502,7 @@ __Return__: An HTML page
 
 
 ### <a name="ClientAPI_Ping">Ping</a>    
-Used to be sure that server is up.  
+Used to be sure that server is up. You can also use the [supervision](#ClientAPI_supervision) URL.  
 
 __URL__: http://localhost:8080/motu-web/Motu?action=ping  
 
@@ -1545,4 +1556,18 @@ __Return__: A XML document
 
 ```  
 <timeCoverage code="007-0" msg="OK" end="2016-09-17T00:00:00.000Z" start="2007-05-13T00:00:00.000Z"/>
+```  
+
+### <a name="ClientAPI_supervision">Supervision</a>  
+Gives information about Motu server.  
+For more details, see [https://jolokia.org/reference/html/agents.html].
+
+__URL__: http://localhost:8080/motu-web/supervision
+
+__Parameters__: No parameter
+  
+__Return__: A JSON document  
+
+```  
+{"timestamp":1474638852,"status":200,"request":{"type":"version"},"value":{"protocol":"7.2","config":{"agentId":"10.1.20.198-18043-2df3a4-servlet","agentType":"servlet"},"agent":"1.3.3","info":{"product":"tomcat","vendor":"Apache","version":"7.0.69"}}}
 ```  
