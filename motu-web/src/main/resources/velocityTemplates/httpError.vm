@@ -2,7 +2,7 @@
 
 #if($httpErrorCode == "400")	
   Access is forbidden to the desired service.
-#else if($httpErrorCode == "403")	
+#elseif($httpErrorCode == "403")	
   Access is forbidden to the desired service.
 #else
   ## Default error message: Manage 404 http error for example

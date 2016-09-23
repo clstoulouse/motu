@@ -233,7 +233,7 @@ public class VelocityTemplateManager implements IVelocityTemplateManager {
             veloTplName += ".vm";
         }
 
-        return getVelocityEngine().getTemplate(VELOCITY_TEMPLATE_DIR + veloTplName);
+        return getVelocityEngine().getTemplate(VELOCITY_TEMPLATE_DIR + veloTplName, "UTF-8");
     }
 
     protected String getCommonGlobalVeloTemplateName(String lang) {

@@ -181,6 +181,7 @@ public class BLLRequestManager implements IBLLRequestManager {
             @Override
             public void run() {
                 download(rds, extractionParameters, cs_, product_, requestId);
+                logQueueInfo(rds, product_, extractionParameters);
             }
 
         };
@@ -193,8 +194,6 @@ public class BLLRequestManager implements IBLLRequestManager {
                 LOGGER.error("InterruptedException download thread join inteeruption, requestId=" + requestId, e);
             }
         }
-
-        logQueueInfo(rds, product_, extractionParameters);
 
         return requestId;
     }

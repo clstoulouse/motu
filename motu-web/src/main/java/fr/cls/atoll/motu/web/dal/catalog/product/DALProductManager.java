@@ -6,6 +6,7 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
@@ -104,11 +105,8 @@ public class DALProductManager implements IDALProductManager {
 
             productDataSize = product.getAmountDataSizeAsBytes();
         } catch (Exception e) {
-            throw new MotuException(ErrorType.NETCDF_VARIABLE_NOT_FOUND, e);
+            throw new MotuException(ExceptionUtils.getErrorType(e), e);
         }
-        // catch (NetCdfAttributeException e) {
-        // // Do nothing;
-        // }
 
         return productDataSize;
     }
