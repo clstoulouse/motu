@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
+import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
@@ -343,6 +344,8 @@ public class BLLRequestManager implements IBLLRequestManager {
             }
         } catch (MotuException e) {
             requestDownloadStatus.setRunningException(e);
+        } catch (Exception e) {
+            requestDownloadStatus.setRunningException(new MotuException(ExceptionUtils.getErrorType(e), e));
         }
     }
 
