@@ -1246,21 +1246,21 @@ Other parameters are used. They are described with their cardinality [x,y].
 __Summary of all actions:__   
   
 * XML API
-   * [Describe coverage](#ClientAPI_DescribeCoverage>)  
-   * [Describe product](#ClientAPI_DescribeProduct>)  
-   * [Request status](#ClientAPI_RequestStatus>)  
-   * [Get size](#ClientAPI_GetSize>)  
-   * [Time coverage](#ClientAPI_GetTimeCov>)  
+   * [Describe coverage](#ClientAPI_DescribeCoverage)  
+   * [Describe product](#ClientAPI_DescribeProduct)  
+   * [Request status](#ClientAPI_RequestStatus)  
+   * [Get size](#ClientAPI_GetSize)  
+   * [Time coverage](#ClientAPI_GetTimeCov)  
 * HTML Web pages
-   * [About](#ClientAPI_About>)  
-   * [Debug](#ClientAPI_Debug>)  
-   * [Download product](#ClientAPI_DownloadProduct>)  
-   * [List catalog](#ClientAPI_ListCatalog>)  
-   * [List services](#ClientAPI_ListServices>)  
-   * [Product download home](#ClientAPI_ProductDownloadHome>)  
-   * [Product medatata](#ClientAPI_ProductMetadata>)  
+   * [About](#ClientAPI_About)  
+   * [Debug](#ClientAPI_Debug)  
+   * [Download product](#ClientAPI_DownloadProduct)  
+   * [List catalog](#ClientAPI_ListCatalog)  
+   * [List services](#ClientAPI_ListServices)  
+   * [Product download home](#ClientAPI_ProductDownloadHome)  
+   * [Product medatata](#ClientAPI_ProductMetadata)  
 * Plain Text 
-   * [Ping](#ClientAPI_Ping>)  
+   * [Ping](#ClientAPI_Ping)  
 
 
  
@@ -1331,8 +1331,8 @@ __Return__: A XML document
   
   
 ### <a name="ClientAPI_DescribeProduct">Describe product</a>    
-Display the product meaning dataset description.  
-There is 2 ways to call describe product, both returning a same response.
+Display the product meaning dataset description. Result contains notably: the datasetid, the time coverage, the geospatial coverage, the variable(s) (with the standard_name and unit), eventually the vertical coverage.  
+There is 2 ways to call describe product, both returning a same response.  
 
 
 #### Way 1   
@@ -1439,7 +1439,7 @@ Size is in MegaBits.
 
  
 ### <a name="ClientAPI_GetSize">Get size</a>    
-Get the size of a download request.  
+Get the size of a download request. Result contains the size of the potential result file, with a unit, and the maximum allowed size for this service.  
 
 __URL__: http://localhost:8080/motu-web/Motu?action=getsize  
 
