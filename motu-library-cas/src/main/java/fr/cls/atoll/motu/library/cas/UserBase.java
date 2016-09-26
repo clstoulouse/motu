@@ -128,10 +128,10 @@ public class UserBase {
     public void setEmail(String email) {
         this.email = email;
     }
-    
+
     /** Is it an anonymous user. */
     private boolean anonymousUser = true;
-    
+
     /**
      * Checks if is anonymous user.
      * 
@@ -149,7 +149,6 @@ public class UserBase {
     public void setAnonymousUser(boolean anonymousUser) {
         this.anonymousUser = anonymousUser;
     }
-
 
     /** The login. */
     private String login = "";
@@ -232,13 +231,13 @@ public class UserBase {
         try {
             this.authenticationMode = AuthenticationMode.fromValue(authenticationMode);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            throw new MotuCasException(String.format("Invalid authentication mode '%s'. Valid values are: %s",
-                                                     authenticationMode,
-                                                  AuthenticationMode.getAvailableValues()));
+            throw new MotuCasException(
+                    String.format("Invalid authentication mode '%s'. Valid values are: %s",
+                                  authenticationMode,
+                                  AuthenticationMode.getAvailableValues()));
         }
     }
-    
+
     /**
      * Checks if is basic authentication.
      *
@@ -301,7 +300,7 @@ public class UserBase {
     public void setCasRestSuffURL(String casRestSuffURL) {
         this.casRestSuffURL = casRestSuffURL;
     }
-    
+
     /** The cas url. */
     protected String casURL = null;
 

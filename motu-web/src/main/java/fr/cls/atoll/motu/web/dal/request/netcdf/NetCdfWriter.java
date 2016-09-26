@@ -70,7 +70,6 @@ import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
-// TODO: Auto-generated Javadoc
 /**
  * Copy a metadata and data to a Netcdf-3 local file. All metadata and data is copied into the
  * NetcdfFileWritable.
@@ -83,7 +82,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-// CSOFF: MultipleStringLiterals : avoid constants and trace duplicate string
 public class NetCdfWriter {
 
     /** Logger for this class. */
@@ -1239,7 +1237,7 @@ public class NetCdfWriter {
                 }
                 mapAxis.put(axisType, listAxis);
 
-                // TODO DEDE X/Y
+                // DEDE X/Y
                 //
                 // if (axis instanceof CoordinateAxis2D) {
                 // CoordinateAxis2D axis2D = (CoordinateAxis2D) axis;
@@ -1259,7 +1257,7 @@ public class NetCdfWriter {
                 // }
                 // }
                 // }
-                // TODO DEDE X/Y
+                // DEDE X/Y
 
                 // addShapes(axis);
 
@@ -1751,7 +1749,6 @@ public class NetCdfWriter {
         CoordinateAxis axis = listCoordinateAxis.get(0);
         Dimension dim = axis.getDimension(0);
         if (dim == null) {
-            // TODO : thow exception
             return;
         }
 

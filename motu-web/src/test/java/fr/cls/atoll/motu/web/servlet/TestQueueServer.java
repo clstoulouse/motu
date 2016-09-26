@@ -161,7 +161,6 @@ public class TestQueueServer {
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -172,7 +171,6 @@ public class TestQueueServer {
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -445,7 +443,6 @@ public class TestQueueServer {
         // }
         //
         // } catch (Exception e) {
-        // // TODO Auto-generated catch block
         // e.printStackTrace();
         // }
 

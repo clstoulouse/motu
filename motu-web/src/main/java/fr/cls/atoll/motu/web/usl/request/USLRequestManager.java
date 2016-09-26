@@ -242,18 +242,15 @@ public class USLRequestManager implements IUSLRequestManager {
     protected boolean isCreateOrGetSession(HttpServletRequest request) {
         String action = CommonHTTPParameters.getActionFromRequest(request);
         String mode = CommonHTTPParameters.getModeFromRequest(request);
-        // TODO SMA Need to understand what mode is ???
-        boolean noMode = false;// RunnableHttpExtraction.noMode(mode);
+        boolean isAActionWhichNeedASession = false;
+        isAActionWhichNeedASession |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_REFRESH);
+        isAActionWhichNeedASession |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_LIST_SERVICES);
+        isAActionWhichNeedASession |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_LIST_CATALOG);
+        isAActionWhichNeedASession |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_LIST_PRODUCT_METADATA);
+        isAActionWhichNeedASession |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_PRODUCT_DOWNLOADHOME);
+        isAActionWhichNeedASession |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_PRODUCT_DOWNLOAD);
 
-        boolean createOk = false;
-        createOk |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_REFRESH);
-        createOk |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_LIST_SERVICES);
-        createOk |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_LIST_CATALOG);
-        createOk |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_LIST_PRODUCT_METADATA);
-        createOk |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_PRODUCT_DOWNLOADHOME);
-        createOk |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_PRODUCT_DOWNLOAD);
-
-        return createOk && noMode;
+        return isAActionWhichNeedASession && StringUtils.isNullOrEmpty(mode);
     }
 
     /**
@@ -264,26 +261,6 @@ public class USLRequestManager implements IUSLRequestManager {
      * @throws IOException the IO exception
      */
     private void initSession(HttpSession session) {
-
-        // TODO SMA To implements : What to save in the session?
-        // Organizer organizer;
-        //
-        // LOGGER.info(String.format("initSession - MaxInactiveInterval " +
-        // session.getMaxInactiveInterval()));
-        //
-        // try {
-        // if (session.isNew()) {
-        // LOGGER.info("initSession - session is New ");
-        // createOrganizer(session);
-        // }
-        // organizer = (Organizer) session.getAttribute(ORGANIZER_SESSION_ATTR);
-        // if (organizer == null) {
-        // LOG.info("initSession - session is not New but Organizer is null");
-        // createOrganizer(session);
-        // }
-        // } catch (Exception e) {
-        // throw new ServletException(e);
-        // }
     }
 
     /** {@inheritDoc} */

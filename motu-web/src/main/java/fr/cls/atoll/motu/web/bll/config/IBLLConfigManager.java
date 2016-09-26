@@ -41,13 +41,6 @@ public interface IBLLConfigManager {
      * 
      * @return
      */
-    boolean isStatusAsFile();
-
-    /**
-     * .
-     * 
-     * @return
-     */
     MotuConfig getMotuConfig();
 
     /**

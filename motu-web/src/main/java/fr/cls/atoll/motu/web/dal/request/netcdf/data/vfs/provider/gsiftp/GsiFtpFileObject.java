@@ -59,14 +59,13 @@ import org.globus.io.streams.GridFTPOutputStream;
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-@SuppressWarnings("unchecked")
 public class GsiFtpFileObject extends AbstractFileObject {
 
     /** The log. */
     private final Log log = LogFactory.getLog(GsiFtpFileObject.class);
 
     /** The Constant EMPTY_FTP_FILE_MAP. */
-    private static final Map EMPTY_FTP_FILE_MAP = Collections.unmodifiableMap(new TreeMap());
+    private static final Map<String, FileInfo> EMPTY_FTP_FILE_MAP = Collections.unmodifiableMap(new TreeMap<String, FileInfo>());
 
     /** The ftp fs. */
     private final GsiFtpFileSystem ftpFs;
@@ -79,7 +78,7 @@ public class GsiFtpFileObject extends AbstractFileObject {
     private FileInfo fileInfo;
 
     /** The children. */
-    private Map children;
+    private Map<String, FileInfo> children;
 
     // private FileObject linkDestination;
 
@@ -140,7 +139,7 @@ public class GsiFtpFileObject extends AbstractFileObject {
         doGetChildren();
 
         // Look for the requested child
-        FileInfo ftpFile = (FileInfo) children.get(name);
+        FileInfo ftpFile = children.get(name);
         return ftpFile;
     }
 
@@ -168,7 +167,7 @@ public class GsiFtpFileObject extends AbstractFileObject {
             if (tmpChildren == null || tmpChildren.size() == 0) {
                 children = EMPTY_FTP_FILE_MAP;
             } else {
-                children = new TreeMap();
+                children = new TreeMap<String, FileInfo>();
 
                 // Remove '.' and '..' elements
                 for (int i = 0; i < tmpChildren.size(); i++) {
@@ -256,7 +255,6 @@ public class GsiFtpFileObject extends AbstractFileObject {
             }
         } else {
             // if child was added we have to rescan the children
-            // TODO - get rid of this
             children = null;
         }
     }
@@ -342,14 +340,13 @@ public class GsiFtpFileObject extends AbstractFileObject {
         // List the children of this file
         doGetChildren();
 
-        // TODO - get rid of this children stuff
         final String[] childNames = new String[children.size()];
         int childNum = -1;
-        Iterator iterChildren = children.values().iterator();
+        Iterator<FileInfo> iterChildren = children.values().iterator();
 
         while (iterChildren.hasNext()) {
             childNum++;
-            final FileInfo child = (FileInfo) iterChildren.next();
+            final FileInfo child = iterChildren.next();
             childNames[childNum] = child.getName();
         }
 

@@ -46,7 +46,6 @@ public class MotuWPSTester {
             Runtime.getRuntime().exec(cmd);
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

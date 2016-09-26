@@ -120,10 +120,8 @@ public class TestCASRest {
             conn.disconnect();
 
         } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return redirectUrl;
@@ -423,7 +421,6 @@ public class TestCASRest {
             System.out.println(s);
 
         } catch (UnsupportedEncodingException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         }
 
@@ -543,13 +540,10 @@ public class TestCASRest {
     // try {
     // pv.validate();
     // } catch (IOException e) {
-    // // TODO Auto-generated catch block
     // e.printStackTrace();
     // } catch (SAXException e) {
-    // // TODO Auto-generated catch block
     // e.printStackTrace();
     // } catch (ParserConfigurationException e) {
-    // // TODO Auto-generated catch block
     // e.printStackTrace();
     // }
     //
@@ -583,7 +577,6 @@ public class TestCASRest {
     // edu.yale.its.tp.cas.proxy.ProxyTicketReceptor.getProxyTicket(
     // pv.getPgtIou(),urlOfTargetService);
     // } catch (IOException e) {
-    // // TODO Auto-generated catch block
     // e.printStackTrace();
     // } }
 

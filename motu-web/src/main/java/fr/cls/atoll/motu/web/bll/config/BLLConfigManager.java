@@ -75,15 +75,6 @@ public class BLLConfigManager implements IBLLConfigManager {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isStatusAsFile() {
-        // TODO SMA To implement, this value was read in the WEB.xml file (=> PARAM_STATUS_AS_FILE =
-        // "statusAsFile";), now we have to move it to another
-        // config file
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public MotuConfig getMotuConfig() {
         return dalConfigManager.getMotuConfig();
     }

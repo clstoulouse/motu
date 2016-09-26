@@ -84,9 +84,6 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dataset.NetcdfDataset;
 
-// TODO: Auto-generated Javadoc
-// CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
-
 /**
  * This class represents a product.
  * 

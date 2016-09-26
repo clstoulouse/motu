@@ -999,16 +999,8 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         Map<int[], int[]> originAndShape = NetCdfWriter.parseOriginAndShape(outputVar);
 
         Set<int[]> keySet = originAndShape.keySet();
-        // TODO: replace the following loop (Inefficient use of keySet iterator instead of entrySet
-        // iterator) by the following:
-        // for( Map.Entry<int[], int[]> entry : originAndShape.entrySet() )
-
         for (Iterator<int[]> it = keySet.iterator(); it.hasNext();) {
-            Runtime runtime = Runtime.getRuntime();
-            // TODO:
-            // See if the garbage collector invocation is necessary or not (FindBugs: Explicit garbage
-            // collection; extremely dubious except in benchmarking code)
-            runtime.gc();
+            Runtime.getRuntime().gc();
 
             int[] origin = null;
             int[] shape = null;
@@ -1079,23 +1071,13 @@ public class DatasetGridXYLatLon extends DatasetGrid {
      * @throws MotuNotImplementedException
      */
     protected void fillDataByBlock(Variable var, Array dataToFill) throws MotuException, MotuNotImplementedException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("fillDataByBlock() - entering");
-        }
-
         int[] origin = null;
         int[] shape = null;
         Array data = null;
         try {
             Map<int[], int[]> originAndShape = NetCdfWriter.parseOriginAndShape(var);
 
-            // CSOFF: StrictDuplicateCode : normal duplication code.
-
             Set<int[]> keySet = originAndShape.keySet();
-
-            // TODO: replace the following loop (Inefficient use of keySet iterator instead of entrySet
-            // iterator) by the following:
-            // for( Map.Entry<int[], int[]> entry : originAndShape.entrySet() )
 
             for (Iterator<int[]> it = keySet.iterator(); it.hasNext();) {
                 origin = it.next();
@@ -1121,17 +1103,12 @@ public class DatasetGridXYLatLon extends DatasetGrid {
             }
         } catch (IOException e) {
             LOG.error("fillDataByBlock()", e);
-
             throw new MotuException(ErrorType.BAD_PARAMETERS, "Error IOException in DatasetGridXYLatLon fillDataByBlock", e);
         } catch (InvalidRangeException e) {
             LOG.error("fillDataByBlock()", e);
-
             throw new MotuException(ErrorType.BAD_PARAMETERS, "Error InvalidRangeException in DatasetGridXYLatLon fillDataByBlock", e);
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("fillDataByBlock() - exiting");
-        }
     }
 
     /**

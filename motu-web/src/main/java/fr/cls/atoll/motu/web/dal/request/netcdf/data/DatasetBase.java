@@ -70,9 +70,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
-// TODO: Auto-generated Javadoc
-//CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
-
 /**
  * Dataset class. A dataset refers to one product.
  * 
