@@ -71,11 +71,8 @@ public class DALRequestManager implements IDALRequestManager {
         } catch (MotuException e) {
             throw e;
         } catch (Exception e) {
-            if (e instanceof MotuException) {
-                throw (MotuException) e;
-            } else {
-                throw new MotuException(ErrorType.SYSTEM, "Error while downloading product ncss=" + ncssStatus, e);
-            }
+            LOGGER.error("Error while downloading product ncss=" + ncssStatus, e);
+            throw new MotuException(ErrorType.SYSTEM, "Error while downloading product ncss=" + ncssStatus, e);
         }
     }
 
@@ -107,63 +104,20 @@ public class DALRequestManager implements IDALRequestManager {
         ncss.setOutputFormat(dataOutputFormat);
         ncss.setncssURL(p.getLocationDataNCSS());
 
-        // Check if the Left longitude is greater than the right longitude
+        // Check if the left longitude is greater than the right longitude
         if (latlon.getLowerLeftLon() > latlon.getLowerRightLon()) {
-            // Check if only one depth is requested. This is because the merge of two netcdf file needs a lot
-            // of resources.
-
-            int fromDepthIndex = searchDepthIndex(p.getZAxisRoundedDownDataAsString(2), depth.getFrom());
-            int toDepthIndex = searchDepthIndex(p.getZAxisRoundedUpDataAsString(2), depth.getTo());
-            if (fromDepthIndex != -1 && toDepthIndex != -1 && fromDepthIndex == toDepthIndex) {
-                // In this case, thredds needs 2 requests to retrieve the data.
-                List<ExtractCriteriaLatLon> rangesToRequest = ComputeRangeOutOfLimit(p, latlon);
-
-                // Create a temporary directory into tmp directory to save the 2 generated file
-                Path tempDirectory = Files.createTempDirectory("LeftAndRightRequest");
-                ncss.setOutputDir(tempDirectory.toString());
-
-                List<String> filesPath = new ArrayList<>();
-
-                int i = 0;
-                long rangesLength = 0;
-                for (ExtractCriteriaLatLon currentRange : rangesToRequest) {
-                    rangesLength += Math.abs(Math.abs(currentRange.getLatLonRect().getLonMax()) - Math.abs(currentRange.getLatLonRect().getLonMin()));
-                    ncss.setGeoSubset(currentRange);
-                    ncss.setOutputFile(i + "-" + fname);
-                    ncssRequest(p, ncss);
-                    filesPath.add(Paths.get(tempDirectory.toString(), ncss.getOutputFile()).toString());
-                    i++;
-                }
-
-                // Concatenate with NCO
-                // Set the merge command
-                String cmd = "merge.sh ";
-                // Set the output file path
-                cmd += extractDirPath + "/" + fname;
-                // Set the start point
-                cmd += " " + latlon.getLowerLeftLon();
-                // Set the length
-                cmd += " " + rangesLength;
-
-                // Set the list of files to merge
-                for (String path : filesPath) {
-                    cmd += " " + path;
-                }
-                LOGGER.info("Start: " + cmd);
-                final Process process = Runtime.getRuntime().exec(cmd);
-
-                new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getInputStream())), LOGGER, Type.INFO)).start();
-                new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getErrorStream())), LOGGER, Type.ERROR)).start();
-
-                int exitValue = process.waitFor();
-                LOGGER.info("END [Exit code=" + exitValue + "] : " + cmd);
-
-                // Cleanup directory and intermediate files (right away once concat)
-                FileUtils.deleteDirectory(tempDirectory.toFile());
-
-                if (exitValue != 0) {
-                    throw new MotuException(ErrorType.SYSTEM, "The generation of the NC file failled. See the log for more information.");
-                }
+            boolean canRequest = true;
+            if (p.getProductMetaData().hasZAxis()) {
+                // Check if only one depth is requested. This is because the merge of two netcdf file needs a
+                // lot
+                // of RAM resources, so to avoid the server miss RAM we do not authorized request on several
+                // depths.
+                int fromDepthIndex = searchDepthIndex(p.getZAxisRoundedDownDataAsString(2), depth.getFrom());
+                int toDepthIndex = searchDepthIndex(p.getZAxisRoundedUpDataAsString(2), depth.getTo());
+                canRequest = fromDepthIndex != -1 && toDepthIndex != -1 && fromDepthIndex == toDepthIndex;
+            }
+            if (canRequest) {
+                runRequestWithCDOMergeTool(p, ncss, latlon, extractDirPath, fname);
             } else {
                 throw new MotuException(ErrorType.TOO_DEPTH_REQUESTED, "There is more than one depth in this request which needs merge procedure.");
             }
@@ -172,6 +126,73 @@ public class DALRequestManager implements IDALRequestManager {
             ncss.setOutputDir(extractDirPath);
             ncss.setGeoSubset(latlon);
             ncssRequest(p, ncss);
+        }
+    }
+
+    /**
+     * .
+     * 
+     * @param latlon
+     * @param ncss
+     * @param p
+     * @param fname
+     * @param extractDirPath
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws MotuException
+     * @throws NetCdfVariableException
+     * @throws MotuInvalidDepthRangeException
+     */
+    private void runRequestWithCDOMergeTool(Product p, NetCdfSubsetService ncss, ExtractCriteriaLatLon latlon, String extractDirPath, String fname)
+            throws IOException, MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, InterruptedException {
+        // In this case, thredds needs 2 requests to retrieve the data.
+        List<ExtractCriteriaLatLon> rangesToRequest = ComputeRangeOutOfLimit(p, latlon);
+
+        // Create a temporary directory into tmp directory to save the 2 generated file
+        Path tempDirectory = Files.createTempDirectory("LeftAndRightRequest");
+        ncss.setOutputDir(tempDirectory.toString());
+
+        List<String> filesPath = new ArrayList<>();
+
+        int i = 0;
+        long rangesLength = 0;
+        for (ExtractCriteriaLatLon currentRange : rangesToRequest) {
+            rangesLength += Math.abs(Math.abs(currentRange.getLatLonRect().getLonMax()) - Math.abs(currentRange.getLatLonRect().getLonMin()));
+            ncss.setGeoSubset(currentRange);
+            ncss.setOutputFile(i + "-" + fname);
+            ncssRequest(p, ncss);
+            filesPath.add(Paths.get(tempDirectory.toString(), ncss.getOutputFile()).toString());
+            i++;
+        }
+
+        // Concatenate with NCO
+        // Set the merge command
+        String cmd = "merge.sh ";
+        // Set the output file path
+        cmd += extractDirPath + "/" + fname;
+        // Set the start point
+        cmd += " " + latlon.getLowerLeftLon();
+        // Set the length
+        cmd += " " + rangesLength;
+
+        // Set the list of files to merge
+        for (String path : filesPath) {
+            cmd += " " + path;
+        }
+        LOGGER.info("Start: " + cmd);
+        final Process process = Runtime.getRuntime().exec(cmd);
+
+        new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getInputStream())), LOGGER, Type.INFO)).start();
+        new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getErrorStream())), LOGGER, Type.ERROR)).start();
+
+        int exitValue = process.waitFor();
+        LOGGER.info("END [Exit code=" + exitValue + "] : " + cmd);
+
+        // Cleanup directory and intermediate files (right away once concat)
+        FileUtils.deleteDirectory(tempDirectory.toFile());
+
+        if (exitValue != 0) {
+            throw new MotuException(ErrorType.SYSTEM, "The generation of the NC file failled. See the log for more information.");
         }
     }
 
