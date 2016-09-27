@@ -825,15 +825,13 @@ RegionWidget.prototype.onChange = function() {
 	}
 }
 
-function updateMap() {
+function showLoadingMask(){
   var loadingDiv = document.getElementById("Loading");
   loadingDiv.style.visibility="visible";
-  var scriptBtn = document.getElementById("ScriptButton");
-  scriptBtn.disabled = true;
-	
+}
+
+function updateMap() {
   var theForm = findForm();
-//var downloadBtn = document.getElementById("DownloadButton");
-//downloadBtn.disabled = true;
 
   if ((theForm.xlo_text != null) && (theForm.x_lo != null)) {
 	  theForm.x_lo.value = theForm.xlo_text.value;	
@@ -1003,14 +1001,10 @@ function closeScriptCmdWin() {
 	  for (var variable = 0; variable < variables.length; variable++){
 		  var item = variables[variable];
 		  if (item.checked) {
-//			  nVar++;
 		      varOptions += " -v " + q + item.value + q + " ";		    	 
 		  }
 	  }
-//	  if (nVar > 0) {
-//		  cmd += " -v " + q + varOptions + q;
-//	  }		  
-		  cmd += varOptions;
+	  cmd += varOptions;
   }
 
   cmd += " -o " + q + "<i>your_output_directory</i><i><b>(1)</b></i>" + q;

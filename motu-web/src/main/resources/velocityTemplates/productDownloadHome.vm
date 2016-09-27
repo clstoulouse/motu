@@ -471,7 +471,7 @@
 
 <p>&nbsp;</p>
 
-<input id="DownloadButton" onClick="this.disabled=true;this.value='Download in progress...';updateMap();this.form.submit();" type="submit" value="Download" />
+<input id="DownloadButton" onClick="this.disabled=true;this.value='Download in progress...';showLoadingMask();updateMap();this.form.submit();" type="submit" value="Download" />
 <input id="ScriptButton" onClick="openScriptCmdWin()" type="button" value="Script" />
 </form>
 
