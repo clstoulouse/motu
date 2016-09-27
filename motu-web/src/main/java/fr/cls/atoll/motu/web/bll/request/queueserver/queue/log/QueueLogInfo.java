@@ -182,7 +182,7 @@ public class QueueLogInfo {
     public void initXStreamOptions() {
 
         // xStream.alias("priority", QueueLogPriority.class);
-        xStream.registerConverter(new DateConverter("yyyy-mm-dd HH:mm:ss.S", new String[] { "yyyy-mm-dd", "yyyy-mm-dd HH:mm:ss" }));
+        xStream.registerConverter(new DateConverter("yyyy-MM-dd HH:mm:ss.S", new String[] { "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss" }));
         xStream.useAttributeFor(Date.class);
         xStream.useAttributeFor(long.class);
         xStream.useAttributeFor(boolean.class);
