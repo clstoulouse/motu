@@ -211,12 +211,12 @@ OS target: Linux 64bits (Tested on centos-7.2.1511)
 Minimal configuration for an __operational usage__:  
 
 * __CPU__: 4 CPU, 2,4GHz
-* __RAM__: 16 Gb RAM
+* __RAM__: 32 Gb RAM
 * __Storage__: 
   * Motu installation folder 15Gb
   * Motu download folder 200Gb: by default [motu/data/public/download](#InstallFolders)  
 Note that the available space of the download folder has to be tuned, depending on:
-  * The number of user which runs requests at the same time on the server
+  * The number of users which run requests at the same time on the server
   * The size of the data distributed
    
 Once started, you can [check performance](#ExpMonitorPerf).
