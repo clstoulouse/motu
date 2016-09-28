@@ -31,7 +31,7 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
   * [Check installation](#InstallCheck)
   * [CDO manual installation](#InstallCDO)
   * [Installation folder structure](#InstallFolders)
-  * [Setup a front Apache HTTPd server](#InstallFrontal)
+  * [Setup a frontal Apache HTTPd server](#InstallFrontal)
 * [Configuration](#Configuration)
   * [Configuration directory structure](#ConfigurationFolderStructure)
   * [Business settings](#ConfigurationBusiness)
@@ -71,7 +71,7 @@ For administrators, Motu allows to monitor the usage of the server: the logs pro
 
 
 # <a name="Architecture">Architecture</a>  
-Motu is a web application running inside the HTTPd Apache Tomcat application server.
+Motu is a Java Web Application running inside the Apache Tomcat application server.
 
 # <a name="ArchitectureInterfaces">Interfaces</a>  
 ## <a name="ArchitectureInterfacesServer">Server interfaces</a>  
@@ -171,22 +171,30 @@ The Motu war is built under "/motu-web/target/motu-web-X.Y.Z-classifier.war".
 It embeds all necessary jar libraries.  
 
 ## <a name="Packaging">Packaging</a>  
-This step includes the compilation step. Once all projects are compiled, it groups all archive in a same folder in order to easy the client delivery.  
-You have to set ANT script inputs parameter before running it. See /motu-distribution/build.xml header to get more details about inputs.  
-```
+This step includes the compilation step. Once all projects are compiled, it groups all archives in a same folder in order to easy the final delivery.  
+You have to set ANT script inputs parameter before running it.  
+See /motu-distribution/build.xml header to get more details about inputs.  
+```  
 cd /motu-distribution  
 ant  
 cd target-ant/delivery/YYYYMMDDhhmmssSSS  
-```
+```  
 
-Three folders are built containing archives :
+4 folders are built containing archives:  
 
 * src: contains sources of motu application and the configuration files
-* motu: contains the built application and the products (java, tomcat, cdo)
+   * motu-$version-src.tar.gz  
+   * motu-client-python-$version-src.tar.gz  
+   * motu-config-$version-src.tar.gz  
+   * motu-web-static-files-$version-src.tar.gz  
+* motu: contains the built application archive and the products (java, tomcat, cdo) archive  
+   * motu-distribution-$version.tar.gz
+   * motu-products-$version.tar.gz
 * config: contains two kind of archives:
   * motu-config-X.Y.Z-classifier-$timestamp-$target.tar.gz:  the built configurations for each target platform  
   * motu-web-static-files-X.Y.Z-classifier-$timestamp-$target.tar.gz: The public static files (css, js) for each target platform 
-
+* motu-client  
+  * motu-client-python-$version-bin.tar.gz
 
 # <a name="Installation">Installation</a>  
 
@@ -222,9 +230,20 @@ For __test usage__ we recommend:
   * Motu download folder 50Gb: by default [motu/data/public/download](#InstallFolders)  
 
 
+### Motu host and software settings
+Motu embeds all its dependencies (Java , Tomcat, CDO). All versions of these dependencies will be visible in the folder name once the Motu product archive is extracted.  
+For example:  
+```
+ls -1 /opt/cmems-cis/motu/products  
+apache-tomcat-7.0.69  
+cdo-group  
+jdk1.7.0_79  
+README  
+version-products.txt  
+```  
 
-
-
+So bash shell is only required on the Linux host machine.  
+  
   
 ### External interfaces
 Motu is able to communicate with different external servers:  
@@ -561,7 +580,7 @@ __motu/__
 
 
 
-## <a name="InstallFrontal">Setup a front Apache HTTPd server</a>  
+## <a name="InstallFrontal">Setup a frontal Apache HTTPd server</a>  
 Apache HTTPd is used as a frontal HTTP server in front of Motu Http server.
 It has several aims:  
 
