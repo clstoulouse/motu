@@ -563,20 +563,23 @@ __motu/__
 
 ## <a name="InstallFrontal">Setup a front Apache HTTPd server</a>  
 Apache HTTPd is used as a frontal HTTP server in front of Motu Http server.
-It has several aims:
-* Delegate HTTP requests to Motu HTTP server   
-* Serve directly extracted dataset files written after a download action. The folder in which requests are written is [configurable](#motuConfig-extractionPath). URL used to download those files is "http://$ipMotuServer/mis-gateway/deliveries". This URL is [configurable](#motuConfig-downloadHttpUrl).
-* Serve the download transaction logbook files. The folder in which log files are written is [configurable](#LogSettings).
-* Manage errors like 403, 404. Motu server manages errors web page by displaying a custom message. Redirect to the URL "http://$ipMotuServer/motu-web/Motu?action=httperror&code=$errorCode" by replacing $errorCode with the HTTP error code.
-* Acts as a load balancer when several instances of Motu.
+It has several aims:  
+
+* Delegate HTTP requests to Motu HTTP server    
+* Serve directly extracted dataset files written after a download action. The folder in which requests are written is [configurable](#motuConfig-extractionPath). URL used to download those files is "http://$ipMotuServer/mis-gateway/deliveries". This URL is [configurable](#motuConfig-downloadHttpUrl).  
+* Serve the download transaction logbook files. The folder in which log files are written is [configurable](#LogSettings).  
+* Manage errors like 403, 404. Motu server manages errors web page by displaying a custom message. Redirect to the URL "http://$ipMotuServer/motu-web/Motu?action=httperror&code=$errorCode" by replacing $errorCode with the HTTP error code.  
+* Optionally acts as a load balancer when several instances of Motu.
 
 
-See sample of the Apache HTTPd configuration in the folder: config/apache-httpd-conf-sample  
-The configuration is described for Apache2  
+See sample of the Apache HTTPd configuration in the Motu installation folder: __config/apache-httpd-conf-sample__  
+The configuration is described for Apache2 contains files:
 
+* __001_httpd-vhosts-motu.conf:__ Main apache configuration file used for Motu, replace __$serverHostName__ by the server host, and $webmasterEmail by the webmaster or administrator email.
 * __apache2.conf:__ Use to show how timeout parameter shall be set
-* __httpd.conf:__ Main apache configuration file used for Motu
 * __enableApacheModules.sh__ Describe the Apache modules to enable
+
+When an SSO cas server is used, you have to st the property [cas-auth-serverName](#ConfigurationSystemCASSSO) to http://$serverHostName
 
 
 # <a name="Configuration">Configuration</a>  
@@ -872,7 +875,7 @@ __tomcat-motu-port-shutdown__=9005
 
 
 
-#### CAS SSO server
+#### <a name="ConfigurationSystemCASSSO">CAS SSO server</a>
 
    # true or false to enable the SSO connection to a CAS server  
 __cas-activated__=false  
