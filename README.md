@@ -747,12 +747,20 @@ Document root of the servlet server.
 @Deprecated from v3 This parameter is not used.
 Proxy settings are not used on Motu:  
 
-* __useProxy__
-* __proxyHost__
-* __proxyPort__
-* __proxyLogin__
-* __proxyPwd__
+* __useProxy__  
+* __proxyHost__  
+* __proxyPort__  
+* __proxyLogin__  
+* __proxyPwd__  
 
+##### downloadFileNameFormat  
+Format of the file name result of a download request.  
+2 dynamic parameters can be used to configure this attribute:  
+
+* __@@requestId@@__: this pattern will be replaced in the final file name by the id of the request.  
+* __@@productId@@__: this pattern will be replaced in the final file name by the id of the requested product.  
+
+If this attribute is not present, default value is: "@@productId@@_@@requestId@@.nc"
 
 #### <a name="BSconfigService">Attributes defined in configService node</a>  
 
