@@ -1167,7 +1167,19 @@ By default, log files are created in the folder $MOTU_HOME/log. This folder cont
 
 ## <a name="AdminDataSetAdd">Add a dataset</a>    
 In order to add a new Dataset, you have to add a new configService node in the [Motu business configuration](#ConfigurationBusiness).  
-When Motu read data through TDS (Opendap or NCSS service), the data shall be configured in TDS before this configuration in Motu. The TDS configuration is not explained here.
+When Motu read data through TDS (Opendap or NCSS service), the data shall be configured in TDS before this configuration in Motu. The TDS configuration is not explained here.  
+
+Within CMEMS, the datasets are organized in a tree structure, where the product granularity appears above the dataset granularity.  
+To be noticed:  
+
+* The dataset disseminated by TDS/Motu shall be gridded datasets (data is defined in a grid)  
+* A gridded dataset is a set of data files aggregated on time. Each file composing a gridded dataset shall contain the same variable in the same geospatial coverage. The difference between two files is the temporal coverage  
+* All gridded dataset shall be configured in TDS, to be served through teh subsetter of Motu  
+* A product is a coherent group of datasets. The product is the granularity used in the catalogue of CMEMS  
+* In the XML tree structure of the TDS configuration, each product shall be configured through a unique node  
+* This node shall correspond to one XML file in the TDS configuration (for example product1.xml) and shall be further referenced in the motuConfiguration.xml file as one &lt;catalog name> (for example &lt;catalog name="psy2v3-myocean.xml>)  
+* The value of the "name" attribute of the element &lt;dataset> shall be identical to the Product Specification Customer Name (from CMEMS Product Information Table).  
+  
   
 Examples:  
 
