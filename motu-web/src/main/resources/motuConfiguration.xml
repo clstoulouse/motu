@@ -12,7 +12,7 @@ cleanExtractionFileInterval="60"
 cleanRequestInterval="60" 
 runCleanInterval="15" 
 
-extractionFilePatterns=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|.*\.extract$|wps_output_.*$|wps_response_.*$" 
+extractionFilePatterns=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|.*\.extract$" 
 extractionFileCacheSize="10000" 
 runGCInterval="0"
 >

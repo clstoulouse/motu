@@ -26,6 +26,8 @@ public interface IDALManager {
      */
     void init() throws MotuException;
 
+    void stop();
+
     /**
      * .
      * 

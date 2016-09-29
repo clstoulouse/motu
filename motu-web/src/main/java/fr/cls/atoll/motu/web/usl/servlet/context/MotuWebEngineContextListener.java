@@ -81,6 +81,7 @@ public class MotuWebEngineContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         try {
             BLLManager.getInstance().stop();
+            DALManager.getInstance().stop();
             // Check if the timeout is reached
             boolean timeOut = false;
             // Store the wait status

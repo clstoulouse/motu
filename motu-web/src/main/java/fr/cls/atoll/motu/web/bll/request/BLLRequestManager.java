@@ -366,7 +366,10 @@ public class BLLRequestManager implements IBLLRequestManager {
             maxSizePerFile = BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue();
         }
         if (maxSizePerFile < fileSize) {
-            throw new MotuException(ErrorType.EXCEEDING_CAPACITY, "The size of the result file is greater than the max size allowed per file");
+            throw new MotuException(
+                    ErrorType.EXCEEDING_CAPACITY,
+                    "The result file size " + fileSize + "Mb shall be less than " + maxSizePerFile + "Mb",
+                    new String[] { Integer.toString(new Double(fileSize).intValue()), Integer.toString(new Double(maxSizePerFile).intValue()) });
         }
     }
 
