@@ -216,11 +216,12 @@ Minimal configuration for an __operational usage__:
 * __CPU__: 4 CPU, 2,4GHz
 * __RAM__: 32 Gb RAM
 * __Storage__: 
-  * Motu installation folder 15Gb
-  * Motu download folder 200Gb: by default [motu/data/public/download](#InstallFolders)  
-Note that the available space of the download folder has to be tuned, depending on:
-  * The number of users which run requests at the same time on the server
-  * The size of the data distributed
+  * Motu installation folder 15Gb: can be install on the OS partition (default folder /opt/cmems-cis)
+  * Motu download folder 200Gb: by default [/opt/cmems-cis/motu/data/public/download](#InstallFolders)  
+    Has to be installed in a dedicated partition to avoid freezing Motu if disk is full.
+Note that the available space of the download folder has to be tuned, depending on:  
+     * The number of users which run requests at the same time on the server
+     * The size of the data distributed
    
 Once started, you can [check performance](#ExpMonitorPerf).
    
@@ -736,7 +737,7 @@ Patterns (as regular expression) that match extraction file name to delete in fo
 * java.io.tmpdir
 * extractionPath
 
-Default is ".*\\.nc$|.*\\.zip$|.*\\.tar$|.*\\.gz$|wps_output_.*$|wps_response_.*$"  
+Default is ".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|.*\.extract$"  
 
 
 ##### extractionFileCacheSize
