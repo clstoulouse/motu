@@ -134,6 +134,8 @@ public class NetCdfSubsetService {
     private long readingTimeInNanoSec = 0L;
     private long writingTimeInNanoSec = 0L;
 
+    private Double rightLonIn360;
+
     /**
      * Setter of the time subset setup .
      * 
@@ -363,6 +365,10 @@ public class NetCdfSubsetService {
         String north = String.valueOf(geoSubset.getUpperLeftLat());
         String west = String.valueOf(geoSubset.getUpperLeftLon());
         String east = String.valueOf(geoSubset.getUpperRightLon());
+        // Hack to manage request on dataset boundaries 0 360 with TDS successfully
+        if (rightLonIn360 != null) {
+            east = String.valueOf(rightLonIn360);
+        }
         String south = String.valueOf(geoSubset.getLowerLeftLat());
 
         // Temporal subset (W3C format supported by TDS)
@@ -475,6 +481,15 @@ public class NetCdfSubsetService {
 
     public void setWritingTimeInNanoSec(long writingTimeInNanoSec) {
         this.writingTimeInNanoSec = writingTimeInNanoSec;
+    }
+
+    /**
+     * Hack to manage 0-360 datasets with ncss
+     * 
+     * @param rightLon
+     */
+    public void setRightLonIn360(double rightLonIn360_) {
+        rightLonIn360 = rightLonIn360_;
     }
 
 }

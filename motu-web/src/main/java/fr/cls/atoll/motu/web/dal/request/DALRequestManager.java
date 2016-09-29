@@ -38,6 +38,7 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.DatasetGrid;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 import ucar.ma2.Array;
+import ucar.unidata.geoloc.LatLonPointImpl;
 
 /**
  * <br>
@@ -104,8 +105,15 @@ public class DALRequestManager implements IDALRequestManager {
         ncss.setOutputFormat(dataOutputFormat);
         ncss.setncssURL(p.getLocationDataNCSS());
 
+        // Check if it is an antimeridien request
+        double rightLon = latlon.getLowerRightLon();
+        if (p.getProductMetaData().getLonAxisMaxValue() > 350) {
+            rightLon = LatLonPointImpl.lonNormal360(rightLon);
+            ncss.setRightLonIn360(rightLon);
+        }
+
         // Check if the left longitude is greater than the right longitude
-        if (latlon.getLowerLeftLon() > latlon.getLowerRightLon()) {
+        if (latlon.getLowerLeftLon() > rightLon) {
             boolean canRequest = true;
             if (p.getProductMetaData().hasZAxis()) {
                 // Check if only one depth is requested. This is because the merge of two netcdf file needs a
@@ -124,7 +132,12 @@ public class DALRequestManager implements IDALRequestManager {
         } else {
             ncss.setOutputFile(fname);
             ncss.setOutputDir(extractDirPath);
-            ncss.setGeoSubset(latlon);
+            ncss.setGeoSubset(new ExtractCriteriaLatLon(
+                    latlon.getLatLonRect().getLatMin(),
+                    latlon.getLatLonRect().getLonMin(),
+                    latlon.getLatLonRect().getLatMax(),
+                    rightLon));
+
             ncssRequest(p, ncss);
         }
     }
@@ -253,14 +266,6 @@ public class DALRequestManager implements IDALRequestManager {
 
         return ranges;
     }
-
-    // private boolean is360systemCoordinates(Product p) {
-    // if (p.getProductMetaData().getLonNormalAxisMinValue() < 0) {
-    // return false;
-    // } else {
-    // return true;
-    // }
-    // }
 
     private void ncssRequest(Product p, NetCdfSubsetService ncss)
             throws MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, IOException, InterruptedException {

@@ -13,9 +13,46 @@ function init() {
   aMapTool.setMode('single');
   aMapTool.selectTool("xy");
   aMapTool.setRanges();
-// setRegionRanges();
-  
 }
+
+
+
+
+
+//This function was originally designed to interact with the
+//Map applet. New code was needed to make it work with
+//the non-java map.
+MapWidget.prototype.positionTool = function(xlo,xhi,ylo,yhi) {
+	var tool = this.mTool;
+	if (tool == "X" || tool == "PT"){
+		 var y = (ylo + yhi)/2.0;
+		 ylo = y;
+		 yhi = y;
+		 if (tool != "PT" && xlo == xhi){
+		   xlo = this.minx;
+		   xhi = this.maxx;
+		 }
+	}
+	
+	if (tool == "Y" || tool == "PT"){
+	 var x = (xlo + xhi)/2.0;
+	 xlo = x;
+	 xhi = x;
+	 if (tool != "PT" && ylo == yhi){
+	   ylo = this.miny;
+	   yhi = this.maxy;
+	 }
+	}
+	
+	this.wx[0].setValue(xlo);
+	this.wx[1].setValue(xhi);
+	this.wy[0].setValue(ylo);
+	this.wy[1].setValue(yhi);
+
+}
+
+
+
 
 // Override this function if you want some action before submitting a form
 // Note that the onSubmit event isn't issued if form.submit() is called
@@ -420,12 +457,6 @@ function MapWidget(formName) {
 MapWidget.prototype.onBlur = function(widget){
   var tool = this.mTool;
   var value = widget.getValue();
-  // Clip to restricted region
-// ////////////// if (widget.mType == "lon"){
-// ////////////// value = this.clip_lon(value);
-// ////////////// } else {
-// ////////////// value = this.clip_lat(value);
-// ////////////// }
   widget.setValue(value);
 
   // Keep as line or point if necessary
@@ -467,97 +498,6 @@ MapWidget.prototype.clip_lat = function(y){
     y = this.maxy;
   }
   return y;
-}
-
-// This function was originally designed to interact with the
-// Map applet. New code was needed to make it work with
-// the non-java map.
-MapWidget.prototype.positionTool = function(xlo,xhi,ylo,yhi) {
-  var tool = this.mTool;
-  if ("${use_java}" == "true") {
-  // This will prevent the "cross-hair" location from being displayed
-  // in the non-java map, so only use if java is on.
-    if (tool == "XY"){
-      if (xlo == xhi){
-        xlo = this.minx;
-        xhi = this.maxx;
-      }
-      if (ylo == yhi){
-        ylo = this.miny;
-        yhi = this.maxy;
-      }
-    }
-  } // end if java
-  if (tool == "X" || tool == "PT"){
-    var y = (ylo + yhi)/2.0;
-    ylo = y;
-    yhi = y;
-    if (tool != "PT" && xlo == xhi){
-      xlo = this.minx;
-      xhi = this.maxx;
-    }
-  }
-  if (tool == "Y" || tool == "PT"){
-    var x = (xlo + xhi)/2.0;
-    xlo = x;
-    xhi = x;
-    if (tool != "PT" && ylo == yhi){
-      ylo = this.miny;
-      yhi = this.maxy;
-    }
-  }
-
-// /////////////////// xlo = this.clip_lon(xlo);
-// ///////////////////// xhi = this.clip_lon(xhi);
-  if ("${use_java}" == "true") {
-    // This logic is pervent the cross hair values from being
-    // added to the text boxes in the non-java case. Only do
-    // if java is on.
-     if (xlo == xhi && !("Y" == tool || "PT" == tool)){
-       xlo = this.minx;
-       xhi = this.maxx;
-     }
-  }
-// ////// ylo = this.clip_lat(ylo);
-// ////// yhi = this.clip_lat(yhi);
-  if ("${use_java}" == "true") {
-     // Same as above.
-     if (ylo == yhi && !("X" == tool || "PT" == tool)){
-       ylo = this.miny;
-       yhi = this.maxy;
-     }
-  }
-
-  // In the Java map case, the values are on the client.
-
-  if ( "${use_java}" == "true" ) {
-     this.wx[0].setValue(xlo);
-     this.wx[1].setValue(xhi);
-     this.wy[0].setValue(ylo);
-     this.wy[1].setValue(yhi);
-  }
-
-  // In the non-java case get them from the mapstate bean from the server.
-  else {
-// this.wx[0].setValue(-180);
-// this.wx[1].setValue(180);
-// this.wy[0].setValue(-90);
-// this.wy[1].setValue(90);
-     this.wx[0].setValue(xlo);
-     this.wx[1].setValue(xhi);
-     this.wy[0].setValue(ylo);
-     this.wy[1].setValue(yhi);
-     
-// if("${hasGeoAxis}" == "true") {
-// this.wx[0].setValue($XMin);
-// this.wx[1].setValue($XMax);
-// this.wy[0].setValue($YMin);
-// this.wy[1].setValue($YMax);
-// }
-     
-  }
-
-
 }
 
 function unconvert_mod_range(xvals){
@@ -687,23 +627,6 @@ MapTool.prototype.setRanges = function(){
   var yhi = parseFloat(this.mForm.elements.y_hi.value);
   this.mApplet.positionTool(xlo, xhi, Math.min(ylo, yhi),
 			    Math.max(ylo,yhi));
-  if ( "${use_java}" == "true" ) {
-     // In the non-java case, the restriction happens on the server side.
-     var txlo = parseFloat("-180");
-     var txhi = parseFloat("180");
-     var tylo = parseFloat("-82");
-     var tyhi = parseFloat("81.9746362041896");
-
-     if("${hasGeoAxis}" == "true") {
-	     txlo = parseFloat("${XMin}");
-	     txhi = parseFloat("${XMax}");
-	     tylo = parseFloat("${YMin}");
-	     tyhi = parseFloat("${YMax}");
-  	 }
-     
-     this.mApplet.restrictToolRange(0, txlo, txhi, Math.min(tylo, tyhi),
-  			       Math.max(tylo,tyhi));
-  }
 }
 
 MapTool.prototype.getRanges = function(){
@@ -744,13 +667,13 @@ MapTool.prototype.setRegion = function(label){
                               Math.max(ylo, yhi));
     // Time events
     if (regionarray.length > 4){
-	var timeLength = TimeMultiWidgetList.length;
-	if (timeLength > 0){
-	    TimeMultiWidgetList[0].setSelected(regionarray[4], "-");
-	}
-	if (timeLength > 1){
-	    TimeMultiWidgetList[1].setSelected(regionarray[5], "-");
-	}
+		var timeLength = TimeMultiWidgetList.length;
+		if (timeLength > 0){
+		    TimeMultiWidgetList[0].setSelected(regionarray[4], "-");
+		}
+		if (timeLength > 1){
+		    TimeMultiWidgetList[1].setSelected(regionarray[5], "-");
+		}
     }
   }
 }
@@ -790,39 +713,28 @@ setInherit("RegionWidget", "Widget");
 
 RegionWidget.prototype.onChange = function() {
   var index = this.getSelected();
-// // do this for map applet
-// if ( "false" == "true") {
-// aMapTool.setRegion(index);
-// }
-// else {
-// // do these for non-java map version
-
-// this.mAction.value="changeRegion";
-// stuffForm('constrain');
-// }
-
-  	var theForm = findForm();
+  var theForm = findForm();
+  regionarray = index.split(",");
+  var xlo = parseFloat(regionarray[0]);    
+  var xhi = parseFloat(regionarray[1]);
+  var ylo = parseFloat(regionarray[2]);
+  var yhi = parseFloat(regionarray[3]);
+  //SMY
+  //if (Math.abs(xlo - xhi) >= 360.0) {
+  //  xlo = -180;
+  //  xhi = 180;
+  //}
+  theForm.xlo_text.value = String(xlo);    
+  theForm.ylo_text.value = String(ylo);
+  theForm.xhi_text.value = String(xhi);
+  theForm.yhi_text.value = String(yhi);
   
-	regionarray = index.split(",");
-	var xlo = parseFloat(regionarray[0]);	
-	var xhi = parseFloat(regionarray[1]);
-	var ylo = parseFloat(regionarray[2]);
-	var yhi = parseFloat(regionarray[3]);
-    if (Math.abs(xlo - xhi) >= 360.0) {
-      xlo = -180;
-      xhi = 180;
-    }
-	theForm.xlo_text.value = String(xlo);	
-	theForm.ylo_text.value = String(ylo);
-	theForm.xhi_text.value = String(xhi);
-	theForm.yhi_text.value = String(yhi);
-	
-	if( aMapTool !== null && aMapTool.mApplet !== null ){
-		aMapTool.mApplet.wx[0].validate();
-		aMapTool.mApplet.wx[1].validate();
-		aMapTool.mApplet.wy[0].validate();
-		aMapTool.mApplet.wy[1].validate();
-	}
+  if( aMapTool !== null && aMapTool.mApplet !== null ){
+      aMapTool.mApplet.wx[0].validate();
+      aMapTool.mApplet.wx[1].validate();
+      aMapTool.mApplet.wy[0].validate();
+      aMapTool.mApplet.wy[1].validate();
+  }
 }
 
 function showLoadingMask(){
@@ -848,27 +760,28 @@ function updateMap() {
 }
 
 function setRegionWidget() {
-     
   aRegionWidget.onChange();
 }
+
 function intersect(x1,x2,ox1,ox2, ctype){
     var xrange = [x1,x2];
     var oxrange = [ox1, ox2];
     if (ctype == "lon"){
-	xrange = unconvert_mod_range(xrange);
-	oxrange = unconvert_mod_range(oxrange);
+		xrange = unconvert_mod_range(xrange);
+		oxrange = unconvert_mod_range(oxrange);
     }
     x1 = xrange[0]; x2 = xrange[1]; ox1 = oxrange[0]; ox2 = oxrange[1];
     if ((x1 <= ox1 && x2 <= ox1) || (x1 >= ox2 && x2 >= ox2)){
-	return [x1,x2];
+    	return [x1,x2];
     }
     var rvals = [Math.max(x1,ox1),Math.min(x2,ox2)];
     if (ctype == "lon"){
-	rvals[0] = convert_modulo(rvals[0]);
-	rvals[1] = convert_modulo(rvals[1]);
+		rvals[0] = convert_modulo(rvals[0]);
+		rvals[1] = convert_modulo(rvals[1]);
     }
     return rvals;
 }
+
 function setRegionRanges() {
   var theForm = findForm();
   var xvals = [theForm.x_lo.value,theForm.x_hi.value];
@@ -878,8 +791,7 @@ function setRegionRanges() {
   var ylo = parseFloat(theForm.y_lo.value);
   var yhi = parseFloat(theForm.y_hi.value);
   
-  xvals = intersect(xlo, xhi, -180, 180);
-
+  xvals = intersect(xlo, xhi, -180, 360);
   yvals = intersect(ylo, yhi, -90, 90);
   
   theForm.xlo_text.value = xvals[0];	
@@ -887,9 +799,8 @@ function setRegionRanges() {
   theForm.ylo_text.value = yvals[0];	
   theForm.yhi_text.value = yvals[1];	
 }
+
 function getRegionRanges() {
-
-
 }
 
 function setUseJava(newval){

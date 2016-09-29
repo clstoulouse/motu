@@ -66,22 +66,17 @@
 		#set($YMinSel = $geoCriteria.getLowerLeftLat())
 		#set($YMaxSel = $geoCriteria.getUpperRightLat())	
 	#end
-##	#set($XMinTmp = $mathTool.min($XMin, $XMax))
-##	#set($XMaxTmp = $mathTool.max($XMin, $XMax))
-##	#set($XMin = $XMinTmp)
-##	#set($XMax = $XMaxTmp)
-		
-		
+
 #end
 ## -------------------------------------------- product_downloadhome_uk_printResult --------------------------------
 #macro(product_downloadhome_uk_printResult)
 	#if ( $product.hasDownloadUrlPath() && ! $product.hasLastError() )
 		<form method="post" action="${product.getDownloadUrlPath()}" name="dlform">
 			<script language="JavaScript">
-			document.write('<h3>Your download should begin shortly.  If it does not, try <a href="${product.getDownloadUrlPath()}" target="_blank">${product.getExtractFilename()}</a></h3>');
-			#if ( ${product.isAutoDownloadTimeOutEnable()})
-				window.setTimeout('document.dlform.submit()', ${product.getAutoDownloadTimeOut()});
-			#end
+				document.write('<h3>Your download should begin shortly.  If it does not, try <a href="${product.getDownloadUrlPath()}" target="_blank">${product.getExtractFilename()}</a></h3>');
+				#if ( ${product.isAutoDownloadTimeOutEnable()})
+					window.setTimeout('document.dlform.submit()', ${product.getAutoDownloadTimeOut()});
+				#end
 			</script>
 		</form>
 	#end
@@ -93,9 +88,9 @@
 		<style>
 			p.error
 			{
-			font: 13pt "Arial", "Helvetica", sans-serif;
-			font-weight: bold;
-			color:#FF0000;
+				font: 13pt "Arial", "Helvetica", sans-serif;
+				font-weight: bold;
+				color:#FF0000;
 			}
 		</style> 
 
@@ -115,28 +110,26 @@
 	
 	<tr>
 		<td align="center">
-		<input type="checkbox" name="variable" ${checked} value="${parameterMetadata.getName()}" />			
+			<input type="checkbox" name="variable" ${checked} value="${parameterMetadata.getName()}" />			
 		</td>
 		<td>
-		<strong>
-		${parameterMetadata.getName()}
-		</strong>
+			<strong>${parameterMetadata.getName()}</strong>
 		</td>
 		<td>
-		$parameterMetadata.getLabel() 
+			$parameterMetadata.getLabel() 
 		</td>			
 		<td>
-		#if($parameterMetadata.getStandardName().equals(""))
-			-
-		#else					
-			$parameterMetadata.getStandardName()			
-		#end
+			#if($parameterMetadata.getStandardName().equals(""))
+				-
+			#else					
+				$parameterMetadata.getStandardName()			
+			#end
 		</td>
 		<td>
-		$parameterMetadata.getUnit()
-		#if(!$parameterMetadata.getUnitLong().equals(""))
-			(${parameterMetadata.getUnitLong()})					
-		#end
+			$parameterMetadata.getUnit()
+			#if(!$parameterMetadata.getUnitLong().equals(""))
+				(${parameterMetadata.getUnitLong()})					
+			#end
 		</td>
 		<td>
 		#if($parameterMetadata.hasDimensions())
@@ -306,9 +299,10 @@
 			</select>
 			<input type="text" name="t_hi" size="12" value="${timeHighValue}"/>
 			<script language="JavaScript">
-			var widget31 = new MultiWidget("${formName}", ["t_hi_0","t_hi"], "rtime");widget31.onChange();
-			widget31.setValue("${timeHighValue}");		
-			widget31.mWidgets[0].setSelected("${timeHighValue}");				
+				var widget31 = new MultiWidget("${formName}", ["t_hi_0","t_hi"], "rtime");
+				widget31.onChange();
+				widget31.setValue("${timeHighValue}");		
+				widget31.mWidgets[0].setSelected("${timeHighValue}");				
 			</script>				
 		    </font>
 		</td>
@@ -346,9 +340,10 @@
 		</select>
 		<input type="text" name="z_lo" size="12" value="${depthLowValue}" />
 		<script language="JavaScript">
-		var widget32 = new MultiWidget("${formName}", ["z_lo_0","z_lo"], "normal");widget32.onChange();
-		widget32.setValue("${depthLowValue}");
-		widget32.mWidgets[0].setSelected("${depthLowValue}");
+			var widget32 = new MultiWidget("${formName}", ["z_lo_0","z_lo"], "normal");
+			widget32.onChange();
+			widget32.setValue("${depthLowValue}");
+			widget32.mWidgets[0].setSelected("${depthLowValue}");
 		</script>
 		       to <br/>
 	    <select name="z_hi_0" >
@@ -362,9 +357,10 @@
 		</select>
 		<input type="text" name="z_hi" size="12" value="${depthHighValue}" />
 		<script language="JavaScript">
-		var widget33 = new MultiWidget("${formName}", ["z_hi_0","z_hi"], "normal");widget33.onChange();
-		widget33.setValue("${depthHighValue}");
-		widget33.mWidgets[0].setSelected("${depthHighValue}");
+			var widget33 = new MultiWidget("${formName}", ["z_hi_0","z_hi"], "normal");
+			widget33.onChange();
+			widget33.setValue("${depthHighValue}");
+			widget33.mWidgets[0].setSelected("${depthHighValue}");
 		</script>				
     </font></td>
   </tr>
@@ -393,32 +389,26 @@
 #product_downloadhome_uk_printResult()
 
 <form id="downloadForm"  method="get" name="${formName}">		
-<input type="hidden" name="action" value="productdownload" />
-<input type="hidden" name="service" value="$service.getNameEncoded()" />
-## #if($catalogType != "DGF")	
-##	<input type="hidden" name="data" value="$product.getLocationData()" />
-## #else
-##	<input type="hidden" name="product" value="$productMetaData.getProductIdEncoded()" />
-## #end
-<div id="Loading" style="position:fixed;left:49%;top:49%;visibility:hidden"><img src="$httpSite/css/motu/screen/images/loader.gif"  alt="Loading" title="Wait until the requested file is generated!" /></div>
-<input type="hidden" name="product" value="$productMetaData.getProductIdEncoded()" />
-<input type="hidden" name="nexturl" value=" " />
-#if(($productMetaData.hasLatLonAxis()) || ($productMetaData.hasGeoXYAxis()))
-	#if($product.hasCriteriaLatLon())				
-	<input type="hidden" name="x_lo" value="${XMinSel}" />
-	<input type="hidden" name="x_hi" value= "${XMaxSel}"/>
-	<input type="hidden" name="y_lo" value="${YMinSel}" />
-	<input type="hidden" name="y_hi" value="${YMaxSel}" />	
-	#else
-	<input type="hidden" name="x_lo" value="${XMin}" />
-	<input type="hidden" name="x_hi" value="${XMax}"/>
-	<input type="hidden" name="y_lo" value="${YMin}" />
-	<input type="hidden" name="y_hi" value="${YMax}" />	
+	<input type="hidden" name="action" value="productdownload" />
+	<input type="hidden" name="service" value="$service.getNameEncoded()" />
+	<div id="Loading" style="position:fixed;left:49%;top:49%;visibility:hidden">
+	    <img src="$httpSite/css/motu/screen/images/loader.gif"  alt="Loading" title="Wait until the requested file is generated!" />
+	</div>
+	<input type="hidden" name="product" value="$productMetaData.getProductIdEncoded()" />
+	<input type="hidden" name="nexturl" value=" " />
+	#if(($productMetaData.hasLatLonAxis()) || ($productMetaData.hasGeoXYAxis()))
+		#if($product.hasCriteriaLatLon())				
+			<input type="hidden" name="x_lo" value="${XMinSel}" />
+			<input type="hidden" name="x_hi" value= "${XMaxSel}"/>
+			<input type="hidden" name="y_lo" value="${YMinSel}" />
+			<input type="hidden" name="y_hi" value="${YMaxSel}" />	
+		#else
+			<input type="hidden" name="x_lo" value="${XMin}" />
+			<input type="hidden" name="x_hi" value="${XMax}"/>
+			<input type="hidden" name="y_lo" value="${YMin}" />
+			<input type="hidden" name="y_hi" value="${YMax}" />	
+		#end
 	#end
-#end
-<!-- 
-<input type="hidden" name="use_java" value="$use_java" />
--->
 
 <h1>$productMetaData.getTitle()</h1>
 <h2>Selection</h2>
@@ -432,21 +422,27 @@
 #end
 
 #if($productMetaData.hasLatLonAxis() || $product.hasGeoXYAxisWithLonLatEquivalence())
-	<tr><td>
-	#product_downloadhome_uk_regionSelection()
-	</td></tr>
+	<tr>
+		<td>
+			#product_downloadhome_uk_regionSelection()
+		</td>
+	</tr>
 #end
 
 #if($productMetaData.hasTimeAxis() || ($catalogType == "DGF"))
-	<tr><td>
-	#product_downloadhome_uk_timeSelection()
-	</td></tr>
+	<tr>
+		<td>
+			#product_downloadhome_uk_timeSelection()
+		</td>
+	</tr>
 #end
 
 #if($productMetaData.hasZAxis())
-	<tr><td>
-	#product_downloadhome_uk_depthSelection()
-	</td></tr>
+	<tr>
+		<td>
+			#product_downloadhome_uk_depthSelection()
+		</td>
+	</tr>
 #end
 </table>
 
@@ -471,9 +467,6 @@
 
 <p>&nbsp;</p>
 
-<input id="DownloadButton" onClick="this.disabled=true;this.value='Download in progress...';showLoadingMask();updateMap();this.form.submit();" type="submit" value="Download" />
-<input id="ScriptButton" onClick="openScriptCmdWin()" type="button" value="Script" />
+	<input id="DownloadButton" onClick="this.disabled=true;this.value='Download in progress...';showLoadingMask();updateMap();this.form.submit();" type="submit" value="Download" />
+	<input id="ScriptButton" onClick="openScriptCmdWin()" type="button" value="Script" />
 </form>
-
-
-

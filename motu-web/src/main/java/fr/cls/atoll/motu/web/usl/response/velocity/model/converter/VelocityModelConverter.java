@@ -10,6 +10,7 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
+import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.URLUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
@@ -370,6 +371,16 @@ public class VelocityModelConverter {
             @Override
             public int getAutoDownloadTimeOut() {
                 return 3000;
+            }
+
+            @Override
+            public boolean hasCriteriaLatLon() {
+                return product_.hasCriteriaLatLon();
+            }
+
+            @Override
+            public ExtractCriteriaLatLon getCriteriaLatLon() {
+                return product_.getCriteriaLatLon();
             }
 
         };

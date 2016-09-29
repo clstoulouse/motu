@@ -2,6 +2,8 @@ package fr.cls.atoll.motu.web.usl.response.velocity.model.catalog;
 
 import java.util.List;
 
+import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
+
 /**
  * <br>
  * <br>
@@ -60,5 +62,9 @@ public interface IProduct {
     boolean hasLastError();
 
     String getLastError();
+
+    boolean hasCriteriaLatLon();
+
+    ExtractCriteriaLatLon getCriteriaLatLon();
 
 }

@@ -2004,7 +2004,9 @@ public class ProductMetaData {
      * @return the maximum value normalized between +/-180, or Double.MAX_VALUE if no longitude axis
      */
     public double getLonNormalAxisMaxValue() {
-        return NetCdfReader.getLonNormal(getLonAxisMaxValue());
+        // Do not set it between 180 & +180, keep original value; could be 0;359.xxx
+        // NetCdfReader.getLonNormal(getLonAxisMaxValue());
+        return getLonAxisMaxValue();
     }
 
     /**
