@@ -32,6 +32,9 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
   * [CDO manual installation](#InstallCDO)
   * [Installation folder structure](#InstallFolders)
   * [Setup a frontal Apache HTTPd server](#InstallFrontal)
+  * [Security](#InstallSecurity)
+     * [Run Motu as an HTTPS Web server](#InstallSecurityRunHTTPs)
+	 * [Motu and Single Sign On](#InstallSecuritySSO)
 * [Configuration](#Configuration)
   * [Configuration directory structure](#ConfigurationFolderStructure)
   * [Business settings](#ConfigurationBusiness)
@@ -601,6 +604,26 @@ The configuration is described for Apache2 contains files:
 When an SSO cas server is used, you have to st the property [cas-auth-serverName](#ConfigurationSystemCASSSO) to http://$serverHostName
 
 
+## <a name="InstallSecurity">Security</a>  
+
+### <a name="InstallSecurityRunHTTPs">Run Motu as an HTTPS Web server</a>  
+Motu is a web server based on Apache Tomcat.  
+In order to secure HTTP connections with a client, HTTPs protocol can be used.  
+You have two choices:  
+
+* __Motu as a standalone web server__  
+  In this case only Motu is installed.  
+  Refers to the Apache Tomcat official documentation to know how to set SSL certificates: [SSL/TLS Configuration HOW-TO](#https://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html)
+* __Motu with an Apache HTTPd frontal web server__  
+  In this case Motu is installed and also a frontal Apache HTTPd server.  
+  Refers to the Apache HTTPd official documentation: [SSL/TLS Strong Encryption: How-To](#https://httpd.apache.org/docs/2.4/ssl/ssl_howto.html)  
+  [Apache HTTPd](#InstallFrontal) communicates with Apache Tomcat with the [AJP protocol](#ConfigurationSystem).
+
+### <a name="InstallSecuritySSO">Motu and Single Sign On</a>  
+In order to manage SSO (Single Sign On) connections to Motu web server, Motu uses an HTTPs client.  
+All documentation about how to setup is written in chapter [CAS SSO server](#ConfigurationSystemCASSSO).
+	 
+	 
 # <a name="Configuration">Configuration</a>  
 
 This chapter describes the Motu configuration settings.  
@@ -918,11 +941,26 @@ __cas-auth-serverName__=http://$motuServerIp:$motuServerPort
 __cas-validationFilter-proxyCallbackUrl__=http://$motuServerIp:$motuServerPort/motu-web/proxyCallback  
   
   
-__IMPORTANT__: Motu uses a Java HTTP client to communicate with the CAS server. When the CAS server has an untrusted SSL certificate, you have to add it to Java default certificates or to add the Java property named "javax.net.ssl.trustStore" to target a CA keystore which contains the CAS Server SSL CA public key.
-For example, add this property by setting Java option "tomcat-motu-jvm-javaOpts":  
+__IMPORTANT__: Motu uses a Java HTTPs client to communicate with the CAS server. When the CAS server has an untrusted SSL certificate, you have to add it to Java default certificates or to add the Java property named "javax.net.ssl.trustStore" to target a CA keystore which contains the CAS Server SSL CA public key.
+For example, add this property by setting Java option [tomcat-motu-jvm-javaOpts](#ConfigurationSystem):  
 ```
 tomcat-motu-jvm-javaOpts=-server -Xmx4096M -Xms512M -XX:PermSize=128M -XX:MaxPermSize=512M -Djavax.net.ssl.trustStore=/opt/cmems-cis/motu/config/security/cacerts-with-cas-qt-ca.jks
 ```
+
+How to build the file cacerts-with-cas-qt-ca.jks on Motu server?  
+
+* Download the file "ca.crt" from the CAS server machine (/opt/atoll/ssl/ca.crt) into ${MOTU_HOME}/config/security/ and rename it "cas-qt-ca.crt"
+* Copy the default Java cacerts "/opt/cmems-cis-validation/motu/products/jdk1.7.0_79/jre/lib/security/cacerts" file into ${MOTU_HOME}/config/security/
+  and rename this file to "cacerts-with-cas-qt-ca.jks"  
+  ```
+  cp /opt/cmems-cis-validation/motu/products/jdk1.7.0_79/jre/lib/security/cacerts /opt/cmems-cis/motu/config/security/  
+  mv /opt/cmems-cis/motu/config/security/cacerts /opt/cmems-cis/motu/config/security/cacerts-with-cas-qt-ca.jks  
+  ```
+* Then import "cas-qt-ca.crt" inside "cacerts-with-cas-qt-ca.jks", Trust the certificate=yes  
+  ```
+  /opt/cmems-cis-validation/motu/products/jdk1.7.0_79/bin/keytool -import -v -trustcacerts -alias $CAS_HOST_NAME -file cas-qt-ca.crt -keystore cacerts-with-cas-qt-ca.jks -keypass XXX  
+  ```  
+
 
 #### Supervision
 To enable the status supervision, set the parameter below:  
