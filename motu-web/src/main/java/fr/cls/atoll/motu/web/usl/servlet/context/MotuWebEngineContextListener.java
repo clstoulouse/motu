@@ -80,51 +80,84 @@ public class MotuWebEngineContextListener implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         try {
-            BLLManager.getInstance().stop();
-            DALManager.getInstance().stop();
-            // Check if the timeout is reached
-            boolean timeOut = false;
-            // Store the wait status
-            boolean hasWait = false;
-            // Store the time of the wait begin to check the timeout
-            long startWaiting = System.currentTimeMillis();
             try {
-                // Wait until the request is finished or the timeout is reached
-                while (hasPendingOrInProgressRequest() && !timeOut) {
-                    // Store that the finish action have to wait.
-                    hasWait = true;
-                    // Sleep 1 second before another check
-                    Thread.sleep(1000);
-                    // Check if the 10 minutes timeout is reached
-                    timeOut = (System.currentTimeMillis() - startWaiting) > 10 * 60 * 1000;
-                }
-                // If the shutdown have wait, wait 500ms to finish correctly the request.
-                if (hasWait) {
-                    Thread.sleep(500);
-                }
-            } catch (InterruptedException e) {
-                LOGGER.error("An error occured while waiting to stop motu", e);
+                LOGGER.info("Stop in progress...");
+                waitForPendingOrInprogressRequests();
+            } finally {
+                LOGGER.info("Stop BLLManager");
+                BLLManager.getInstance().stop();
+                LOGGER.info("Stop DALManager");
+                DALManager.getInstance().stop();
             }
         } catch (Exception e) {
             LOGGER.error("An error occured while waiting to stop motu", e);
         }
+        LOGGER.info("Stop done");
     }
 
-    private boolean hasPendingOrInProgressRequest() throws MotuException {
-        boolean hasRequest = false;
+    private void waitForPendingOrInprogressRequests() throws MotuException {
+        // Check if the timeout is reached
+        boolean timeOut = false;
+        // Store the wait status
+        boolean hasWait = false;
+        // Store the time of the wait begin to check the timeout
+        long startWaiting = System.currentTimeMillis();
+        try {
+            int[] pendingAndInProgressRequestNbr = getPendingAnInProgressRequestNumber();
+            int pendingRequestNbr = pendingAndInProgressRequestNbr[0];
+            int inProgressRequestNbr = pendingAndInProgressRequestNbr[1];
+            int totalWaitTimeInSec = 0;
+            LOGGER.info("Stop: Pending=" + pendingRequestNbr + "; InProgress=" + inProgressRequestNbr);
+
+            while ((pendingRequestNbr > 0 || inProgressRequestNbr > 0) && !timeOut) {
+                // Log each 5sec
+                if (totalWaitTimeInSec % 5 == 0) {
+                    LOGGER.info("Stop: Waiting requests: Pending=" + pendingRequestNbr + "; InProgress=" + inProgressRequestNbr);
+                }
+
+                // Sleep 1 second before another check
+                Thread.sleep(1000);
+                totalWaitTimeInSec++;
+
+                // Check if the 10 minutes timeout is reached
+                timeOut = (System.currentTimeMillis() - startWaiting) > 10 * 60 * 1000;
+
+                // Store that the finish action have to wait.
+                hasWait = true;
+
+                pendingAndInProgressRequestNbr = getPendingAnInProgressRequestNumber();
+                pendingRequestNbr = pendingAndInProgressRequestNbr[0];
+                inProgressRequestNbr = pendingAndInProgressRequestNbr[1];
+            }
+            LOGGER.info("Stop: Waiting requests: Pending=" + pendingRequestNbr + "; InProgress=" + inProgressRequestNbr);
+
+            // If the shutdown have wait, wait 1sec to finish correctly the request.
+            if (hasWait) {
+                Thread.sleep(1000);
+            }
+
+        } catch (InterruptedException e) {
+            LOGGER.error("An error occured while waiting to stop motu", e);
+        }
+    }
+
+    private int[] getPendingAnInProgressRequestNumber() throws MotuException {
+        int pendingRequestNbr = 0;
+        int inProgressRequestNbr = 0;
         List<Long> requestIds = BLLManager.getInstance().getRequestManager().getRequestIds();
         for (Long requestId : requestIds) {
             RequestDownloadStatus rds = BLLManager.getInstance().getRequestManager().getDownloadRequestStatus(requestId);
             if (rds != null) {
                 StatusModeResponse statusModeResponse = XMLConverter.convertStatusModeResponse(rds);
-                if (statusModeResponse.getStatus() == StatusModeType.PENDING || statusModeResponse.getStatus() == StatusModeType.INPROGRESS) {
-                    hasRequest = true;
-                    break;
+                if (statusModeResponse.getStatus() == StatusModeType.PENDING) {
+                    pendingRequestNbr++;
+                } else if (statusModeResponse.getStatus() == StatusModeType.INPROGRESS) {
+                    inProgressRequestNbr++;
                 }
             }
         }
 
-        return hasRequest;
+        return new int[] { pendingRequestNbr, inProgressRequestNbr };
     }
 
     private void initCommonTools() {
@@ -136,6 +169,7 @@ public class MotuWebEngineContextListener implements ServletContextListener {
         initCommonTools();
 
         try {
+            LOGGER.info("Start DALManager");
             // Init DAL and also LOG4J
             DALManager.getInstance().init();
         } catch (MotuException e) {
@@ -143,12 +177,14 @@ public class MotuWebEngineContextListener implements ServletContextListener {
         }
 
         try {
+            LOGGER.info("Start BLLManager");
             BLLManager.getInstance().init();
         } catch (MotuException e) {
             LOGGER.error("Error while initializing BLL:Business Logic Layer", e);
         }
 
         try {
+            LOGGER.info("Start USLManager");
             USLManager.getInstance().init();
         } catch (MotuException e) {
             LOGGER.error("Error while initializing USL:User Service Layer", e);

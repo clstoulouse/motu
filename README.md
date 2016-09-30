@@ -1058,12 +1058,30 @@ Start the Motu process.
 ```
 
 ### Stop Motu  
-At the shutdown of Motu, the server waits that none of the pending or in progress request are in execution.  
+At the shutdown of Motu, the server waits for none of the pending or in progress request to be in execution.  
 If it's the case, the server waits the end of the request before shutdown.  
-Note that after waiting 10 minutes server will automatically shutdown without waiting any running requests.  
+Note that after waiting 10 minutes, server will automatically shutdown without waiting any running requests.  
+So command below can respond quickly if no requests are in the queue server or takes time to process them.  
 ``` 
 ./motu stop
 ``` 
+
+If you needs to understand what Motu is waiting for, you can check the logbook:  
+``` 
+tail -f log/logbook.log  
+Stop in progress...  
+Stop: Pending=0; InProgress=2  
+Stop: Pending=0; InProgress=2  
+...  
+Stop: Pending=0; InProgress=1  
+Stop: Pending=0; InProgress=0  
+...  
+Stop done  
+``` 
+
+During the stop step, from a web browser, the user will be able to ends its download request if a front web server (Apache HTTPd) serves the statics files and the downloaded product.
+In case where Motu is installed as a standalone web server, user will get a 500 HTTP error. For example in development or qualification environment, 
+this could lead to block the download of the files if Motu is used to serve both static and requested product files.
 
 
 ### Advanced commands
@@ -1341,6 +1359,7 @@ __Summary of all actions:__
    * [Request status](#ClientAPI_RequestStatus)  
    * [Get size](#ClientAPI_GetSize)  
    * [Time coverage](#ClientAPI_GetTimeCov)  
+   * [Download product](#ClientAPI_DownloadProduct)  
 * HTML Web pages
    * [About](#ClientAPI_About)  
    * [Debug](#ClientAPI_Debug)  
@@ -1500,10 +1519,15 @@ __Parameters__:
 
    * mode=__url__: URL of the delivery file is directly returned in the HTTP response as an HTML web page. Then Javascript read this URL to download file. The request is processed in a synchronous mode.  
    * mode=__console__: the response is a 302 HTTP redirection to the delivery file to be returned as a binary stream. The request is processed in a synchronous mode.  
-   * mode=__status__: request is submitted and the status of the request processing is immediately returned.  The request is processed in an asynchronous mode.  
-   Web Portal submits the request to the Dissemination Unit Subsetter and gets an immediate response of the Subsetter. This response contains the identifier and the status of the order (pending, in progress, done, error).   So long as the order is not completed (done or error), Web Portal requests the status of the order at regular and fair intervals (> 5 seconds) and gets an immediate response. When the status is “done”, Web Portal retrieves the url of the file to download, from the status response. Then Web Portal redirects response to this url. The Web Browser opens a binary stream of the file to download and shows a dialog box to allow the user saving it as a local file.  
+   * mode=__status__: request is submitted and [the status](#ClientAPI_RequestStatus) of the request processing is immediately returned as an XML. The request is processed in an asynchronous mode.  
+   Web Portal submits the request to the Dissemination Unit Subsetter and gets an immediate response of the Subsetter. 
+   This response contains the identifier and the status of the order (pending, in progress, done, error).
+   So long as the order is not completed (done or error), Web Portal requests the status of the order at regular and fair intervals (> 5 seconds) 
+   and gets an immediate response. When the status is “done”, Web Portal retrieves the url of the file to download, from the status response. 
+   Then Web Portal redirects response to this url. 
+   The Web Browser opens a binary stream of the file to download and shows a dialog box to allow the user saving it as a local file.  
 
-__Return__: Severals ways depending of the selected http parameter mode.  
+__Return__: Several ways depending of the selected http parameter mode.  
 
 
 

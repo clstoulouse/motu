@@ -75,6 +75,7 @@ public class DebugAction extends AbstractAction {
 
         stringBuffer.append("<html>\n");
         stringBuffer.append("<head>\n");
+        stringBuffer.append("<title>Motu | Debug</title>\n");
         stringBuffer.append("</head>\n");
         stringBuffer.append("<body>\n");
 
