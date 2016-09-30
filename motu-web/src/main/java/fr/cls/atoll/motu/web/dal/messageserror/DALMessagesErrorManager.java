@@ -75,7 +75,19 @@ public class DALMessagesErrorManager implements IDALMessagesErrorManager {
      */
     @Override
     public String getMessageError(ErrorType errorCode, Exception e) {
-        return e != null ? getMessageError(errorCode, e.getMessage()) : getMessageError(errorCode);
+        String result = "";
+        if (e != null) {
+            if (e instanceof MotuException) {
+                MotuException me = (MotuException) e;
+                result = (me.getErrorArguments() != null && me.getErrorArguments().length > 0) ? getMessageError(errorCode, me.getErrorArguments())
+                        : getMessageError(errorCode, e.getMessage());
+            } else {
+                result = getMessageError(errorCode, e.getMessage());
+            }
+        } else {
+            result = getMessageError(errorCode);
+        }
+        return result;
     }
 
     /**

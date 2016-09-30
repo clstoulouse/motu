@@ -66,12 +66,15 @@ public class QueueServerManager implements IQueueServerManager {
     /** The queue management map. */
     private Map<QueueType, QueueManagement> queueManagementMap;
 
+    private boolean isStopping;
+
     /**
      * The Constructor.
      * 
      * @throws MotuException the motu exception
      */
     public QueueServerManager() {
+        isStopping = false;
         queueManagementMap = new HashMap<QueueType, QueueManagement>();
     }
 
@@ -127,11 +130,17 @@ public class QueueServerManager implements IQueueServerManager {
         queueManagement.execute(new QueueJob(cs_, product_, extractionParameters_, qjl, requestId));
 
         synchronized (this) {
-            if (!qjl.isJobEnded()) {
+            long startWaitTime = System.currentTimeMillis();
+            long waitTime = BLLRequestManager.REQUEST_TIMEOUT_MSEC;
+            while (!qjl.isJobEnded() && !isStopping) {
                 try {
-                    wait(BLLRequestManager.REQUEST_TIMEOUT_MSEC);
+                    wait(waitTime);
                 } catch (InterruptedException e) {
                     LOGGER.error("Error in download execution while waiting the job ended notification", e);
+                }
+                waitTime = BLLRequestManager.REQUEST_TIMEOUT_MSEC - (System.currentTimeMillis() - startWaitTime);
+                if (waitTime <= 0) {
+                    waitTime = 1;
                 }
             }
         }
@@ -158,7 +167,7 @@ public class QueueServerManager implements IQueueServerManager {
 
                 synchronized (QueueServerManager.this) {
                     isJobEnded = true;
-                    QueueServerManager.this.notify();
+                    QueueServerManager.this.notifyAll();
                 }
             }
 

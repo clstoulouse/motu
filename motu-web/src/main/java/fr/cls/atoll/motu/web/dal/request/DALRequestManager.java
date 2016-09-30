@@ -1,16 +1,9 @@
 package fr.cls.atoll.motu.web.dal.request;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,11 +22,11 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
-import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer;
-import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer.Type;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.DALConfigManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
+import fr.cls.atoll.motu.web.dal.request.cdo.CDOManager;
+import fr.cls.atoll.motu.web.dal.request.cdo.ICDOManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DatasetGrid;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
@@ -53,6 +46,12 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 public class DALRequestManager implements IDALRequestManager {
 
     private static final Logger LOGGER = LogManager.getLogger();
+
+    private ICDOManager cdoManager;
+
+    public DALRequestManager() {
+        cdoManager = new CDOManager();
+    }
 
     @Override
     public void downloadProduct(ConfigService cs, Product p, OutputFormat dataOutputFormat, Long requestId) throws MotuException {
@@ -125,7 +124,13 @@ public class DALRequestManager implements IDALRequestManager {
                 canRequest = fromDepthIndex != -1 && toDepthIndex != -1 && fromDepthIndex == toDepthIndex;
             }
             if (canRequest) {
-                runRequestWithCDOMergeTool(p, ncss, latlon, extractDirPath, fname);
+                try {
+                    runRequestWithCDOMergeTool(p, ncss, latlon, extractDirPath, fname);
+                } catch (MotuException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new MotuException(ErrorType.SYSTEM, "Error while running request with CDO merge tool", e);
+                }
             } else {
                 throw new MotuException(ErrorType.TOO_DEPTH_REQUESTED, "There is more than one depth in this request which needs merge procedure.");
             }
@@ -157,56 +162,8 @@ public class DALRequestManager implements IDALRequestManager {
      * @throws MotuInvalidDepthRangeException
      */
     private void runRequestWithCDOMergeTool(Product p, NetCdfSubsetService ncss, ExtractCriteriaLatLon latlon, String extractDirPath, String fname)
-            throws IOException, MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, InterruptedException {
-        // In this case, thredds needs 2 requests to retrieve the data.
-        List<ExtractCriteriaLatLon> rangesToRequest = ComputeRangeOutOfLimit(p, latlon);
-
-        // Create a temporary directory into tmp directory to save the 2 generated file
-        Path tempDirectory = Files.createTempDirectory("LeftAndRightRequest");
-        ncss.setOutputDir(tempDirectory.toString());
-
-        List<String> filesPath = new ArrayList<>();
-
-        int i = 0;
-        long rangesLength = 0;
-        for (ExtractCriteriaLatLon currentRange : rangesToRequest) {
-            rangesLength += Math.abs(Math.abs(currentRange.getLatLonRect().getLonMax()) - Math.abs(currentRange.getLatLonRect().getLonMin()));
-            ncss.setGeoSubset(currentRange);
-            ncss.setOutputFile(i + "-" + fname);
-            ncssRequest(p, ncss);
-            filesPath.add(Paths.get(tempDirectory.toString(), ncss.getOutputFile()).toString());
-            i++;
-        }
-
-        // Concatenate with NCO
-        // Set the merge command
-        String cmd = "merge.sh ";
-        // Set the output file path
-        cmd += extractDirPath + "/" + fname;
-        // Set the start point
-        cmd += " " + latlon.getLowerLeftLon();
-        // Set the length
-        cmd += " " + rangesLength;
-
-        // Set the list of files to merge
-        for (String path : filesPath) {
-            cmd += " " + path;
-        }
-        LOGGER.info("Start: " + cmd);
-        final Process process = Runtime.getRuntime().exec(cmd);
-
-        new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getInputStream())), LOGGER, Type.INFO)).start();
-        new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getErrorStream())), LOGGER, Type.ERROR)).start();
-
-        int exitValue = process.waitFor();
-        LOGGER.info("END [Exit code=" + exitValue + "] : " + cmd);
-
-        // Cleanup directory and intermediate files (right away once concat)
-        FileUtils.deleteDirectory(tempDirectory.toFile());
-
-        if (exitValue != 0) {
-            throw new MotuException(ErrorType.SYSTEM, "The generation of the NC file failled. See the log for more information.");
-        }
+            throws Exception {
+        cdoManager.runRequestWithCDOMergeTool(p, ncss, latlon, extractDirPath, fname, this);
     }
 
     private int searchDepthIndex(List<String> listOfDepth, double depthToSearch) {
@@ -227,47 +184,8 @@ public class DALRequestManager implements IDALRequestManager {
         return fileName;
     }
 
-    /**
-     * Compute the ranges of requests to do if leftLon is upper than rightlon .
-     * 
-     * @param p The product to request
-     * @param latLon the coordinates to request
-     * @return The different ranges to request
-     */
-    private List<ExtractCriteriaLatLon> ComputeRangeOutOfLimit(Product p, ExtractCriteriaLatLon latLon) {
-        List<ExtractCriteriaLatLon> ranges = new ArrayList<>();
-
-        double leftLon = latLon.getLowerLeftLon();
-        double rightLon = latLon.getLowerRightLon();
-
-        // If the leftLon value is negative
-        if (leftLon < 0) {
-            // The rightLon which is smaller than the leftLon is also negative.
-            // In this case the only possible alternative is 3 ranges (leftLon ; 0), (0 ; 180), (-180 ;
-            // rightLon)
-            ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), leftLon, latLon.getUpperRightLat(), 0));
-            ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), 0, latLon.getUpperRightLat(), 180));
-            ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), -180, latLon.getUpperRightLat(), rightLon));
-        } else {
-            // If the leftLon value is positive
-            if (rightLon > 0) {
-                // And the rightLon is positive also, so the alternative is (leftLon , 180), (-180 ; 0)
-                // (0 ; rightLon)
-                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), leftLon, latLon.getUpperRightLat(), 180));
-                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), -180, latLon.getUpperRightLat(), 0));
-                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), 0, latLon.getUpperRightLat(), rightLon));
-            } else {
-                // Or if the rightLon is negative also, so the alternative is (leftLon ; 180)
-                // (-180 ; rightLon)
-                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), leftLon, latLon.getUpperRightLat(), 180));
-                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), -180, latLon.getUpperRightLat(), rightLon));
-            }
-        }
-
-        return ranges;
-    }
-
-    private void ncssRequest(Product p, NetCdfSubsetService ncss)
+    @Override
+    public void ncssRequest(Product p, NetCdfSubsetService ncss)
             throws MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, IOException, InterruptedException {
         // Run rest query (unitary or concat depths)
         Array zAxisData = null;
@@ -295,5 +213,11 @@ public class DALRequestManager implements IDALRequestManager {
         }
         p.addReadingTime(ncss.getReadingTimeInNanoSec());
         p.addWritingTime(ncss.getWritingTimeInNanoSec());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void stop() {
+        cdoManager.stop();
     }
 }

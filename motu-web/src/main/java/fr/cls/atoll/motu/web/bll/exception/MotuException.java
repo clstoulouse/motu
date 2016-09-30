@@ -42,6 +42,25 @@ public class MotuException extends Exception {
     private static final long serialVersionUID = -1L;
 
     private ErrorType errorType;
+    private Object[] errorArguments;
+
+    /**
+     * Valeur de errorArguments.
+     * 
+     * @return la valeur.
+     */
+    public Object[] getErrorArguments() {
+        return errorArguments;
+    }
+
+    /**
+     * Valeur de errorArguments.
+     * 
+     * @param errorArguments nouvelle valeur.
+     */
+    public void setErrorArguments(Object... errorArguments) {
+        this.errorArguments = errorArguments;
+    }
 
     /**
      * @param message message to post.
@@ -54,18 +73,15 @@ public class MotuException extends Exception {
 
     /**
      * @param message message to post.
-     * @param cause native exception.
-     */
-    // public MotuException(String message, Throwable cause) {
-    // this(ErrorType.SYSTEM, message, cause);
-    // }
-
-    /**
-     * @param message message to post.
      */
     public MotuException(ErrorType errorType, String message) {
+        this(errorType, message, new String[0]);
+    }
+
+    public MotuException(ErrorType errorType, String message, String... errorArguments) {
         super(message);
         this.errorType = errorType;
+        setErrorArguments(errorArguments);
     }
 
     /**

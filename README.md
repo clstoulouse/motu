@@ -216,11 +216,12 @@ Minimal configuration for an __operational usage__:
 * __CPU__: 4 CPU, 2,4GHz
 * __RAM__: 32 Gb RAM
 * __Storage__: 
-  * Motu installation folder 15Gb
-  * Motu download folder 200Gb: by default [motu/data/public/download](#InstallFolders)  
-Note that the available space of the download folder has to be tuned, depending on:
-  * The number of users which run requests at the same time on the server
-  * The size of the data distributed
+  * Motu installation folder 15Gb: can be install on the OS partition (default folder /opt/cmems-cis)
+  * Motu download folder 200Gb: by default [/opt/cmems-cis/motu/data/public/download](#InstallFolders)  
+    Has to be installed in a dedicated partition to avoid freezing Motu if disk is full.
+Note that the available space of the download folder has to be tuned, depending on:  
+     * The number of users which run requests at the same time on the server
+     * The size of the data distributed
    
 Once started, you can [check performance](#ExpMonitorPerf).
    
@@ -736,7 +737,7 @@ Patterns (as regular expression) that match extraction file name to delete in fo
 * java.io.tmpdir
 * extractionPath
 
-Default is ".*\\.nc$|.*\\.zip$|.*\\.tar$|.*\\.gz$|wps_output_.*$|wps_response_.*$"  
+Default is ".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|.*\.extract$"  
 
 
 ##### extractionFileCacheSize
@@ -1057,12 +1058,30 @@ Start the Motu process.
 ```
 
 ### Stop Motu  
-At the shutdown of Motu, the server waits that none of the pending or in progress request are in execution.  
+At the shutdown of Motu, the server waits for none of the pending or in progress request to be in execution.  
 If it's the case, the server waits the end of the request before shutdown.  
-Note that after waiting 10 minutes server will automatically shutdown without waiting any running requests.  
+Note that after waiting 10 minutes, server will automatically shutdown without waiting any running requests.  
+So command below can respond quickly if no requests are in the queue server or takes time to process them.  
 ``` 
 ./motu stop
 ``` 
+
+If you needs to understand what Motu is waiting for, you can check the logbook:  
+``` 
+tail -f log/logbook.log  
+Stop in progress...  
+Stop: Pending=0; InProgress=2  
+Stop: Pending=0; InProgress=2  
+...  
+Stop: Pending=0; InProgress=1  
+Stop: Pending=0; InProgress=0  
+...  
+Stop done  
+``` 
+
+During the stop step, from a web browser, the user will be able to ends its download request if a front web server (Apache HTTPd) serves the statics files and the downloaded product.
+In case where Motu is installed as a standalone web server, user will get a 500 HTTP error. For example in development or qualification environment, 
+this could lead to block the download of the files if Motu is used to serve both static and requested product files.
 
 
 ### Advanced commands
@@ -1167,7 +1186,19 @@ By default, log files are created in the folder $MOTU_HOME/log. This folder cont
 
 ## <a name="AdminDataSetAdd">Add a dataset</a>    
 In order to add a new Dataset, you have to add a new configService node in the [Motu business configuration](#ConfigurationBusiness).  
-When Motu read data through TDS (Opendap or NCSS service), the data shall be configured in TDS before this configuration in Motu. The TDS configuration is not explained here.
+When Motu read data through TDS (Opendap or NCSS service), the data shall be configured in TDS before this configuration in Motu. The TDS configuration is not explained here.  
+
+Within CMEMS, the datasets are organized in a tree structure, where the product granularity appears above the dataset granularity.  
+To be noticed:  
+
+* The dataset disseminated by TDS/Motu shall be gridded datasets (data is defined in a grid)  
+* A gridded dataset is a set of data files aggregated on time. Each file composing a gridded dataset shall contain the same variable in the same geospatial coverage. The difference between two files is the temporal coverage  
+* All gridded dataset shall be configured in TDS, to be served through teh subsetter of Motu  
+* A product is a coherent group of datasets. The product is the granularity used in the catalogue of CMEMS  
+* In the XML tree structure of the TDS configuration, each product shall be configured through a unique node  
+* This node shall correspond to one XML file in the TDS configuration (for example product1.xml) and shall be further referenced in the motuConfiguration.xml file as one &lt;catalog name> (for example &lt;catalog name="psy2v3-myocean.xml>)  
+* The value of the "name" attribute of the element &lt;dataset> shall be identical to the Product Specification Customer Name (from CMEMS Product Information Table).  
+  
   
 Examples:  
 
@@ -1328,6 +1359,7 @@ __Summary of all actions:__
    * [Request status](#ClientAPI_RequestStatus)  
    * [Get size](#ClientAPI_GetSize)  
    * [Time coverage](#ClientAPI_GetTimeCov)  
+   * [Download product](#ClientAPI_DownloadProduct)  
 * HTML Web pages
    * [About](#ClientAPI_About)  
    * [Debug](#ClientAPI_Debug)  
@@ -1487,10 +1519,15 @@ __Parameters__:
 
    * mode=__url__: URL of the delivery file is directly returned in the HTTP response as an HTML web page. Then Javascript read this URL to download file. The request is processed in a synchronous mode.  
    * mode=__console__: the response is a 302 HTTP redirection to the delivery file to be returned as a binary stream. The request is processed in a synchronous mode.  
-   * mode=__status__: request is submitted and the status of the request processing is immediately returned.  The request is processed in an asynchronous mode.  
-   Web Portal submits the request to the Dissemination Unit Subsetter and gets an immediate response of the Subsetter. This response contains the identifier and the status of the order (pending, in progress, done, error).   So long as the order is not completed (done or error), Web Portal requests the status of the order at regular and fair intervals (> 5 seconds) and gets an immediate response. When the status is “done”, Web Portal retrieves the url of the file to download, from the status response. Then Web Portal redirects response to this url. The Web Browser opens a binary stream of the file to download and shows a dialog box to allow the user saving it as a local file.  
+   * mode=__status__: request is submitted and [the status](#ClientAPI_RequestStatus) of the request processing is immediately returned as an XML. The request is processed in an asynchronous mode.  
+   Web Portal submits the request to the Dissemination Unit Subsetter and gets an immediate response of the Subsetter. 
+   This response contains the identifier and the status of the order (pending, in progress, done, error).
+   So long as the order is not completed (done or error), Web Portal requests the status of the order at regular and fair intervals (> 5 seconds) 
+   and gets an immediate response. When the status is “done”, Web Portal retrieves the url of the file to download, from the status response. 
+   Then Web Portal redirects response to this url. 
+   The Web Browser opens a binary stream of the file to download and shows a dialog box to allow the user saving it as a local file.  
 
-__Return__: Severals ways depending of the selected http parameter mode.  
+__Return__: Several ways depending of the selected http parameter mode.  
 
 
 

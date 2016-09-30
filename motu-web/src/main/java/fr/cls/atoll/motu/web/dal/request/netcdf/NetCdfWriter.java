@@ -2803,10 +2803,6 @@ public class NetCdfWriter {
      * @throws MotuException the motu exception
      */
     public void writeVariableData(Variable var, int[] origin, Array data) throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("writeVariableData() - entering");
-        }
-
         int rank = var.getRank();
 
         int[] originOutOffset = originOutOffsetHash.get(var.getName());
@@ -2831,12 +2827,7 @@ public class NetCdfWriter {
             }
         } catch (Exception e) {
             LOG.error("writeVariableData()", e);
-
             throw new MotuException(ErrorType.NETCDF_GENERATION, "Error in NetcdfWriter writeVariableData", e);
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("writeVariableData() - exiting");
         }
     }
 
@@ -2862,9 +2853,7 @@ public class NetCdfWriter {
      * @throws MotuException the motu exception
      */
     public static boolean isReadByBlock(int[] varShape, DataType datatype) throws MotuException {
-
         return NetCdfWriter.countVarElementData(varShape) > NetCdfWriter.countMaxElementData(varShape, datatype);
-
     }
 
     /**

@@ -82,4 +82,10 @@ public class DALManager implements IDALManager {
         return dalMessagesErrorManager;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void stop() {
+        dalRequestManager.stop();
+    }
+
 }

@@ -44,4 +44,5 @@ public interface IDALMessagesErrorManager {
      * @throws MotuException
      */
     String getMessageError(ErrorType errorCode, Object... messageArguments);
+
 }

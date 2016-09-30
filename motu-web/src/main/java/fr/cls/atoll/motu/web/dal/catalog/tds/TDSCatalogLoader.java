@@ -886,7 +886,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
             catalogData.setCasAuthentication(false);
             catalogData.setTitle(tdsCatalogXml.getName());
 
-            // Loop over all dataset
+            // Loop over all datasets
             List<JAXBElement<? extends DatasetType>> list = tdsCatalogXml.getDataset();
             for (Iterator<JAXBElement<? extends DatasetType>> it = list.iterator(); it.hasNext();) {
                 DatasetType tdsDatasetType = it.next().getValue();
