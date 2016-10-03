@@ -79,7 +79,21 @@
   h2, h3, h4, h5, h6 {
       margin:0 0 1em;
   }
-    
+  
+  h1 {
+	font: 18pt "Arial", "Helvetica", sans-serif;
+	font-weight: bold;
+	color:#000099;
+	padding-top: 20px;
+  }
+
+  h2 {
+	font: 14pt "Arial", "Helvetica", sans-serif;
+	font-weight: bold;
+	color:#000099;
+	padding-top: 10px;
+  }
+  
   .encadre th, td {
         padding-left:0.2em;
         padding-right:0.2em;
