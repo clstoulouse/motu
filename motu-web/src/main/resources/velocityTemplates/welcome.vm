@@ -1,0 +1,11 @@
+## -------------------------------------------- main --------------------------------
+<div id="sitemap">
+	<ul class="CMS_lvl2"> 
+		<!-- Was used to display DGF files, from Motu v3.x it is not used
+		<li class="CMS_lvl2 CMS_sub"><a href="./inventories">Inventories</a></li>
+		-->
+		<li class="CMS_lvl2 CMS_sub"><a href="./Motu?action=transactions">Transactions</a></li>
+		<li class="CMS_lvl2 CMS_nosub"><a href="./Motu">Services</a></li>
+	</ul>
+	<br/>
+</div>

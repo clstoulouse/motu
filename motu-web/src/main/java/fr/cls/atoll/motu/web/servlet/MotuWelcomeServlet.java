@@ -27,39 +27,31 @@ package fr.cls.atoll.motu.web.servlet;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.usl.USLManager;
-import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
+import fr.cls.atoll.motu.web.usl.request.actions.WelcomeAction;
 
 /**
- * The Class MotuServlet.
+ * Manage the Welcome page as a Motu Action As in web.xml welcome-file in web.xml does not authorise http
+ * parameters, so we manage the Motu welcome action with an attribute of the request
  * 
  * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
  * 
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-public class MotuServlet extends HttpServlet {
+public class MotuWelcomeServlet extends MotuServlet {
 
     /**
      * .
      */
     private static final long serialVersionUID = 1L;
 
-    /** Logger for this class. */
-    private static final Logger LOGGER = LogManager.getLogger();
-
     /**
      * Default constructor.
      */
-    public MotuServlet() {
+    public MotuWelcomeServlet() {
     }
 
     /**
@@ -74,30 +66,8 @@ public class MotuServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try {
-            USLManager.getInstance().getRequestManager().onNewRequest(request, response);
-        } catch (InvalidHTTPParameterException e) {
-            response.sendError(500, String.format("Oops, an HTTP parameter is not valid: %s", e.getMessage()));
-        } catch (MotuException e) {
-            LOGGER.error("Error while processing HTTP request", e);
-            throw new ServletException(e);
-        }
-
-    }
-
-    /**
-     * Handles a POST request.
-     *
-     * @param request object that contains the request the client has made of the servlet.
-     * @param response object that contains the response the servlet sends to the client
-     * @throws ServletException the servlet exception
-     * @throws IOException the IO exception
-     * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
-     *      javax.servlet.http.HttpServletResponse)
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
+        request.setAttribute("action", WelcomeAction.ACTION_NAME);
+        super.doGet(request, response);
     }
 
 }

@@ -24,6 +24,13 @@ ${project.name} - v. ${project.version}
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
+	<servlet>
+		<display-name>Motu</display-name>
+		<servlet-name>MotuWelcome</servlet-name>
+		<servlet-class>fr.cls.atoll.motu.web.servlet.MotuWelcomeServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
 
 	<!-- ############################################# -->
 	<!-- ############# Jolokia  (JMX Monitoring) ##### -->
@@ -249,6 +256,11 @@ ${project.name} - v. ${project.version}
 	<!-- ############# MAPPING ####################### -->
 	<!-- ############################################# -->
 	<servlet-mapping>
+		<servlet-name>MotuWelcome</servlet-name>
+		<url-pattern>/MotuWelcome</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
 		<servlet-name>Motu</servlet-name>
 		<url-pattern>/CLS</url-pattern>
 	</servlet-mapping>
@@ -281,6 +293,7 @@ ${project.name} - v. ${project.version}
 	</error-page>
 	
 	<welcome-file-list>
-        <welcome-file>index.html</welcome-file>
+	<!-- Servlet used to manage the Motu welcome action -->
+        <welcome-file>MotuWelcome</welcome-file>
     </welcome-file-list>    
 </web-app>

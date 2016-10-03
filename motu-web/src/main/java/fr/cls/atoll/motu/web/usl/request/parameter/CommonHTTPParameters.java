@@ -31,14 +31,16 @@ public class CommonHTTPParameters {
     public static String getActionFromRequest(HttpServletRequest request) {
         String action = request.getParameter(MotuRequestParametersConstant.PARAM_ACTION);
         if (StringUtils.isNullOrEmpty(action)) {
-            String defaultService = BLLManager.getInstance().getConfigManager().getMotuConfig().getDefaultService();
-            if (StringUtils.isNullOrEmpty(defaultService)) {
-                action = MotuRequestParametersConstant.ACTION_LIST_SERVICES;
-            } else {
-                action = defaultService;
+            action = (String) request.getAttribute(MotuRequestParametersConstant.PARAM_ACTION);
+            if (StringUtils.isNullOrEmpty(action)) {
+                String defaultService = BLLManager.getInstance().getConfigManager().getMotuConfig().getDefaultService();
+                if (StringUtils.isNullOrEmpty(defaultService)) {
+                    action = MotuRequestParametersConstant.ACTION_LIST_SERVICES;
+                } else {
+                    action = defaultService;
+                }
             }
         }
-
         return action;
     }
 
@@ -199,6 +201,10 @@ public class CommonHTTPParameters {
 
     public static String getHttpErrorCodeFromRequest(HttpServletRequest request) {
         return request.getParameter(MotuRequestParametersConstant.PARAM_HTTP_ERROR_CODE);
+    }
+
+    public static String getFileNameFromRequest(HttpServletRequest request) {
+        return request.getParameter(MotuRequestParametersConstant.PARAM_FILE_NAME);
     }
 
 }

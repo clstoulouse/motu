@@ -38,6 +38,8 @@ import fr.cls.atoll.motu.web.usl.request.actions.PingAction;
 import fr.cls.atoll.motu.web.usl.request.actions.ProductDownloadHomeAction;
 import fr.cls.atoll.motu.web.usl.request.actions.ProductMetadataAction;
 import fr.cls.atoll.motu.web.usl.request.actions.TimeCoverageAction;
+import fr.cls.atoll.motu.web.usl.request.actions.TransactionsAction;
+import fr.cls.atoll.motu.web.usl.request.actions.WelcomeAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.response.velocity.VelocityTemplateManager;
@@ -75,7 +77,8 @@ public class USLRequestManager implements IUSLRequestManager {
     public void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws MotuException, InvalidHTTPParameterException {
         String action = CommonHTTPParameters.getActionFromRequest(request).toLowerCase();
         AbstractAction actionInst = retrieveActionFromHTTPParameters(action, request, response);
-
+        // request.getServletContext().getAttribute("action")
+        // request.getServletContext().getInitParameter("action")
         Long requestId = -1L;
         try {
             if (actionInst != null) {
@@ -147,6 +150,12 @@ public class USLRequestManager implements IUSLRequestManager {
             break;
         case HttpErrorAction.ACTION_NAME:
             actionInst = new HttpErrorAction("017", request, response);
+            break;
+        case WelcomeAction.ACTION_NAME:
+            actionInst = new WelcomeAction("018", request, response);
+            break;
+        case TransactionsAction.ACTION_NAME:
+            actionInst = new TransactionsAction("019", request, response);
             break;
         default:
             // Nothing to do

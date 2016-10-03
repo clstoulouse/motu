@@ -216,4 +216,6 @@ public interface MotuRequestParametersConstant {
 
     final String PARAM_HTTP_ERROR_CODE = "code";
 
+    final String PARAM_FILE_NAME = "fileName";
+
 }

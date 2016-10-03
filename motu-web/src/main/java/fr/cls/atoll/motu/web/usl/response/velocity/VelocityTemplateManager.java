@@ -118,6 +118,12 @@ public class VelocityTemplateManager implements IVelocityTemplateManager {
         case "exception":
             templateFileName = "exception";
             break;
+        case "welcome":
+            templateFileName = "welcome";
+            break;
+        case "transactions":
+            templateFileName = "transactions";
+            break;
         case "listservices":
         default:
             templateFileName = "listServices";
