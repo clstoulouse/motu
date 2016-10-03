@@ -43,7 +43,7 @@ public class WelcomeAction extends AbstractAction {
 
     @Override
     public void process() throws MotuException {
-        getResponse().setContentType(CONTENT_TYPE_HTML);
+        getResponse().setContentType(CONTENT_TYPE_HTML + ";charset=UTF-8");
         Map<String, Object> velocityContext = new HashMap<String, Object>(2);
         velocityContext.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
 

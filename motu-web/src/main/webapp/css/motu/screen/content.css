@@ -151,7 +151,7 @@ dd { margin:0 0 1em 0.8em; }
     color: #999;
 }
 .body_header .fa-map-marker::before {
-    content: "";
+/*    content: ""; */
 }
 .body_header .icon_text a{
     color: #777;
