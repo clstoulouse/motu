@@ -26,6 +26,10 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
   * [Packaging](#Packaging)
 * [Installation](#Installation)
   * [Prerequisites](#InstallPrerequisites)
+     * [Hardware settings](#InstallPrerequisitesHard)
+     * [Software settings](#InstallPrerequisitesSoft)
+	 * [External interfaces](#InstallPrerequisitesExternalInterfaces)
+     * [Several Motu instances on a same host](#InstallPrerequisitesSeveralsInstances)
   * [Upgrade from Motu v2.x](#UpgradeFromMotu2x)
   * [Install Motu from scratch](#InstallFromScratch)
   * [Check installation](#InstallCheck)
@@ -208,7 +212,7 @@ cd target-ant/delivery/YYYYMMDDhhmmssSSS
 In this chapter some paths are set. For example "/opt/cmems-cis" is often written to talk about the installation path.
 You are free to install Motu in any other folder, so in the case, replace "/opt/cmems-cis" by your installation folder.
 
-### Motu host and hardware settings
+### <a name="InstallPrerequisitesHard">Motu host, hardware settings</a>
 OS target: Linux 64bits (Tested on centos-7.2.1511)
 
 Minimal configuration for an __operational usage__:  
@@ -234,7 +238,7 @@ For __test usage__ we recommend:
   * Motu download folder 50Gb: by default [motu/data/public/download](#InstallFolders)  
 
 
-### Motu host and software settings
+### <a name="InstallPrerequisitesSoft">Motu host, software settings</a>
 Motu embeds all its dependencies (Java , Tomcat, CDO). All versions of these dependencies will be visible in the folder name once the Motu product archive is extracted.  
 For example:  
 ```
@@ -247,9 +251,8 @@ version-products.txt
 ```  
 
 So bash shell is only required on the Linux host machine.  
-  
-  
-### External interfaces
+
+### <a name="InstallPrerequisitesExternalInterfaces">External interfaces</a>
 Motu is able to communicate with different external servers:  
 
 * __Unidata | THREDDS Data Server (TDS)__: Motu has been only tested with TDS v4.6.6 2016-06-13. The links to this server are set in the [Business settings](#ConfigurationBusiness) and are used to run OpenDap or subsetter interfaces. If Motu runs only with DGF, this server is not required.
@@ -257,7 +260,19 @@ Motu is able to communicate with different external servers:
 
 The installation of these two servers is not detailed in this document. Refer to their official web site to know how to install them.
 
+  
+### <a name="InstallPrerequisitesSeveralsInstances">Several Motu instances on a same host</a>
+If you need to instance several instances of Motu server on a same host, you have to:  
 
+* __RAM__: set 32Go of RAM for each instance. For example, two Motu instances on a same host requires 64Go  
+* __Storage__: allocate disk space, in relationship with the Motu usage. Download dedicated partition can be shared or dedicated.  
+* __Folders__: Install each Motu instance in a dedicated folder:  
+  * /opt/motu1/motu, 
+  * /opt/motu2/motu, 
+  * ..., 
+  * /opt/motuN/motu  
+
+  
 ## <a name="UpgradeFromMotu2x">Upgrade from Motu v2.x</a>    
 
 Check this section only if you have installed Motu v2.x and you want to install Motu 3.x.
@@ -905,6 +920,9 @@ process smallest requests by running the thread on the other processor core. Sp 
 
 ### motu.properties: Motu system settings  
 
+System settings are configured in file config/motu.properties  
+All parameters can be updated in the file.  
+
 #### Java options
 The three parameters below are used to tune the Java Virtual Machine:  
    # -server: tells the Hostspot compiler to run the JVM in "server" mode (for performance)  
@@ -913,7 +931,7 @@ __tomcat-motu-jvm-port-jmx__=9010
 __tomcat-motu-jvm-address-debug__=9090  
 
 
-#### Tomcat network ports
+#### <a name="ConfigurationSystemTomcatNetworkPorts">Tomcat network ports</a>
 The parameters below are used to set the different network ports used by Apache Tomcat.  
 At startup, these ports are set in the file "$installdir/motu/tomcat-motu/conf/server.xml".    
 But if this file already exist, it won't be replaced. So in order to apply these parameters, remove the file "$installdir/motu/tomcat-motu/conf/server.xml".  
@@ -923,7 +941,6 @@ __tomcat-motu-port-http__=9080
 __tomcat-motu-port-https__=9443  
 __tomcat-motu-port-ajp__=9009  
 __tomcat-motu-port-shutdown__=9005  
-
 
 
 #### <a name="ConfigurationSystemCASSSO">CAS SSO server</a>
@@ -981,7 +998,7 @@ org.tuckey UrlRewriteFilter FILTERS : see http://urlrewritefilter.googlecode.com
   
 ## <a name="LogSettings">Log settings</a>  
 
-Log are configured by using log4j2 in file config/log4j2.xml  
+Log are configured by using log4j2 in file config/log4j.xml  
 
 ### Motu queue server logs: motuQSlog.xml, motuQSlog.csv
 
