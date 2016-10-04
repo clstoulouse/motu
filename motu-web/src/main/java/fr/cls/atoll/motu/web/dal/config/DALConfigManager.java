@@ -118,7 +118,6 @@ public class DALConfigManager implements IDALConfigManager {
             motuConfig = (MotuConfig) unmarshaller.unmarshal(in);
             motuConfig.setExtractionPath(PropertiesUtilities.replaceSystemVariable(motuConfig.getExtractionPath()));
             motuConfig.setDownloadHttpUrl(PropertiesUtilities.replaceSystemVariable(motuConfig.getDownloadHttpUrl()));
-            motuConfig.setHttpDocumentRoot(PropertiesUtilities.replaceSystemVariable(motuConfig.getHttpDocumentRoot()));
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error in getMotuConfigInstance", e);
         }

@@ -472,8 +472,7 @@
 				httpDocumentRoot : http url of the document root of the servlet
 				server.
 			-->
-			<xs:attribute name="httpDocumentRoot" type="xs:string"
-				use="required" />
+			<xs:attribute name="httpDocumentRoot" type="xs:string" />
 			<!--
 				downloadFileNameFormat : The format of the downloaded file name.
 			-->
