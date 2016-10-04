@@ -45,7 +45,7 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
   * [System settings](#ConfigurationSystem)
   * [Log settings](#LogSettings)
   * [Theme and Style](#ThemeStyle)
-* [Exploitation](#Exploitation)
+* [Operation](#Operation)
   * [Start, Stop and other Motu commands](#SS)
   * [Monitor performance](#ExpMonitorPerf)
   * [Logbooks](#Logbooks)
@@ -355,7 +355,7 @@ cd motu
 ```
 
 At this step, Motu is able to start. But static files used for customizing the web theme can be installed.  
-In the CMEMS context, the installation on a dissemination unit is ended, static files are installed on a [central server](#IntallPublicFilesOnCentralServer).  
+In the CMEMS context, the installation on a dissemination unit is ended, static files are installed on a [central server](#InstallPublicFilesOnCentralServer).  
 
 Now you can configure the server:  
 * Set the [system properties](#ConfigurationSystem): http port, ...
@@ -373,11 +373,11 @@ Then you can [check installation](#InstallCheck).
 As a dissemination unit administrator, in CMEMS context, this section is not applicable.  
 
 Public static files are used to customized Motu theme. When several Motu are installed, a central server eases the installation and the update by 
-referencing static files only once on a unique machine. This is the case in the CMEMS contact, where each dissemination unit host a Motu server, and 
+referencing static files only once on a unique machine. This is the case in the CMEMS context, where each dissemination unit host a Motu server, and 
 a central server hosts static files.  
 If you runs only one install of Motu, you can install static files directly on Motu Apache tomcat server.
 
-#### <a name="IntallPublicFilesOnCentralServer">On a central server</a>    
+#### <a name="InstallPublicFilesOnCentralServer">On a central server</a>    
 Extract this archive on a server.
 ```
 tar xvzf motu-web-static-files-X.Y.Z-classifier-$timestamp-$target.tar.gz  
@@ -1059,7 +1059,7 @@ service.getHttpBaseRef()/css/motu/screen/images/favicon.ico"
 
 
 
-# <a name="Exploitation">Exploitation</a>    
+# <a name="Operation">Operation</a>    
 
 ## <a name="SS">Start, Stop and other Motu commands</a>    
 All operations are done from the Motu installation folder.  
@@ -1238,12 +1238,64 @@ Here OpenDap is used because it is the default protocol when tds type is set and
 ```  
 
 * __DGF protocol__:   
-This protocol is used to access to local files on the current machine of done with a NFS mount. With this protocol user download the full file and can run any specific extraction.  
-``` 
+This protocol is used to access to local files. With this protocol user download the full data source file and can run only temporal extractions on the dataset (As a reminder, a dataset is temporal aggregation of several datasource files.    
+
+```
 <configService description="Free text to describe your dataSet" group="HR-Sample" profiles="internal, external, major" httpBaseRef="" name="HR_MOD-TDS" veloTemplatePrefix="">  
-           <catalog name="catalogFILE_GLOBAL_ANALYSIS_PHYS_001_016.xml" type="file" urlSite="file:///opt/atoll/hoa-armor/publication/inventories"/>  
+           <catalog name="catalogFILE_GLOBAL_ANALYSIS_PHYS_001_016.xml" type="file" urlSite="file:///opt/cmems-cis-data/data/public/inventories"/>  
 </configService>  
 ```
+
+An an example, the file __catalogFILE_GLOBAL_ANALYSIS_PHYS_001_016.xml__ contains:  
+
+```
+< ?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE rdf:RDF [  
+<!ENTITY atoll "http://purl.org/cls/atoll/ontology/individual/atoll#">  
+]>  
+<catalogOLA xmlns="http://purl.org/cls/atoll" name="catalog GLOBAL-ANALYSIS-PHYS-001-016">  
+        <resourcesOLA>  
+                <resourceOLA urn="dataset-armor-3d-v5-myocean" inventoryUrl="file:///opt/cmems-cis-data/data/public/inventories/dataset-armor-3d-v5-myocean-cls-toulouse-fr-armor-motu-rest-file.xml"/>  
+        </resourcesOLA>  
+</catalogOLA>    
+```
+
+File __dataset-armor-3d-v5-myocean-cls-toulouse-fr-armor-motu-rest-file.xml__:  
+
+```
+< ?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE rdf:RDF [  
+<!ENTITY atoll "http://purl.org/cls/atoll/ontology/individual/atoll#">  
+<!ENTITY cf "http://purl.org/myocean/ontology/vocabulary/cf-standard-name#">  
+<!ENTITY cu "http://purl.org/myocean/ontology/vocabulary/cf-unofficial-standard-name#">  
+<!ENTITY ct "http://purl.org/myocean/ontology/vocabulary/forecasting#">  
+<!ENTITY cp "http://purl.org/myocean/ontology/vocabulary/grid-projection#">  
+]>  
+<inventory lastModificationDate="2016-01-27T00:10:10+00:00" xmlns="http://purl.org/cls/atoll" updateFrequency="P1D">  
+  <service urn="cls-toulouse-fr-armor-motu-rest-file"/>  
+  <resource urn="dataset-armor-3d-v5-myocean">  
+    <access urlPath="file:///data/atoll/armor/armor-3d-v3/"/>  
+    <geospatialCoverage south="-82" north="90" west="0" east="359.75"/>  
+    <depthCoverage min="0" max="5500" units="m"/>  
+    <timePeriod start="2014-10-01T00:00:00+00:00" end="2016-01-26T23:59:59+00:00"/>  
+    <theoricalTimePeriod start="2014-10-01T00:00:00+00:00" end="2016-01-26T23:59:59+00:00"/>  
+    <variables>  
+      <variable name="zvelocity" vocabularyName="http://mmisw.org/ont/cf/parameter/eastward_sea_water_velocity" units="m/s"/>  
+      <variable name="height" vocabularyName="http://purl.org/myocean/ontology/vocabulary/cf-standard-name#height_above_geoid" units="m"/>  
+      <variable name="mvelocity" vocabularyName="http://mmisw.org/ont/cf/parameter/northward_sea_water_velocity" units="m/s"/>  
+      <variable name="salinity" vocabularyName="http://mmisw.org/ont/cf/parameter/sea_water_salinity" units="1e-3"/>  
+      <variable name="temperature" vocabularyName="http://mmisw.org/ont/cf/parameter/sea_water_temperature" units="degC"/>  
+    </variables>  
+  </resource>  
+  <files>  
+    <file name="ARMOR3D_TSHUV_20141001.nc" weight="327424008" modelPrediction="http://www.myocean.eu.org/2009/resource/vocabulary/forecasting#" startCoverageDate="2014-10-01T00:00:00+00:00" endCoverageDate="2014-10-07T23:59:59+00:00" creationDate="2015-03-17T00:00:00+00:00" availabilitySIDate="2016-01-27T00:10:10+00:00" availabilityServiceDate="2016-01-27T00:10:10+00:00" theoreticalAvailabilityDate="2015-03-17T00:00:00+00:00"/>  
+    <file name="ARMOR3D_TSHUV_20141008.nc" weight="327424008" modelPrediction="http://www.myocean.eu.org/2009/resource/vocabulary/forecasting#" startCoverageDate="2014-10-08T00:00:00+00:00" endCoverageDate="2014-10-14T23:59:59+00:00" creationDate="2015-03-17T00:00:00+00:00" availabilitySIDate="2016-01-27T00:10:10+00:00" availabilityServiceDate="2016-01-27T00:10:10+00:00" theoreticalAvailabilityDate="2015-03-17T00:00:00+00:00"/>  
+    ...  
+	<file name="ARMOR3D_TSHUV_20160120.nc" weight="327424008" modelPrediction="http://www.myocean.eu.org/2009/resource/vocabulary/forecasting#" startCoverageDate="2016-01-20T00:00:00+00:00" endCoverageDate="2016-01-26T23:59:59+00:00" creationDate="2016-01-26T11:11:00+00:00" availabilitySIDate="2016-01-27T00:10:10+00:00" availabilityServiceDate="2016-01-27T00:10:10+00:00" theoreticalAvailabilityDate="2016-01-26T11:11:00+00:00"/>  
+  </files>  
+</inventory>  
+```  
+
 
 
 

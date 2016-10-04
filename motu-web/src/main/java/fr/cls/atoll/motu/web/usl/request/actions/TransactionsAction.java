@@ -121,7 +121,7 @@ public class TransactionsAction extends AbstractAction {
     private void downloadLogFile(File logFolder, String logFileName) throws IOException, MotuException {
         File file = new File(logFolder, logFileName);
         getResponse().setCharacterEncoding("UTF-8");
-        getResponse().setContentType(logFileName.endsWith("xml") ? "text/xml" : "text/csv");
+        getResponse().setContentType(logFileName.endsWith("xml") ? "text/plain; charset=UTF-8" : "text/plain; charset=UTF-8");
         getResponse().setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");
         getResponse().setHeader("Content-Length", Long.toString(file.length()));
         Files.copy(file.toPath(), getResponse().getOutputStream());
