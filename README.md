@@ -301,17 +301,20 @@ rm -rf $motu2xInstallFolder/tomcat-motu-cas
 
 #### Business configuration, Product & dataset: motuConfiguration.xml  
 The new version of Motu is compatible with the motuConfiguration.xml file configured in Motu v3.x.  
-So you can use exactly the same file. 
+So you can use exactly the same file, but it is important to update some fields to improve performance and future compatibility. 
 Copy your old motuConfiguration.xml file to the folder /opt/cmems-cis/motu/config, for example:  
 ```
 cp  /opt/atoll/misgw/motu-configuration-sample-misgw/resources/motuConfiguration.xml /opt/cmems-cis/motu/config
 ```  
 
-It is important to update this file in order to:  
+Then update the attribute below:  
 
-* use the new [ncss protocol](#BSmotuConfigNCSS) to improve performance of product download 
-* remove @deprecated attributes to ease future migrations. You can check them [Business configuration](#ConfigurationBusiness).
-* Check the attribute [extractionPath](#motuConfig-extractionPath) to continue to serve downloaded dataset from a fontral Apache HTTPd server.
+* use the new [ncss protocol](#BSmotuConfigNCSS) to improve performance of product download  
+* check the attribute [extractionPath](#motuConfig-extractionPath) to continue to serve downloaded dataset from a fontral Apache HTTPd server.  
+* remove all @deprecated attributes to ease future migrations. You can check them [Business configuration](#ConfigurationBusiness).  
+* after starting Motu, if there is issues with the graphic chart, check [httpBaseRef](#motuConfig-httpBaseRef) attribute.
+* remove attribute [defaultService](#motuConfig-defaultService). It was previously used to declare a default config Service. Now this attribute sets a default action. If the action set is unknown, an error log will be written and user is redirected to the listServices action which is the default one.
+
 
 
 #### Log files
@@ -686,7 +689,7 @@ If you have this file from a version anterior to Motu v3.x, you can reuse it. In
 
 #### <a name="BSmotuConfig">Attributes defined in motuConfig node</a>  
 
-##### defaultService  
+##### <a name="motuConfig-defaultService">defaultService</a>  
 A string representing the default action in the URL /Motu?action=$defaultService  
 The default one is "listservices".  
 All values can be found in the method USLRequestManager#onNewRequest with the different ACTION_NAME.  

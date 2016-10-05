@@ -73,15 +73,19 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
         if (checkConfigService(cs, serviceHTTPParameterValidator)) {
             CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
-            String productId = productHTTPParameterValidator.getParameterValueValidated();
-            Product p = cd.getProducts().get(productId);
-            if (checkProduct(p, productId)) {
-                ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
-                        .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(p), productId, p.getLocationData());
-                if (pmd != null) {
-                    p.setProductMetaData(pmd);
+            if (cd != null) {
+                String productId = productHTTPParameterValidator.getParameterValueValidated();
+                Product p = cd.getProducts().get(productId);
+                if (checkProduct(p, productId)) {
+                    ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
+                            .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(p), productId, p.getLocationData());
+                    if (pmd != null) {
+                        p.setProductMetaData(pmd);
+                    }
+                    writeResponseWithVelocity(mc, cs, cd, p);
                 }
-                writeResponseWithVelocity(mc, cs, cd, p);
+            } else {
+                throw new MotuException(ErrorType.SYSTEM, "Error while get catalog data for config service " + cs.getName());
             }
         }
     }

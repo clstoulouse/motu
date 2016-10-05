@@ -180,10 +180,14 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
         if (checkConfigService(cs, serviceHTTPParameterValidator)) {
             CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
-            String productId = productHTTPParameterValidator.getParameterValueValidated();
-            Product p = cd.getProducts().get(productId);
-            if (checkProduct(p, productId)) {
-                downloadProduct(mc, cs, cd, productId, p);
+            if (cd != null) {
+                String productId = productHTTPParameterValidator.getParameterValueValidated();
+                Product p = cd.getProducts().get(productId);
+                if (checkProduct(p, productId)) {
+                    downloadProduct(mc, cs, cd, productId, p);
+                }
+            } else {
+                throw new MotuException(ErrorType.SYSTEM, "Error while get catalog data for config service " + cs.getName());
             }
         }
     }

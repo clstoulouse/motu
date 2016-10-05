@@ -112,13 +112,21 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         if (!location.toString().endsWith("/")) {
             location.append("/");
         }
+
+        String oldCDUrlSite = cd.getUrlSite();
+        if (cd.getUrlSite() != null && !cd.getUrlSite().endsWith("/")) {
+            cd.setUrlSite(cd.getUrlSite() + "/");
+        }
         for (String path : listCatalogRefSubPaths) {
             location.append(path);
             location.append("/");
+
+            cd.setUrlSite(cd.getUrlSite() + path + "/");
         }
         location.append(catalogXmlName);
 
         loadTdsSubCatalog(location.toString(), useSSO, cd);
+        cd.setUrlSite(oldCDUrlSite);
 
         return catalogHrefSplit.length - 1;
     }
@@ -144,6 +152,10 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
                         int numberSubPaths = loadTdsCatalogRef((CatalogRef) datasetType, useSSO, cd);
                         removeListCatalogRefSubPaths(cd, numberSubPaths);
                     } else if (datasetType instanceof DatasetType) {
+                        // if (StringUtils.isNullOrEmpty(datasetType.getUrlPath())) {
+                        // datasetType.setUrlPath(org.apache.commons.lang.StringUtils.substringBeforeLast(path,
+                        // "/") + "/");
+                        // }
                         loadTdsProducts(datasetType, catalogXml, useSSO, cd);
                     }
                 }
@@ -295,7 +307,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         }
 
         if (tdsDatasetType.getID() != null) {
-            if (tdsDatasetType.getID().equals("")) {
+            if (StringUtils.isNullOrEmpty(tdsDatasetType.getID())) {
                 productId = tdsUrlPath;
             } else {
                 productId = tdsDatasetType.getID();
@@ -867,7 +879,9 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      */
     private void removeListCatalogRefSubPaths(CatalogData catalogData, int numberToRemove) {
         for (int i = 0; i < numberToRemove; i++) {
-            catalogData.getListCatalogRefSubPaths().remove(catalogData.getListCatalogRefSubPaths().size() - 1);
+            if (catalogData.getListCatalogRefSubPaths().size() > 0) {
+                catalogData.getListCatalogRefSubPaths().remove(catalogData.getListCatalogRefSubPaths().size() - 1);
+            }
         }
 
     }
@@ -878,7 +892,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      * @param catalog
      * @throws MotuException
      */
-    public CatalogData loadTdsCatalog(CatalogService catalogService) throws MotuException {
+    public CatalogData loadTdsCatalog(CatalogService catalogService) {
         try {
             Catalog tdsCatalogXml = getCatalogFromTDS(catalogService);
             CatalogData catalogData = new CatalogData();
@@ -912,7 +926,9 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
 
             return catalogData;
         } catch (Exception e) {
-            throw new MotuException(ErrorType.LOADING_CATALOG, "Error while reading catalog from TDS", e);
+            LOGGER.error("Error while reading catalog from TDS", e);
+            return null;
+            // throw new MotuException(ErrorType.LOADING_CATALOG, "Error while reading catalog from TDS", e);
         }
 
     }

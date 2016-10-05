@@ -422,7 +422,7 @@
 				defaultService : The service name when no service is specified.
 			-->
 			<xs:attribute name="defaultService" type="xs:string"
-				default="aviso_nrt" />
+				default="" />
 			<!--
 				useAuthentication True if users have to be authenticated, false
 				otherwise. Default value is false.

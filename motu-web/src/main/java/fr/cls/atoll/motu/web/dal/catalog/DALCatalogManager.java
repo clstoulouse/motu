@@ -91,15 +91,17 @@ public class DALCatalogManager implements IDALCatalogManager {
         if (!StringUtils.isNullOrEmpty(locationData)) {
             for (ConfigService c : BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService()) {
                 CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(c);
-                Map<String, Product> products = cd.getProducts();
-                for (Map.Entry<String, Product> currentProduct : products.entrySet()) {
-                    if (currentProduct.getValue().getProductId().equals(product.getProductId())) {
-                        serviceFound = c;
+                if (cd != null) {
+                    Map<String, Product> products = cd.getProducts();
+                    for (Map.Entry<String, Product> currentProduct : products.entrySet()) {
+                        if (currentProduct.getValue().getProductId().equals(product.getProductId())) {
+                            serviceFound = c;
+                            break;
+                        }
+                    }
+                    if (serviceFound != null) {
                         break;
                     }
-                }
-                if (serviceFound != null) {
-                    break;
                 }
             }
         }

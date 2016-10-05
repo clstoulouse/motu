@@ -45,14 +45,16 @@ public class BLLProductManager implements IBLLProductManager {
             String currentCatalogName = c.getCatalog().getName();
             if (currentCatalogName.equals(catalogName)) {
                 CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(c);
-                Map<String, Product> products = cd.getProducts();
-                for (Map.Entry<String, Product> product : products.entrySet()) {
-                    if (product.getValue().getTdsUrlPath().equals(URLPath)) {
-                        productFound = product.getValue();
-                        break;
+                if (cd != null) {
+                    Map<String, Product> products = cd.getProducts();
+                    for (Map.Entry<String, Product> product : products.entrySet()) {
+                        if (product.getValue().getTdsUrlPath().equals(URLPath)) {
+                            productFound = product.getValue();
+                            break;
+                        }
                     }
+                    break;
                 }
-                break;
             }
         }
 
@@ -64,11 +66,13 @@ public class BLLProductManager implements IBLLProductManager {
         Product productFound = null;
         for (ConfigService c : BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService()) {
             CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(c);
-            Map<String, Product> products = cd.getProducts();
-            for (Map.Entry<String, Product> product : products.entrySet()) {
-                if (product.getValue().getTdsUrlPath().equals(URLPath)) {
-                    productFound = product.getValue();
-                    break;
+            if (cd != null) {
+                Map<String, Product> products = cd.getProducts();
+                for (Map.Entry<String, Product> product : products.entrySet()) {
+                    if (product.getValue().getTdsUrlPath().equals(URLPath)) {
+                        productFound = product.getValue();
+                        break;
+                    }
                 }
             }
         }
@@ -85,7 +89,10 @@ public class BLLProductManager implements IBLLProductManager {
     public Product getProduct(String serviceName, String productId) throws MotuException {
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceName);
         CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
-        Product p = cd.getProducts(productId);
+        Product p = null;
+        if (cd != null) {
+            p = cd.getProducts(productId);
+        }
         return p;
     }
 

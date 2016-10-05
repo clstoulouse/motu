@@ -64,7 +64,11 @@ public class ListCatalogAction extends AbstractAuthorizedAction {
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
         if (checkConfigService(cs, serviceHTTPParameterValidator)) {
             CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
-            writeResponseWithVelocity(mc, cs, cd);
+            if (cd != null) {
+                writeResponseWithVelocity(mc, cs, cd);
+            } else {
+                throw new MotuException(ErrorType.SYSTEM, "Error while get catalog data for config service " + cs.getName());
+            }
         }
     }
 

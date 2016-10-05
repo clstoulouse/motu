@@ -59,12 +59,14 @@ public class RequestCleaner implements IRequestCleaner {
     private static long getRecurseFileLength(File dirOrFileToScan) {
         long bytes = 0;
         File[] files = dirOrFileToScan.listFiles();
-        for (File file : files) {
-            if (file.isFile()) {
-                bytes = bytes + file.length();
-            }
-            if (file.isDirectory()) {
-                bytes = bytes + getRecurseFileLength(file);
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    bytes = bytes + file.length();
+                }
+                if (file.isDirectory()) {
+                    bytes = bytes + getRecurseFileLength(file);
+                }
             }
         }
         return bytes;

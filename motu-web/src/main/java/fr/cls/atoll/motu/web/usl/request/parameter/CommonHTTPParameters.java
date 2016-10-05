@@ -5,9 +5,29 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.usl.request.actions.AboutAction;
+import fr.cls.atoll.motu.web.usl.request.actions.DebugAction;
+import fr.cls.atoll.motu.web.usl.request.actions.DescribeCoverageAction;
+import fr.cls.atoll.motu.web.usl.request.actions.DescribeProductAction;
+import fr.cls.atoll.motu.web.usl.request.actions.DownloadProductAction;
+import fr.cls.atoll.motu.web.usl.request.actions.GetRequestStatusAction;
+import fr.cls.atoll.motu.web.usl.request.actions.GetSizeAction;
+import fr.cls.atoll.motu.web.usl.request.actions.HttpErrorAction;
+import fr.cls.atoll.motu.web.usl.request.actions.ListCatalogAction;
+import fr.cls.atoll.motu.web.usl.request.actions.ListServicesAction;
+import fr.cls.atoll.motu.web.usl.request.actions.LogoutAction;
+import fr.cls.atoll.motu.web.usl.request.actions.PingAction;
+import fr.cls.atoll.motu.web.usl.request.actions.ProductDownloadHomeAction;
+import fr.cls.atoll.motu.web.usl.request.actions.ProductMetadataAction;
+import fr.cls.atoll.motu.web.usl.request.actions.TimeCoverageAction;
+import fr.cls.atoll.motu.web.usl.request.actions.TransactionsAction;
+import fr.cls.atoll.motu.web.usl.request.actions.WelcomeAction;
 
 /**
  * <br>
@@ -20,6 +40,9 @@ import fr.cls.atoll.motu.web.common.utils.StringUtils;
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
 public class CommonHTTPParameters {
+
+    /** Logger for this class. */
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * Gets the action.
@@ -37,11 +60,54 @@ public class CommonHTTPParameters {
                 if (StringUtils.isNullOrEmpty(defaultService)) {
                     action = MotuRequestParametersConstant.ACTION_LIST_SERVICES;
                 } else {
-                    action = defaultService;
+                    if (isAKnownAction(defaultService)) {
+                        action = defaultService;
+                    } else {
+                        LOGGER.error("Error in motuCOnfiguration.xml, default service has not a valide value: " + defaultService
+                                + ", default value is: listservices");
+                        action = MotuRequestParametersConstant.ACTION_LIST_SERVICES;
+                    }
                 }
             }
         }
         return action;
+    }
+
+    /**
+     * .
+     * 
+     * @param defaultService
+     * @return
+     */
+    public static boolean isAKnownAction(String defaultService) {
+        boolean isAKnownAction = false;
+        if (defaultService != null) {
+            switch (defaultService) {
+            case PingAction.ACTION_NAME:
+            case DebugAction.ACTION_NAME:
+            case DebugAction.ACTION_NAME_ALIAS_QUEUE_SERVER:
+            case GetRequestStatusAction.ACTION_NAME:
+            case GetSizeAction.ACTION_NAME:
+            case DescribeProductAction.ACTION_NAME:
+            case TimeCoverageAction.ACTION_NAME:
+            case LogoutAction.ACTION_NAME:
+            case DownloadProductAction.ACTION_NAME:
+            case ListCatalogAction.ACTION_NAME:
+            case ProductMetadataAction.ACTION_NAME:
+            case ProductDownloadHomeAction.ACTION_NAME:
+            case ListServicesAction.ACTION_NAME:
+            case DescribeCoverageAction.ACTION_NAME:
+            case AboutAction.ACTION_NAME:
+            case HttpErrorAction.ACTION_NAME:
+            case WelcomeAction.ACTION_NAME:
+            case TransactionsAction.ACTION_NAME:
+                isAKnownAction = true;
+                break;
+            default:
+                // Nothing to do
+            }
+        }
+        return isAKnownAction;
     }
 
     /**

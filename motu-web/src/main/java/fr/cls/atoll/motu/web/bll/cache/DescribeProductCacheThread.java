@@ -100,20 +100,23 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
     private void processConfigService(ConfigService configService) {
         try {
             CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(configService);
-            Map<String, Product> products = cd.getProducts();
-            for (Map.Entry<String, Product> currentProductEntry : products.entrySet()) {
-                Product currentProduct = currentProductEntry.getValue();
+            if (cd != null) {
+                Map<String, Product> products = cd.getProducts();
+                for (Map.Entry<String, Product> currentProductEntry : products.entrySet()) {
+                    Product currentProduct = currentProductEntry.getValue();
 
-                ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
-                        .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(configService),
-                                            currentProduct.getProductId(),
-                                            currentProduct.getLocationData());
-                if (pmd != null) {
-                    currentProduct.setProductMetaData(pmd);
+                    ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
+                            .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(configService),
+                                                currentProduct.getProductId(),
+                                                currentProduct.getLocationData());
+                    if (pmd != null) {
+                        currentProduct.setProductMetaData(pmd);
+                    }
+                    describeProductMap.put(currentProduct.getProductId(), initProductMetadataInfo(currentProduct));
                 }
-                describeProductMap.put(currentProduct.getProductId(), initProductMetadataInfo(currentProduct));
+            } else {
+                LOGGER.error("Unable to read catalog data for config service " + configService.getName());
             }
-
         } catch (MotuException e) {
             LOGGER.error("Error during refresh of the describe product cache", e);
         } catch (MotuExceptionBase e) {
