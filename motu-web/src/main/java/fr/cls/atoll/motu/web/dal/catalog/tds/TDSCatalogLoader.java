@@ -165,7 +165,8 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
             // Remove products that are not anymore in the catalog
             cd.productsKeySet().retainAll(cd.getProductsLoaded());
         } catch (Exception e) {
-            throw new MotuException(ErrorType.LOADING_CATALOG, "Error while initializing TDS sub catalog", e);
+            LOGGER.error("Error while reading catalog from TDS", e);
+            // throw new MotuException(ErrorType.LOADING_CATALOG, "Error while reading catalog from TDS", e);
         }
 
     }
