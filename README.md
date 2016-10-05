@@ -1208,14 +1208,24 @@ When Motu read data through TDS (Opendap or NCSS service), the data shall be con
 Within CMEMS, the datasets are organized in a tree structure, where the product granularity appears above the dataset granularity.  
 To be noticed:  
 
-* The dataset disseminated by TDS/Motu shall be gridded datasets (data is defined in a grid)  
-* A gridded dataset is a set of data files aggregated on time. Each file composing a gridded dataset shall contain the same variable in the same geospatial coverage. The difference between two files is the temporal coverage  
-* All gridded dataset shall be configured in TDS, to be served through teh subsetter of Motu  
+* All gridded dataset shall be configured in TDS, to be served through the subsetter of Motu  
 * A product is a coherent group of datasets. The product is the granularity used in the catalogue of CMEMS  
 * In the XML tree structure of the TDS configuration, each product shall be configured through a unique node  
-* This node shall correspond to one XML file in the TDS configuration (for example product1.xml) and shall be further referenced in the motuConfiguration.xml file as one &lt;catalog name> (for example &lt;catalog name="psy2v3-myocean.xml>)  
-* The value of the "name" attribute of the element &lt;dataset> shall be identical to the Product Specification Customer Name (from CMEMS Product Information Table).  
-  
+* This node shall correspond to one XML file in the TDS configuration (for example GLOBAL_ANALYSIS_PHYS_001_016.xml) and shall be further referenced in the motuConfiguration.xml file as one <catalog name> (for example <catalog name=" GLOBAL_ANALYSIS_PHYS_001_016.xml>)  
+* The value of the "name" attribute of the element <dataset> shall be identical to the Product Name (from CMEMS Product Information Table). 
+In the example below named “CMEMS DU xxx Thredds Catalog” there are three datasets. The following catalog tree presents a hierarchical organization for this catalog.
+      
+``` 	  
+<  CMEMS DU xxx Thredds Catalog >  
+| ------ < GLOBAL_ANALYSIS_PHYS_001_016  >   
+|------- < dataset-armor-3d-v5-myocean >  
+|----------------- < GLOBAL_REP_PHYS_001_013  >   
+|------- < dataset-armor-3d-rep-monthly-v3-1-myocean >                                                                     
+|------- < dataset-armor-3d-rep-weekly-v3-1-myocean>   
+``` 
+
+The Motu configuration (motuConfiguration.xml) should reference the node corresponding to one XML file in the TDS configuration.
+
   
 Examples:  
 
