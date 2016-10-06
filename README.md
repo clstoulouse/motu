@@ -309,13 +309,47 @@ cp  /opt/atoll/misgw/motu-configuration-sample-misgw/resources/motuConfiguration
 
 Then update the attribute below:  
 
-* use the new [ncss protocol](#BSmotuConfigNCSS) to improve performance of product download  
-* check the attribute [extractionPath](#motuConfig-extractionPath) to continue to serve downloaded dataset from a fontral Apache HTTPd server.  
-* remove all @deprecated attributes to ease future migrations. You can check them [Business configuration](#ConfigurationBusiness).  
-* after starting Motu, if there is issues with the graphic chart, check [httpBaseRef](#motuConfig-httpBaseRef) attribute.
-* remove attribute [defaultService](#motuConfig-defaultService). It was previously used to declare a default config Service. Now this attribute sets a default action. If the action set is unknown, an error log will be written and user is redirected to the listServices action which is the default one.
+* use the TDS subsetter protocol to improve performance of product download  
+   * __motuConfig/configService/catalog__
+      * __ncss__: See [ncss protocol](#BSmotuConfigNCSS)
+	  * __urlSite__: Update URL to use the TDS subsetter URL. See [Add a dataset, TDS NCSS protocol](#AdminDataSetAdd)
+* check the attributes used to serve downloaded datasets  
+   * __motuConfig__
+      * __extractionPath__ See [extractionPath](#motuConfig-extractionPath)
+	  * __downloadHttpUrl__ Set the URL used to serve files from extractionPath
+* remove all @deprecated attributes listed below to ease future migrations. You can read the attribute description in [Business configuration](#ConfigurationBusiness).  
+   * __XML header__ Remove header below  
+```
+< !DOCTYPE rdf:RDF [  
+<!ENTITY myoceanUrn "http://purl.org/myocean/ontology/service/database#">  
+]>  
+```
+   * __motuConfig__
+      * __maxSizePerFile__ Remove the attribute
+	  * __runGCInterval__ Remove the attribute
+	  * __httpDocumentRoot__ Remove the attribute
+	  * __useAuthentication__ Remove the attribute
+	  * __defaultActionIsListServices__ Remove the attribute
+	  * __useProxy__, __proxyHost__, __proxyPort__, __proxyLogin__, __proxyPwd__ Remove the attributes
+	  * __defaultService__  Remove the attribute, See [defaultService](#motuConfig-defaultService) . It was previously used to declare a default config Service. Now this attribute sets a default action. If the action set is unknown, an error log will be written and user is redirected to the listServices action which is the default one.
+   * __motuConfig/configService__
+      * __defaultLanguage__ Remove the attribute
+	  * __defaultPriority__ Remove the attribute
+	  * __httpBaseRef__ Remove the attribute
+	  * __veloTemplatePrefix__ Remove the attribute
+   * __motuConfig/queueServerConfig__
+      * __defaultPriority__ Remove the attribute
+   * __motuConfig/queues__
+      * __batch__ Remove the attribute
+	  * __lowPriorityWaiting__ Remove the attribute
+   * __motuConfig/configFileSystem__ Remove the node
+* after starting Motu, if there is issues with the graphic chart, check the attributes below.
+   * __motuConfig__
+      * __httpBaseRef__ See [httpBaseRef](#motuConfig-httpBaseRef) attribute
+   * __motuConfig/configService__
+      * __httpBaseRef__ Remove the attribute
 
-
+   
 
 #### Log files
 In CMEMS-CIS context the log file motuQSlog.xml is stored in a specific place in order to be shared.  
