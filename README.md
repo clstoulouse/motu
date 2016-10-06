@@ -656,6 +656,42 @@ The configuration is described for Apache2 contains files:
 
 When an SSO cas server is used, you have to st the property [cas-auth-serverName](#ConfigurationSystemCASSSO) to http://$serverHostName
 
+Apache HTTPd can be used at different levels. The Apache HTTPd above is the one installed on the same machine as Motu.
+An Apache HTTPd can be used as a frontal to manage Apache HTTPd load balancing. In the case, you can set up with the folowing example:  
+
+```  
+ # Use to authenticate users which want to download transaction files  
+< Location /datastore-gateway/transactions/* >  
+|--AuthType Basic  
+|--AuthName "XXX"  
+|--AuthUserFile /XXX/password.conf  
+|--Require valid-user  
+< / Location>   
+  
+ # Used to serve URL requested after a CAS authentication  
+ # Because Motu SSO client set a redirection URL directly to its webapp name so we have to take into account the webapp name in Apache HTTPd
+ProxyPass /motu-web http://$motuTomcatIp:$motuTomcatPort/motu-web  
+ProxyPassReverse /motu-web http://$motuTomcatIp:$motuTomcatPort/motu-web  
+        
+ # Used to serve Motu requests   
+ # /motu-web-servlet can be any other URL  
+ProxyPass /motu-web-servlet http://$motuTomcatIp:$motuTomcatPort/motu-web  
+ProxyPassReverse /motu-web-servlet http://$motuTomcatIp:$motuTomcatPort/motu-web  
+                
+ProxyPass /datastore-gateway/transactions http://$apacheHTTPdOnMotuHost/datastore-gateway/transactions  
+ProxyPassReverse /datastore-gateway/transactions http://$apacheHTTPdOnMotuHost/datastore-gateway/transactions  
+
+ProxyPass /datastore-gateway/deliveries http://$apacheHTTPdOnMotuHost/datastore-gateway/deliveries  
+ProxyPassReverse /datastore-gateway/deliveries http://$apacheHTTPdOnMotuHost/datastore-gateway/deliveries  
+
+< Location /motu-web-servlet/supervision>  
+|--Order allow,deny  
+|--Allow from All  
+< /Location>  
+
+```  
+
+
 
 ## <a name="InstallSecurity">Security</a>  
 
