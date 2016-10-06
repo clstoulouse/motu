@@ -349,12 +349,15 @@ public class BLLRequestManager implements IBLLRequestManager {
         }
     }
 
-    private void checkFreeSpace(double fileSize) throws NotEnoughSpaceException {
+    private void checkFreeSpace(double fileSize) throws MotuException {
         File extractionDirectory = new File(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath());
-
-        if (UnitUtils.toMegaBytes(extractionDirectory.getFreeSpace()) > fileSize) {
+        if (!extractionDirectory.exists()) {
+            LOGGER.error("The extraction folder does not exists: " + extractionDirectory.exists());
+            throw new MotuException(ErrorType.SYSTEM, "The extraction folder does not exists: " + extractionDirectory.exists());
         } else {
-            throw new NotEnoughSpaceException("There is not enough disk space available to generate the file result and to satisfy this request");
+            if (UnitUtils.toMegaBytes(extractionDirectory.getFreeSpace()) <= fileSize) {
+                throw new NotEnoughSpaceException("There is not enough disk space available to generate the file result and to satisfy this request");
+            }
         }
     }
 

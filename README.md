@@ -309,13 +309,47 @@ cp  /opt/atoll/misgw/motu-configuration-sample-misgw/resources/motuConfiguration
 
 Then update the attribute below:  
 
-* use the new [ncss protocol](#BSmotuConfigNCSS) to improve performance of product download  
-* check the attribute [extractionPath](#motuConfig-extractionPath) to continue to serve downloaded dataset from a fontral Apache HTTPd server.  
-* remove all @deprecated attributes to ease future migrations. You can check them [Business configuration](#ConfigurationBusiness).  
-* after starting Motu, if there is issues with the graphic chart, check [httpBaseRef](#motuConfig-httpBaseRef) attribute.
-* remove attribute [defaultService](#motuConfig-defaultService). It was previously used to declare a default config Service. Now this attribute sets a default action. If the action set is unknown, an error log will be written and user is redirected to the listServices action which is the default one.
+* use the TDS subsetter protocol to improve performance of product download  
+   * __motuConfig/configService/catalog__
+      * __ncss__: See [ncss protocol](#BSmotuConfigNCSS)
+	  * __urlSite__: Update URL to use the TDS subsetter URL. See [Add a dataset, TDS NCSS protocol](#AdminDataSetAdd)
+* check the attributes used to serve downloaded datasets  
+   * __motuConfig__
+      * __extractionPath__ See [extractionPath](#motuConfig-extractionPath)
+	  * __downloadHttpUrl__ Set the URL used to serve files from extractionPath
+* remove all @deprecated attributes listed below to ease future migrations. You can read the attribute description in [Business configuration](#ConfigurationBusiness).  
+   * __XML header__ Remove header below  
+```
+< !DOCTYPE rdf:RDF [  
+<!ENTITY myoceanUrn "http://purl.org/myocean/ontology/service/database#">  
+]>  
+```
+   * __motuConfig__
+      * __maxSizePerFile__ Remove the attribute
+	  * __runGCInterval__ Remove the attribute
+	  * __httpDocumentRoot__ Remove the attribute
+	  * __useAuthentication__ Remove the attribute
+	  * __defaultActionIsListServices__ Remove the attribute
+	  * __useProxy__, __proxyHost__, __proxyPort__, __proxyLogin__, __proxyPwd__ Remove the attributes
+	  * __defaultService__  Remove the attribute, See [defaultService](#motuConfig-defaultService) . It was previously used to declare a default config Service. Now this attribute sets a default action. If the action set is unknown, an error log will be written and user is redirected to the listServices action which is the default one.
+   * __motuConfig/configService__
+      * __defaultLanguage__ Remove the attribute
+	  * __defaultPriority__ Remove the attribute
+	  * __httpBaseRef__ Remove the attribute
+	  * __veloTemplatePrefix__ Remove the attribute
+   * __motuConfig/queueServerConfig__
+      * __defaultPriority__ Remove the attribute
+   * __motuConfig/queues__
+      * __batch__ Remove the attribute
+	  * __lowPriorityWaiting__ Remove the attribute
+   * __motuConfig/configFileSystem__ Remove the node
+* after starting Motu, if there is issues with the graphic chart, check the attributes below.
+   * __motuConfig__
+      * __httpBaseRef__ See [httpBaseRef](#motuConfig-httpBaseRef) attribute
+   * __motuConfig/configService__
+      * __httpBaseRef__ Remove the attribute
 
-
+   
 
 #### Log files
 In CMEMS-CIS context the log file motuQSlog.xml is stored in a specific place in order to be shared.  
@@ -621,6 +655,42 @@ The configuration is described for Apache2 contains files:
 * __enableApacheModules.sh__ Describe the Apache modules to enable
 
 When an SSO cas server is used, you have to st the property [cas-auth-serverName](#ConfigurationSystemCASSSO) to http://$serverHostName
+
+Apache HTTPd can be used at different levels. The Apache HTTPd above is the one installed on the same machine as Motu.
+An Apache HTTPd can be used as a frontal to manage Apache HTTPd load balancing. In the case, you can set up with the folowing example:  
+
+```  
+ # Use to authenticate users which want to download transaction files  
+< Location /datastore-gateway/transactions/* >  
+|--AuthType Basic  
+|--AuthName "XXX"  
+|--AuthUserFile /XXX/password.conf  
+|--Require valid-user  
+< / Location>   
+  
+ # Used to serve URL requested after a CAS authentication  
+ # Because Motu SSO client set a redirection URL directly to its webapp name so we have to take into account the webapp name in Apache HTTPd
+ProxyPass /motu-web http://$motuTomcatIp:$motuTomcatPort/motu-web  
+ProxyPassReverse /motu-web http://$motuTomcatIp:$motuTomcatPort/motu-web  
+        
+ # Used to serve Motu requests   
+ # /motu-web-servlet can be any other URL  
+ProxyPass /motu-web-servlet http://$motuTomcatIp:$motuTomcatPort/motu-web  
+ProxyPassReverse /motu-web-servlet http://$motuTomcatIp:$motuTomcatPort/motu-web  
+                
+ProxyPass /datastore-gateway/transactions http://$apacheHTTPdOnMotuHost/datastore-gateway/transactions  
+ProxyPassReverse /datastore-gateway/transactions http://$apacheHTTPdOnMotuHost/datastore-gateway/transactions  
+
+ProxyPass /datastore-gateway/deliveries http://$apacheHTTPdOnMotuHost/datastore-gateway/deliveries  
+ProxyPassReverse /datastore-gateway/deliveries http://$apacheHTTPdOnMotuHost/datastore-gateway/deliveries  
+
+< Location /motu-web-servlet/supervision>  
+|--Order allow,deny  
+|--Allow from All  
+< /Location>  
+
+```  
+
 
 
 ## <a name="InstallSecurity">Security</a>  
@@ -954,9 +1024,11 @@ __cas-activated__=false
    # Cas server configuration to allow Motu to access it  
    # @see https://wiki.jasig.org/display/casc/configuring+the+jasig+cas+client+for+java+in+the+web.xml  
      
-   # The Cas server URL  
+   # The  start of the CAS server URL, i.e. https://cas-cis.cls.fr/cas 
 __cas-server-url__=https://cas-cis.cls.fr/cas  
    # The Motu HTTP server url: example: http://misgw-ddo-qt.cls.fr:9080 or http://motu.cls.fr   
+   # If you use a frontal HTTP server, it is important to known that this URL will be called once used will be login on CAS server
+   # In this case, set the Apache HTTPd server. The value will be http://$apacheHTTPdServer/motu-web/Motu So in Apache HTTPd you have to redirect this URL to the Motu Web server
 __cas-auth-serverName__=http://$motuServerIp:$motuServerPort  
    # The proxy callback HTTP URL on the Motu server (this URL can be defined on the frontal Apache HTTPs server)  
 __cas-validationFilter-proxyCallbackUrl__=http://$motuServerIp:$motuServerPort/motu-web/proxyCallback  
@@ -1375,7 +1447,6 @@ The Action Code		=>	A number matching the HTTP request with the action parameter
 015		=>	DESCRIBE\_COVERAGE\_ACTION         
 016		=>	ABOUT\_ACTION  
 017		=>	WELCOME\_ACTION  
-018		=>	TRANSACTIONS\_ACTION  
 
 ### <a name="LogCodeErrorsErrorType">Error types</a>  
 
@@ -1451,8 +1522,7 @@ __Summary of all actions:__
    * [List catalog](#ClientAPI_ListCatalog)  
    * [List services](#ClientAPI_ListServices)  
    * [Product download home](#ClientAPI_ProductDownloadHome)  
-   * [Product medatata](#ClientAPI_ProductMetadata)  
-   * [Transaction log files](#ClientAPI_TransactionLogFiles)  
+   * [Product medatata](#ClientAPI_ProductMetadata)    
    * [Welcome](#ClientAPI_welcome)  
 * Plain Text 
    * [Ping](#ClientAPI_Ping)  
@@ -1762,21 +1832,6 @@ __Return__: A JSON document
 ```  
 {"timestamp":1474638852,"status":200,"request":{"type":"version"},"value":{"protocol":"7.2","config":{"agentId":"10.1.20.198-18043-2df3a4-servlet","agentType":"servlet"},"agent":"1.3.3","info":{"product":"tomcat","vendor":"Apache","version":"7.0.69"}}}
 ```  
-
-
-### <a name="ClientAPI_TransactionLogFiles">Transaction log files</a>  
-HTML page which gives access to several web pages, in particular the Motu listservices web page.
-
-__URL__:  
-* http://localhost:8080/motu-web/Motu?action=transactions  
-* http://localhost:8080/motu-web/Motu?action=transactions&fileName=motuQSlog.xml  
-
-__Parameters__: No parameter
-  
-* __fileName__ [0,1]: The log file name to download  
-
-__Return__: If parameter fileName is not set, an HTML web page which lists all log files available on the server.  
-If parameter is set, return the file content with an XML or CSV text content type or an HTML error page is file does not exist.
 
 
 

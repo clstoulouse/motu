@@ -38,7 +38,6 @@ import fr.cls.atoll.motu.web.usl.request.actions.PingAction;
 import fr.cls.atoll.motu.web.usl.request.actions.ProductDownloadHomeAction;
 import fr.cls.atoll.motu.web.usl.request.actions.ProductMetadataAction;
 import fr.cls.atoll.motu.web.usl.request.actions.TimeCoverageAction;
-import fr.cls.atoll.motu.web.usl.request.actions.TransactionsAction;
 import fr.cls.atoll.motu.web.usl.request.actions.WelcomeAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
@@ -154,11 +153,11 @@ public class USLRequestManager implements IUSLRequestManager {
         case WelcomeAction.ACTION_NAME:
             actionInst = new WelcomeAction("018", request, response);
             break;
-        case TransactionsAction.ACTION_NAME:
-            actionInst = new TransactionsAction("019", request, response);
-            break;
-        default:
-            // Nothing to do
+        // case TransactionsAction.ACTION_NAME:
+        // actionInst = new TransactionsAction("019", request, response);
+        // break;
+        // default:
+        // Nothing to do
         }
         return actionInst;
     }

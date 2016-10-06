@@ -35,7 +35,11 @@ public class AbstractCatalogLoader {
     }
 
     protected String getCatalogURL(CatalogService catalogService) {
-        return catalogService.getUrlSite() + catalogService.getName();
+        String url = catalogService.getUrlSite();
+        if (!catalogService.getUrlSite().endsWith("/")) {
+            url += "/";
+        }
+        return url + catalogService.getName();
     }
 
     /**
