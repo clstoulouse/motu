@@ -47,7 +47,8 @@ import java.util.Collection;
 import javax.net.ssl.HttpsURLConnection;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -67,7 +68,7 @@ import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
 public class RestUtil {
 
     /** Logger for this class. */
-    private static final Logger LOG = Logger.getLogger(RestUtil.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /** The Constant CAS_REST_URL_SUFFIX. */
     public static final String CAS_REST_URL_SUFFIX = "/v1/tickets";
@@ -312,6 +313,7 @@ public class RestUtil {
         return isCasifiedUrl(serviceURL.toString(), null, ignoreHttp4XX);
 
     }
+
     /**
      * Checks if is casified url.
      * 
@@ -338,6 +340,7 @@ public class RestUtil {
     public static boolean isCasifiedUrl(URI serviceURL, Proxy proxy, boolean ignoreHttp4XX) throws IOException, MotuCasBadRequestException {
         return isCasifiedUrl(serviceURL.toString(), proxy, ignoreHttp4XX);
     }
+
     /**
      * Checks if is casified url.
      * 
@@ -450,8 +453,8 @@ public class RestUtil {
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws MotuCasBadRequestException the motu cas bad request exception
      */
-    public static String getCasRestletUrl(Client client, RestUtil.HttpMethod method, String serviceURL, String casRestUrlSuffix) throws IOException,
-            MotuCasBadRequestException {
+    public static String getCasRestletUrl(Client client, RestUtil.HttpMethod method, String serviceURL, String casRestUrlSuffix)
+            throws IOException, MotuCasBadRequestException {
 
         if (client == null) {
             return null;
@@ -617,7 +620,7 @@ public class RestUtil {
                                                       path,
                                                       "Error while trying to retrieve CAS url (RestUtil.getRedirectUrl(String path, Proxy proxy)");
         }
-        
+
         String location = "";
         if (response.getLocation() != null) {
             location = response.getLocation().toString();

@@ -24,14 +24,14 @@
  */
 package fr.cls.atoll.motu.api;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.rest.MotuRequest;
 import fr.cls.atoll.motu.api.rest.MotuRequestException;
 import fr.cls.atoll.motu.api.rest.MotuRequestParameters;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * 
@@ -74,7 +74,6 @@ public class TestCharge {
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -85,7 +84,6 @@ public class TestCharge {
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -110,11 +108,9 @@ public class TestCharge {
                 launchMotuRequest(servletUrl);
                 // Thread.sleep(10000);
                 // return;
-
             }
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

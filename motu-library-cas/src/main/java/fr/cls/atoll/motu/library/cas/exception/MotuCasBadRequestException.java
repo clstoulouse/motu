@@ -32,7 +32,8 @@ import java.util.List;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -44,23 +45,21 @@ import fr.cls.atoll.motu.library.cas.util.RestUtil;
  */
 public class MotuCasBadRequestException extends MotuCasException {
 
-    /**
-     * Logger for this class.
-     */
-    private static final Logger LOG = Logger.getLogger(MotuCasBadRequestException.class);
+    /** Logger for this class. */
+    private static final Logger LOG = LogManager.getLogger();
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -1L;
 
     /** The code. */
     protected Integer code = -1;
-    
+
     /** The url. */
     protected String url;
 
     /** The Constant STATUS_LINE_FIELD. */
     public static final String STATUS_LINE_FIELD = "Status-line";
-    
+
     /** The header fields. */
     protected MultivaluedMap<String, String> headerFields = new MultivaluedMapImpl();
 
@@ -123,7 +122,7 @@ public class MotuCasBadRequestException extends MotuCasException {
     public MotuCasBadRequestException(int code, String url, Throwable cause) {
         this(code, url, "Bad request.", cause);
     }
-       
+
     /**
      * Instantiates a new motu cas bad request exception.
      *
@@ -176,10 +175,11 @@ public class MotuCasBadRequestException extends MotuCasException {
         this(code, url, "Bad request.", cause);
         setHeaderFields(conn);
     }
-    
-    public static MotuCasBadRequestException createMotuCasBadRequestException(ClientResponse response, String url) {     
-            return MotuCasBadRequestException.createMotuCasBadRequestException(response, url, "");
-    }       
+
+    public static MotuCasBadRequestException createMotuCasBadRequestException(ClientResponse response, String url) {
+        return MotuCasBadRequestException.createMotuCasBadRequestException(response, url, "");
+    }
+
     /**
      * Creates the motu cas bad request exception.
      *
@@ -187,11 +187,11 @@ public class MotuCasBadRequestException extends MotuCasException {
      * @param url the url
      * @return the motu cas bad request exception
      */
-    public static MotuCasBadRequestException createMotuCasBadRequestException(ClientResponse response, String url, String message) {     
+    public static MotuCasBadRequestException createMotuCasBadRequestException(ClientResponse response, String url, String message) {
         if (response == null) {
             return new MotuCasBadRequestException(-1, url);
         }
-        
+
         InputStream entity = response.getEntityInputStream();
 
         String responseEntity = "";
@@ -202,24 +202,23 @@ public class MotuCasBadRequestException extends MotuCasException {
                 // Do nothing
             }
         }
-        
+
         StringBuffer stringBuffer = new StringBuffer();
-        
+
         if (!RestUtil.isNullOrEmpty(message)) {
             stringBuffer.append(message);
             stringBuffer.append("\n");
         }
-        
+
         stringBuffer.append(responseEntity);
-        
+
         MotuCasBadRequestException exception = new MotuCasBadRequestException(response.getStatus(), url, stringBuffer.toString());
         exception.setHeaderFields(response.getHeaders());
         exception.getHeaderFields().add(MotuCasBadRequestException.STATUS_LINE_FIELD, response.toString());
-        
+
         return exception;
     }
 
-    
     /**
      * Gets the code.
      *
@@ -237,7 +236,7 @@ public class MotuCasBadRequestException extends MotuCasException {
     public String getUrl() {
         return url;
     }
-    
+
     /**
      * Gets the header fields.
      *
@@ -246,7 +245,7 @@ public class MotuCasBadRequestException extends MotuCasException {
     public MultivaluedMap<String, String> getHeaderFields() {
         return headerFields;
     }
-    
+
     /**
      * Gets the header field.
      *
@@ -256,7 +255,7 @@ public class MotuCasBadRequestException extends MotuCasException {
     public List<String> getHeaderFields(String key) {
         return headerFields.get(key);
     }
-    
+
     /**
      * Gets the header fields.
      *
@@ -293,8 +292,10 @@ public class MotuCasBadRequestException extends MotuCasException {
     public void setUrl(String url) {
         this.url = url;
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see fr.cls.atoll.motu.library.cas.exception.MotuCasException#notifyException()
      */
     @Override
@@ -314,7 +315,9 @@ public class MotuCasBadRequestException extends MotuCasException {
         return stringBuffer.toString();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see fr.cls.atoll.motu.library.cas.exception.MotuCasException#notifyLogException()
      */
     @Override
@@ -347,12 +350,11 @@ public class MotuCasBadRequestException extends MotuCasException {
         int index = 0;
         // getHeaderField(0) can return an non-null value, but getHeaderFieldKey(0) can return a null value
         String fieldKey = conn.getHeaderFieldKey(index);
-        
-        if (RestUtil.isNullOrEmpty(fieldKey))
-        {
+
+        if (RestUtil.isNullOrEmpty(fieldKey)) {
             fieldKey = MotuCasBadRequestException.STATUS_LINE_FIELD; // a non-standard key
         }
-        
+
         String fieldValue = conn.getHeaderField(index);
 
         boolean hasField = ((fieldKey != null) && (fieldValue != null));
@@ -381,5 +383,4 @@ public class MotuCasBadRequestException extends MotuCasException {
 
     }
 
- 
 }

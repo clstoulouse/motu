@@ -63,7 +63,7 @@ public class MotuRequestMainTest {
     /**
      * Main du programme de test
      * 
-     * @param args non utilisé
+     * @param args non utilisÃ©
      * @throws Exception si une erreur se produit
      */
 
@@ -111,6 +111,7 @@ public class MotuRequestMainTest {
         }
 
     }
+
     public static String prompt(String msg) {
 
         // prompt the user
@@ -133,10 +134,9 @@ public class MotuRequestMainTest {
 
     }
 
-    
     public static void testExtractV2() throws Exception {
-        
-        // If a proxy is used, set properties 
+
+        // If a proxy is used, set properties
         System.setProperty("http.proxyHost", "proxy-bureautique.cls.fr");
         System.setProperty("http.proxyPort", "8080");
 
@@ -145,14 +145,14 @@ public class MotuRequestMainTest {
         // CASified
         motuRequest.setServletUrl("http://atoll-dev.cls.fr:30080/mis-gateway-servlet/Motu");
         // Non CASified
-        //motuRequest.setServletUrl("http://atoll-dev.cls.fr:31080/mis-gateway-servlet/Motu");
+        // motuRequest.setServletUrl("http://atoll-dev.cls.fr:31080/mis-gateway-servlet/Motu");
 
         MotuRequestParameters motuRequestParameters = new MotuRequestParameters();
 
         String login = MotuRequestMainTest.prompt("Enter your login: ");
         String password = MotuRequestMainTest.prompt("Enter your password: ");
-//        String login = "xxx";
-//        String password = "xxx";
+        // String login = "xxx";
+        // String password = "xxx";
 
         // Set login, pawd, authentication parameters
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_LOGIN, login);
@@ -162,12 +162,12 @@ public class MotuRequestMainTest {
         // Set action parameter, i.e 'download'
         motuRequestParameters.setParameter(MotuRequestParameters.PARAM_ACTION, MotuRequestParameters.ACTION_PRODUCT_DOWNLOAD);
         // Set Motu service id parameter
-        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_SERVICE, "http://purl.org/cls/atoll/ontology/individual/atoll#motu-opendap-mercator-myocean");
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_SERVICE,
+                                           "http://purl.org/cls/atoll/ontology/individual/atoll#motu-opendap-mercator-myocean");
         // Set Motu product (dataset) id parameter
-        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PRODUCT,
-                                           "dataset-psy2v3-pgs-med-myocean-bestestimate");
+        motuRequestParameters.setParameter(MotuRequestParameters.PARAM_PRODUCT, "dataset-psy2v3-pgs-med-myocean-bestestimate");
         // Set the variables to extract (no variable parameter means all variable of th dataset)
-        //motuRequestParameters.setParameter(MotuRequestParameters.PARAM_VARIABLE, "v");
+        // motuRequestParameters.setParameter(MotuRequestParameters.PARAM_VARIABLE, "v");
         List<String> variableList = new ArrayList<String>();
         variableList.add("u");
         variableList.add("v");
@@ -206,6 +206,7 @@ public class MotuRequestMainTest {
         out.close();
 
     }
+
     public static void testMode() throws Exception {
         MotuRequest motuRequest = new MotuRequest();
 
@@ -342,7 +343,7 @@ public class MotuRequestMainTest {
         // }
         // System.out.println(nb);
         //
-        //        
+        //
         // in.close();
         // out.close();
 
@@ -403,7 +404,7 @@ public class MotuRequestMainTest {
         // }
         // System.out.println(nb);
         //
-        //        
+        //
         // in.close();
         // out.close();
 
@@ -553,7 +554,7 @@ public class MotuRequestMainTest {
         // }
         // System.out.println(nb);
         //
-        //        
+        //
         // in.close();
         // out.close();
 
@@ -915,7 +916,6 @@ public class MotuRequestMainTest {
     // }
     //
     // } catch (MotuException e) {
-    // // TODO Auto-generated catch block
     // e.printStackTrace();
     // }
     //

@@ -1,5 +1,5 @@
 <?xml version="1.0" standalone="yes"?>
-<project basedir="." default="generate">
+<project name="API XML" basedir="." default="generate">
 
 	<!-- =================================================================== -->
 	<!-- Initialisation de toutes les variables                              -->
@@ -11,9 +11,9 @@
 
 	<property name="schema.path" value="fr/cls/atoll/motu/api/message/xml" />
 	<property name="schema.package" value="fr.cls.atoll.motu.api.message.xml" />
-	<property name="schema.xsdfile" value="atoll-motu-msg.xsd" />
+	<property name="schema.xsdfile" value="XmlMessageModel.xsd" />
 	<property name="schema.xsdpath" value="${basedir}" />
-	<property name="schema.xjbfile" value="atoll-motu-msg.xjb" />
+	<property name="schema.xjbfile" value="XmlMessageModel.xjb" />
 
 	<!--
 	<path id="classpath">

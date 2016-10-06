@@ -45,10 +45,7 @@ public class MotuWPSTester {
             String cmd = "c:/curl/curl -v  -X POST --header \"Content-Type: text/xml\" -d @C:/Java/apache-tomcat-6.0.9/save/client/requests/wps/example/Execute/xml/TestProductTimeCoverage.xml http://localhost:8080/atoll-motuservlet/services";
             Runtime.getRuntime().exec(cmd);
 
-            System.out.println(System.getProperties().toString());
-
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

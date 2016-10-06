@@ -1,0 +1,149 @@
+#!/bin/sh
+
+# This file contains products (COTS) packaged without any modification
+
+# --- How to install this archive?
+#     Copy archive motu-products-x.y.tar.gz to /opt/cmems-cis
+#     Extract this archive: cd /opt/cmems-cis; tar xvzf motu-products-x.y.tar.gz
+
+# --- How to rebuild this archive from scratch?
+#     gcc, gcc-c++ and m4 libraries have to be installed on the system.
+#
+#     First set the version variable:
+MOTU_PRODUCTS_VERSION=3.0
+#     Then run this file as a shell script to build this archive: ./README
+#     WARN: You need an Internet Access to download products. So optionally, set your proxy parameters:
+#         vi ~/.wgetrc
+#         --
+#         http_proxy=http://$ip:$port/
+#         https_proxy=http://$ip:$port/
+#         use_proxy=on
+#         wait=15
+#         --
+
+if [ -d motu ]; then
+  echo $PWD/motu folder already exists.
+  echo Please delete or rename \'motu\' folder before running this script.
+  exit 1
+fi
+
+if [ -f motu-products-$MOTU_PRODUCTS_VERSION.tar.gz ]; then
+  echo $PWD/motu-products-$MOTU_PRODUCTS_VERSION.tar.gz archive already exists.
+  echo Please delete or rename \'motu-products-$MOTU_PRODUCTS_VERSION.tar.gz\' archive before running this script.
+  exit 2
+fi
+
+cd "$(dirname "$0")"
+PRODUCT_INSTALL_DIR=$(pwd)
+
+mkdir -p motu/products
+cd motu/products
+
+echo
+#echo "### Download Apache Tomcat"
+wget --no-cookies https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.69/bin/apache-tomcat-7.0.69.tar.gz
+tar xzf apache-tomcat-7.0.69.tar.gz
+rm apache-tomcat-7.0.69.tar.gz
+result=$?
+if [ $result -ne 0 ]; then
+   echo "Impossible to retrieve Apache Tomcat"
+   exit 3
+fi
+
+echo
+echo "### Download Oracle JDK"
+wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-linux-x64.tar.gz
+
+while [ ! -f jdk-7u79-linux-x64.tar.gz ]; do
+  echo
+  echo "ERROR jdk-7u79-linux-x64.tar.gz cannot be downloaded, or is not present in $PWD"
+  echo "  Download it manually from http://www.oracle.com/technetwork/es/java/javase/downloads/jdk7-downloads-1880260.html"
+  echo "  Select: Java SE Development Kit 7u79, Linux x64, tar.gz"
+  echo "  Move jdk-7u79-linux-x64.tar.gz to $PWD"
+  echo
+  echo Tape ENTER to continue
+  read nothing 
+done
+tar xzf jdk-7u79-linux-x64.tar.gz
+rm jdk-7u79-linux-x64.tar.gz
+
+
+echo
+echo "### Download CDO tools"
+mkdir cdo-group
+cd cdo-group
+cp $PRODUCT_INSTALL_DIR/cdo-group/cdo.sh ./
+cp $PRODUCT_INSTALL_DIR/cdo-group/merge.sh ./
+cp $PRODUCT_INSTALL_DIR/cdo-group/install-cdo.sh ./
+
+echo "- download zlib"
+wget http://zlib.net/zlib-1.2.8.tar.gz
+tar xvf zlib-1.2.8.tar.gz
+echo
+
+echo "- download hdf5"
+wget https://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.17/src/hdf5-1.8.17.tar.gz
+tar xvzf hdf5-1.8.17.tar.gz
+echo
+
+echo "- download netcdf"
+wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.4.1.tar.gz
+tar xvzf netcdf-4.4.1.tar.gz
+echo
+
+echo "- download cdo"
+wget https://code.zmaw.de/attachments/download/12070/cdo-1.7.1.tar.gz
+tar xvzf cdo-1.7.1.tar.gz
+echo
+
+
+
+# Check if the SYSTEM GLIBC version if greater than 1.14
+# In this case, use the sytem GLIBC version, otherwise use the embeded one
+GLIBC_SYSTEM_VESION=`ldd --version | grep "2\." | cut -d. -f2`
+if (( $GLIBC_SYSTEM_VESION >= 15 )); then
+  echo "GLIBC version=$GLIBC_SYSTEM_VESION"
+else
+  echo "- download GLIBC"
+  wget http://ftp.gnu.org/gnu/glibc/glibc-2.14.tar.gz 
+  tar xvzf glibc-2.14.tar.gz
+  result=$?
+  if [ $result -ne 0 ]; then
+     echo "Impossible to retrieve the GLIBC"
+     exit 3
+  fi
+fi
+
+echo
+
+echo "-- Now compile and build cdo tools from sources"
+./install-cdo.sh $PRODUCT_INSTALL_DIR/motu
+result=$?
+if [ $result -ne 0 ]; then
+   echo "Impossible to install cdo tools"
+   exit 3
+fi
+
+
+echo
+echo "### Create version file"
+cd $PRODUCT_INSTALL_DIR/motu/products
+echo $MOTU_PRODUCTS_VERSION > version-products.txt 
+
+
+echo
+echo "### Copy README file"
+cd $PRODUCT_INSTALL_DIR
+cp README motu/products/
+
+
+echo
+echo "### Create motu-products-$MOTU_PRODUCTS_VERSION.tar.gz"
+tar pczf motu-products-$MOTU_PRODUCTS_VERSION.tar.gz motu
+rm -rf motu
+
+echo
+echo "$PWD/motu-products-$MOTU_PRODUCTS_VERSION.tar.gz has been generated successfully."
+echo
+
+

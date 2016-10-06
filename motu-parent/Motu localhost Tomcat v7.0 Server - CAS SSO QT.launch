@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jst.server.tomcat.core.launchConfigurationType">
+<listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0_80&quot; path=&quot;2&quot; type=&quot;4&quot;/&gt;&#13;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;runtimeClasspathEntry externalArchive=&quot;C:/dvlt/java/servers/tomcat/apache-tomcat-7.0.65/bin/bootstrap.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#13;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;runtimeClasspathEntry externalArchive=&quot;C:/dvlt/java/servers/tomcat/apache-tomcat-7.0.65/bin/tomcat-juli.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#13;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;runtimeClasspathEntry externalArchive=&quot;C:/dvlt/java/jdk/jdk1.7.0_80/lib/tools.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#13;&#10;"/>
+</listAttribute>
+<booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
+<stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0_80"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="start"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dcatalina.base=&quot;J:\ewk\cmems-motu\.metadata\.plugins\org.eclipse.wst.server.core\tmp0&quot; -Dcatalina.home=&quot;C:\dvlt\java\servers\tomcat\apache-tomcat-7.0.65&quot; -Dwtp.deploy=&quot;J:\ewk\cmems-motu\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps&quot; -Djava.endorsed.dirs=&quot;C:\dvlt\java\servers\tomcat\apache-tomcat-7.0.65\endorsed&quot; -server -Xmx4096M -Xms512M -XX:PermSize=128M -XX:MaxPermSize=512M -Dtomcat-motu-urlrewrite-statusEnabledOnHosts=localhost,*.cls.fr -Dcas-activated=true -Dcas-auth-serverName=http://${env_var:COMPUTERNAME}.pc.cls.fr:8080 -Dcas-server-url=https://atoll-qt2.vlandata.cls.fr:8443/mis-cas -Dcas-validationFilter-proxyCallbackUrl=http://${env_var:COMPUTERNAME}.pc.cls.fr:8080/motu-web/proxyCallback -Dmotu-config-dir=&quot;${MOTU_HOME}/config&quot; -Dmotu-log-dir=&quot;${MOTU_HOME}/log&quot; -Dlog4j.configurationFile=&quot;file:///${MOTU_HOME}/config/log4j.xml&quot; -Djavax.net.ssl.trustStore=${MOTU_HOME}/config/security/cacerts-with-cas-qt-ca.jks"/>
+<stringAttribute key="server-id" value="Tomcat v7.0 Server at localhost"/>
+</launchConfiguration>

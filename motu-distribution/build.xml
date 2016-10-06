@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ANT File
+     
+     Build under /motu-distribution/target-ant/delivery/YYYYmmDDhhMMssSSS 4 folders:
+       - config : All configuration archives, plus Motu web static files
+       - motu: The products and the server distribution
+       - motu-client: The motu-client-python distribution
+       - src: The distribution source files and build procedures
+     
+     Before running the default target you have to set the properties below defined in the "init" target:
+       - products.dir
+       - products.version
+       - motu-config.dir
+       - JAVA_HOME
+	     
+	 This ANT script needs http://maven.apache.org/ant-tasks/ to be installed in order to read the POM version.
+	     
+-->
+<project name="MOTU_Delivery" default="all" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+		
+	<target name="init">
+		<property name="project.name" value="motu"></property>
+		
+		<!-- ##### External folders ##### -->
+		<property file="buildConfig.properties"/>
+		
+		<!-- ##### Init JAVA_HOME ##### -->
+		<condition property="JAVA_HOME" value="${JAVA_HOME_UNIX}">
+			<os family="unix" />
+		</condition>
+		<condition property="JAVA_HOME" value="${JAVA_HOME_WIN}">
+			<os family="windows" />
+		</condition>
+		
+		<antcall target="init-echoUserConfig" />
+		
+		<!-- ##### Init common: env var, windows/unix, timestamp ##### -->
+		<property environment="env"/>
+		
+		<condition property="isUnix" value="true">
+			<os family="unix" />
+		</condition>
+		
+		<condition property="mvn" value="mvn">
+			<os family="unix" />
+		</condition>
+		<condition property="mvn" value="mvn.cmd">
+			<os family="windows" />
+		</condition>
+		
+		<condition property="PathWithGoodJavaVersion" value="${JAVA_HOME}/bin:${env.Path}">
+			<os family="unix" />
+		</condition>
+		<condition property="PathWithGoodJavaVersion" value="${JAVA_HOME}/bin;${env.Path}">
+			<os family="windows" />
+		</condition>
+		
+		<tstamp>
+			<format property="build-timestamp" pattern="yyyyMMddHHmmssSSS" locale="en,GB" />
+		</tstamp>
+		
+		<!-- ##### Init folders ##### -->
+		<property name="maven.target.dir.name" value="target" />
+		<property name="target.dir" location="target-ant" />
+		<property name="delivery.dir" location="${target.dir}/delivery" />
+		<property name="delivery.now.dir" location="${delivery.dir}/${build-timestamp}" />
+		
+		<!-- ##### Init project version from pom file ##### -->
+		<!-- Need to build in order to get pom version, and also to be able to clean child maven projects -->
+        <antcall target="build-parent-project"> </antcall>
+		<artifact:pom id="pom" file="./pom.xml" />
+	</target>
+	
+	<target name="init-echoUserConfig">
+		<echo message=" " />
+		<echo message="=== USER CONFIGURATION ===" />
+		<echo message="products.version=${products.version}" />
+		<echo message="products.dir=${products.dir}" />
+		<echo message="motu-config.dir=${motu-config.dir}" />
+		<echo message="motu-client-python.dir=${motu-client-python.dir}" />
+		<echo message="JAVA_HOME=${JAVA_HOME}" />
+		<echo message="==========================" />
+		<echo message=" " />
+	</target>
+	
+	<!-- ###################################################
+	     ##### BUILD 
+	     ################################################### -->
+	<target name="build-config" depends="init">
+		<!-- /motu-config -->
+		<exec executable="${mvn}" failonerror="true" dir="${motu-config.dir}/motu-config">
+			<env key="JAVA_HOME" value="${JAVA_HOME}"/>
+			<env key="Path" value="${PathWithGoodJavaVersion}"/>
+			<arg line="clean install -Dmaven.test.skip=true -Dbuild-timestamp=${build-timestamp}" />
+		</exec>
+		<!-- /motu-web-static-files -->
+		<exec executable="${mvn}" failonerror="true" dir="${motu-config.dir}/motu-web-static-files">
+			<env key="JAVA_HOME" value="${JAVA_HOME}"/>
+			<env key="Path" value="${PathWithGoodJavaVersion}"/>
+			<arg line="clean install -Dmaven.test.skip=true -Dbuild-timestamp=${build-timestamp}" />
+		</exec>
+	</target>
+	
+	<target name="build-motu-client-python" depends="init">
+		<!-- /motu-config -->
+		<exec executable="${mvn}" failonerror="true" dir="${motu-client-python.dir}">
+			<env key="JAVA_HOME" value="${JAVA_HOME}"/>
+			<env key="Path" value="${PathWithGoodJavaVersion}"/>
+			<arg line="clean install -Dmaven.test.skip=true -Dbuild-timestamp=${build-timestamp}" />
+		</exec>
+	</target>
+	
+	<!-- ###################################################
+	     ##### PACKAGE 
+	     ##### Put archive in the good delivery folder with the good name
+	     ################################################### -->
+	<target name="package-init" depends="init">
+		<property name="delivery.distrib.dir" location="${delivery.now.dir}/${project.name}" />
+		<property name="delivery.config.dir" location="${delivery.now.dir}/config" />
+		<property name="delivery.src.dir" location="${delivery.now.dir}/src" />
+		<property name="delivery.motu-client.dir" location="${delivery.now.dir}/motu-client" />
+		
+		<mkdir dir="${delivery.distrib.dir}" />
+		<mkdir dir="${delivery.config.dir}" />
+		<mkdir dir="${delivery.motu-client.dir}" />
+		<mkdir dir="${delivery.src.dir}" />
+	</target>
+	
+	<target name="package-config" depends="package-init">
+		<!-- motu-config -->
+		<copy todir="${delivery.config.dir}" >
+			<fileset dir="${motu-config.dir}/motu-config/${maven.target.dir.name}" casesensitive="yes">
+			  <include name="${project.name}-config-*.tar.gz"/>
+			  <exclude name="${project.name}-config-*src.tar.gz"/>
+			</fileset>
+		</copy>
+		<copy todir="${delivery.src.dir}" >
+			<fileset dir="${motu-config.dir}/motu-config/${maven.target.dir.name}" casesensitive="yes">
+			  <include name="${project.name}-config-*src.tar.gz"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${delivery.src.dir}" >
+			<fileset dir="src/main/configuration" casesensitive="yes">
+			  <include name="Build-configuration-procedure.txt"/>
+			</fileset>
+		</copy>
+		
+		<!-- motu-web-static-files -->
+		<copy todir="${delivery.config.dir}" >
+			<fileset dir="${motu-config.dir}/motu-web-static-files/${maven.target.dir.name}" casesensitive="yes">
+			  <include name="${project.name}-web-static-files-*.tar.gz"/>
+			  <exclude name="${project.name}-web-static-files-*src.tar.gz"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${delivery.src.dir}" >
+			<fileset dir="${motu-config.dir}/motu-web-static-files/${maven.target.dir.name}" casesensitive="yes">
+			  <include name="${project.name}-web-static-files-*src.tar.gz"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="package-motu-client-python" depends="package-init">
+			<!-- motu-client-python -->
+			<copy todir="${delivery.motu-client.dir}" >
+				<fileset dir="${motu-client-python.dir}/${maven.target.dir.name}" casesensitive="yes">
+				  <include name="${project.name}-client-python-*bin.tar.gz"/>
+				</fileset>
+			</copy>
+			<copy todir="${delivery.src.dir}" >
+				<fileset dir="${motu-client-python.dir}/${maven.target.dir.name}" casesensitive="yes">
+				  <include name="${project.name}-client-python-*src.tar.gz"/>
+				</fileset>
+			</copy>
+	</target>
+	
+	<target name="package-config-all" depends="init, package-init, package-config">
+	</target>
+	
+	<target name="all-config" depends="init, build-config, package-config-all">
+	</target>
+	
+	<target name="all-motu-client-python" depends="init, build-motu-client-python, package-motu-client-python">
+	</target>
+
+	<target name="__echo-manual-package-operations">
+		<echo message="[Manual Operations]" />
+		<echo message="" />
+		<echo message="" />
+		<echo message="==>> Built with success in : ${delivery.now.dir}" />
+	</target>
+	
+	<target name="all-soft" depends="init, build-soft-all, package-soft-all">
+	</target>
+	
+	<target name="build-soft-all" depends="init, build-src, build-soft" description="Archive all sources in a tgz file and run maven on parent project">
+	</target>
+	
+	<target name="package-soft-all" depends="init, package-src, package-soft">
+	</target>
+	
+	<target name="build-src" depends="init">
+		<!-- TAR SOURCE FILES -->
+		<tar destfile="../${project.name}-${pom.version}-src.tar.gz" compression="gzip">
+		  <tarfileset dir="../">
+		  	<include name="**"/>
+		  			  		  		  	
+			<exclude name="${project.name}-${pom.version}-src.tar.gz"/>
+		  	
+		  	<exclude name="*/target/**" />
+		  	<exclude name="*/target-ant/**" />
+		  	<exclude name="*/build/**" />
+		  	<exclude name="*/gen/**" />
+		  	<exclude name="*/.svn/**" />
+		  	<exclude name="*/.git/**" />
+		  </tarfileset>
+		</tar>
+	</target>
+	
+	<target name="build-parent-project">
+		<!-- BUILD with MAVEN -->
+		<exec executable="${mvn}" dir="../${project.name}-parent" failonerror="true">
+			<env key="JAVA_HOME" value="${JAVA_HOME}"/>
+			<env key="Path" value="${PathWithGoodJavaVersion}"/>
+			<arg line="clean install -Dmaven.test.skip=true -Dbuild-timestamp=${build-timestamp}" />
+		</exec>
+	</target>
+	
+	<target name="build-soft" depends="init">
+		<antcall target="build-parent-project"></antcall>
+	</target>
+	
+	<target name="package-soft" depends="package-init, build-soft">
+		<copy todir="${delivery.distrib.dir}" >
+			<fileset dir="../${project.name}-distribution/target" casesensitive="yes">
+			  <include name="${project.name}-distribution*.tar.gz"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${delivery.distrib.dir}" >
+			<fileset dir="${products.dir}" casesensitive="yes">
+			  <include name="${project.name}-products-${products.version}.tar.gz"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="package-src" depends="package-init">
+		<copy todir="${delivery.src.dir}" >
+			<fileset dir="src/main/configuration" casesensitive="yes">
+			  <include name="Build-distribution-procedure.txt"/>
+			</fileset>
+		</copy>
+		
+		<move file="../${project.name}-${pom.version}-src.tar.gz" todir="${delivery.src.dir}"/>
+	</target>
+	
+	<target name="clean" depends="init">
+		<!-- CLEAN with MAVEN -->
+		<exec executable="${mvn}" dir="../${project.name}-parent" failonerror="true">
+			<env key="JAVA_HOME" value="${JAVA_HOME}"/>
+			<env key="Path" value="${PathWithGoodJavaVersion}"/>
+			<arg line="clean -Dmaven.test.skip=true -Dbuild-timestamp=${build-timestamp}" />
+		</exec>
+	</target>
+	
+	<target name="all" depends="clean, all-soft, all-config, all-motu-client-python, __echo-manual-package-operations">
+	</target>
+	
+</project>

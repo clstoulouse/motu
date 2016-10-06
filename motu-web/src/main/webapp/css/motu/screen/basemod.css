@@ -1,0 +1,226 @@
+/**
+ * "Yet Another Multicolumn Layout" - (X)HTML/CSS framework
+ * (en) stylesheet for screen layout
+ * (de) Stylesheet für das Bildschirm-Layout
+ *
+ * @creator       YAML Builder V1.2.1 (http://builder.yaml.de)
+ * @file          basemod.css
+ * @-yaml-minver  3.3
+ */
+
+@media screen, projection
+{
+  /** 
+   * (en) Forcing vertical scrollbars in IE8, Firefox, Webkit & Opera 
+   * (de) Erzwingen vertikaler Scrollbalken in IE8, Firefox, Webkit & Opera 
+   *
+   * @workaround
+   * @affected IE8, FF, Webkit, Opera
+   * @css-for all
+   * @valid CSS3
+   */
+
+  body { /*overflow-y: scroll;*/ }
+html, body {
+    min-height: 100%;
+    margin: 0;   
+    padding: 0;
+}
+  /*-------------------------------------------------------------------------*/
+
+  /* (en) Marginal areas & page background */
+  /* (de) Randbereiche & Seitenhintergrund */
+  body { padding: 0; }
+  
+  body { background: #FFFFFF url("images/background.png") no-repeat bottom right; }
+
+  /* Layout Alignment | Layout-Ausrichtung */
+  .page_margins { margin: 0 auto; }
+
+  /* Layout Properties | Layout-Eigenschaften */
+  .page_margins { width: 984px; background: transparent; position: relative; }
+  .page { padding: 0px; }
+  /*#header { position:relative; padding: 0; color: #000; height: 190px; }*/
+  #topnav { position:absolute; top:64px; left:222px; text-align:left; color: #fff; background: transparent; }
+  #main { margin: 10px 0; background: #FFFFFF; }
+  /*#footer { padding: 0; color:#fff; height:30px; background: #2470AE; }*/
+  #footer { width: 100%; height: 150px; background-color: #2470ae; padding-top: 1em; color: #c5d9e9;}
+  #gmes_fp7 { width: 206px; height:30px; background: #fff /*url("images/copernicus-fp7.png") no-repeat top left*/; float:left; text-align: right; }
+  #gmes_fp7 div { float: right; font-weight: bold; font-size:11px; line-height:30px; padding-right:8px; }
+  #gmes_fp7 a { color: #ffffff; text-decoration: none; }
+  #gmes_fp7 a:hover  { text-decoration:underline; }
+  #footer_content { height:30px; background: transparent /*url("images/flags.gif") no-repeat top right*/; }
+  #footer_content div { float: left; width: 225px; line-height:30px; font-size:11px; color: #fff; text-align: center; }
+  #footer_content a { color: #fff; }
+
+  #logo { width: 165px; height: 160px; position: absolute; top: 0px; left:20px; }
+  #logoPrint { display: none; }
+
+  #headerText { width: 400px; position: absolute; top: 15px; left: 232px; font-family:Arial, Helvetica, sans-serif; color: #fff; font-weight: bold; padding:0; }
+  #headerText h1 { margin:0 0 5px 0; line-height: 1em; font-size:28px; font-family:Arial, Helvetica, sans-serif; color: #fff; font-weight: bold; }
+  #headerText p { line-height: normal; font-size:11px; font-family:Arial, Helvetica, sans-serif; color: #fff; font-weight: bold; }
+
+  #aboutus { width: 175px; height:23px; 
+	position: absolute; top: 165px; left: 18px;
+	line-height: 23px;
+	text-transform: uppercase;
+	font-size:14px;
+	font-weight: bold;
+	color: #fff; 
+  }
+  #aboutus a { background: url("images/puce2.gif") no-repeat center left; padding-left: 20px; color: #fff;}
+  #aboutus a:hover, #aboutus a.current {text-decoration: none; background: url("images/puce2_b.gif") no-repeat center left; }
+
+  #topright_back {
+	background: #fff;
+	opacity : 0.4;
+	-moz-opacity : 0.4;
+	-ms-filter: "alpha(opacity=40)"; /* IE 8 */
+	filter : alpha(opacity=40); /* IE < 8 */ 
+	width: 175px; height:135px; position: absolute; top: 0px; right: 23px;
+	z-index: 100;
+  }
+  #topright {
+	width: 167px; height:121px; position: absolute; top: 10px; right: 27px;
+	z-index: 200;
+  }
+  #topright input.input { width: 115px; height: 19px; border: 1px solid #ffffff; font-size:11px; font-family:Arial, Helvetica, sans-serif; color: #000; padding-left:5px; line-height: 19px; }
+  #topright input.send { background-color: transparent; border: none; padding:0; margin:0; border: 0px none transparent; font-weight: bold; font-size:13px; font-family:Arial, Helvetica, sans-serif; color: #fff; padding-left:5px; cursor: pointer; width: 40px; text-align:left   }
+  #topright h1, #topright a { font-weight: bold; font-size:13px; font-family:Arial, Helvetica, sans-serif; color: #fff; text-transform: uppercase; margin-top: 20px; } 
+
+  #memberAccess { display: none; }
+
+  #contactus { 
+	width: 175px; height:23px; 
+	background: transparent url("images/bg_contact.gif") no-repeat top right;
+	position: absolute; top: 135px; right: 23px;
+	line-height: 23px;
+	text-transform: uppercase;
+	font-size:14px;
+	font-weight: bold;
+	color: #053879; 
+  }
+  #contactus a { background: url("images/puce1.gif") no-repeat center left; padding-left: 20px; color: #053879;}
+  #contactus a:hover {text-decoration: none; background: url("puce1_b.gif") no-repeat center left; }
+  #head_colors { position: absolute; top: 180px; left: 233px; }
+
+  #titrePage { margin-bottom: 10px; }
+
+  body #main { margin: 0; }
+  /*-------------------------------------------------------------------------*/
+
+  /**
+   * (en) Formatting content container
+   * (de) Formatierung der Inhalts-Container
+   *
+   */
+
+  #col1 { float: left; width: 100px; position: relative; z-index: 50;}
+  #col2 { display:none}
+  #col3 { width: auto; margin: 0 0 0 100px; background-color: #ffffff;}
+  #col1_content { padding: 0; }
+  #col3_content { padding: 10px 20px 0 20px; margin-right: 20px; min-height:350px; position: relative; z-index: 60;
+	background: #fff /*url("images/bottom_right_corner.gif") no-repeat bottom right*/; }
+  /* Pas de padding-right page online catalogue a cause de l'iframe qui occupe toute la largeur */
+  body.page_24  #col3_content { padding-right: 0; }
+	
+  .clear { clear: both; }
+
+  body.home .c25l, body.home .c25r { width:206px; }
+  body.home .c75l, body.home .c75r { width:778px; }
+  body.home .subcl, #topLeftMenuInner, #topLeftMenuAboutInner, #bottomLeftMenuInner { padding: 4px 0 20px 18px; }
+  body.home .subcr { padding: 4px 10px 10px 10px; }
+  body.home .subcl p { margin: 0px; }
+
+  .c25pl { float:left; }
+  .c25pr { float:right; margin-left:-5px; }
+  .c25pl, .c25pr { width:25%; padding:0; }
+  body.home .c25pl .subc, body.home .c25pr .subc  { padding:0 0.5em; }
+  body.home .c25pl .subcl, body.home .c25pr .subcl { padding:0 1em 0 0; }
+  body.home .c25pl .subcr, body.home .c25pr .subcr { padding:0 0 0 1em; }
+
+  .white_background, #white_background_inner { background: #fff; }
+  #white_background_inner { position:absolute; z-index: 0; left:0; width: 100%; height: 0px; }
+  #white_background_inner_page { background: #fff /*url("images/bg_page_back.gif") repeat-x bottom left*/; }
+  #white_background_inner_page { position:absolute; z-index: 1; left:0; width: 100%; height: 50px; }
+
+  #home_top .subcolumns, #topLeftMenuInner { background: #ffffff ; }
+  #topLeftMenuAboutInner { background: #fff url("images/bg_menu_about.gif") no-repeat bottom left; }
+  #flashHome .subcolumns { background: transparent none; }
+  #home_top .subcr { padding:0 10px 10px 27px; margin-top:0; }
+  #home_top .c25l { color: #19171c; }
+  #home_top .c75r {  margin-bottom: 9px; color: #5b545c; }
+
+  #home_bottom .c25l, #home_bottom .subcolumns, #col1_content { background: #FFFFFF; color: #fff; }
+  #home_bottom .c75r { background: #023363; color: #fff; }
+  .topLeftMenu, .topLeftMenuAbout {  /*margin-bottom: 9px;*/ }
+  .topLeftMenu { position: relative; }
+
+  #focusOn, #imgOfTheMonth {
+	width: 360px; max-width: 360px; height: 167px; max-height: 167px;
+	background: transparent /*url("images/bg_focus.gif") no-repeat top right*/;
+	float: left;
+	margin-bottom: 13px;
+	margin-left: 8px;
+	position: relative;
+  }
+  #focusOn p, #imgOfTheMonth p , #home_top div.intro p { margin: 0; line-height: 1.1em; }
+  #focusOn h1, #imgOfTheMonth h1 {
+	text-align:right;
+	margin: 7px 10px 0 0;
+  }
+  #focusOn h1, #imgOfTheMonth h1, #focusOn h1 a, #imgOfTheMonth h1 a {
+	color: #5E99CF;
+	font-weight: bold;
+	font-size:12px;
+	font-family:Arial, Helvetica, sans-serif;
+	text-transform: uppercase;
+	text-decoration: none;
+  }
+  #focusOn h2, #imgOfTheMonth h2 {
+	color: #fff;
+	font-weight: bold;
+	font-size:15px;
+	font-family:Arial, Helvetica, sans-serif;
+	text-transform: none;
+	margin: 0 3px 7px 9px;
+  }
+  #focusOn div.image img, #imgOfTheMonth div.image img {
+	max-width: 180px;
+	max-height: 110px;
+	margin: 0 9px;
+  }
+  #focusOn div.image, #imgOfTheMonth div.image {
+	float: left;
+	height: 115px;
+  }
+  #focusOn div.intro, #imgOfTheMonth div.intro {
+	font-size: 11px;
+	padding: 0 9px 0 0;
+  }  
+  #focusOn div.RSS, #imgOfTheMonth div.RSS {
+	position: absolute;
+	right: 5px;
+	bottom: 5px;
+  }
+  .topLeftMenu div.RSS {
+	position: absolute;
+	right: 30px;
+	bottom: -3px;
+  }
+  #searchresult div.rss { text-align: right; margin: 0 20px 20px 0; }
+
+
+  #col3_content .subcolumns { width: 720px; }
+  #col3_content .subcolumns .c62l { width: 420px; max-width: 410px; }
+  #col3_content .subcolumns .c62l .subcl { padding:0px 20px 0 0; text-align: justify; }
+  #col3_content .subcolumns .c38r { width: 310px; max-width: 310px; }
+  #col3_content .subcolumns .c38r .subcr { padding:4px 0 0 0; }
+  #col3_content .subcolumns .c38r .subcr img {
+	max-width: 310px;
+  }
+  
+  #searchresult .subcolumns .c38r { margin-top: -30px; }
+  
+  /*-------------------------------------------------------------------------*/
+}

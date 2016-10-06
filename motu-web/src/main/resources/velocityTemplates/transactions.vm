@@ -1,0 +1,27 @@
+## -------------------------------------------- main --------------------------------
+## logTransactionList
+## logFolder
+<div id="sitemap">
+	<h3>Transaction account log files</h3>
+	#if($logTransactionList.size() > 0)
+		<table>
+	    #foreach($log in $logTransactionList)
+			<tr>
+			  <td>
+			  #if($log.sizeInMBytes == 0)
+				$log.fileName
+			  #else
+			    <a href="Motu?action=transactions&fileName=$log.fileName">$log.fileName</a>
+			  #end
+			  </td>
+			  <td align="right">$math.roundTo(2, $log.sizeInMBytes) Mb<td>
+			  <td align="right">$log.lastModifiedDate</td>
+			</tr>
+	
+		#end
+		</table>
+	#else
+		No log file available in folder: $logFolder
+	#end
+	
+</div>

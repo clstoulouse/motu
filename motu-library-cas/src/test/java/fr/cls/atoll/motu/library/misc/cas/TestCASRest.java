@@ -51,16 +51,13 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.jasig.cas.client.util.AssertionHolder;
 import org.jasig.cas.client.validation.Assertion;
 import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.jasig.cas.client.validation.TicketValidationException;
-
-import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.cas.util.RestUtil;
-
 
 /**
  * 
@@ -70,13 +67,11 @@ import fr.cls.atoll.motu.library.cas.util.RestUtil;
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
 public class TestCASRest {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOG = Logger.getLogger(TestCASRest.class);
+    /** Logger for this class. */
+    private static final Logger LOG = LogManager.getLogger();
 
     public static final String casServerUrlPrefix = "https://atoll-dev.cls.fr:8443/cas-server-webapp-3.3.5";
-    //public static final String casServerUrlPrefix = "https://mis-cas-qt.cls.fr/cas";
+    // public static final String casServerUrlPrefix = "https://mis-cas-qt.cls.fr/cas";
 
     public static void main(String... args) throws Exception {
         System.setProperty("http.proxyHost", "proxy-bureautique.cls.fr");
@@ -86,13 +81,12 @@ public class TestCASRest {
         validateFromCAS(username, password);
         // loginToCAS(username, password);
         // getRedirectUrl();
-        
 
-        //String targetService = "http://mis-qt1.vlandata.cls.fr/atoll-is/resources/orders?_context=default";
-        //RestUtil.getRedirectUrl("http://web-qt.cls.fr/mis-gateway-servlet/Motu");
-        //RestUtil.getRedirectUrl("http://mis-qt1.vlandata.cls.fr/atoll-is/resources/metadata?_context=default");
-        //RestUtil.getRedirectUrl("http://mis-qt1.vlandata.cls.fr/atoll-is/resources/orders?_context=default");
-        //AssertionUtils.addCASTicket(targetService, "demo", "demo", null);
+        // String targetService = "http://mis-qt1.vlandata.cls.fr/atoll-is/resources/orders?_context=default";
+        // RestUtil.getRedirectUrl("http://web-qt.cls.fr/mis-gateway-servlet/Motu");
+        // RestUtil.getRedirectUrl("http://mis-qt1.vlandata.cls.fr/atoll-is/resources/metadata?_context=default");
+        // RestUtil.getRedirectUrl("http://mis-qt1.vlandata.cls.fr/atoll-is/resources/orders?_context=default");
+        // AssertionUtils.addCASTicket(targetService, "demo", "demo", null);
 
     }
 
@@ -126,10 +120,8 @@ public class TestCASRest {
             conn.disconnect();
 
         } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return redirectUrl;
@@ -327,8 +319,6 @@ public class TestCASRest {
         c.disconnect();
     }
 
- 
-
     public static Cookie[] getServiceUrlResponse(String ticket, String url) {
         // Get initial state object
         HttpState initialState = new HttpState();
@@ -359,7 +349,7 @@ public class TestCASRest {
         // String password = "xxx";
         // Credentials credentials = new UsernamePasswordCredentials(username, password);
         // AuthScope authScope = new AuthScope("proxy.cls.fr", 8080);
-        //           
+        //
         // client.getState().setProxyCredentials(authScope, credentials);
         Cookie[] cookies = null;
 
@@ -431,7 +421,6 @@ public class TestCASRest {
             System.out.println(s);
 
         } catch (UnsupportedEncodingException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         }
 
@@ -450,7 +439,7 @@ public class TestCASRest {
         // String password = "xxx";
         // Credentials credentials = new UsernamePasswordCredentials(username, password);
         // AuthScope authScope = new AuthScope("proxy.cls.fr", 8080);
-        //           
+        //
         // client.getState().setProxyCredentials(authScope, credentials);
 
         try {
@@ -521,7 +510,7 @@ public class TestCASRest {
         return assertion;
     }
 
-    //    
+    //
     // public final static void validateTicket2(String ticket, String legacyServerServiceUrl, String
     // targetService, String proxyCallbackUrl) {
     // String user = null;
@@ -551,13 +540,10 @@ public class TestCASRest {
     // try {
     // pv.validate();
     // } catch (IOException e) {
-    // // TODO Auto-generated catch block
     // e.printStackTrace();
     // } catch (SAXException e) {
-    // // TODO Auto-generated catch block
     // e.printStackTrace();
     // } catch (ParserConfigurationException e) {
-    // // TODO Auto-generated catch block
     // e.printStackTrace();
     // }
     //
@@ -584,14 +570,13 @@ public class TestCASRest {
     //
     // //String urlOfTargetService = "http://hkg2.its.yale.edu/someApp/portalFeed";
     // String urlOfTargetService = targetService;
-    //        
+    //
     //
     // try {
     // String proxyTicket =
     // edu.yale.its.tp.cas.proxy.ProxyTicketReceptor.getProxyTicket(
     // pv.getPgtIou(),urlOfTargetService);
     // } catch (IOException e) {
-    // // TODO Auto-generated catch block
     // e.printStackTrace();
     // } }
 
@@ -663,5 +648,4 @@ public class TestCASRest {
 
     }
 
- 
 }

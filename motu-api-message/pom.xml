@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>cls.atoll.motu</groupId>
+		<groupId>cls.motu</groupId>
 		<artifactId>motu-parent</artifactId>
 		<version>3.0.0-SNAPSHOT</version>
         <relativePath>../motu-parent</relativePath>
@@ -11,5 +11,23 @@
 	<artifactId>motu-api-message</artifactId>
     <name>Motu Api Message</name>
     <description>This package holds the messages exchanged by the published services.</description>
-	
+    
+    <!-- Add for the JAXB generation (cf : /motu-api-message/src/main/schema/build.xml) -->
+    <dependencies>
+		<dependency>
+		    <groupId>org.jvnet.jaxb2_commons</groupId>
+		    <artifactId>jaxb2-basics-ant</artifactId>
+		    <version>0.6.1</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.jvnet.jaxb2_commons</groupId>
+    		<artifactId>jaxb2-basics</artifactId>
+    		<version>0.6.1</version>
+		</dependency>
+		<dependency>
+    		<groupId>commons-beanutils</groupId>
+    		<artifactId>commons-beanutils</artifactId>
+    		<version>1.8.3</version>
+		</dependency>
+	</dependencies>
 </project>

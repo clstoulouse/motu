@@ -1,0 +1,3 @@
+## Template used to manage server Exception, @See /motu-web/src/main/java/fr/cls/atoll/motu/web/usl/request/USLRequestManager.java#writeErrorMessage
+
+$message

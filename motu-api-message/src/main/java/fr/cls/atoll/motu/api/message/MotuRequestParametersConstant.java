@@ -60,9 +60,9 @@ public interface MotuRequestParametersConstant {
     /** Action servlet parameter value to list catalog. */
     final String ACTION_LIST_SERVICES = "listservices";
 
-    /** Action servlet parameter value just to ping the servlet. */
+    /** Action servlet parameter value to list catalog. */
     final String ACTION_PING = "ping";
-    
+
     /** Action servlet parameter value to logout from Motu (invalidate cookie). */
     final String ACTION_LOGOUT = "logout";
 
@@ -89,7 +89,7 @@ public interface MotuRequestParametersConstant {
 
     /** Data parameter name. */
     final String PARAM_DATA = "data";
-    
+
     /** The PARA m_ dat a_ format. */
     final String PARAM_DATA_FORMAT = "dataformat";
 
@@ -98,6 +98,9 @@ public interface MotuRequestParametersConstant {
 
     /** The PARAM output. */
     final String PARAM_OUTPUT = "output";
+
+    /** The PARAM script version. */
+    final String PARAM_SCRIPT_VERSION = "scriptVersion";
 
     /** The PARA m_ ca s_ res t_ suffi x_ url. */
     final String PARAM_CAS_REST_SUFFIX_URL = "cas_rest_suff_url";
@@ -113,8 +116,13 @@ public interface MotuRequestParametersConstant {
      * {@link #ACTION_DESCRIBE_COVERAGE} action.
      */
     final String PARAM_DATASET_ID = "datasetID";
-    
+
     final String PARAM_CATALOG_TYPE = "catalogtype";
+
+    final String PARAM_CATALOG_TYPE_OPENDAP = "opendap";
+    final String PARAM_CATALOG_TYPE_TDS = "tds";
+    final String PARAM_CATALOG_TYPE_FTP = "ftp";
+    final String PARAM_CATALOG_TYPE_FILE = "file";
 
     /** End date servlet paremeter name. */
     final String PARAM_END_DATE = "t_hi";
@@ -184,7 +192,7 @@ public interface MotuRequestParametersConstant {
 
     /** Service servlet parameter name. */
     final String PARAM_SERVICE = "service";
-    
+
     /**
      * Service servlet parameter id. This is an alias of {@link #PARAM_SERVICE} for the
      * {@link #ACTION_DESCRIBE_COVERAGE} action.
@@ -202,5 +210,12 @@ public interface MotuRequestParametersConstant {
 
     /** The PARA m_ extr a_ metadata. */
     final String PARAM_EXTRA_METADATA = "extraMetadata";
+
+    /** The order of section into debug page */
+    final String PARAM_DEBUG_ORDER = "order";
+
+    final String PARAM_HTTP_ERROR_CODE = "code";
+
+    final String PARAM_FILE_NAME = "fileName";
 
 }

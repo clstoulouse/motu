@@ -75,7 +75,6 @@ public class DecimalMeasureAdapter extends XmlAdapter<String, DecimalMeasure<?>>
             return DecimalMeasure.valueOf(s);
         } catch (IllegalArgumentException e) {
             LOGGER.warn("Failed to parse measure from " + s, e);
-            // TODO how to handle this.
             return null;
         }
     }

@@ -1,0 +1,96 @@
+@media all
+{
+  .hlist {
+    /* (en) This image is mainly transparent */
+    float:left;
+    width:100%;
+  }
+
+  .hlist ul {
+    margin:0;
+    padding:0;
+    line-height:20px;
+    list-style:none;
+    white-space:nowrap;
+  }
+
+  .hlist li {
+    list-style-type:none !important;
+    border-bottom:none;
+    float:left; /* LTR */
+    margin:0;
+    padding:0 0 10px 3px;
+  }
+
+  .hlist a,
+  .hlist strong {
+    display:block;
+    padding:0px 0px 0px 0px;
+    text-decoration:none;
+    text-transform:none;
+
+    /**
+     * @bugfix
+     * @affected   IE5.x, IE6
+     * @css-for    all browsers
+     * @valid      yes
+     */
+    width:auto; /* only IE 5.x */
+    width/**/:/**/ .1em; /* only IE 6.0 */
+  }
+
+  .hlist a:link,
+  .hlist a:visited {  }
+
+  /**
+   * @bugfix
+   * @affected   IE5.x, IE6
+   * @css-for    all browsers
+   * @valid      yes
+   */
+  .hlist > ul a,
+  .hlist > ul strong { width:auto; }  /* for other browsers */
+
+  
+  .hlist ul li:focus,
+  .hlist ul li:hover,
+  .hlist ul li:active {
+
+  }
+
+  .hlist a:focus,
+  .hlist a:hover,
+  .hlist a:active {
+    outline: 0 none;
+    text-decoration:none;
+  }
+
+  .hlist ul li.CMS_current,
+  .hlist ul li.CMS_current:focus,
+  .hlist ul li.CMS_current:hover,
+  .hlist ul li.CMS_current:active {
+    /* (en) Repeat the main color from the image */
+    border:0 none;
+  }
+
+  .hlist li.CMS_current a,
+  .hlist li.CMS_current a:focus,
+  .hlist li.CMS_current a:hover,
+  .hlist li.CMS_current a:active {
+
+  }
+
+
+  .hlist li.CMS_current strong {
+    padding-bottom:4px;
+    padding-top:5px;
+  }
+
+  /*.hlist li div:focus, .hlist li div:hover , .hlist li div:active, */
+  .hlist li.CMS_current div {
+	height: 27px;
+  }
+
+
+
+}
