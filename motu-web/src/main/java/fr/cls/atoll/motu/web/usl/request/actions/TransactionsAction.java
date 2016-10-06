@@ -39,11 +39,6 @@ import fr.cls.atoll.motu.web.usl.response.velocity.model.transaction.LogTransact
  * Société : CLS (Collecte Localisation Satellites)<br>
  * <br>
  * <br>
- * This interface is used to display the version of the Motu entities.<br>
- * Operation invocation consists in performing an HTTP GET request.<br>
- * There is no input parameter<br>
- * The output response is a simple HTML web page.<br>
- * <br>
  * 
  * @author Sylvain MARTY
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $

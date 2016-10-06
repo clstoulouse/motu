@@ -1411,7 +1411,6 @@ The Action Code		=>	A number matching the HTTP request with the action parameter
 015		=>	DESCRIBE\_COVERAGE\_ACTION         
 016		=>	ABOUT\_ACTION  
 017		=>	WELCOME\_ACTION  
-018		=>	TRANSACTIONS\_ACTION  
 
 ### <a name="LogCodeErrorsErrorType">Error types</a>  
 
@@ -1487,8 +1486,7 @@ __Summary of all actions:__
    * [List catalog](#ClientAPI_ListCatalog)  
    * [List services](#ClientAPI_ListServices)  
    * [Product download home](#ClientAPI_ProductDownloadHome)  
-   * [Product medatata](#ClientAPI_ProductMetadata)  
-   * [Transaction log files](#ClientAPI_TransactionLogFiles)  
+   * [Product medatata](#ClientAPI_ProductMetadata)    
    * [Welcome](#ClientAPI_welcome)  
 * Plain Text 
    * [Ping](#ClientAPI_Ping)  
@@ -1798,21 +1796,6 @@ __Return__: A JSON document
 ```  
 {"timestamp":1474638852,"status":200,"request":{"type":"version"},"value":{"protocol":"7.2","config":{"agentId":"10.1.20.198-18043-2df3a4-servlet","agentType":"servlet"},"agent":"1.3.3","info":{"product":"tomcat","vendor":"Apache","version":"7.0.69"}}}
 ```  
-
-
-### <a name="ClientAPI_TransactionLogFiles">Transaction log files</a>  
-HTML page which gives access to several web pages, in particular the Motu listservices web page.
-
-__URL__:  
-* http://localhost:8080/motu-web/Motu?action=transactions  
-* http://localhost:8080/motu-web/Motu?action=transactions&fileName=motuQSlog.xml  
-
-__Parameters__: No parameter
-  
-* __fileName__ [0,1]: The log file name to download  
-
-__Return__: If parameter fileName is not set, an HTML web page which lists all log files available on the server.  
-If parameter is set, return the file content with an XML or CSV text content type or an HTML error page is file does not exist.
 
 
 
