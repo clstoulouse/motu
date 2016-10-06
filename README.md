@@ -988,9 +988,11 @@ __cas-activated__=false
    # Cas server configuration to allow Motu to access it  
    # @see https://wiki.jasig.org/display/casc/configuring+the+jasig+cas+client+for+java+in+the+web.xml  
      
-   # The Cas server URL  
+   # The  start of the CAS server URL, i.e. https://cas-cis.cls.fr/cas 
 __cas-server-url__=https://cas-cis.cls.fr/cas  
    # The Motu HTTP server url: example: http://misgw-ddo-qt.cls.fr:9080 or http://motu.cls.fr   
+   # If you use a frontal HTTP server, it is important to known that this URL will be called once used will be login on CAS server
+   # In this case, set the Apache HTTPd server. The value will be http://$apacheHTTPdServer/motu-web/Motu So in Apache HTTPd you have to redirect this URL to the Motu Web server
 __cas-auth-serverName__=http://$motuServerIp:$motuServerPort  
    # The proxy callback HTTP URL on the Motu server (this URL can be defined on the frontal Apache HTTPs server)  
 __cas-validationFilter-proxyCallbackUrl__=http://$motuServerIp:$motuServerPort/motu-web/proxyCallback  

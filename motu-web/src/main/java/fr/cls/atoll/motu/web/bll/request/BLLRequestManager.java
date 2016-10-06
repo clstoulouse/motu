@@ -352,6 +352,7 @@ public class BLLRequestManager implements IBLLRequestManager {
     private void checkFreeSpace(double fileSize) throws MotuException {
         File extractionDirectory = new File(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath());
         if (!extractionDirectory.exists()) {
+            LOGGER.error("The extraction folder does not exists: " + extractionDirectory.exists());
             throw new MotuException(ErrorType.SYSTEM, "The extraction folder does not exists: " + extractionDirectory.exists());
         } else {
             if (UnitUtils.toMegaBytes(extractionDirectory.getFreeSpace()) <= fileSize) {
