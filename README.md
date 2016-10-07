@@ -62,7 +62,7 @@ Motu is a robust web server allowing the distribution of met/ocean gridded data 
 Subsetter allows user to extract the data of a dataset, with geospatial, temporal and variable criterias. 
 Thus, user download only the data of interest.  
 A graphic web interface and machine to machine interfaces allow to access data and information on data (metadata).
-The machine-to-machine interface can be used through a client written in python, freely available here https://sourceforge.net/projects/cls-motu/files/client/motu-client-python/.
+The machine-to-machine interface can be used through a client written in python, freely available here https://github.com/clstoulouse/motu-client-python.
 Output data files format can be netCDF3 or netCDF4.  
 An important characteristic of Motu is its robustness: in order to be able to answer many users without crashing, Motu manages its incoming requests in a queue server.  
 The aim is to obtain complete control over the requests processing by balancing the processing load according to criteria (volume of data to extract, number of requests to fulfill 
