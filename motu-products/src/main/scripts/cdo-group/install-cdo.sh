@@ -95,14 +95,19 @@ cd $CDO_FOLDER_NAME
 ./configure --with-hdf5=$HDF_INSTALL_PATH --with-netcdf=$NETCDF_INSTALL_PATH --prefix=$CDO_HOME_PATH
 compileAndInstall "CDO" false
 
+# Set execution rights 
+echo "Add execution rights to cdo.sh and merge.sh"
+chmod a+x $CDO_GROUP_FOLDER_ABSPATH/cdo.sh
+chmod a+x $CDO_GROUP_FOLDER_ABSPATH/merge.sh
+
 echo 
 echo "##########################################################"
-echo "END OF INSTALLATION"
 echo " - ZLIB: $ZLIB_HOME_PATH"
 echo " - HDF:  $HDF_HOME_PATH"
 echo " - CDO:  $CDO_HOME_PATH"
-echo "#######"
-$CDO_HOME_PATH/bin/cdo --version
+echo "END OF CDO INSTALLATION"
+echo "##########################################################"
+$CDO_GROUP_FOLDER_ABSPATH/cdo.sh --version 2>&1
 echo
 
 
