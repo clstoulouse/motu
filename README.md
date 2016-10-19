@@ -20,6 +20,9 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
      * [Server interfaces](#ArchitectureInterfacesServer)  
      * [External interfaces with other systems or tools](#ArchitectureInterfacesExternal)  
   * [Design](#ArchitectureDesign)
+  * [Design details](#ArchitectureDesignD)  
+     * [Motu-web project](#ArchitectureDesignDMW)
+     * [Other projects](#ArchitectureDesignDOthers)	 
 * [Development](#Development)
   * [Development environment](#DEV)
   * [Compilation](#COMPILATION)
@@ -69,7 +72,7 @@ The aim is to obtain complete control over the requests processing by balancing 
 for a user at a given time, number of requests to process simultaneously).  
 Moreover, Motu implements a request size threshold. Motu masters the amount of data to extract per request by computing, without any data processing, the result data size of the request.  
 Beyond the allowed threshold, every request is rejected. The threshold is set in the configuration file.
-Motu can be secured behing an authentication server and thus implements authorization. A CAS server can implement the authentication. 
+Motu can be secured behind an authentication server and thus implements authorization. A CAS server can implement the authentication. 
 Motu receives with authentication process user information, including a user profile associated with the account. 
 Motu is configured to authorize or not the user to access the dataset or group of datasets which user is trying to access.  
 For administrators, Motu allows to monitor the usage of the server: the logs produced by Motu allow to know who (login) requests what (dataset) and when, with extraction criterias.
@@ -80,16 +83,18 @@ For administrators, Motu allows to monitor the usage of the server: the logs pro
 # <a name="Architecture">Architecture</a>  
 Motu is a Java Web Application running inside the Apache Tomcat application server.
 
+![Software architecture](./motu-parent/src/doc/softwareArchitecture.png "Motu software architecture")
+
 # <a name="ArchitectureInterfaces">Interfaces</a>  
 ## <a name="ArchitectureInterfacesServer">Server interfaces</a>  
 All ports are defined in [motu.properties](#ConfigurationSystem) configuration file.
 
-* __HTTP__: Used to manage HTTP incoming requests
-* __HTTPs__: Used to manage HTTPs incoming requests
+* __HTTP__: Apache tomcat manages incoming requests with HTTP protocol.
+* __HTTPs__: Used to manage HTTPs incoming requests. This is delegated to Apache HTTPd frontal web server. Apache Tomcat is not intended to be used with HTTPs.
 * __AJP__: Used to communicate with an Apache HTTPd frontal server
+* __Socket for Shutdown__: Port opened by Tomcat to shutdown the server
 * __JMX__: Used to monitor the application
 * __Debug__: In development mode, used to remotely debug the application
-* __Socket for Shutdown__: Port opened by Tomcat to shutdown the server
   
 ## <a name="ArchitectureInterfacesExternal">External interfaces with other systems or tools</a>  
 Motu has interfaces with other systems:  
@@ -105,7 +110,7 @@ Motu has interfaces with other systems:
 The Motu application has been designed by implementing the Three-Layered Services Application design. It takes many advantages in maintenance cost efficiency and in the ease of its future evolutivity.  
 Three layers are set in the core "motu-web" project:  
 
-* __USL__: User Service Layer: This layer manages all incoming actions throught HTTP request
+* __USL__: User Service Layer: This layer manages all incoming actions through HTTP request
 * __BLL__: Business Logic Layer: This layer manages all Motu business
 * __DAL__: Data Access Layer: This layer manages all access to Motu external interfaces: DGF, Unidata server, CDO, ...
 
@@ -113,6 +118,57 @@ Each layer is an entry point of the application designed with a singleton. These
 High level managers handle for example the configuration, the request, the catalog, the users.
 
 A common package is also defined to provide utilities: log4j custom format, XML, String ...
+
+# <a name="ArchitectureDesignD">Design details</a>  
+The main project is "motu-web". This project is divided in three main layers detailed below:  
+
+## <a name="ArchitectureDesignDMW">Motu-web project</a> 
+### <a name="ArchitectureDesignDLayers">Layers</a> 
+#### <a name="ArchitectureDesignDUSL">USL</a>  
+* __usl/servlet/context/MotuWebEngineContextListener.java__: Apache tomcat ServletContextListener used to init and stop the application.  
+* __usl/request__: All requests are managed with the "motu/web/servlet/MotuServlet.java" by following a command pattern. "action" HTTP parameter match the "usl/request/actions" classes.  
+* __usl/response__: XML and [Apache velocity](https://velocity.apache.org/) data model.  
+
+#### <a name="ArchitectureDesignDBLL">BLL</a>  
+* __bll/cache__: Contains the describe product cache manager.  
+* __bll/catalog__: Catalog and Product managers.  
+* __bll/config__: Configuration and version manager.  
+* __bll/exception__: Business exceptions. MotuException is a generic one. MotuExceptionBase defines all other business exceptions.
+* __bll/messageserror__: Message error manager
+* __bll/request__: The queue server used to download requests
+* __bll/users__: User manager
+
+#### <a name="ArchitectureDesignDDAL">DAL</a>    
+* __dal/catalog__: OpenDap, TDS or FILE catalog access.  
+* __dal/config__: Configuration (/motu-web/src/main/resources/schema/MotuConfig.xsd) and version manager (configuration, distribution, products).  
+* __dal/messageserror__: Manage messages for a specific error (/motu-web/src/main/resources/MessagesError.properties).
+* __dal/request__: NCSS, OpenDAP and CDO
+* __dal/tds__: NCSS and OpenDap datamodel
+* __dal/users__: User manager
+
+### <a name="ArchitectureDesignDDynamics">Daemon threads</a> 
+"motu-web" project starts daemon threads for:  
+
+* __bll/cache__: Describe project cache
+* __bll/request/cleaner__: Clean files and Java map cache data
+* __bll/request/queueserver__: Contains a thread pool executor to treat download requests
+* __dal/request/cdo__: A queue server used to manage requests using CDO tool to avoid using too much RAM
+
+
+
+
+## <a name="ArchitectureDesignDOthers">Other projects</a>
+* __motu-api-message__: JAXB API: All errors types, status mode, ... /motu-api-message/src/main/schema/XmlMessageModel.xsd  
+* __motu-api-rest__: @Deprecated. Not used since Motu v3.
+* __motu-distribution__: Deployment tools (ant script, install folder structure, ...)
+* __motu-library-cas__: Used to manage JAVA HTTP client with CAS server.
+* __motu-library-converter__: JodaTime, ...
+* __motu-library-inventory__: Used for DGF access. JAXBmodels are /motu-library-inventory/src/main/resources/fr/cls/atoll/motu/library/inventory/Inventory.xsd and CatalogOLA.xsd
+* __motu-parent__: Maven parent, eclipse launchers, documentation
+* __motu-poducts__: Source code and scripts used to build archive motu-products.tar.gz (JDK, Apache tomcat, CDO tools)
+* __motu-scripts__: ./motu bash script
+* __motu-web__: Main Motu project. See [Motu-web project](#ArchitectureDesignDMW) for details.
+
 
 # <a name="Development">Development</a>  
 
@@ -1740,7 +1796,7 @@ Example:
 ```  
 
 ### <a name="ClientAPI_ListCatalog">List catalog</a>    
-Get the size of a download request.  
+Display information about a catalog (last update timestamp) and display link to access to download page and dataset metadata.
 
 __URL__: http://localhost:8080/motu-web/Motu?action=listcatalog&service=HR_MOD-TDS  
 
