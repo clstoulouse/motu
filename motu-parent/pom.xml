@@ -481,18 +481,12 @@
 				<artifactId>motu-api-message</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>cls.motu</groupId>
-				<artifactId>motu-api-rest</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-
+			
 		</dependencies>
 	</dependencyManagement>
 
 	<modules>
 		<module>../motu-api-message</module>
-		<module>../motu-api-rest</module>
 
 		<module>../motu-library-converter</module>
 		<module>../motu-library-cas</module>
