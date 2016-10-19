@@ -1,23 +1,25 @@
 #!/bin/sh
 #
-# Parameters:
-# $1=> the file to generate
-# $2=> the first latitude of the output file
-# $3=> the distance between the first latitude and the last latitude of the output file
-# $4=>the First file to merge
-# $5=> the secund file to merge
-# $6=> the third file to merge if needed
+# @Param
+# $1 Output absolute file path to generate. It is the result of the merge operation (Example: /opt/cmems-cis-validation/motu/data/public/download/HR_MOD.nc)
+# $2 First longitude of the output file (Example: 110.0)
+# $3 Distance between the first longitude and the last longitude of the output file (Example: 110)
+# $4 First absolute file path to merge
+# $5 Second absolute file path to merge
+# $6 Optional: Third absolute file path to merge if needed
 
 cd "$(dirname "$0")"
 CUR_DIR=$(pwd)
 
-INPUT_GRID_FILE="Griddes.txt"
-TARGET_GRID_FILE="targetGrid"
+
 OUTPUT_FILE=$1
+TARGET_GRID_FILE=$OUTPUT_FILE"_targetGrid"
 START_POINT=$2
 LENGTH=$3
 FILE1=$4
+INPUT_GRID_FILE1=$FILE1"_Griddes.txt"
 FILE2=$5
+INPUT_GRID_FILE2=$FILE2"_Griddes.txt"
 
 checkCommand(){
    if [ $1 -ne 0 ]; then
@@ -30,7 +32,7 @@ if [ $# -eq 6 ]; then
 fi
 
 #Generate the squeletum grid
-${CUR_DIR}/cdo.sh griddes $FILE1 > $INPUT_GRID_FILE
+${CUR_DIR}/cdo.sh griddes $FILE1 > $INPUT_GRID_FILE1
 checkCommand $? $?
 
 #Read the squeletum grid file
@@ -68,7 +70,7 @@ do
 	if [ $field = "yunits" ]; then
 		yunits=$(echo $line | cut -d '=' -f2 | cut -d ' ' -f2)
 	fi
-done < $INPUT_GRID_FILE
+done < $INPUT_GRID_FILE1
 
 #Compute the data to expense the grid and create the super grid
 echo "The xinc value : "$xinc
@@ -81,28 +83,30 @@ echo "The grid size value : "$(($xsize*$ysize))
 
 #Generate the super grid used to merge the files.
 echo "" > $TARGET_GRID_FILE
-echo "gridtype  = lonlat" >> $TARGET_GRID_FILE
+echo "gridtype  = lonlat"             >> $TARGET_GRID_FILE
 echo "gridsize  = $(($xsize*$ysize))" >> $TARGET_GRID_FILE
-echo "xname     = $xname" >> $TARGET_GRID_FILE
-echo "xlongname = $xlongname" >> $TARGET_GRID_FILE
-echo "xunits    = $xunits" >> $TARGET_GRID_FILE
-echo "yname     = $yname" >> $TARGET_GRID_FILE
-echo "ylongname = $ylongname" >> $TARGET_GRID_FILE
-echo "yunits    = $yunits" >> $TARGET_GRID_FILE
-echo "xsize     = $xsize" >> $TARGET_GRID_FILE
-echo "ysize     = $ysize" >> $TARGET_GRID_FILE
-echo "xfirst    = $START_POINT" >> $TARGET_GRID_FILE
-echo "xinc      = $xinc" >> $TARGET_GRID_FILE
-echo "yfirst    = $yfirst" >> $TARGET_GRID_FILE
-echo "yinc      = $yinc" >> $TARGET_GRID_FILE
+echo "xname     = $xname"             >> $TARGET_GRID_FILE
+echo "xlongname = $xlongname"         >> $TARGET_GRID_FILE
+echo "xunits    = $xunits"            >> $TARGET_GRID_FILE
+echo "yname     = $yname"             >> $TARGET_GRID_FILE
+echo "ylongname = $ylongname"         >> $TARGET_GRID_FILE
+echo "yunits    = $yunits"            >> $TARGET_GRID_FILE
+echo "xsize     = $xsize"             >> $TARGET_GRID_FILE
+echo "ysize     = $ysize"             >> $TARGET_GRID_FILE
+echo "xfirst    = $START_POINT"       >> $TARGET_GRID_FILE
+echo "xinc      = $xinc"              >> $TARGET_GRID_FILE
+echo "yfirst    = $yfirst"            >> $TARGET_GRID_FILE
+echo "yinc      = $yinc"              >> $TARGET_GRID_FILE
 
-#remap the files with the new grid
+#remap the files with the new grid ($TARGET_GRID_FILE)
 echo $FILE1
-${CUR_DIR}/cdo.sh remapbil,targetGrid $FILE1 $FILE1"_Global"
+${CUR_DIR}/cdo.sh remapbil,$TARGET_GRID_FILE -setgrid,$INPUT_GRID_FILE1 $FILE1 $FILE1"_Global"
 checkCommand $? $?
 
 echo $FILE2
-${CUR_DIR}/cdo.sh remapbil,targetGrid $FILE2 $FILE2"_Global"
+${CUR_DIR}/cdo.sh griddes $FILE2 > $INPUT_GRID_FILE2
+checkCommand $? $?
+${CUR_DIR}/cdo.sh remapbil,$TARGET_GRID_FILE -setgrid,$INPUT_GRID_FILE2 $FILE2 $FILE2"_Global"
 checkCommand $? $?
 
 #Merge the 2 first files
@@ -115,7 +119,7 @@ rm -f $FILE2"_Global"
 if [ $# -eq 6 ]; then
 	echo $FILE3
 	mv $OUTPUT_FILE $OUTPUT_FILE"_aux"
-	${CUR_DIR}/cdo.sh remapbil,targetGrid $FILE3 $FILE3"_Global"
+	${CUR_DIR}/cdo.sh remapbil,$TARGET_GRID_FILE $FILE3 $FILE3"_Global"
 	checkCommand $? $?
 	${CUR_DIR}/cdo.sh mergegrid $FILE3"_Global" $OUTPUT_FILE"_aux" $OUTPUT_FILE
 	checkCommand $? $?
@@ -123,3 +127,5 @@ if [ $# -eq 6 ]; then
 	rm -f $OUTPUT_FILE"_aux"
 fi
 
+rm $INPUT_GRID_FILE1
+rm $INPUT_GRID_FILE2
