@@ -25,7 +25,6 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
-import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
@@ -182,7 +181,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
             CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
             if (cd != null) {
                 String productId = productHTTPParameterValidator.getParameterValueValidated();
-                Product p = cd.getProducts().get(productId);
+                Product p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(productId);
                 if (checkProduct(p, productId)) {
                     downloadProduct(mc, cs, cd, productId, p);
                 }
@@ -209,13 +208,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      * @throws MotuException
      */
     private void downloadProduct(MotuConfig mc, ConfigService cs, CatalogData cd, String productId, Product p) throws MotuException {
-        ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
-                .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(p), productId, p.getLocationData());
-
-        if (pmd != null) {
-            p.setProductMetaData(pmd);
-        }
-
         String mode = modeHTTPParameterValidator.getParameterValueValidated();
 
         if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_STATUS)) {

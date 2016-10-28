@@ -10,7 +10,7 @@
 #     gcc, gcc-c++ and m4 libraries have to be installed on the system.
 #
 #     First set the version variable:
-MOTU_PRODUCTS_VERSION=3.0
+MOTU_PRODUCTS_VERSION=3.0.01
 #     Then run this file as a shell script to build this archive: ./README
 #     WARN: You need an Internet Access to download products. So optionally, set your proxy parameters:
 #         vi ~/.wgetrc
@@ -52,20 +52,20 @@ fi
 
 echo
 echo "### Download Oracle JDK"
-wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-linux-x64.tar.gz
-
-while [ ! -f jdk-7u79-linux-x64.tar.gz ]; do
+wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-linux-x64.tar.gz
+JDKArchiveFileName=jdk-8u102-linux-x64.tar.gz
+while [ ! -f $JDKArchiveFileName ]; do
   echo
-  echo "ERROR jdk-7u79-linux-x64.tar.gz cannot be downloaded, or is not present in $PWD"
-  echo "  Download it manually from http://www.oracle.com/technetwork/es/java/javase/downloads/jdk7-downloads-1880260.html"
-  echo "  Select: Java SE Development Kit 7u79, Linux x64, tar.gz"
-  echo "  Move jdk-7u79-linux-x64.tar.gz to $PWD"
+  echo "ERROR $JDKArchiveFileName cannot be downloaded, or is not present in $PWD"
+  echo "  Download it manually from http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html"
+  echo "  Select: Java SE Development Kit 8u102, Linux x64, tar.gz"
+  echo "  Move $JDKArchiveFileName to $PWD"
   echo
   echo Tape ENTER to continue
   read nothing 
 done
-tar xzf jdk-7u79-linux-x64.tar.gz
-rm jdk-7u79-linux-x64.tar.gz
+tar xzf $JDKArchiveFileName
+rm $JDKArchiveFileName
 
 
 echo
@@ -126,7 +126,7 @@ fi
 
 
 echo
-echo "### Create version file"
+echo "### Create version file: $MOTU_PRODUCTS_VERSION"
 cd $PRODUCT_INSTALL_DIR/motu/products
 echo $MOTU_PRODUCTS_VERSION > version-products.txt 
 
@@ -138,7 +138,7 @@ cp README motu/products/
 
 
 echo
-echo "### Create motu-products-$MOTU_PRODUCTS_VERSION.tar.gz"
+echo "### Create archive motu-products-$MOTU_PRODUCTS_VERSION.tar.gz"
 tar pczf motu-products-$MOTU_PRODUCTS_VERSION.tar.gz motu
 rm -rf motu
 

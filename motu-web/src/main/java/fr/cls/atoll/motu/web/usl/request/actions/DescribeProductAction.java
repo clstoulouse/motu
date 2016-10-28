@@ -16,6 +16,7 @@ import fr.cls.atoll.motu.api.message.xml.ProductMetadataInfo;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.catalog.product.IBLLProductManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
@@ -23,6 +24,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.AbstractHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ExtraMetaDataHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.XMLFileHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.response.xml.converter.ProductMetadataInfoConverter;
 import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
 
 /**
@@ -106,16 +108,19 @@ public class DescribeProductAction extends AbstractProductInfoAction {
     protected void process() throws MotuException {
         String hasProductIdentifierErrMsg = hasProductIdentifier();
         if (hasProductIdentifierErrMsg == null) {
-            ProductMetadataInfo pmdi = null;
             try {
                 String httpParameterProductId = getProductId();
                 Product currentProduct = getProduct();
                 if (checkProduct(currentProduct, httpParameterProductId)) {
-                    pmdi = BLLManager.getInstance().getDescribeProductCacheManager().getDescribeProduct(currentProduct.getProductId());
-                    if (checkProductMetaDataInfo(pmdi, httpParameterProductId)) {
-                        getResponse().setContentType(CONTENT_TYPE_XML);
-                        String response = XMLConverter.toXMLString(pmdi);
-                        getResponse().getWriter().write(response);
+                    try {
+                        ProductMetadataInfo pmdi = ProductMetadataInfoConverter.getProductMetadataInfo(currentProduct);
+                        if (checkProductMetaDataInfo(pmdi, httpParameterProductId)) {
+                            getResponse().setContentType(CONTENT_TYPE_XML);
+                            String response = XMLConverter.toXMLString(pmdi);
+                            getResponse().getWriter().write(response);
+                        }
+                    } catch (MotuExceptionBase e) {
+                        throw new MotuException(ErrorType.SYSTEM, e);
                     }
                 }
             } catch (IOException e) {

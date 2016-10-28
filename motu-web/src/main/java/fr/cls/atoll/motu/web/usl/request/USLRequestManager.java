@@ -257,6 +257,7 @@ public class USLRequestManager implements IUSLRequestManager {
         isAActionWhichNeedASession |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_LIST_PRODUCT_METADATA);
         isAActionWhichNeedASession |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_PRODUCT_DOWNLOADHOME);
         isAActionWhichNeedASession |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_PRODUCT_DOWNLOAD);
+        isAActionWhichNeedASession |= action.equalsIgnoreCase(MotuRequestParametersConstant.ACTION_LOGOUT);
 
         return isAActionWhichNeedASession && StringUtils.isNullOrEmpty(mode);
     }

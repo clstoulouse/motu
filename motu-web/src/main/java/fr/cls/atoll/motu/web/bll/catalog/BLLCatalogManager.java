@@ -2,6 +2,8 @@ package fr.cls.atoll.motu.web.bll.catalog;
 
 import fr.cls.atoll.motu.web.bll.catalog.product.BLLProductManager;
 import fr.cls.atoll.motu.web.bll.catalog.product.IBLLProductManager;
+import fr.cls.atoll.motu.web.bll.catalog.product.cache.IProductCacheManager;
+import fr.cls.atoll.motu.web.bll.catalog.product.cache.ProductCacheManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
@@ -21,9 +23,11 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 public class BLLCatalogManager implements IBLLCatalogManager {
 
     private IBLLProductManager bllProductManager;
+    private IProductCacheManager productCacheManager;
 
     public BLLCatalogManager() {
         bllProductManager = new BLLProductManager();
+        productCacheManager = new ProductCacheManager();
     }
 
     /**
@@ -45,7 +49,13 @@ public class BLLCatalogManager implements IBLLCatalogManager {
     /** {@inheritDoc} */
     @Override
     public void init() throws MotuException {
-        // noop
+        productCacheManager.init();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void stop() {
+        productCacheManager.stop();
     }
 
     @Override
@@ -56,6 +66,11 @@ public class BLLCatalogManager implements IBLLCatalogManager {
     @Override
     public String getCatalogType(ConfigService service) throws MotuException {
         return DALManager.getInstance().getCatalogManager().getCatalogType(service);
+    }
+
+    @Override
+    public IProductCacheManager getProductCacheManager() {
+        return productCacheManager;
     }
 
 }

@@ -79,7 +79,7 @@ public class CDOJob implements Runnable {
             // In this case, thredds needs 2 requests to retrieve the data.
             List<ExtractCriteriaLatLon> rangesToRequest = computeRangeOutOfLimit(p, latlon);
 
-            // Create a temporary directory into tmp directory to save the 2 generated file
+            // Create a temporary directory into tmp directory to save the 2 generated files
             Path tempDirectory = Files.createTempDirectory("LeftAndRightRequest");
             ncss.setOutputDir(tempDirectory.toString());
 

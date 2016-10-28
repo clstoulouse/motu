@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -92,7 +93,7 @@ import ucar.nc2.dataset.NetcdfDataset;
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-public class Product {
+public class Product implements Comparator<Product> {
 
     /** Logger for this class. */
     private static final Logger LOG = LogManager.getLogger();
@@ -2628,5 +2629,14 @@ public class Product {
         }
         return stringBuffer.toString();
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public int compare(Product o1, Product o2) {
+        int compareValue = 1;
+        if (o1 != null && o2 != null && o1.getProductId() != null) {
+            compareValue = o1.getProductId().compareToIgnoreCase(o2.getProductId());
+        }
+        return compareValue;
+    }
 }
-// CSON: MultipleStringLiterals

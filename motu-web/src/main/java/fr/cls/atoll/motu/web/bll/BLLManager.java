@@ -1,7 +1,5 @@
 package fr.cls.atoll.motu.web.bll;
 
-import fr.cls.atoll.motu.web.bll.cache.DescribeProductCacheManager;
-import fr.cls.atoll.motu.web.bll.cache.IDescribeProductCacheManager;
 import fr.cls.atoll.motu.web.bll.catalog.BLLCatalogManager;
 import fr.cls.atoll.motu.web.bll.catalog.IBLLCatalogManager;
 import fr.cls.atoll.motu.web.bll.config.BLLConfigManager;
@@ -32,7 +30,6 @@ public class BLLManager implements IBLLManager {
     private IBLLRequestManager requestManager;
     private IBLLUserManager userManager;
     private IBLLCatalogManager catalogManager;
-    private IDescribeProductCacheManager describeProductCacheManager;
     private IBLLMessagesErrorManager messagesErrorManager;
 
     public static IBLLManager getInstance() {
@@ -47,7 +44,6 @@ public class BLLManager implements IBLLManager {
         requestManager = new BLLRequestManager();
         userManager = new BLLUserManager();
         catalogManager = new BLLCatalogManager();
-        describeProductCacheManager = new DescribeProductCacheManager();
         messagesErrorManager = new BLLMessagesErrorManager();
     }
 
@@ -57,12 +53,11 @@ public class BLLManager implements IBLLManager {
         userManager.init();
         requestManager.init();
         catalogManager.init();
-        describeProductCacheManager.init();
     }
 
     @Override
     public void stop() {
-        describeProductCacheManager.stop();
+        getCatalogManager().stop();
         requestManager.stop();
     }
 
@@ -92,11 +87,6 @@ public class BLLManager implements IBLLManager {
     @Override
     public IBLLCatalogManager getCatalogManager() {
         return catalogManager;
-    }
-
-    @Override
-    public IDescribeProductCacheManager getDescribeProductCacheManager() {
-        return describeProductCacheManager;
     }
 
     /** {@inheritDoc} */

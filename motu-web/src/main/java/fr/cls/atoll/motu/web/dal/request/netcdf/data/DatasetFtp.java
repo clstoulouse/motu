@@ -412,9 +412,8 @@ public class DatasetFtp extends DatasetBase {
 
     /** {@inheritDoc} */
     @Override
-    public List<String> addVariables(List<String> listVar) throws MotuException {
+    public void addVariables(List<String> listVar) throws MotuException {
         // There is no variable criteria on FTP dataset
-        return listVar;
     }
 
     /** {@inheritDoc} */
