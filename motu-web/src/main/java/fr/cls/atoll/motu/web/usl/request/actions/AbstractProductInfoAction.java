@@ -12,7 +12,6 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
-import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.AbstractHTTPParameterValidator;
@@ -145,19 +144,9 @@ public abstract class AbstractProductInfoAction extends AbstractAction {
             p = BLLManager.getInstance().getCatalogManager().getProductManager().getProductFromLocation(BLLManager.getInstance().getCatalogManager()
                     .getProductManager().datasetIdFromProductLocation(locationData));
         } else if (!AbstractHTTPParameterValidator.EMPTY_VALUE.equals(serviceName) && !StringUtils.isNullOrEmpty(productId)) {
-            p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(serviceName, StringUtils.getDataSetName(productId));
+            p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(StringUtils.getDataSetName(productId));
         }
 
         return p;
-    }
-
-    protected void initProductMetaData(Product product) throws MotuException {
-        String catalogType = BLLManager.getInstance().getCatalogManager().getCatalogType(product);
-
-        ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
-                .getProductMetaData(catalogType, product.getProductId(), product.getLocationData());
-        if (pmd != null) {
-            product.setProductMetaData(pmd);
-        }
     }
 }

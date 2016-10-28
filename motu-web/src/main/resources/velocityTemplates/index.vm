@@ -99,14 +99,14 @@
 	<!--[if lte IE 7]>
 	<link href="$httpSite/css/motu/patches/patch_motu.css" rel="stylesheet" type="text/css" />
 	<![endif]-->
-    <link rel="stylesheet" type="text/css" href="$httpSite/css/motu/screen/content_cc.css" media="all">
-    <link rel="stylesheet" type="text/css" href="$httpSite/css/motu/screen/mis-gw.css" media="all">
+    <link rel="stylesheet" type="text/css" href="$httpSite/css/motu/screen/content_cc.css" media="all" />
+    <link rel="stylesheet" type="text/css" href="$httpSite/css/motu/screen/mis-gw.css" media="all" />
 </head>
 
 <body>
 <!-- Banniere -->
 <!-- STATUS: OK --><a name="top"></a><map name="retour">
-<area shape="rect" coords="30,30,80,100" href="http://www.cls.fr/welcome_fr.html" onmouseover="window.status='SOMMAIRE'; return true" onmouseout="window.status=''; return true">
+<area alt="" shape="rect" coords="30,30,80,100" href="http://www.cls.fr/welcome_fr.html" onmouseover="window.status='SOMMAIRE'; return true" onmouseout="window.status=''; return true">
 </map>
 
 		<!-- Body -->

@@ -1,6 +1,5 @@
 package fr.cls.atoll.motu.web.bll;
 
-import fr.cls.atoll.motu.web.bll.cache.IDescribeProductCacheManager;
 import fr.cls.atoll.motu.web.bll.catalog.IBLLCatalogManager;
 import fr.cls.atoll.motu.web.bll.config.IBLLConfigManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
@@ -59,14 +58,6 @@ public interface IBLLManager {
      * @return
      */
     IBLLCatalogManager getCatalogManager();
-
-    /**
-     * 
-     * .
-     * 
-     * @return
-     */
-    IDescribeProductCacheManager getDescribeProductCacheManager();
 
     /**
      * 

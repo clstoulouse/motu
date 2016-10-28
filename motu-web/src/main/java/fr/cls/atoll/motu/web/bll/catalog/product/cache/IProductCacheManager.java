@@ -1,6 +1,6 @@
-package fr.cls.atoll.motu.web.bll.cache;
+package fr.cls.atoll.motu.web.bll.catalog.product.cache;
 
-import fr.cls.atoll.motu.api.message.xml.ProductMetadataInfo;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
  * <br>
@@ -12,14 +12,20 @@ import fr.cls.atoll.motu.api.message.xml.ProductMetadataInfo;
  * @author Pierre LACOSTE
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public interface IDescribeProductCacheManager {
+public interface IProductCacheManager {
 
     void init();
-
-    ProductMetadataInfo getDescribeProduct(String productId);
 
     /**
      * .
      */
     void stop();
+
+    /**
+     * .
+     * 
+     * @param productId
+     * @return
+     */
+    Product getProduct(String productId);
 }

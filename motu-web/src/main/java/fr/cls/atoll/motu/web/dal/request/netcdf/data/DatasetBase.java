@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -389,8 +388,8 @@ public abstract class DatasetBase {
      * @return the list
      * @throws MotuException the motu exception
      */
-    public List<String> addVariables(String... vars) throws MotuException {
-        return addVariables(Arrays.asList(vars));
+    public void addVariables(String... vars) throws MotuException {
+        addVariables(Arrays.asList(vars));
     }
 
     /**
@@ -402,8 +401,8 @@ public abstract class DatasetBase {
      * 
      * @throws MotuException the motu exception
      */
-    public List<String> addVariables(List<String> listVar) throws MotuException {
-        List<String> listVarNameResolved = new ArrayList<String>();
+    public void addVariables(List<String> listVar) throws MotuException {
+        // List<String> listVarNameResolved = new ArrayList<String>();
         if (listVar == null) {
             throw new MotuException(ErrorType.NO_VARIABLE, "Error in addVariables - List of variables to be added is null");
         }
@@ -426,12 +425,15 @@ public abstract class DatasetBase {
             for (String varName : listVarName) {
                 VarData varData = new VarData(varName);
                 varData.setStandardName(trimmedStandardName);
-                listVarNameResolved.add(varData.getVarName());
+                if (this.variablesMap.keySet().contains(varData.getVarName())) {
+                    // listVarNameResolved.add(varData.getVarName());
+                    this.variablesMap.remove(varData.getVarName());
+                }
                 putVariables(varData.getVarName(), varData);
             }
         }
 
-        return listVarNameResolved;
+        // return listVarNameResolved;
     }
 
     /**
@@ -443,10 +445,7 @@ public abstract class DatasetBase {
      * @throws MotuException the motu exception
      */
     public void updateVariables(List<String> listVar) throws MotuException {
-        List<String> listVarNameResolved = addVariables(listVar);
-
-        // remove variables which are in variables map and not in listVar.
-        variablesKeySet().retainAll(listVarNameResolved);
+        addVariables(listVar);
     }
 
     /**
@@ -460,7 +459,7 @@ public abstract class DatasetBase {
         if (listVar == null) {
             return;
         }
-        variablesKeySet().removeAll(listVar);
+        this.variablesMap.keySet().removeAll(listVar);
     }
 
     /**
@@ -1201,18 +1200,6 @@ public abstract class DatasetBase {
      */
     public Map<String, VarData> getVariables() {
         return this.variablesMap;
-    }
-
-    /**
-     * Returns a set view of the keys contained in this map.
-     * 
-     * @return a set view of the keys contained in this map.
-     * 
-     * @see java.util.Map#keySet()
-     * @uml.property name="variables"
-     */
-    public Set<String> variablesKeySet() {
-        return this.variablesMap.keySet();
     }
 
     /**

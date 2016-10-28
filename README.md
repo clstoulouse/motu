@@ -126,7 +126,7 @@ The main project is "motu-web". This project is divided in three main layers det
 ### <a name="ArchitectureDesignDLayers">Layers</a> 
 #### <a name="ArchitectureDesignDUSL">USL</a>  
 * __usl/servlet/context/MotuWebEngineContextListener.java__: Apache tomcat ServletContextListener used to init and stop the application.  
-* __usl/request__: All requests are managed with the "motu/web/servlet/MotuServlet.java" by following a command pattern. "action" HTTP parameter match the "usl/request/actions" classes.  
+* __usl/request__: All requests are managed with the "motu/web/servlet/MotuServlet.java" by following a command pattern. "action" HTTP parameter matches one of the "usl/request/actions" classes.  
 * __usl/response__: XML and [Apache velocity](https://velocity.apache.org/) data model.  
 
 #### <a name="ArchitectureDesignDBLL">BLL</a>  
@@ -824,11 +824,18 @@ All values can be found in the method USLRequestManager#onNewRequest with the di
 Number of data in Ko that can be read in the same time. Default is 2048Kb.
 
 ##### maxSizePerFile
-@Deprecated from v3 This parameter is not used. 
-Number of data in Megabytes that can be written and download for a Netcdf file. Default is 1024Mb. 
+This parameter is only used with a catalog type set to "FILE" meaning a DGF access.  
+It allows download requests to be executed only if data extraction is lower that this parameter value.  
+Unit of this value is Megabytes.  
+Default is 1024 Megabytes.  
+Example: maxSizePerFile="2048" to limit request result file size to 2GB.  
 
-##### maxSizePerFileTDS
-Number of data in Megabytes that can be written and download for a Netcdf file. Default is 1024Mb. 
+##### maxSizePerFileSub
+This parameter is only used with a catalog type used with Opendap or Ncss.  
+It allows download requests to be executed only if data extraction is lower that this parameter value.  
+Unit of this value is Megabytes.  
+Default is 1024 Megabytes.  
+Example: maxSizePerFileSub="2048" to limit request result file size to 2GB.
 
 ##### <a name="motuConfig-extractionPath">extractionPath</a>  
 The absolute path where files downloaded from TDS are stored.  
@@ -1459,9 +1466,9 @@ You change the status order by entering 4 parameters in the URL:
 
 ## <a name="ExploitCleanDiskLogbook">Logbook files</a>  
 Logbook files are written in the folder configured in the log4j.xml configuration file.  
-All logs are generated daily except for motuQSLog (xml or csv) which are generated monthly.
-You can clean those files to avoid to fullfill the harddrive. 
-crontab -e
+All logs are generated daily except for motuQSLog (xml or csv) which are generated monthly.  
+You can clean those files to avoid to fullfill the harddrive.   
+crontab -e   
 0 * * * * find /opt/cmems-cis/motu/log/*.log* -type f -mmin +14400 -delete >/dev/null 2>&1  
 0 * * * * find /opt/cmems-cis/motu/log/*.out* -type f -mmin +14400 -delete >/dev/null 2>&1  
 0 * * * * find /opt/cmems-cis/motu/log/*.xml* -type f -mmin +144000 -delete >/dev/null 2>&1  

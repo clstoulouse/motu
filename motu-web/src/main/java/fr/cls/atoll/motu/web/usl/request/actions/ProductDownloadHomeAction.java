@@ -17,7 +17,6 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
-import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
@@ -75,14 +74,8 @@ public class ProductDownloadHomeAction extends AbstractAuthorizedAction {
             CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
             if (cd != null) {
                 String productId = productHTTPParameterValidator.getParameterValueValidated();
-                Product p = cd.getProducts().get(productId);
+                Product p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(productId);
                 if (checkProduct(p, productId)) {
-                    ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
-                            .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(p), productId, p.getLocationData());
-                    if (pmd != null) {
-                        p.setProductMetaData(pmd);
-                    }
-
                     try {
                         writeResponseWithVelocity(mc, cs, cd, p, getResponse().getWriter());
                     } catch (IOException e) {

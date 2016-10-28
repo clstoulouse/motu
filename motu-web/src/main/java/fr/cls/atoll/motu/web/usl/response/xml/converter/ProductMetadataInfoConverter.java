@@ -1,13 +1,10 @@
-package fr.cls.atoll.motu.web.bll.cache;
+package fr.cls.atoll.motu.web.usl.response.xml.converter;
 
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,10 +30,7 @@ import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.web.common.thread.StoppableDaemonThread;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
-import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataFile;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
@@ -54,82 +48,19 @@ import ucar.unidata.geoloc.LatLonRect;
  * <br>
  * Société : CLS (Collecte Localisation Satellites)
  * 
- * @author Pierre LACOSTE
+ * @author Sylvain MARTY
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class DescribeProductCacheThread extends StoppableDaemonThread {
+public class ProductMetadataInfoConverter {
 
     private static final Logger LOGGER = LogManager.getLogger();
-
-    private ConcurrentMap<String, ProductMetadataInfo> describeProductMap;
-
-    /**
-     * Constructeur.
-     */
-    public DescribeProductCacheThread() {
-        super(
-            "DescribeProduct Cache Thread Daemon",
-            BLLManager.getInstance().getConfigManager().getMotuConfig().getDescribeProductCacheRefreshInMilliSec());
-    }
-
-    public ProductMetadataInfo getProductDescription(String productId) {
-        return describeProductMap.get(productId);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void runProcess() {
-        long startRefresh = System.currentTimeMillis();
-        describeProductMap = new ConcurrentHashMap<>();
-        List<ConfigService> services = BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService();
-        int i = 0;
-        while (!isDaemonStoppedASAP() && i < services.size()) {
-            ConfigService configService = services.get(i);
-            processConfigService(configService);
-            i++;
-        }
-        LOGGER.info("Describe product cache refreshed in "
-                + fr.cls.atoll.motu.web.common.utils.DateUtils.getDurationMinSecMsec(System.currentTimeMillis() - startRefresh));
-    }
-
-    /**
-     * .
-     * 
-     * @param configService
-     */
-    private void processConfigService(ConfigService configService) {
-        try {
-            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(configService);
-            if (cd != null) {
-                Map<String, Product> products = cd.getProducts();
-                for (Map.Entry<String, Product> currentProductEntry : products.entrySet()) {
-                    Product currentProduct = currentProductEntry.getValue();
-
-                    ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
-                            .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(configService),
-                                                currentProduct.getProductId(),
-                                                currentProduct.getLocationData());
-                    if (pmd != null) {
-                        currentProduct.setProductMetaData(pmd);
-                    }
-                    describeProductMap.put(currentProduct.getProductId(), initProductMetadataInfo(currentProduct));
-                }
-            } else {
-                LOGGER.error("Unable to read catalog data for config service " + configService.getName());
-            }
-        } catch (MotuException e) {
-            LOGGER.error("Error during refresh of the describe product cache", e);
-        } catch (MotuExceptionBase e) {
-            LOGGER.error("Error during refresh of the describe product cache", e);
-        }
-    }
 
     /**
      * Creates the product metadata info.
      * 
      * @return the time coverage
      */
-    public static ProductMetadataInfo createProductMetadataInfo() {
+    private static ProductMetadataInfo createProductMetadataInfo() {
         ObjectFactory objectFactory = new ObjectFactory();
 
         ProductMetadataInfo productMetadataInfo = objectFactory.createProductMetadataInfo();
@@ -156,7 +87,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * @throws MotuExceptionBase the motu exception base
      * @throws MotuException
      */
-    public static ProductMetadataInfo initProductMetadataInfo(Product product) throws MotuExceptionBase, MotuException {
+    public static ProductMetadataInfo getProductMetadataInfo(Product product) throws MotuExceptionBase, MotuException {
 
         ProductMetadataInfo productMetadataInfo = createProductMetadataInfo();
 
@@ -195,7 +126,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @return the data geospatial coverage
      */
-    public static DataGeospatialCoverage createDataGeospatialCoverage() {
+    private static DataGeospatialCoverage createDataGeospatialCoverage() {
         ObjectFactory objectFactory = new ObjectFactory();
 
         DataGeospatialCoverage dataGeospatialCoverage = objectFactory.createDataGeospatialCoverage();
@@ -216,7 +147,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @throws MotuException the motu exception
      */
-    public static DataGeospatialCoverage initDataGeospatialCoverage(Product product) throws MotuException {
+    private static DataGeospatialCoverage initDataGeospatialCoverage(Product product) throws MotuException {
         DataGeospatialCoverage dataGeospatialCoverage = createDataGeospatialCoverage();
 
         if (product == null) {
@@ -262,7 +193,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @throws MotuException the motu exception
      */
-    public static Axis initAxis(CoordinateAxis coordinateAxis, ProductMetaData productMetaData) throws MotuException {
+    private static Axis initAxis(CoordinateAxis coordinateAxis, ProductMetaData productMetaData) throws MotuException {
 
         Axis axis = createAxis();
 
@@ -306,7 +237,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @return the axis
      */
-    public static Axis createAxis() {
+    private static Axis createAxis() {
         ObjectFactory objectFactory = new ObjectFactory();
 
         Axis axis = objectFactory.createAxis();
@@ -331,7 +262,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @return the available depths
      */
-    public static AvailableDepths createAvailableDepth() {
+    private static AvailableDepths createAvailableDepth() {
         ObjectFactory objectFactory = new ObjectFactory();
 
         AvailableDepths availableDepths = objectFactory.createAvailableDepths();
@@ -355,7 +286,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * @throws MotuException the motu exception
      * @throws NetCdfVariableException the net cdf variable exception
      */
-    public static AvailableDepths initAvailableDepths(Product product) throws MotuException, NetCdfVariableException {
+    private static AvailableDepths initAvailableDepths(Product product) throws MotuException, NetCdfVariableException {
 
         AvailableDepths availableDepths = createAvailableDepth();
 
@@ -400,7 +331,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @return the available times
      */
-    public static AvailableTimes createAvailableTimes() {
+    private static AvailableTimes createAvailableTimes() {
         ObjectFactory objectFactory = new ObjectFactory();
 
         AvailableTimes availableTimes = objectFactory.createAvailableTimes();
@@ -424,7 +355,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * @throws MotuException the motu exception
      * @throws NetCdfVariableException the net cdf variable exception
      */
-    public static AvailableTimes initAvailableTimes(Product product) throws MotuException, NetCdfVariableException {
+    private static AvailableTimes initAvailableTimes(Product product) throws MotuException, NetCdfVariableException {
         AvailableTimes availableTimes = createAvailableTimes();
 
         if (product == null) {
@@ -482,7 +413,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @throws MotuException the motu exception
      */
-    public static Variables initVariables(ProductMetaData productMetaData) throws MotuException {
+    private static Variables initVariables(ProductMetaData productMetaData) throws MotuException {
         Variables variables = createVariables();
 
         if (productMetaData == null) {
@@ -514,7 +445,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @return the fr.cls.atoll.motu.api.message.xml. variables
      */
-    public static Variables createVariables() {
+    private static Variables createVariables() {
         ObjectFactory objectFactory = new ObjectFactory();
 
         Variables variables = objectFactory.createVariables();
@@ -535,7 +466,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @throws MotuException the motu exception
      */
-    public static Variable initVariable(ParameterMetaData parameterMetaData) throws MotuException {
+    private static Variable initVariable(ParameterMetaData parameterMetaData) throws MotuException {
         Variable variable = createVariable();
 
         if (parameterMetaData == null) {
@@ -559,7 +490,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @return the variable
      */
-    public static Variable createVariable() {
+    private static Variable createVariable() {
         ObjectFactory objectFactory = new ObjectFactory();
 
         Variable variable = objectFactory.createVariable();
@@ -586,7 +517,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @throws MotuException the motu exception
      */
-    public static TimeCoverage initTimeCoverage(ProductMetaData productMetaData) throws MotuException {
+    private static TimeCoverage initTimeCoverage(ProductMetaData productMetaData) throws MotuException {
         if (productMetaData == null) {
             return null;
         }
@@ -603,7 +534,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @throws MotuException the motu exception
      */
-    public static TimeCoverage initTimeCoverage(Interval datePeriod) throws MotuException {
+    private static TimeCoverage initTimeCoverage(Interval datePeriod) throws MotuException {
         TimeCoverage timeCoverage = createTimeCoverage();
         if (datePeriod == null) {
             return timeCoverage;
@@ -629,7 +560,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @throws MotuException the motu exception
      */
-    public static VariablesVocabulary initVariablesVocabulary(ProductMetaData productMetaData) throws MotuException {
+    private static VariablesVocabulary initVariablesVocabulary(ProductMetaData productMetaData) throws MotuException {
         VariablesVocabulary variablesVocabulary = createVariablesVocabulary();
 
         if (productMetaData == null) {
@@ -668,7 +599,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @return the variables vocabulary
      */
-    public static VariablesVocabulary createVariablesVocabulary() {
+    private static VariablesVocabulary createVariablesVocabulary() {
         ObjectFactory objectFactory = new ObjectFactory();
 
         VariablesVocabulary variablesVocabulary = objectFactory.createVariablesVocabulary();
@@ -690,7 +621,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @throws MotuException the motu exception
      */
-    public static VariableVocabulary initVariableVocabulary(VariableDesc variableDesc) throws MotuException {
+    private static VariableVocabulary initVariableVocabulary(VariableDesc variableDesc) throws MotuException {
         VariableVocabulary variableVocabulary = createVariableVocabulary();
 
         if (variableDesc == null) {
@@ -713,7 +644,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @return the variable vocabulary
      */
-    public static VariableVocabulary createVariableVocabulary() {
+    private static VariableVocabulary createVariableVocabulary() {
         ObjectFactory objectFactory = new ObjectFactory();
 
         VariableVocabulary variableVocabulary = objectFactory.createVariableVocabulary();
@@ -735,7 +666,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @return the time coverage
      */
-    public static TimeCoverage createTimeCoverage() {
+    private static TimeCoverage createTimeCoverage() {
         ObjectFactory objectFactory = new ObjectFactory();
 
         TimeCoverage timeCoverage = objectFactory.createTimeCoverage();
@@ -757,7 +688,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @throws MotuException the motu exception
      */
-    public static GeospatialCoverage initGeospatialCoverage(ProductMetaData productMetaData) throws MotuException {
+    private static GeospatialCoverage initGeospatialCoverage(ProductMetaData productMetaData) throws MotuException {
         GeospatialCoverage geospatialCoverage = createGeospatialCoverage();
 
         if (productMetaData == null) {
@@ -809,7 +740,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @return the geospatial coverage
      */
-    public static GeospatialCoverage createGeospatialCoverage() {
+    private static GeospatialCoverage createGeospatialCoverage() {
         ObjectFactory objectFactory = new ObjectFactory();
 
         GeospatialCoverage geospatialCoverage = objectFactory.createGeospatialCoverage();
@@ -842,7 +773,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @throws MotuException the motu exception
      */
-    public static fr.cls.atoll.motu.api.message.xml.Properties initProperties(ProductMetaData productMetaData) throws MotuException {
+    private static fr.cls.atoll.motu.api.message.xml.Properties initProperties(ProductMetaData productMetaData) throws MotuException {
         fr.cls.atoll.motu.api.message.xml.Properties properties = createProperties();
 
         if (productMetaData == null) {
@@ -872,7 +803,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @return the fr.cls.atoll.motu.api.message.xml. properties
      */
-    public static fr.cls.atoll.motu.api.message.xml.Properties createProperties() {
+    private static fr.cls.atoll.motu.api.message.xml.Properties createProperties() {
         ObjectFactory objectFactory = new ObjectFactory();
 
         fr.cls.atoll.motu.api.message.xml.Properties properties = objectFactory.createProperties();
@@ -892,7 +823,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @throws MotuException the motu exception
      */
-    public static fr.cls.atoll.motu.api.message.xml.Property initProperty(Property tdsProperty) throws MotuException {
+    private static fr.cls.atoll.motu.api.message.xml.Property initProperty(Property tdsProperty) throws MotuException {
 
         fr.cls.atoll.motu.api.message.xml.Property property = createProperty();
 
@@ -914,7 +845,7 @@ public class DescribeProductCacheThread extends StoppableDaemonThread {
      * 
      * @return the fr.cls.atoll.motu.api.message.xml. property
      */
-    public static fr.cls.atoll.motu.api.message.xml.Property createProperty() {
+    private static fr.cls.atoll.motu.api.message.xml.Property createProperty() {
         ObjectFactory objectFactory = new ObjectFactory();
 
         fr.cls.atoll.motu.api.message.xml.Property property = objectFactory.createProperty();
