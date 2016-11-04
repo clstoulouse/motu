@@ -156,7 +156,7 @@ public class NetCdfWriter {
      * Constructeur.
      */
     public NetCdfWriter() {
-        init();
+        variablesMap = new HashMap<String, List<Variable>>();
     }
 
     /**
@@ -169,17 +169,9 @@ public class NetCdfWriter {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public NetCdfWriter(String fileOutName, boolean fill) throws IOException {
-        init();
+        this();
         ncfileName = fileOutName;
         ncfile = NetcdfFileWriteable.createNew(fileOutName, fill);
-    }
-
-    /**
-     * Initialization.
-     * 
-     */
-    private void init() {
-        variablesMap = new HashMap<String, List<Variable>>();
     }
 
     /**
@@ -1925,10 +1917,6 @@ public class NetCdfWriter {
      * @throws MotuNotImplementedException the motu not implemented exception
      */
     public void finish(String[] varAttrToRemove) throws MotuException, MotuExceedingCapacityException, MotuNotImplementedException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("finish() - entering");
-        }
-
         // Add variables to file and create it.
         create(varAttrToRemove);
 
@@ -1958,13 +1946,7 @@ public class NetCdfWriter {
 
             ncfile.close();
         } catch (Exception e) {
-            LOG.error("finish()", e);
-
             throw new MotuException(ErrorType.NETCDF_GENERATION, "Error in NetcdfWriter finish", e);
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("finish() - exiting");
         }
     }
 
@@ -1984,10 +1966,6 @@ public class NetCdfWriter {
                             List<Range> listDistinctYRange,
                             Map<String, List<Section>> mapVarOrgRanges)
                                     throws MotuException, MotuExceedingCapacityException, MotuNotImplementedException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("finish() - entering");
-        }
-
         // Add variables to file and create it.
         create(varAttrToRemove);
 
@@ -2011,13 +1989,7 @@ public class NetCdfWriter {
 
             ncfile.close();
         } catch (Exception e) {
-            LOG.error("finish()", e);
-
             throw new MotuException(ErrorType.NETCDF_GENERATION, "Error in NetcdfWriter finish", e);
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("finish() - exiting");
         }
     }
 

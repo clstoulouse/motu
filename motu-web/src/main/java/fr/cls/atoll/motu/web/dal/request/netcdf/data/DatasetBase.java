@@ -1013,15 +1013,11 @@ public abstract class DatasetBase {
      * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      */
     public void initNetCdfExtraction() throws MotuException, MotuNoVarException, NetCdfVariableNotFoundException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initNetCdfExtraction() - entering");
-        }
-
         if (product == null) {
             throw new MotuException(ErrorType.SYSTEM, "Error in DatasetBase - initNetCdfExtraction product have not nbeen set (= null)");
         }
 
-        if (variablesSize() <= 0) {
+        if (isVariablesEmpty()) {
             throw new MotuNoVarException("Variable list is empty");
         }
 
@@ -1036,10 +1032,6 @@ public abstract class DatasetBase {
         product.setExtractFilename(NetCdfWriter.getUniqueNetCdfFileName(product.getProductId()));
 
         setHasOutputDimension();
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initNetCdfExtraction() - exiting");
-        }
     }
 
     /**

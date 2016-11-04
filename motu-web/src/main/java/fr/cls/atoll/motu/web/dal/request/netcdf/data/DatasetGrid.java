@@ -209,10 +209,6 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
     public void extractData(OutputFormat dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
             NetCdfVariableNotFoundException, IOException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("extractData() - entering");
-        }
-
         if (product == null) {
             throw new MotuException(ErrorType.SYSTEM, "Error in DatasetGrid - extractData product have not been set (= null)");
         }
@@ -230,10 +226,6 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
         default:
             throw new MotuNotImplementedException(String.format("extraction into %s is not implemented", dataOutputFormat.toString()));
             // break;
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("extractData() - exiting");
         }
     }
 
@@ -254,10 +246,6 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
     public void extractDataIntoNetCdf() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
             NetCdfVariableNotFoundException, IOException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("extractDataIntoNetCdf() - entering");
-        }
-
         initNetCdfExtraction();
 
         getTimeRange();
@@ -400,10 +388,6 @@ public class DatasetGrid extends fr.cls.atoll.motu.web.dal.request.netcdf.data.D
         this.writingTime += netCdfWriter.getWritingTime();
 
         product.moveTempExtractFileToFinalExtractFile();
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("extractDataIntoNetCdf() - exiting");
-        }
     }
 
     protected void addGeoXYNeededVariables() {
