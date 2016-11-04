@@ -130,8 +130,7 @@ The main project is "motu-web". This project is divided in three main layers det
 * __usl/response__: XML and [Apache velocity](https://velocity.apache.org/) data model.  
 
 #### <a name="ArchitectureDesignDBLL">BLL</a>  
-* __bll/cache__: Contains the describe product cache manager.  
-* __bll/catalog__: Catalog and Product managers.  
+* __bll/catalog__: Catalog and Product managers. Package "bll/catalog/product/cache" contains the product cache.
 * __bll/config__: Configuration and version manager.  
 * __bll/exception__: Business exceptions. MotuException is a generic one. MotuExceptionBase defines all other business exceptions.
 * __bll/messageserror__: Message error manager
@@ -149,10 +148,11 @@ The main project is "motu-web". This project is divided in three main layers det
 ### <a name="ArchitectureDesignDDynamics">Daemon threads</a> 
 "motu-web" project starts daemon threads for:  
 
-* __bll/cache__: Describe project cache
-* __bll/request/cleaner__: Clean files and Java map cache data
+* __bll/catalog/product/cache__: Keep a product cache and refresh it asynchronously to improve response time 
+* __bll/request/cleaner__: Clean files (extracted files, java temp files) and request status (stored into java map or list objects)
 * __bll/request/queueserver__: Contains a thread pool executor to treat download requests
-* __dal/request/cdo__: A queue server used to manage requests using CDO tool to avoid using too much RAM
+* __dal/request/cdo__: A queue server used to manage requests using CDO tool to avoid using too much RAM. As CDO uses a lot of RAM memory, 
+requests that require CDO to be processed are in sequence and only one is processed at a time
 
 
 
@@ -713,7 +713,7 @@ The configuration is described for Apache2 contains files:
 When an SSO cas server is used, you have to st the property [cas-auth-serverName](#ConfigurationSystemCASSSO) to http://$serverHostName
 
 Apache HTTPd can be used at different levels. The Apache HTTPd above is the one installed on the same machine as Motu.
-An Apache HTTPd can be used as a frontal to manage Apache HTTPd load balancing. In the case, you can set up with the folowing example:  
+An Apache HTTPd can be used as a frontal to manage Apache HTTPd load balancing. In the case, you can set up with the following example:  
 
 ```  
  # Use to authenticate users which want to download transaction files  
@@ -725,12 +725,18 @@ An Apache HTTPd can be used as a frontal to manage Apache HTTPd load balancing. 
 < / Location>   
   
  # Used to serve URL requested after a CAS authentication  
- # Because Motu SSO client set a redirection URL directly to its webapp name so we have to take into account the webapp name in Apache HTTPd
+ # Because Motu SSO client set a redirection URL directly to its webapp name  
+ # so we have to take into account the webapp name in Apache HTTPd  
 ProxyPass /motu-web http://$motuTomcatIp:$motuTomcatPort/motu-web  
 ProxyPassReverse /motu-web http://$motuTomcatIp:$motuTomcatPort/motu-web  
         
  # Used to serve Motu requests   
- # /motu-web-servlet can be any other URL  
+    # /mis-gateway-servlet These rules are used for retro compatibility between Motu v2.x and Motu v3.x  
+ProxyPass /mis-gateway-servlet http://$motuTomcatIp:$motuTomcatPort/motu-web  
+ProxyPassReverse /mis-gateway-servlet http://$motuTomcatIp:$motuTomcatPort/motu-web  
+ProxyPreserveHost On  
+    # /motu-web-servlet This URL is sometimes used.  
+	# It can be customized depending of your current installation. If you have any doubt, keep this rule.  
 ProxyPass /motu-web-servlet http://$motuTomcatIp:$motuTomcatPort/motu-web  
 ProxyPassReverse /motu-web-servlet http://$motuTomcatIp:$motuTomcatPort/motu-web  
                 
@@ -744,7 +750,6 @@ ProxyPassReverse /datastore-gateway/deliveries http://$apacheHTTPdOnMotuHost/dat
 |--Order allow,deny  
 |--Allow from All  
 < /Location>  
-
 ```  
 
 
