@@ -408,8 +408,8 @@ Then update the attribute below:
    
 
 #### Log files
-In CMEMS-CIS context the log file motuQSlog.xml is stored in a specific place in order to be shared.  
-You have so to check that with the new version this log file is well written in the share folder.
+In CMEMS-CIS context the log file motuQSlog.xml is stored in a specific folder in order to be shared.  
+You have so to check that with the new version this log file is well written in the shared folder.
 Here is where this log files were written in Motu v2.x:  
 ``` 
 grep -i "motuQSlog.xml" /opt/atoll/misgw/motu-configuration-sample-misgw-1.0.5/resources/log4j.xml
