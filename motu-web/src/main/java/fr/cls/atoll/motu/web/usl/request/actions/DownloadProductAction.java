@@ -189,6 +189,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 throw new MotuException(ErrorType.SYSTEM, "Error while get catalog data for config service " + cs.getName());
             }
         }
+
     }
 
     @Override

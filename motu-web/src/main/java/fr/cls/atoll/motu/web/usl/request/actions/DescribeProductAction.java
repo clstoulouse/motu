@@ -91,7 +91,8 @@ public class DescribeProductAction extends AbstractProductInfoAction {
         String locationData = CommonHTTPParameters.getDataFromParameter(getRequest());
         String xmlFile = xmlFileParameterValidator.getParameterValueValidated();
 
-        if (!StringUtils.isNullOrEmpty(locationData) && !StringUtils.isNullOrEmpty(xmlFile)) {
+        if (!(StringUtils.isNullOrEmpty(locationData) || AbstractHTTPParameterValidator.EMPTY_VALUE.equals(locationData))
+                && !(StringUtils.isNullOrEmpty(xmlFile) || AbstractHTTPParameterValidator.EMPTY_VALUE.equals(xmlFile))) {
             String urlPath = BLLManager.getInstance().getCatalogManager().getProductManager().datasetIdFromProductLocation(locationData);
             if (urlPath == null) {
                 throw new InvalidHTTPParameterException(
@@ -135,7 +136,8 @@ public class DescribeProductAction extends AbstractProductInfoAction {
     protected Product getProduct() throws MotuException {
         Product currentProduct = null;
         String locationData = CommonHTTPParameters.getDataFromParameter(getRequest());
-        String xmlFile = xmlFileParameterValidator.getParameterValueValidated();
+        String xmlFile = AbstractHTTPParameterValidator.EMPTY_VALUE.equalsIgnoreCase(xmlFileParameterValidator.getParameterValueValidated()) ? null
+                : xmlFileParameterValidator.getParameterValueValidated();
 
         if (!StringUtils.isNullOrEmpty(locationData) && !StringUtils.isNullOrEmpty(xmlFile)) {
             String catalogName = xmlFile.substring(xmlFile.lastIndexOf("/") + 1, xmlFile.length());

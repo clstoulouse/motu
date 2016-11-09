@@ -60,6 +60,11 @@ public class BLLProductManager implements IBLLProductManager {
                 Map<String, Product> products = cd.getProducts();
                 for (Map.Entry<String, Product> product : products.entrySet()) {
                     if (product.getValue().getTdsUrlPath().equals(URLPath)) {
+                        // TDS Case
+                        productFound = product.getValue();
+                        break;
+                    } else if (product.getValue().getLocationMetaData().equals(URLPath)) {
+                        // DGF Case
                         productFound = product.getValue();
                         break;
                     }
@@ -78,7 +83,13 @@ public class BLLProductManager implements IBLLProductManager {
         Pattern pattern = Pattern.compile(patternExpression);
         Matcher matcher = pattern.matcher(locationData);
 
-        return matcher.find() ? matcher.group(matcher.groupCount()) : null;
+        if (matcher.find()) {
+            // TDS URL
+            return matcher.group(matcher.groupCount());
+        } else {
+            // DGF URL
+            return locationData;
+        }
     }
 
     @Override

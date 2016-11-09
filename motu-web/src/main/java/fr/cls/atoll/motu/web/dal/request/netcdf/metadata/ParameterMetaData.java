@@ -248,12 +248,13 @@ public class ParameterMetaData {
         if (StringUtils.isNullOrEmpty(standardName)) {
             this.standardNameWithoutURI = standardName;
         } else {
-
             String[] split = standardName.split(".*#");
             if (split.length <= 1) {
-                split = standardName.split(".*#");
+                split = standardName.split(".*/");
                 if (split.length <= 1) {
                     this.standardNameWithoutURI = standardName;
+                } else {
+                    this.standardNameWithoutURI = split[1];
                 }
             } else {
                 this.standardNameWithoutURI = split[1];
