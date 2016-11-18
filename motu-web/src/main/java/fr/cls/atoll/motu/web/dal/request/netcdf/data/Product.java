@@ -24,8 +24,6 @@
  */
 package fr.cls.atoll.motu.web.dal.request.netcdf.data;
 
-import java.io.File;
-import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -41,7 +39,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,32 +46,20 @@ import org.joda.time.DateTime;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
-import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.web.bll.exception.MotuNoVarException;
 import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeNotFoundException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteria;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.DocMetaData;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
-import fr.cls.atoll.motu.web.common.utils.ListUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.catalog.tds.TDSCatalogLoader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
-import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
-import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.MAMath;
@@ -157,38 +142,6 @@ public class Product implements Comparator<Product> {
         this.productMetaData = productMetaData;
     }
 
-    /** The dataset. */
-    private DatasetBase dataset;
-
-    /**
-     * Getter of the property <tt>dataset</tt>.
-     * 
-     * @return Returns the dataset.
-     * 
-     * @uml.property name="dataset"
-     */
-    public DatasetBase getDataset() {
-        return this.dataset;
-    }
-
-    /**
-     * Reset dataset.
-     */
-    public void resetDataset() {
-        dataset = null;
-    }
-
-    /**
-     * Setter of the property <tt>dataset</tt>.
-     * 
-     * @param dataset The dataset to set.
-     * 
-     * @uml.property name="dataset"
-     */
-    public void setDataset(DatasetBase dataset) {
-        this.dataset = dataset;
-    }
-
     /** Does Service needs CAS authentication to access catalog resources and data. */
     protected boolean casAuthentication = false;
 
@@ -208,81 +161,6 @@ public class Product implements Comparator<Product> {
      */
     public void setCasAuthentication(boolean casAuthentication) {
         this.casAuthentication = casAuthentication;
-    }
-
-    /**
-     * Checks for criteria date time.
-     * 
-     * @return true if datetime criteria have been set, false otherwise.
-     */
-    public boolean hasCriteriaDateTime() {
-        if (dataset == null) {
-            return false;
-        }
-        ExtractCriteriaDatetime extractCriteriaDatetime = dataset.findCriteriaDatetime();
-        return extractCriteriaDatetime != null;
-    }
-
-    /**
-     * Gets the criteria date time.
-     * 
-     * @return DateTime criteria, null if none.
-     */
-    public ExtractCriteriaDatetime getCriteriaDateTime() {
-        if (dataset == null) {
-            return null;
-        }
-        return dataset.findCriteriaDatetime();
-    }
-
-    /**
-     * Checks for criteria lat lon.
-     * 
-     * @return true if Lat/Lon criteria have been set, false otherwise.
-     */
-    public boolean hasCriteriaLatLon() {
-        if (dataset == null) {
-            return false;
-        }
-        ExtractCriteriaLatLon extractCriteriaLatLon = dataset.findCriteriaLatLon();
-        return extractCriteriaLatLon != null;
-    }
-
-    /**
-     * Gets the criteria lat lon.
-     * 
-     * @return Lat/Lon criteria, null if none.
-     */
-    public ExtractCriteriaLatLon getCriteriaLatLon() {
-        if (dataset == null) {
-            return null;
-        }
-        return dataset.findCriteriaLatLon();
-    }
-
-    /**
-     * Checks for criteria depth.
-     * 
-     * @return true if depth criteria have been set, false otherwise.
-     */
-    public boolean hasCriteriaDepth() {
-        if (dataset == null) {
-            return false;
-        }
-        ExtractCriteriaDepth extractCriteriaDepth = dataset.findCriteriaDepth();
-        return extractCriteriaDepth != null;
-    }
-
-    /**
-     * Gets the criteria depth.
-     * 
-     * @return Depth criteria, null if none.
-     */
-    public ExtractCriteriaDepth getCriteriaDepth() {
-        if (dataset == null) {
-            return null;
-        }
-        return dataset.findCriteriaDepth();
     }
 
     /**
@@ -306,10 +184,7 @@ public class Product implements Comparator<Product> {
      * 
      * @throws MotuException the motu exception
      */
-    public boolean isFtpMedia() throws MotuException {
-        if (productMetaData == null) {
-            throw new MotuException(ErrorType.SYSTEM, "Error in isFtpMedia - productMetaData is null");
-        }
+    public boolean isFtpMedia() {
         return productMetaData.isFtpMedia();
     }
 
@@ -328,24 +203,6 @@ public class Product implements Comparator<Product> {
 
         // return !(productMetaData.isProductAlongTrack() || hasGeoXYAxisWithLonLatEquivalence());
         return !(productMetaData.isProductAlongTrack());
-    }
-
-    /**
-     * Checks if is dataset along track.
-     * 
-     * @return true if dataset instance is a DatasetAlongTrack.
-     */
-    public boolean isDatasetAlongTrack() {
-        return dataset instanceof DatasetAlongTrack;
-    }
-
-    /**
-     * Checks if is dataset grid.
-     * 
-     * @return true if dataset instance is a DatasetGrid.
-     */
-    public boolean isDatasetGrid() {
-        return dataset instanceof DatasetGrid;
     }
 
     /**
@@ -737,7 +594,6 @@ public class Product implements Comparator<Product> {
      * @return the opendap variable metadata
      * @throws MotuException the motu exception
      */
-    @SuppressWarnings("unchecked")
     private void getOpendapVariableMetadata() throws MotuException {
         // Gets variables metadata.
         String unitLong;
@@ -820,69 +676,6 @@ public class Product implements Comparator<Product> {
     }
 
     /**
-     * a mapping for the specified variable to extract.
-     *
-     * @param varName key whose presence in this map is to be tested.
-     * @return Returns if this product contains a specified variable to be extracted.
-     */
-    public boolean hasVariableToBeExtracted(String varName) {
-        if (dataset == null) {
-            return false;
-        }
-        if (dataset.getVariables() == null) {
-            return false;
-        }
-        return dataset.getVariables().containsKey(varName);
-    }
-
-    /**
-     * Add variables to the dataset. If dataset doesn't exist, it creates it. If variable already exists in
-     * the dataset, it will be replaced.
-     *
-     * @param listVar list of variables to be added.
-     * @throws MotuException the motu exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     */
-    public void addVariables(List<String> listVar) throws MotuException, MotuNotImplementedException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("addVariables() - entering");
-        }
-
-        if (dataset == null) {
-            createDataset();
-        }
-
-        dataset.addVariables(listVar);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("addVariables() - exiting");
-        }
-    }
-
-    /**
-     * Updates variables into the dataset. - Adds new variables - Updates the variables which already exist -
-     * Remove the variables from the dataset which are not any more in the list If dataset doesn't exist, it
-     * creates it.
-     *
-     * @param listVar list of variables to be updated.
-     * @throws MotuException the motu exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     */
-    public void updateVariables(List<String> listVar) throws MotuException, MotuNotImplementedException {
-        // if list of variables to extract is no set,
-        // get all variables form this product
-        if (ListUtils.isNullOrEmpty(listVar)) {
-            listVar = getVariables();
-        }
-
-        if (dataset == null) {
-            createDataset();
-        }
-
-        dataset.updateVariables(listVar);
-    }
-
-    /**
      * Update variables.
      *
      * @return the variables
@@ -890,219 +683,21 @@ public class Product implements Comparator<Product> {
      * @throws MotuNotImplementedException the motu not implemented exception
      */
     public List<String> getVariables() throws MotuException, MotuNotImplementedException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getVariables() - start");
-        }
-
         List<String> listVar = new ArrayList<String>();
-
-        if (productMetaData == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getVariables() - end - productMetaData is null");
+        if (productMetaData != null) {
+            Map<String, ParameterMetaData> parameterMetaDatas = productMetaData.getParameterMetaDatas();
+            if (parameterMetaDatas != null) {
+                Collection<ParameterMetaData> listParameterMetaData = parameterMetaDatas.values();
+                for (ParameterMetaData parameterMetaData : listParameterMetaData) {
+                    if (StringUtils.isNullOrEmpty(parameterMetaData.getName())) {
+                        continue;
+                    }
+                    listVar.add(parameterMetaData.getName());
+                }
             }
-            return listVar;
         }
 
-        Map<String, ParameterMetaData> parameterMetaDatas = productMetaData.getParameterMetaDatas();
-        if (parameterMetaDatas == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getVariables() - end - parameterMetaDatas is null");
-            }
-            return listVar;
-        }
-
-        Collection<ParameterMetaData> listParameterMetaData = parameterMetaDatas.values();
-        for (ParameterMetaData parameterMetaData : listParameterMetaData) {
-            if (StringUtils.isNullOrEmpty(parameterMetaData.getName())) {
-                continue;
-            }
-            listVar.add(parameterMetaData.getName());
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getVariables() - end");
-        }
         return listVar;
-    }
-
-    /**
-     * Removes variables from the dataset.
-     * 
-     * @param listVar list of variables to be removed.
-     * 
-     * @throws MotuException the motu exception
-     */
-    public void removeVariables(List<String> listVar) throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("removeVariables() - entering");
-        }
-
-        if (dataset == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("removeVariables() - exiting");
-            }
-            return;
-        }
-
-        dataset.removeVariables(listVar);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("removeVariables() - exiting");
-        }
-    }
-
-    /**
-     * Removes all variables from the dataset.
-     */
-    public void clearVariables() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("clearVariables() - entering");
-        }
-
-        if (dataset == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("clearVariables() - exiting");
-            }
-            return;
-        }
-
-        dataset.clearVariables();
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("clearVariables() - exiting");
-        }
-    }
-
-    /**
-     * Updates list of criteria into the dataset. - Adds new criteria - Updates the criteria which already
-     * exist - Removes the criteria from the dataset which are not any more in the list If dataset doesn't
-     * exist, it creates it.
-     *
-     * @param listCriteria list of criteria to be updated.
-     * @throws MotuException the motu exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     */
-    public void updateCriteria(List<ExtractCriteria> listCriteria) throws MotuException, MotuNotImplementedException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("updateCriteria() - entering");
-        }
-
-        if (dataset == null) {
-            createDataset();
-        }
-
-        dataset.updateCriteria(listCriteria);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("updateCriteria() - exiting");
-        }
-    }
-
-    /**
-     * Removes all criteria from the dataset.
-     */
-    public void clearCriteria() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("clearCriteria() - entering");
-        }
-
-        if (dataset == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("clearCriteria() - exiting");
-            }
-            return;
-        }
-
-        dataset.clearCriteria();
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("clearCriteria() - exiting");
-        }
-    }
-
-    /**
-     * Update files.
-     * 
-     * @throws MotuException the motu exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     */
-    public void updateFiles() throws MotuException, MotuNotImplementedException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("updateFiles() - entering");
-        }
-
-        if (dataset == null) {
-            createDataset();
-        }
-
-        dataset.updateFiles(dataFiles);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("updateFiles() - exiting");
-        }
-    }
-
-    /**
-     * Clear files.
-     */
-    public void clearFiles() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("clearFiles() - entering");
-        }
-
-        if (dataset == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("clearFiles() - exiting");
-            }
-            return;
-        }
-
-        dataset.clearFiles();
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("clearFiles() - exiting");
-        }
-    }
-
-    /**
-     * Sets the select data. If dataset doesn't exist, it creates it.
-     *
-     * @param selectData to be updated.
-     * @throws MotuException the motu exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     */
-    public void setSelectData(SelectData selectData) throws MotuException, MotuNotImplementedException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("setSelectData() - entering");
-        }
-
-        if (dataset == null) {
-            createDataset();
-        }
-
-        dataset.setSelectData(selectData);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("setSelectData() - exiting");
-        }
-    }
-
-    /**
-     * Creates a new dataset.
-     *
-     * @throws MotuException the motu exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     */
-    private void createDataset() throws MotuException, MotuNotImplementedException {
-        if (productMetaData == null) {
-            throw new MotuException(ErrorType.SYSTEM, "Error in CreateDataset - Unable to create dataset - productMetaData is null");
-        }
-
-        if (isFtpMedia()) {
-            dataset = new DatasetFtp(this);
-        } else {
-            dataset = new DatasetGrid(this);
-        }
     }
 
     /**
@@ -1660,402 +1255,6 @@ public class Product implements Comparator<Product> {
     }
 
     /**
-     * Compute amount data size.
-     *
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     */
-    public void computeAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
-            NetCdfVariableNotFoundException {
-        if (dataset == null) {
-            throw new MotuException(ErrorType.SYSTEM, "Error in getAmountDataSize - Nothing to get - dataset is null");
-        }
-
-        dataset.computeAmountDataSize();
-    }
-
-    /**
-     * Gets the amount data size.
-     * 
-     * @return the amount data size
-     */
-    public double getAmountDataSize() {
-        if (dataset == null) {
-            return -1d;
-        }
-        return dataset.getAmountDataSize();
-    }
-
-    /**
-     * Gets the amount data size as bytes.
-     * 
-     * @return the amount data size as bytes
-     */
-    public double getAmountDataSizeAsBytes() {
-        return getAmountDataSizeAsKBytes() * 1024d;
-    }
-
-    /**
-     * Gets the amount data size as Kilo-bytes.
-     * 
-     * @return the amount data size as Kilo-bytes
-     */
-    public double getAmountDataSizeAsKBytes() {
-        return getAmountDataSize() * 1024d;
-    }
-
-    /**
-     * Gets the amount data size as Mega-bytes.
-     * 
-     * @return the amount data size as Mega-bytes
-     */
-    public double getAmountDataSizeAsMBytes() {
-        return getAmountDataSize();
-    }
-
-    /**
-     * Gets the reading time.
-     * 
-     * @return the reading time in nanoSeconds (ns)
-     */
-    public long getReadingTime() {
-        if (dataset == null) {
-            return -1L;
-        }
-        return dataset.getReadingTime();
-    }
-
-    /**
-     * Adds the reading time.
-     *
-     * @param readingTime the reading time in nanoSeconds (ns)
-     */
-    public void addReadingTime(long readingTime) {
-        if (dataset == null) {
-            return;
-        }
-        dataset.addReadingTime(readingTime);
-    }
-
-    /**
-     * Gets the reading time as nano seconds.
-     *
-     * @return the reading time as nano seconds
-     */
-    public long getReadingTimeAsNanoSeconds() {
-        return getReadingTime();
-    }
-
-    /**
-     * Gets the reading time as micro seconds.
-     *
-     * @return the reading time as micro seconds
-     */
-    public long getReadingTimeAsMicroSeconds() {
-        return getReadingTimeAsNanoSeconds() / 1000;
-    }
-
-    /**
-     * Gets the reading time as milli seconds.
-     *
-     * @return the reading time as milli seconds
-     */
-    public long getReadingTimeAsMilliSeconds() {
-        return getReadingTimeAsMicroSeconds() / 1000;
-    }
-
-    /**
-     * Gets the reading time as seconds.
-     *
-     * @return the reading time as seconds
-     */
-    public long getReadingTimeAsSeconds() {
-        return getReadingTimeAsMilliSeconds() / 1000;
-    }
-
-    /**
-     * Gets the writing time.
-     *
-     * @return the writing time in nanoSeconds (ns)
-     */
-    public long getWritingTime() {
-        if (dataset == null) {
-            return -1L;
-        }
-        return dataset.getWritingTime();
-    }
-
-    /**
-     * Adds the writing time.
-     *
-     * @param writingTime the writing time in nanoSeconds (ns)
-     */
-    public void addWritingTime(long writingTime) {
-        if (dataset == null) {
-            return;
-        }
-        dataset.addWritingTime(writingTime);
-    }
-
-    /**
-     * Gets the writing time as nano seconds.
-     *
-     * @return the writing time as nano seconds
-     */
-    public long getWritingTimeAsNanoSeconds() {
-        return getWritingTime();
-    }
-
-    /**
-     * Gets the writing time as micro seconds.
-     *
-     * @return the writing time as micro seconds
-     */
-    public long getWritingTimeAsMicroSeconds() {
-        return getWritingTimeAsNanoSeconds() / 1000;
-    }
-
-    /**
-     * Gets the writing time as milli seconds.
-     *
-     * @return the writing time as milli seconds
-     */
-    public long getWritingTimeAsMilliSeconds() {
-        return getWritingTimeAsMicroSeconds() / 1000;
-    }
-
-    /**
-     * Gets the writing time as seconds.
-     *
-     * @return the writing time as seconds
-     */
-    public long getWritingTimeAsSeconds() {
-        return getWritingTimeAsMilliSeconds() / 1000;
-    }
-
-    /**
-     * Gets the copying time.
-     *
-     * @return the copying time in nanoSeconds (ns)
-     */
-    public long getCopyingTime() {
-        if (dataset == null) {
-            return -1L;
-        }
-        return dataset.getCopyingTime();
-    }
-
-    /**
-     * Adds the copying time.
-     *
-     * @param copyingTime the copying time in nanoSeconds (ns)
-     */
-    public void addCopyingTime(long copyingTime) {
-        if (dataset == null) {
-            return;
-        }
-        dataset.addCopyingTime(copyingTime);
-    }
-
-    /**
-     * Gets the copying time as nano seconds.
-     *
-     * @return the copying time as nano seconds
-     */
-    public long getCopyingTimeAsNanoSeconds() {
-        return getCopyingTime();
-    }
-
-    /**
-     * Gets the copying time as micro seconds.
-     *
-     * @return the copying time as micro seconds
-     */
-    public long getCopyingTimeAsMicroSeconds() {
-        return getCopyingTimeAsNanoSeconds() / 1000;
-    }
-
-    /**
-     * Gets the copying time as milli seconds.
-     *
-     * @return the copying time as milli seconds
-     */
-    public long getCopyingTimeAsMilliSeconds() {
-        return getCopyingTimeAsMicroSeconds() / 1000;
-    }
-
-    /**
-     * Gets the copying time as seconds.
-     *
-     * @return the copying time as seconds
-     */
-    public long getCopyingTimeAsSeconds() {
-        return getCopyingTimeAsMilliSeconds() / 1000;
-    }
-
-    /**
-     * Gets the compressing time.
-     *
-     * @return the compressing time in nanoSeconds (ns)
-     */
-    public long getCompressingTime() {
-        if (dataset == null) {
-            return -1L;
-        }
-        return dataset.getCompressingTime();
-    }
-
-    /**
-     * Adds the compressing time.
-     *
-     * @param compressingTime the compressing time in nanoSeconds (ns)
-     */
-    public void addCompressingTime(long compressingTime) {
-        if (dataset == null) {
-            return;
-        }
-        dataset.addCompressingTime(compressingTime);
-    }
-
-    /**
-     * Gets the compressing time as nano seconds.
-     *
-     * @return the compressing time as nano seconds
-     */
-    public long getCompressingTimeAsNanoSeconds() {
-        return getCompressingTime();
-    }
-
-    /**
-     * Gets the compressing time as micro seconds.
-     *
-     * @return the compressing time as micro seconds
-     */
-    public long getCompressingTimeAsMicroSeconds() {
-        return getCompressingTimeAsNanoSeconds() / 1000;
-    }
-
-    /**
-     * Gets the compressing time as milli seconds.
-     *
-     * @return the compressing time as milli seconds
-     */
-    public long getCompressingTimeAsMilliSeconds() {
-        return getCompressingTimeAsMicroSeconds() / 1000;
-    }
-
-    /**
-     * Gets the compressing time as seconds.
-     *
-     * @return the compressing time as seconds
-     */
-    public long getCompressingTimeAsSeconds() {
-        return getCompressingTimeAsMilliSeconds() / 1000;
-    }
-
-    /**
-     * Extract data.
-     *
-     * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    public void extractData(OutputFormat dataOutputFormat) throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
-            NetCdfVariableNotFoundException, IOException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("extractData() - entering");
-        }
-
-        if (dataset == null) {
-            throw new MotuException(ErrorType.SYSTEM, "Error in extractData - Nothing to extract - dataset is null");
-        }
-
-        dataset.extractData(dataOutputFormat);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("extractData() - exiting");
-        }
-    }
-
-    /**
-     * Extract NCSS data.
-     * 
-     * @param dataOutputFormat the data output format
-     * @throws MotuException
-     * @throws MotuNotImplementedException
-     * @throws NetCdfVariableException
-     * @throws MotuInvalidDepthRangeException
-     * @throws InterruptedException
-     */
-    public void extractNCSSData(OutputFormat dataOutputFormat) throws MotuException, MotuNotImplementedException, NetCdfVariableException,
-            MotuInvalidDepthRangeException, IOException, InterruptedException {
-        // Extract criteria collect
-        ExtractCriteriaDatetime time = getCriteriaDateTime();
-        ExtractCriteriaLatLon latlon = getCriteriaLatLon();
-        ExtractCriteriaDepth depth = getCriteriaDepth();
-        Set<String> var = dataset.getVariables().keySet();
-
-        // Create output NetCdf file to deliver to the user (equivalent to opendap)
-        String fname = NetCdfWriter.getUniqueNetCdfFileName(getProductId());
-        setExtractFilename(fname);
-        String dir = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath();
-
-        // Create and initialize selection
-        NetCdfSubsetService ncss = new NetCdfSubsetService();
-        ncss.setGeoSubset(latlon);
-        ncss.setTimeSubset(time);
-        ncss.setDepthSubset(depth);
-        ncss.setVariablesSubset(var);
-        ncss.setOutputFormat(dataOutputFormat);
-        ncss.setOutputDir(dir);
-        ncss.setOutputFile(fname);
-        ncss.setncssURL(getLocationDataNCSS());
-
-        // Run rest query (unitary or concat depths)
-        Array zAxisData = null;
-        if (productMetaData.hasZAxis() && isDatasetGrid()) {
-            // Z-Range selection update
-            DatasetGrid d = (DatasetGrid) dataset;
-            d.productMetadata = productMetaData;
-            d.getZRange();
-            int zlev = d.zRange.length();
-
-            // Dataset available depths
-            zAxisData = dataset.getProduct().getZAxisData();
-            long alev = zAxisData.getSize();
-
-            // Pass data to TDS-NCSS subsetter
-            ncss.setDepthAxis(zAxisData);
-            ncss.setDepthRange(d.zRange);
-
-            if (zlev == 1 || zlev == alev) {
-                ncss.unitRequestNCSS(); // 1-level or ALL levels (can be done with TDS-NCSS)
-            } else {
-                ncss.concatDepths(); // True depth Subset with CDO operators (needs concatenation)
-            }
-        } else {
-            ncss.unitRequestNCSS(); // No depth axis -> request without depths
-        }
-    }
-
-    /**
      * Extract ftp data.
      * 
      * @param dataOutputFormat the data output format
@@ -2173,7 +1372,7 @@ public class Product implements Comparator<Product> {
     }
 
     /** The data files. */
-    List<DataFile> dataFiles = null;
+    private List<DataFile> dataFiles = null;
 
     /**
      * Gets the data files.
@@ -2435,120 +1634,6 @@ public class Product implements Comparator<Product> {
         }
     }
 
-    /** The output location path and file name. */
-    private String extractFilename = "";
-
-    /**
-     * Getter of the property <tt>extractFilename</tt>.
-     * 
-     * @return Returns the extractFilename.
-     * 
-     * @uml.property name="extractFilename"
-     */
-    public String getExtractFilename() {
-        return this.extractFilename;
-    }
-
-    /**
-     * Setter of the property <tt>extractFilename</tt>.
-     * 
-     * @param extractFilename The extractFilename to set.
-     * 
-     * @uml.property name="extractFilename"
-     */
-    public void setExtractFilename(String extractFilename) {
-        this.extractFilename = extractFilename;
-        this.extractFilenameTemp = this.extractFilename + NetCdfWriter.NETCDF_FILE_EXTENSION_EXTRACT;
-    }
-
-    /** The temporary output location path and file name. */
-    private String extractFilenameTemp = "";
-
-    /**
-     * Getter of the property <tt>extractFilenameTemp</tt>.
-     * 
-     * @return Returns the extractFilenameTemp.
-     * 
-     * @uml.property name="extractFilenameTemp"
-     */
-    public String getExtractFilenameTemp() {
-        return this.extractFilenameTemp;
-    }
-
-    /**
-     * Setter of the property <tt>extractFilenameTemp</tt>.
-     * 
-     * @param extractFilenameTemp The extractFilenameTemp to set.
-     * 
-     * @uml.property name="extractFilenameTemp"
-     */
-    public void setExtractFilenameTemp(String extractFilenameTemp) {
-        this.extractFilenameTemp = extractFilenameTemp;
-    }
-
-    /**
-     * Clears <tt>extractFilename</tt>.
-     * 
-     * @uml.property name="extractFilename"
-     */
-    public void clearExtractFilename() {
-        this.extractFilename = "";
-        this.extractFilenameTemp = "";
-    }
-
-    /** Last error encountered. */
-    private String lastError = "";
-
-    /**
-     * Getter of the property <tt>lastError</tt>.
-     * 
-     * @return Returns the lastError.
-     * 
-     * @uml.property name="lastError"
-     */
-    public String getLastError() {
-        return this.lastError;
-    }
-
-    /**
-     * Setter of the property <tt>lastError</tt>.
-     * 
-     * @param lastError The lastError to set.
-     * 
-     * @uml.property name="lastError"
-     */
-    public void setLastError(String lastError) {
-        this.lastError = lastError;
-    }
-
-    /**
-     * Clears <tt>lastError</tt>.
-     * 
-     * @uml.property name="lastError"
-     */
-    public void clearLastError() {
-        this.lastError = "";
-    }
-
-    /**
-     * Checks for last error.
-     * 
-     * @return true last error message string is not empty, false otherwise.
-     */
-    public boolean hasLastError() {
-        return !StringUtils.isNullOrEmpty(getLastError());
-    }
-
-    /**
-     * Gets the output full file name (with path).
-     * 
-     * @return the output full file name (with path).
-     * 
-     */
-    public String getExtractLocationData() {
-        return Product.getExtractLocationData(extractFilename);
-    }
-
     /**
      * Gets the extract location data.
      * 
@@ -2558,7 +1643,6 @@ public class Product implements Comparator<Product> {
      * 
      */
     public static String getExtractLocationData(String fileName) {
-
         if (fileName.length() <= 0) {
             return "";
         }
@@ -2571,46 +1655,6 @@ public class Product implements Comparator<Product> {
     }
 
     /**
-     * Gets the output temporary full file name (with path).
-     * 
-     * @return the output temporary full file name (with path).
-     * 
-     * @throws MotuException the motu exception
-     */
-    public String getExtractLocationDataTemp() throws MotuException {
-
-        if (extractFilenameTemp.length() <= 0) {
-            return "";
-        }
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(Product.getExtractionPath());
-        stringBuffer.append(extractFilenameTemp);
-
-        return stringBuffer.toString();
-    }
-
-    /**
-     * Move temp extract file to final extract.
-     * 
-     * @throws MotuException the motu exception
-     */
-    public void moveTempExtractFileToFinalExtractFile() throws MotuException {
-        // Temporary File
-        String locationTmp = getExtractLocationDataTemp();
-        File fileTemp = new File(locationTmp);
-
-        // Final File
-        String locationFinal = getExtractLocationData();
-        File fileFinal = new File(locationFinal);
-
-        // Rename file
-        boolean success = fileTemp.renameTo(fileFinal);
-        if (!success) {
-            throw new MotuException(ErrorType.SYSTEM, String.format("Unable to rename file '%s' to file '%s'.", locationTmp, locationFinal));
-        }
-    }
-
-    /**
      * Gets the extraction path.
      * 
      * @return the extraction path
@@ -2618,7 +1662,6 @@ public class Product implements Comparator<Product> {
      * @throws MotuException the motu exception
      */
     public static String getExtractionPath() {
-
         StringBuffer stringBuffer = new StringBuffer();
 
         String dir = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath();

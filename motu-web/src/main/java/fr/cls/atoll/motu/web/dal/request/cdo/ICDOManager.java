@@ -6,8 +6,8 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthRangeException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.dal.request.IDALRequestManager;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 
 /**
@@ -43,7 +43,7 @@ public interface ICDOManager {
      * @throws InterruptedException
      * @throws Exception
      */
-    void runRequestWithCDOMergeTool(Product p,
+    void runRequestWithCDOMergeTool(RequestProduct requestProduct,
                                     NetCdfSubsetService ncss,
                                     ExtractCriteriaLatLon latlon,
                                     String extractDirPath,

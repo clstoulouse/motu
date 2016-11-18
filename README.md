@@ -671,12 +671,10 @@ __motu/__
      * __transaction__: This folder is used to serve the [transaction accounting logs](#LogbooksTransactions)
      * __static-files__: Used to store public static files. This folder can be served by a frontal Apache HTTPd Web server or Motu Apache Tomcat. In the CMEMS-CIS context, it is not used as static files are deployed on a central web server.      
 * __log:__ Folder which contains all log files. Daily logging are suffixed by yyyy-MM-dd.
-  * __errors.log:__ Motu application errors
-  * __warnings.log:__ Motu application warnings
   * __logbook.log:__ Motu application logs (errors and warning are included)
-  * __tomcat-motu.log:__ Apache tomcat console output and errors
-  * __tomcat-motu-catalina.out:__ CATALINA_OUT environment variable used by catalina engine to write its logs.
-  * __queue.log:__ Motu queue server logs messages (transaction accounting logs)
+  * __warnings.log:__ Motu application warnings
+  * __errors.log:__ Motu application errors
+  * __motuQSlog.xml,motuQSlog.csv:__ Motu queue server logs messages (transaction accounting logs), format is either xml or csv
 * __motu file:__ Script used to start, stop Motu application.  Refers to [Start & Stop Motu](#SS) for more details.
 * __pid:__ Folder which contains pid files of the running Motu application.
   * __tomcat-motu.pid:__ Contains the UNIX PID of the Motu process.
@@ -1469,8 +1467,20 @@ You change the status order by entering 4 parameters in the URL:
  
 ## <a name="ExploitCleanDisk">Clean files</a>  
 
-## <a name="ExploitCleanDiskLogbook">Logbook files</a>  
-Logbook files are written in the folder configured in the log4j.xml configuration file.  
+## <a name="ExploitCleanDiskLogbook">Logbook files</a>   
+Logbook files are written by Apache Tomcat server and Motu application.  
+ 
+### <a name="ExploitCleanDiskLogbookTomcat">Apache Tomcat Logbook files</a>  
+Tomcat writes log files in folder tomcat-motu/logs.  
+You can customize this default configuration by editing tomcat-motu/conf/logging.properties  
+This file is the default file provided by Apache Tomcat.
+There is a daily rotation so you can clean those files to fullfill the harddrive.   
+crontab -e   
+0 * * * * find /opt/cmems-cis/motu/tomcat-motu/logs/*.log* -type f -mmin +14400 -delete >/dev/null 2>&1   
+0 * * * * find /opt/cmems-cis/motu/tomcat-motu/logs/*.txt* -type f -mmin +14400 -delete >/dev/null 2>&1   
+
+### <a name="ExploitCleanDiskLogbookMotu">Motu Logbook files</a>  
+Logbook files are written in the folder(s) configured in the log4j.xml configuration file.  
 All logs are generated daily except for motuQSLog (xml or csv) which are generated monthly.  
 You can clean those files to avoid to fullfill the harddrive.   
 crontab -e   
@@ -1479,6 +1489,9 @@ crontab -e
 0 * * * * find /opt/cmems-cis/motu/log/*.xml* -type f -mmin +144000 -delete >/dev/null 2>&1  
 0 * * * * find /opt/cmems-cis/motu/log/*.csv* -type f -mmin +144000 -delete >/dev/null 2>&1  
   
+Note that Motu is often tuned to write the motuQSLog in a dedicated folder. So you have to clean log files in this folder too. For example:
+0 * * * * find /opt/cmems-cis/motu/data/public/transaction/*.xml* -type f -mmin +144000 -delete >/dev/null 2>&1  
+0 * * * * find /opt/cmems-cis/motu/data/public/transaction/*.csv* -type f -mmin +144000 -delete >/dev/null 2>&1 
 
 ## <a name="LogCodeErrors">Log Errors</a>   
 

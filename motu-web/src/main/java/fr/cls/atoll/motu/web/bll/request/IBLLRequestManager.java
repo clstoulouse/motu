@@ -5,9 +5,9 @@ import java.util.List;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.bll.request.queueserver.IQueueServerManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
@@ -78,7 +78,7 @@ public interface IBLLRequestManager {
      * @param extractionParameters
      * @return
      */
-    ProductResult download(ConfigService cs_, Product product_, ExtractionParameters extractionParameters, AbstractAction action);
+    ProductResult download(ConfigService cs_, RequestProduct product_, AbstractAction action);
 
     /**
      * .
@@ -88,7 +88,7 @@ public interface IBLLRequestManager {
      * @param extractionParameters
      * @return
      */
-    long downloadAsynchonously(ConfigService cs_, Product product_, ExtractionParameters extractionParameters, AbstractAction action);
+    long downloadAsynchonously(ConfigService cs_, RequestProduct product_, AbstractAction action);
 
     /**
      * Delete the files associated to the provided URL. .
@@ -118,11 +118,7 @@ public interface IBLLRequestManager {
      * @return
      * @throws MotuExceptionBase
      */
-    double getProductDataSizeIntoByte(Product product,
-                                      List<String> listVar,
-                                      List<String> listTemporalCoverage,
-                                      List<String> listLatLongCoverage,
-                                      List<String> listDepthCoverage) throws MotuException;
+    double getProductDataSizeIntoByte(RequestProduct requestProduct) throws MotuException;
 
     /**
      * .
@@ -141,12 +137,10 @@ public interface IBLLRequestManager {
     /**
      * Initialize the maps which manage the requests.
      * 
-     * @param userId The id of the user
-     * @param userHost The host if the user
      * @param action The action object associated to the request
      * @return The computed id of the current new request.
      */
-    Long initRequest(String userId, String userHost, AbstractAction action);
+    Long initRequest(AbstractAction action);
 
     /**
      * Sets the new status of the request associated with the provided request Id.

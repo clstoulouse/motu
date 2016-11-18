@@ -30,6 +30,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.MotuMarshallException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
@@ -150,13 +151,8 @@ public class GetSizeAction extends AbstractProductInfoAction {
         try {
             Product p = getProduct();
             if (checkProduct(p, getProductId())) {
-                ExtractionParameters extractionParameters = createExtractionParameters();
-                double productDataSize = BLLManager.getInstance().getRequestManager()
-                        .getProductDataSizeIntoByte(p,
-                                                    extractionParameters.getListVar(),
-                                                    extractionParameters.getListTemporalCoverage(),
-                                                    extractionParameters.getListLatLonCoverage(),
-                                                    extractionParameters.getListDepthCoverage());
+                RequestProduct rp = new RequestProduct(p, createExtractionParameters());
+                double productDataSize = BLLManager.getInstance().getRequestManager().getProductDataSizeIntoByte(rp);
                 double productMaxAllowedDataSize = BLLManager.getInstance().getRequestManager().getProductMaxAllowedDataSizeIntoByte(p);
                 RequestSize requestSize = getRequestSize(productDataSize, productMaxAllowedDataSize);
 

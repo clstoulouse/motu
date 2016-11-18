@@ -24,49 +24,31 @@
  */
 package fr.cls.atoll.motu.web.dal.request.netcdf.data;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateRangeException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthRangeException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatLonRangeException;
-import fr.cls.atoll.motu.web.bll.exception.MotuNoVarException;
-import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeNotFoundException;
-import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
-import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteria;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaGeo;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
-import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
-import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import ucar.ma2.MAMath;
 import ucar.ma2.MAMath.MinMax;
 import ucar.ma2.Range;
-import ucar.ma2.Section;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.Variable;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.CoordinateAxis;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
 /**
@@ -77,20 +59,27 @@ import ucar.unidata.geoloc.LatLonPointImpl;
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-public abstract class DatasetBase {
+public class DatasetBase {
 
-    /** Logger for this class. */
-    private static final Logger LOG = LogManager.getLogger();
+    /** The product. */
+    protected Product product = null;
 
-    /** Contains variable attributes names to remove in output. */
-    static final String[] VAR_ATTR_TO_REMOVE = new String[] { "Date_CNES_JD", "date", "_unsigned", };
+    /** The variables map. */
+    private Map<String, VarData> variablesMap;
 
-    /**
-     * Default constructor.
-     */
-    public DatasetBase() {
-        init();
-    }
+    /** The list criteria. */
+    private List<DataFile> listFiles;
+
+    /** The list criteria. */
+    private List<ExtractCriteria> listCriteria;
+
+    /** The output location path and file name. */
+    private String extractFilename = "";
+
+    /** The temporary output location path and file name. */
+    private String extractFilenameTemp = "";
+
+    private DataBaseExtractionTimeCounter dataBaseExtractionTimeCounter;
 
     /**
      * Constructor.
@@ -98,287 +87,71 @@ public abstract class DatasetBase {
      * @param product product to work with
      */
     public DatasetBase(Product product) {
-        init();
+        variablesMap = new HashMap<String, VarData>();
+        listCriteria = new ArrayList<ExtractCriteria>();
+        dataBaseExtractionTimeCounter = new DataBaseExtractionTimeCounter();
         setProduct(product);
     }
 
     /**
-     * Initialization.
-     */
-    private void init() {
-        variablesMap = new HashMap<String, VarData>();
-    }
-
-    /** Time dimension range. */
-    protected Range tRange = null;
-
-    /** Y/X or Lat/Lon dimension range. (Y first, X second) */
-    protected Range[] yxRange = null;
-
-    /** Z dimension range. */
-    protected Range zRange = null;
-
-    /** Time dimension range values. */
-    protected double[] tRangeValue = new double[] { Double.MAX_VALUE, Double.MAX_VALUE, };
-
-    /** Y or Lat dimension range values. */
-    protected double[] yRangeValue = new double[] { Double.MAX_VALUE, Double.MAX_VALUE, };
-
-    /** X or Lon dimension range values. */
-    protected double[] xRangeValue = new double[] { Double.MAX_VALUE, Double.MAX_VALUE, };
-
-    /** List of each adjacent Lat dimension range values. */
-    List<double[]> rangesLatValue = new ArrayList<double[]>();
-
-    /** List of each adjacent Lon dimension range values. */
-    List<double[]> rangesLonValue = new ArrayList<double[]>();
-
-    /** List of each adjacent Lat dimension range. */
-    List<List<Range>> listYXRanges = null;
-
-    /** Z dimension range values. */
-    protected double[] zRangeValue = new double[] { Double.MAX_VALUE, Double.MAX_VALUE, };
-
-    /** Has output time dimension. */
-    protected boolean hasOutputTimeDimension = false;
-
-    /** Has output latitude dimension. */
-    protected boolean hasOutputLatDimension = false;
-
-    /** Has output longitude dimension. */
-    protected boolean hasOutputLonDimension = false;
-
-    /** Has output Z dimension. */
-    protected boolean hasOutputZDimension = false;
-
-    // protected List<CoordinateAxis> listVariableLatSubset = new ArrayList<CoordinateAxis>();
-    // protected List<CoordinateAxis> listVariableLonSubset = new ArrayList<CoordinateAxis>();
-    /** The list variable x subset. */
-    protected List<CoordinateAxis> listVariableXSubset = null;
-
-    /** The list variable y subset. */
-    protected List<CoordinateAxis> listVariableYSubset = null;
-
-    /** The map x range. */
-    protected Map<String, Range> mapXRange = null;
-
-    /** The map y range. */
-    protected Map<String, Range> mapYRange = null;
-
-    /** The map var org ranges. */
-    protected Map<String, List<Section>> mapVarOrgRanges = null;
-
-    /** The list distinct x range. */
-    protected List<Range> listDistinctXRange = null;
-
-    /** The list distinct y range. */
-    protected List<Range> listDistinctYRange = null;
-
-    /**
-     * Checks for T range value.
+     * Valeur de dataBaseExtractionTimeCounter.
      * 
-     * @return Time range values have been set ?.
+     * @return la valeur.
      */
-    protected boolean hasTRangeValue() {
-        return tRangeValue[0] != Double.MAX_VALUE;
+    public DataBaseExtractionTimeCounter getDataBaseExtractionTimeCounter() {
+        return dataBaseExtractionTimeCounter;
     }
 
     /**
-     * Checks for Z range value.
+     * Valeur de dataBaseExtractionTimeCounter.
      * 
-     * @return Z range values have been set ?.
+     * @param dataBaseExtractionTimeCounter nouvelle valeur.
      */
-    protected boolean hasZRangeValue() {
-        return zRangeValue[0] != Double.MAX_VALUE;
-
+    public void setDataBaseExtractionTimeCounter(DataBaseExtractionTimeCounter dataBaseExtractionTimeCounter) {
+        this.dataBaseExtractionTimeCounter = dataBaseExtractionTimeCounter;
     }
 
+    /** Last error encountered. */
+    private String lastError = "";
+
     /**
-     * Checks for Y range value.
+     * Getter of the property <tt>lastError</tt>.
      * 
-     * @return Y range values have been set ?.
-     */
-    protected boolean hasYRangeValue() {
-        return yRangeValue[0] != Double.MAX_VALUE;
-
-    }
-
-    /**
-     * Checks for X range value.
+     * @return Returns the lastError.
      * 
-     * @return X range values have been set ?.
+     * @uml.property name="lastError"
      */
-    protected boolean hasXRangeValue() {
-        return xRangeValue[0] != Double.MAX_VALUE;
-
+    public String getLastError() {
+        return this.lastError;
     }
 
-    /** The amount data size of a request in Megabytes. */
-    protected double amountDataSize = 0d;
-
     /**
-     * Gets the amount data size.
+     * Setter of the property <tt>lastError</tt>.
      * 
-     * @return the amount data size
-     */
-    public double getAmountDataSize() {
-        return amountDataSize;
-    }
-
-    /**
-     * Gets the amount data size as bytes.
+     * @param lastError The lastError to set.
      * 
-     * @return the amount data size as bytes
+     * @uml.property name="lastError"
      */
-    public double getAmountDataSizeAsBytes() {
-        return getAmountDataSizeAsKBytes() * 1024d;
+    public void setLastError(String lastError) {
+        this.lastError = lastError;
     }
 
     /**
-     * Gets the amount data size as Kilo-bytes.
+     * Clears <tt>lastError</tt>.
      * 
-     * @return the amount data size as Kilo-bytes
+     * @uml.property name="lastError"
      */
-    public double getAmountDataSizeAsKBytes() {
-        return getAmountDataSize() * 1024d;
+    public void clearLastError() {
+        this.lastError = "";
     }
 
     /**
-     * Gets the amount data size as Mega-bytes.
+     * Checks for last error.
      * 
-     * @return the amount data size as Mega-bytes
+     * @return true last error message string is not empty, false otherwise.
      */
-    public double getAmountDataSizeAsMBytes() {
-        return getAmountDataSize();
-    }
-
-    /**
-     * Gets the amount data size as Giga-bytes.
-     * 
-     * @return the amount data size as Giga-bytes
-     */
-    public double getAmountDataSizeAsGBytes() {
-        return getAmountDataSize() / 1024d;
-    }
-
-    /** The reading time in nanoSeconds (ns). */
-    protected long readingTime = 0L;
-
-    /**
-     * Gets the reading time.
-     * 
-     * @return the reading time in nanoSeconds (ns)
-     */
-    public long getReadingTime() {
-        return this.readingTime;
-    }
-
-    /**
-     * Sets the reading time.
-     *
-     * @param readingTime the new reading time in nanoSeconds (ns)
-     */
-    public void setReadingTime(long readingTime) {
-        this.readingTime = readingTime;
-    }
-
-    /**
-     * Adds the reading time.
-     *
-     * @param readingTime the reading time in nanoSeconds (ns)
-     */
-    public void addReadingTime(long readingTime) {
-        this.readingTime += readingTime;
-    }
-
-    /** The writing time in nanoSeconds (ns). */
-    protected long writingTime = 0L;
-
-    /**
-     * Gets the writing time.
-     *
-     * @return the writing time in nanoSeconds (ns)
-     */
-    public long getWritingTime() {
-        return writingTime;
-    }
-
-    /**
-     * Sets the writing time.
-     *
-     * @param writingTime the new writing time in nanoSeconds (ns)
-     */
-    public void setWritingTime(long writingTime) {
-        this.writingTime = writingTime;
-    }
-
-    /**
-     * Adds the writing time.
-     *
-     * @param writingTime the writing time in nanoSeconds (ns)
-     */
-    public void addWritingTime(long writingTime) {
-        this.writingTime += writingTime;
-    }
-
-    /** The copying time in nanoSeconds (ns). */
-    protected long copyingTime = 0L;
-
-    /**
-     * Gets the copying time.
-     *
-     * @return the copying time in nanoSeconds (ns)
-     */
-    public long getCopyingTime() {
-        return copyingTime;
-    }
-
-    /**
-     * Sets the copying time.
-     *
-     * @param copyingTime the new copying time in nanoSeconds (ns)
-     */
-    public void setCopyingTime(long copyingTime) {
-        this.copyingTime = copyingTime;
-    }
-
-    /**
-     * Adds the copying time.
-     *
-     * @param copyingTime the copying time in nanoSeconds (ns)
-     */
-    public void addCopyingTime(long copyingTime) {
-        this.copyingTime += copyingTime;
-    }
-
-    /** The compressing time in nanoSeconds (ns). */
-    protected long compressingTime = 0L;
-
-    /**
-     * Gets the compressing time.
-     *
-     * @return the compressing time in nanoSeconds (ns)
-     */
-    public long getCompressingTime() {
-        return compressingTime;
-    }
-
-    /**
-     * Sets the compressing time.
-     *
-     * @param compressingTime the new compressing time in nanoSeconds (ns)
-     */
-    public void setCompressingTime(long compressingTime) {
-        this.compressingTime = compressingTime;
-    }
-
-    /**
-     * Adds the compressing time.
-     * 
-     * @param compressingTime the compressing time in nanoSeconds (ns)
-     */
-    public void addCompressingTime(long compressingTime) {
-        this.compressingTime += compressingTime;
+    public boolean hasLastError() {
+        return !StringUtils.isNullOrEmpty(getLastError());
     }
 
     /**
@@ -402,7 +175,6 @@ public abstract class DatasetBase {
      * @throws MotuException the motu exception
      */
     public void addVariables(List<String> listVar) throws MotuException {
-        // List<String> listVarNameResolved = new ArrayList<String>();
         if (listVar == null) {
             throw new MotuException(ErrorType.NO_VARIABLE, "Error in addVariables - List of variables to be added is null");
         }
@@ -410,10 +182,6 @@ public abstract class DatasetBase {
         NetCdfReader netCdfReader = new NetCdfReader(product.getLocationData(), false);
         netCdfReader.open(true);
         for (String standardName : listVar) {
-            if (variablesMap == null) {
-                variablesMap = new HashMap<String, VarData>();
-            }
-
             String trimmedStandardName = standardName.trim();
 
             List<String> listVarName;
@@ -425,15 +193,12 @@ public abstract class DatasetBase {
             for (String varName : listVarName) {
                 VarData varData = new VarData(varName);
                 varData.setStandardName(trimmedStandardName);
-                if (this.variablesMap.keySet().contains(varData.getVarName())) {
-                    // listVarNameResolved.add(varData.getVarName());
-                    this.variablesMap.remove(varData.getVarName());
+                if (getVariables().keySet().contains(varData.getVarName())) {
+                    getVariables().remove(varData.getVarName());
                 }
-                putVariables(varData.getVarName(), varData);
+                getVariables().put(varData.getVarName(), varData);
             }
         }
-
-        // return listVarNameResolved;
     }
 
     /**
@@ -446,20 +211,6 @@ public abstract class DatasetBase {
      */
     public void updateVariables(List<String> listVar) throws MotuException {
         addVariables(listVar);
-    }
-
-    /**
-     * Removes variables from the dataset.
-     * 
-     * @param listVar list of variables to be removed.
-     * 
-     * @throws MotuException the motu exception
-     */
-    public void removeVariables(List<String> listVar) throws MotuException {
-        if (listVar == null) {
-            return;
-        }
-        this.variablesMap.keySet().removeAll(listVar);
     }
 
     /**
@@ -506,28 +257,16 @@ public abstract class DatasetBase {
      * @return criteria found or null if not found.
      */
     public ExtractCriteria findCriteria(Class<? extends ExtractCriteria> cls) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("findCriteria() - entering");
-        }
-
-        if (listCriteria == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("findCriteria() - exiting");
-            }
-            return null;
-        }
-
         ExtractCriteria criteriaFound = null;
-        for (ExtractCriteria c : this.listCriteria) {
-            if (c.getClass().isAssignableFrom(cls)) {
-                criteriaFound = c;
-                break;
+        if (listCriteria != null) {
+            for (ExtractCriteria c : this.listCriteria) {
+                if (c.getClass().isAssignableFrom(cls)) {
+                    criteriaFound = c;
+                    break;
+                }
             }
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("findCriteria() - exiting");
-        }
         return criteriaFound;
     }
 
@@ -539,10 +278,7 @@ public abstract class DatasetBase {
      * @return criteria found or null if not found.
      */
     public ExtractCriteria findCriteria(ExtractCriteria criteria) {
-        if (criteria == null) {
-            return null;
-        }
-        return findCriteria(criteria.getClass());
+        return criteria != null ? findCriteria(criteria.getClass()) : null;
     }
 
     /**
@@ -554,10 +290,6 @@ public abstract class DatasetBase {
      * @throws MotuException the motu exception
      */
     public void addCriteria(List<ExtractCriteria> list, boolean replace) throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("addCriteria() - entering");
-        }
-
         if (list == null) {
             throw new MotuException(ErrorType.BAD_PARAMETERS, "Error in addCriteria - List of listCriteria to be added is null");
         }
@@ -570,44 +302,100 @@ public abstract class DatasetBase {
         for (ExtractCriteria c : list) {
             criteriaFound = findCriteria(c);
             if ((criteriaFound != null) && replace) {
-                removeCriteria(criteriaFound);
+                getListCriteria().remove(criteriaFound);
             }
-            addCriteria(c);
+            getListCriteria().add(c);
         }
+    }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("addCriteria() - exiting");
+    public void setCriteria(List<String> listTemporalCoverage, List<String> listLatLonCoverage, List<String> listDepthCoverage)
+            throws MotuException, MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException, MotuInvalidLongitudeException {
+        createCriteriaList(listTemporalCoverage, listLatLonCoverage, listDepthCoverage, listCriteria);
+    }
+
+    /**
+     * Creates a list of {@link ExtractCriteria} objects.
+     *
+     * @param criteria list of criteria (geographical coverage, temporal coverage ...)
+     * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
+     *            be empty string)
+     * @param listDepthCoverage list contains low depth, high depth.
+     * @param listTemporalCoverage list contains start date and end date (can be empty string)
+     *
+     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
+     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
+     * @throws MotuException the motu exception
+     * @throws MotuInvalidDepthException the motu invalid depth exception
+     * @throws MotuInvalidDateException the motu invalid date exception
+     */
+    private static void createCriteriaList(List<String> listTemporalCoverage,
+                                           List<String> listLatLonCoverage,
+                                           List<String> listDepthCoverage,
+                                           List<ExtractCriteria> criteria) throws MotuInvalidDateException, MotuInvalidDepthException,
+                                                   MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException {
+        addCriteriaTemporal(listTemporalCoverage, criteria);
+        addCriteriaLatLon(listLatLonCoverage, criteria);
+        addCriteriaDepth(listDepthCoverage, criteria);
+    }
+
+    /**
+     * Add a temporal criteria to a list of {@link ExtractCriteria} objects.
+     *
+     * @param criteria list of criteria (geographical coverage, temporal coverage ...), if null list is
+     *            created
+     * @param listTemporalCoverage list contains start date and end date (can be empty string)
+     *
+     * @throws MotuException the motu exception
+     * @throws MotuInvalidDateException the motu invalid date exception
+     */
+    private static void addCriteriaTemporal(List<String> listTemporalCoverage, List<ExtractCriteria> criteria)
+            throws MotuInvalidDateException, MotuException {
+        if (criteria != null && listTemporalCoverage != null) {
+            if (!listTemporalCoverage.isEmpty()) {
+                ExtractCriteriaDatetime c = new ExtractCriteriaDatetime();
+                criteria.add(c);
+                c.setValues(listTemporalCoverage);
+            }
         }
     }
 
     /**
-     * Updates listCriteria into the dataset. - Adds new criteria - Updates the criteria which already exist -
-     * Removes the criteria from the dataset which are not any more in the list
-     * 
-     * @param list list of riteria to be updated.
-     * 
+     * Add a geographical Lat/Lon criteria to a list of {@link ExtractCriteria} objects.
+     *
+     * @param criteria list of criteria (geographical coverage, temporal coverage ...), if null list is
+     *            created
+     * @param listLatLonCoverage list contains low latitude, low longitude, high latitude, high longitude (can
+     *            be empty string)
+     *
+     * @throws MotuInvalidLongitudeException the motu invalid longitude exception
+     * @throws MotuInvalidLatitudeException the motu invalid latitude exception
      * @throws MotuException the motu exception
      */
-    public void updateCriteria(List<ExtractCriteria> list) throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("updateCriteria() - entering");
-        }
-
-        if (list == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("updateCriteria() - exiting");
+    private static void addCriteriaLatLon(List<String> listLatLonCoverage, List<ExtractCriteria> criteria)
+            throws MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException {
+        if (criteria != null && listLatLonCoverage != null) {
+            if (!listLatLonCoverage.isEmpty()) {
+                criteria.add(new ExtractCriteriaLatLon(listLatLonCoverage));
             }
-            return;
         }
+    }
 
-        if (listCriteria == null) {
-            listCriteria = new ArrayList<ExtractCriteria>();
-        }
-        listCriteria.clear();
-        listCriteria.addAll(list);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("updateCriteria() - exiting");
+    /**
+     * Add a geographical Depth criteria to a list of {@link ExtractCriteria} objects.
+     *
+     * @param criteria list of criteria (geographical coverage, temporal coverage ...), if null list is
+     *            created
+     * @param listDepthCoverage list contains low depth, high depth.
+     *
+     * @throws MotuInvalidDepthException the motu invalid depth exception
+     * @throws MotuException the motu exception
+     */
+    private static void addCriteriaDepth(List<String> listDepthCoverage, List<ExtractCriteria> criteria)
+            throws MotuInvalidDepthException, MotuException {
+        if (criteria != null && listDepthCoverage != null) {
+            if (!listDepthCoverage.isEmpty()) {
+                criteria.add(new ExtractCriteriaDepth(listDepthCoverage));
+            }
         }
     }
 
@@ -619,479 +407,12 @@ public abstract class DatasetBase {
      * @throws MotuException the motu exception
      */
     public void updateFiles(List<DataFile> list) throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("updateFiles() - entering");
-        }
-
-        if (list == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("updateFiles() - exiting");
+        if (list != null) {
+            if (listFiles == null) {
+                listFiles = new ArrayList<DataFile>();
             }
-            return;
-        }
-
-        if (listFiles == null) {
-            listFiles = new ArrayList<DataFile>();
-        }
-        listFiles.clear();
-        listFiles.addAll(list);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("updateFiles() - exiting");
-        }
-    }
-
-    /**
-     * initializes a list of global attributes ('fixed' attributes that don't depend on data).
-     * 
-     * @return a list of global attributes
-     * 
-     * @throws MotuException the motu exception
-     */
-    // CSOFF: NPathComplexity : initialization method with controls and try/catch.
-    public List<Attribute> initializeNetCdfFixedGlobalAttributes() throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initializeNetCdfFixedGlobalAttributes() - entering");
-        }
-
-        if (product == null) {
-            throw new MotuException(
-                    ErrorType.SYSTEM,
-                    "Error in DatasetBase - initializeNetCdfFixedGlobalAttributes product have not been set (= null)");
-        }
-        if (productMetadata == null) {
-            throw new MotuException(
-                    ErrorType.SYSTEM,
-                    "Error in DatasetBase - initializeNetCdfFixedGlobalAttributes productMetadata have not nbeen set (= null)");
-        }
-
-        List<Attribute> globalAttributes = new ArrayList<Attribute>();
-        Attribute attribute = null;
-
-        // -----------------------------
-        // adds title attribute
-        // -----------------------------
-        try {
-            attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_TITLE);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
-
-            attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_TITLE, productMetadata.getTitle());
-        }
-        globalAttributes.add(attribute);
-        // -----------------------------
-        // adds institution attribute
-        // -----------------------------
-        try {
-            attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_INSTITUTION);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
-
-            if (productMetadata.getDataProvider() != null) {
-                attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_INSTITUTION, productMetadata.getDataProvider().getName());
-            } else {
-                attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_INSTITUTION, " ");
-            }
-        }
-        globalAttributes.add(attribute);
-        // -----------------------------
-        // adds references attribute
-        // -----------------------------
-        try {
-            attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_REFERENCES);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
-
-            if (productMetadata.getDataProvider() != null) {
-                attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_REFERENCES, productMetadata.getDataProvider().getWebSite());
-            } else {
-                attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_REFERENCES, " ");
-            }
-        }
-        globalAttributes.add(attribute);
-        // -----------------------------
-        // adds source attribute
-        // -----------------------------
-        try {
-            attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_SOURCE);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
-
-            attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_SOURCE, " ");
-        }
-        globalAttributes.add(attribute);
-        // -----------------------------
-        // adds conventions attribute
-        // -----------------------------
-        attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_CONVENTIONS, NetCdfReader.GLOBALATTRIBUTE_CONVENTIONS_VALUE);
-        globalAttributes.add(attribute);
-        // -----------------------------
-        // adds comment attribute
-        // -----------------------------
-        try {
-            attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_COMMENT);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
-
-            attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_COMMENT, productMetadata.getDescription());
-        }
-        // -----------------------------
-        // adds history attribute
-        // -----------------------------
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("Data extracted from dataset ");
-        stringBuffer.append(product.getLocationData());
-        globalAttributes.add(new Attribute(NetCdfReader.GLOBALATTRIBUTE_HISTORY, stringBuffer.toString()));
-        // -----------------------------
-        // adds easting attribute
-        // -----------------------------
-        try {
-            attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_EASTING);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
-
-            // Do nothing
-        }
-        // -----------------------------
-        // adds northing attribute
-        // -----------------------------
-        try {
-            attribute = product.getNetCdfReader().getAttribute(NetCdfReader.GLOBALATTRIBUTE_NORTHING);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
-
-            // Do nothing
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initializeNetCdfFixedGlobalAttributes() - exiting");
-        }
-        return globalAttributes;
-    }
-
-    // CSON: NPathComplexity
-
-    /**
-     * initializes a list of global attributes ('dynamic' attributes that depend on data). Range values can be
-     * Double.MAX_VALUE if no value
-     *
-     * @return a list of global attributes
-     * @throws MotuException the motu exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     */
-    // CSOFF: NPathComplexity : initialization method with controls and try/catch.
-    // CSOFF: ExecutableStatementCount : initialization method with controls and try/catch.
-    public List<Attribute> initializeNetCdfDynGlobalAttributes() throws MotuException, MotuNotImplementedException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initializeNetCdfDynGlobalAttributes() - entering");
-        }
-
-        if (product == null) {
-            throw new MotuException(
-                    ErrorType.SYSTEM,
-                    "Error in DatasetBase - initializeNetCdfDynGlobalAttributes product have not been set (= null)");
-        }
-        if (productMetadata == null) {
-            throw new MotuException(
-                    ErrorType.SYSTEM,
-                    "Error in DatasetBase - initializeNetCdfDynGlobalAttributes productMetadata have not nbeen set (= null)");
-        }
-        // intialisation
-        List<Attribute> globalAttributes = new ArrayList<Attribute>();
-        Attribute attribute = null;
-
-        double min = 0.0;
-        double max = 0.0;
-
-        // -----------------------------
-        // adds Time min/max attribute and date Units
-        // -----------------------------
-        if (hasOutputTimeDimension) {
-            if (hasTRangeValue()) {
-                min = tRangeValue[0];
-                max = tRangeValue[1];
-            } else {
-                min = productMetadata.getTimeAxisMinValueAsDouble();
-                max = productMetadata.getTimeAxisMaxValueAsDouble();
-            }
-            attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_TIME_MIN, min);
-            globalAttributes.add(attribute);
-            attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_TIME_MAX, max);
-            globalAttributes.add(attribute);
-            attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_JULIAN_DAY_UNIT, productMetadata.getTimeAxis().getUnitsString());
-            globalAttributes.add(attribute);
-        }
-        // -----------------------------
-        // adds Z min/max attribute
-        // -----------------------------
-        if (hasOutputZDimension) {
-            if (hasZRangeValue()) {
-                min = zRangeValue[0];
-                max = zRangeValue[1];
-            } else {
-                min = productMetadata.getZAxisMinValue();
-                max = productMetadata.getZAxisMaxValue();
-            }
-
-            attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_Z_MIN, min);
-            globalAttributes.add(attribute);
-            attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_Z_MAX, max);
-            globalAttributes.add(attribute);
-        }
-        // -----------------------------
-        // adds Lat min/max attribute
-        // -----------------------------
-        if (hasOutputLatDimension) {
-            if (hasYRangeValue()) {
-                // min = NetCdfReader.getLatNormal(yRangeValue[0]);
-                // max = NetCdfReader.getLatNormal(yRangeValue[1]);
-                min = yRangeValue[0];
-                max = yRangeValue[1];
-            } else {
-                min = productMetadata.getLatNormalAxisMinValue();
-                max = productMetadata.getLatNormalAxisMaxValue();
-            }
-
-            attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_LATITUDE_MIN, min);
-            globalAttributes.add(attribute);
-            attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_LATITUDE_MAX, max);
-            globalAttributes.add(attribute);
-        }
-        // -----------------------------
-        // adds Lon min/max attribute
-        // -----------------------------
-        if (hasOutputLonDimension) {
-            if (hasXRangeValue()) {
-                min = xRangeValue[0];
-                max = xRangeValue[1];
-            } else {
-                min = productMetadata.getLonNormalAxisMinValue();
-                max = productMetadata.getLonNormalAxisMaxValue();
-            }
-            if (min > max) {
-                double longitudeCenter = min + 180.0;
-                max = LatLonPointImpl.lonNormal(max, longitudeCenter);
-            }
-
-            attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_LONGITUDE_MIN, min);
-            globalAttributes.add(attribute);
-            attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_LONGITUDE_MAX, max);
-            globalAttributes.add(attribute);
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initializeNetCdfDynGlobalAttributes() - exiting");
-        }
-        return globalAttributes;
-    }
-
-    /**
-     * Compute amount data size.
-     *
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     */
-    public abstract void computeAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
-            MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
-            NetCdfVariableNotFoundException;
-
-    // CSON: NPathComplexity
-
-    /**
-     * Extract data.
-     *
-     * @param dataOutputFormat data output format (NetCdf, HDF, Ascii, ...).
-     * @throws MotuException the motu exception
-     * @throws MotuInvalidDateRangeException the motu invalid date range exception
-     * @throws MotuExceedingCapacityException the motu exceeding capacity exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     * @throws MotuInvalidDepthRangeException the motu invalid depth range exception
-     * @throws MotuInvalidLatLonRangeException the motu invalid lat lon range exception
-     * @throws NetCdfVariableException the net cdf variable exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    public abstract void extractData(OutputFormat dataOutputFormat) throws MotuException, MotuInvalidDateRangeException,
-            MotuExceedingCapacityException, MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException,
-            NetCdfVariableException, MotuNoVarException, NetCdfVariableNotFoundException, IOException;
-
-    /**
-     * Checks dimension in output.
-     * 
-     * @throws MotuException the net cdf variable not found exception
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     */
-    public void setHasOutputDimension() throws MotuException, NetCdfVariableNotFoundException {
-        hasOutputTimeDimension = false;
-        hasOutputLatDimension = false;
-        hasOutputLonDimension = false;
-        hasOutputZDimension = false;
-
-        for (VarData varData : variablesMap.values()) {
-            Variable variable = product.getNetCdfReader().getRootVariable(varData.getVarName());
-            List<Dimension> dimsVar = variable.getDimensions();
-            for (Dimension dim : dimsVar) {
-                // ATESTER : changement de signature dans getCoordinateVariables entre netcdf-java 2.2.20 et
-                // 2.2.22
-                CoordinateAxis coord = getCoordinateVariable(dim);
-                if (coord != null) {
-                    hasOutputTimeDimension |= coord.getAxisType() == AxisType.Time;
-                    hasOutputLatDimension |= coord.getAxisType() == AxisType.Lat;
-                    hasOutputLonDimension |= coord.getAxisType() == AxisType.Lon;
-                    if (product.getNetCdfReader().hasGeoXYAxisWithLonLatEquivalence()) {
-                        hasOutputLatDimension |= coord.getAxisType() == AxisType.GeoY;
-                        hasOutputLonDimension |= coord.getAxisType() == AxisType.GeoX;
-                    }
-                    hasOutputZDimension |= (coord.getAxisType() == AxisType.GeoZ) || (coord.getAxisType() == AxisType.Height);
-                }
-            }
-        }
-    }
-
-    /**
-     * Gets the coordinate variable.
-     * 
-     * @param dim the dim
-     * 
-     * @return the coordinate variable
-     * 
-     * @throws MotuException the netcdf variable not found
-     */
-    public CoordinateAxis getCoordinateVariable(Dimension dim) throws MotuException {
-
-        return product.getNetCdfReader().getCoordinateVariable(dim);
-
-    }
-
-    /**
-     * Inits the get amount data.
-     *
-     * @throws MotuException the motu exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     */
-    public void initGetAmountData() throws MotuException, MotuNoVarException, NetCdfVariableNotFoundException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initNetCdfExtraction() - entering");
-        }
-
-        if (product == null) {
-            throw new MotuException(ErrorType.SYSTEM, "Error in DatasetBase - initNetCdfExtraction product have not nbeen set (= null)");
-        }
-
-        if (variablesSize() <= 0) {
-            throw new MotuNoVarException("Variable list is empty");
-        }
-
-        this.readingTime += product.openNetCdfReader();
-
-        productMetadata = product.getProductMetaData();
-        if (productMetadata == null) {
-            throw new MotuException(ErrorType.SYSTEM, "Error in DatasetBase - initNetCdfExtraction productMetadata have not nbeen set (= null)");
-        }
-
-        setHasOutputDimension();
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initNetCdfExtraction() - exiting");
-        }
-    }
-
-    /**
-     * NetCdf extraction initialization.
-     *
-     * @throws MotuException the motu exception
-     * @throws MotuNoVarException the motu no var exception
-     * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
-     */
-    public void initNetCdfExtraction() throws MotuException, MotuNoVarException, NetCdfVariableNotFoundException {
-        if (product == null) {
-            throw new MotuException(ErrorType.SYSTEM, "Error in DatasetBase - initNetCdfExtraction product have not nbeen set (= null)");
-        }
-
-        if (isVariablesEmpty()) {
-            throw new MotuNoVarException("Variable list is empty");
-        }
-
-        this.readingTime += product.openNetCdfReader();
-
-        productMetadata = product.getProductMetaData();
-        if (productMetadata == null) {
-            throw new MotuException(ErrorType.SYSTEM, "Error in DatasetBase - initNetCdfExtraction productMetadata have not nbeen set (= null)");
-        }
-
-        // Create output NetCdf file
-        product.setExtractFilename(NetCdfWriter.getUniqueNetCdfFileName(product.getProductId()));
-
-        setHasOutputDimension();
-    }
-
-    /**
-     * Get min/max the longitude from the grid.
-     *
-     * @return Normalized Min/Max of the Longitude ranges values
-     * @throws MotuException the motu exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     */
-    public MAMath.MinMax getMinMaxLonNormal() throws MotuException, MotuNotImplementedException {
-
-        // Assumes size of lists are consistency.
-        if (listYXRanges.size() == 2) {
-            List<Range> yxRanges1 = listYXRanges.get(0);
-            List<Range> yxRanges2 = listYXRanges.get(1);
-            return DatasetBase.getMinMaxLonNormal(yxRanges1.get(1), yxRanges2.get(1), rangesLonValue.get(0), rangesLonValue.get(1));
-        } else if (rangesLonValue.size() == 1) {
-            double[] rangeLonVal = rangesLonValue.get(0);
-            return new MAMath.MinMax(rangeLonVal[0], rangeLonVal[1]);
-        } else if (rangesLonValue.size() == 0) {
-            // no range
-            return new MAMath.MinMax(Double.MAX_VALUE, Double.MAX_VALUE);
-        } else {
-            throw new MotuNotImplementedException(
-                    String.format("Longitude ranges list more than 2 elements is not implemented (%s)", this.getClass().getName()));
-
-        }
-    }
-
-    /**
-     * Get min/max the latitude from the grid.
-     * 
-     * @return Normalized Min/Max of the latitude ranges values
-     * 
-     * @throws MotuNotImplementedException the motu not implemented exception
-     */
-    public MAMath.MinMax getMinMaxLatNormal() throws MotuNotImplementedException {
-
-        // Assumes size of lists are consistency.
-        if ((rangesLatValue.size() == 1) || (rangesLatValue.size() == 2)) {
-            // Assumes that all latitude's Ranges are the same.
-            double[] rangeLatVal = rangesLatValue.get(0);
-            return new MAMath.MinMax(NetCdfReader.getLatNormal(rangeLatVal[0]), NetCdfReader.getLatNormal(rangeLatVal[1]));
-        } else if (rangesLatValue.size() == 0) {
-            // no range
-            return new MAMath.MinMax(Double.MAX_VALUE, Double.MAX_VALUE);
-        } else {
-            double min = Double.MAX_VALUE;
-            double max = Double.MIN_VALUE;
-            for (double[] latValues : rangesLatValue) {
-                for (double value : latValues) {
-                    if (value < min) {
-                        min = value;
-                    } else if (value > max) {
-                        max = value;
-                    }
-                }
-
-            }
-            return new MAMath.MinMax(NetCdfReader.getLatNormal(min), NetCdfReader.getLatNormal(max));
+            listFiles.clear();
+            listFiles.addAll(list);
         }
     }
 
@@ -1180,9 +501,6 @@ public abstract class DatasetBase {
         this.selectData = selectData;
     }
 
-    /** The variables map. */
-    private Map<String, VarData> variablesMap;
-
     /**
      * Getter of the property <tt>variables</tt>.
      * 
@@ -1193,130 +511,6 @@ public abstract class DatasetBase {
     public Map<String, VarData> getVariables() {
         return this.variablesMap;
     }
-
-    /**
-     * Returns a collection view of the values contained in this map.
-     * 
-     * @return a collection view of the values contained in this map.
-     * 
-     * @see java.util.Map#values()
-     * @uml.property name="variables"
-     */
-    public Collection<VarData> variablesValues() {
-        return this.variablesMap.values();
-    }
-
-    /**
-     * Returns <tt>true</tt> if this map contains a mapping for the specified key.
-     *
-     * @param key key whose presence in this map is to be tested.
-     * @return if this map contains a mapping for the specified key.
-     * @see java.util.Map#containsKey(Object)
-     * @uml.property name="variables"
-     */
-    public boolean variablesContainsKey(String key) {
-        return this.variablesMap.containsKey(key);
-    }
-
-    /**
-     * Returns <tt>true</tt> if this map maps one or more keys to the specified value.
-     *
-     * @param value value whose presence in this map is to be tested.
-     * @return if this map maps one or more keys to the specified value.
-     * @see java.util.Map#containsValue(Object)
-     * @uml.property name="variables"
-     */
-    public boolean variablesContainsValue(VarData value) {
-        return this.variablesMap.containsValue(value);
-    }
-
-    /**
-     * Returns the value to which this map maps the specified key.
-     *
-     * @param key key whose associated value is to be returned.
-     * @return the value to which this map maps the specified key, or if the map contains no mapping for this
-     *         key.
-     * @see java.util.Map#get(Object)
-     * @uml.property name="variables"
-     */
-    public VarData getVariables(String key) {
-        return this.variablesMap.get(key);
-    }
-
-    /**
-     * Returns <tt>true</tt> if this map contains no key-value mappings.
-     *
-     * @return if this map contains no key-value mappings.
-     * @see java.util.Map#isEmpty()
-     * @uml.property name="variables"
-     */
-    public boolean isVariablesEmpty() {
-        return this.variablesMap.isEmpty();
-    }
-
-    /**
-     * Returns the number of key-value mappings in this map.
-     * 
-     * @return the number of key-value mappings in this map.
-     * 
-     * @see java.util.Map#size()
-     * @uml.property name="variables"
-     */
-    public int variablesSize() {
-        return this.variablesMap.size();
-    }
-
-    /**
-     * Setter of the property <tt>variables</tt>.
-     * 
-     * @param variables the variablesMap to set.
-     * 
-     * @uml.property name="variables"
-     */
-    public void setVariables(Map<String, VarData> variables) {
-        this.variablesMap = variables;
-    }
-
-    /**
-     * Associates the specified value with the specified key in this map (optional operation).
-     *
-     * @param key key with which the specified value is to be associated.
-     * @param value value to be associated with the specified key.
-     * @return previous value associated with specified key, or
-     * @see java.util.Map#put(Object,Object)
-     * @uml.property name="variables"
-     */
-    public VarData putVariables(String key, VarData value) {
-        return this.variablesMap.put(key, value);
-    }
-
-    /**
-     * Removes the mapping for this key from this map if it is present (optional operation).
-     *
-     * @param key key whose mapping is to be removed from the map.
-     * @return previous value associated with specified key, or if there was no mapping for key.
-     * @see java.util.Map#remove(Object)
-     * @uml.property name="variables"
-     */
-    public VarData removeVariables(String key) {
-        return this.variablesMap.remove(key);
-    }
-
-    /**
-     * Removes all mappings from this map (optional operation).
-     * 
-     * @see java.util.Map#clear()
-     * @uml.property name="variables"
-     */
-    public void clearVariables() {
-        this.variablesMap.clear();
-    }
-
-    /** The list criteria. */
-    private List<DataFile> listFiles;
-
-    /** The list criteria. */
-    private List<ExtractCriteria> listCriteria;
 
     /**
      * Getter of the property <tt>listCriteria</tt>.
@@ -1330,148 +524,11 @@ public abstract class DatasetBase {
     }
 
     /**
-     * Returns an iterator over the elements in this collection.
-     *
-     * @return an over the elements in this collection
-     * @see java.util.Collection#iterator()
-     * @uml.property name="listCriteria"
-     */
-    public Iterator<ExtractCriteria> criteriaIterator() {
-        return this.listCriteria.iterator();
-    }
-
-    /**
-     * Returns <tt>true</tt> if this collection contains no elements.
-     *
-     * @return if this collection contains no elements
-     * @see java.util.Collection#isEmpty()
-     * @uml.property name="listCriteria"
-     */
-    public boolean isCriteriaEmpty() {
-        return this.listCriteria.isEmpty();
-    }
-
-    /**
-     * Contains criteria.
-     *
-     * @param element whose presence in this collection is to be tested.
-     * @return Returns if this collection contains the specified element.
-     * @see java.util.Collection#contains(Object)
-     * @uml.property name="listCriteria"
-     */
-    public boolean containsCriteria(ExtractCriteria element) {
-        return this.listCriteria.contains(element);
-    }
-
-    /**
-     * Contains all criteria.
-     *
-     * @param elements collection to be checked for containment in this collection.
-     * @return Returns if this collection contains all of the elements in the specified collection.
-     * @see java.util.Collection#containsAll(Collection)
-     * @uml.property name="listCriteria"
-     */
-    public boolean containsAllCriteria(List<ExtractCriteria> elements) {
-        return this.listCriteria.containsAll(elements);
-    }
-
-    /**
-     * Returns the number of elements in this collection.
-     * 
-     * @return the number of elements in this collection
-     * 
-     * @see java.util.Collection#size()
-     * @uml.property name="listCriteria"
-     */
-    public int criteriaSize() {
-        return this.listCriteria.size();
-    }
-
-    /**
-     * Returns all elements of this collection in an array.
-     * 
-     * @return an array containing all of the elements in this collection
-     * 
-     * @see java.util.Collection#toArray()
-     * @uml.property name="listCriteria"
-     */
-    public ExtractCriteria[] criteriaToArray() {
-        return this.listCriteria.toArray(new ExtractCriteria[this.listCriteria.size()]);
-    }
-
-    /**
-     * Returns an array containing all of the elements in this collection; the runtime type of the returned
-     * array is that of the specified array.
-     *
-     * @param <T> the generic type
-     * @param criteria the array into which the elements of this collection are to be stored.
-     * @return an array containing all of the elements in this collection
-     * @see java.util.Collection#toArray(Object[])
-     * @uml.property name="listCriteria"
-     */
-    public <T extends ExtractCriteria> T[] criteriaToArray(T[] criteria) {
-        return this.listCriteria.toArray(criteria);
-    }
-
-    /**
-     * Ensures that this collection contains the specified element (optional operation).
-     * 
-     * @param element whose presence in this collection is to be ensured.
-     * 
-     * @return true if this collection changed as a result of the call
-     * 
-     * @see java.util.Collection#add(Object)
-     * @uml.property name="listCriteria"
-     */
-    public boolean addCriteria(ExtractCriteria element) {
-        return this.listCriteria.add(element);
-    }
-
-    /**
-     * Setter of the property <tt>listCriteria</tt>.
-     * 
-     * @param listCriteria the listCriteria to set.
-     * 
-     * @uml.property name="listCriteria"
-     */
-    public void setListCriteria(List<ExtractCriteria> listCriteria) {
-        this.listCriteria = listCriteria;
-    }
-
-    /**
-     * Removes a single instance of the specified element from this collection, if it is present (optional
-     * operation).
-     * 
-     * @param element to be removed from this collection, if present.
-     * 
-     * @return true if this collection changed as a result of the call
-     * 
-     * @see java.util.Collection#add(Object)
-     * @uml.property name="listCriteria"
-     */
-    public boolean removeCriteria(ExtractCriteria element) {
-        return this.listCriteria.remove(element);
-    }
-
-    /**
-     * Removes all of the elements from this collection (optional operation).
-     * 
-     * @see java.util.Collection#clear()
-     * @uml.property name="listCriteria"
-     */
-    public void clearCriteria() {
-        this.listCriteria.clear();
-    }
-
-    /**
      * Clear files.
      */
     public void clearFiles() {
         this.listFiles.clear();
     }
-
-    /** The product. */
-    protected Product product = null;
 
     /**
      * Getter of the property <tt>product</tt>.
@@ -1495,49 +552,6 @@ public abstract class DatasetBase {
         this.product = product;
     }
 
-    /** The product metadata. */
-    protected ProductMetaData productMetadata = null;
-
-    // public static class RangeComparator implements Comparator<Range> {
-    // /**
-    // * Logger for this class
-    // */
-    // private static final Logger LOG = Logger.getLogger(RangeComparator.class);
-    //
-    // private String property;
-    // private boolean ascending = true;
-    //
-    // public RangeComparator(String property) {
-    // this.property = property;
-    // }
-    //
-    // public RangeComparator(String property, boolean ascending) {
-    // this(property);
-    // this.ascending = ascending;
-    // }
-    //
-    // /** {@inheritDoc} */
-    // @SuppressWarnings("unchecked")
-    // @Override
-    // public int compare(Range r1, Range r2) {
-    // try {
-    // Field field = ReflectionUtils.findField(Range.class, property);
-    // if (field != null) {
-    // Comparable c1 = (Comparable) field.get(r1);
-    // Comparable c2 = (Comparable) field.get(r2);
-    // if (ascending) {
-    // return new CompareToBuilder().append(c1, c2).toComparison();
-    // } else {
-    // return new CompareToBuilder().append(c2, c1).toComparison();
-    // }
-    // }
-    // } catch (IllegalArgumentException e) {
-    // } catch (IllegalAccessException e) {
-    // }
-    // return 0;
-    // }
-    //
-    // }
     /**
      * The Class RangeComparator.
      */
@@ -1591,13 +605,87 @@ public abstract class DatasetBase {
     }
 
     /**
-     * Valeur de productMetadata.
+     * Getter of the property <tt>extractFilename</tt>.
      * 
-     * @param productMetadata nouvelle valeur.
+     * @return Returns the extractFilename.
+     * 
+     * @uml.property name="extractFilename"
      */
-    public void setProductMetadata(ProductMetaData productMetadata) {
-        this.productMetadata = productMetadata;
+    public String getExtractFilename() {
+        return this.extractFilename;
+    }
+
+    /**
+     * Setter of the property <tt>extractFilename</tt>.
+     * 
+     * @param extractFilename The extractFilename to set.
+     * 
+     * @uml.property name="extractFilename"
+     */
+    public void setExtractFilename(String extractFilename) {
+        this.extractFilename = extractFilename;
+        this.extractFilenameTemp = this.extractFilename + NetCdfWriter.NETCDF_FILE_EXTENSION_EXTRACT;
+    }
+
+    /**
+     * Getter of the property <tt>extractFilenameTemp</tt>.
+     * 
+     * @return Returns the extractFilenameTemp.
+     * 
+     * @uml.property name="extractFilenameTemp"
+     */
+    public String getExtractFilenameTemp() {
+        return this.extractFilenameTemp;
+    }
+
+    /**
+     * Setter of the property <tt>extractFilenameTemp</tt>.
+     * 
+     * @param extractFilenameTemp The extractFilenameTemp to set.
+     * 
+     * @uml.property name="extractFilenameTemp"
+     */
+    public void setExtractFilenameTemp(String extractFilenameTemp) {
+        this.extractFilenameTemp = extractFilenameTemp;
+    }
+
+    /**
+     * Clears <tt>extractFilename</tt>.
+     * 
+     * @uml.property name="extractFilename"
+     */
+    public void clearExtractFilename() {
+        this.extractFilename = "";
+        this.extractFilenameTemp = "";
+    }
+
+    /**
+     * Gets the output full file name (with path).
+     * 
+     * @return the output full file name (with path).
+     * 
+     */
+    public String getExtractLocationData() {
+        return Product.getExtractLocationData(extractFilename);
+    }
+
+    /**
+     * Gets the output temporary full file name (with path).
+     * 
+     * @return the output temporary full file name (with path).
+     * 
+     * @throws MotuException the motu exception
+     */
+    public String getExtractLocationDataTemp() throws MotuException {
+
+        if (extractFilenameTemp.length() <= 0) {
+            return "";
+        }
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append(Product.getExtractionPath());
+        stringBuffer.append(extractFilenameTemp);
+
+        return stringBuffer.toString();
     }
 
 }
-// CSON: MultipleStringLiterals

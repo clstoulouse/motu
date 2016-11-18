@@ -1,7 +1,7 @@
 package fr.cls.atoll.motu.web.bll.request.queueserver.queue;
 
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 
 /**
  * <br>
@@ -15,8 +15,6 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
  */
 public interface IQueueJob extends Runnable {
 
-    ExtractionParameters getExtractionParameters();
-
     /**
      * .
      * 
@@ -28,4 +26,11 @@ public interface IQueueJob extends Runnable {
      * .
      */
     void stop();
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    RequestDownloadStatus getRequestDownloadStatus();
 }

@@ -19,9 +19,8 @@ import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.api.utils.JAXBWriter;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
-import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.request.actions.AboutAction;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DebugAction;
@@ -76,16 +75,11 @@ public class USLRequestManager implements IUSLRequestManager {
     public void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws MotuException, InvalidHTTPParameterException {
         String action = CommonHTTPParameters.getActionFromRequest(request).toLowerCase();
         AbstractAction actionInst = retrieveActionFromHTTPParameters(action, request, response);
-        // request.getServletContext().getAttribute("action")
-        // request.getServletContext().getInitParameter("action")
         Long requestId = -1L;
         try {
             if (actionInst != null) {
                 if (!(actionInst instanceof DownloadProductAction)) {
-                    requestId = BLLManager.getInstance().getRequestManager()
-                            .initRequest(USLManager.getInstance().getUserManager().getUserName(),
-                                         USLManager.getInstance().getUserManager().getUserHostName(request),
-                                         actionInst);
+                    requestId = BLLManager.getInstance().getRequestManager().initRequest(actionInst);
                     BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.INPROGRESS);
                     actionInst.doAction();
                     BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.DONE);
@@ -274,8 +268,8 @@ public class USLRequestManager implements IUSLRequestManager {
 
     /** {@inheritDoc} */
     @Override
-    public String getProductDownloadUrlPath(Product product) {
-        if (StringUtils.isNullOrEmpty(product.getExtractFilename())) {
+    public String getProductDownloadUrlPath(RequestProduct product) {
+        if (StringUtils.isNullOrEmpty(product.getDataSetBase().getExtractFilename())) {
             return "";
         }
 
@@ -285,7 +279,7 @@ public class USLRequestManager implements IUSLRequestManager {
         if (!(httpDownloadUrlBase.endsWith("/"))) {
             stringBuffer.append("/");
         }
-        stringBuffer.append(product.getExtractFilename());
+        stringBuffer.append(product.getDataSetBase().getExtractFilename());
 
         return stringBuffer.toString();
     }

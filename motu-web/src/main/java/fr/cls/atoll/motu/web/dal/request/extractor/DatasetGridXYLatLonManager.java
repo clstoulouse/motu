@@ -1,28 +1,4 @@
-/* 
- * Motu, a high efficient, robust and Standard compliant Web Server for Geographic
- * Data Dissemination.
- *
- * http://cls-motu.sourceforge.net/
- *
- * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites) - 
- * http://www.cls.fr - and  Contributors
- *
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
- * License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- */
-package fr.cls.atoll.motu.web.dal.request.netcdf.data;
+package fr.cls.atoll.motu.web.dal.request.extractor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,9 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
@@ -49,8 +22,10 @@ import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeNotFoundException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.VarData;
 import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
@@ -67,37 +42,17 @@ import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 
-// CSOFF: MultipleStringLiterals : avoid message in '@SuppressWarnings("unchecked")'.
-
 /**
- * Class to process gridded dataset in X/Y coordinate with Lat/Lon transformation coordinate system. .
+ * <br>
+ * <br>
+ * Copyright : Copyright (c) 2016 <br>
+ * <br>
+ * Société : CLS (Collecte Localisation Satellites)
  * 
- * DON'T USE IT : developpment of this functionality not finished and it is deffered.
- * 
- * (C) Copyright 2009-2010, by CLS (Collecte Localisation Satellites)
- * 
- * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
- * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
+ * @author Sylvain MARTY
+ * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class DatasetGridXYLatLon extends DatasetGrid {
-    /**
-     * Logger for this class.
-     */
-    private static final Logger LOG = LogManager.getLogger();
-
-    /**
-     * 
-     */
-    public DatasetGridXYLatLon() {
-        super();
-    }
-
-    /**
-     * @param product product linked to the dataset
-     */
-    public DatasetGridXYLatLon(Product product) {
-        super(product);
-    }
+public class DatasetGridXYLatLonManager extends DatasetGridManager {
 
     /**
      * Map of each output Lat value and position (index).
@@ -191,35 +146,26 @@ public class DatasetGridXYLatLon extends DatasetGrid {
     Array lonArray = null;
 
     /**
-     * Extract data into a NetCdf format.
+     * Constructeur.
      * 
-     * @throws MotuException
-     * @throws MotuExceedingCapacityException
-     * @throws MotuNotImplementedException
-     * @throws MotuInvalidDateRangeException
-     * @throws MotuInvalidDepthRangeException
-     * @throws NetCdfVariableException
-     * @throws MotuInvalidLatLonRangeException
-     * @throws MotuNoVarException
-     * @throws NetCdfVariableNotFoundException
-     * @throws IOException
+     * @param requestProduct
      */
+    public DatasetGridXYLatLonManager(RequestProduct requestProduct) {
+        super(requestProduct);
+    }
+
     @Override
     public void extractDataIntoNetCdf() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
             NetCdfVariableNotFoundException, IOException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("extractDataIntoNetCdf() - entering");
-        }
-
         initNetCdfExtraction();
 
-        netCdfWriter = new NetCdfWriter(product.getExtractLocationDataTemp(), true);
+        netCdfWriter = new NetCdfWriter(getRequestProduct().getDataSetBase().getExtractLocationDataTemp(), true);
         NetcdfFileWriteable ncFile = netCdfWriter.getNcfile();
 
-        ExtractCriteriaLatLon extractCriteriaLatLon = findCriteriaLatLon();
+        ExtractCriteriaLatLon extractCriteriaLatLon = getRequestProduct().getDataSetBase().findCriteriaLatLon();
         if (extractCriteriaLatLon == null) {
-            addCriteria(new ExtractCriteriaLatLon());
+            getRequestProduct().getDataSetBase().getListCriteria().add(new ExtractCriteriaLatLon());
         }
 
         // gets global ranges to be extracted
@@ -231,16 +177,16 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         getAdjacentYXRange();
 
         if (hasOutputTimeDimension) {
-            inputVarTime = productMetadata.getTimeAxis();
+            inputVarTime = getRequestProduct().getProduct().getProductMetaData().getTimeAxis();
         }
         if (hasOutputZDimension) {
-            inputVarZ = productMetadata.getZAxis();
+            inputVarZ = getRequestProduct().getProduct().getProductMetaData().getZAxis();
         }
         if (hasOutputLatDimension) {
-            inputVarLat = productMetadata.getLatAxis();
+            inputVarLat = getRequestProduct().getProduct().getProductMetaData().getLatAxis();
         }
         if (hasOutputLonDimension) {
-            inputVarLon = productMetadata.getLonAxis();
+            inputVarLon = getRequestProduct().getProduct().getProductMetaData().getLonAxis();
         }
 
         // -----------------------------
@@ -263,9 +209,9 @@ public class DatasetGridXYLatLon extends DatasetGrid {
 
         // netCdfWriter.writeDimensions(outputDims.values());
 
-        GridDataset gds = new GridDataset(product.getNetCdfReaderDataset());
+        GridDataset gds = new GridDataset(getRequestProduct().getProduct().getNetCdfReaderDataset());
 
-        for (VarData varData : variablesValues()) {
+        for (VarData varData : getRequestProduct().getDataSetBase().getVariables().values()) {
 
             GeoGrid geoGrid = gds.findGridByName(varData.getVarName());
             if (geoGrid == null) {
@@ -317,7 +263,6 @@ public class DatasetGridXYLatLon extends DatasetGrid {
             writeVariable(outputVar, gds);
         }
 
-        System.out.print("WRITE :");
         try {
             if (outputVarLat != null) {
                 Array data = Array.factory(outputVarLat.getDataType(), outputVarLat.getShape());
@@ -345,13 +290,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         } catch (IOException e) {
             throw new MotuException(ErrorType.SYSTEM, e);
         }
-        // netCdfWriter.finish(VAR_ATTR_TO_REMOVE);
-
-        product.moveTempExtractFileToFinalExtractFile();
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("extractDataIntoNetCdf() - exiting");
-        }
+        moveTempExtractFileToFinalExtractFile();
     }
 
     /**
@@ -363,41 +302,29 @@ public class DatasetGridXYLatLon extends DatasetGrid {
      */
     @Override
     public void getAdjacentYXRange() throws MotuException, MotuInvalidLatLonRangeException, MotuNotImplementedException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getAdjacentYXRange() - entering");
-        }
-
         listYXRanges = null;
 
-        if (productMetadata.hasLatLonAxis()) {
-            ExtractCriteriaLatLon extractCriteriaLatLon = findCriteriaLatLon();
+        if (getRequestProduct().getProduct().getProductMetaData().hasLatLonAxis()) {
+            ExtractCriteriaLatLon extractCriteriaLatLon = getRequestProduct().getDataSetBase().findCriteriaLatLon();
             if (extractCriteriaLatLon != null) {
-                CoordinateSystem cs = new CoordinateSystem(product.getNetCdfReaderDataset(), productMetadata.getLatLonAxis(), null);
+                CoordinateSystem cs = new CoordinateSystem(
+                        getRequestProduct().getProduct().getNetCdfReaderDataset(),
+                        getRequestProduct().getProduct().getProductMetaData().getLatLonAxis(),
+                        null);
                 listYXRanges = extractCriteriaLatLon.toListRanges(cs, rangesLatValue, rangesLonValue);
             }
-        } else if (productMetadata.hasGeoXYAxis()) {
+        } else if (getRequestProduct().getProduct().getProductMetaData().hasGeoXYAxis()) {
             throw new MotuNotImplementedException("X/Y axis is not implemented (method DatasetGridXYLatLon.getAdjacentYXRange");
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getAdjacentYXRange() - exiting");
-        }
     }
 
     /**
      * Creates Time Dimension and Variable.
      */
     public void createTimeVariable() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("createTimeVariable() - entering");
-        }
-
         if (inputVarTime == null) {
             outputVarTime = null;
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("createTimeVariable() - exiting");
-            }
             return;
         }
         timeDim = new Dimension(inputVarTime.getShortName(), tRange.length(), true);
@@ -413,26 +340,14 @@ public class DatasetGridXYLatLon extends DatasetGrid {
 
         // netCdfWriter.writeDimension(timeDim);
         // netCdfWriter.writeVariable(outputVarTime, null);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("createTimeVariable() - exiting");
-        }
     }
 
     /**
      * Creates Z (Depth) Dimension and Variable.
      */
     public void createZVariable() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("createZVariable() - entering");
-        }
-
         if (inputVarZ == null) {
             outputVarZ = null;
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("createZVariable() - exiting");
-            }
             return;
         }
         zDim = new Dimension(inputVarZ.getShortName(), zRange.length(), true);
@@ -448,26 +363,14 @@ public class DatasetGridXYLatLon extends DatasetGrid {
 
         // netCdfWriter.writeDimension(zDim);
         // netCdfWriter.writeVariable(outputVarZ, null);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("createZVariable() - exiting");
-        }
     }
 
     /**
      * Creates Latitude Dimension and Variable.
      */
     public void createLatVariable() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("createLatVariable() - entering");
-        }
-
         if (inputVarLat == null) {
             outputVarLat = null;
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("createLatVariable() - exiting");
-            }
             return;
         }
         latDim = new Dimension(inputVarLat.getShortName(), mapLat.size(), true);
@@ -482,26 +385,14 @@ public class DatasetGridXYLatLon extends DatasetGrid {
 
         // netCdfWriter.writeDimension(latDim);
         // netCdfWriter.writeVariable(outputVarLat, null);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("createLatVariable() - exiting");
-        }
     }
 
     /**
      * Creates Longitude Dimension and Variable.
      */
     public void createLonVariable() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("createLonVariable() - entering");
-        }
-
         if (inputVarLon == null) {
             outputVarLon = null;
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("createLonVariable() - exiting");
-            }
             return;
         }
         lonDim = new Dimension(inputVarLon.getShortName(), mapLon.size(), true);
@@ -517,10 +408,6 @@ public class DatasetGridXYLatLon extends DatasetGrid {
 
         // netCdfWriter.writeDimension(lonDim);
         // netCdfWriter.writeVariable(outputVarLon, null);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("createLonVariable() - exiting");
-        }
     }
 
     /**
@@ -530,14 +417,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
      * 
      */
     protected void storeLatitudeMap() throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("storeLatitudeMap() - entering");
-        }
-
         if (inputVarLat == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("storeLatitudeMap() - exiting");
-            }
             return;
         }
 
@@ -572,8 +452,6 @@ public class DatasetGridXYLatLon extends DatasetGrid {
                 index++;
             }
         } catch (Exception e) {
-            LOG.error("storeLatitudeMap()", e);
-
             throw new MotuException(ErrorType.BAD_PARAMETERS, "ERROR encountered in DatasetGridXYLatLon - fillLatitudeMap", e);
 
         }
@@ -583,10 +461,6 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         // -----------------------------
         yRangeValue[0] = mapLat.firstKey();
         yRangeValue[1] = mapLat.lastKey();
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("storeLatitudeMap() - exiting");
-        }
     }
 
     /**
@@ -596,14 +470,7 @@ public class DatasetGridXYLatLon extends DatasetGrid {
      * 
      */
     protected void storeLongitudeMap() throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("storeLongitudeMap() - entering");
-        }
-
         if (inputVarLon == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("storeLongitudeMap() - exiting");
-            }
             return;
         }
 
@@ -637,8 +504,6 @@ public class DatasetGridXYLatLon extends DatasetGrid {
                 index++;
             }
         } catch (Exception e) {
-            LOG.error("storeLongitudeMap()", e);
-
             throw new MotuException(ErrorType.BAD_PARAMETERS, "ERROR encountered in DatasetGridXYLatLon - fillLongitudeMap", e);
 
         }
@@ -647,10 +512,6 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         // -----------------------------
         xRangeValue[0] = mapLon.firstKey();
         xRangeValue[1] = mapLon.lastKey();
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("storeLongitudeMap() - exiting");
-        }
     }
 
     /**
@@ -1102,10 +963,8 @@ public class DatasetGridXYLatLon extends DatasetGrid {
                 // writeVariableData(var, data);
             }
         } catch (IOException e) {
-            LOG.error("fillDataByBlock()", e);
             throw new MotuException(ErrorType.BAD_PARAMETERS, "Error IOException in DatasetGridXYLatLon fillDataByBlock", e);
         } catch (InvalidRangeException e) {
-            LOG.error("fillDataByBlock()", e);
             throw new MotuException(ErrorType.BAD_PARAMETERS, "Error InvalidRangeException in DatasetGridXYLatLon fillDataByBlock", e);
         }
 
@@ -1121,16 +980,10 @@ public class DatasetGridXYLatLon extends DatasetGrid {
      * @throws MotuException
      */
     protected void fillDataInOneGulp(Variable varToRead, Array dataToFill, int[] originToFill, double fillValue) throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("fillDataInOneGulp() - entering");
-        }
-
         Array dataRead = null;
         try {
             dataRead = varToRead.read();
         } catch (IOException e) {
-            LOG.error("fillDataInOneGulp()", e);
-
             throw new MotuException(ErrorType.BAD_PARAMETERS, "Error in DatasetGridXYLatLon fillDataInOneGulp", e);
         }
 
@@ -1151,15 +1004,11 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         default:
             break;
         }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("fillDataInOneGulp() - exiting");
-        }
     }
 
     /**
-     * 
-     */
+    * 
+    */
     // public static int cpt = 0;
     /**
      * 
@@ -1171,10 +1020,6 @@ public class DatasetGridXYLatLon extends DatasetGrid {
      * @throws MotuException
      */
     public void fillData2D(Variable varSrc, Array dataSrc, Array dataDest, int[] originDest, double fillValue) throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("fillData2D() - entering");
-        }
-
         // Assumes that arrays are 2D first first dimension = y and second dimension = x
         // Assumes that data type is double.
         // List<Range> listRange = varSrc.getSectionRanges();
@@ -1230,10 +1075,6 @@ public class DatasetGridXYLatLon extends DatasetGrid {
                 dataDest.setDouble(imaOut.set(jDest, iDest), dataValue);
             }
         }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("fillData2D() - exiting");
-        }
     }
 
     /**
@@ -1281,6 +1122,5 @@ public class DatasetGridXYLatLon extends DatasetGrid {
         double temp = Math.round(value * precision);
         return temp / precision;
     }
-}
 
-// CSON: MultipleStringLiterals
+}

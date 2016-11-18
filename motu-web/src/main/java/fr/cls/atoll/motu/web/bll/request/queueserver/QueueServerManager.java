@@ -37,7 +37,6 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.request.BLLRequestManager;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueJob;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueJobListener;
@@ -46,7 +45,6 @@ import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueThresholdCompara
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueServerType;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
  * 
@@ -111,12 +109,7 @@ public class QueueServerManager implements IQueueServerManager {
      * @throws MotuException
      */
     @Override
-    public void execute(RequestDownloadStatus rds_,
-                        ConfigService cs_,
-                        Product product_,
-                        ExtractionParameters extractionParameters_,
-                        double requestSizeInMB_,
-                        Long requestId) throws MotuException {
+    public void execute(RequestDownloadStatus rds_, ConfigService cs_, double requestSizeInMB_) throws MotuException {
         QueueManagement queueManagement = findQueue(requestSizeInMB_);
         if (queueManagement == null) {
             throw new MotuException(ErrorType.EXCEEDING_QUEUE_DATA_CAPACITY, "Oops, the size of the data to download (" + (int) requestSizeInMB_
@@ -127,7 +120,7 @@ public class QueueServerManager implements IQueueServerManager {
 
         // Here we synchronize the execution of the request
         QueueJobListener qjl = createQueueJobListener(rds_);
-        queueManagement.execute(new QueueJob(cs_, product_, extractionParameters_, qjl, requestId));
+        queueManagement.execute(new QueueJob(cs_, rds_, qjl));
 
         synchronized (this) {
             long startWaitTime = System.currentTimeMillis();

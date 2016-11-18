@@ -11,6 +11,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.URLUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
@@ -220,18 +221,18 @@ public class VelocityModelConverter {
      * @param product_
      * @return
      */
-    public static IProduct convertToProduct(final Product product_) {
+    public static IProduct convertToProduct(final RequestProduct requestProduct_) {
         IProduct ip = new IProduct() {
 
             @Override
             public String getProductId() {
-                return product_.getProductId();
+                return requestProduct_.getProduct().getProductId();
             }
 
             @Override
             public boolean isProductDownloadable() {
                 try {
-                    return product_.isProductDownloadable();
+                    return requestProduct_.getProduct().isProductDownloadable();
                 } catch (MotuException e) {
                     LOGGER.error("Converting Product to be used in Velocity", e);
                     return true;
@@ -240,18 +241,18 @@ public class VelocityModelConverter {
 
             @Override
             public String getLocationData() {
-                return product_.getLocationData();
+                return requestProduct_.getProduct().getLocationData();
             }
 
             @Override
             public String getLocationMetaData() {
-                return product_.getLocationMetaData();
+                return requestProduct_.getProduct().getLocationMetaData();
             }
 
             @Override
             public boolean isProductAlongTrack() {
                 try {
-                    return product_.isProductAlongTrack();
+                    return requestProduct_.getProduct().isProductAlongTrack();
                 } catch (MotuException e) {
                     LOGGER.error("Converting Product to be used in Velocity", e);
                     return false;
@@ -261,7 +262,7 @@ public class VelocityModelConverter {
             @Override
             public boolean hasGeoXAxisWithLonEquivalence() {
                 try {
-                    return product_.hasGeoXAxisWithLonEquivalence();
+                    return requestProduct_.getProduct().hasGeoXAxisWithLonEquivalence();
                 } catch (MotuException e) {
                     LOGGER.error("Converting Product to be used in Velocity", e);
                     return false;
@@ -271,7 +272,7 @@ public class VelocityModelConverter {
             @Override
             public boolean hasGeoYAxisWithLatEquivalence() {
                 try {
-                    return product_.hasGeoYAxisWithLatEquivalence();
+                    return requestProduct_.getProduct().hasGeoYAxisWithLatEquivalence();
                 } catch (MotuException e) {
                     LOGGER.error("Converting Product to be used in Velocity", e);
                     return false;
@@ -280,18 +281,18 @@ public class VelocityModelConverter {
 
             @Override
             public IProductMetadata getProductMetaData() {
-                return convertToProductMetadata(product_, product_.getProductMetaData());
+                return convertToProductMetadata(requestProduct_.getProduct(), requestProduct_.getProduct().getProductMetaData());
             }
 
             @Override
             public IDateTime getCriteriaDateTime() {
-                return convertToDateTime(product_.getCriteriaDateTime());
+                return convertToDateTime(requestProduct_.getCriteriaDateTime());
             }
 
             @Override
             public List<String> getZAxisRoundedDownDataAsString(int desiredDecimalNumberDigits) {
                 try {
-                    return product_.getZAxisRoundedDownDataAsString(desiredDecimalNumberDigits);
+                    return requestProduct_.getProduct().getZAxisRoundedDownDataAsString(desiredDecimalNumberDigits);
                 } catch (MotuException e) {
                     LOGGER.error("Error while converting Product", e);
                     return null;
@@ -301,7 +302,7 @@ public class VelocityModelConverter {
             @Override
             public List<String> getZAxisRoundedUpDataAsString(int desiredDecimalNumberDigits) {
                 try {
-                    return product_.getZAxisRoundedUpDataAsString(desiredDecimalNumberDigits);
+                    return requestProduct_.getProduct().getZAxisRoundedUpDataAsString(desiredDecimalNumberDigits);
                 } catch (MotuException e) {
                     LOGGER.error("Error while converting Product", e);
                     return null;
@@ -310,23 +311,23 @@ public class VelocityModelConverter {
 
             @Override
             public boolean hasCriteriaDepth() {
-                return product_.hasCriteriaDepth();
+                return requestProduct_.hasCriteriaDepth();
             }
 
             @Override
             public boolean hasCriteriaDateTime() {
-                return product_.hasCriteriaDateTime();
+                return requestProduct_.hasCriteriaDateTime();
             }
 
             @Override
             public IDepth getCriteriaDepth() {
-                return convertToDepth(product_.getCriteriaDepth());
+                return convertToDepth(requestProduct_.getCriteriaDepth());
             }
 
             @Override
             public List<String> getTimeAxisDataAsString() {
                 try {
-                    return product_.getTimeAxisDataAsString();
+                    return requestProduct_.getProduct().getTimeAxisDataAsString();
                 } catch (MotuException e) {
                     LOGGER.error("Error while converting Product", e);
                     return null;
@@ -335,37 +336,38 @@ public class VelocityModelConverter {
 
             @Override
             public List<String> getTimeCoverageFromDataFiles() {
-                return product_.getTimeCoverageFromDataFiles();
+                return requestProduct_.getProduct().getTimeCoverageFromDataFiles();
             }
 
             @Override
             public boolean hasLastError() {
-                return product_.hasLastError();
+                return requestProduct_.hasLastError();
             }
 
             @Override
             public String getLastError() {
-                return product_.getLastError();
+                return requestProduct_.getLastError();
             }
 
             @Override
             public boolean hasDownloadUrlPath() {
-                return !StringUtils.isNullOrEmpty(product_.getExtractFilename());
+                return requestProduct_ != null && requestProduct_.getDataSetBase() != null
+                        && !StringUtils.isNullOrEmpty(requestProduct_.getDataSetBase().getExtractFilename());
             }
 
             @Override
             public String getDownloadUrlPath() {
-                return USLManager.getInstance().getRequestManager().getProductDownloadUrlPath(product_);
+                return USLManager.getInstance().getRequestManager().getProductDownloadUrlPath(requestProduct_);
             }
 
             @Override
             public String getExtractFilename() {
-                return product_.getExtractFilename();
+                return requestProduct_.getDataSetBase().getExtractFilename();
             }
 
             @Override
             public boolean isAutoDownloadTimeOutEnable() {
-                return !StringUtils.isNullOrEmpty(product_.getExtractFilename());
+                return !StringUtils.isNullOrEmpty(requestProduct_.getDataSetBase().getExtractFilename());
             }
 
             @Override
@@ -375,12 +377,12 @@ public class VelocityModelConverter {
 
             @Override
             public boolean hasCriteriaLatLon() {
-                return product_.hasCriteriaLatLon();
+                return requestProduct_.hasCriteriaLatLon();
             }
 
             @Override
             public ExtractCriteriaLatLon getCriteriaLatLon() {
-                return product_.getCriteriaLatLon();
+                return requestProduct_.getCriteriaLatLon();
             }
 
         };

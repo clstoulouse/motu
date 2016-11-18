@@ -20,8 +20,7 @@ public class RequestDownloadStatus {
     public static final int STATUS_ERROR = 30;
 
     private long requestId;
-    private String userId;
-    private String userHost;
+    private RequestProduct requestProduct;
 
     private long creationDateTime;
     private long startProcessingDateTime;
@@ -30,13 +29,10 @@ public class RequestDownloadStatus {
     private long sizeInBits;
 
     private MotuException runningException;
-    private String extractFilename;
 
     // Queue server manager processing info
     private String queueId;
     private String queueDescription;
-
-    private String scriptVersion;
 
     /**
      * Constructeur.
@@ -45,36 +41,33 @@ public class RequestDownloadStatus {
      * @param userId
      * @param userHost
      */
-    public RequestDownloadStatus(long requestId, String userId, String userHost, String scriptVersion) {
+    public RequestDownloadStatus(long requestId_, RequestProduct requestProduct_) {
         super();
-        setRequestId(requestId);
-
-        setUserId(userId);
-        setUserHost(userHost);
+        setRequestId(requestId_);
+        setRequestProduct(requestProduct_);
 
         setCreationDateTime(System.currentTimeMillis());
         setStartProcessingDateTime(0L);
         setEndProcessingDateTime(0L);
 
-        setScriptVersion(scriptVersion);
     }
 
     /**
-     * Retrieves the script version
+     * Valeur de requestProduct.
      * 
-     * @return The script version.
+     * @return la valeur.
      */
-    public String getScriptVersion() {
-        return scriptVersion;
+    public RequestProduct getRequestProduct() {
+        return requestProduct;
     }
 
     /**
-     * Sets the script version
+     * Valeur de requestProduct.
      * 
-     * @param scriptVersion The script version
+     * @param requestProduct nouvelle valeur.
      */
-    public void setScriptVersion(String scriptVersion) {
-        this.scriptVersion = scriptVersion;
+    public void setRequestProduct(RequestProduct requestProduct) {
+        this.requestProduct = requestProduct;
     }
 
     /**
@@ -111,42 +104,6 @@ public class RequestDownloadStatus {
      */
     public void setRequestId(long requestId) {
         this.requestId = requestId;
-    }
-
-    /**
-     * Valeur de userId.
-     * 
-     * @return la valeur.
-     */
-    public String getUserId() {
-        return userId;
-    }
-
-    /**
-     * Valeur de userId.
-     * 
-     * @param userId nouvelle valeur.
-     */
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    /**
-     * Valeur de userHost.
-     * 
-     * @return la valeur.
-     */
-    public String getUserHost() {
-        return userHost;
-    }
-
-    /**
-     * Valeur de userHost.
-     * 
-     * @param userHost nouvelle valeur.
-     */
-    public void setUserHost(String userHost) {
-        this.userHost = userHost;
     }
 
     /**
@@ -238,24 +195,6 @@ public class RequestDownloadStatus {
      */
     public void setSizeInBits(long sizeInBits) {
         this.sizeInBits = sizeInBits;
-    }
-
-    /**
-     * .
-     * 
-     * @param extractFilename
-     */
-    public void setProductFileName(String extractFilename_) {
-        extractFilename = extractFilename_;
-    }
-
-    /**
-     * Valeur de extractFilename.
-     * 
-     * @return la valeur.
-     */
-    public String getExtractFilename() {
-        return extractFilename;
     }
 
     /**
