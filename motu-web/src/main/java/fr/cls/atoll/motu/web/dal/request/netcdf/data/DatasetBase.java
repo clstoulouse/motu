@@ -175,28 +175,26 @@ public class DatasetBase {
      * @throws MotuException the motu exception
      */
     public void addVariables(List<String> listVar) throws MotuException {
-        if (listVar == null) {
-            throw new MotuException(ErrorType.NO_VARIABLE, "Error in addVariables - List of variables to be added is null");
-        }
+        if (listVar != null && listVar.size() > 0) {
+            NetCdfReader netCdfReader = new NetCdfReader(product.getLocationData(), false);
+            netCdfReader.open(true);
+            for (String standardName : listVar) {
+                String trimmedStandardName = standardName.trim();
 
-        NetCdfReader netCdfReader = new NetCdfReader(product.getLocationData(), false);
-        netCdfReader.open(true);
-        for (String standardName : listVar) {
-            String trimmedStandardName = standardName.trim();
-
-            List<String> listVarName;
-            try {
-                listVarName = netCdfReader.getNetcdfVarNameByStandardName(trimmedStandardName);
-            } catch (NetCdfAttributeException e) {
-                throw new MotuException(ErrorType.NETCDF_VARIABLE, "Error in addVariables - Unable to get netcdf variable name", e);
-            }
-            for (String varName : listVarName) {
-                VarData varData = new VarData(varName);
-                varData.setStandardName(trimmedStandardName);
-                if (getVariables().keySet().contains(varData.getVarName())) {
-                    getVariables().remove(varData.getVarName());
+                List<String> listVarName;
+                try {
+                    listVarName = netCdfReader.getNetcdfVarNameByStandardName(trimmedStandardName);
+                } catch (NetCdfAttributeException e) {
+                    throw new MotuException(ErrorType.NETCDF_VARIABLE, "Error in addVariables - Unable to get netcdf variable name", e);
                 }
-                getVariables().put(varData.getVarName(), varData);
+                for (String varName : listVarName) {
+                    VarData varData = new VarData(varName);
+                    varData.setStandardName(trimmedStandardName);
+                    if (getVariables().keySet().contains(varData.getVarName())) {
+                        getVariables().remove(varData.getVarName());
+                    }
+                    getVariables().put(varData.getVarName(), varData);
+                }
             }
         }
     }
