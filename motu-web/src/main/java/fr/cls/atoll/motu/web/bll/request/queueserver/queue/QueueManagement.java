@@ -89,7 +89,7 @@ public class QueueManagement {
 
     private void checkMaxQueueSize() throws MotuException {
         if (isMaxQueueSizeReached()) {
-            throw new MotuException(ErrorType.EXCEEDING_QUEUE_DATA_CAPACITY, "Max queue size limit reached: " + priorityBlockingQueue.size());
+            throw new MotuException(ErrorType.EXCEEDING_QUEUE_CAPACITY, "Max queue size limit reached: " + priorityBlockingQueue.size());
         }
     }
 

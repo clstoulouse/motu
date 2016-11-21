@@ -189,6 +189,7 @@ public class USLRequestManager implements IUSLRequestManager {
         switch (errorType_) {
         case SYSTEM:
         case NETCDF_GENERATION:
+        case EXCEEDING_QUEUE_DATA_CAPACITY:
             isErrorTypeToLog = true;
             break;
         }

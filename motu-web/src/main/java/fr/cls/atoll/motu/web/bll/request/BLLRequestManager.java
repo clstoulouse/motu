@@ -292,7 +292,7 @@ public class BLLRequestManager implements IBLLRequestManager {
                 userIdMsg = " for user: " + userId_;
             }
             throw new MotuException(
-                    ErrorType.EXCEEDING_QUEUE_CAPACITY,
+                    ErrorType.EXCEEDING_USER_CAPACITY,
                     "Maximum number of running request reached" + userIdMsg + ", x"
                             + (userId_ == null
                                     ? BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig().getMaxPoolAnonymous()
