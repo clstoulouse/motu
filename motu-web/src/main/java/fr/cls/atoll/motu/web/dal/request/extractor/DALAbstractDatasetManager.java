@@ -4,7 +4,7 @@ import java.io.File;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
+import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 
 /**
  * <br>
@@ -18,7 +18,7 @@ import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
  */
 public abstract class DALAbstractDatasetManager implements IDALDatasetManager {
 
-    private RequestProduct requestProduct;
+    private RequestDownloadStatus rds;
 
     /** The amount data size of a request in Megabytes. */
     protected double amountDataSize = 0d;
@@ -28,27 +28,27 @@ public abstract class DALAbstractDatasetManager implements IDALDatasetManager {
      * 
      * @param requestProduct
      */
-    public DALAbstractDatasetManager(RequestProduct requestProduct) {
+    public DALAbstractDatasetManager(RequestDownloadStatus rds_) {
         super();
-        this.requestProduct = requestProduct;
+        setRequestDownloadStatus(rds_);
     }
 
     /**
-     * Valeur de requestProduct.
+     * Valeur de rds.
      * 
      * @return la valeur.
      */
-    public RequestProduct getRequestProduct() {
-        return requestProduct;
+    public RequestDownloadStatus getRequestDownloadStatus() {
+        return rds;
     }
 
     /**
-     * Valeur de requestProduct.
+     * Valeur de rds.
      * 
-     * @param requestProduct nouvelle valeur.
+     * @param rds nouvelle valeur.
      */
-    public void setRequestProduct(RequestProduct requestProduct) {
-        this.requestProduct = requestProduct;
+    public void setRequestDownloadStatus(RequestDownloadStatus rds) {
+        this.rds = rds;
     }
 
     /**
@@ -103,11 +103,11 @@ public abstract class DALAbstractDatasetManager implements IDALDatasetManager {
      */
     public void moveTempExtractFileToFinalExtractFile() throws MotuException {
         // Temporary File
-        String locationTmp = getRequestProduct().getDataSetBase().getExtractLocationDataTemp();
+        String locationTmp = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getExtractLocationDataTemp();
         File fileTemp = new File(locationTmp);
 
         // Final File
-        String locationFinal = getRequestProduct().getDataSetBase().getExtractLocationData();
+        String locationFinal = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getExtractLocationData();
         File fileFinal = new File(locationFinal);
 
         // Rename file

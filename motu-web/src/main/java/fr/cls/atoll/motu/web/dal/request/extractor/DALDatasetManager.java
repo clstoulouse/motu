@@ -11,7 +11,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuNoVarException;
 import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
+import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 
 /**
  * <br>
@@ -25,25 +25,25 @@ import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
  */
 public class DALDatasetManager {
 
-    private RequestProduct requestProduct;
+    private RequestDownloadStatus rds;
 
     /**
      * Constructeur.
      * 
      * @param datasetBase
      */
-    public DALDatasetManager(RequestProduct requestProduct_) {
+    public DALDatasetManager(RequestDownloadStatus rds_) {
         super();
-        this.requestProduct = requestProduct_;
+        this.rds = rds_;
     }
 
     public void extractData() throws MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
             MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
             NetCdfVariableNotFoundException, MotuException, IOException {
-        if (getRequestProduct().getProduct().isFtpMedia()) {
-            new DatasetFileManager(requestProduct).extractData();
+        if (rds.getRequestProduct().getProduct().isFtpMedia()) {
+            new DatasetFileManager(rds).extractData();
         } else {
-            new DatasetGridManager(requestProduct).extractData();
+            new DatasetGridManager(rds).extractData();
         }
     }
 
@@ -65,29 +65,11 @@ public class DALDatasetManager {
     public double getAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
             NetCdfVariableNotFoundException {
-        if (getRequestProduct().getProduct().isFtpMedia()) {
-            return new DatasetFileManager(requestProduct).computeAmountDataSize();
+        if (rds.getRequestProduct().getProduct().isFtpMedia()) {
+            return new DatasetFileManager(rds).computeAmountDataSize();
         } else {
-            return new DatasetGridManager(requestProduct).computeAmountDataSize();
+            return new DatasetGridManager(rds).computeAmountDataSize();
         }
-    }
-
-    /**
-     * Valeur de requestProduct.
-     * 
-     * @return la valeur.
-     */
-    public RequestProduct getRequestProduct() {
-        return requestProduct;
-    }
-
-    /**
-     * Valeur de requestProduct.
-     * 
-     * @param requestProduct nouvelle valeur.
-     */
-    public void setRequestProduct(RequestProduct requestProduct) {
-        this.requestProduct = requestProduct;
     }
 
 }

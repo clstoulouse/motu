@@ -2,7 +2,7 @@ package fr.cls.atoll.motu.web.dal.catalog.product;
 
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
+import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 
 /**
@@ -34,5 +34,5 @@ public interface IDALProductManager {
      * @return The size of the product into kylobyte
      * @throws MotuExceptionBase
      */
-    double getProductDataSizeRequest(RequestProduct requestProduct_) throws MotuException;
+    double getProductDataSizeRequest(RequestDownloadStatus rds_) throws MotuException;
 }

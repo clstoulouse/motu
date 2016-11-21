@@ -12,7 +12,7 @@ import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.BLLRequestManager;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
-import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
+import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.dal.request.IDALRequestManager;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 
@@ -54,13 +54,13 @@ public class CDOManager implements ICDOManager {
     }
 
     @Override
-    public void runRequestWithCDOMergeTool(RequestProduct requestProduct,
+    public void runRequestWithCDOMergeTool(RequestDownloadStatus rds_,
                                            NetCdfSubsetService ncss,
                                            ExtractCriteriaLatLon latlon,
                                            String extractDirPath,
                                            String fname,
                                            IDALRequestManager dalRequestManager) throws Exception {
-        CDOJob job = new CDOJob(requestProduct, ncss, latlon, extractDirPath, fname, dalRequestManager) {
+        CDOJob job = new CDOJob(rds_, ncss, latlon, extractDirPath, fname, dalRequestManager) {
 
             /** {@inheritDoc} */
             @Override
@@ -75,7 +75,8 @@ public class CDOManager implements ICDOManager {
 
         try {
             cdoJobsQueue.add(job);
-            LOGGER.info("CDO job added, ProductId=" + requestProduct.getProduct().getProductId() + ", cdoJobsQueue size=" + cdoJobsQueue.size());
+            LOGGER.info("CDO job added, ProductId=" + rds_.getRequestProduct().getProduct().getProductId() + ", cdoJobsQueue size="
+                    + cdoJobsQueue.size());
             synchronized (this) {
                 long startWaitTime = System.currentTimeMillis();
                 long waitTime = BLLRequestManager.REQUEST_TIMEOUT_MSEC;

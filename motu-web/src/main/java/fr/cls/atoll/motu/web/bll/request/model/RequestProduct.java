@@ -8,12 +8,8 @@ import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.web.common.utils.ListUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.DatasetBase;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.SelectData;
 
 /**
  * <br>
@@ -28,7 +24,7 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.SelectData;
 public class RequestProduct {
 
     private Product product;
-    private DatasetBase dataset;
+    private RequestProductParameters requestProductParameters;
     private ExtractionParameters extractionParameters;
 
     /** Last error encountered. */
@@ -121,8 +117,8 @@ public class RequestProduct {
      * 
      * @return la valeur.
      */
-    public DatasetBase getDataSetBase() {
-        return dataset;
+    public RequestProductParameters getRequestProductParameters() {
+        return requestProductParameters;
     }
 
     /**
@@ -130,8 +126,8 @@ public class RequestProduct {
      * 
      * @param dataSetBase nouvelle valeur.
      */
-    public void setDataSetBase(DatasetBase dataSetBase) {
-        this.dataset = dataSetBase;
+    public void setDataSetBase(RequestProductParameters dataSetBase) {
+        this.requestProductParameters = dataSetBase;
     }
 
     /**
@@ -140,10 +136,10 @@ public class RequestProduct {
      * @return true if datetime criteria have been set, false otherwise.
      */
     public boolean hasCriteriaDateTime() {
-        if (dataset == null) {
+        if (requestProductParameters == null) {
             return false;
         }
-        ExtractCriteriaDatetime extractCriteriaDatetime = dataset.findCriteriaDatetime();
+        ExtractCriteriaDatetime extractCriteriaDatetime = requestProductParameters.findCriteriaDatetime();
         return extractCriteriaDatetime != null;
     }
 
@@ -153,10 +149,10 @@ public class RequestProduct {
      * @return DateTime criteria, null if none.
      */
     public ExtractCriteriaDatetime getCriteriaDateTime() {
-        if (dataset == null) {
+        if (requestProductParameters == null) {
             return null;
         }
-        return dataset.findCriteriaDatetime();
+        return requestProductParameters.findCriteriaDatetime();
     }
 
     /**
@@ -165,10 +161,10 @@ public class RequestProduct {
      * @return true if Lat/Lon criteria have been set, false otherwise.
      */
     public boolean hasCriteriaLatLon() {
-        if (dataset == null) {
+        if (requestProductParameters == null) {
             return false;
         }
-        ExtractCriteriaLatLon extractCriteriaLatLon = dataset.findCriteriaLatLon();
+        ExtractCriteriaLatLon extractCriteriaLatLon = requestProductParameters.findCriteriaLatLon();
         return extractCriteriaLatLon != null;
     }
 
@@ -178,10 +174,10 @@ public class RequestProduct {
      * @return Lat/Lon criteria, null if none.
      */
     public ExtractCriteriaLatLon getCriteriaLatLon() {
-        if (dataset == null) {
+        if (requestProductParameters == null) {
             return null;
         }
-        return dataset.findCriteriaLatLon();
+        return requestProductParameters.findCriteriaLatLon();
     }
 
     /**
@@ -190,10 +186,10 @@ public class RequestProduct {
      * @return true if depth criteria have been set, false otherwise.
      */
     public boolean hasCriteriaDepth() {
-        if (dataset == null) {
+        if (requestProductParameters == null) {
             return false;
         }
-        ExtractCriteriaDepth extractCriteriaDepth = dataset.findCriteriaDepth();
+        ExtractCriteriaDepth extractCriteriaDepth = requestProductParameters.findCriteriaDepth();
         return extractCriteriaDepth != null;
     }
 
@@ -203,10 +199,10 @@ public class RequestProduct {
      * @return Depth criteria, null if none.
      */
     public ExtractCriteriaDepth getCriteriaDepth() {
-        if (dataset == null) {
+        if (requestProductParameters == null) {
             return null;
         }
-        return dataset.findCriteriaDepth();
+        return requestProductParameters.findCriteriaDepth();
     }
 
     /**
@@ -216,44 +212,13 @@ public class RequestProduct {
      * @return Returns if this product contains a specified variable to be extracted.
      */
     public boolean hasVariableToBeExtracted(String varName) {
-        if (dataset == null) {
+        if (requestProductParameters == null) {
             return false;
         }
-        if (dataset.getVariables() == null) {
+        if (requestProductParameters.getVariables() == null) {
             return false;
         }
-        return dataset.getVariables().containsKey(varName);
-    }
-
-    /**
-     * Add variables to the dataset. If dataset doesn't exist, it creates it. If variable already exists in
-     * the dataset, it will be replaced.
-     *
-     * @param listVar list of variables to be added.
-     * @throws MotuException the motu exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     */
-    public void addVariables(List<String> listVar) throws MotuException, MotuNotImplementedException {
-        dataset.addVariables(listVar);
-    }
-
-    /**
-     * Updates variables into the dataset. - Adds new variables - Updates the variables which already exist -
-     * Remove the variables from the dataset which are not any more in the list If dataset doesn't exist, it
-     * creates it.
-     *
-     * @param listVar list of variables to be updated.
-     * @throws MotuException the motu exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     */
-    public void updateVariables(List<String> listVar) throws MotuException, MotuNotImplementedException {
-        // if list of variables to extract is no set,
-        // get all variables form this product
-        if (ListUtils.isNullOrEmpty(listVar)) {
-            listVar = getProduct().getVariables();
-        }
-
-        dataset.updateVariables(listVar);
+        return requestProductParameters.getVariables().containsKey(varName);
     }
 
     /**
@@ -264,41 +229,9 @@ public class RequestProduct {
      * @throws MotuException the motu exception
      */
     public void removeVariables(List<String> listVar) throws MotuException {
-        if (dataset != null && !dataset.getVariables().isEmpty()) {
-            dataset.getVariables().keySet().removeAll(listVar);
+        if (requestProductParameters != null && !requestProductParameters.getVariables().isEmpty()) {
+            requestProductParameters.getVariables().keySet().removeAll(listVar);
         }
-    }
-
-    /**
-     * Update files.
-     * 
-     * @throws MotuException the motu exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     */
-    public void updateFiles() throws MotuException, MotuNotImplementedException {
-        dataset.updateFiles(getProduct().getDataFiles());
-    }
-
-    /**
-     * Clear files.
-     */
-    public void clearFiles() {
-        if (dataset == null) {
-            return;
-        }
-
-        dataset.clearFiles();
-    }
-
-    /**
-     * Sets the select data. If dataset doesn't exist, it creates it.
-     *
-     * @param selectData to be updated.
-     * @throws MotuException the motu exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     */
-    public void setSelectData(SelectData selectData) throws MotuException, MotuNotImplementedException {
-        dataset.setSelectData(selectData);
     }
 
     /**
@@ -308,11 +241,11 @@ public class RequestProduct {
      *
      */
     private void initDataset() throws MotuException {
-        dataset = new DatasetBase(getProduct());
+        requestProductParameters = new RequestProductParameters(getProduct());
 
-        getDataSetBase().updateVariables(extractionParameters.getListVar());
+        getRequestProductParameters().addVariables(extractionParameters.getListVar(), getProduct().getProductMetaData());
         try {
-            getDataSetBase().setCriteria(extractionParameters.getListTemporalCoverage(),
+            getRequestProductParameters().setCriteria(extractionParameters.getListTemporalCoverage(),
                                          extractionParameters.getListLatLonCoverage(),
                                          extractionParameters.getListDepthCoverage());
         } catch (MotuInvalidDateException | MotuInvalidDepthException | MotuInvalidLatitudeException | MotuInvalidLongitudeException e) {

@@ -189,6 +189,7 @@ public class USLRequestManager implements IUSLRequestManager {
         switch (errorType_) {
         case SYSTEM:
         case NETCDF_GENERATION:
+        case EXCEEDING_QUEUE_CAPACITY:
         case EXCEEDING_QUEUE_DATA_CAPACITY:
             isErrorTypeToLog = true;
             break;
@@ -270,7 +271,7 @@ public class USLRequestManager implements IUSLRequestManager {
     /** {@inheritDoc} */
     @Override
     public String getProductDownloadUrlPath(RequestProduct product) {
-        if (StringUtils.isNullOrEmpty(product.getDataSetBase().getExtractFilename())) {
+        if (StringUtils.isNullOrEmpty(product.getRequestProductParameters().getExtractFilename())) {
             return "";
         }
 
@@ -280,7 +281,7 @@ public class USLRequestManager implements IUSLRequestManager {
         if (!(httpDownloadUrlBase.endsWith("/"))) {
             stringBuffer.append("/");
         }
-        stringBuffer.append(product.getDataSetBase().getExtractFilename());
+        stringBuffer.append(product.getRequestProductParameters().getExtractFilename());
 
         return stringBuffer.toString();
     }

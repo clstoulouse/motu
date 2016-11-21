@@ -4,7 +4,7 @@ import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
-import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
+import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.catalog.product.metadata.opendap.OpenDapProductMetadataReader;
 import fr.cls.atoll.motu.web.dal.request.extractor.DALDatasetManager;
@@ -37,12 +37,11 @@ public class DALProductManager implements IDALProductManager {
      * @throws MotuExceptionBase
      */
     @Override
-    public double getProductDataSizeRequest(RequestProduct requestProduct_) throws MotuException {
+    public double getProductDataSizeRequest(RequestDownloadStatus rds_) throws MotuException {
         double productDataSize = -1d;
-
         try {
-            checkCatalogType(requestProduct_);
-            productDataSize = new DALDatasetManager(requestProduct_).getAmountDataSize();
+            checkCatalogType(rds_);
+            productDataSize = new DALDatasetManager(rds_).getAmountDataSize();
         } catch (Exception e) {
             throw new MotuException(ExceptionUtils.getErrorType(e), e);
         }
@@ -56,34 +55,17 @@ public class DALProductManager implements IDALProductManager {
      * @throws MotuException
      * @throws MotuNotImplementedException
      */
-    protected void checkCatalogType(RequestProduct requestProduct_) throws MotuException, MotuNotImplementedException {
-        String catalogType = DALManager.getInstance().getCatalogManager().getCatalogType(requestProduct_.getProduct());
+    protected void checkCatalogType(RequestDownloadStatus rds_) throws MotuException, MotuNotImplementedException {
+        String catalogType = DALManager.getInstance().getCatalogManager().getCatalogType(rds_.getRequestProduct().getProduct());
         if (catalogType.toUpperCase().equals("FILE")) {
             long d1 = System.nanoTime();
             long d2 = System.nanoTime();
 
-            requestProduct_.getProduct().setMediaKey(catalogType);
+            rds_.getRequestProduct().getProduct().setMediaKey(catalogType);
 
-            updateFiles(requestProduct_);
             // Add time here (after updateFiles), because before updateFiles
             // dataset is not still create
-            requestProduct_.getDataSetBase().getDataBaseExtractionTimeCounter().addReadingTime((d2 - d1));
-        }
-    }
-
-    /**
-     * Update files.
-     * 
-     * @param product the product
-     * 
-     * @throws MotuException the motu exception
-     * @throws MotuNotImplementedException the motu not implemented exception
-     */
-    private void updateFiles(RequestProduct requestProduct_) throws MotuNotImplementedException, MotuException {
-        if (requestProduct_.getProduct().getDataFiles() == null) {
-            requestProduct_.clearFiles();
-        } else {
-            requestProduct_.updateFiles();
+            rds_.getDataBaseExtractionTimeCounter().addReadingTime((d2 - d1));
         }
     }
 }

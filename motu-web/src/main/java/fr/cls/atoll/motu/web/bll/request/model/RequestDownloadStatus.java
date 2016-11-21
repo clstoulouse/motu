@@ -1,6 +1,7 @@
 package fr.cls.atoll.motu.web.bll.request.model;
 
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataBaseExtractionTimeCounter;
 
 /**
  * <br>
@@ -34,6 +35,8 @@ public class RequestDownloadStatus {
     private String queueId;
     private String queueDescription;
 
+    private DataBaseExtractionTimeCounter dataBaseExtractionTimeCounter;
+
     /**
      * Constructeur.
      * 
@@ -49,7 +52,25 @@ public class RequestDownloadStatus {
         setCreationDateTime(System.currentTimeMillis());
         setStartProcessingDateTime(0L);
         setEndProcessingDateTime(0L);
+        setDataBaseExtractionTimeCounter(new DataBaseExtractionTimeCounter());
+    }
 
+    /**
+     * Valeur de dataBaseExtractionTimeCounter.
+     * 
+     * @return la valeur.
+     */
+    public DataBaseExtractionTimeCounter getDataBaseExtractionTimeCounter() {
+        return dataBaseExtractionTimeCounter;
+    }
+
+    /**
+     * Valeur de dataBaseExtractionTimeCounter.
+     * 
+     * @param dataBaseExtractionTimeCounter nouvelle valeur.
+     */
+    public void setDataBaseExtractionTimeCounter(DataBaseExtractionTimeCounter dataBaseExtractionTimeCounter) {
+        this.dataBaseExtractionTimeCounter = dataBaseExtractionTimeCounter;
     }
 
     /**

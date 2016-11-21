@@ -147,7 +147,7 @@ public class BLLRequestManager implements IBLLRequestManager {
             LOGGER.error("RequestDownloadStatus is null for requestId=" + requestId
                     + ". The parameter \"cleanRequestInterval\" in motuConfig is certainly to low for the current request which has certainly takes more times. So cleaner has remove the request status whereas the request was currently in progress. Solution is to set a value greater for \"cleanRequestInterval\" or understand why this request takes so much time to end.");
         }
-        p.setProductFileName(reqProduct_.getDataSetBase().getExtractFilename());
+        p.setProductFileName(reqProduct_.getRequestProductParameters().getExtractFilename());
 
         return p;
     }
@@ -166,7 +166,7 @@ public class BLLRequestManager implements IBLLRequestManager {
             @Override
             public void run() {
                 download(rds, cs_);
-                logQueueInfo(rds, reqProduct_);
+                logQueueInfo(rds);
             }
 
         };
@@ -186,19 +186,19 @@ public class BLLRequestManager implements IBLLRequestManager {
     /**
      * .
      */
-    private void logQueueInfo(RequestDownloadStatus rds, RequestProduct reqProduct_) {
+    private void logQueueInfo(RequestDownloadStatus rds) {
         QueueLogInfo qli = new QueueLogInfo();
         qli.setAmountDataSize(UnitUtils.toMegaBytes(rds.getSizeInBits()));
-        qli.setCompressingTime(TimeUtils.nanoToMillisec(reqProduct_.getDataSetBase().getDataBaseExtractionTimeCounter().getCompressingTime()));
-        qli.setCopyingTime(TimeUtils.nanoToMillisec(reqProduct_.getDataSetBase().getDataBaseExtractionTimeCounter().getCopyingTime()));
-        qli.setReadingTime(TimeUtils.nanoToMillisec(reqProduct_.getDataSetBase().getDataBaseExtractionTimeCounter().getReadingTime()));
-        qli.setWritingTime(TimeUtils.nanoToMillisec(reqProduct_.getDataSetBase().getDataBaseExtractionTimeCounter().getWritingTime()));
+        qli.setCompressingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getCompressingTime()));
+        qli.setCopyingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getCopyingTime()));
+        qli.setReadingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getReadingTime()));
+        qli.setWritingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getWritingTime()));
 
         qli.setDownloadUrlPath(BLLManager.getInstance().getCatalogManager().getProductManager()
-                .getProductDownloadHttpUrl(reqProduct_.getDataSetBase().getExtractFilename()));
+                .getProductDownloadHttpUrl(rds.getRequestProduct().getRequestProductParameters().getExtractFilename()));
         // qli.setEncoding(""); Set by default
-        qli.setExtractionParameters(reqProduct_.getExtractionParameters());
-        qli.setExtractLocationData(reqProduct_.getDataSetBase().getExtractLocationData());
+        qli.setExtractionParameters(rds.getRequestProduct().getExtractionParameters());
+        qli.setExtractLocationData(rds.getRequestProduct().getRequestProductParameters().getExtractLocationData());
 
         Calendar c = Calendar.getInstance();
 
@@ -217,7 +217,7 @@ public class BLLRequestManager implements IBLLRequestManager {
 
         // SMA: Not sure that this field as a real sense, keep it for retro compatibility between Motu
         // versions 2.x and 3.x
-        qli.setPreparingTime(TimeUtils.nanoToMillisec(reqProduct_.getDataSetBase().getDataBaseExtractionTimeCounter().getReadingTime()));
+        qli.setPreparingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getReadingTime()));
 
         qli.setQueueId(rds.getQueueId());
         qli.setQueueDesc(rds.getQueueDescription());
@@ -310,7 +310,7 @@ public class BLLRequestManager implements IBLLRequestManager {
                 : rds_.getRequestProduct().getExtractionParameters().getUserId();
         try {
             try {
-                double requestSizeInByte = getProductDataSizeIntoByte(rds_.getRequestProduct());
+                double requestSizeInByte = getProductDataSizeIntoByte(rds_);
                 rds_.setSizeInBits(new Double(requestSizeInByte * 8).longValue());
                 double requestSizeInMB = UnitUtils.toMegaBytes(requestSizeInByte);
 
@@ -368,7 +368,11 @@ public class BLLRequestManager implements IBLLRequestManager {
      */
     @Override
     public double getProductDataSizeIntoByte(RequestProduct requestProduct_) throws MotuException {
-        return UnitUtils.toBytes(DALManager.getInstance().getCatalogManager().getProductManager().getProductDataSizeRequest(requestProduct_));
+        return getProductDataSizeIntoByte(new RequestDownloadStatus(-1L, requestProduct_));
+    }
+
+    private double getProductDataSizeIntoByte(RequestDownloadStatus rds_) throws MotuException {
+        return UnitUtils.toBytes(DALManager.getInstance().getCatalogManager().getProductManager().getProductDataSizeRequest(rds_));
     }
 
     /** {@inheritDoc} */

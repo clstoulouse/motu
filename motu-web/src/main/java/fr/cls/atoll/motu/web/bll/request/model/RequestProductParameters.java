@@ -22,10 +22,9 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-package fr.cls.atoll.motu.web.dal.request.netcdf.data;
+package fr.cls.atoll.motu.web.bll.request.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -37,15 +36,11 @@ import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteria;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaGeo;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
-import fr.cls.atoll.motu.web.common.utils.StringUtils;
-import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.VarData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import ucar.ma2.MAMath;
 import ucar.ma2.MAMath.MinMax;
 import ucar.ma2.Range;
@@ -59,16 +54,10 @@ import ucar.unidata.geoloc.LatLonPointImpl;
  * @version $Revision: 1.1 $ - $Date: 2009-03-18 12:18:22 $
  * @author <a href="mailto:dearith@cls.fr">Didier Earith</a>
  */
-public class DatasetBase {
-
-    /** The product. */
-    protected Product product = null;
+public class RequestProductParameters {
 
     /** The variables map. */
     private Map<String, VarData> variablesMap;
-
-    /** The list criteria. */
-    private List<DataFile> listFiles;
 
     /** The list criteria. */
     private List<ExtractCriteria> listCriteria;
@@ -79,90 +68,14 @@ public class DatasetBase {
     /** The temporary output location path and file name. */
     private String extractFilenameTemp = "";
 
-    private DataBaseExtractionTimeCounter dataBaseExtractionTimeCounter;
-
     /**
      * Constructor.
      * 
      * @param product product to work with
      */
-    public DatasetBase(Product product) {
+    public RequestProductParameters(Product product) {
         variablesMap = new HashMap<String, VarData>();
         listCriteria = new ArrayList<ExtractCriteria>();
-        dataBaseExtractionTimeCounter = new DataBaseExtractionTimeCounter();
-        setProduct(product);
-    }
-
-    /**
-     * Valeur de dataBaseExtractionTimeCounter.
-     * 
-     * @return la valeur.
-     */
-    public DataBaseExtractionTimeCounter getDataBaseExtractionTimeCounter() {
-        return dataBaseExtractionTimeCounter;
-    }
-
-    /**
-     * Valeur de dataBaseExtractionTimeCounter.
-     * 
-     * @param dataBaseExtractionTimeCounter nouvelle valeur.
-     */
-    public void setDataBaseExtractionTimeCounter(DataBaseExtractionTimeCounter dataBaseExtractionTimeCounter) {
-        this.dataBaseExtractionTimeCounter = dataBaseExtractionTimeCounter;
-    }
-
-    /** Last error encountered. */
-    private String lastError = "";
-
-    /**
-     * Getter of the property <tt>lastError</tt>.
-     * 
-     * @return Returns the lastError.
-     * 
-     * @uml.property name="lastError"
-     */
-    public String getLastError() {
-        return this.lastError;
-    }
-
-    /**
-     * Setter of the property <tt>lastError</tt>.
-     * 
-     * @param lastError The lastError to set.
-     * 
-     * @uml.property name="lastError"
-     */
-    public void setLastError(String lastError) {
-        this.lastError = lastError;
-    }
-
-    /**
-     * Clears <tt>lastError</tt>.
-     * 
-     * @uml.property name="lastError"
-     */
-    public void clearLastError() {
-        this.lastError = "";
-    }
-
-    /**
-     * Checks for last error.
-     * 
-     * @return true last error message string is not empty, false otherwise.
-     */
-    public boolean hasLastError() {
-        return !StringUtils.isNullOrEmpty(getLastError());
-    }
-
-    /**
-     * Adds the variables.
-     * 
-     * @param vars the vars
-     * @return the list
-     * @throws MotuException the motu exception
-     */
-    public void addVariables(String... vars) throws MotuException {
-        addVariables(Arrays.asList(vars));
     }
 
     /**
@@ -174,41 +87,20 @@ public class DatasetBase {
      * 
      * @throws MotuException the motu exception
      */
-    public void addVariables(List<String> listVar) throws MotuException {
+    public void addVariables(List<String> listVar, ProductMetaData productMetaData_) throws MotuException {
         if (listVar != null && listVar.size() > 0) {
-            NetCdfReader netCdfReader = new NetCdfReader(product.getLocationData(), false);
-            netCdfReader.open(true);
             for (String standardName : listVar) {
                 String trimmedStandardName = standardName.trim();
 
-                List<String> listVarName;
-                try {
-                    listVarName = netCdfReader.getNetcdfVarNameByStandardName(trimmedStandardName);
-                } catch (NetCdfAttributeException e) {
-                    throw new MotuException(ErrorType.NETCDF_VARIABLE, "Error in addVariables - Unable to get netcdf variable name", e);
+                ParameterMetaData pm = productMetaData_.getParameterMetaDatas(trimmedStandardName);
+                VarData varData = new VarData(pm.getName());
+                varData.setStandardName(trimmedStandardName);
+                if (getVariables().keySet().contains(varData.getVarName())) {
+                    getVariables().remove(varData.getVarName());
                 }
-                for (String varName : listVarName) {
-                    VarData varData = new VarData(varName);
-                    varData.setStandardName(trimmedStandardName);
-                    if (getVariables().keySet().contains(varData.getVarName())) {
-                        getVariables().remove(varData.getVarName());
-                    }
-                    getVariables().put(varData.getVarName(), varData);
-                }
+                getVariables().put(varData.getVarName(), varData);
             }
         }
-    }
-
-    /**
-     * Updates variables into the dataset. - Adds new variables - Updates the variables which already exist -
-     * Remove the variables from the dataset which are not any more in the list
-     * 
-     * @param listVar list of variables to be updated.
-     * 
-     * @throws MotuException the motu exception
-     */
-    public void updateVariables(List<String> listVar) throws MotuException {
-        addVariables(listVar);
     }
 
     /**
@@ -308,7 +200,7 @@ public class DatasetBase {
 
     public void setCriteria(List<String> listTemporalCoverage, List<String> listLatLonCoverage, List<String> listDepthCoverage)
             throws MotuException, MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException, MotuInvalidLongitudeException {
-        createCriteriaList(listTemporalCoverage, listLatLonCoverage, listDepthCoverage, listCriteria);
+        createCriteriaList(listTemporalCoverage, listLatLonCoverage, listDepthCoverage);
     }
 
     /**
@@ -326,14 +218,11 @@ public class DatasetBase {
      * @throws MotuInvalidDepthException the motu invalid depth exception
      * @throws MotuInvalidDateException the motu invalid date exception
      */
-    private static void createCriteriaList(List<String> listTemporalCoverage,
-                                           List<String> listLatLonCoverage,
-                                           List<String> listDepthCoverage,
-                                           List<ExtractCriteria> criteria) throws MotuInvalidDateException, MotuInvalidDepthException,
-                                                   MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException {
-        addCriteriaTemporal(listTemporalCoverage, criteria);
-        addCriteriaLatLon(listLatLonCoverage, criteria);
-        addCriteriaDepth(listDepthCoverage, criteria);
+    private void createCriteriaList(List<String> listTemporalCoverage, List<String> listLatLonCoverage, List<String> listDepthCoverage)
+            throws MotuInvalidDateException, MotuInvalidDepthException, MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException {
+        addCriteriaTemporal(listTemporalCoverage);
+        addCriteriaLatLon(listLatLonCoverage);
+        addCriteriaDepth(listDepthCoverage);
     }
 
     /**
@@ -346,14 +235,11 @@ public class DatasetBase {
      * @throws MotuException the motu exception
      * @throws MotuInvalidDateException the motu invalid date exception
      */
-    private static void addCriteriaTemporal(List<String> listTemporalCoverage, List<ExtractCriteria> criteria)
-            throws MotuInvalidDateException, MotuException {
-        if (criteria != null && listTemporalCoverage != null) {
-            if (!listTemporalCoverage.isEmpty()) {
-                ExtractCriteriaDatetime c = new ExtractCriteriaDatetime();
-                criteria.add(c);
-                c.setValues(listTemporalCoverage);
-            }
+    private void addCriteriaTemporal(List<String> listTemporalCoverage) throws MotuInvalidDateException, MotuException {
+        if (listTemporalCoverage != null && !listTemporalCoverage.isEmpty()) {
+            ExtractCriteriaDatetime c = new ExtractCriteriaDatetime();
+            c.setValues(listTemporalCoverage);
+            listCriteria.add(c);
         }
     }
 
@@ -369,12 +255,10 @@ public class DatasetBase {
      * @throws MotuInvalidLatitudeException the motu invalid latitude exception
      * @throws MotuException the motu exception
      */
-    private static void addCriteriaLatLon(List<String> listLatLonCoverage, List<ExtractCriteria> criteria)
+    private void addCriteriaLatLon(List<String> listLatLonCoverage)
             throws MotuInvalidLatitudeException, MotuInvalidLongitudeException, MotuException {
-        if (criteria != null && listLatLonCoverage != null) {
-            if (!listLatLonCoverage.isEmpty()) {
-                criteria.add(new ExtractCriteriaLatLon(listLatLonCoverage));
-            }
+        if (listLatLonCoverage != null && !listLatLonCoverage.isEmpty()) {
+            listCriteria.add(new ExtractCriteriaLatLon(listLatLonCoverage));
         }
     }
 
@@ -388,29 +272,9 @@ public class DatasetBase {
      * @throws MotuInvalidDepthException the motu invalid depth exception
      * @throws MotuException the motu exception
      */
-    private static void addCriteriaDepth(List<String> listDepthCoverage, List<ExtractCriteria> criteria)
-            throws MotuInvalidDepthException, MotuException {
-        if (criteria != null && listDepthCoverage != null) {
-            if (!listDepthCoverage.isEmpty()) {
-                criteria.add(new ExtractCriteriaDepth(listDepthCoverage));
-            }
-        }
-    }
-
-    /**
-     * Update files.
-     * 
-     * @param list the list
-     * 
-     * @throws MotuException the motu exception
-     */
-    public void updateFiles(List<DataFile> list) throws MotuException {
-        if (list != null) {
-            if (listFiles == null) {
-                listFiles = new ArrayList<DataFile>();
-            }
-            listFiles.clear();
-            listFiles.addAll(list);
+    private void addCriteriaDepth(List<String> listDepthCoverage) throws MotuInvalidDepthException, MotuException {
+        if (listDepthCoverage != null && !listDepthCoverage.isEmpty()) {
+            listCriteria.add(new ExtractCriteriaDepth(listDepthCoverage));
         }
     }
 
@@ -455,51 +319,6 @@ public class DatasetBase {
     }
 
     /**
-     * Compute variance from a variable. A new variable containing the result of calculation is created and
-     * added to the variable's collection.
-     * 
-     * @param variable variable to compute.
-     */
-    public void computeVariance(VarData variable) {
-
-    }
-
-    /**
-     * Compute interpolation from a variable. A new variable containing the result of calculation is created
-     * and added to the variable's collection.
-     * 
-     * @param variable variable to compute.
-     */
-    public void computeSubSampling(VarData variable) {
-
-    }
-
-    /** The select data. */
-    private SelectData selectData;
-
-    /**
-     * Getter of the property <tt>selectData</tt>.
-     * 
-     * @return Returns the selectData.
-     * 
-     * @uml.property name="selectData"
-     */
-    public SelectData getSelectData() {
-        return this.selectData;
-    }
-
-    /**
-     * Setter of the property <tt>selectData</tt>.
-     * 
-     * @param selectData The selectData to set.
-     * 
-     * @uml.property name="selectData"
-     */
-    public void setSelectData(SelectData selectData) {
-        this.selectData = selectData;
-    }
-
-    /**
      * Getter of the property <tt>variables</tt>.
      * 
      * @return Returns the variablesMap.
@@ -519,35 +338,6 @@ public class DatasetBase {
      */
     public List<ExtractCriteria> getListCriteria() {
         return this.listCriteria;
-    }
-
-    /**
-     * Clear files.
-     */
-    public void clearFiles() {
-        this.listFiles.clear();
-    }
-
-    /**
-     * Getter of the property <tt>product</tt>.
-     * 
-     * @return Returns the product.
-     * 
-     * @uml.property name="product"
-     */
-    public Product getProduct() {
-        return this.product;
-    }
-
-    /**
-     * Setter of the property <tt>product</tt>.
-     * 
-     * @param product The product to set.
-     * 
-     * @uml.property name="product"
-     */
-    public void setProduct(Product product) {
-        this.product = product;
     }
 
     /**
@@ -648,23 +438,21 @@ public class DatasetBase {
     }
 
     /**
-     * Clears <tt>extractFilename</tt>.
-     * 
-     * @uml.property name="extractFilename"
-     */
-    public void clearExtractFilename() {
-        this.extractFilename = "";
-        this.extractFilenameTemp = "";
-    }
-
-    /**
      * Gets the output full file name (with path).
      * 
      * @return the output full file name (with path).
      * 
      */
     public String getExtractLocationData() {
-        return Product.getExtractLocationData(extractFilename);
+        if (extractFilename.length() <= 0) {
+            return "";
+        }
+        StringBuffer stringBuffer = new StringBuffer();
+
+        stringBuffer.append(Product.getExtractionPath());
+        stringBuffer.append(extractFilename);
+
+        return stringBuffer.toString();
     }
 
     /**

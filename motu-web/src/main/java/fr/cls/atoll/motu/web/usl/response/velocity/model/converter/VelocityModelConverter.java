@@ -351,8 +351,8 @@ public class VelocityModelConverter {
 
             @Override
             public boolean hasDownloadUrlPath() {
-                return requestProduct_ != null && requestProduct_.getDataSetBase() != null
-                        && !StringUtils.isNullOrEmpty(requestProduct_.getDataSetBase().getExtractFilename());
+                return requestProduct_ != null && requestProduct_.getRequestProductParameters() != null
+                        && !StringUtils.isNullOrEmpty(requestProduct_.getRequestProductParameters().getExtractFilename());
             }
 
             @Override
@@ -362,12 +362,12 @@ public class VelocityModelConverter {
 
             @Override
             public String getExtractFilename() {
-                return requestProduct_.getDataSetBase().getExtractFilename();
+                return requestProduct_.getRequestProductParameters().getExtractFilename();
             }
 
             @Override
             public boolean isAutoDownloadTimeOutEnable() {
-                return !StringUtils.isNullOrEmpty(requestProduct_.getDataSetBase().getExtractFilename());
+                return !StringUtils.isNullOrEmpty(requestProduct_.getRequestProductParameters().getExtractFilename());
             }
 
             @Override

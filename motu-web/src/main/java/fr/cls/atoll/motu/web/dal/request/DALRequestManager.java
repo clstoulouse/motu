@@ -80,7 +80,7 @@ public class DALRequestManager implements IDALRequestManager {
     private void downloadWithOpenDap(RequestDownloadStatus rds_) throws MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
             NetCdfVariableNotFoundException, MotuException, IOException {
-        new DALDatasetManager(rds_.getRequestProduct()).extractData();
+        new DALDatasetManager(rds_).extractData();
     }
 
     private void downloadWithNCSS(RequestDownloadStatus rds_)
@@ -89,12 +89,12 @@ public class DALRequestManager implements IDALRequestManager {
         ExtractCriteriaDatetime time = rds_.getRequestProduct().getCriteriaDateTime();
         ExtractCriteriaLatLon latlon = rds_.getRequestProduct().getCriteriaLatLon();
         ExtractCriteriaDepth depth = rds_.getRequestProduct().getCriteriaDepth();
-        Set<String> var = rds_.getRequestProduct().getDataSetBase().getVariables().keySet();
+        Set<String> var = rds_.getRequestProduct().getRequestProductParameters().getVariables().keySet();
 
         // Create output NetCdf file to deliver to the user (equivalent to opendap)
         // String fname = NetCdfWriter.getUniqueNetCdfFileName(p.getProductId());
         String fname = computeDownloadFileName(rds_.getRequestProduct().getProduct().getProductId(), rds_.getRequestId());
-        rds_.getRequestProduct().getDataSetBase().setExtractFilename(fname);
+        rds_.getRequestProduct().getRequestProductParameters().setExtractFilename(fname);
         String extractDirPath = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath();
 
         // Create and initialize selection
@@ -126,7 +126,7 @@ public class DALRequestManager implements IDALRequestManager {
             }
             if (canRequest) {
                 try {
-                    runRequestWithCDOMergeTool(rds_.getRequestProduct(), ncss, latlon, extractDirPath, fname);
+                    runRequestWithCDOMergeTool(rds_, ncss, latlon, extractDirPath, fname);
                 } catch (MotuException e) {
                     throw e;
                 } catch (Exception e) {
@@ -144,7 +144,7 @@ public class DALRequestManager implements IDALRequestManager {
                     latlon.getLatLonRect().getLatMax(),
                     rightLon));
 
-            ncssRequest(rds_.getRequestProduct(), ncss);
+            ncssRequest(rds_, ncss);
         }
     }
 
@@ -162,12 +162,12 @@ public class DALRequestManager implements IDALRequestManager {
      * @throws NetCdfVariableException
      * @throws MotuInvalidDepthRangeException
      */
-    private void runRequestWithCDOMergeTool(RequestProduct rp,
+    private void runRequestWithCDOMergeTool(RequestDownloadStatus rds_,
                                             NetCdfSubsetService ncss,
                                             ExtractCriteriaLatLon latlon,
                                             String extractDirPath,
                                             String fname) throws Exception {
-        cdoManager.runRequestWithCDOMergeTool(rp, ncss, latlon, extractDirPath, fname, this);
+        cdoManager.runRequestWithCDOMergeTool(rds_, ncss, latlon, extractDirPath, fname, this);
     }
 
     private int searchDepthIndex(List<String> listOfDepth, double depthToSearch) {
@@ -189,19 +189,19 @@ public class DALRequestManager implements IDALRequestManager {
     }
 
     @Override
-    public void ncssRequest(RequestProduct requestProduct, NetCdfSubsetService ncss)
+    public void ncssRequest(RequestDownloadStatus rds_, NetCdfSubsetService ncss)
             throws MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, IOException, InterruptedException {
         // Run rest query (unitary or concat depths)
         Array zAxisData = null;
-        if (requestProduct.getProduct().getProductMetaData().hasZAxis()) {
+        if (rds_.getRequestProduct().getProduct().getProductMetaData().hasZAxis()) {
 
             // Dataset available depths
-            zAxisData = requestProduct.getProduct().getZAxisData();
+            zAxisData = rds_.getRequestProduct().getProduct().getZAxisData();
             long alev = zAxisData.getSize();
 
             // Pass data to TDS-NCSS subsetter
             ncss.setDepthAxis(zAxisData);
-            Range zRange = getZRange(requestProduct);
+            Range zRange = getZRange(rds_.getRequestProduct());
             ncss.setDepthRange(zRange);
 
             // Z-Range selection update
@@ -214,8 +214,8 @@ public class DALRequestManager implements IDALRequestManager {
         } else {
             ncss.unitRequestNCSS(); // No depth axis -> request without depths
         }
-        requestProduct.getDataSetBase().getDataBaseExtractionTimeCounter().addReadingTime(ncss.getReadingTimeInNanoSec());
-        requestProduct.getDataSetBase().getDataBaseExtractionTimeCounter().addWritingTime(ncss.getWritingTimeInNanoSec());
+        rds_.getDataBaseExtractionTimeCounter().addReadingTime(ncss.getReadingTimeInNanoSec());
+        rds_.getDataBaseExtractionTimeCounter().addWritingTime(ncss.getWritingTimeInNanoSec());
     }
 
     /** {@inheritDoc} */
@@ -236,7 +236,7 @@ public class DALRequestManager implements IDALRequestManager {
         Range zRange = null;
         if (requestProduct.getProduct().getProductMetaData().hasZAxis()) {
             Array zAxisData = requestProduct.getProduct().getZAxisData();
-            ExtractCriteriaDepth extractCriteriaDepth = requestProduct.getDataSetBase().findCriteriaDepth();
+            ExtractCriteriaDepth extractCriteriaDepth = requestProduct.getRequestProductParameters().findCriteriaDepth();
             if (extractCriteriaDepth != null) {
                 zRange = extractCriteriaDepth.toRange(zAxisData, new double[] { Double.MAX_VALUE, Double.MAX_VALUE });
             }

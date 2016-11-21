@@ -283,9 +283,9 @@ public class XMLConverter {
         }
         smr.setMsg(msg);
         smr.setLocalUri(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath() + "/"
-                + requestDownloadStatus.getRequestProduct().getDataSetBase().getExtractFilename());
+                + requestDownloadStatus.getRequestProduct().getRequestProductParameters().getExtractFilename());
         smr.setRemoteUri(BLLManager.getInstance().getConfigManager().getMotuConfig().getDownloadHttpUrl() + "/"
-                + requestDownloadStatus.getRequestProduct().getDataSetBase().getExtractFilename());
+                + requestDownloadStatus.getRequestProduct().getRequestProductParameters().getExtractFilename());
         smr.setRequestId(requestDownloadStatus.getRequestId());
 
         smr.setSize(UnitUtils.toMegaBytes(requestDownloadStatus.getSizeInBits()));

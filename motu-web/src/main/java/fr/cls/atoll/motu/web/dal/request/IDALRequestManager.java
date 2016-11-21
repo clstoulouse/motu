@@ -6,7 +6,6 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthRangeException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
-import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 
@@ -45,6 +44,6 @@ public interface IDALRequestManager {
      * @throws IOException
      * @throws InterruptedException
      */
-    void ncssRequest(RequestProduct requestProduct, NetCdfSubsetService ncss)
+    void ncssRequest(RequestDownloadStatus rds, NetCdfSubsetService ncss)
             throws MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, IOException, InterruptedException;
 }

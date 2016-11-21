@@ -1230,28 +1230,11 @@ public class Product implements Comparator<Product> {
      */
 
     public Array readVariable(Variable variable) throws MotuException, NetCdfVariableException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("readVariable() - entering");
-        }
-
         openNetCdfReader();
 
         // Loads global metadata from opendap
         Array array = netCdfReader.getGrid(variable);
-        // Array array = null;
-        // try {
-        // openNetCdfReader();
-        // // Loads global metadata from opendap
-        // array = netCdfReader.getGrid(variable);
-        // } finally {
-        // netCdfReader.close();
-        // }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("readVariable() - exiting");
-        }
         return array;
-
     }
 
     /**
@@ -1632,26 +1615,6 @@ public class Product implements Comparator<Product> {
         } else {
             return "Unknown_tds_url_path";
         }
-    }
-
-    /**
-     * Gets the extract location data.
-     * 
-     * @param fileName the file name
-     * 
-     * @return the extract location data
-     * 
-     */
-    public static String getExtractLocationData(String fileName) {
-        if (fileName.length() <= 0) {
-            return "";
-        }
-        StringBuffer stringBuffer = new StringBuffer();
-
-        stringBuffer.append(Product.getExtractionPath());
-        stringBuffer.append(fileName);
-
-        return stringBuffer.toString();
     }
 
     /**
