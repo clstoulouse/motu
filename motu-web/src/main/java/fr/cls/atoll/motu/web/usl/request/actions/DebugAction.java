@@ -128,8 +128,12 @@ public class DebugAction extends AbstractAction {
             return;
         }
 
+        IBLLRequestManager requestManager = BLLManager.getInstance().getRequestManager();
+        List<Long> requestIds = requestManager.getRequestIds();
+        Collections.sort(requestIds, Collections.reverseOrder());
+
         stringBuffer.append("<h2>\n");
-        stringBuffer.append(statusModeType.toString());
+        stringBuffer.append(statusModeType.toString() + " (x" + requestIds.size() + ")");
         stringBuffer.append("</h2>\n");
         stringBuffer.append("<table border=\"1\">\n");
         stringBuffer.append("<tr>\n");
@@ -161,10 +165,6 @@ public class DebugAction extends AbstractAction {
         stringBuffer.append("Local data");
         stringBuffer.append("</th>\n");
         stringBuffer.append("</tr>\n");
-
-        IBLLRequestManager requestManager = BLLManager.getInstance().getRequestManager();
-        List<Long> requestIds = requestManager.getRequestIds();
-        Collections.sort(requestIds, Collections.reverseOrder());
 
         for (Long requestId : requestIds) {
             AbstractAction action = requestManager.getRequestAction(requestId);
