@@ -24,4 +24,14 @@ public class UnitUtils {
         return sizeInMegaBytes * (1024 * 1024);
     }
 
+    /**
+     * .
+     * 
+     * @param maxAllowedSizeInBytes
+     * @return
+     */
+    public static Double toKBytes(double sizeInBytes) {
+        return sizeInBytes / 1024;
+    }
+
 }

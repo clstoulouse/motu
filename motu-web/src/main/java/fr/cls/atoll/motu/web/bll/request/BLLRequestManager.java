@@ -368,7 +368,7 @@ public class BLLRequestManager implements IBLLRequestManager {
      */
     @Override
     public double getProductDataSizeIntoByte(RequestProduct requestProduct_) throws MotuException {
-        return DALManager.getInstance().getCatalogManager().getProductManager().getProductDataSizeRequest(requestProduct_);
+        return UnitUtils.toBytes(DALManager.getInstance().getCatalogManager().getProductManager().getProductDataSizeRequest(requestProduct_));
     }
 
     /** {@inheritDoc} */
