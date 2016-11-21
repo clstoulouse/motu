@@ -131,9 +131,9 @@ public class DebugAction extends AbstractAction {
         IBLLRequestManager requestManager = BLLManager.getInstance().getRequestManager();
         List<Long> requestIds = requestManager.getRequestIds();
         Collections.sort(requestIds, Collections.reverseOrder());
-
+        String requestCountToken = "@@requestCountForStatus@@";
         stringBuffer.append("<h2>\n");
-        stringBuffer.append(statusModeType.toString() + " (x" + requestIds.size() + ")");
+        stringBuffer.append(statusModeType.toString() + " (x" + requestCountToken + ")");
         stringBuffer.append("</h2>\n");
         stringBuffer.append("<table border=\"1\">\n");
         stringBuffer.append("<tr>\n");
@@ -166,6 +166,7 @@ public class DebugAction extends AbstractAction {
         stringBuffer.append("</th>\n");
         stringBuffer.append("</tr>\n");
 
+        int requestCount = 0;
         for (Long requestId : requestIds) {
             AbstractAction action = requestManager.getRequestAction(requestId);
             String userId = action.getUserId();
@@ -173,8 +174,11 @@ public class DebugAction extends AbstractAction {
                 userId = "Anonymous";
             }
             if (action instanceof DownloadProductAction) {
-                manageTheDownloadProductActionLog(stringBuffer, requestId, statusModeType, action, userId);
+                if (manageTheDownloadProductActionLog(stringBuffer, requestId, statusModeType, action, userId)) {
+                    requestCount++;
+                }
             } else if (requestManager.getRequestStatus(requestId) == statusModeType) {
+                requestCount++;
                 manageTheActionLog(stringBuffer,
                                    requestId,
                                    requestManager.getRequestAction(requestId),
@@ -183,6 +187,8 @@ public class DebugAction extends AbstractAction {
             }
         }
         stringBuffer.append("</table>\n");
+        int startIndex = stringBuffer.indexOf(requestCountToken);
+        stringBuffer.replace(startIndex, startIndex + requestCountToken.length(), Integer.toString(requestCount));
     }
 
     private void manageTheActionLog(StringBuffer stringBuffer, Long requestId, AbstractAction action, StatusModeType status, String userId) {
@@ -218,17 +224,17 @@ public class DebugAction extends AbstractAction {
         stringBuffer.append("\n");
     }
 
-    private void manageTheDownloadProductActionLog(StringBuffer stringBuffer,
-                                                   Long requestId,
-                                                   StatusModeType statusModeType,
-                                                   AbstractAction action,
-                                                   String userId) {
+    private boolean manageTheDownloadProductActionLog(StringBuffer stringBuffer,
+                                                      Long requestId,
+                                                      StatusModeType statusModeType,
+                                                      AbstractAction action,
+                                                      String userId) {
         StatusModeResponse statusModeResponse;
         try {
             statusModeResponse = XMLConverter
                     .convertStatusModeResponse(getActionCode(), BLLManager.getInstance().getRequestManager().getDownloadRequestStatus(requestId));
             if (statusModeResponse.getStatus() != statusModeType) {
-                return;
+                return false;
             }
 
             stringBuffer.append("<tr>\n");
@@ -298,6 +304,7 @@ public class DebugAction extends AbstractAction {
         } catch (MotuException e) {
             LOGGER.error(e);
         }
+        return true;
     }
 
     /**
