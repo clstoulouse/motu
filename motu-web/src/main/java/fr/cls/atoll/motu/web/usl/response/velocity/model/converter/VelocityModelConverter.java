@@ -903,7 +903,7 @@ public class VelocityModelConverter {
 
             @Override
             public String getDepthUnits() {
-                return getDepthUnits();
+                return productMetaData_.getDepthUnits();
             }
 
         };
