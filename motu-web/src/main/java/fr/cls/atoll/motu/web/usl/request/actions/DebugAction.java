@@ -169,21 +169,23 @@ public class DebugAction extends AbstractAction {
         int requestCount = 0;
         for (Long requestId : requestIds) {
             AbstractAction action = requestManager.getRequestAction(requestId);
-            String userId = action.getUserId();
-            if (userId == null) {
-                userId = "Anonymous";
-            }
-            if (action instanceof DownloadProductAction) {
-                if (manageTheDownloadProductActionLog(stringBuffer, requestId, statusModeType, action, userId)) {
-                    requestCount++;
+            if (action != null) {
+                String userId = action.getUserId();
+                if (userId == null) {
+                    userId = "Anonymous";
                 }
-            } else if (requestManager.getRequestStatus(requestId) == statusModeType) {
-                requestCount++;
-                manageTheActionLog(stringBuffer,
-                                   requestId,
-                                   requestManager.getRequestAction(requestId),
-                                   requestManager.getRequestStatus(requestId),
-                                   userId);
+                if (action instanceof DownloadProductAction) {
+                    if (manageTheDownloadProductActionLog(stringBuffer, requestId, statusModeType, action, userId)) {
+                        requestCount++;
+                    }
+                } else if (requestManager.getRequestStatus(requestId) == statusModeType) {
+                    requestCount++;
+                    manageTheActionLog(stringBuffer,
+                                       requestId,
+                                       requestManager.getRequestAction(requestId),
+                                       requestManager.getRequestStatus(requestId),
+                                       userId);
+                }
             }
         }
         stringBuffer.append("</table>\n");
