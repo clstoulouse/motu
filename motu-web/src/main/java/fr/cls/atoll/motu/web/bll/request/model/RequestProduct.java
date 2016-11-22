@@ -243,11 +243,11 @@ public class RequestProduct {
     private void initDataset() throws MotuException {
         requestProductParameters = new RequestProductParameters(getProduct());
 
-        getRequestProductParameters().addVariables(extractionParameters.getListVar(), getProduct().getProductMetaData());
+        getRequestProductParameters().addVariables(extractionParameters.getListVar(), getProduct());
         try {
             getRequestProductParameters().setCriteria(extractionParameters.getListTemporalCoverage(),
-                                         extractionParameters.getListLatLonCoverage(),
-                                         extractionParameters.getListDepthCoverage());
+                                                      extractionParameters.getListLatLonCoverage(),
+                                                      extractionParameters.getListDepthCoverage());
         } catch (MotuInvalidDateException | MotuInvalidDepthException | MotuInvalidLatitudeException | MotuInvalidLongitudeException e) {
             throw new MotuException(ErrorType.SYSTEM, e);
         }

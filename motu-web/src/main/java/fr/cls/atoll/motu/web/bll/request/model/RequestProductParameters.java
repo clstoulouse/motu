@@ -36,11 +36,12 @@ import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
+import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.VarData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
-import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import ucar.ma2.MAMath;
 import ucar.ma2.MAMath.MinMax;
 import ucar.ma2.Range;
@@ -87,20 +88,47 @@ public class RequestProductParameters {
      * 
      * @throws MotuException the motu exception
      */
-    public void addVariables(List<String> listVar, ProductMetaData productMetaData_) throws MotuException {
-        if (listVar != null && listVar.size() > 0) {
+    public void addVariables(List<String> listVar, Product product_) throws MotuException {
+        if (listVar != null && listVar.size() > 0 && product_ != null && product_.getProductMetaData() != null) {
             for (String standardName : listVar) {
                 String trimmedStandardName = standardName.trim();
 
-                ParameterMetaData pm = productMetaData_.getParameterMetaDatas(trimmedStandardName);
-                VarData varData = new VarData(pm.getName());
-                varData.setStandardName(trimmedStandardName);
-                if (getVariables().keySet().contains(varData.getVarName())) {
-                    getVariables().remove(varData.getVarName());
+                ParameterMetaData pm = product_.getProductMetaData().getParameterMetaDatas(trimmedStandardName);
+                if (pm == null) {
+                    NetCdfReader r = new NetCdfReader(product_.getLocationData(), false);
+                    try {
+                        r.open(true);
+                        try {
+                            List<String> listVarName = r.getNetcdfVarNameByStandardName(trimmedStandardName);
+                            for (String varName : listVarName) {
+                                addVariableIfNotPresent(varName, trimmedStandardName);
+                                VarData varData = new VarData(varName);
+                                varData.setStandardName(trimmedStandardName);
+                                if (getVariables().keySet().contains(varData.getVarName())) {
+                                    getVariables().remove(varData.getVarName());
+                                }
+                                getVariables().put(varData.getVarName(), varData);
+                            }
+                        } catch (NetCdfAttributeException e) {
+                            throw new MotuException(ErrorType.NETCDF_VARIABLE, e);
+                        }
+                    } catch (MotuException e1) {
+                        throw e1;
+                    }
+                } else {
+                    addVariableIfNotPresent(pm.getName(), trimmedStandardName);
                 }
-                getVariables().put(varData.getVarName(), varData);
             }
         }
+    }
+
+    private void addVariableIfNotPresent(String varName, String varStandardName) {
+        VarData varData = new VarData(varName);
+        varData.setStandardName(varStandardName);
+        if (getVariables().keySet().contains(varData.getVarName())) {
+            getVariables().remove(varData.getVarName());
+        }
+        getVariables().put(varData.getVarName(), varData);
     }
 
     /**
