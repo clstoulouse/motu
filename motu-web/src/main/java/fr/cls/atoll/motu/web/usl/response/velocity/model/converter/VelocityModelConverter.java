@@ -544,6 +544,11 @@ public class VelocityModelConverter {
             }
 
             @Override
+            public String getStartTimeCoverageAsUTCString(String dateFormat) {
+                return productMetaData_.getStartTimeCoverageAsUTCString(dateFormat);
+            }
+
+            @Override
             public String getQuickLook(IParameterMetadata parameterMetadata) {
                 return productMetaData_.getQuickLook(parameterMetadata.getName());
             }
@@ -762,6 +767,11 @@ public class VelocityModelConverter {
             }
 
             @Override
+            public String getEndTimeCoverageAsUTCString(String dateFormat) {
+                return productMetaData_.getEndTimeCoverageAsUTCString(dateFormat);
+            }
+
+            @Override
             public String getDepthMinAsString() {
                 return productMetaData_.getDepthMinAsString();
             }
@@ -890,6 +900,12 @@ public class VelocityModelConverter {
                 }
                 return "";
             }
+
+            @Override
+            public String getDepthUnits() {
+                return getDepthUnits();
+            }
+
         };
     }
 
