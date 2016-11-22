@@ -1,5 +1,6 @@
 package fr.cls.atoll.motu.web.dal.catalog.tds;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -67,8 +68,20 @@ public class JAXBTDSModel {
      * 
      * @return la valeur.
      */
-    public Unmarshaller getUnmarshallerTdsModel() {
+    private Unmarshaller getUnmarshallerTdsModel() {
         return unmarshallerTdsModel;
+    }
+
+    /**
+     * Used to Fix Xerces Parsing and the Dreaded FWK005 Exception
+     * http://prystash.blogspot.fr/2012/01/xerces-parsing-and-dreaded-fwk005.html
+     * 
+     * @param is
+     * @return
+     * @throws JAXBException
+     */
+    public synchronized Object unmarshall(InputStream is) throws JAXBException {
+        return getUnmarshallerTdsModel().unmarshal(is);
     }
 
     /**
