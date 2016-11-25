@@ -682,7 +682,7 @@ public class Product implements Comparator<Product> {
      * @throws MotuException the motu exception
      * @throws MotuNotImplementedException the motu not implemented exception
      */
-    public List<String> getVariables() throws MotuException, MotuNotImplementedException {
+    public List<String> getVariables() throws MotuException {
         List<String> listVar = new ArrayList<String>();
         if (productMetaData != null) {
             Map<String, ParameterMetaData> parameterMetaDatas = productMetaData.getParameterMetaDatas();

@@ -37,6 +37,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
+import fr.cls.atoll.motu.web.common.utils.ListUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
@@ -89,35 +90,43 @@ public class RequestProductParameters {
      * @throws MotuException the motu exception
      */
     public void addVariables(List<String> listVar, Product product_) throws MotuException {
-        if (listVar != null && listVar.size() > 0 && product_ != null && product_.getProductMetaData() != null) {
-            for (String standardName : listVar) {
-                String trimmedStandardName = standardName.trim();
+        if (!ListUtils.isNullOrEmpty(listVar)) {
+            if (product_ != null && product_.getProductMetaData() != null) {
+                for (String standardName : listVar) {
+                    String trimmedStandardName = standardName.trim();
 
-                ParameterMetaData pm = product_.getProductMetaData().getParameterMetaDatas(trimmedStandardName);
-                if (pm == null) {
-                    NetCdfReader r = new NetCdfReader(product_.getLocationData(), false);
-                    try {
-                        r.open(true);
+                    ParameterMetaData pm = product_.getProductMetaData().getParameterMetaDatas(trimmedStandardName);
+                    if (pm == null) {
+                        NetCdfReader r = new NetCdfReader(product_.getLocationData(), false);
                         try {
-                            List<String> listVarName = r.getNetcdfVarNameByStandardName(trimmedStandardName);
-                            for (String varName : listVarName) {
-                                addVariableIfNotPresent(varName, trimmedStandardName);
-                                VarData varData = new VarData(varName);
-                                varData.setStandardName(trimmedStandardName);
-                                if (getVariables().keySet().contains(varData.getVarName())) {
-                                    getVariables().remove(varData.getVarName());
+                            r.open(true);
+                            try {
+                                List<String> listVarName = r.getNetcdfVarNameByStandardName(trimmedStandardName);
+                                for (String varName : listVarName) {
+                                    addVariableIfNotPresent(varName, trimmedStandardName);
+                                    VarData varData = new VarData(varName);
+                                    varData.setStandardName(trimmedStandardName);
+                                    if (getVariables().keySet().contains(varData.getVarName())) {
+                                        getVariables().remove(varData.getVarName());
+                                    }
+                                    getVariables().put(varData.getVarName(), varData);
                                 }
-                                getVariables().put(varData.getVarName(), varData);
+                            } catch (NetCdfAttributeException e) {
+                                throw new MotuException(ErrorType.NETCDF_VARIABLE, e);
                             }
-                        } catch (NetCdfAttributeException e) {
-                            throw new MotuException(ErrorType.NETCDF_VARIABLE, e);
+                        } catch (MotuException e1) {
+                            throw e1;
                         }
-                    } catch (MotuException e1) {
-                        throw e1;
+                    } else {
+                        addVariableIfNotPresent(pm.getName(), trimmedStandardName);
                     }
-                } else {
-                    addVariableIfNotPresent(pm.getName(), trimmedStandardName);
                 }
+            }
+        } else {
+            // List variable is null or empty
+            // We get all products variables
+            if (product_ != null) {
+                addVariables(product_.getVariables(), product_);
             }
         }
     }
