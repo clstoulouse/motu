@@ -186,6 +186,7 @@ public class GetSizeAction extends AbstractProductInfoAction {
                 getProductHTTPParameterValidator().getParameterValueValidated(),
                 OutputFormat.NETCDF,
                 USLManager.getInstance().getUserManager().getLoginOrUserHostname(getRequest()),
+                USLManager.getInstance().getUserManager().getUserHostName(getRequest()),
                 USLManager.getInstance().getUserManager().isUserAnonymous(),
                 scriptVersionParameterValidator.getParameterValueValidated());
 

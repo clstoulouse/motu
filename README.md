@@ -335,7 +335,7 @@ Check this section only if you have installed Motu v2.x and you want to install 
 In this section we consider that your Motu installation folder of version 2.x is "/opt/atoll/misgw/".  
 
 ### Upgrade the software
-First stop your Motu v2.x: /opt/atoll/misgw/stop-motu.  
+First stop Motu v2.x: /opt/atoll/misgw/stop-motu.  
 Then install the version 3.x of [Motu from scratch](#InstallFromScratch). Before starting the new Motu version, upgrade its configuration by ready section below.  
 Once the version 3.x of Motu runs well, you can fully remove the folder of version 2.x is "/opt/atoll/misgw/".  
 To avoid any issue, perhaps backup the folder of Motu v2.x before removing it definitively.  
@@ -1150,6 +1150,7 @@ To configure it, edit config/log4j.xml
 ##### Log format: XML or CSV  
 Update the fileFormat attribute of the node "MotuCustomLayout": <MotuCustomLayout fileFormat="xml">
 A string either "xml" or "csv" to select the format in which log message are written.  
+Also update the log file name extension of the attributes "fileName" and "filePattern" in order to get a coherent content in relationship with value set for MotuCustomLayout file format.  
 If this attribute is not set, the default format is "xml".  
 ``` 
 		<RollingFile name="log-file-infos.queue"   

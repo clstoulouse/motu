@@ -56,6 +56,53 @@ public class ExtractionParameters implements Cloneable {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    /**
+     * The Constructor.
+     *
+     * @param listVar the list var
+     * @param dataOutputFormat the data output format
+     * @param userId the user id
+     * @param locationData the location data
+     * @param responseFormat the response format
+     * @param anonymousUser the anonymous user
+     * @param listLatLonCoverage the list lat lon coverage
+     * @param listDepthCoverage the list depth coverage
+     * @param listTemporalCoverage the list temporal coverage
+     * @param out the out
+     * @param productId the product id
+     * @param serviceName the service name
+     */
+    public ExtractionParameters(
+        String serviceName,
+        String locationData,
+        List<String> listVar,
+        List<String> listTemporalCoverage,
+        List<String> listLatLonCoverage,
+        List<String> listDepthCoverage,
+        String productId,
+        OutputFormat dataOutputFormat,
+        Writer out,
+        OutputFormat responseFormat,
+        String userId,
+        String userHostName,
+        boolean anonymousUser,
+        String scriptVersion) {
+        setServiceName(serviceName);
+        setLocationData(locationData);
+        setListVar(listVar);
+        setListTemporalCoverage(listTemporalCoverage);
+        setListLatLonCoverage(listLatLonCoverage);
+        setListDepthCoverage(listDepthCoverage);
+        setProductId(productId);
+        setDataOutputFormat(dataOutputFormat);
+        setOut(out);
+        setResponseFormat(responseFormat);
+        setUserId(userId);
+        setUserHost(userHostName);
+        setAnonymousUser(anonymousUser);
+        setScriptVersion(scriptVersion);
+    }
+
     public ExtractionParameters(
         String serviceName,
         String locationData,
@@ -71,6 +118,7 @@ public class ExtractionParameters implements Cloneable {
         String productId,
         OutputFormat dataOutputFormat_,
         String userId,
+        String userHostName,
         boolean anonymousUser,
         String scriptVersion) {
         this(
@@ -85,9 +133,9 @@ public class ExtractionParameters implements Cloneable {
             null,
             null,
             userId,
+            userHostName,
             anonymousUser,
             scriptVersion);
-
     }
 
     /**
@@ -132,313 +180,6 @@ public class ExtractionParameters implements Cloneable {
         listDepthCoverage.add(Double.toString(lowdepth));
         listDepthCoverage.add(Double.toString(highDepth));
         return listDepthCoverage;
-    }
-
-    /**
-     * The Constructor.
-     * 
-     * @param listVar the list var
-     * @param dataOutputFormat the data output format
-     * @param locationData the location data
-     * @param responseFormat the response format
-     * @param listLatLonCoverage the list lat lon coverage
-     * @param listDepthCoverage the list depth coverage
-     * @param listTemporalCoverage the list temporal coverage
-     * @param out the out
-     */
-    public ExtractionParameters(
-        String locationData,
-        List<String> listVar,
-        List<String> listTemporalCoverage,
-        List<String> listLatLonCoverage,
-        List<String> listDepthCoverage,
-        OutputFormat dataOutputFormat,
-        Writer out,
-        OutputFormat responseFormat,
-        String scriptVersion) {
-
-        this(
-            null,
-            locationData,
-            listVar,
-            listTemporalCoverage,
-            listLatLonCoverage,
-            listDepthCoverage,
-            null,
-            dataOutputFormat,
-            out,
-            responseFormat,
-            null,
-            true,
-            scriptVersion);
-
-    }
-
-    /**
-     * The Constructor.
-     * 
-     * @param listVar the list var
-     * @param dataOutputFormat the data output format
-     * @param userId the user id
-     * @param locationData the location data
-     * @param responseFormat the response format
-     * @param anonymousUser the anonymous user
-     * @param listLatLonCoverage the list lat lon coverage
-     * @param listDepthCoverage the list depth coverage
-     * @param listTemporalCoverage the list temporal coverage
-     * @param out the out
-     */
-    public ExtractionParameters(
-        String locationData,
-        List<String> listVar,
-        List<String> listTemporalCoverage,
-        List<String> listLatLonCoverage,
-        List<String> listDepthCoverage,
-        OutputFormat dataOutputFormat,
-        Writer out,
-        OutputFormat responseFormat,
-        String userId,
-        boolean anonymousUser,
-        String scriptVersion) {
-
-        this(
-            null,
-            locationData,
-            listVar,
-            listTemporalCoverage,
-            listLatLonCoverage,
-            listDepthCoverage,
-            null,
-            dataOutputFormat,
-            out,
-            responseFormat,
-            userId,
-            anonymousUser,
-            scriptVersion);
-
-    }
-
-    /**
-     * The Constructor.
-     * 
-     * @param listVar the list var
-     * @param dataOutputFormat the data output format
-     * @param locationData the location data
-     * @param responseFormat the response format
-     * @param listLatLonCoverage the list lat lon coverage
-     * @param listDepthCoverage the list depth coverage
-     * @param listTemporalCoverage the list temporal coverage
-     * @param serviceName the service name
-     * @param out the out
-     */
-    public ExtractionParameters(
-        String serviceName,
-        String locationData,
-        List<String> listVar,
-        List<String> listTemporalCoverage,
-        List<String> listLatLonCoverage,
-        List<String> listDepthCoverage,
-        OutputFormat dataOutputFormat,
-        Writer out,
-        OutputFormat responseFormat,
-        String scriptVersion) {
-
-        this(
-            serviceName,
-            locationData,
-            listVar,
-            listTemporalCoverage,
-            listLatLonCoverage,
-            listDepthCoverage,
-            null,
-            dataOutputFormat,
-            out,
-            responseFormat,
-            null,
-            true,
-            scriptVersion);
-
-    }
-
-    /**
-     * The Constructor.
-     * 
-     * @param listVar the list var
-     * @param dataOutputFormat the data output format
-     * @param userId the user id
-     * @param locationData the location data
-     * @param responseFormat the response format
-     * @param anonymousUser the anonymous user
-     * @param listLatLonCoverage the list lat lon coverage
-     * @param listDepthCoverage the list depth coverage
-     * @param listTemporalCoverage the list temporal coverage
-     * @param out the out
-     * @param serviceName the service name
-     */
-    public ExtractionParameters(
-        String serviceName,
-        String locationData,
-        List<String> listVar,
-        List<String> listTemporalCoverage,
-        List<String> listLatLonCoverage,
-        List<String> listDepthCoverage,
-        OutputFormat dataOutputFormat,
-        Writer out,
-        OutputFormat responseFormat,
-        String userId,
-        boolean anonymousUser,
-        String scriptVersion) {
-
-        this(
-            serviceName,
-            locationData,
-            listVar,
-            listTemporalCoverage,
-            listLatLonCoverage,
-            listDepthCoverage,
-            null,
-            dataOutputFormat,
-            out,
-            responseFormat,
-            userId,
-            anonymousUser,
-            scriptVersion);
-
-    }
-
-    /**
-     * The Constructor.
-     * 
-     * @param listVar the list var
-     * @param dataOutputFormat the data output format
-     * @param responseFormat the response format
-     * @param listLatLonCoverage the list lat lon coverage
-     * @param listDepthCoverage the list depth coverage
-     * @param listTemporalCoverage the list temporal coverage
-     * @param serviceName the service name
-     * @param productId the product id
-     * @param out the out
-     */
-    public ExtractionParameters(
-        String serviceName,
-        List<String> listVar,
-        List<String> listTemporalCoverage,
-        List<String> listLatLonCoverage,
-        List<String> listDepthCoverage,
-        String productId,
-        OutputFormat dataOutputFormat,
-        Writer out,
-        OutputFormat responseFormat,
-        String scriptVersion) {
-
-        this(
-            serviceName,
-            null,
-            listVar,
-            listTemporalCoverage,
-            listLatLonCoverage,
-            listDepthCoverage,
-            productId,
-            dataOutputFormat,
-            out,
-            responseFormat,
-            null,
-            true,
-            scriptVersion);
-
-    }
-
-    /**
-     * The Constructor.
-     * 
-     * @param listVar the list var
-     * @param dataOutputFormat the data output format
-     * @param userId the user id
-     * @param responseFormat the response format
-     * @param anonymousUser the anonymous user
-     * @param listLatLonCoverage the list lat lon coverage
-     * @param listDepthCoverage the list depth coverage
-     * @param listTemporalCoverage the list temporal coverage
-     * @param out the out
-     * @param productId the product id
-     * @param serviceName the service name
-     */
-    public ExtractionParameters(
-        String serviceName,
-        List<String> listVar,
-        List<String> listTemporalCoverage,
-        List<String> listLatLonCoverage,
-        List<String> listDepthCoverage,
-        String productId,
-        OutputFormat dataOutputFormat,
-        Writer out,
-        OutputFormat responseFormat,
-        String userId,
-        boolean anonymousUser,
-        String scriptVersion) {
-
-        this(
-            serviceName,
-            null,
-            listVar,
-            listTemporalCoverage,
-            listLatLonCoverage,
-            listDepthCoverage,
-            productId,
-            dataOutputFormat,
-            out,
-            responseFormat,
-            userId,
-            anonymousUser,
-            scriptVersion);
-
-    }
-
-    /**
-     * The Constructor.
-     * 
-     * @param listVar the list var
-     * @param dataOutputFormat the data output format
-     * @param userId the user id
-     * @param locationData the location data
-     * @param responseFormat the response format
-     * @param anonymousUser the anonymous user
-     * @param listLatLonCoverage the list lat lon coverage
-     * @param listDepthCoverage the list depth coverage
-     * @param listTemporalCoverage the list temporal coverage
-     * @param out the out
-     * @param productId the product id
-     * @param serviceName the service name
-     */
-    public ExtractionParameters(
-        String serviceName,
-        String locationData,
-        List<String> listVar,
-        List<String> listTemporalCoverage,
-        List<String> listLatLonCoverage,
-        List<String> listDepthCoverage,
-        String productId,
-        OutputFormat dataOutputFormat,
-        Writer out,
-        OutputFormat responseFormat,
-        String userId,
-        boolean anonymousUser,
-        String scriptVersion) {
-
-        setServiceName(serviceName);
-        setLocationData(locationData);
-        setListVar(listVar);
-        setListTemporalCoverage(listTemporalCoverage);
-        setListLatLonCoverage(listLatLonCoverage);
-        setListDepthCoverage(listDepthCoverage);
-        setProductId(productId);
-        setDataOutputFormat(dataOutputFormat);
-        setOut(out);
-        setResponseFormat(responseFormat);
-        setUserId(userId);
-        setAnonymousUser(anonymousUser);
-        setScriptVersion(scriptVersion);
-
     }
 
     /**

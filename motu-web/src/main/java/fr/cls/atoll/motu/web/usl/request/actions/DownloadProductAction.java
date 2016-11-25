@@ -299,9 +299,9 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 productHTTPParameterValidator.getParameterValueValidated(),
                 OutputFormat.valueOf(outputFormatParameterValidator.getParameterValueValidated()),
                 USLManager.getInstance().getUserManager().getLoginOrUserHostname(getRequest()),
+                USLManager.getInstance().getUserManager().getUserHostName(getRequest()),
                 USLManager.getInstance().getUserManager().isUserAnonymous(),
                 scriptVersionParameterValidator.getParameterValueValidated());
-        extractionParameters.setUserHost(USLManager.getInstance().getUserManager().getLoginOrUserHostname(getRequest()));
 
         // Set assertion to manage CAS.
         extractionParameters.setAssertion(AssertionHolder.getAssertion());
