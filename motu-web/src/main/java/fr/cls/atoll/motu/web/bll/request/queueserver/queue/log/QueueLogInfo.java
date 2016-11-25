@@ -94,8 +94,8 @@ public class QueueLogInfo {
     /** The end time. */
     private Date endTime = null;
 
-    /** The amount data size. */
-    private double amountDataSize = 0d;
+    /** The amount data size in MegaBytes */
+    private double amountDataSizeInMegaBytes = 0d;
 
     /** The total io time. */
     private long totalIOTime = 0L;
@@ -302,7 +302,7 @@ public class QueueLogInfo {
                 outputStream.write(DATE_FORMAT.format(endTime).concat(CSV_SEPARATOR).getBytes(encoding));
 
             // Size of request (bytes)
-            outputStream.write(Double.toString(amountDataSize).concat(CSV_SEPARATOR).getBytes(encoding));
+            outputStream.write(Double.toString(amountDataSizeInMegaBytes).concat(CSV_SEPARATOR).getBytes(encoding));
 
             // Urls and location
             outputStream.write(downloadUrlPath.concat(CSV_SEPARATOR).getBytes(encoding));
@@ -564,17 +564,17 @@ public class QueueLogInfo {
      * 
      * @return the amount data size
      */
-    public double getAmountDataSize() {
-        return amountDataSize;
+    public double getAmountDataSizeInMegaBytes() {
+        return amountDataSizeInMegaBytes;
     }
 
     /**
      * Sets the amount data size.
      * 
-     * @param amountDataSize the amount data size
+     * @param amountDataSizeInMegaBytes the amount data size
      */
-    public void setAmountDataSize(double amountDataSize) {
-        this.amountDataSize = amountDataSize;
+    public void setAmountDataSizeInMegaBytes(double amountDataSizeInMegaBytes) {
+        this.amountDataSizeInMegaBytes = amountDataSizeInMegaBytes;
     }
 
     /**

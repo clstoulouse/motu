@@ -188,7 +188,7 @@ public class BLLRequestManager implements IBLLRequestManager {
      */
     private void logQueueInfo(RequestDownloadStatus rds) {
         QueueLogInfo qli = new QueueLogInfo();
-        qli.setAmountDataSize(UnitUtils.toMegaBytes(rds.getSizeInBits()));
+        qli.setAmountDataSizeInMegaBytes(UnitUtils.bitsToMegaBytes(rds.getSizeInBits()));
         qli.setCompressingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getCompressingTime()));
         qli.setCopyingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getCopyingTime()));
         qli.setReadingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getReadingTime()));
@@ -311,14 +311,14 @@ public class BLLRequestManager implements IBLLRequestManager {
         try {
             try {
                 double requestSizeInByte = getProductDataSizeIntoByte(rds_);
-                rds_.setSizeInBits(new Double(requestSizeInByte * 8).longValue());
-                double requestSizeInMB = UnitUtils.toMegaBytes(requestSizeInByte);
+                rds_.setSizeInBits(new Double(UnitUtils.bitsToBytes(requestSizeInByte)).longValue());
+                double requestSizeInMBytes = UnitUtils.toMegaBytes(requestSizeInByte);
 
                 checkNumberOfRunningRequestForUser(userId);
-                checkMaxSizePerFile(cs_.getCatalog().getType(), requestSizeInMB);
-                checkFreeSpace(requestSizeInMB);
+                checkMaxSizePerFile(cs_.getCatalog().getType(), requestSizeInMBytes);
+                checkFreeSpace(requestSizeInMBytes);
 
-                downloadSafe(requestDownloadStatus, requestSizeInMB, cs_);
+                downloadSafe(requestDownloadStatus, requestSizeInMBytes, cs_);
             } finally {
                 userRequestCounter.onRequestStoppedForUser(userId);
             }
@@ -329,30 +329,32 @@ public class BLLRequestManager implements IBLLRequestManager {
         }
     }
 
-    private void checkFreeSpace(double fileSize) throws MotuException {
+    private void checkFreeSpace(double fileSizeInMBytes) throws MotuException {
         File extractionDirectory = new File(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath());
         if (!extractionDirectory.exists()) {
             LOGGER.error("The extraction folder does not exists: " + extractionDirectory.exists());
             throw new MotuException(ErrorType.SYSTEM, "The extraction folder does not exists: " + extractionDirectory.exists());
         } else {
-            if (UnitUtils.toMegaBytes(extractionDirectory.getFreeSpace()) <= fileSize) {
+            if (UnitUtils.toMegaBytes(extractionDirectory.getFreeSpace()) <= fileSizeInMBytes) {
                 throw new NotEnoughSpaceException("There is not enough disk space available to generate the file result and to satisfy this request");
             }
         }
     }
 
-    private void checkMaxSizePerFile(String catalogType, double fileSize) throws MotuException {
-        double maxSizePerFile = -1;
+    private void checkMaxSizePerFile(String catalogType, double fileSizeInMegaBytes) throws MotuException {
+        double maxSizePerFileInMegaBytes = -1;
         if (CatalogType.FILE.name().toUpperCase().equals(catalogType.toUpperCase())) {
-            maxSizePerFile = BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFile().doubleValue();
+            maxSizePerFileInMegaBytes = BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFile().doubleValue();
         } else {
-            maxSizePerFile = BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue();
+            maxSizePerFileInMegaBytes = BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue();
         }
-        if (maxSizePerFile < fileSize) {
+        if (maxSizePerFileInMegaBytes < fileSizeInMegaBytes) {
             throw new MotuException(
                     ErrorType.EXCEEDING_CAPACITY,
-                    "The result file size " + fileSize + "Mb shall be less than " + maxSizePerFile + "Mb",
-                    new String[] { Integer.toString(new Double(fileSize).intValue()), Integer.toString(new Double(maxSizePerFile).intValue()) });
+                    "The result file size " + fileSizeInMegaBytes + "MBytes shall be less than " + maxSizePerFileInMegaBytes + "MBytes",
+                    new String[] {
+                            Integer.toString(new Double(fileSizeInMegaBytes).intValue()),
+                            Integer.toString(new Double(maxSizePerFileInMegaBytes).intValue()) });
         }
     }
 

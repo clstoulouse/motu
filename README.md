@@ -363,7 +363,7 @@ Copy your old motuConfiguration.xml file to the folder /opt/cmems-cis/motu/confi
 cp  /opt/atoll/misgw/motu-configuration-sample-misgw/resources/motuConfiguration.xml /opt/cmems-cis/motu/config
 ```  
 
-Then update the attribute below:  
+Then update attributes below:  
 
 * use the TDS subsetter protocol to improve performance of product download  
    * __motuConfig/configService/catalog__
@@ -381,7 +381,8 @@ Then update the attribute below:
 ]>  
 ```
    * __motuConfig__
-      * __maxSizePerFile__ Remove the attribute
+      * __maxSizePerFile__ This attribute definition has been updated. See [maxSizePerFile parameter configuration](#motuConfig-defaultService)  
+	  * __maxSizePerFileTDS__ Rename this attribute to maxSizePerFileSub. See [maxSizePerFileSub parameter configuration](#motuConfig-defaultService)  
 	  * __runGCInterval__ Remove the attribute
 	  * __httpDocumentRoot__ Remove the attribute
 	  * __useAuthentication__ Remove the attribute
@@ -828,16 +829,16 @@ Number of data in Ko that can be read in the same time. Default is 2048Kb.
 
 ##### maxSizePerFile
 This parameter is only used with a catalog type set to "FILE" meaning a DGF access.  
-It allows download requests to be executed only if data extraction is lower that this parameter value.  
-Unit of this value is Megabytes.  
-Default is 1024 Megabytes.  
-Example: maxSizePerFile="2048" to limit request result file size to 2GB.  
+It allows download requests to be executed only if data extraction is lower than this parameter value.  
+Unit of this value is MegaBytes.  
+Default is 1024 MegaBytes.  
+Example: maxSizePerFile="2048" to limit a request result file size to 2GB.  
 
 ##### maxSizePerFileSub
 This parameter is only used with a catalog type used with Opendap or Ncss.  
 It allows download requests to be executed only if data extraction is lower that this parameter value.  
-Unit of this value is Megabytes.  
-Default is 1024 Megabytes.  
+Unit of this value is MegaBytes.  
+Default is 1024 MegaBytes.  
 Example: maxSizePerFileSub="2048" to limit request result file size to 2GB.
 
 ##### <a name="motuConfig-extractionPath">extractionPath</a>  
@@ -1096,8 +1097,8 @@ __cas-server-url__=https://cas-cis.cls.fr/cas
    # If you use a frontal HTTP server, it is important to known that this URL will be called once used will be login on CAS server
    # In this case, set the Apache HTTPd server. The value will be http://$apacheHTTPdServer/motu-web/Motu So in Apache HTTPd you have to redirect this URL to the Motu Web server
 __cas-auth-serverName__=http://$motuServerIp:$motuServerPort  
-   # The proxy callback HTTP URL on the Motu server (this URL can be defined on the frontal Apache HTTPs server)  
-__cas-validationFilter-proxyCallbackUrl__=http://$motuServerIp:$motuServerPort/motu-web/proxyCallback  
+   # The proxy callback HTTPs URL of the Motu server ($motuServerIp is either the Motu host or the frontal Apache HTTPs host ip or name. $motuServerHttpsPort is optional if default HTTPs port 443 is used, otherwise it is the same value as defined above with the key "tomcat-motu-port-https", or it is the port defined for the HTTPs server on the frontal Apache HTTPd)  
+__cas-validationFilter-proxyCallbackUrl__=https://$motuServerIp:$motuServerHttpsPort/motu-web/proxyCallback  
   
   
 __IMPORTANT__: Motu uses a Java HTTPs client to communicate with the CAS server. When the CAS server has an untrusted SSL certificate, you have to add it to Java default certificates or to add the Java property named "javax.net.ssl.trustStore" to target a CA keystore which contains the CAS Server SSL CA public key.
@@ -1106,9 +1107,12 @@ For example, add this property by setting Java option [tomcat-motu-jvm-javaOpts]
 tomcat-motu-jvm-javaOpts=-server -Xmx4096M -Xms512M -XX:PermSize=128M -XX:MaxPermSize=512M -Djavax.net.ssl.trustStore=/opt/cmems-cis/motu/config/security/cacerts-with-cas-qt-ca.jks
 ```
 
+The following part is not relevant in the CMEMS context as the SSO CAS server has been signed by a known certification authority.  
+If you need to run tests with your own SSO CAS server without any certificate signed by a known certification authority, you have to follow the following steps.  
+
 How to build the file cacerts-with-cas-qt-ca.jks on Motu server?  
 
-* Download the file "ca.crt" from the CAS server machine (/opt/atoll/ssl/ca.crt) into ${MOTU_HOME}/config/security/ and rename it "cas-qt-ca.crt"
+* Download the certificate file (for example "ca.crt") of the authority which has signed the CAS SSO certificate on the CAS server machine (/opt/atoll/ssl/ca.crt) and copy it to "${MOTU_HOME}/config/security/", then rename it "cas-qt-ca.crt"
 * Copy the default Java cacerts "/opt/cmems-cis-validation/motu/products/jdk1.7.0_79/jre/lib/security/cacerts" file into ${MOTU_HOME}/config/security/
   and rename this file to "cacerts-with-cas-qt-ca.jks"  
   ```
@@ -1127,6 +1131,10 @@ __tomcat-motu-urlrewrite-statusEnabledOnHosts__=localhost,*.cls.fr
 
 This parameter is used to set the property below in the WEB.XML file:  
 ```
+        <!-- Documentation from http://tuckey.org/urlrewrite/manual/3.0/
+		you may want to allow more hosts to look at the status page
+        statusEnabledOnHosts is a comma delimited list of hosts, * can
+        be used as a wildcard (defaults to "localhost, local, 127.0.0.1") -->
         <init-param>  
             <param-name>statusEnabledOnHosts</param-name>  
             <param-value>${tomcat-motu-urlrewrite-statusEnabledOnHosts}</param-value>  
@@ -1134,7 +1142,7 @@ This parameter is used to set the property below in the WEB.XML file:
 ```  
 
 For more detail read:  
-org.tuckey UrlRewriteFilter FILTERS : see http://urlrewritefilter.googlecode.com/svn/trunk/src/doc/manual/3.1/index.html  
+org.tuckey UrlRewriteFilter FILTERS : see http://tuckey.org/urlrewrite/manual/3.0/  
 
   
 ## <a name="LogSettings">Log settings</a>  
@@ -1814,6 +1822,7 @@ Parameters below are exactly the same as for [Download product](#ClientAPI_Downl
 * __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is yyy-mm-dd or yyyy-dd h:m:s or yyyy-ddTh:m:s.  
   
 __Return__: An XML document.    
+The unit is "kb" means kilobits.
 Validated by the schema /motu-api-message/src/main/schema/XmlMessageModel.xsd#RequestSize  
 Example:  
 
