@@ -311,7 +311,7 @@ public class BLLRequestManager implements IBLLRequestManager {
         try {
             try {
                 double requestSizeInByte = getProductDataSizeIntoByte(rds_);
-                rds_.setSizeInBits(new Double(UnitUtils.bitsToBytes(requestSizeInByte)).longValue());
+                rds_.setSizeInBits(new Double(UnitUtils.bytesToBits(requestSizeInByte)).longValue());
                 double requestSizeInMBytes = UnitUtils.toMegaBytes(requestSizeInByte);
 
                 checkNumberOfRunningRequestForUser(userId);
