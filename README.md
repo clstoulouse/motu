@@ -1091,12 +1091,14 @@ __cas-activated__=false
    # Cas server configuration to allow Motu to access it  
    # @see https://wiki.jasig.org/display/casc/configuring+the+jasig+cas+client+for+java+in+the+web.xml  
      
-   # The  start of the CAS server URL, i.e. https://cas-cis.cls.fr/cas 
-__cas-server-url__=https://cas-cis.cls.fr/cas  
-   # The Motu HTTP server url: example: http://misgw-ddo-qt.cls.fr:9080 or http://motu.cls.fr   
-   # If you use a frontal HTTP server, it is important to known that this URL will be called once used will be login on CAS server
-   # In this case, set the Apache HTTPd server. The value will be http://$apacheHTTPdServer/motu-web/Motu So in Apache HTTPd you have to redirect this URL to the Motu Web server
-__cas-auth-serverName__=http://$motuServerIp:$motuServerPort  
+   # The  start of the CAS server URL, i.e. https://cas-cis.cls.fr/cas  
+__cas-server-url__=https://cas-cis.cls.fr/cas   
+
+   # The Motu HTTP server URL, for example: http://misgw-ddo-qt.cls.fr:9080 or http://motu.cls.fr   
+   # If you use a frontal HTTPd server, you have to known if its URL will be called once the user will be login on CAS server.  
+   # In this case, set the Apache HTTPd server. The value will be http://$apacheHTTPdServer/motu-web/Motu So, in Apache HTTPd, you have to redirect this URL to the Motu Web server  
+__cas-auth-serverName__=http://$motuServerIp:$motuServerPort   
+
    # The proxy callback HTTPs URL of the Motu server ($motuServerIp is either the Motu host or the frontal Apache HTTPs host ip or name. $motuServerHttpsPort is optional if default HTTPs port 443 is used, otherwise it is the same value as defined above with the key "tomcat-motu-port-https", or it is the port defined for the HTTPs server on the frontal Apache HTTPd)  
 __cas-validationFilter-proxyCallbackUrl__=https://$motuServerIp:$motuServerHttpsPort/motu-web/proxyCallback  
   
