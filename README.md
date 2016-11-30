@@ -841,6 +841,10 @@ Unit of this value is MegaBytes.
 Default is 1024 MegaBytes.  
 Example: maxSizePerFileSub="2048" to limit request result file size to 2GB.
 
+##### maxSizePerFileTDS
+@Deprecated from v3 This parameter is not used and has been replaced by maxSizePerFile and maxSizePerFileSub.   
+Number of data in Megabytes that can be written and download for a Netcdf file. Default is 1024Mb.
+
 ##### <a name="motuConfig-extractionPath">extractionPath</a>  
 The absolute path where files downloaded from TDS are stored.  
 For example: /opt/cmems-cis/motu/data/public/download
