@@ -13,11 +13,11 @@ import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
-import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
@@ -75,16 +75,11 @@ public class ProductDownloadHomeAction extends AbstractAuthorizedAction {
             CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
             if (cd != null) {
                 String productId = productHTTPParameterValidator.getParameterValueValidated();
-                Product p = cd.getProducts().get(productId);
+                Product p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(productId);
                 if (checkProduct(p, productId)) {
-                    ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
-                            .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(p), productId, p.getLocationData());
-                    if (pmd != null) {
-                        p.setProductMetaData(pmd);
-                    }
-
                     try {
-                        writeResponseWithVelocity(mc, cs, cd, p, getResponse().getWriter());
+                        RequestProduct rp = new RequestProduct(p);
+                        writeResponseWithVelocity(mc, cs, cd, rp, getResponse().getWriter());
                     } catch (IOException e) {
                         throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
                     }
@@ -95,13 +90,13 @@ public class ProductDownloadHomeAction extends AbstractAuthorizedAction {
         }
     }
 
-    public static void writeResponseWithVelocity(MotuConfig mc_, ConfigService cs_, CatalogData cd_, Product product_, Writer w_)
+    public static void writeResponseWithVelocity(MotuConfig mc_, ConfigService cs_, CatalogData cd_, RequestProduct reqProduct_, Writer w_)
             throws MotuException {
         Map<String, Object> velocityContext = new HashMap<String, Object>(2);
         velocityContext.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
         velocityContext.put("service", VelocityModelConverter.convertToService(mc_, cs_, cd_));
         velocityContext.put("user", USLManager.getInstance().getUserManager().getUserName());
-        velocityContext.put("product", VelocityModelConverter.convertToProduct(product_));
+        velocityContext.put("product", VelocityModelConverter.convertToProduct(reqProduct_));
 
         String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, cs_.getVeloTemplatePrefix());
         try {

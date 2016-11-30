@@ -107,7 +107,6 @@ public class TimeCoverageAction extends AbstractProductInfoAction {
             try {
                 Product product = getProduct();
                 if (checkProduct(product, getProductId())) {
-                    initProductMetaData(product);
                     Interval datePeriod = null;
                     if (product.getProductMetaData() != null) {
                         datePeriod = product.getProductMetaData().getTimeCoverage();

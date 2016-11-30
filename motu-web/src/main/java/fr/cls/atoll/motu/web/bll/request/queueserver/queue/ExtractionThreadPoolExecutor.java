@@ -150,13 +150,14 @@ public class ExtractionThreadPoolExecutor extends ThreadPoolExecutor {
             MotuException e = new MotuException(
                     ErrorType.SYSTEM,
                     String.format("An error occurs during extraction (detected from afterExecute): user id: '%s' - request parameters '%s'",
-                                  qj.getExtractionParameters().getUserId(),
-                                  qj.getExtractionParameters().toString()),
+                                  qj.getRequestDownloadStatus().getRequestProduct().getExtractionParameters().getUserId(),
+                                  qj.getRequestDownloadStatus().getRequestProduct().getExtractionParameters().toString()),
                     t);
             qj.onJobException(e);
         }
 
-        onRequestStoppedForUser(qj.getExtractionParameters().isAnonymousUser() ? null : qj.getExtractionParameters().getUserId());
+        onRequestStoppedForUser(qj.getRequestDownloadStatus().getRequestProduct().getExtractionParameters().isAnonymousUser() ? null
+                : qj.getRequestDownloadStatus().getRequestProduct().getExtractionParameters().getUserId());
 
         // runnableExtraction.setEnded();
     }

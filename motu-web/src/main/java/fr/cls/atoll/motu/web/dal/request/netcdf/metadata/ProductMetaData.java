@@ -46,6 +46,7 @@ import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProductParameters;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.DataProvider;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.Delivery;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.DocMetaData;
@@ -55,7 +56,6 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.CoordSysBuilderYXLatLon;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.DatasetBase;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.tds.ncss.model.Property;
 import fr.cls.atoll.motu.web.dal.tds.ncss.model.Variables;
@@ -1023,7 +1023,7 @@ public class ProductMetaData {
      * 
      * @param dataset dataset to read variables metadata.
      */
-    public void readParameterMetaData(DatasetBase dataset) {
+    public void readParameterMetaData(RequestProductParameters dataset) {
 
     }
 

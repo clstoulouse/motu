@@ -94,7 +94,7 @@ public class QueueLogInfo {
     /** The end time. */
     private Date endTime = null;
 
-    /** The amount data size. */
+    /** The amount data size in MegaBytes */
     private double amountDataSize = 0d;
 
     /** The total io time. */
@@ -564,17 +564,17 @@ public class QueueLogInfo {
      * 
      * @return the amount data size
      */
-    public double getAmountDataSize() {
+    public double getAmountDataSizeInMegaBytes() {
         return amountDataSize;
     }
 
     /**
      * Sets the amount data size.
      * 
-     * @param amountDataSize the amount data size
+     * @param amountDataSizeInMegaBytes the amount data size
      */
-    public void setAmountDataSize(double amountDataSize) {
-        this.amountDataSize = amountDataSize;
+    public void setAmountDataSizeInMegaBytes(double amountDataSizeInMegaBytes) {
+        this.amountDataSize = amountDataSizeInMegaBytes;
     }
 
     /**

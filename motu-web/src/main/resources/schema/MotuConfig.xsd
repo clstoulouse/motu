@@ -447,13 +447,13 @@
 				default="2048" />
 			<!--
 				maxSizePerFile : The number for data in Megabytes that can be
-				written and download for a Netcdf file.
+				written and download for a Netcdf file in DGF usecase.
 			-->
 			<xs:attribute name="maxSizePerFile" type="xs:integer"
 				default="1024" />
 			<!--
 				maxSizePerFileSub : The number for data in Megabytes that can be
-				written and download for a Netcdf file.
+				written and download for a Netcdf file in TDS usecase.
 			-->
 			<xs:attribute name="maxSizePerFileSub" type="xs:integer"
 				default="1024" />

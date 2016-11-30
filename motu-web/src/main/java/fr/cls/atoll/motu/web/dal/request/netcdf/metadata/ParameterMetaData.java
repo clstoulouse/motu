@@ -239,24 +239,23 @@ public class ParameterMetaData {
      * @uml.property name="standardName"
      */
     public void setStandardName(String standardName) {
-        if (standardName == null) {
-            return;
-        }
+        if (standardName != null) {
+            this.standardName = standardName;
 
-        this.standardName = standardName;
-
-        if (StringUtils.isNullOrEmpty(standardName)) {
-            this.standardNameWithoutURI = standardName;
-        } else {
-
-            String[] split = standardName.split(".*#");
-            if (split.length <= 1) {
-                split = standardName.split(".*#");
-                if (split.length <= 1) {
-                    this.standardNameWithoutURI = standardName;
-                }
+            if (StringUtils.isNullOrEmpty(standardName)) {
+                this.standardNameWithoutURI = standardName;
             } else {
-                this.standardNameWithoutURI = split[1];
+                String[] split = standardName.split(".*#");
+                if (split.length <= 1) {
+                    split = standardName.split(".*/");
+                    if (split.length <= 1) {
+                        this.standardNameWithoutURI = standardName;
+                    } else {
+                        this.standardNameWithoutURI = split[1];
+                    }
+                } else {
+                    this.standardNameWithoutURI = split[1];
+                }
             }
         }
     }

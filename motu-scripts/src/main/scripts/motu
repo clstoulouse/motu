@@ -54,7 +54,7 @@ __setApacheTomcatCatalinaEnvVar() {
   #For specific Tomcat instances
   export CATALINA_BASE=$MOTU_INSTALL_DIR/$1
   export CATALINA_PID=$MOTU_PID_DIR/$1.pid
-  export CATALINA_OUT=$MOTU_LOG_DIR/$1-catalina.out
+  #export CATALINA_OUT=$MOTU_LOG_DIR/$1-catalina.out
   export CATALINA_TMPDIR=$MOTU_INSTALL_DIR/$1/temp
 }
 
@@ -247,7 +247,8 @@ __startCatalinaShellAction() {
   # $2 webapp name
   # $3 optional: suffix message if version is checked
   __checkWarUpdated $@
-  $CATALINA_HOME/bin/startup.sh >> $MOTU_LOG_DIR/$tomcatDirName.log 2>&1
+  #  >> $MOTU_LOG_DIR/$tomcatDirName.log 2>&1
+  $CATALINA_HOME/bin/startup.sh
 }
    
   
@@ -257,7 +258,8 @@ __stopCatalinaShell() {
   tomcatDirName=$1
   # Can wait 10min (60*10) until Tomcat stop (used to process pending requests)
   # @See /motu-web/src/main/java/fr/cls/atoll/motu/web/usl/servlet/context/MotuWebEngineContextListener
-  $CATALINA_HOME/bin/shutdown.sh 600 -force >> $MOTU_LOG_DIR/$tomcatDirName.log 2>&1
+  #  >> $MOTU_LOG_DIR/$tomcatDirName.log 2>&1
+  $CATALINA_HOME/bin/shutdown.sh 600 -force
 }
 
 __showStatus() {
@@ -340,7 +342,9 @@ __initMotuJavaOpt() {
    __addCatalinaOpt "$casValidationFilterProxyCallbackUrl" "-Dcas-validationFilter-proxyCallbackUrl=$casValidationFilterProxyCallbackUrl"
    __addCatalinaOpt "$MOTU_CONF_DIR_NAME" "-Dmotu-config-dir=$MOTU_CONF_DIR"
    __addCatalinaOpt "$MOTU_LOG_DIR" "-Dmotu-log-dir=$MOTU_LOG_DIR"
-   __addCatalinaOpt "$MOTU_CONF_DIR" "-Dlog4j.configurationFile=$MOTU_CONF_DIR/log4j.xml"
+# Do not initialize log4j with a Java property to avoid conflicts with other tomcat webapps   
+# Initialization is done in source code /motu-web/src/main/java/fr/cls/atoll/motu/web/usl/servlet/context/MotuWebEngineContextListener.java
+#   __addCatalinaOpt "$MOTU_CONF_DIR" "-Dlog4j.configurationFile=$MOTU_CONF_DIR/log4j.xml"
    export MOTU_LOG_DIR=$MOTU_LOG_DIR
    export JAVA_OPTS=$JAVA_OPTS_ORIG
 }

@@ -30,8 +30,10 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.MotuMarshallException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
@@ -150,16 +152,10 @@ public class GetSizeAction extends AbstractProductInfoAction {
         try {
             Product p = getProduct();
             if (checkProduct(p, getProductId())) {
-                initProductMetaData(p);
-                ExtractionParameters extractionParameters = createExtractionParameters();
-                double productDataSize = BLLManager.getInstance().getRequestManager()
-                        .getProductDataSizeIntoByte(p,
-                                                    extractionParameters.getListVar(),
-                                                    extractionParameters.getListTemporalCoverage(),
-                                                    extractionParameters.getListLatLonCoverage(),
-                                                    extractionParameters.getListDepthCoverage());
-                double productMaxAllowedDataSize = BLLManager.getInstance().getRequestManager().getProductMaxAllowedDataSizeIntoByte(p);
-                RequestSize requestSize = getRequestSize(productDataSize, productMaxAllowedDataSize);
+                RequestProduct rp = new RequestProduct(p, createExtractionParameters());
+                double productDataSizeInBytes = BLLManager.getInstance().getRequestManager().getProductDataSizeIntoByte(rp);
+                double productMaxAllowedDataSizeInBytes = BLLManager.getInstance().getRequestManager().getProductMaxAllowedDataSizeIntoByte(p);
+                RequestSize requestSize = getRequestSize(productDataSizeInBytes, productMaxAllowedDataSizeInBytes);
 
                 getResponse().setContentType(CONTENT_TYPE_XML);
                 String response = XMLConverter.toXMLString(requestSize, getActionCode());
@@ -190,6 +186,7 @@ public class GetSizeAction extends AbstractProductInfoAction {
                 getProductHTTPParameterValidator().getParameterValueValidated(),
                 OutputFormat.NETCDF,
                 USLManager.getInstance().getUserManager().getLoginOrUserHostname(getRequest()),
+                USLManager.getInstance().getUserManager().getUserHostName(getRequest()),
                 USLManager.getInstance().getUserManager().isUserAnonymous(),
                 scriptVersionParameterValidator.getParameterValueValidated());
 
@@ -202,19 +199,19 @@ public class GetSizeAction extends AbstractProductInfoAction {
      * Inits the request size.
      * 
      * @param batchQueue the batch queue
-     * @param size the size
+     * @param sizeInBytes the size
      * @param isFtp type of request
      * 
      * @return the request size
      */
-    private RequestSize getRequestSize(double size, double maxAllowedSize) {
+    private RequestSize getRequestSize(double sizeInBytes, double maxAllowedSizeInBytes) {
         RequestSize requestSize = createRequestSize();
 
-        requestSize.setSize(size);
+        requestSize.setSize(UnitUtils.toKBytes(sizeInBytes));
         requestSize.setCode(StringUtils.getErrorCode(getActionCode(), ErrorType.OK));
         requestSize.setMsg(ErrorType.OK.toString());
 
-        if (size < 0) {
+        if (sizeInBytes < 0) {
             MotuException e = new MotuException(ErrorType.SYSTEM, "size can't be computed and the cause is unspecified");
             ExceptionUtils.setError(getActionCode(), requestSize, e);
             LOGGER.error(StringUtils.getLogMessage(getActionCode(), e.getErrorType(), e.getMessage()), e);
@@ -223,15 +220,17 @@ public class GetSizeAction extends AbstractProductInfoAction {
 
         MotuExceptionBase exceptionBase = null;
 
-        if (size > maxAllowedSize) {
-            exceptionBase = new MotuExceedingCapacityException(convertFromBytesToMegabytes(size), convertFromBytesToMegabytes(maxAllowedSize));
+        if (sizeInBytes > maxAllowedSizeInBytes) {
+            exceptionBase = new MotuExceedingCapacityException(
+                    convertFromBytesToMegabytes(sizeInBytes),
+                    convertFromBytesToMegabytes(maxAllowedSizeInBytes));
         }
 
         if (exceptionBase != null) {
             ExceptionUtils.setError(getActionCode(), requestSize, exceptionBase);
         }
 
-        requestSize.setMaxAllowedSize(maxAllowedSize);
+        requestSize.setMaxAllowedSize(UnitUtils.toKBytes(maxAllowedSizeInBytes));
 
         requestSize.setUnit("kb");
 

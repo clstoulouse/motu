@@ -89,7 +89,7 @@ public class QueueManagement {
 
     private void checkMaxQueueSize() throws MotuException {
         if (isMaxQueueSizeReached()) {
-            throw new MotuException(ErrorType.EXCEEDING_QUEUE_DATA_CAPACITY, "Max queue size limit reached: " + priorityBlockingQueue.size());
+            throw new MotuException(ErrorType.EXCEEDING_QUEUE_CAPACITY, "Max queue size limit reached: " + priorityBlockingQueue.size());
         }
     }
 
@@ -100,14 +100,14 @@ public class QueueManagement {
      * 
      * @throws MotuException the motu exception
      */
-    public void execute(IQueueJob runnableExtraction) throws MotuException {
+    public void execute(IQueueJob queueJob) throws MotuException {
         // If queue is full, throws new MotuExceedingQueueCapacityException
         checkMaxQueueSize();
 
         try {
-            threadPoolExecutor.onNewRequestForUser(runnableExtraction.getExtractionParameters().isAnonymousUser() ? null
-                    : runnableExtraction.getExtractionParameters().getUserId());
-            threadPoolExecutor.execute(runnableExtraction);
+            threadPoolExecutor.onNewRequestForUser(queueJob.getRequestDownloadStatus().getRequestProduct().getExtractionParameters().isAnonymousUser()
+                    ? null : queueJob.getRequestDownloadStatus().getRequestProduct().getExtractionParameters().getUserId());
+            threadPoolExecutor.execute(queueJob);
         } catch (RejectedExecutionException e) {
             throw new MotuException(ErrorType.SYSTEM, "ERROR Execute request", e);
 

@@ -2,7 +2,6 @@ package fr.cls.atoll.motu.web.bll.catalog.product;
 
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
-import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 
 /**
  * <br>
@@ -15,16 +14,6 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
 public interface IBLLProductManager {
-
-    /**
-     * .
-     * 
-     * @param productId
-     * @param locationData
-     * @return
-     * @throws MotuException
-     */
-    ProductMetaData getProductMetaData(String catalogType, String productId, String locationData) throws MotuException;
 
     /**
      * Retrieve the product using the catalog name and the url path of the product. .
@@ -46,16 +35,6 @@ public interface IBLLProductManager {
     Product getProductFromLocation(String urlPath) throws MotuException;
 
     /**
-     * .
-     * 
-     * @param serviceName
-     * @param productId
-     * @return
-     * @throws MotuException
-     */
-    Product getProduct(String serviceName, String productId) throws MotuException;
-
-    /**
      * Gets the tDS dataset id.
      * 
      * @param locationData the location data
@@ -71,5 +50,13 @@ public interface IBLLProductManager {
      * @return
      */
     String getProductDownloadHttpUrl(String productFileName_);
+
+    /**
+     * .
+     * 
+     * @param productId
+     * @return
+     */
+    Product getProduct(String productId);
 
 }

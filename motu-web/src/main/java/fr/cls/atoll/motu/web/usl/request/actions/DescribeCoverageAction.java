@@ -13,11 +13,11 @@ import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
-import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ProductHTTPParameterValidator;
@@ -75,14 +75,10 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
             CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
             if (cd != null) {
                 String productId = productHTTPParameterValidator.getParameterValueValidated();
-                Product p = cd.getProducts().get(productId);
+                Product p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(productId);
                 if (checkProduct(p, productId)) {
-                    ProductMetaData pmd = BLLManager.getInstance().getCatalogManager().getProductManager()
-                            .getProductMetaData(BLLManager.getInstance().getCatalogManager().getCatalogType(p), productId, p.getLocationData());
-                    if (pmd != null) {
-                        p.setProductMetaData(pmd);
-                    }
-                    writeResponseWithVelocity(mc, cs, cd, p);
+                    RequestProduct rp = new RequestProduct(p);
+                    writeResponseWithVelocity(mc, cs, cd, rp);
                 }
             } else {
                 throw new MotuException(ErrorType.SYSTEM, "Error while get catalog data for config service " + cs.getName());
@@ -90,10 +86,10 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
         }
     }
 
-    private void writeResponseWithVelocity(MotuConfig mc_, ConfigService cs_, CatalogData cd, Product p) throws MotuException {
+    private void writeResponseWithVelocity(MotuConfig mc_, ConfigService cs_, CatalogData cd, RequestProduct requestProduct) throws MotuException {
         Map<String, Object> velocityContext = new HashMap<String, Object>(2);
         velocityContext.put("service", VelocityModelConverter.convertToService(mc_, cs_, cd));
-        velocityContext.put("product", VelocityModelConverter.convertToProduct(p));
+        velocityContext.put("product", VelocityModelConverter.convertToProduct(requestProduct));
 
         try {
             Template template = VelocityTemplateManager.getInstance().getVelocityEngine()

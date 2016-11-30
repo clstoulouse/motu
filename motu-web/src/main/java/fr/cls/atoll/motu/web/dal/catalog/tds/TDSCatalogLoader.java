@@ -944,7 +944,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         URLConnection conn = url.openConnection();
         InputStream in = conn.getInputStream();
         try {
-            catalog = (Catalog) JAXBTDSModel.getInstance().getUnmarshallerTdsModel().unmarshal(in);
+            catalog = (Catalog) JAXBTDSModel.getInstance().unmarshall(in);
         } finally {
             in.close();
         }

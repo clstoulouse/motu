@@ -45,20 +45,6 @@
 		<dependencies.version.jaxb2_commons>0.6.1</dependencies.version.jaxb2_commons>
 	</properties>
 
-	<!-- Référentiel de déploiement -->
-	<distributionManagement>
-		<repository>
-			<id>releases-repo</id>
-			<name>CLS Entreprise Release Repository</name>
-			<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/altamira-to-cls-releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>snapshots-repo</id>
-			<name>CLS Entreprise Snapshot Repository</name>
-			<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/altamira-to-cls-snapshot/</url>
-		</snapshotRepository>
-	</distributionManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -361,13 +347,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.seleniumhq.selenium.client-drivers</groupId>
-				<artifactId>selenium-java-client-driver</artifactId>
-				<version>1.0.2</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
 				<groupId>org.jolokia</groupId>
 				<artifactId>jolokia-core</artifactId>
 				<version>1.3.3</version>
@@ -481,18 +460,12 @@
 				<artifactId>motu-api-message</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>cls.motu</groupId>
-				<artifactId>motu-api-rest</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-
+			
 		</dependencies>
 	</dependencyManagement>
 
 	<modules>
 		<module>../motu-api-message</module>
-		<module>../motu-api-rest</module>
 
 		<module>../motu-library-converter</module>
 		<module>../motu-library-cas</module>

@@ -784,20 +784,22 @@ function intersect(x1,x2,ox1,ox2, ctype){
 
 function setRegionRanges() {
   var theForm = findForm();
-  var xvals = [theForm.x_lo.value,theForm.x_hi.value];
-  var yvals = [theForm.y_lo.value,theForm.y_hi.value];
-  var xlo = parseFloat(theForm.x_lo.value);
-  var xhi = parseFloat(theForm.x_hi.value);
-  var ylo = parseFloat(theForm.y_lo.value);
-  var yhi = parseFloat(theForm.y_hi.value);
-  
-  xvals = intersect(xlo, xhi, -180, 360);
-  yvals = intersect(ylo, yhi, -90, 90);
-  
-  theForm.xlo_text.value = xvals[0];	
-  theForm.xhi_text.value = xvals[1];	
-  theForm.ylo_text.value = yvals[0];	
-  theForm.yhi_text.value = yvals[1];	
+  if( theForm.x_lo !== undefined ){ // Not a DGF download page
+	  var xvals = [theForm.x_lo.value,theForm.x_hi.value];
+	  var yvals = [theForm.y_lo.value,theForm.y_hi.value];
+	  var xlo = parseFloat(theForm.x_lo.value);
+	  var xhi = parseFloat(theForm.x_hi.value);
+	  var ylo = parseFloat(theForm.y_lo.value);
+	  var yhi = parseFloat(theForm.y_hi.value);
+	  
+	  xvals = intersect(xlo, xhi, -180, 360);
+	  yvals = intersect(ylo, yhi, -90, 90);
+	  
+	  theForm.xlo_text.value = xvals[0];	
+	  theForm.xhi_text.value = xvals[1];	
+	  theForm.ylo_text.value = yvals[0];	
+	  theForm.yhi_text.value = yvals[1];
+  }
 }
 
 function getRegionRanges() {
@@ -833,14 +835,11 @@ function closeScriptCmdWin() {
   doc.write("<h1>Python script command line that matches the extraction:</h1>");
   doc.write("<p>To resquest data, you can also use the Python script. This page should help you to enter your command line from the shell of you system (Linux/Unix/windows).</p>");
 
-  //var linkMotuPython = "<a href=http://mvnrepo-ext.cls.fr/nexus/content/repositories/cls-to-ext/cls/atoll/motu/client/motu-client-python target='_blank'>here</a>";
-  var linkMotuPython = "<a href=http://sourceforge.net/projects/cls-motu/files/client/motu-client-python target='_blank'>here</a>";
   doc.write('<p>You can download the Motu Python Client package ');
-  doc.write(linkMotuPython);
-  doc.write('.</p>');
+  doc.write('<a href="https://github.com/clstoulouse/motu-client-python" target="_blank">here</a>.</p>');
   
-  doc.write("<p><b>Python 2.7 or higher is required in order to execute the Motu Python script.</b>");
-  doc.write("Python can be downloaded <a href=https://www.python.org/downloads/ target='_blank'>here</a>.</p>");
+  doc.write('<p><b>Python 2.7</b> or higher is required in order to execute the Motu Python script.');
+  doc.write('Python can be downloaded <a href="https://www.python.org/downloads/" target="_blank">here</a>.</p>');
 
   var x_lo = theForm.elements['x_lo'];
   var x_hi = theForm.elements['x_hi'];
@@ -926,19 +925,19 @@ function closeScriptCmdWin() {
   cmd += " --proxy-pwd=" + q + "<i>your_proxy_user_password</i><i><b>(3)</b></i>" + q;
 
 
-  doc.write('<p>To execute your extraction through the Motu Python Client, type (copy/paste) the <font color="blue">command-line</font> below on your system command prompt.</p>');
+  doc.write('<p>To execute your extraction through the Motu Python Client, type (copy/paste) the <font color="blue">command-line</font> below on your system command prompt:</p>');
   doc.write('<p><font color="blue">');
   doc.write(cmd);
   doc.write('</font></p>');
-  doc.write('<p>(1) Value must be replaced by yourself.</p>');  
+  doc.write('<p><font color="blue">(1)</font> Value must be replaced by yourself.</p>');  
   doc.write('<p/>');
-  doc.write('<p>(2) If you use an HTTP proxy, replace the value by your proxy url and port number: e.g. \'http://myproxy.org:8080\'. If you don\'t use HTTP proxy, remove this option.</p>');
+  doc.write('<p><font color="blue">(2)</font> If you use an HTTP proxy, replace the value by your proxy url and port number: e.g. \'http://myproxy.org:8080\'. If you don\'t use HTTP proxy, remove this option.</p>');
   doc.write('<p/>');
-  doc.write('<p>(3) If you use an HTTP proxy with authentication, replace the value by your login and password. If you don\'t need to authenticate to your proxy, remove these options.</p>');
+  doc.write('<p><font color="blue">(3)</font> If you use an HTTP proxy with authentication, replace the value by your login and password. If you don\'t need to authenticate to your proxy, remove these options.</p>');
   doc.write('<p/>');
   
   doc.write('<p/>');
-  doc.write('<p>Full documentation is available in the Motu Python Client package.</p>');
+  doc.write('<p>Full documentation is available <a href="https://github.com/clstoulouse/motu-client-python#Usage" target="_blank">here</a>.</p>');
   doc.write('<p>To get help on the Motu Python Client, type : \'');
   doc.write(motu_client_py);
   doc.write(' --help\' on your system command prompt.</p>');

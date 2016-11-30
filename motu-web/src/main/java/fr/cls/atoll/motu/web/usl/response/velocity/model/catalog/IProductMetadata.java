@@ -42,7 +42,11 @@ public interface IProductMetadata {
 
     String getStartTimeCoverageAsUTCString();
 
+    String getStartTimeCoverageAsUTCString(String dateFormat);
+
     String getEndTimeCoverageAsUTCString();
+
+    String getEndTimeCoverageAsUTCString(String dateFormat);
 
     String getTimeAxisMinValueAsUTCString(String datePattern);
 
@@ -151,5 +155,7 @@ public interface IProductMetadata {
     String getGeoYAxisMinValue();
 
     String getGeoYAxisMaxValue();
+
+    String getDepthUnits();
 
 }

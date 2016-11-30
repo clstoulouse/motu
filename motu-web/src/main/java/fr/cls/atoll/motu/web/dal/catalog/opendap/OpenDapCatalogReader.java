@@ -270,8 +270,11 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
         URL url = new URL(getUrlWithSSO(catalogUrl, useSSO_));
         URLConnection conn = url.openConnection();
         InputStream in = conn.getInputStream();
-        catalog = (Catalog) JAXBTDSModel.getInstance().getUnmarshallerTdsModel().unmarshal(in);
-        in.close();
+        try {
+            catalog = (Catalog) JAXBTDSModel.getInstance().unmarshall(in);
+        } finally {
+            in.close();
+        }
         return catalog;
     }
 

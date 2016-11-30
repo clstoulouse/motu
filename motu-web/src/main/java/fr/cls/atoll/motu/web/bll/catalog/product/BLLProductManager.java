@@ -6,11 +6,9 @@ import java.util.regex.Pattern;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
-import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 
 /**
  * <br>
@@ -24,18 +22,9 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
  */
 public class BLLProductManager implements IBLLProductManager {
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @throws MotuException
-     */
     @Override
-    public ProductMetaData getProductMetaData(String catalogType, String productId, String locationData) throws MotuException {
-        return DALManager.getInstance().getCatalogManager().getProductManager()
-                .getMetadata(catalogType,
-                             productId,
-                             locationData,
-                             BLLManager.getInstance().getConfigManager().getMotuConfig().getUseAuthentication());
+    public Product getProduct(String productId) {
+        return BLLManager.getInstance().getCatalogManager().getProductCacheManager().getProduct(productId);
     }
 
     @Override
@@ -58,7 +47,8 @@ public class BLLProductManager implements IBLLProductManager {
             }
         }
 
-        return productFound;
+        Product pWithMetadata = getProduct(productFound.getProductId());
+        return pWithMetadata != null ? pWithMetadata : productFound;
     }
 
     @Override
@@ -70,6 +60,11 @@ public class BLLProductManager implements IBLLProductManager {
                 Map<String, Product> products = cd.getProducts();
                 for (Map.Entry<String, Product> product : products.entrySet()) {
                     if (product.getValue().getTdsUrlPath().equals(URLPath)) {
+                        // TDS Case
+                        productFound = product.getValue();
+                        break;
+                    } else if (product.getValue().getLocationMetaData().equals(URLPath)) {
+                        // DGF Case
                         productFound = product.getValue();
                         break;
                     }
@@ -77,23 +72,8 @@ public class BLLProductManager implements IBLLProductManager {
             }
         }
 
-        return productFound;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @throws MotuException
-     */
-    @Override
-    public Product getProduct(String serviceName, String productId) throws MotuException {
-        ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceName);
-        CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
-        Product p = null;
-        if (cd != null) {
-            p = cd.getProducts(productId);
-        }
-        return p;
+        Product pWithMetadata = getProduct(productFound.getProductId());
+        return pWithMetadata != null ? pWithMetadata : productFound;
     }
 
     @Override
@@ -103,7 +83,13 @@ public class BLLProductManager implements IBLLProductManager {
         Pattern pattern = Pattern.compile(patternExpression);
         Matcher matcher = pattern.matcher(locationData);
 
-        return matcher.find() ? matcher.group(matcher.groupCount()) : null;
+        if (matcher.find()) {
+            // TDS URL
+            return matcher.group(matcher.groupCount());
+        } else {
+            // DGF URL
+            return locationData;
+        }
     }
 
     @Override

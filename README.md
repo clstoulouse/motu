@@ -20,6 +20,9 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
      * [Server interfaces](#ArchitectureInterfacesServer)  
      * [External interfaces with other systems or tools](#ArchitectureInterfacesExternal)  
   * [Design](#ArchitectureDesign)
+  * [Design details](#ArchitectureDesignD)  
+     * [Motu-web project](#ArchitectureDesignDMW)
+     * [Other projects](#ArchitectureDesignDOthers)	 
 * [Development](#Development)
   * [Development environment](#DEV)
   * [Compilation](#COMPILATION)
@@ -69,7 +72,7 @@ The aim is to obtain complete control over the requests processing by balancing 
 for a user at a given time, number of requests to process simultaneously).  
 Moreover, Motu implements a request size threshold. Motu masters the amount of data to extract per request by computing, without any data processing, the result data size of the request.  
 Beyond the allowed threshold, every request is rejected. The threshold is set in the configuration file.
-Motu can be secured behing an authentication server and thus implements authorization. A CAS server can implement the authentication. 
+Motu can be secured behind an authentication server and thus implements authorization. A CAS server can implement the authentication. 
 Motu receives with authentication process user information, including a user profile associated with the account. 
 Motu is configured to authorize or not the user to access the dataset or group of datasets which user is trying to access.  
 For administrators, Motu allows to monitor the usage of the server: the logs produced by Motu allow to know who (login) requests what (dataset) and when, with extraction criterias.
@@ -80,16 +83,18 @@ For administrators, Motu allows to monitor the usage of the server: the logs pro
 # <a name="Architecture">Architecture</a>  
 Motu is a Java Web Application running inside the Apache Tomcat application server.
 
+![Software architecture](./motu-parent/src/doc/softwareArchitecture.png "Motu software architecture")
+
 # <a name="ArchitectureInterfaces">Interfaces</a>  
 ## <a name="ArchitectureInterfacesServer">Server interfaces</a>  
 All ports are defined in [motu.properties](#ConfigurationSystem) configuration file.
 
-* __HTTP__: Used to manage HTTP incoming requests
-* __HTTPs__: Used to manage HTTPs incoming requests
+* __HTTP__: Apache tomcat manages incoming requests with HTTP protocol.
+* __HTTPs__: Used to manage HTTPs incoming requests. This is delegated to Apache HTTPd frontal web server. Apache Tomcat is not intended to be used with HTTPs.
 * __AJP__: Used to communicate with an Apache HTTPd frontal server
+* __Socket for Shutdown__: Port opened by Tomcat to shutdown the server
 * __JMX__: Used to monitor the application
 * __Debug__: In development mode, used to remotely debug the application
-* __Socket for Shutdown__: Port opened by Tomcat to shutdown the server
   
 ## <a name="ArchitectureInterfacesExternal">External interfaces with other systems or tools</a>  
 Motu has interfaces with other systems:  
@@ -105,7 +110,7 @@ Motu has interfaces with other systems:
 The Motu application has been designed by implementing the Three-Layered Services Application design. It takes many advantages in maintenance cost efficiency and in the ease of its future evolutivity.  
 Three layers are set in the core "motu-web" project:  
 
-* __USL__: User Service Layer: This layer manages all incoming actions throught HTTP request
+* __USL__: User Service Layer: This layer manages all incoming actions through HTTP request
 * __BLL__: Business Logic Layer: This layer manages all Motu business
 * __DAL__: Data Access Layer: This layer manages all access to Motu external interfaces: DGF, Unidata server, CDO, ...
 
@@ -113,6 +118,57 @@ Each layer is an entry point of the application designed with a singleton. These
 High level managers handle for example the configuration, the request, the catalog, the users.
 
 A common package is also defined to provide utilities: log4j custom format, XML, String ...
+
+# <a name="ArchitectureDesignD">Design details</a>  
+The main project is "motu-web". This project is divided in three main layers detailed below:  
+
+## <a name="ArchitectureDesignDMW">Motu-web project</a> 
+### <a name="ArchitectureDesignDLayers">Layers</a> 
+#### <a name="ArchitectureDesignDUSL">USL</a>  
+* __usl/servlet/context/MotuWebEngineContextListener.java__: Apache tomcat ServletContextListener used to init and stop the application.  
+* __usl/request__: All requests are managed with the "motu/web/servlet/MotuServlet.java" by following a command pattern. "action" HTTP parameter matches one of the "usl/request/actions" classes.  
+* __usl/response__: XML and [Apache velocity](https://velocity.apache.org/) data model.  
+
+#### <a name="ArchitectureDesignDBLL">BLL</a>  
+* __bll/catalog__: Catalog and Product managers. Package "bll/catalog/product/cache" contains the product cache.
+* __bll/config__: Configuration and version manager.  
+* __bll/exception__: Business exceptions. MotuException is a generic one. MotuExceptionBase defines all other business exceptions.
+* __bll/messageserror__: Message error manager
+* __bll/request__: The queue server used to download requests
+* __bll/users__: User manager
+
+#### <a name="ArchitectureDesignDDAL">DAL</a>    
+* __dal/catalog__: OpenDap, TDS or FILE catalog access.  
+* __dal/config__: Configuration (/motu-web/src/main/resources/schema/MotuConfig.xsd) and version manager (configuration, distribution, products).  
+* __dal/messageserror__: Manage messages for a specific error (/motu-web/src/main/resources/MessagesError.properties).
+* __dal/request__: NCSS, OpenDAP and CDO
+* __dal/tds__: NCSS and OpenDap datamodel
+* __dal/users__: User manager
+
+### <a name="ArchitectureDesignDDynamics">Daemon threads</a> 
+"motu-web" project starts daemon threads for:  
+
+* __bll/catalog/product/cache__: Keep a product cache and refresh it asynchronously to improve response time 
+* __bll/request/cleaner__: Clean files (extracted files, java temp files) and request status (stored into java map or list objects)
+* __bll/request/queueserver__: Contains a thread pool executor to treat download requests
+* __dal/request/cdo__: A queue server used to manage requests using CDO tool to avoid using too much RAM. As CDO uses a lot of RAM memory, 
+requests that require CDO to be processed are in sequence and only one is processed at a time
+
+
+
+
+## <a name="ArchitectureDesignDOthers">Other projects</a>
+* __motu-api-message__: JAXB API: All errors types, status mode, ... /motu-api-message/src/main/schema/XmlMessageModel.xsd  
+* __motu-api-rest__: @Deprecated. Not used since Motu v3.
+* __motu-distribution__: Deployment tools (ant script, install folder structure, ...)
+* __motu-library-cas__: Used to manage JAVA HTTP client with CAS server.
+* __motu-library-converter__: JodaTime, ...
+* __motu-library-inventory__: Used for DGF access. JAXBmodels are /motu-library-inventory/src/main/resources/fr/cls/atoll/motu/library/inventory/Inventory.xsd and CatalogOLA.xsd
+* __motu-parent__: Maven parent, eclipse launchers, documentation
+* __motu-poducts__: Source code and scripts used to build archive motu-products.tar.gz (JDK, Apache tomcat, CDO tools)
+* __motu-scripts__: ./motu bash script
+* __motu-web__: Main Motu project. See [Motu-web project](#ArchitectureDesignDMW) for details.
+
 
 # <a name="Development">Development</a>  
 
@@ -279,7 +335,7 @@ Check this section only if you have installed Motu v2.x and you want to install 
 In this section we consider that your Motu installation folder of version 2.x is "/opt/atoll/misgw/".  
 
 ### Upgrade the software
-First stop your Motu v2.x: /opt/atoll/misgw/stop-motu.  
+First stop Motu v2.x: /opt/atoll/misgw/stop-motu.  
 Then install the version 3.x of [Motu from scratch](#InstallFromScratch). Before starting the new Motu version, upgrade its configuration by ready section below.  
 Once the version 3.x of Motu runs well, you can fully remove the folder of version 2.x is "/opt/atoll/misgw/".  
 To avoid any issue, perhaps backup the folder of Motu v2.x before removing it definitively.  
@@ -307,7 +363,7 @@ Copy your old motuConfiguration.xml file to the folder /opt/cmems-cis/motu/confi
 cp  /opt/atoll/misgw/motu-configuration-sample-misgw/resources/motuConfiguration.xml /opt/cmems-cis/motu/config
 ```  
 
-Then update the attribute below:  
+Then update attributes below:  
 
 * use the TDS subsetter protocol to improve performance of product download  
    * __motuConfig/configService/catalog__
@@ -325,7 +381,8 @@ Then update the attribute below:
 ]>  
 ```
    * __motuConfig__
-      * __maxSizePerFile__ Remove the attribute
+      * __maxSizePerFile__ This attribute definition has been updated. See [maxSizePerFile parameter configuration](#motuConfig-defaultService)  
+	  * __maxSizePerFileTDS__ Rename this attribute to maxSizePerFileSub. See [maxSizePerFileSub parameter configuration](#motuConfig-defaultService)  
 	  * __runGCInterval__ Remove the attribute
 	  * __httpDocumentRoot__ Remove the attribute
 	  * __useAuthentication__ Remove the attribute
@@ -352,8 +409,8 @@ Then update the attribute below:
    
 
 #### Log files
-In CMEMS-CIS context the log file motuQSlog.xml is stored in a specific place in order to be shared.  
-You have so to check that with the new version this log file is well written in the share folder.
+In CMEMS-CIS context the log file motuQSlog.xml is stored in a specific folder in order to be shared.  
+You have so to check that with the new version this log file is well written in the shared folder.
 Here is where this log files were written in Motu v2.x:  
 ``` 
 grep -i "motuQSlog.xml" /opt/atoll/misgw/motu-configuration-sample-misgw-1.0.5/resources/log4j.xml
@@ -615,12 +672,10 @@ __motu/__
      * __transaction__: This folder is used to serve the [transaction accounting logs](#LogbooksTransactions)
      * __static-files__: Used to store public static files. This folder can be served by a frontal Apache HTTPd Web server or Motu Apache Tomcat. In the CMEMS-CIS context, it is not used as static files are deployed on a central web server.      
 * __log:__ Folder which contains all log files. Daily logging are suffixed by yyyy-MM-dd.
-  * __errors.log:__ Motu application errors
-  * __warnings.log:__ Motu application warnings
   * __logbook.log:__ Motu application logs (errors and warning are included)
-  * __tomcat-motu.log:__ Apache tomcat console output and errors
-  * __tomcat-motu-catalina.out:__ CATALINA_OUT environment variable used by catalina engine to write its logs.
-  * __queue.log:__ Motu queue server logs messages (transaction accounting logs)
+  * __warnings.log:__ Motu application warnings
+  * __errors.log:__ Motu application errors
+  * __motuQSlog.xml,motuQSlog.csv:__ Motu queue server logs messages (transaction accounting logs), format is either xml or csv
 * __motu file:__ Script used to start, stop Motu application.  Refers to [Start & Stop Motu](#SS) for more details.
 * __pid:__ Folder which contains pid files of the running Motu application.
   * __tomcat-motu.pid:__ Contains the UNIX PID of the Motu process.
@@ -657,7 +712,7 @@ The configuration is described for Apache2 contains files:
 When an SSO cas server is used, you have to st the property [cas-auth-serverName](#ConfigurationSystemCASSSO) to http://$serverHostName
 
 Apache HTTPd can be used at different levels. The Apache HTTPd above is the one installed on the same machine as Motu.
-An Apache HTTPd can be used as a frontal to manage Apache HTTPd load balancing. In the case, you can set up with the folowing example:  
+An Apache HTTPd can be used as a frontal to manage Apache HTTPd load balancing. In the case, you can set up with the following example:  
 
 ```  
  # Use to authenticate users which want to download transaction files  
@@ -669,12 +724,18 @@ An Apache HTTPd can be used as a frontal to manage Apache HTTPd load balancing. 
 < / Location>   
   
  # Used to serve URL requested after a CAS authentication  
- # Because Motu SSO client set a redirection URL directly to its webapp name so we have to take into account the webapp name in Apache HTTPd
+ # Because Motu SSO client set a redirection URL directly to its webapp name  
+ # so we have to take into account the webapp name in Apache HTTPd  
 ProxyPass /motu-web http://$motuTomcatIp:$motuTomcatPort/motu-web  
 ProxyPassReverse /motu-web http://$motuTomcatIp:$motuTomcatPort/motu-web  
         
  # Used to serve Motu requests   
- # /motu-web-servlet can be any other URL  
+    # /mis-gateway-servlet These rules are used for retro compatibility between Motu v2.x and Motu v3.x  
+ProxyPass /mis-gateway-servlet http://$motuTomcatIp:$motuTomcatPort/motu-web  
+ProxyPassReverse /mis-gateway-servlet http://$motuTomcatIp:$motuTomcatPort/motu-web  
+ProxyPreserveHost On  
+    # /motu-web-servlet This URL is sometimes used.  
+	# It can be customized depending of your current installation. If you have any doubt, keep this rule.  
 ProxyPass /motu-web-servlet http://$motuTomcatIp:$motuTomcatPort/motu-web  
 ProxyPassReverse /motu-web-servlet http://$motuTomcatIp:$motuTomcatPort/motu-web  
                 
@@ -688,7 +749,6 @@ ProxyPassReverse /datastore-gateway/deliveries http://$apacheHTTPdOnMotuHost/dat
 |--Order allow,deny  
 |--Allow from All  
 < /Location>  
-
 ```  
 
 
@@ -768,11 +828,22 @@ All values can be found in the method USLRequestManager#onNewRequest with the di
 Number of data in Ko that can be read in the same time. Default is 2048Kb.
 
 ##### maxSizePerFile
-@Deprecated from v3 This parameter is not used. 
-Number of data in Megabytes that can be written and download for a Netcdf file. Default is 1024Mb. 
+This parameter is only used with a catalog type set to "FILE" meaning a DGF access.  
+It allows download requests to be executed only if data extraction is lower than this parameter value.  
+Unit of this value is MegaBytes.  
+Default is 1024 MegaBytes.  
+Example: maxSizePerFile="2048" to limit a request result file size to 2GB.  
+
+##### maxSizePerFileSub
+This parameter is only used with a catalog type used with Opendap or Ncss.  
+It allows download requests to be executed only if data extraction is lower that this parameter value.  
+Unit of this value is MegaBytes.  
+Default is 1024 MegaBytes.  
+Example: maxSizePerFileSub="2048" to limit request result file size to 2GB.
 
 ##### maxSizePerFileTDS
-Number of data in Megabytes that can be written and download for a Netcdf file. Default is 1024Mb. 
+@Deprecated from v3 This parameter is not used and has been replaced by maxSizePerFile and maxSizePerFileSub.   
+Number of data in Megabytes that can be written and download for a Netcdf file. Default is 1024Mb.
 
 ##### <a name="motuConfig-extractionPath">extractionPath</a>  
 The absolute path where files downloaded from TDS are stored.  
@@ -1024,14 +1095,16 @@ __cas-activated__=false
    # Cas server configuration to allow Motu to access it  
    # @see https://wiki.jasig.org/display/casc/configuring+the+jasig+cas+client+for+java+in+the+web.xml  
      
-   # The  start of the CAS server URL, i.e. https://cas-cis.cls.fr/cas 
-__cas-server-url__=https://cas-cis.cls.fr/cas  
-   # The Motu HTTP server url: example: http://misgw-ddo-qt.cls.fr:9080 or http://motu.cls.fr   
-   # If you use a frontal HTTP server, it is important to known that this URL will be called once used will be login on CAS server
-   # In this case, set the Apache HTTPd server. The value will be http://$apacheHTTPdServer/motu-web/Motu So in Apache HTTPd you have to redirect this URL to the Motu Web server
-__cas-auth-serverName__=http://$motuServerIp:$motuServerPort  
-   # The proxy callback HTTP URL on the Motu server (this URL can be defined on the frontal Apache HTTPs server)  
-__cas-validationFilter-proxyCallbackUrl__=http://$motuServerIp:$motuServerPort/motu-web/proxyCallback  
+   # The  start of the CAS server URL, i.e. https://cas-cis.cls.fr/cas  
+__cas-server-url__=https://cas-cis.cls.fr/cas   
+
+   # The Motu HTTP server URL, for example: http://misgw-ddo-qt.cls.fr:9080 or http://motu.cls.fr   
+   # If you use a frontal HTTPd server, you have to known if its URL will be called once the user will be login on CAS server.  
+   # In this case, set the Apache HTTPd server. The value will be http://$apacheHTTPdServer/motu-web/Motu So, in Apache HTTPd, you have to redirect this URL to the Motu Web server  
+__cas-auth-serverName__=http://$motuServerIp:$motuServerPort   
+
+   # The proxy callback HTTPs URL of the Motu server ($motuServerIp is either the Motu host or the frontal Apache HTTPs host ip or name. $motuServerHttpsPort is optional if default HTTPs port 443 is used, otherwise it is the same value as defined above with the key "tomcat-motu-port-https", or it is the port defined for the HTTPs server on the frontal Apache HTTPd)  
+__cas-validationFilter-proxyCallbackUrl__=https://$motuServerIp:$motuServerHttpsPort/motu-web/proxyCallback  
   
   
 __IMPORTANT__: Motu uses a Java HTTPs client to communicate with the CAS server. When the CAS server has an untrusted SSL certificate, you have to add it to Java default certificates or to add the Java property named "javax.net.ssl.trustStore" to target a CA keystore which contains the CAS Server SSL CA public key.
@@ -1040,9 +1113,12 @@ For example, add this property by setting Java option [tomcat-motu-jvm-javaOpts]
 tomcat-motu-jvm-javaOpts=-server -Xmx4096M -Xms512M -XX:PermSize=128M -XX:MaxPermSize=512M -Djavax.net.ssl.trustStore=/opt/cmems-cis/motu/config/security/cacerts-with-cas-qt-ca.jks
 ```
 
+The following part is not relevant in the CMEMS context as the SSO CAS server has been signed by a known certification authority.  
+If you need to run tests with your own SSO CAS server without any certificate signed by a known certification authority, you have to follow the following steps.  
+
 How to build the file cacerts-with-cas-qt-ca.jks on Motu server?  
 
-* Download the file "ca.crt" from the CAS server machine (/opt/atoll/ssl/ca.crt) into ${MOTU_HOME}/config/security/ and rename it "cas-qt-ca.crt"
+* Download the certificate file (for example "ca.crt") of the authority which has signed the CAS SSO certificate on the CAS server machine (/opt/atoll/ssl/ca.crt) and copy it to "${MOTU_HOME}/config/security/", then rename it "cas-qt-ca.crt"
 * Copy the default Java cacerts "/opt/cmems-cis-validation/motu/products/jdk1.7.0_79/jre/lib/security/cacerts" file into ${MOTU_HOME}/config/security/
   and rename this file to "cacerts-with-cas-qt-ca.jks"  
   ```
@@ -1061,6 +1137,10 @@ __tomcat-motu-urlrewrite-statusEnabledOnHosts__=localhost,*.cls.fr
 
 This parameter is used to set the property below in the WEB.XML file:  
 ```
+        <!-- Documentation from http://tuckey.org/urlrewrite/manual/3.0/
+		you may want to allow more hosts to look at the status page
+        statusEnabledOnHosts is a comma delimited list of hosts, * can
+        be used as a wildcard (defaults to "localhost, local, 127.0.0.1") -->
         <init-param>  
             <param-name>statusEnabledOnHosts</param-name>  
             <param-value>${tomcat-motu-urlrewrite-statusEnabledOnHosts}</param-value>  
@@ -1068,7 +1148,7 @@ This parameter is used to set the property below in the WEB.XML file:
 ```  
 
 For more detail read:  
-org.tuckey UrlRewriteFilter FILTERS : see http://urlrewritefilter.googlecode.com/svn/trunk/src/doc/manual/3.1/index.html  
+org.tuckey UrlRewriteFilter FILTERS : see http://tuckey.org/urlrewrite/manual/3.0/  
 
   
 ## <a name="LogSettings">Log settings</a>  
@@ -1084,6 +1164,7 @@ To configure it, edit config/log4j.xml
 ##### Log format: XML or CSV  
 Update the fileFormat attribute of the node "MotuCustomLayout": <MotuCustomLayout fileFormat="xml">
 A string either "xml" or "csv" to select the format in which log message are written.  
+Also update the log file name extension of the attributes "fileName" and "filePattern" in order to get a coherent content in relationship with value set for MotuCustomLayout file format.  
 If this attribute is not set, the default format is "xml".  
 ``` 
 		<RollingFile name="log-file-infos.queue"   
@@ -1220,7 +1301,8 @@ KiB Mem : 10224968 total,  ***4034876 free***,  3334576 used,  2855516 buff/cach
 ## <a name="Logbooks">Logbooks</a>    
 
 Log messages are generated by Apache Log4j 2. The configuration file is "config/log4j.xml".  
-By default, log files are created in the folder $MOTU_HOME/log. This folder contains:  
+By default, log files are created in the folder $MOTU_HOME/log. This folder contains Motu log messages.  
+Tomcat log messages are generated in the tomcat-motu/logs folder.  
 
 * __Motu log messages__
   * __logbook.log__: All Motu log messages including WARN and ERROR(without stacktrace) messages.
@@ -1272,9 +1354,9 @@ By default, log files are created in the folder $MOTU_HOME/log. This folder cont
          * DepthMin;DepthMax;: Depth coverage   
   * __velocity.log__: Logs generated by the http://velocity.apache.org/ technology to render HTML web pages.
 
-* __Tomcat log messages__
-  * __tomcat-motu-catalina.out__: Catalina output matching the environment variable CATALINA_OUT.
-  * __tomcat-motu.log__: $CATALINA_HOME/bin/startup.sh and $CATALINA_HOME/bin/shutdown.sh outputs are redirected to this file.  
+* __Tomcat log messages__: This folder contains all Apache Tomcat log files. The file below is important to check startup logs:  
+  * __catalina.out__: Catalina output matching the environment variable CATALINA_OUT.
+    
 
 ## <a name="AdminDataSetAdd">Add a dataset</a>    
 In order to add a new Dataset, you have to add a new configService node in the [Motu business configuration](#ConfigurationBusiness).  
@@ -1401,16 +1483,31 @@ You change the status order by entering 4 parameters in the URL:
  
 ## <a name="ExploitCleanDisk">Clean files</a>  
 
-## <a name="ExploitCleanDiskLogbook">Logbook files</a>  
-Logbook files are written in the folder configured in the log4j.xml configuration file.  
-All logs are generated daily except for motuQSLog (xml or csv) which are generated monthly.
-You can clean those files to avoid to fullfill the harddrive. 
-crontab -e
+## <a name="ExploitCleanDiskLogbook">Logbook files</a>   
+Logbook files are written by Apache Tomcat server and Motu application.  
+ 
+### <a name="ExploitCleanDiskLogbookTomcat">Apache Tomcat Logbook files</a>  
+Tomcat writes log files in folder tomcat-motu/logs.  
+You can customize this default configuration by editing tomcat-motu/conf/logging.properties  
+This file is the default file provided by Apache Tomcat.
+There is a daily rotation so you can clean those files to fullfill the harddrive.   
+crontab -e   
+0 * * * * find /opt/cmems-cis/motu/tomcat-motu/logs/*.log* -type f -mmin +14400 -delete >/dev/null 2>&1   
+0 * * * * find /opt/cmems-cis/motu/tomcat-motu/logs/*.txt* -type f -mmin +14400 -delete >/dev/null 2>&1   
+
+### <a name="ExploitCleanDiskLogbookMotu">Motu Logbook files</a>  
+Logbook files are written in the folder(s) configured in the log4j.xml configuration file.  
+All logs are generated daily except for motuQSLog (xml or csv) which are generated monthly.  
+You can clean those files to avoid to fullfill the harddrive.   
+crontab -e   
 0 * * * * find /opt/cmems-cis/motu/log/*.log* -type f -mmin +14400 -delete >/dev/null 2>&1  
 0 * * * * find /opt/cmems-cis/motu/log/*.out* -type f -mmin +14400 -delete >/dev/null 2>&1  
 0 * * * * find /opt/cmems-cis/motu/log/*.xml* -type f -mmin +144000 -delete >/dev/null 2>&1  
 0 * * * * find /opt/cmems-cis/motu/log/*.csv* -type f -mmin +144000 -delete >/dev/null 2>&1  
   
+Note that Motu is often tuned to write the motuQSLog in a dedicated folder. So you have to clean log files in this folder too. For example:
+0 * * * * find /opt/cmems-cis/motu/data/public/transaction/*.xml* -type f -mmin +144000 -delete >/dev/null 2>&1  
+0 * * * * find /opt/cmems-cis/motu/data/public/transaction/*.csv* -type f -mmin +144000 -delete >/dev/null 2>&1 
 
 ## <a name="LogCodeErrors">Log Errors</a>   
 
@@ -1732,6 +1829,7 @@ Parameters below are exactly the same as for [Download product](#ClientAPI_Downl
 * __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is yyy-mm-dd or yyyy-dd h:m:s or yyyy-ddTh:m:s.  
   
 __Return__: An XML document.    
+The unit is "kb" means kilobits.
 Validated by the schema /motu-api-message/src/main/schema/XmlMessageModel.xsd#RequestSize  
 Example:  
 
@@ -1740,7 +1838,7 @@ Example:
 ```  
 
 ### <a name="ClientAPI_ListCatalog">List catalog</a>    
-Get the size of a download request.  
+Display information about a catalog (last update timestamp) and display link to access to download page and dataset metadata.
 
 __URL__: http://localhost:8080/motu-web/Motu?action=listcatalog&service=HR_MOD-TDS  
 

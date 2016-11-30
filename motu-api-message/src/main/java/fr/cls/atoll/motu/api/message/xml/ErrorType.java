@@ -129,6 +129,7 @@ public enum ErrorType {
     TOO_DEPTH_REQUESTED(31),
     @XmlEnumValue("32")
     NETCDF4_NOT_SUPPORTED_BY_TDS(32);
+	
     private final int value;
 
     ErrorType(int v) {
