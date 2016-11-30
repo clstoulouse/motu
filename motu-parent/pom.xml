@@ -45,20 +45,6 @@
 		<dependencies.version.jaxb2_commons>0.6.1</dependencies.version.jaxb2_commons>
 	</properties>
 
-	<!-- Référentiel de déploiement -->
-	<distributionManagement>
-		<repository>
-			<id>releases-repo</id>
-			<name>CLS Entreprise Release Repository</name>
-			<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/altamira-to-cls-releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>snapshots-repo</id>
-			<name>CLS Entreprise Snapshot Repository</name>
-			<url>http://mvnrepo-ext.cls.fr/nexus/content/repositories/altamira-to-cls-snapshot/</url>
-		</snapshotRepository>
-	</distributionManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.slf4j</groupId>
