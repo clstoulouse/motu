@@ -283,16 +283,16 @@ public class XMLConverter {
         }
         smr.setMsg(msg);
         smr.setLocalUri(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath() + "/"
-                + requestDownloadStatus.getExtractFilename());
+                + requestDownloadStatus.getRequestProduct().getRequestProductParameters().getExtractFilename());
         smr.setRemoteUri(BLLManager.getInstance().getConfigManager().getMotuConfig().getDownloadHttpUrl() + "/"
-                + requestDownloadStatus.getExtractFilename());
+                + requestDownloadStatus.getRequestProduct().getRequestProductParameters().getExtractFilename());
         smr.setRequestId(requestDownloadStatus.getRequestId());
 
         smr.setSize(UnitUtils.toMegaBytes(requestDownloadStatus.getSizeInBits()));
         smr.setStatus(convertStatusModeResponse(requestDownloadStatus.getRequestStatus()));
-        smr.setUserHost(requestDownloadStatus.getUserHost());
-        smr.setUserId(requestDownloadStatus.getUserId());
-        smr.setScriptVersion(requestDownloadStatus.getScriptVersion());
+        smr.setUserHost(requestDownloadStatus.getRequestProduct().getExtractionParameters().getUserHost());
+        smr.setUserId(requestDownloadStatus.getRequestProduct().getExtractionParameters().getUserId());
+        smr.setScriptVersion(requestDownloadStatus.getRequestProduct().getExtractionParameters().getScriptVersion());
         return smr;
     }
 

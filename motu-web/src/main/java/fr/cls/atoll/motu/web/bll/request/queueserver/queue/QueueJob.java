@@ -2,11 +2,9 @@ package fr.cls.atoll.motu.web.bll.request.queueserver.queue;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
-import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
  * <br>
@@ -21,24 +19,13 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 public class QueueJob implements IQueueJob, Comparable<IQueueJob> {
 
     private QueueJobListener queueJobListener;
-    private ExtractionParameters extractionParameters;
-    private Product product;
+    private RequestDownloadStatus rds;
     private ConfigService cs;
-    private OutputFormat dataOutputFormat;
-    private Long requestId;
 
-    public QueueJob(
-        ConfigService cs_,
-        Product product_,
-        ExtractionParameters extractionParameters_,
-        QueueJobListener queueJobListener_,
-        Long requestId_) {
+    public QueueJob(ConfigService cs_, RequestDownloadStatus rds_, QueueJobListener queueJobListener_) {
         cs = cs_;
-        product = product_;
-        extractionParameters = extractionParameters_;
-        dataOutputFormat = extractionParameters.getDataOutputFormat();
         queueJobListener = queueJobListener_;
-        requestId = requestId_;
+        rds = rds_;
     }
 
     /** {@inheritDoc} */
@@ -59,7 +46,7 @@ public class QueueJob implements IQueueJob, Comparable<IQueueJob> {
      * .
      */
     private void processJob() throws MotuException {
-        DALManager.getInstance().getRequestManager().downloadProduct(cs, product, dataOutputFormat, requestId);
+        DALManager.getInstance().getRequestManager().downloadProduct(cs, rds);
     }
 
     private void onJobStarted() {
@@ -77,12 +64,6 @@ public class QueueJob implements IQueueJob, Comparable<IQueueJob> {
 
     /** {@inheritDoc} */
     @Override
-    public ExtractionParameters getExtractionParameters() {
-        return extractionParameters;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public int compareTo(IQueueJob o) {
         // In version 2.x Motu managed priorities, now it does not.
         // But as a priority queue, is already used, we keep this comparable implementation
@@ -94,6 +75,16 @@ public class QueueJob implements IQueueJob, Comparable<IQueueJob> {
     public void stop() {
         // Here there is nothing to do, we let this request ends in a normal way
 
+    }
+
+    /**
+     * Valeur de rds.
+     * 
+     * @return la valeur.
+     */
+    @Override
+    public RequestDownloadStatus getRequestDownloadStatus() {
+        return rds;
     }
 
 }

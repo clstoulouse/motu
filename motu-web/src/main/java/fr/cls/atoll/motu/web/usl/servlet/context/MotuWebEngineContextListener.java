@@ -24,6 +24,8 @@
  */
 package fr.cls.atoll.motu.web.usl.servlet.context;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -45,6 +47,8 @@ import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.deploy.FilterMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
@@ -66,8 +70,31 @@ import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
 public class MotuWebEngineContextListener implements ServletContextListener {
-    /** Parameter specifying the location of the log4j config file */
-    public static final String CONFIG_LOCATION_PARAM = "log4jConfigLocation";
+
+    static {
+        initLog4j();
+    }
+
+    private static void initLog4j() {
+        String log4jConfigFolderPath = System.getProperty("motu-config-dir");
+        if (log4jConfigFolderPath != null && log4jConfigFolderPath.length() > 0) {
+            if (!log4jConfigFolderPath.endsWith("/")) {
+                log4jConfigFolderPath += "/";
+            }
+        } else {
+            System.err.println("Error while initializing log4j. Property is not set motu-config-dir or has a bad value");
+        }
+        // Do not use system property to avoid conflicts with other tomcat webapps
+        // System.setProperty("log4j.configurationFile", log4jConfigFolderPath + "log4j.xml");
+
+        try {
+            ConfigurationSource source = new ConfigurationSource(new FileInputStream(log4jConfigFolderPath + "log4j.xml"));
+            Configurator.initialize(null, source);
+        } catch (IOException e) {
+            System.err.println("Error while initializing log4j from file: " + log4jConfigFolderPath + "log4j.xml");
+            e.printStackTrace();
+        }
+    }
 
     /** Logger for this class. */
     private static final Logger LOGGER = LogManager.getLogger();

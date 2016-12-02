@@ -3,12 +3,10 @@ package fr.cls.atoll.motu.web.bll.request.queueserver;
 import java.util.Map;
 
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueManagement;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
  * <br>
@@ -51,12 +49,7 @@ public interface IQueueServerManager {
      * @param extractionParameters
      * @throws MotuException
      */
-    void execute(RequestDownloadStatus requestDownloadStatus,
-                 ConfigService cs_,
-                 Product product_,
-                 ExtractionParameters extractionParameters,
-                 double requestSizeInMB,
-                 Long requestId) throws MotuException;
+    void execute(RequestDownloadStatus requestDownloadStatus, ConfigService cs_, double requestSizeInMB) throws MotuException;
 
     /**
      * .

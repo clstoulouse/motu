@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 
 /**
@@ -38,7 +38,7 @@ public interface IUSLRequestManager {
      * @param product
      * @return
      */
-    String getProductDownloadUrlPath(Product product);
+    String getProductDownloadUrlPath(RequestProduct product);
 
     /**
      * Initialize the USLRequestManager .

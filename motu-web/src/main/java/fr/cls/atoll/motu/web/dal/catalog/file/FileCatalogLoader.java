@@ -486,6 +486,7 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
         if (depthCoverage != null) {
             productMetaData
                     .setDepthCoverage(new MinMax(depthCoverage.getMin().getValue().doubleValue(), depthCoverage.getMax().getValue().doubleValue()));
+            productMetaData.setDepthUnits(depthCoverage.getUnits());
         }
 
         // Gets variables metadata.

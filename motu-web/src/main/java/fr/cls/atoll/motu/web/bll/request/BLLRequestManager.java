@@ -17,27 +17,21 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatitudeException;
-import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLongitudeException;
-import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.web.bll.exception.NotEnoughSpaceException;
 import fr.cls.atoll.motu.web.bll.request.cleaner.RequestCleanerDaemonThread;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteria;
-import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.bll.request.queueserver.IQueueServerManager;
 import fr.cls.atoll.motu.web.bll.request.queueserver.QueueServerManager;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.log.QueueLogError;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.log.QueueLogInfo;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.common.utils.TimeUtils;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueServerType;
-import fr.cls.atoll.motu.web.dal.request.ProductSizeRequest;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData.CatalogType;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
@@ -140,8 +134,8 @@ public class BLLRequestManager implements IBLLRequestManager {
 
     /** {@inheritDoc} */
     @Override
-    public ProductResult download(ConfigService cs_, Product product_, ExtractionParameters extractionParameters, AbstractAction action) {
-        long requestId = download(false, cs_, product_, extractionParameters, action);
+    public ProductResult download(ConfigService cs_, RequestProduct reqProduct_, AbstractAction action) {
+        long requestId = download(false, cs_, reqProduct_, action);
 
         ProductResult p = new ProductResult();
         RequestDownloadStatus rds = getDownloadRequestStatus(requestId);
@@ -149,40 +143,30 @@ public class BLLRequestManager implements IBLLRequestManager {
             if (rds.getRunningException() != null) {
                 p.setRunningException(rds.getRunningException());
             }
-            rds.setProductFileName(product_.getExtractFilename());
         } else {
             LOGGER.error("RequestDownloadStatus is null for requestId=" + requestId
                     + ". The parameter \"cleanRequestInterval\" in motuConfig is certainly to low for the current request which has certainly takes more times. So cleaner has remove the request status whereas the request was currently in progress. Solution is to set a value greater for \"cleanRequestInterval\" or understand why this request takes so much time to end.");
         }
-        p.setProductFileName(product_.getExtractFilename());
+        p.setProductFileName(reqProduct_.getRequestProductParameters().getExtractFilename());
 
         return p;
     }
 
     /** {@inheritDoc} */
     @Override
-    public long downloadAsynchonously(ConfigService cs_, Product product_, ExtractionParameters extractionParameters, AbstractAction action) {
-        return download(true, cs_, product_, extractionParameters, action);
+    public long downloadAsynchonously(ConfigService cs_, RequestProduct reqProduct_, AbstractAction action) {
+        return download(true, cs_, reqProduct_, action);
     }
 
-    private long download(boolean isAsynchronous,
-                          final ConfigService cs_,
-                          final Product product_,
-                          final ExtractionParameters extractionParameters,
-                          AbstractAction action) {
-        final RequestDownloadStatus rds = initRequest(extractionParameters.getUserId(),
-                                                      extractionParameters.getUserHost(),
-                                                      extractionParameters.getScriptVersion(),
-                                                      action);
-        final long requestId = rds.getRequestId();
-
-        Thread t = new Thread("download isAsynchRqt=" + Boolean.toString(isAsynchronous) + " - " + requestId) {
+    private long download(boolean isAsynchronous, final ConfigService cs_, final RequestProduct reqProduct_, AbstractAction action) {
+        final RequestDownloadStatus rds = initRequest(reqProduct_, action);
+        Thread t = new Thread("download isAsynchRqt=" + Boolean.toString(isAsynchronous) + " - " + rds.getRequestId()) {
 
             /** {@inheritDoc} */
             @Override
             public void run() {
-                download(rds, extractionParameters, cs_, product_, requestId);
-                logQueueInfo(rds, product_, extractionParameters);
+                download(rds, cs_);
+                logQueueInfo(rds);
             }
 
         };
@@ -192,29 +176,29 @@ public class BLLRequestManager implements IBLLRequestManager {
             try {
                 t.join();
             } catch (InterruptedException e) {
-                LOGGER.error("InterruptedException download thread join inteeruption, requestId=" + requestId, e);
+                LOGGER.error("InterruptedException download thread join inteeruption, requestId=" + rds.getRequestId(), e);
             }
         }
 
-        return requestId;
+        return rds.getRequestId();
     }
 
     /**
      * .
      */
-    private void logQueueInfo(RequestDownloadStatus rds, Product product_, ExtractionParameters extractionParameters) {
+    private void logQueueInfo(RequestDownloadStatus rds) {
         QueueLogInfo qli = new QueueLogInfo();
-        qli.setAmountDataSize(UnitUtils.toMegaBytes(rds.getSizeInBits()));
-        qli.setCompressingTime(product_.getCompressingTimeAsMilliSeconds());
-        qli.setCopyingTime(product_.getCopyingTimeAsMilliSeconds());
-        qli.setReadingTime(product_.getReadingTimeAsMilliSeconds());
-        qli.setWritingTime(product_.getWritingTimeAsMilliSeconds());
+        qli.setAmountDataSizeInMegaBytes(UnitUtils.bitsToMegaBytes(rds.getSizeInBits()));
+        qli.setCompressingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getCompressingTime()));
+        qli.setCopyingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getCopyingTime()));
+        qli.setReadingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getReadingTime()));
+        qli.setWritingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getWritingTime()));
 
         qli.setDownloadUrlPath(BLLManager.getInstance().getCatalogManager().getProductManager()
-                .getProductDownloadHttpUrl(product_.getExtractFilename()));
+                .getProductDownloadHttpUrl(rds.getRequestProduct().getRequestProductParameters().getExtractFilename()));
         // qli.setEncoding(""); Set by default
-        qli.setExtractionParameters(extractionParameters);
-        qli.setExtractLocationData(product_.getExtractLocationData());
+        qli.setExtractionParameters(rds.getRequestProduct().getExtractionParameters());
+        qli.setExtractLocationData(rds.getRequestProduct().getRequestProductParameters().getExtractLocationData());
 
         Calendar c = Calendar.getInstance();
 
@@ -233,7 +217,7 @@ public class BLLRequestManager implements IBLLRequestManager {
 
         // SMA: Not sure that this field as a real sense, keep it for retro compatibility between Motu
         // versions 2.x and 3.x
-        qli.setPreparingTime(product_.getReadingTimeAsMilliSeconds());
+        qli.setPreparingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getReadingTime()));
 
         qli.setQueueId(rds.getQueueId());
         qli.setQueueDesc(rds.getQueueDescription());
@@ -245,19 +229,19 @@ public class BLLRequestManager implements IBLLRequestManager {
 
         qli.setRequestId(rds.getRequestId());
 
-        qli.setScriptVersion(rds.getScriptVersion());
+        qli.setScriptVersion(rds.getRequestProduct().getExtractionParameters().getScriptVersion());
         LOGGER.info(qli);
     }
 
-    private RequestDownloadStatus initRequest(String userId, String userHost, String scriptVersion, AbstractAction action) {
-        Long requestId = initRequest(userId, userHost, action);
-        RequestDownloadStatus requestDownloadStatus = new RequestDownloadStatus(requestId, userId, userHost, scriptVersion);
+    private RequestDownloadStatus initRequest(RequestProduct requestProduct_, AbstractAction action) {
+        Long requestId = initRequest(action);
+        RequestDownloadStatus requestDownloadStatus = new RequestDownloadStatus(requestId, requestProduct_);
         requestIdStatusMap.put(requestId, requestDownloadStatus);
         return requestDownloadStatus;
     }
 
     @Override
-    public Long initRequest(String userId, String userHost, AbstractAction action) {
+    public Long initRequest(AbstractAction action) {
         final long requestId = getNewRequestId();
         actionMap.putIfAbsent(requestId, action);
         actionStatus.putIfAbsent(requestId, StatusModeType.PENDING);
@@ -308,7 +292,7 @@ public class BLLRequestManager implements IBLLRequestManager {
                 userIdMsg = " for user: " + userId_;
             }
             throw new MotuException(
-                    ErrorType.EXCEEDING_QUEUE_CAPACITY,
+                    ErrorType.EXCEEDING_USER_CAPACITY,
                     "Maximum number of running request reached" + userIdMsg + ", x"
                             + (userId_ == null
                                     ? BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig().getMaxPoolAnonymous()
@@ -318,27 +302,23 @@ public class BLLRequestManager implements IBLLRequestManager {
         }
     }
 
-    private void download(RequestDownloadStatus rds_,
-                          ExtractionParameters extractionParameters,
-                          ConfigService cs_,
-                          Product product_,
-                          long requestId) {
-        RequestDownloadStatus requestDownloadStatus = requestIdStatusMap.get(requestId);
+    private void download(RequestDownloadStatus rds_, ConfigService cs_) {
+        RequestDownloadStatus requestDownloadStatus = requestIdStatusMap.get(rds_.getRequestId());
 
         // If too much request for this user, throws MotuExceedingUserCapacityException
-        String userId = extractionParameters.isAnonymousUser() ? null : extractionParameters.getUserId();
+        String userId = rds_.getRequestProduct().getExtractionParameters().isAnonymousUser() ? null
+                : rds_.getRequestProduct().getExtractionParameters().getUserId();
         try {
             try {
-                double requestSizeInByte = getRequestSizeInByte(extractionParameters, product_);
-                rds_.setSizeInBits(new Double(requestSizeInByte * 8).longValue());
-                double requestSizeInMB = UnitUtils.toMegaBytes(requestSizeInByte);
+                double requestSizeInByte = getProductDataSizeIntoByte(rds_);
+                rds_.setSizeInBits(new Double(UnitUtils.bytesToBits(requestSizeInByte)).longValue());
+                double requestSizeInMBytes = UnitUtils.toMegaBytes(requestSizeInByte);
 
                 checkNumberOfRunningRequestForUser(userId);
-                checkMaxSizePerFile(cs_.getCatalog().getType(), requestSizeInMB);
-                checkFreeSpace(requestSizeInMB);
+                checkMaxSizePerFile(cs_.getCatalog().getType(), requestSizeInMBytes);
+                checkFreeSpace(requestSizeInMBytes);
 
-                downloadSafe(requestDownloadStatus, requestSizeInMB, extractionParameters, cs_, product_, requestId);
-                requestDownloadStatus.setProductFileName(product_.getExtractFilename());
+                downloadSafe(requestDownloadStatus, requestSizeInMBytes, cs_);
             } finally {
                 userRequestCounter.onRequestStoppedForUser(userId);
             }
@@ -349,56 +329,38 @@ public class BLLRequestManager implements IBLLRequestManager {
         }
     }
 
-    private void checkFreeSpace(double fileSize) throws MotuException {
+    private void checkFreeSpace(double fileSizeInMBytes) throws MotuException {
         File extractionDirectory = new File(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath());
         if (!extractionDirectory.exists()) {
             LOGGER.error("The extraction folder does not exists: " + extractionDirectory.exists());
             throw new MotuException(ErrorType.SYSTEM, "The extraction folder does not exists: " + extractionDirectory.exists());
         } else {
-            if (UnitUtils.toMegaBytes(extractionDirectory.getFreeSpace()) <= fileSize) {
+            if (UnitUtils.toMegaBytes(extractionDirectory.getFreeSpace()) <= fileSizeInMBytes) {
                 throw new NotEnoughSpaceException("There is not enough disk space available to generate the file result and to satisfy this request");
             }
         }
     }
 
-    private void checkMaxSizePerFile(String catalogType, double fileSize) throws MotuException {
-        double maxSizePerFile = -1;
+    private void checkMaxSizePerFile(String catalogType, double fileSizeInMegaBytes) throws MotuException {
+        double maxSizePerFileInMegaBytes = -1;
         if (CatalogType.FILE.name().toUpperCase().equals(catalogType.toUpperCase())) {
-            maxSizePerFile = BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFile().doubleValue();
+            maxSizePerFileInMegaBytes = BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFile().doubleValue();
         } else {
-            maxSizePerFile = BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue();
+            maxSizePerFileInMegaBytes = BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue();
         }
-        if (maxSizePerFile < fileSize) {
+        if (maxSizePerFileInMegaBytes < fileSizeInMegaBytes) {
             throw new MotuException(
                     ErrorType.EXCEEDING_CAPACITY,
-                    "The result file size " + fileSize + "Mb shall be less than " + maxSizePerFile + "Mb",
-                    new String[] { Integer.toString(new Double(fileSize).intValue()), Integer.toString(new Double(maxSizePerFile).intValue()) });
+                    "The result file size " + fileSizeInMegaBytes + "MBytes shall be less than " + maxSizePerFileInMegaBytes + "MBytes",
+                    new String[] {
+                            Integer.toString(new Double(fileSizeInMegaBytes).intValue()),
+                            Integer.toString(new Double(maxSizePerFileInMegaBytes).intValue()) });
         }
     }
 
-    private void downloadSafe(RequestDownloadStatus requestDownloadStatus,
-                              double requestSizeInMB,
-                              ExtractionParameters extractionParameters,
-                              ConfigService cs_,
-                              Product product_,
-                              Long requestId) throws MotuException {
-        // Clear and update the product in case of the instance have already been used for other
-        // calculation.
-        clearAndUpdateProductDataSet(product_,
-                                     extractionParameters.getListVar(),
-                                     extractionParameters.getListTemporalCoverage(),
-                                     extractionParameters.getListLatLonCoverage(),
-                                     extractionParameters.getListDepthCoverage());
+    private void downloadSafe(RequestDownloadStatus requestDownloadStatus, double requestSizeInMB, ConfigService cs_) throws MotuException {
         // The request download is delegated to a download request manager
-        queueServerManager.execute(requestDownloadStatus, cs_, product_, extractionParameters, requestSizeInMB, requestId);
-    }
-
-    private double getRequestSizeInByte(ExtractionParameters extractionParameters, Product product_) throws MotuException {
-        return BLLManager.getInstance().getRequestManager().getProductDataSizeIntoByte(product_,
-                                                                                       extractionParameters.getListVar(),
-                                                                                       extractionParameters.getListTemporalCoverage(),
-                                                                                       extractionParameters.getListLatLonCoverage(),
-                                                                                       extractionParameters.getListDepthCoverage());
+        queueServerManager.execute(requestDownloadStatus, cs_, requestSizeInMB);
     }
 
     /**
@@ -407,41 +369,12 @@ public class BLLRequestManager implements IBLLRequestManager {
      * @throws MotuExceptionBase
      */
     @Override
-    public double getProductDataSizeIntoByte(Product product,
-                                             List<String> listVar,
-                                             List<String> listTemporalCoverage,
-                                             List<String> listLatLongCoverage,
-                                             List<String> listDepthCoverage) throws MotuException {
-        return DALManager.getInstance().getCatalogManager().getProductManager()
-                .getProductDataSizeRequest(product, listVar, listTemporalCoverage, listLatLongCoverage, listDepthCoverage);
+    public double getProductDataSizeIntoByte(RequestProduct requestProduct_) throws MotuException {
+        return getProductDataSizeIntoByte(new RequestDownloadStatus(-1L, requestProduct_));
     }
 
-    /**
-     * Hack due to the previous implementation of Motu. This method clear and update the dataset of the
-     * provided product in contemplation of a new calculation on the product. .
-     * 
-     * @param product the product to clear and update
-     * @param listVar the list of variable for the update
-     * @param listTemporalCoverage the list of temporal coverage for the update
-     * @param listLatLongCoverage the list of lat/long coverage for the update
-     * @param listDepthCoverage the list of depth coverage for the update
-     * @throws MotuException
-     */
-    private void clearAndUpdateProductDataSet(Product product,
-                                              List<String> listVar,
-                                              List<String> listTemporalCoverage,
-                                              List<String> listLatLongCoverage,
-                                              List<String> listDepthCoverage) throws MotuException {
-        try {
-            product.resetDataset();
-            product.updateVariables(listVar);
-            List<ExtractCriteria> criteria = new ArrayList<ExtractCriteria>();
-            ProductSizeRequest.createCriteriaList(listTemporalCoverage, listLatLongCoverage, listDepthCoverage, criteria);
-            product.updateCriteria(criteria);
-        } catch (MotuNotImplementedException | MotuInvalidDateException | MotuInvalidDepthException | MotuInvalidLatitudeException
-                | MotuInvalidLongitudeException e) {
-            throw new MotuException(ErrorType.SYSTEM, e);
-        }
+    private double getProductDataSizeIntoByte(RequestDownloadStatus rds_) throws MotuException {
+        return UnitUtils.toBytes(DALManager.getInstance().getCatalogManager().getProductManager().getProductDataSizeRequest(rds_));
     }
 
     /** {@inheritDoc} */

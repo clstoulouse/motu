@@ -804,7 +804,6 @@ public class NetCdfReader {
      * @throws MotuException the motu exception
      */
     public long open(boolean enhanceVar) throws MotuException {
-
         long d1 = System.nanoTime();
         long d2 = d1;
 
@@ -818,7 +817,6 @@ public class NetCdfReader {
         }
 
         try {
-            // this.netcdfDataset = NetcdfDataset.acquireDataset(locationData, null);
             this.netcdfDataset = acquireDataset(locationData, enhanceVar, null);
             controlAxes();
         } catch (Exception e) {
@@ -2444,11 +2442,6 @@ public class NetCdfReader {
      * @throws NetCdfAttributeException the neCdf attribute exception
      */
     public List<String> getNetcdfVarNameByStandardName(String standardName) throws NetCdfAttributeException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getVarNameByStandardName(String) - entering");
-            LOG.debug("getNetcdfVarNameByStandardName(String) - standardName=" + standardName);
-        }
-
         List<String> listVarName = new ArrayList<String>();
 
         List<Variable> listVariable = getVariables();
@@ -2476,9 +2469,6 @@ public class NetCdfReader {
             listVarName.add(standardName);
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getVarNameByStandardName(String) - exiting");
-        }
         return listVarName;
     }
 

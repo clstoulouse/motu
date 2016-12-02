@@ -27,4 +27,8 @@ public class TimeUtils {
      * 2. Daylight-savings "spring forward" or "fall back" days.
      */
     public static final long MILLISECS_PER_DAY = 24 * MILLISECS_PER_HOUR;
+
+    public static long nanoToMillisec(long nanoSec) {
+        return nanoSec / 1000000;
+    }
 }
