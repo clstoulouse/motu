@@ -156,7 +156,7 @@ public class USLRequestManager implements IUSLRequestManager {
         return actionInst;
     }
 
-    private void onException(Long requestId, AbstractAction actionInst, Exception e, HttpServletResponse response) throws MotuException {
+    public static void onException(Long requestId, AbstractAction actionInst, Exception e, HttpServletResponse response) throws MotuException {
         if (requestId != -1L) {
             BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.ERROR);
         }
@@ -184,7 +184,7 @@ public class USLRequestManager implements IUSLRequestManager {
         writeErrorMessage(actionCode, errorType, errMessage, response);
     }
 
-    private boolean isErrorTypeToLog(ErrorType errorType_) {
+    private static boolean isErrorTypeToLog(ErrorType errorType_) {
         boolean isErrorTypeToLog = false;
         switch (errorType_) {
         case SYSTEM:
@@ -198,7 +198,8 @@ public class USLRequestManager implements IUSLRequestManager {
         return isErrorTypeToLog;
     }
 
-    private void writeErrorMessage(String actionCode, ErrorType errorType, String errMessage, HttpServletResponse response_) throws MotuException {
+    private static void writeErrorMessage(String actionCode, ErrorType errorType, String errMessage, HttpServletResponse response_)
+            throws MotuException {
         response_.setContentType(AbstractAction.CONTENT_TYPE_HTML);
 
         Map<String, Object> velocityContext = new HashMap<String, Object>(2);

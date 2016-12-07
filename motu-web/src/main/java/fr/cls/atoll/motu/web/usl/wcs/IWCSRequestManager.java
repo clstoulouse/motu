@@ -3,6 +3,9 @@ package fr.cls.atoll.motu.web.usl.wcs;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
+
 /**
  * <br>
  * <br>
@@ -20,7 +23,9 @@ public interface IWCSRequestManager {
      * 
      * @param request
      * @param response
+     * @throws InvalidHTTPParameterException
+     * @throws MotuException
      */
-    void onNewRequest(HttpServletRequest request, HttpServletResponse response);
+    void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws MotuException, InvalidHTTPParameterException;
 
 }

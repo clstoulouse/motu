@@ -18,20 +18,22 @@ ${project.name} - v. ${project.version}
 	<!-- ############# MOTU   ################## -->
 	<!-- ####################################### -->
     <servlet>
-		<display-name>Motu</display-name>
 		<servlet-name>Motu</servlet-name>
 		<servlet-class>fr.cls.atoll.motu.web.servlet.MotuServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
 	<servlet>
-		<display-name>Motu</display-name>
 		<servlet-name>MotuWelcome</servlet-name>
 		<servlet-class>fr.cls.atoll.motu.web.servlet.MotuWelcomeServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
-
+	<servlet>
+		<servlet-name>MotuWCS</servlet-name>
+		<servlet-class>fr.cls.atoll.motu.web.servlet.MotuWCSServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
 	<!-- ############################################# -->
 	<!-- ############# Jolokia  (JMX Monitoring) ##### -->
 	<!-- ############################################# -->	
@@ -268,6 +270,11 @@ ${project.name} - v. ${project.version}
 	<servlet-mapping>
 		<servlet-name>Motu</servlet-name>
 		<url-pattern>/Motu</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>MotuWCS</servlet-name>
+		<url-pattern>/wcs</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
