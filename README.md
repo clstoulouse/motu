@@ -223,10 +223,72 @@ For more details about Eclipse launchers, refers to /motu-parent/README-eclipseL
 
 
 ## <a name="COMPILATION">Compilation</a>  
+
+Maven is used in order to compile Motu.  
+You have to set maven settings in order to compile.  
+Copy/paste content below in a new file settings.xml and adapt it to your information system by reading comments inside.
+
+```
+<settings>
+     <!-- localRepository: Path to the maven local repository used to store artifacts. (Default: ~/.m2/repository) --> 
+	<localRepository>J:/dev/cmems-cis-motu/testGitHub/m2/repository</localRepository>
+	
+	<!-- proxies: Optional. Set it if you need to connect to a proxy to access to Internet -->
+	<!-- 
+	<proxies>
+	   <proxy>
+		  <id>cls-proxy</id>
+		  <active>true</active>
+		  <protocol>http</protocol>
+		  <host></host>
+		  <port></port>
+		  <username></username>
+		  <password></password>
+		  <nonProxyHosts></nonProxyHosts>
+		</proxy>
+	  </proxies>
+	--> 
+	
+	<!-- Repositories used to download Maven artifacts in addition to https://repo.maven.apache.org 
+	     cls-to-ext-thirdparty : contains patched libraries and non public maven packaged libraries
+		 geotoolkit: contains geographical tools libraries
+	-->
+	<profiles>
+	   <profile>
+		 <id>profile-cls-cmems-motu</id>
+		 <repositories>
+			<repository>
+			  <id>cls-to-ext-thirdparty</id>
+			  <name>CLS maven central repository, used for CMEMS Motu project</name>
+			  <url>http://mvnrepo.cls.fr:8081/nexus/content/repositories/cls-to-ext-thirdparty</url>
+			</repository>
+			
+			<repository>
+			  <id>geotoolkit</id>
+			  <name>geotoolkit</name>
+			  <url>http://maven.geotoolkit.org/</url>
+			</repository>
+		</repositories>
+	   </profile>
+	 </profiles>
+</settings> 
+```
+
+
 This step is used to generate JAR (Java ARchives) and WAR (Web application ARchive).  
 ```
-cd /motu-parent  
-mvn clean install -Dmaven.test.skip=true  
+mkdir motu
+cd motu
+#Copy paste the content above inside settings.xml
+vi settings.xml
+git clone https://github.com/clstoulouse/motu.git
+cd motu/motu-parent  
+#This remove the parent artifact from pom.xml
+sed -i '6,10d' pom.xml
+mvn -s ../../settings.xml -gs ../../settings.xml -Pprofile-cls-cmems-motu -Dmaven.test.skip=true clean install
+...
+[INFO] BUILD SUCCESS
+...
 ```  
 
 All projects are built under target folder.  
@@ -234,6 +296,9 @@ The Motu war is built under "/motu-web/target/motu-web-X.Y.Z-classifier.war".
 It embeds all necessary jar libraries.  
 
 ## <a name="Packaging">Packaging</a>  
+This packaging process can be run only on CLS development environment.
+This is an helpful script used to packaged as tar.gz the different projects (products, distribution (server and client), configuration, themes).   
+So if you try to run it outside of CLS development environment, you will have to tune and remove many things to run it successfully (in particular all which is related to motu-config and motu-products).
 This step includes the compilation step. Once all projects are compiled, it groups all archives in a same folder in order to easy the final delivery.  
 You have to set ANT script inputs parameter before running it.  
 See /motu-distribution/build.xml header to get more details about inputs.  
