@@ -279,12 +279,19 @@ This step is used to generate JAR (Java ARchives) and WAR (Web application ARchi
 ```
 mkdir motu
 cd motu
+
 #Copy paste the content above inside settings.xml
 vi settings.xml
+
+#Get source code of the last Motu version
 git clone https://github.com/clstoulouse/motu.git
+
 cd motu/motu-parent  
-#This remove the parent artifact from pom.xml
+
+#This remove the maven parent artifact from pom.xml
 sed -i '6,10d' pom.xml
+
+#Compile the source code
 mvn -s ../../settings.xml -gs ../../settings.xml -Pprofile-cls-cmems-motu -Dmaven.test.skip=true clean install
 ...
 [INFO] BUILD SUCCESS
