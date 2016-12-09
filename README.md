@@ -478,7 +478,20 @@ Then update attributes below:
    * __motuConfig/configService__
       * __httpBaseRef__ Remove the attribute
 
-   
+### Upgrade DGF
+Resource URN attributes are not handled in the same way in Motu v3.  
+In Motu __v2.x__, URN attributes had values set with an ontology URL:  
+``` 
+<resource urn="http://purl.org/myocean/ontology/product/database#dataset-bal-analysis-forecast-phys-V2-dailymeans">
+```   
+
+In Motu __v3.x__, you have to upgrade URN attributes with only the value found after the # character:  
+``` 
+<resource urn="dataset-bal-analysis-forecast-phys-V2-dailymeans">
+```   
+  
+
+
 
 #### Log files
 In CMEMS-CIS context the log file motuQSlog.xml is stored in a specific folder in order to be shared.  
