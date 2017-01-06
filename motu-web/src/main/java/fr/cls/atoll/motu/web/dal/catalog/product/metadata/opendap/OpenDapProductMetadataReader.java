@@ -12,6 +12,7 @@ import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeNotFoundException;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
+import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -107,7 +108,63 @@ public class OpenDapProductMetadataReader {
 
         getOpendapVariableMetadata();
 
+        initGeoYAxisWithLatEquivalence();
+        initGeoXAxisWithLatEquivalence();
+        
         return productMetaData;
+    }
+    
+    /**
+     * Checks for geo Y axis with lat equivalence.
+     * 
+     * @param netCdfReader the net cdf reader
+     * 
+     * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable equivalence
+     *         (Variable whose name is 'longitude' and with at least two dimensions X/Y).
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void initGeoYAxisWithLatEquivalence() throws MotuException {
+        CoordinateAxis coord = productMetaData.getGeoYAxis();
+        if (coord == null) {
+            productMetaData.setGeoYAxisWithLatEquivalence(false);
+        }
+
+        ParameterMetaData parameterMetaData = productMetaData.findLatitudeIgnoreCase();
+
+        if (parameterMetaData == null) {
+            productMetaData.setGeoYAxisWithLatEquivalence(false);
+        } else {
+            List<Dimension> listDims = parameterMetaData.getDimensions();
+            productMetaData.setGeoYAxisWithLatEquivalence(netCdfReader.hasGeoXYDimensions(listDims));
+        }
+
+    }
+    
+    /**
+     * Checks for geo X axis with lon equivalence.
+     * 
+     * @param netCdfReader the net cdf reader
+     * 
+     * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable equivalence
+     *         (Variable whose name is 'longitude' and with at least two dimensions X/Y).
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void initGeoXAxisWithLatEquivalence() throws MotuException {
+        CoordinateAxis coord = productMetaData.getGeoXAxis();
+        if (coord == null) {
+            productMetaData.setGeoXAxisWithLatEquivalence( false );
+        }
+
+        ParameterMetaData parameterMetaData = productMetaData.findLongitudeIgnoreCase();
+
+        if (parameterMetaData == null) {
+            productMetaData.setGeoXAxisWithLatEquivalence(false);
+        } else {
+            List<Dimension> listDims = parameterMetaData.getDimensions();
+            productMetaData.setGeoXAxisWithLatEquivalence( netCdfReader.hasGeoXYDimensions(listDims));
+        }
     }
 
     /**
@@ -121,8 +178,6 @@ public class OpenDapProductMetadataReader {
         String unitLong;
         String standardName;
         String longName;
-
-        // openNetCdfReader();
 
         List<Variable> variables = netCdfReader.getVariables();
         for (Iterator<Variable> it = variables.iterator(); it.hasNext();) {

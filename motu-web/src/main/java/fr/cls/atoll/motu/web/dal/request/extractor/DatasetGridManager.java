@@ -444,7 +444,7 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
         getZRange();
 
         // Is this dataset a Geo X/Y with Lat/Lon whose dimensions depend on X/Y ?
-        boolean isGeoXY = getRequestDownloadStatus().getRequestProduct().getProduct().hasGeoXYAxisWithLonLatEquivalence();
+        boolean isGeoXY = getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().hasGeoXYAxisWithLonLatEquivalence();
 
         String locationData = getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReaderDataset().getLocation();
         NetCdfReader netCdfReader = new NetCdfReader(locationData, getRequestDownloadStatus().getRequestProduct().getProduct().isCasAuthentication());

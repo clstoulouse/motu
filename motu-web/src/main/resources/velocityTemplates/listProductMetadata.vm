@@ -94,10 +94,10 @@
 #macro(product_metadata_uk_printGeoCoverageTH)
 	#set($xLib = "")
 	#set($yLib = "")
-	#if ($product.hasGeoXAxisWithLonEquivalence())
+	#if ($productMetaData.hasGeoXAxisWithLonEquivalence())
 		#set($xLib = "(x)")	
 	#end
-	#if ($product.hasGeoYAxisWithLatEquivalence())
+	#if ($productMetaData.hasGeoYAxisWithLatEquivalence())
 		#set($yLib = "(y)")	
 	#end
 	<tr>
@@ -105,7 +105,7 @@
 		#if($productMetaData.hasLatAxis())
 			<th>${productMetaData.getLatAxis().getName()} $yLib</th>			
 		#elseif($productMetaData.hasGeoYAxis())
-			#if ($product.hasGeoYAxisWithLatEquivalence())
+			#if ($productMetaData.hasGeoYAxisWithLatEquivalence())
 				<th>${productMetaData.getGeoYAxisAsLat(${product}).getName()} $yLib</th>			
             #else				
 				<th>${productMetaData.getGeoYAxis().getName()}</th>			
@@ -139,16 +139,16 @@
 		<td><b>min. </b></td>		
 		##if lat axis and geoY axis with lat equivalence, don't get lat min. value, it's to slow 
 		## because in lat axis can have also time dimension.
-		#if(($productMetaData.hasLatAxis()) && (!$product.hasGeoYAxisWithLatEquivalence()))
+		#if(($productMetaData.hasLatAxis()) && (!$productMetaData.hasGeoYAxisWithLatEquivalence()))
 			<td class ="right">$productMetaData.getLatAxisMinValueAsString()</td>
 		#end
 		##if lon axis and geoX axis with lon equivalence, don't get lon min. value, it's to slow 
 		## because in lon axis can have also time dimension.
-		#if(($productMetaData.hasLonAxis()) && (!$product.hasGeoXAxisWithLonEquivalence()))
+		#if(($productMetaData.hasLonAxis()) && (!$productMetaData.hasGeoXAxisWithLonEquivalence()))
 			<td class ="right">$productMetaData.getLonAxisMinValueAsString()</td>
 		#end
 		#if($productMetaData.hasGeoYAxis())
-			#if ($product.hasGeoYAxisWithLatEquivalence())
+			#if ($productMetaData.hasGeoYAxisWithLatEquivalence())
 				<td class ="right">$productMetaData.getGeoYAxisMinValueAsLatString(${product})</td>
             #else				
 				<td class ="right">$productMetaData.getGeoYAxisMinValueAsString()</td>
@@ -157,7 +157,7 @@
 				<td class ="right">$productMetaData.getGeoBBoxLatMinAsString()</td>
 		#end
 		#if($productMetaData.hasGeoXAxis())
-			#if ($product.hasGeoXAxisWithLonEquivalence())
+			#if ($productMetaData.hasGeoXAxisWithLonEquivalence())
 				<td class ="right">$productMetaData.getGeoXAxisMinValueAsLonString(${product})</td>
             #else				
 				<td class ="right">$productMetaData.getGeoXAxisMinValueAsString()</td>
@@ -176,7 +176,7 @@
 		<td><b>max. </b></td>		
 		##if lat axis and geoY axis with lat equivalence, don't get lat max. value, it's to slow 
 		## because in lat axis can have also time dimension.
-		#if(($productMetaData.hasLatAxis()) && (!$product.hasGeoYAxisWithLatEquivalence()))
+		#if(($productMetaData.hasLatAxis()) && (!$productMetaData.hasGeoYAxisWithLatEquivalence()))
 			<td class ="right">$productMetaData.getLatAxisMaxValueAsString()</td>
 		#end
 		##if lon axis and geoX axis with lon equivalence, don't get lon max. value, it's to slow 
@@ -185,7 +185,7 @@
 			<td class ="right">$productMetaData.getLonAxisMaxValueAsString()</td>
 		#end
 		#if($productMetaData.hasGeoYAxis())
-			#if ($product.hasGeoYAxisWithLatEquivalence())
+			#if ($productMetaData.hasGeoYAxisWithLatEquivalence())
 				<td class ="right">$productMetaData.getGeoYAxisMaxValueAsLatString(${product})</td>
             #else				
 				<td class ="right">$productMetaData.getGeoYAxisMaxValueAsString()</td>
@@ -194,7 +194,7 @@
 				<td class ="right">$productMetaData.getGeoBBoxLatMaxAsString()</td>
 		#end
 		#if($productMetaData.hasGeoXAxis())
-			#if ($product.hasGeoXAxisWithLonEquivalence())
+			#if ($productMetaData.hasGeoXAxisWithLonEquivalence())
 				<td class ="right">$productMetaData.getGeoXAxisMaxValueAsLonString(${product})</td>
             #else				
 				<td class ="right">$productMetaData.getGeoXAxisMaxValueAsString()</td>

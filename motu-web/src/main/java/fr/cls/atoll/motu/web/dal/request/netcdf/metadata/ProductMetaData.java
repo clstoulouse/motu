@@ -61,7 +61,6 @@ import fr.cls.atoll.motu.web.dal.tds.ncss.model.Property;
 import fr.cls.atoll.motu.web.dal.tds.ncss.model.Variables;
 import ucar.ma2.MAMath;
 import ucar.ma2.MAMath.MinMax;
-import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -122,6 +121,12 @@ public class ProductMetaData {
     @SuppressWarnings("unused")
     public static final String TYPE_VALUE_GRID = "gridded product";
 
+
+    /** The list tds meta data property. */
+    private List<Property> listTDSMetaDataProperty = null;
+
+    private boolean hasGeoYAxisWithLatEquivalence;
+    
     /**
      * Default constructor.
      */
@@ -1536,8 +1541,8 @@ public class ProductMetaData {
      * 
      * @throws MotuException the motu exception
      */
-    public boolean hasGeoXYAxisWithLonLatEquivalence(NetCdfReader netCdfReader) throws MotuException {
-        return (hasGeoXAxisWithLonEquivalence(netCdfReader) && hasGeoYAxisWithLatEquivalence(netCdfReader));
+    public boolean hasGeoXYAxisWithLonLatEquivalence() {
+        return (hasGeoXAxisWithLonEquivalence() && hasGeoYAxisWithLatEquivalence());
     }
 
     /**
@@ -2019,57 +2024,18 @@ public class ProductMetaData {
     }
 
     /**
-     * Checks for geo X axis with lon equivalence.
-     * 
-     * @param netCdfReader the net cdf reader
-     * 
-     * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable equivalence
-     *         (Variable whose name is 'longitude' and with at least two dimensions X/Y).
-     * 
-     * @throws MotuException the motu exception
-     */
-    public boolean hasGeoXAxisWithLonEquivalence(NetCdfReader netCdfReader) throws MotuException {
-        CoordinateAxis coord = getGeoXAxis();
-        if (coord == null) {
-            return false;
-        }
-
-        ParameterMetaData parameterMetaData = findLongitudeIgnoreCase();
-
-        if (parameterMetaData == null) {
-            return false;
-        }
-
-        List<Dimension> listDims = parameterMetaData.getDimensions();
-
-        return netCdfReader.hasGeoXYDimensions(listDims);
-    }
-
-    /**
      * Checks for geo Y axis with lat equivalence.
      * 
-     * @param netCdfReader the net cdf reader
-     * 
      * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable equivalence
      *         (Variable whose name is 'longitude' and with at least two dimensions X/Y).
      * 
-     * @throws MotuException the motu exception
      */
-    public boolean hasGeoYAxisWithLatEquivalence(NetCdfReader netCdfReader) throws MotuException {
-        CoordinateAxis coord = getGeoYAxis();
-        if (coord == null) {
-            return false;
-        }
-
-        ParameterMetaData parameterMetaData = findLatitudeIgnoreCase();
-
-        if (parameterMetaData == null) {
-            return false;
-        }
-
-        List<Dimension> listDims = parameterMetaData.getDimensions();
-
-        return netCdfReader.hasGeoXYDimensions(listDims);
+    public boolean hasGeoYAxisWithLatEquivalence() {
+        return hasGeoYAxisWithLatEquivalence;
+    }
+    
+    public boolean hasGeoXAxisWithLonEquivalence() {
+        return hasGeoXAxisWithLonEquivalence;
     }
 
     /**
@@ -3173,6 +3139,8 @@ public class ProductMetaData {
     /** The variables vocabulary. */
     private Variables variablesVocabulary = null;
 
+    private boolean hasGeoXAxisWithLonEquivalence;
+
     /**
      * Gets the variables vocabulary.
      * 
@@ -3191,8 +3159,6 @@ public class ProductMetaData {
         this.variablesVocabulary = variablesVocabulary;
     }
 
-    /** The list tds meta data property. */
-    private List<Property> listTDSMetaDataProperty = null;
 
     /**
      * Gets the list tds meta data property.
@@ -3227,6 +3193,16 @@ public class ProductMetaData {
 
         listTDSMetaDataProperty.add(property);
     }
+
+    public void setGeoYAxisWithLatEquivalence(boolean hasGeoYDimensions) {
+        hasGeoYAxisWithLatEquivalence = hasGeoYDimensions;
+    }
+    
+    public void setGeoXAxisWithLatEquivalence(boolean hasGeoXDimensions) {
+        hasGeoXAxisWithLonEquivalence = hasGeoXDimensions;
+    }
+    
+    
 
 }
 // CSON: MultipleStringLiterals

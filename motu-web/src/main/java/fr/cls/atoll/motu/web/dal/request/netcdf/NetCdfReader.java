@@ -311,15 +311,6 @@ public class NetCdfReader {
     private final Map<String, Variable> orignalVariables = new HashMap<String, Variable>();
 
     /**
-     * Default constructor.
-     */
-    public NetCdfReader(boolean casAuthentication) {
-        init();
-        this.casAuthentication = casAuthentication;
-
-    }
-
-    /**
      * /** Constructor.
      * 
      * @param locationData NetCDF file name or Opendap location data (URL) to read.
@@ -417,7 +408,7 @@ public class NetCdfReader {
      * @return coordinate systems.
      */
     public List<CoordinateSystem> getCoordinateSystems() {
-        return this.netcdfDataset.getCoordinateSystems();
+        return getNetcdfDataset().getCoordinateSystems();
     }
 
     /**
@@ -425,15 +416,14 @@ public class NetCdfReader {
      * type (GeoX or GeoY).
      */
     private void controlAxes() {
-
-        List<CoordinateAxis> coordinateAxes = this.netcdfDataset.getCoordinateAxes();
+        List<CoordinateAxis> coordinateAxes = getNetcdfDataset().getCoordinateAxes();
         for (CoordinateAxis coord : coordinateAxes) {
             if (coord.getAxisType() != null) {
                 continue;
             }
 
             if (coord.getName().equalsIgnoreCase("x")) {
-                Dimension dim = this.netcdfDataset.findDimension(coord.getName());
+                Dimension dim = getNetcdfDataset().findDimension(coord.getName());
                 if (dim == null) {
                     continue;
                 }
@@ -441,7 +431,7 @@ public class NetCdfReader {
                 coord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoX.toString()));
             }
             if (coord.getName().equalsIgnoreCase("y")) {
-                Dimension dim = this.netcdfDataset.findDimension(coord.getName());
+                Dimension dim = getNetcdfDataset().findDimension(coord.getName());
                 if (dim == null) {
                     continue;
                 }
@@ -458,7 +448,7 @@ public class NetCdfReader {
      * @return coordinate systems.
      */
     public List<CoordinateAxis> getCoordinateAxes() {
-        return this.netcdfDataset.getCoordinateAxes();
+        return getNetcdfDataset().getCoordinateAxes();
     }
 
     /**
@@ -467,7 +457,7 @@ public class NetCdfReader {
      * @return the dimensions contained directly in the root group.
      */
     public List<Dimension> getDimensionList() {
-        return this.netcdfDataset.getRootGroup().getDimensions();
+        return getNetcdfDataset().getRootGroup().getDimensions();
     }
 
     /**
@@ -480,7 +470,7 @@ public class NetCdfReader {
      * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      */
     public Variable getRootVariable(String shortName) throws NetCdfVariableNotFoundException {
-        Variable var = this.netcdfDataset.getRootGroup().findVariable(shortName);
+        Variable var = getNetcdfDataset().getRootGroup().findVariable(shortName);
         if (var == null) {
             throw new NetCdfVariableNotFoundException(shortName);
         }
@@ -497,7 +487,7 @@ public class NetCdfReader {
      * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
      */
     public Variable getVariable(String fullName) throws NetCdfVariableNotFoundException {
-        return NetCdfReader.getVariable(fullName, this.netcdfDataset);
+        return NetCdfReader.getVariable(fullName, getNetcdfDataset());
     }
 
     /**
@@ -524,7 +514,7 @@ public class NetCdfReader {
      * @return all of the variables of the root group.
      */
     public List<Variable> getRootVariables() {
-        return this.netcdfDataset.getRootGroup().getVariables();
+        return getNetcdfDataset().getRootGroup().getVariables();
     }
 
     /**
@@ -544,7 +534,7 @@ public class NetCdfReader {
      * @return all of the variables of all groups.
      */
     public List<Variable> getVariables() {
-        return this.netcdfDataset.getVariables();
+        return getNetcdfDataset().getVariables();
     }
 
     /**
@@ -553,7 +543,7 @@ public class NetCdfReader {
      * @return global attributes (attributes of the root group).
      */
     public List<Attribute> getAttributes() {
-        return this.netcdfDataset.getRootGroup().getAttributes();
+        return getNetcdfDataset().getRootGroup().getAttributes();
     }
 
     /**
@@ -612,7 +602,7 @@ public class NetCdfReader {
      * @throws NetCdfAttributeNotFoundException if attribute is not found
      */
     public Attribute getAttribute(String attributeName) throws NetCdfAttributeNotFoundException {
-        Attribute attribute = this.netcdfDataset.getRootGroup().findAttributeIgnoreCase(attributeName);
+        Attribute attribute = getNetcdfDataset().getRootGroup().findAttributeIgnoreCase(attributeName);
 
         if (attribute == null) {
             throw new NetCdfAttributeNotFoundException(attributeName);
@@ -756,7 +746,7 @@ public class NetCdfReader {
      * @return the CoordinateAxis, or null if not found
      */
     public CoordinateAxis getCoordinateAxis(String fullName) {
-        return this.netcdfDataset.findCoordinateAxis(fullName);
+        return getNetcdfDataset().findCoordinateAxis(fullName);
     }
 
     /**
@@ -786,17 +776,6 @@ public class NetCdfReader {
     }
 
     /**
-     * Open.
-     * 
-     * @return the time (in nanoseconds) taken to open the dataset
-     * @throws MotuException the motu exception
-     */
-    public long open() throws MotuException {
-
-        return open(true);
-    }
-
-    /**
      * Opens the reader, if it is closed.
      *
      * @param enhanceVar the enhance var
@@ -817,7 +796,7 @@ public class NetCdfReader {
         }
 
         try {
-            this.netcdfDataset = acquireDataset(locationData, enhanceVar, null);
+            setNetcdfDataset( acquireDataset(locationData, enhanceVar, null) );
             controlAxes();
         } catch (Exception e) {
             throw new MotuException(
@@ -830,19 +809,19 @@ public class NetCdfReader {
             NetCdfCancelTask ct = new NetCdfCancelTask();
             CoordSysBuilderYXLatLon conv = new CoordSysBuilderYXLatLon();
 
-            conv.augmentDataset(netcdfDataset, ct);
+            conv.augmentDataset(getNetcdfDataset(), ct);
 
             if (conv.isAugmented()) {
                 if (ct.hasError()) {
                     throw new MotuException(ErrorType.NETCDF_LOADING, ct.getError());
                 }
 
-                conv.buildCoordinateSystems(netcdfDataset);
+                conv.buildCoordinateSystems(getNetcdfDataset());
             }
         }
 
         d2 = System.nanoTime();
-        return (d2 - d1);
+        return d2 - d1;
     }
 
     /**
@@ -1021,10 +1000,7 @@ public class NetCdfReader {
      * @return if the reader already closed?
      */
     public boolean isClosed() {
-        if (netcdfDataset == null) {
-            return true;
-        }
-        return netcdfDataset.isClosed();
+        return getNetcdfDataset() == null ? true : getNetcdfDataset().isClosed();
     }
 
     /**
@@ -1033,16 +1009,15 @@ public class NetCdfReader {
      * @throws MotuException the motu exception
      */
     public void close() throws MotuException {
-        if (netcdfDataset == null) {
-            return;
-        }
-        try {
-            if (!this.netcdfDataset.isClosed()) {
-                this.netcdfDataset.close();
-                this.netcdfDataset = null;
+        if (getNetcdfDataset() != null) {
+            try {
+                if (!getNetcdfDataset().isClosed()) {
+                    getNetcdfDataset().close();
+                    setNetcdfDataset(null);
+                }
+            } catch (Exception e) {
+                throw new MotuException(ErrorType.NETCDF_LOADING, String.format("Enable to close NetCDF reader - location: %s", locationData), e);
             }
-        } catch (Exception e) {
-            throw new MotuException(ErrorType.NETCDF_LOADING, String.format("Enable to close NetCDF reader - location: %s", locationData), e);
         }
     }
 
@@ -2071,8 +2046,7 @@ public class NetCdfReader {
      * @throws MotuException
      */
     public CoordinateAxis getCoordinateVariable(Dimension dim) throws MotuException {
-
-        return NetCdfReader.getCoordinateVariable(dim, this.netcdfDataset);
+        return NetCdfReader.getCoordinateVariable(dim, getNetcdfDataset());
     }
 
     /**
@@ -2120,7 +2094,10 @@ public class NetCdfReader {
      */
     @SuppressWarnings("unchecked")
     public boolean hasGeoXYDimensions(List<Dimension> listDims) throws MotuException {
-
+        //TODO SMA Hack to fix issue, because this boolean has to be in a cache
+        if( getNetcdfDataset()== null){
+            open(true);
+        }
         if (listDims.size() < 2) {
             return false;
         }
@@ -2288,7 +2265,7 @@ public class NetCdfReader {
      * @throws MotuException
      */
     public List<Variable> getCoordinateVariables(Variable var) throws MotuNotImplementedException, MotuException {
-        return NetCdfReader.getCoordinateVariables(var, this.netcdfDataset);
+        return NetCdfReader.getCoordinateVariables(var, getNetcdfDataset());
     }
 
     /**

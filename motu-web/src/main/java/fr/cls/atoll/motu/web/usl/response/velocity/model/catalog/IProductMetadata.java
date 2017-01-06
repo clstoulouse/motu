@@ -157,5 +157,9 @@ public interface IProductMetadata {
     String getGeoYAxisMaxValue();
 
     String getDepthUnits();
+    
+    boolean hasGeoYAxisWithLatEquivalence();
+    
+    boolean hasGeoXAxisWithLonEquivalence();
 
 }

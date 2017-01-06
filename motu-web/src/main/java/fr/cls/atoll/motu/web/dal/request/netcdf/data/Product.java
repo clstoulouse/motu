@@ -90,6 +90,30 @@ public class Product implements Comparator<Product> {
     private static final String[] UNUSED_VARIABLES_ATP = new String[] {
             "DeltaT", "Tracks", "NbPoints", "Cycles", "Longitudes", "Latitudes", "BeginDates", "DataIndexes", "GlobalCyclesList", };
 
+    /** The data files. */
+    private List<DataFile> dataFiles = null;
+    
+    /** URL to find the product (URL NetcdfSubsetService NCSS , ...). */
+    private String locationDataNCSS = "";
+    
+    /** URL to find the product (URL Opendap , ...). */
+    private String locationData = "";
+    
+    /**
+     * URL of a XML file that describes product's metadata. If there is no XML file, product's metadata will
+     * be loaded from netCDF file (dataset).
+     */
+    private String locationMetaData = "";
+    
+    /** The tds service type. */
+    private String tdsServiceType;
+    
+    /** NetCdfReader object. */
+    private NetCdfReader netCdfReader = null;
+
+    /** The product meta data. */
+    private ProductMetaData productMetaData;
+    
     /**
      * Default constructor.
      *
@@ -97,6 +121,7 @@ public class Product implements Comparator<Product> {
      */
     public Product(boolean casAuthentication) {
         this.casAuthentication = casAuthentication;
+        tdsServiceType = TDSCatalogLoader.TDS_OPENDAP_SERVICE;
     }
 
     /**
@@ -106,7 +131,6 @@ public class Product implements Comparator<Product> {
      * 
      * @see java.lang.Object#finalize()
      */
-
     @Override
     protected void finalize() throws MotuException {
         closeNetCdfReader();
@@ -117,8 +141,6 @@ public class Product implements Comparator<Product> {
         }
     }
 
-    /** The product meta data. */
-    private ProductMetaData productMetaData;
 
     /**
      * Getter of the property <tt>productMetaData</tt>.
@@ -343,7 +365,7 @@ public class Product implements Comparator<Product> {
         try {
             // Gets global attribute 'title' if not set.
             if (productMetaData.getTitle().equals("")) {
-                String title = netCdfReader.getStringValue("title");
+                String title = getNetCdfReader().getStringValue("title");
                 productMetaData.setTitle(title);
             }
 
@@ -359,7 +381,7 @@ public class Product implements Comparator<Product> {
         // Gets global attribute 'FileType'.
         try {
             // Gets global attribute 'FileType'.
-            String fileType = netCdfReader.getStringValue("filetype");
+            String fileType = getNetCdfReader().getStringValue("filetype");
             productMetaData.setProductCategory(fileType);
         } catch (NetCdfAttributeException e) {
             LOG.error("loadOpendapGlobalMetaData()", e);
@@ -602,7 +624,7 @@ public class Product implements Comparator<Product> {
 
         openNetCdfReader();
 
-        List<Variable> variables = netCdfReader.getVariables();
+        List<Variable> variables = getNetCdfReader().getVariables();
         for (Iterator<Variable> it = variables.iterator(); it.hasNext();) {
             Variable variable = it.next();
 
@@ -1050,44 +1072,6 @@ public class Product implements Comparator<Product> {
             LOG.debug("getZAxisDataAsDouble() - exiting");
         }
         return list;
-
-    }
-
-    /**
-     * Checks for geo XY axis with lon lat equivalence.
-     * 
-     * @return true if axes collection contains GeoX with Longitude equivalence and GeoY with Latitude
-     *         equivalenceaxes.
-     * 
-     * @throws MotuException the motu exception
-     */
-    public boolean hasGeoXYAxisWithLonLatEquivalence() throws MotuException {
-        return (hasGeoXAxisWithLonEquivalence() && hasGeoYAxisWithLatEquivalence());
-    }
-
-    /**
-     * Checks for geo X axis with lon equivalence.
-     * 
-     * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable equivalence
-     *         (Variable whose name is 'longitude' and with at least two dimensions X/Y).
-     * 
-     * @throws MotuException the motu exception
-     */
-    public boolean hasGeoXAxisWithLonEquivalence() throws MotuException {
-        return productMetaData.hasGeoXAxisWithLonEquivalence(this.netCdfReader);
-    }
-
-    /**
-     * Checks for geo Y axis with lat equivalence.
-     * 
-     * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable equivalence
-     *         (Variable whose name is 'longitude' and with at least two dimensions X/Y).
-     * 
-     * @throws MotuException the motu exception
-     */
-    public boolean hasGeoYAxisWithLatEquivalence() throws MotuException {
-        return productMetaData.hasGeoYAxisWithLatEquivalence(this.netCdfReader);
-
     }
 
     /**
@@ -1233,8 +1217,7 @@ public class Product implements Comparator<Product> {
         openNetCdfReader();
 
         // Loads global metadata from opendap
-        Array array = netCdfReader.getGrid(variable);
-        return array;
+        return getNetCdfReader().getGrid(variable);
     }
 
     /**
@@ -1333,9 +1316,6 @@ public class Product implements Comparator<Product> {
 
     }
 
-    /** The tds service type. */
-    private String tdsServiceType = TDSCatalogLoader.TDS_OPENDAP_SERVICE;
-
     /**
      * Gets the tds service type.
      * 
@@ -1353,9 +1333,6 @@ public class Product implements Comparator<Product> {
     public void setTdsServiceType(String tdsServiceType) {
         this.tdsServiceType = tdsServiceType;
     }
-
-    /** The data files. */
-    private List<DataFile> dataFiles = null;
 
     /**
      * Gets the data files.
@@ -1416,9 +1393,6 @@ public class Product implements Comparator<Product> {
 
     }
 
-    /** URL to find the product (URL NetcdfSubsetService NCSS , ...). */
-    private String locationDataNCSS = "";
-
     /**
      * Getter of the property <tt>location</tt>.
      * 
@@ -1440,9 +1414,6 @@ public class Product implements Comparator<Product> {
     public void setLocationDataNCSS(String locationDataNCSS) {
         this.locationDataNCSS = locationDataNCSS;
     }
-
-    /** URL to find the product (URL Opendap , ...). */
-    private String locationData = "";
 
     /**
      * Getter of the property <tt>location</tt>.
@@ -1467,12 +1438,6 @@ public class Product implements Comparator<Product> {
     }
 
     /**
-     * URL of a XML file that describes product's metadata. If there is no XML file, product's metadata will
-     * be loaded from netCDF file (dataset).
-     */
-    private String locationMetaData = "";
-
-    /**
      * Getter of the property <tt>locationMetaData</tt>.
      * 
      * @return Returns the locationMetaData.
@@ -1494,9 +1459,6 @@ public class Product implements Comparator<Product> {
         this.locationMetaData = locationMetaData;
     }
 
-    /** NetCdfReader object. */
-    private NetCdfReader netCdfReader = null;
-
     /**
      * Getter of the property <tt>netCdfReader</tt>.
      * 
@@ -1506,7 +1468,7 @@ public class Product implements Comparator<Product> {
      */
     public NetCdfReader getNetCdfReader() {
         if (netCdfReader == null) {
-            netCdfReader = new NetCdfReader(locationData, this.casAuthentication);
+            setNetCdfReader(new NetCdfReader(locationData, casAuthentication));
         }
         return this.netCdfReader;
     }
