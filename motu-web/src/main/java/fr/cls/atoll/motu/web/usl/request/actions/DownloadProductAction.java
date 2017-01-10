@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.util.AssertionHolder;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
@@ -27,6 +29,7 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.USLManager;
+import fr.cls.atoll.motu.web.usl.request.USLRequestManager;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.DepthHTTPParameterValidator;
@@ -92,6 +95,7 @@ import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
  */
 public class DownloadProductAction extends AbstractAuthorizedAction {
 
+    private static final Logger LOGGER = LogManager.getLogger();
     public static final String ACTION_NAME = "productdownload";
 
     private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
@@ -228,7 +232,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
             ProductResult pr = BLLManager.getInstance().getRequestManager().download(cs, requestProduct, this);
             if (pr.getRunningException() != null) {
                 setProductException(requestProduct, pr.getRunningException());
-                onError(mc, cs, cd, requestProduct);
+                onError(mc, cs, cd, requestProduct, pr.getRunningException());
             } else {
                 String productURL = BLLManager.getInstance().getCatalogManager().getProductManager()
                         .getProductDownloadHttpUrl(pr.getProductFileName());
@@ -271,8 +275,11 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      * 
      * @throws MotuException
      */
-    private void onError(MotuConfig mc_, ConfigService cs, CatalogData cd, RequestProduct reqProduct) throws MotuException {
+    private void onError(MotuConfig mc_, ConfigService cs, CatalogData cd, RequestProduct reqProduct, MotuException e_) throws MotuException {
         try {
+            if (e_ != null && USLRequestManager.isErrorTypeToLog(e_.getErrorType())) {
+                LOGGER.error(e_);
+            }
             ProductDownloadHomeAction.writeResponseWithVelocity(mc_, cs, cd, reqProduct, getResponse().getWriter());
         } catch (IOException e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
