@@ -447,7 +447,7 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
         boolean isGeoXY = getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().hasGeoXYAxisWithLonLatEquivalence();
 
         String locationData = getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReaderDataset().getLocation();
-        NetCdfReader netCdfReader = new NetCdfReader(locationData, getRequestDownloadStatus().getRequestProduct().getProduct().isCasAuthentication());
+        NetCdfReader netCdfReader = new NetCdfReader(locationData);
         getRequestDownloadStatus().getDataBaseExtractionTimeCounter().addReadingTime(netCdfReader.open(false));
 
         // GridDataset gds = new

@@ -12,14 +12,7 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
  * @author Pierre LACOSTE
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public interface IProductCacheManager {
-
-    void init();
-
-    /**
-     * .
-     */
-    void stop();
+public interface IProductCache {
 
     /**
      * .
@@ -28,4 +21,6 @@ public interface IProductCacheManager {
      * @return
      */
     Product getProduct(String productId);
+
+    void setProduct(Product product);
 }

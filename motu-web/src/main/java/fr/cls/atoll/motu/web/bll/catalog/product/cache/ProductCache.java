@@ -20,45 +20,12 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
  * @author Pierre LACOSTE
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class ProductCacheManager implements IProductCacheManager {
-
-    private static final Logger LOGGER = LogManager.getLogger();
-
-    private ProductCacheThread productCacheDaemonThread;
+public class ProductCache implements IProductCache {
 
     private List<Product> productList;
 
-    @Override
-    public void init() {
+    public ProductCache() {
         productList = Collections.synchronizedList(new ArrayList<Product>());
-
-        productCacheDaemonThread = new ProductCacheThread(this) {
-
-            /** {@inheritDoc} */
-            @Override
-            public void onThreadStopped() {
-                super.onThreadStopped();
-                synchronized (ProductCacheManager.this) {
-                    ProductCacheManager.this.notify();
-                }
-            }
-
-        };
-        productCacheDaemonThread.start();
-    }
-
-    @Override
-    public void stop() {
-        productCacheDaemonThread.setDaemonStoppingASAP(true);
-        synchronized (this) {
-            if (!productCacheDaemonThread.isDaemonStopped()) {
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {
-                    LOGGER.error("Error during wait while stopping daemon: " + productCacheDaemonThread.getName());
-                }
-            }
-        }
     }
 
     @Override
@@ -74,11 +41,7 @@ public class ProductCacheManager implements IProductCacheManager {
         return p;
     }
 
-    /**
-     * .
-     * 
-     * @param currentProduct
-     */
+    @Override
     public void setProduct(Product product) {
         Product pInList = getProduct(product.getProductId());
         if (pInList != null) {

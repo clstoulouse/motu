@@ -119,9 +119,8 @@ public class Product implements Comparator<Product> {
      *
      * @param casAuthentication the cas authentication
      */
-    public Product(boolean casAuthentication) {
-        this.casAuthentication = casAuthentication;
-        tdsServiceType = TDSCatalogLoader.TDS_OPENDAP_SERVICE;
+
+    public Product() {
     }
 
     /**
@@ -140,7 +139,6 @@ public class Product implements Comparator<Product> {
             throw new MotuException(ErrorType.SYSTEM, "Error in Product.finalize", e);
         }
     }
-
 
     /**
      * Getter of the property <tt>productMetaData</tt>.
@@ -162,27 +160,6 @@ public class Product implements Comparator<Product> {
      */
     public void setProductMetaData(ProductMetaData productMetaData) {
         this.productMetaData = productMetaData;
-    }
-
-    /** Does Service needs CAS authentication to access catalog resources and data. */
-    protected boolean casAuthentication = false;
-
-    /**
-     * Checks if is cas authentication.
-     * 
-     * @return true, if is cas authentication
-     */
-    public boolean isCasAuthentication() {
-        return casAuthentication;
-    }
-
-    /**
-     * Sets the cas authentication.
-     * 
-     * @param casAuthentication the new cas authentication
-     */
-    public void setCasAuthentication(boolean casAuthentication) {
-        this.casAuthentication = casAuthentication;
     }
 
     /**
@@ -1468,7 +1445,7 @@ public class Product implements Comparator<Product> {
      */
     public NetCdfReader getNetCdfReader() {
         if (netCdfReader == null) {
-            setNetCdfReader(new NetCdfReader(locationData, casAuthentication));
+            setNetCdfReader(new NetCdfReader(locationData));
         }
         return this.netCdfReader;
     }

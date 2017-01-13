@@ -2,12 +2,10 @@ package fr.cls.atoll.motu.web.bll.catalog;
 
 import fr.cls.atoll.motu.web.bll.catalog.product.BLLProductManager;
 import fr.cls.atoll.motu.web.bll.catalog.product.IBLLProductManager;
-import fr.cls.atoll.motu.web.bll.catalog.product.cache.IProductCacheManager;
-import fr.cls.atoll.motu.web.bll.catalog.product.cache.ProductCacheManager;
+import fr.cls.atoll.motu.web.bll.catalog.product.cache.CatalogAndProductCacheManager;
+import fr.cls.atoll.motu.web.bll.catalog.product.cache.ICatalogAndProductCacheManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
@@ -23,21 +21,12 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 public class BLLCatalogManager implements IBLLCatalogManager {
 
     private IBLLProductManager bllProductManager;
-    private IProductCacheManager productCacheManager;
+    
+    private ICatalogAndProductCacheManager cacheManager;
 
     public BLLCatalogManager() {
         bllProductManager = new BLLProductManager();
-        productCacheManager = new ProductCacheManager();
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @throws MotuException
-     */
-    @Override
-    public CatalogData getCatalogData(ConfigService cs) throws MotuException {
-        return DALManager.getInstance().getCatalogManager().getCatalogData(cs);
+        cacheManager = new CatalogAndProductCacheManager();
     }
 
     /** {@inheritDoc} */
@@ -49,28 +38,35 @@ public class BLLCatalogManager implements IBLLCatalogManager {
     /** {@inheritDoc} */
     @Override
     public void init() throws MotuException {
-        productCacheManager.init();
+        cacheManager.init();
     }
 
     /** {@inheritDoc} */
     @Override
     public void stop() {
-        productCacheManager.stop();
+        cacheManager.stop();
     }
 
     @Override
     public String getCatalogType(Product product) throws MotuException {
-        return DALManager.getInstance().getCatalogManager().getCatalogType(product);
+        return getCatalogAndProductCacheManager().getCatalogCache().getCatalogType(product);
+    }
+
+    @Override
+    public ICatalogAndProductCacheManager getCatalogAndProductCacheManager() {
+        return cacheManager;
     }
 
     @Override
     public String getCatalogType(ConfigService service) throws MotuException {
-        return DALManager.getInstance().getCatalogManager().getCatalogType(service);
-    }
+        String catalogType = service.getCatalog().getType().toUpperCase();
+        // This is for retrocompatibility with the motu version anterior to 3.0
+        // The catalog type FTP is left and only FILE is used even if FTP is set as catalog type
+        if ("FTP".equals(catalogType.toUpperCase())) {
+            catalogType = "FILE";
+        }
 
-    @Override
-    public IProductCacheManager getProductCacheManager() {
-        return productCacheManager;
+        return catalogType.toUpperCase();
     }
 
 }

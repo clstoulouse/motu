@@ -311,14 +311,21 @@ public class NetCdfReader {
     private final Map<String, Variable> orignalVariables = new HashMap<String, Variable>();
 
     /**
+
+     * Default constructor.
+     */
+    public NetCdfReader() {
+        init();
+    }
+
+    /**
      * /** Constructor.
      * 
      * @param locationData NetCDF file name or Opendap location data (URL) to read.
      */
-    public NetCdfReader(String locationData, boolean casAuthentication) {
+    public NetCdfReader(String locationData) {
         init();
         this.locationData = locationData;
-        this.casAuthentication = casAuthentication;
     }
 
     /**

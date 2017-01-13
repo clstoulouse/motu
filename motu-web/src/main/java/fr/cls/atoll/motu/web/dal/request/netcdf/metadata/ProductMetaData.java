@@ -121,23 +121,19 @@ public class ProductMetaData {
     @SuppressWarnings("unused")
     public static final String TYPE_VALUE_GRID = "gridded product";
 
-
     /** The list tds meta data property. */
     private List<Property> listTDSMetaDataProperty = null;
 
     private boolean hasGeoYAxisWithLatEquivalence;
-    
+
+    /** The tds url path. */
+    private String tdsUrlPath;
+
     /**
      * Default constructor.
      */
     public ProductMetaData() {
-        init();
-    }
-
-    /**
-     * Initialization.
-     */
-    private void init() {
+        setTdsUrlPath("");
     }
 
     /**
@@ -235,9 +231,6 @@ public class ProductMetaData {
             return productId;
         }
     }
-
-    /** The tds url path. */
-    private String tdsUrlPath = "";
 
     /**
      * Gets the tds url path.
@@ -2033,7 +2026,7 @@ public class ProductMetaData {
     public boolean hasGeoYAxisWithLatEquivalence() {
         return hasGeoYAxisWithLatEquivalence;
     }
-    
+
     public boolean hasGeoXAxisWithLonEquivalence() {
         return hasGeoXAxisWithLonEquivalence;
     }
@@ -3159,7 +3152,6 @@ public class ProductMetaData {
         this.variablesVocabulary = variablesVocabulary;
     }
 
-
     /**
      * Gets the list tds meta data property.
      * 
@@ -3197,12 +3189,10 @@ public class ProductMetaData {
     public void setGeoYAxisWithLatEquivalence(boolean hasGeoYDimensions) {
         hasGeoYAxisWithLatEquivalence = hasGeoYDimensions;
     }
-    
+
     public void setGeoXAxisWithLatEquivalence(boolean hasGeoXDimensions) {
         hasGeoXAxisWithLonEquivalence = hasGeoXDimensions;
     }
-    
-    
 
 }
 // CSON: MultipleStringLiterals

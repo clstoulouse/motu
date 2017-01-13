@@ -38,8 +38,8 @@ public class OpenDapProductMetadataReader {
     private String productId;
     private ProductMetaData productMetaData;
 
-    public OpenDapProductMetadataReader(String productId_, String locationData, boolean useSSO) {
-        netCdfReader = new NetCdfReader(locationData, useSSO);
+    public OpenDapProductMetadataReader(String productId_, String locationData) {
+        netCdfReader = new NetCdfReader(locationData);
         productId = productId_;
         productMetaData = new ProductMetaData();
     }

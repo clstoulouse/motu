@@ -1,7 +1,9 @@
 package fr.cls.atoll.motu.web.bll.catalog;
 
 import fr.cls.atoll.motu.web.bll.catalog.product.IBLLProductManager;
-import fr.cls.atoll.motu.web.bll.catalog.product.cache.IProductCacheManager;
+import fr.cls.atoll.motu.web.bll.catalog.product.cache.ICatalogAndProductCacheManager;
+import fr.cls.atoll.motu.web.bll.catalog.product.cache.ICatalogCache;
+import fr.cls.atoll.motu.web.bll.catalog.product.cache.IProductCache;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
@@ -22,27 +24,9 @@ public interface IBLLCatalogManager {
     /**
      * .
      * 
-     * @param cs
-     * 
-     * @return
-     * @throws MotuException
-     */
-    CatalogData getCatalogData(ConfigService cs) throws MotuException;
-
-    /**
-     * .
-     * 
      * @return
      */
     IBLLProductManager getProductManager();
-
-    /**
-     * 
-     * .
-     * 
-     * @return
-     */
-    IProductCacheManager getProductCacheManager();
 
     /**
      * .
@@ -71,4 +55,6 @@ public interface IBLLCatalogManager {
      * .
      */
     void stop();
+
+    ICatalogAndProductCacheManager getCatalogAndProductCacheManager();
 }

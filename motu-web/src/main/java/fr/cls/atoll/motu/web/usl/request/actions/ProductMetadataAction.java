@@ -72,7 +72,7 @@ public class ProductMetadataAction extends AbstractAuthorizedAction {
         String service = serviceHTTPParameterValidator.getParameterValueValidated();
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(service);
         if (checkConfigService(cs, serviceHTTPParameterValidator)) {
-            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
+            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache().getCatalog(cs.getName());
             if (cd != null) {
                 String productId = productHTTPParameterValidator.getParameterValueValidated();
                 Product p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(productId);

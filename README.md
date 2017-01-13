@@ -1265,11 +1265,23 @@ If this attribute is not set, the default format is "xml".
 ``` 
 
 ##### Log path
-In the dissemination unit, Motu share its log files with a central server.  
+In the dissemination unit, Motu shares its log files with a central server.  
 Log files have to be save on a public access folder.  
-Set the absolute path in the "fileName" and "filePattern" attributes. This path shall be serve by the frontal Apache HTTPd or Apache Tomcat.
-
-
+Set absolute path in "fileName" and "filePattern" attributes. This path shall be serve by the frontal Apache HTTPd or Apache Tomcat.
+  
+For example, if you want to share account transaction log files, you edit config/log4j.xml. 
+Update content below:  
+``` 
+<RollingFile name="log-file-infos.queue" fileName="${sys:motu-log-dir}/motuQSlog.xml"
+			filePattern="${sys:motu-log-dir}/motuQSlog.xml.%d{MM-yyyy}"
+```   
+ with:  
+``` 
+<RollingFile name="log-file-infos.queue" fileName="/opt/cmems-cis/motu/data/public/transaction/motuQSlog.xml"
+			filePattern="/opt/cmems-cis/motu/data/public/transaction/motuQSlog.xml.%d{MM-yyyy}"
+```   
+Note that both attributes __fileName__ and __filePattern__ have been updated.  
+Then the frontal [Apache HTTPd server](#InstallFrontal) has to serve this folder.
 
 
 

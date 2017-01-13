@@ -193,8 +193,7 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
         Product product = cd.getProducts(productId);
 
         if (product == null) {
-            product = new Product(cd.isCasAuthentication());
-
+            product = new Product();
         } else {
             newProduct = false;
         }

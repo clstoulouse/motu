@@ -72,7 +72,7 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
         MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
         if (checkConfigService(cs, serviceHTTPParameterValidator)) {
-            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
+            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache().getCatalog(cs.getName());
             if (cd != null) {
                 String productId = productHTTPParameterValidator.getParameterValueValidated();
                 Product p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(productId);

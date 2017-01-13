@@ -41,21 +41,4 @@ public interface IDALCatalogManager {
      */
     IDALProductManager getProductManager();
 
-    /**
-     * Return the catalog type of the provided product.
-     * 
-     * @param product
-     * @return
-     * @throws MotuException
-     */
-    String getCatalogType(Product product) throws MotuException;
-
-    /**
-     * Return the catalog type of the provided service.
-     * 
-     * @param service
-     * @return
-     * @throws MotuException
-     */
-    String getCatalogType(ConfigService service) throws MotuException;
 }

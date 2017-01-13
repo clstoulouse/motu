@@ -61,7 +61,7 @@ public class VelocityModelConverter {
         return convertToService(mc, cs, null);
     }
 
-    public static IService convertToService(final MotuConfig mc_, final ConfigService cs, final CatalogData c) {
+    public static IService convertToService(final MotuConfig mc_, final ConfigService cs, final CatalogData catalogData) {
         return new IService() {
 
             @Override
@@ -100,7 +100,7 @@ public class VelocityModelConverter {
 
             @Override
             public ICatalog getCatalog() {
-                return convertToICatalog(c);
+                return convertToICatalog(catalogData);
             }
 
             @Override

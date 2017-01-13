@@ -41,7 +41,6 @@ import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
-import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.dal.tds.ncss.model.GeospatialCoverage;
 import fr.cls.atoll.motu.web.dal.tds.ncss.model.SpatialRange;
 
@@ -60,10 +59,9 @@ public class CatalogData {
     /** Logger for this class. */
     private static final Logger LOG = LogManager.getLogger();
 
+    /** ServiceName XML tag element. */
+    public static final String XML_TAG_SERVICENAME = "serviceName";
     public static final String FTP_MISSING_FILE_REGEXP = "unknown.*";
-
-    /** Does Service needs CAS authentication to access catalog resources and data. */
-    private boolean casAuthentication = false;
 
     /** List contains lists of products from the catalog, group product of the same type/subtypes. */
     private List<List<Product>> listProductTypeDataset = null;
@@ -80,27 +78,20 @@ public class CatalogData {
     /** List contains each ath element to a Xml Tds catalog. */
     protected List<String> listCatalogRefSubPaths = null;
 
-    /** URL where the catalog is stored. */
-    private String urlSite = "";
-
     /** The products map. Key is product tds url path */
     private Map<String, Product> productsByTdsUrlMap;
 
     /** The current product sub-types. */
     private List<String> currentProductSubTypes;
 
-    /** The current product metadata. */
-    private ProductMetaData currentProductMetaData;
-
     /** The catalog title. */
     private String title = "";
+    /** URL where the catalog is stored. */
+    private String urlSite = "";
 
     private boolean loadTDSExtraMetadata = false;
 
     private String currentProductType = "";
-
-    private Product currentProduct;
-
     private GeospatialCoverage currentGeospatialCoverage;
 
     /**
@@ -172,9 +163,6 @@ public class CatalogData {
 
     }
 
-    /** ServiceName XML tag element. */
-    static public final String XML_TAG_SERVICENAME = "serviceName";
-
     /**
      * Default constructor.
      */
@@ -185,7 +173,7 @@ public class CatalogData {
         productsLoaded = new HashSet<String>();
         listProductTypeDataset = new ArrayList<List<Product>>();
         productsMap = new HashMap<String, Product>();
-        productsByTdsUrlMap = new HashMap<String, Product>();
+        setProductsByTdsUrl(new HashMap<String, Product>());
     }
 
     /**
@@ -195,14 +183,12 @@ public class CatalogData {
      * @return the matcher
      */
     public static Matcher matchFTPMissingFile(String name) {
-
         Pattern pattern = Pattern.compile(CatalogData.FTP_MISSING_FILE_REGEXP);
         Matcher matcher = pattern.matcher(name);
         if (!(matcher.find())) {
             return null;
         }
         return matcher;
-
     }
 
     /**
@@ -277,15 +263,6 @@ public class CatalogData {
     }
 
     /**
-     * Initialize product's collection.
-     * 
-     * @param catalogLocation URL of a XML file containing the catalog.
-     */
-    public void listProducts(String catalogLocation) {
-
-    }
-
-    /**
      * Gets the title.
      * 
      * @return the title
@@ -306,50 +283,6 @@ public class CatalogData {
      */
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    /**
-     * Gets the current product.
-     * 
-     * @return the currentProduct.
-     * 
-     * @uml.property name="currentProduct"
-     */
-    public Product getCurrentProduct() {
-        return this.currentProduct;
-    }
-
-    /**
-     * Sets the current product.
-     * 
-     * @param currentProduct the currentProduct to set.
-     * 
-     * @uml.property name="currentProduct"
-     */
-    public void setCurrentProduct(Product currentProduct) {
-        this.currentProduct = currentProduct;
-    }
-
-    /**
-     * Gets the current product meta data.
-     * 
-     * @return the currentProductMetaData
-     * 
-     * @uml.property name="currentProductMetaData"
-     */
-    public ProductMetaData getCurrentProductMetaData() {
-        return this.currentProductMetaData;
-    }
-
-    /**
-     * Sets the current product meta data.
-     * 
-     * @param currentProductMetaData the currentProductMetaData to set
-     * 
-     * @uml.property name="currentProductMetaData"
-     */
-    public void setCurrentProductMetaData(ProductMetaData currentProductMetaData) {
-        this.currentProductMetaData = currentProductMetaData;
     }
 
     /**
@@ -569,7 +502,7 @@ public class CatalogData {
             return null;
         }
 
-        this.productsByTdsUrlMap.clear();
+        this.getProductsByTdsUrl().clear();
         return this.productsMap.remove(key);
     }
 
@@ -580,7 +513,7 @@ public class CatalogData {
      * @uml.property name="products"
      */
     public void clearProducts() {
-        this.productsByTdsUrlMap.clear();
+        this.getProductsByTdsUrl().clear();
         this.productsMap.clear();
     }
 
@@ -600,10 +533,7 @@ public class CatalogData {
      * @return the products by tds url map
      */
     public Product getProductsByTdsUrl(String key) {
-        if (key == null) {
-            return null;
-        }
-        return this.productsByTdsUrlMap.get(key.trim());
+        return key == null ? null : this.getProductsByTdsUrl().get(key.trim());
     }
 
     /**
@@ -639,24 +569,6 @@ public class CatalogData {
         } else {
             this.urlSite = urlSite;
         }
-    }
-
-    /**
-     * Checks if is cas authentication.
-     * 
-     * @return true, if is cas authentication
-     */
-    public boolean isCasAuthentication() {
-        return casAuthentication;
-    }
-
-    /**
-     * Sets the cas authentication.
-     * 
-     * @param casAuthentication the new cas authentication
-     */
-    public void setCasAuthentication(boolean casAuthentication) {
-        this.casAuthentication = casAuthentication;
     }
 
     public Set<String> getProductsLoaded() {

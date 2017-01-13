@@ -82,42 +82,4 @@ public class DALCatalogManager implements IDALCatalogManager {
         return dalProductManager;
     }
 
-    @Override
-    public String getCatalogType(Product product) throws MotuException {
-        ConfigService serviceFound = null;
-
-        String locationData = product.getLocationData();
-
-        if (!StringUtils.isNullOrEmpty(locationData)) {
-            for (ConfigService c : BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService()) {
-                CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(c);
-                if (cd != null) {
-                    Map<String, Product> products = cd.getProducts();
-                    for (Map.Entry<String, Product> currentProduct : products.entrySet()) {
-                        if (currentProduct.getValue().getProductId().equals(product.getProductId())) {
-                            serviceFound = c;
-                            break;
-                        }
-                    }
-                    if (serviceFound != null) {
-                        break;
-                    }
-                }
-            }
-        }
-        return getCatalogType(serviceFound);
-    }
-
-    @Override
-    public String getCatalogType(ConfigService service) throws MotuException {
-        String catalogType = service.getCatalog().getType().toUpperCase();
-        // This is for retrocompatibility with the motu version anterior to 3.0
-        // The catalog type FTP is left and only FILE is used even if FTP is set as catalog type
-        if ("FTP".equals(catalogType.toUpperCase())) {
-            catalogType = "FILE";
-        }
-
-        return catalogType.toUpperCase();
-    }
-
 }
