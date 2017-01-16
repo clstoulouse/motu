@@ -87,7 +87,7 @@ public class BLLVersionManager implements IBLLVersionManager {
         if (StringUtils.isNullOrEmpty(httpBaseRef) || httpBaseRef.equalsIgnoreCase(".")) {
             return null;
         } else {
-            return httpBaseRef + "/version-static-files.txt";
+            return httpBaseRef + "/version-static-files.js";
         }
     }
 
