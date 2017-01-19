@@ -83,7 +83,7 @@ public class CatalogAndProductCacheRefreshThread extends StoppableDaemonThread {
                     if (pmd != null) {
                         currentProduct.setProductMetaData(pmd);
                     }
-                    productCache.setProduct(currentProduct);
+                    productCache.setProduct(configService.getName(), currentProduct);
                 }
             } else {
                 LOGGER.error("Unable to read catalog data for config service " + configService.getName());

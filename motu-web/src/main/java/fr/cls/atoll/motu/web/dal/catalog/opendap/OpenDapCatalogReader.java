@@ -61,7 +61,7 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
 
             for (Iterator<Object> it = list.iterator(); it.hasNext();) {
                 Object o = it.next();
-                if (o != null&& o instanceof Dataset) {
+                if (o != null && o instanceof Dataset) {
                     catalogData.setCurrentProductType("");
                     catalogData.getSameProductTypeDataset().clear();
 
@@ -74,7 +74,7 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
             }
 
             // Remove products that are not anymore in the catalog
-            catalogData.productsKeySet().retainAll(catalogData.getProductsLoaded());
+            catalogData.getProducts().keySet().retainAll(catalogData.getProductsLoaded());
 
             return catalogData;
         } catch (Exception e) {
@@ -97,7 +97,7 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
 
         // When Url path of the dataset is not null or not empty,
         // we are at the last level --> Create Product and add to the list.
-        if ( fr.cls.atoll.motu.web.common.utils.StringUtils.isNullOrEmpty( dataset.getUrlPath() ) )  {
+        if (fr.cls.atoll.motu.web.common.utils.StringUtils.isNullOrEmpty(dataset.getUrlPath())) {
             initializeProductFromOpendap(dataset, catalogData);
             return;
         }
@@ -106,7 +106,7 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
         // level 0)
         // - the product sub-type, if not top level product
         // (type or sub-type correspond to the dataser name)
-        if ( fr.cls.atoll.motu.web.common.utils.StringUtils.isNullOrEmpty(catalogData.getCurrentProductType()) ) {
+        if (fr.cls.atoll.motu.web.common.utils.StringUtils.isNullOrEmpty(catalogData.getCurrentProductType())) {
             catalogData.setCurrentProductType(dataset.getName());
         } else {
             catalogData.getCurrentProductSubTypes().add(dataset.getName());
@@ -120,7 +120,7 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
                 loadOpendapProducts((Dataset) o, catalogData);
             }
         }
-        if (! catalogData.getSameProductTypeDataset().isEmpty()) {
+        if (!catalogData.getSameProductTypeDataset().isEmpty()) {
             catalogData.getListProductTypeDataset().add(catalogData.getSameProductTypeDataset());
             catalogData.getSameProductTypeDataset().clear();
         }

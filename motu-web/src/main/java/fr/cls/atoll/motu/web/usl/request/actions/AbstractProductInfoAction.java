@@ -144,7 +144,7 @@ public abstract class AbstractProductInfoAction extends AbstractAction {
             p = BLLManager.getInstance().getCatalogManager().getProductManager().getProductFromLocation(BLLManager.getInstance().getCatalogManager()
                     .getProductManager().datasetIdFromProductLocation(locationData));
         } else if (!AbstractHTTPParameterValidator.EMPTY_VALUE.equals(serviceName) && !StringUtils.isNullOrEmpty(productId)) {
-            p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(StringUtils.getDataSetName(productId));
+            p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(serviceName, StringUtils.getDataSetName(productId));
         }
 
         return p;

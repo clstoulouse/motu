@@ -183,10 +183,11 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
         if (checkConfigService(cs, serviceHTTPParameterValidator)) {
-            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache().getCatalog(cs.getName());
+            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache()
+                    .getCatalog(cs.getName());
             if (cd != null) {
                 String productId = productHTTPParameterValidator.getParameterValueValidated();
-                Product p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(productId);
+                Product p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(cs.getName(), productId);
                 if (checkProduct(p, productId)) {
                     RequestProduct rp = new RequestProduct(p, createExtractionParameters());
                     downloadProduct(mc, cs, cd, rp);
@@ -214,8 +215,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      * 
      * @throws MotuException
      */
-    private void downloadProduct(MotuConfig mc, ConfigService cs, CatalogData cd, RequestProduct requestProduct)
-            throws MotuException {
+    private void downloadProduct(MotuConfig mc, ConfigService cs, CatalogData cd, RequestProduct requestProduct) throws MotuException {
         String mode = modeHTTPParameterValidator.getParameterValueValidated();
 
         if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_STATUS)) {
@@ -238,8 +238,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
             }
         }
     }
-    
-    private void onAsynchronousMode(ConfigService cs, RequestProduct requestProduct) throws MotuException{
+
+    private void onAsynchronousMode(ConfigService cs, RequestProduct requestProduct) throws MotuException {
         long requestId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(cs, requestProduct, this);
         try {
             getResponse().setContentType(CONTENT_TYPE_XML);
@@ -249,16 +249,16 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
             throw new MotuException(ErrorType.SYSTEM, "Error while writing HTTP response ", e);
         }
     }
-    
-    private void onSynchronousRedirectMode(String productURL) throws MotuException{
+
+    private void onSynchronousRedirectMode(String productURL) throws MotuException {
         try {
             getResponse().sendRedirect(productURL);
         } catch (IOException e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while sending download redirection PARAM_MODE_CONSOLE", e);
         }
     }
-    
-    private void onSynchronousURLMode(MotuConfig mc, ConfigService cs, CatalogData cd, RequestProduct requestProduct) throws MotuException{
+
+    private void onSynchronousURLMode(MotuConfig mc, ConfigService cs, CatalogData cd, RequestProduct requestProduct) throws MotuException {
         try {
             ProductDownloadHomeAction.writeResponseWithVelocity(mc, cs, cd, requestProduct, getResponse().getWriter());
         } catch (IOException e) {

@@ -6,7 +6,6 @@ import fr.cls.atoll.motu.web.bll.catalog.product.cache.CatalogAndProductCacheMan
 import fr.cls.atoll.motu.web.bll.catalog.product.cache.ICatalogAndProductCacheManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 
 /**
  * <br>
@@ -21,7 +20,7 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 public class BLLCatalogManager implements IBLLCatalogManager {
 
     private IBLLProductManager bllProductManager;
-    
+
     private ICatalogAndProductCacheManager cacheManager;
 
     public BLLCatalogManager() {
@@ -45,11 +44,6 @@ public class BLLCatalogManager implements IBLLCatalogManager {
     @Override
     public void stop() {
         cacheManager.stop();
-    }
-
-    @Override
-    public String getCatalogType(Product product) throws MotuException {
-        return getCatalogAndProductCacheManager().getCatalogCache().getCatalogType(product);
     }
 
     @Override

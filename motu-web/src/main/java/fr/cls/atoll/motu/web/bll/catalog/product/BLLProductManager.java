@@ -23,14 +23,17 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 public class BLLProductManager implements IBLLProductManager {
 
     @Override
-    public Product getProduct(String productId) {
-        return BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getProductCache().getProduct(productId);
+    public Product getProduct(String configServiceName, String productId) {
+        return BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getProductCache().getProduct(configServiceName,
+                                                                                                                            productId);
     }
 
     @Override
     public Product getProductFromLocation(String configServiceCatalogName, String URLPath) throws MotuException {
         Product productFound = null;
+        ConfigService cFound = null;
         for (ConfigService c : BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService()) {
+            cFound = c;
             String curConfigServiceCatalogName = c.getCatalog().getName();
             if (curConfigServiceCatalogName.equals(configServiceCatalogName)) {
                 CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache()
@@ -52,14 +55,16 @@ public class BLLProductManager implements IBLLProductManager {
             }
         }
 
-        Product pWithMetadata = getProduct(productFound.getProductId());
+        Product pWithMetadata = getProduct(cFound.getName(), productFound.getProductId());
         return pWithMetadata != null ? pWithMetadata : productFound;
     }
 
     @Override
     public Product getProductFromLocation(String URLPath) throws MotuException {
         Product productFound = null;
+        ConfigService cFound = null;
         for (ConfigService c : BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService()) {
+            cFound = c;
             CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache()
                     .getCatalog(c.getName());
             if (cd != null) {
@@ -78,7 +83,7 @@ public class BLLProductManager implements IBLLProductManager {
             }
         }
 
-        Product pWithMetadata = getProduct(productFound.getProductId());
+        Product pWithMetadata = getProduct(cFound.getName(), productFound.getProductId());
         return pWithMetadata != null ? pWithMetadata : productFound;
     }
 

@@ -20,7 +20,7 @@ public interface IProductCache {
      * @param productId
      * @return
      */
-    Product getProduct(String productId);
+    Product getProduct(String configServiceName, String productId);
 
-    void setProduct(Product product);
+    void setProduct(String configServiceName, Product product);
 }

@@ -45,7 +45,7 @@ public class AbstractCatalogLoader {
     /**
      * Associates the specified value with the specified key in this map (optional operation).
      * 
-     * @param value value to be associated with the specified key.
+     * @param product_ value to be associated with the specified key.
      * @param key key with which the specified value is to be associated.
      * 
      * @return previous value associated with specified key, or <tt>null</tt>
@@ -53,17 +53,17 @@ public class AbstractCatalogLoader {
      * @see java.util.Map#put(Object,Object)
      * @uml.property name="products"
      */
-    protected Product putProducts(String key, Product value, CatalogData cd) {
+    protected Product putProducts(String key, Product product_, CatalogData cd) {
         if (key == null) {
             return null;
         }
 
-        if (value == null) {
+        if (product_ == null) {
             return null;
         }
 
-        cd.getProductsByTdsUrl().put(value.getTdsUrlPath(), value);
+        cd.getProductsByTdsUrl().put(product_.getTdsUrlPath(), product_);
 
-        return cd.getProducts().put(key.trim(), value);
+        return cd.getProducts().put(key.trim(), product_);
     }
 }

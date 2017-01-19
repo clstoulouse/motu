@@ -56,7 +56,8 @@ public class DALProductManager implements IDALProductManager {
      * @throws MotuNotImplementedException
      */
     protected void checkCatalogType(RequestDownloadStatus rds_) throws MotuException, MotuNotImplementedException {
-        String catalogType = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache().getCatalogType(rds_.getRequestProduct().getProduct());
+        String catalogType = BLLManager.getInstance().getCatalogManager().getCatalogType(BLLManager.getInstance().getConfigManager()
+                .getConfigService(rds_.getRequestProduct().getExtractionParameters().getServiceName()));
         if (catalogType.toUpperCase().equals("FILE")) {
             long d1 = System.nanoTime();
             long d2 = System.nanoTime();

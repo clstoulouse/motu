@@ -75,7 +75,7 @@ public class ProductDownloadHomeAction extends AbstractAuthorizedAction {
             CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache().getCatalog(cs.getName());
             if (cd != null) {
                 String productId = productHTTPParameterValidator.getParameterValueValidated();
-                Product p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(productId);
+                Product p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(cs.getName(), productId);
                 if (checkProduct(p, productId)) {
                     try {
                         RequestProduct rp = new RequestProduct(p);

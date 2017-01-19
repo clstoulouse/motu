@@ -57,6 +57,6 @@ public interface IBLLProductManager {
      * @param productId
      * @return
      */
-    Product getProduct(String productId);
+    Product getProduct(String configServiceName, String productId);
 
 }
