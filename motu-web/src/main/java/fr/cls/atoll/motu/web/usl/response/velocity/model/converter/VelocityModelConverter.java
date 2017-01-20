@@ -261,12 +261,12 @@ public class VelocityModelConverter {
 
             @Override
             public boolean hasGeoXAxisWithLonEquivalence() {
-                    return requestProduct_.getProduct().getProductMetaData().hasGeoXAxisWithLonEquivalence();
+                return requestProduct_.getProduct().getProductMetaData().hasGeoXAxisWithLonEquivalence();
             }
 
             @Override
             public boolean hasGeoYAxisWithLatEquivalence() {
-                    return requestProduct_.getProduct().getProductMetaData().hasGeoYAxisWithLatEquivalence();
+                return requestProduct_.getProduct().getProductMetaData().hasGeoYAxisWithLatEquivalence();
             }
 
             @Override
@@ -905,6 +905,11 @@ public class VelocityModelConverter {
             @Override
             public boolean hasGeoXAxisWithLonEquivalence() {
                 return productMetaData_.hasGeoXAxisWithLonEquivalence();
+            }
+
+            @Override
+            public String getProductType() {
+                return productMetaData_.getProductType();
             }
 
         };

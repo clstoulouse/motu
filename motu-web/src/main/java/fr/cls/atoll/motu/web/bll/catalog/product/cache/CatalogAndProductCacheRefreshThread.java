@@ -13,7 +13,6 @@ import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
-import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 
 /**
  * <br>
@@ -75,14 +74,15 @@ public class CatalogAndProductCacheRefreshThread extends StoppableDaemonThread {
                 for (Map.Entry<String, Product> currentProductEntry : products.entrySet()) {
                     Product currentProduct = currentProductEntry.getValue();
 
-                    ProductMetaData pmd = DALManager.getInstance().getCatalogManager().getProductManager()
-                            .getMetadata(BLLManager.getInstance().getCatalogManager().getCatalogType(configService),
-                                         currentProduct.getProductId(),
-                                         currentProduct.getLocationData());
+                    DALManager.getInstance().getCatalogManager().getProductManager()
+                            .updateMetadata(BLLManager.getInstance().getCatalogManager().getCatalogType(configService),
+                                            currentProduct.getProductId(),
+                                            currentProduct.getLocationData(),
+                                            currentProduct.getProductMetaData());
 
-                    if (pmd != null) {
-                        currentProduct.setProductMetaData(pmd);
-                    }
+                    // if (pmd != null) {
+                    // currentProduct.setProductMetaData(pmd);
+                    // }
                     productCache.setProduct(configService.getName(), currentProduct);
                 }
             } else {
