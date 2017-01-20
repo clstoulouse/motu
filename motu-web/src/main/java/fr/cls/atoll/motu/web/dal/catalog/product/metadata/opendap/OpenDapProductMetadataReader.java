@@ -36,12 +36,11 @@ public class OpenDapProductMetadataReader {
     /** NetCdfReader object. */
     private NetCdfReader netCdfReader = null;
     private String productId;
-    private ProductMetaData productMetaData;
 
     public OpenDapProductMetadataReader(String productId_, String locationData) {
         netCdfReader = new NetCdfReader(locationData);
         productId = productId_;
-        productMetaData = new ProductMetaData();
+
     }
 
     /**
@@ -53,25 +52,27 @@ public class OpenDapProductMetadataReader {
         return productId;
     }
 
+    public ProductMetaData loadMetaData() throws MotuException {
+        return loadMetaData(null);
+    }
+
     /**
      * Reads product global metadata from an (NetCDF file).
      * 
      * @throws MotuException the motu exception
      */
-    public ProductMetaData loadMetaData() throws MotuException {
-        productMetaData.setProductId(productId);
-
-        netCdfReader.open(true);
-
+    public ProductMetaData loadMetaData(ProductMetaData productMetaDataOnlyForUpdate) throws MotuException {
+        ProductMetaData productMetaData = productMetaDataOnlyForUpdate != null ? productMetaDataOnlyForUpdate : new ProductMetaData();
+        productMetaData.setProductId(getProductId());
         productMetaData.setTitle(getProductId());
 
+        netCdfReader.open(true);
         try {
             // Gets global attribute 'title' if not set.
             if (productMetaData.getTitle().equals("")) {
                 String title = netCdfReader.getStringValue("title");
                 productMetaData.setTitle(title);
             }
-
         } catch (Exception e) {
             throw new MotuException(ErrorType.LOADING_CATALOG, "Error in loadOpendapGlobalMetaData", e);
         }
@@ -106,14 +107,14 @@ public class OpenDapProductMetadataReader {
             productMetaData.setTimeCoverage(productMetaData.getTimeAxisMinValue(), productMetaData.getTimeAxisMaxValue());
         }
 
-        getOpendapVariableMetadata();
+        getOpendapVariableMetadata(productMetaData);
 
-        initGeoYAxisWithLatEquivalence();
-        initGeoXAxisWithLatEquivalence();
-        
+        initGeoYAxisWithLatEquivalence(productMetaData);
+        initGeoXAxisWithLatEquivalence(productMetaData);
+
         return productMetaData;
     }
-    
+
     /**
      * Checks for geo Y axis with lat equivalence.
      * 
@@ -124,7 +125,7 @@ public class OpenDapProductMetadataReader {
      * 
      * @throws MotuException the motu exception
      */
-    public void initGeoYAxisWithLatEquivalence() throws MotuException {
+    public void initGeoYAxisWithLatEquivalence(ProductMetaData productMetaData) throws MotuException {
         CoordinateAxis coord = productMetaData.getGeoYAxis();
         if (coord == null) {
             productMetaData.setGeoYAxisWithLatEquivalence(false);
@@ -140,7 +141,7 @@ public class OpenDapProductMetadataReader {
         }
 
     }
-    
+
     /**
      * Checks for geo X axis with lon equivalence.
      * 
@@ -151,10 +152,10 @@ public class OpenDapProductMetadataReader {
      * 
      * @throws MotuException the motu exception
      */
-    public void initGeoXAxisWithLatEquivalence() throws MotuException {
+    public void initGeoXAxisWithLatEquivalence(ProductMetaData productMetaData) throws MotuException {
         CoordinateAxis coord = productMetaData.getGeoXAxis();
         if (coord == null) {
-            productMetaData.setGeoXAxisWithLatEquivalence( false );
+            productMetaData.setGeoXAxisWithLatEquivalence(false);
         }
 
         ParameterMetaData parameterMetaData = productMetaData.findLongitudeIgnoreCase();
@@ -163,7 +164,7 @@ public class OpenDapProductMetadataReader {
             productMetaData.setGeoXAxisWithLatEquivalence(false);
         } else {
             List<Dimension> listDims = parameterMetaData.getDimensions();
-            productMetaData.setGeoXAxisWithLatEquivalence( netCdfReader.hasGeoXYDimensions(listDims));
+            productMetaData.setGeoXAxisWithLatEquivalence(netCdfReader.hasGeoXYDimensions(listDims));
         }
     }
 
@@ -173,7 +174,7 @@ public class OpenDapProductMetadataReader {
      * @return the opendap variable metadata
      * @throws MotuException the motu exception
      */
-    private void getOpendapVariableMetadata() throws MotuException {
+    private void getOpendapVariableMetadata(ProductMetaData productMetaData) throws MotuException {
         // Gets variables metadata.
         String unitLong;
         String standardName;
@@ -242,15 +243,6 @@ public class OpenDapProductMetadataReader {
             }
             productMetaData.putParameterMetaDatas(variable.getName(), parameterMetaData);
         }
-    }
-
-    /**
-     * Valeur de productMetaData.
-     * 
-     * @return la valeur.
-     */
-    public ProductMetaData getProductMetaData() {
-        return productMetaData;
     }
 
 }

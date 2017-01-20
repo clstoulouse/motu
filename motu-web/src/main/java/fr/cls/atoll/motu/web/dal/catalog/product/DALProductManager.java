@@ -69,4 +69,13 @@ public class DALProductManager implements IDALProductManager {
             rds_.getDataBaseExtractionTimeCounter().addReadingTime((d2 - d1));
         }
     }
+
+    @Override
+    public ProductMetaData updateMetadata(String catalogType, String productId, String locationData, ProductMetaData pmd) throws MotuException {
+        if (!"FILE".equals(catalogType.toUpperCase())) {
+            return new OpenDapProductMetadataReader(productId, locationData).loadMetaData(pmd);
+        } else {
+            return null;
+        }
+    }
 }

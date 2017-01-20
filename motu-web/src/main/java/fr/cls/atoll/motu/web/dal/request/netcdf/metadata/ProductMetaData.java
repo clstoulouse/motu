@@ -129,11 +129,15 @@ public class ProductMetaData {
     /** The tds url path. */
     private String tdsUrlPath;
 
+    /** Type of product. */
+    private String productType;
+
     /**
      * Default constructor.
      */
     public ProductMetaData() {
         setTdsUrlPath("");
+        setProductType("");
     }
 
     /**
@@ -219,14 +223,12 @@ public class ProductMetaData {
      * @return the product id encoded
      */
     public String getProductIdEncoded(String enc) {
-        String productId = this.getProductId();
-
-        if (StringUtils.isNullOrEmpty(productId)) {
+        if (StringUtils.isNullOrEmpty(getProductId())) {
             return "Unknown_product_Id";
         }
 
         try {
-            return URLEncoder.encode(productId, enc);
+            return URLEncoder.encode(getProductId(), enc);
         } catch (UnsupportedEncodingException e) {
             return productId;
         }
@@ -249,9 +251,6 @@ public class ProductMetaData {
     public void setTdsUrlPath(String tdsUrlPath) {
         this.tdsUrlPath = tdsUrlPath;
     }
-
-    /** Type of product. */
-    private String productType = "";
 
     /**
      * Getter of the property <tt>productType</tt>.

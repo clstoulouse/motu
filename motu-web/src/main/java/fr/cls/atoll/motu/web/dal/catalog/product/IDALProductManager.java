@@ -35,4 +35,6 @@ public interface IDALProductManager {
      * @throws MotuExceptionBase
      */
     double getProductDataSizeRequest(RequestDownloadStatus rds_) throws MotuException;
+
+    ProductMetaData updateMetadata(String catalogType, String productId, String locationData, ProductMetaData pmd) throws MotuException;
 }
