@@ -134,7 +134,7 @@ public class DescribeProductAction extends AbstractProductInfoAction {
 
     @Override
     protected Product getProduct() throws MotuException {
-        Product currentProduct = null;
+        Product currentProduct;
         String locationData = CommonHTTPParameters.getDataFromParameter(getRequest());
         String xmlFile = AbstractHTTPParameterValidator.EMPTY_VALUE.equalsIgnoreCase(xmlFileParameterValidator.getParameterValueValidated()) ? null
                 : xmlFileParameterValidator.getParameterValueValidated();
