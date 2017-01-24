@@ -74,16 +74,21 @@ public class CatalogAndProductCacheRefreshThread extends StoppableDaemonThread {
                 for (Map.Entry<String, Product> currentProductEntry : products.entrySet()) {
                     Product currentProduct = currentProductEntry.getValue();
 
-                    DALManager.getInstance().getCatalogManager().getProductManager()
-                            .updateMetadata(BLLManager.getInstance().getCatalogManager().getCatalogType(configService),
-                                            currentProduct.getProductId(),
-                                            currentProduct.getLocationData(),
-                                            currentProduct.getProductMetaData());
+                    try {
+                        DALManager.getInstance().getCatalogManager().getProductManager()
+                                .updateMetadata(BLLManager.getInstance().getCatalogManager().getCatalogType(configService),
+                                                currentProduct.getProductId(),
+                                                currentProduct.getLocationData(),
+                                                currentProduct.getProductMetaData());
 
-                    // if (pmd != null) {
-                    // currentProduct.setProductMetaData(pmd);
-                    // }
-                    productCache.setProduct(configService.getName(), currentProduct);
+                        // if (pmd != null) {
+                        // currentProduct.setProductMetaData(pmd);
+                        // }
+                        productCache.setProduct(configService.getName(), currentProduct);
+                    } catch (MotuException e) {
+                        LOGGER.error("Error during refresh of the describe product cache, config service=" + configService.getName() + ", productId="
+                                + currentProduct.getProductId(), e);
+                    }
                 }
             } else {
                 LOGGER.error("Unable to read catalog data for config service " + configService.getName());
