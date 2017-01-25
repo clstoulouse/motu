@@ -184,7 +184,7 @@ public class USLRequestManager implements IUSLRequestManager {
         writeErrorMessage(actionCode, errorType, errMessage, response);
     }
 
-    private boolean isErrorTypeToLog(ErrorType errorType_) {
+    public static boolean isErrorTypeToLog(ErrorType errorType_) {
         boolean isErrorTypeToLog = false;
         switch (errorType_) {
         case SYSTEM:

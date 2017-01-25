@@ -223,10 +223,79 @@ For more details about Eclipse launchers, refers to /motu-parent/README-eclipseL
 
 
 ## <a name="COMPILATION">Compilation</a>  
+
+Maven is used in order to compile Motu.  
+You have to set maven settings in order to compile.  
+Copy/paste content below in a new file settings.xml and adapt it to your information system by reading comments inside.
+
+```
+<settings>
+     <!-- localRepository: Path to the maven local repository used to store artifacts. (Default: ~/.m2/repository) --> 
+	<localRepository>J:/dev/cmems-cis-motu/testGitHub/m2/repository</localRepository>
+	
+	<!-- proxies: Optional. Set it if you need to connect to a proxy to access to Internet -->
+	<!-- 
+	<proxies>
+	   <proxy>
+		  <id>cls-proxy</id>
+		  <active>true</active>
+		  <protocol>http</protocol>
+		  <host></host>
+		  <port></port>
+		  <username></username>
+		  <password></password>
+		  <nonProxyHosts></nonProxyHosts>
+		</proxy>
+	  </proxies>
+	--> 
+	
+	<!-- Repositories used to download Maven artifacts in addition to https://repo.maven.apache.org 
+	     cls-to-ext-thirdparty : contains patched libraries and non public maven packaged libraries
+		 geotoolkit: contains geographical tools libraries
+	-->
+	<profiles>
+	   <profile>
+		 <id>profile-cls-cmems-motu</id>
+		 <repositories>
+			<repository>
+			  <id>cls-to-ext-thirdparty</id>
+			  <name>CLS maven central repository, used for CMEMS Motu project</name>
+			  <url>http://mvnrepo.cls.fr:8081/nexus/content/repositories/cls-to-ext-thirdparty</url>
+			</repository>
+			
+			<repository>
+			  <id>geotoolkit</id>
+			  <name>geotoolkit</name>
+			  <url>http://maven.geotoolkit.org/</url>
+			</repository>
+		</repositories>
+	   </profile>
+	 </profiles>
+</settings> 
+```
+
+
 This step is used to generate JAR (Java ARchives) and WAR (Web application ARchive).  
 ```
-cd /motu-parent  
-mvn clean install -Dmaven.test.skip=true  
+mkdir motu
+cd motu
+
+#Copy paste the content above inside settings.xml
+vi settings.xml
+
+#Get source code of the last Motu version
+git clone https://github.com/clstoulouse/motu.git
+
+cd motu/motu-parent  
+
+#This remove the maven parent artifact from pom.xml
+sed -i '6,10d' pom.xml
+
+#Compile the source code
+mvn -s ../../settings.xml -gs ../../settings.xml -Pprofile-cls-cmems-motu -Dmaven.test.skip=true clean install
+...
+[INFO] BUILD SUCCESS
+...
 ```  
 
 All projects are built under target folder.  
@@ -234,6 +303,9 @@ The Motu war is built under "/motu-web/target/motu-web-X.Y.Z-classifier.war".
 It embeds all necessary jar libraries.  
 
 ## <a name="Packaging">Packaging</a>  
+This packaging process can be run only on CLS development environment.
+This is an helpful script used to packaged as tar.gz the different projects (products, distribution (server and client), configuration, themes).   
+So if you try to run it outside of CLS development environment, you will have to tune and remove many things to run it successfully (in particular all which is related to motu-config and motu-products).
 This step includes the compilation step. Once all projects are compiled, it groups all archives in a same folder in order to easy the final delivery.  
 You have to set ANT script inputs parameter before running it.  
 See /motu-distribution/build.xml header to get more details about inputs.  
@@ -406,7 +478,20 @@ Then update attributes below:
    * __motuConfig/configService__
       * __httpBaseRef__ Remove the attribute
 
-   
+### Upgrade DGF
+Resource URN attributes are not handled in the same way in Motu v3.  
+In Motu __v2.x__, URN attributes had values set with an ontology URL:  
+``` 
+<resource urn="http://purl.org/myocean/ontology/product/database#dataset-bal-analysis-forecast-phys-V2-dailymeans">
+```   
+
+In Motu __v3.x__, you have to upgrade URN attributes with only the value found after the # character:  
+``` 
+<resource urn="dataset-bal-analysis-forecast-phys-V2-dailymeans">
+```   
+  
+
+
 
 #### Log files
 In CMEMS-CIS context the log file motuQSlog.xml is stored in a specific folder in order to be shared.  
@@ -1180,11 +1265,23 @@ If this attribute is not set, the default format is "xml".
 ``` 
 
 ##### Log path
-In the dissemination unit, Motu share its log files with a central server.  
+In the dissemination unit, Motu shares its log files with a central server.  
 Log files have to be save on a public access folder.  
-Set the absolute path in the "fileName" and "filePattern" attributes. This path shall be serve by the frontal Apache HTTPd or Apache Tomcat.
-
-
+Set absolute path in "fileName" and "filePattern" attributes. This path shall be serve by the frontal Apache HTTPd or Apache Tomcat.
+  
+For example, if you want to share account transaction log files, you edit config/log4j.xml. 
+Update content below:  
+``` 
+<RollingFile name="log-file-infos.queue" fileName="${sys:motu-log-dir}/motuQSlog.xml"
+			filePattern="${sys:motu-log-dir}/motuQSlog.xml.%d{MM-yyyy}"
+```   
+ with:  
+``` 
+<RollingFile name="log-file-infos.queue" fileName="/opt/cmems-cis/motu/data/public/transaction/motuQSlog.xml"
+			filePattern="/opt/cmems-cis/motu/data/public/transaction/motuQSlog.xml.%d{MM-yyyy}"
+```   
+Note that both attributes __fileName__ and __filePattern__ have been updated.  
+Then the frontal [Apache HTTPd server](#InstallFrontal) has to serve this folder.
 
 
 

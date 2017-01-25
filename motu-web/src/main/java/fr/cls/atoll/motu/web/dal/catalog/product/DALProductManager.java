@@ -1,11 +1,11 @@
 package fr.cls.atoll.motu.web.dal.catalog.product;
 
+import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
-import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.catalog.product.metadata.opendap.OpenDapProductMetadataReader;
 import fr.cls.atoll.motu.web.dal.request.extractor.DALDatasetManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
@@ -23,9 +23,9 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 public class DALProductManager implements IDALProductManager {
 
     @Override
-    public ProductMetaData getMetadata(String catalogType, String productId, String locationData, boolean useSSO) throws MotuException {
+    public ProductMetaData getMetadata(String catalogType, String productId, String locationData) throws MotuException {
         if (!"FILE".equals(catalogType.toUpperCase())) {
-            return new OpenDapProductMetadataReader(productId, locationData, useSSO).loadMetaData();
+            return new OpenDapProductMetadataReader(productId, locationData).loadMetaData();
         } else {
             return null;
         }
@@ -56,7 +56,8 @@ public class DALProductManager implements IDALProductManager {
      * @throws MotuNotImplementedException
      */
     protected void checkCatalogType(RequestDownloadStatus rds_) throws MotuException, MotuNotImplementedException {
-        String catalogType = DALManager.getInstance().getCatalogManager().getCatalogType(rds_.getRequestProduct().getProduct());
+        String catalogType = BLLManager.getInstance().getCatalogManager().getCatalogType(BLLManager.getInstance().getConfigManager()
+                .getConfigService(rds_.getRequestProduct().getExtractionParameters().getServiceName()));
         if (catalogType.toUpperCase().equals("FILE")) {
             long d1 = System.nanoTime();
             long d2 = System.nanoTime();
@@ -66,6 +67,15 @@ public class DALProductManager implements IDALProductManager {
             // Add time here (after updateFiles), because before updateFiles
             // dataset is not still create
             rds_.getDataBaseExtractionTimeCounter().addReadingTime((d2 - d1));
+        }
+    }
+
+    @Override
+    public ProductMetaData updateMetadata(String catalogType, String productId, String locationData, ProductMetaData pmd) throws MotuException {
+        if (!"FILE".equals(catalogType.toUpperCase())) {
+            return new OpenDapProductMetadataReader(productId, locationData).loadMetaData(pmd);
+        } else {
+            return null;
         }
     }
 }

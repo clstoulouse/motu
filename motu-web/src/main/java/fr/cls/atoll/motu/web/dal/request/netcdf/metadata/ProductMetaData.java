@@ -61,7 +61,6 @@ import fr.cls.atoll.motu.web.dal.tds.ncss.model.Property;
 import fr.cls.atoll.motu.web.dal.tds.ncss.model.Variables;
 import ucar.ma2.MAMath;
 import ucar.ma2.MAMath.MinMax;
-import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -122,17 +121,23 @@ public class ProductMetaData {
     @SuppressWarnings("unused")
     public static final String TYPE_VALUE_GRID = "gridded product";
 
+    /** The list tds meta data property. */
+    private List<Property> listTDSMetaDataProperty = null;
+
+    private boolean hasGeoYAxisWithLatEquivalence;
+
+    /** The tds url path. */
+    private String tdsUrlPath;
+
+    /** Type of product. */
+    private String productType;
+
     /**
      * Default constructor.
      */
     public ProductMetaData() {
-        init();
-    }
-
-    /**
-     * Initialization.
-     */
-    private void init() {
+        setTdsUrlPath("");
+        setProductType("");
     }
 
     /**
@@ -218,21 +223,16 @@ public class ProductMetaData {
      * @return the product id encoded
      */
     public String getProductIdEncoded(String enc) {
-        String productId = this.getProductId();
-
-        if (StringUtils.isNullOrEmpty(productId)) {
+        if (StringUtils.isNullOrEmpty(getProductId())) {
             return "Unknown_product_Id";
         }
 
         try {
-            return URLEncoder.encode(productId, enc);
+            return URLEncoder.encode(getProductId(), enc);
         } catch (UnsupportedEncodingException e) {
             return productId;
         }
     }
-
-    /** The tds url path. */
-    private String tdsUrlPath = "";
 
     /**
      * Gets the tds url path.
@@ -251,9 +251,6 @@ public class ProductMetaData {
     public void setTdsUrlPath(String tdsUrlPath) {
         this.tdsUrlPath = tdsUrlPath;
     }
-
-    /** Type of product. */
-    private String productType = "";
 
     /**
      * Getter of the property <tt>productType</tt>.
@@ -1536,8 +1533,8 @@ public class ProductMetaData {
      * 
      * @throws MotuException the motu exception
      */
-    public boolean hasGeoXYAxisWithLonLatEquivalence(NetCdfReader netCdfReader) throws MotuException {
-        return (hasGeoXAxisWithLonEquivalence(netCdfReader) && hasGeoYAxisWithLatEquivalence(netCdfReader));
+    public boolean hasGeoXYAxisWithLonLatEquivalence() {
+        return (hasGeoXAxisWithLonEquivalence() && hasGeoYAxisWithLatEquivalence());
     }
 
     /**
@@ -2019,57 +2016,18 @@ public class ProductMetaData {
     }
 
     /**
-     * Checks for geo X axis with lon equivalence.
-     * 
-     * @param netCdfReader the net cdf reader
-     * 
-     * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable equivalence
-     *         (Variable whose name is 'longitude' and with at least two dimensions X/Y).
-     * 
-     * @throws MotuException the motu exception
-     */
-    public boolean hasGeoXAxisWithLonEquivalence(NetCdfReader netCdfReader) throws MotuException {
-        CoordinateAxis coord = getGeoXAxis();
-        if (coord == null) {
-            return false;
-        }
-
-        ParameterMetaData parameterMetaData = findLongitudeIgnoreCase();
-
-        if (parameterMetaData == null) {
-            return false;
-        }
-
-        List<Dimension> listDims = parameterMetaData.getDimensions();
-
-        return netCdfReader.hasGeoXYDimensions(listDims);
-    }
-
-    /**
      * Checks for geo Y axis with lat equivalence.
      * 
-     * @param netCdfReader the net cdf reader
-     * 
      * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable equivalence
      *         (Variable whose name is 'longitude' and with at least two dimensions X/Y).
      * 
-     * @throws MotuException the motu exception
      */
-    public boolean hasGeoYAxisWithLatEquivalence(NetCdfReader netCdfReader) throws MotuException {
-        CoordinateAxis coord = getGeoYAxis();
-        if (coord == null) {
-            return false;
-        }
+    public boolean hasGeoYAxisWithLatEquivalence() {
+        return hasGeoYAxisWithLatEquivalence;
+    }
 
-        ParameterMetaData parameterMetaData = findLatitudeIgnoreCase();
-
-        if (parameterMetaData == null) {
-            return false;
-        }
-
-        List<Dimension> listDims = parameterMetaData.getDimensions();
-
-        return netCdfReader.hasGeoXYDimensions(listDims);
+    public boolean hasGeoXAxisWithLonEquivalence() {
+        return hasGeoXAxisWithLonEquivalence;
     }
 
     /**
@@ -3173,6 +3131,8 @@ public class ProductMetaData {
     /** The variables vocabulary. */
     private Variables variablesVocabulary = null;
 
+    private boolean hasGeoXAxisWithLonEquivalence;
+
     /**
      * Gets the variables vocabulary.
      * 
@@ -3190,9 +3150,6 @@ public class ProductMetaData {
     public void setVariablesVocabulary(Variables variablesVocabulary) {
         this.variablesVocabulary = variablesVocabulary;
     }
-
-    /** The list tds meta data property. */
-    private List<Property> listTDSMetaDataProperty = null;
 
     /**
      * Gets the list tds meta data property.
@@ -3226,6 +3183,14 @@ public class ProductMetaData {
         }
 
         listTDSMetaDataProperty.add(property);
+    }
+
+    public void setGeoYAxisWithLatEquivalence(boolean hasGeoYDimensions) {
+        hasGeoYAxisWithLatEquivalence = hasGeoYDimensions;
+    }
+
+    public void setGeoXAxisWithLatEquivalence(boolean hasGeoXDimensions) {
+        hasGeoXAxisWithLonEquivalence = hasGeoXDimensions;
     }
 
 }

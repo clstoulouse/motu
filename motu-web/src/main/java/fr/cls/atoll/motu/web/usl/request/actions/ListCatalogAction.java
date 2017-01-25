@@ -63,7 +63,7 @@ public class ListCatalogAction extends AbstractAuthorizedAction {
         MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
         if (checkConfigService(cs, serviceHTTPParameterValidator)) {
-            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
+            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache().getCatalog(cs.getName());
             if (cd != null) {
                 writeResponseWithVelocity(mc, cs, cd);
             } else {

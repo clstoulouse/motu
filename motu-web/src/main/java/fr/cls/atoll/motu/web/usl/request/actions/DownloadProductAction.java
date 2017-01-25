@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.util.AssertionHolder;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
@@ -27,6 +29,7 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.USLManager;
+import fr.cls.atoll.motu.web.usl.request.USLRequestManager;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.DepthHTTPParameterValidator;
@@ -92,6 +95,7 @@ import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
  */
 public class DownloadProductAction extends AbstractAuthorizedAction {
 
+    private static final Logger LOGGER = LogManager.getLogger();
     public static final String ACTION_NAME = "productdownload";
 
     private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
@@ -179,13 +183,14 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
         if (checkConfigService(cs, serviceHTTPParameterValidator)) {
-            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(cs);
+            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache()
+                    .getCatalog(cs.getName());
             if (cd != null) {
                 String productId = productHTTPParameterValidator.getParameterValueValidated();
-                Product p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(productId);
+                Product p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(cs.getName(), productId);
                 if (checkProduct(p, productId)) {
                     RequestProduct rp = new RequestProduct(p, createExtractionParameters());
-                    downloadProduct(mc, cs, cd, productId, rp);
+                    downloadProduct(mc, cs, cd, rp);
                 }
             } else {
                 throw new MotuException(ErrorType.SYSTEM, "Error while get catalog data for config service " + cs.getName());
@@ -210,43 +215,54 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      * 
      * @throws MotuException
      */
-    private void downloadProduct(MotuConfig mc, ConfigService cs, CatalogData cd, String productId, RequestProduct requestProduct)
-            throws MotuException {
+    private void downloadProduct(MotuConfig mc, ConfigService cs, CatalogData cd, RequestProduct requestProduct) throws MotuException {
         String mode = modeHTTPParameterValidator.getParameterValueValidated();
 
         if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_STATUS)) {
             // Asynchronous mode
-            long requestId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(cs, requestProduct, this);
-            try {
-                getResponse().setContentType(CONTENT_TYPE_XML);
-                String response = XMLConverter.toXMLString(requestId, getActionCode(), scriptVersionParameterValidator.getParameterValueValidated());
-                getResponse().getWriter().write(response);
-            } catch (IOException e) {
-                throw new MotuException(ErrorType.SYSTEM, "Error while writing HTTP response ", e);
-            }
+            onAsynchronousMode(cs, requestProduct);
         } else {
             ProductResult pr = BLLManager.getInstance().getRequestManager().download(cs, requestProduct, this);
             if (pr.getRunningException() != null) {
                 setProductException(requestProduct, pr.getRunningException());
-                onError(mc, cs, cd, requestProduct);
+                onError(mc, cs, cd, requestProduct, pr.getRunningException());
             } else {
                 String productURL = BLLManager.getInstance().getCatalogManager().getProductManager()
                         .getProductDownloadHttpUrl(pr.getProductFileName());
                 // Synchronous mode
                 if (mode.equalsIgnoreCase(MotuRequestParametersConstant.PARAM_MODE_CONSOLE)) {
-                    try {
-                        getResponse().sendRedirect(productURL);
-                    } catch (IOException e) {
-                        throw new MotuException(ErrorType.SYSTEM, "Error while sending download redirection PARAM_MODE_CONSOLE", e);
-                    }
+                    onSynchronousRedirectMode(productURL);
                 } else { // Default mode MotuRequestParametersConstant.PARAM_MODE_URL
-                    try {
-                        ProductDownloadHomeAction.writeResponseWithVelocity(mc, cs, cd, requestProduct, getResponse().getWriter());
-                    } catch (IOException e) {
-                        throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
-                    }
+                    onSynchronousURLMode(mc, cs, cd, requestProduct);
                 }
             }
+        }
+    }
+
+    private void onAsynchronousMode(ConfigService cs, RequestProduct requestProduct) throws MotuException {
+        long requestId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(cs, requestProduct, this);
+        try {
+            getResponse().setContentType(CONTENT_TYPE_XML);
+            String response = XMLConverter.toXMLString(requestId, getActionCode(), scriptVersionParameterValidator.getParameterValueValidated());
+            getResponse().getWriter().write(response);
+        } catch (IOException e) {
+            throw new MotuException(ErrorType.SYSTEM, "Error while writing HTTP response ", e);
+        }
+    }
+
+    private void onSynchronousRedirectMode(String productURL) throws MotuException {
+        try {
+            getResponse().sendRedirect(productURL);
+        } catch (IOException e) {
+            throw new MotuException(ErrorType.SYSTEM, "Error while sending download redirection PARAM_MODE_CONSOLE", e);
+        }
+    }
+
+    private void onSynchronousURLMode(MotuConfig mc, ConfigService cs, CatalogData cd, RequestProduct requestProduct) throws MotuException {
+        try {
+            ProductDownloadHomeAction.writeResponseWithVelocity(mc, cs, cd, requestProduct, getResponse().getWriter());
+        } catch (IOException e) {
+            throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
         }
     }
 
@@ -271,8 +287,11 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
      * 
      * @throws MotuException
      */
-    private void onError(MotuConfig mc_, ConfigService cs, CatalogData cd, RequestProduct reqProduct) throws MotuException {
+    private void onError(MotuConfig mc_, ConfigService cs, CatalogData cd, RequestProduct reqProduct, MotuException e_) throws MotuException {
         try {
+            if (e_ != null && USLRequestManager.isErrorTypeToLog(e_.getErrorType())) {
+                LOGGER.error(e_);
+            }
             ProductDownloadHomeAction.writeResponseWithVelocity(mc_, cs, cd, reqProduct, getResponse().getWriter());
         } catch (IOException e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);

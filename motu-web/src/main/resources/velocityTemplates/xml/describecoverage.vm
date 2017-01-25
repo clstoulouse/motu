@@ -23,18 +23,18 @@
 ##
 ##if lat axis and geoY axis with lat equivalence, don't get lat min. value, it's to slow 
 ## because in lat axis can have also time dimension.
-#if(($productMetaData.hasLatAxis()) && (!$product.hasGeoYAxisWithLatEquivalence()))
+#if(($productMetaData.hasLatAxis()) && (!$productMetaData.hasGeoYAxisWithLatEquivalence()))
 #set($ymin = $productMetaData.getLatNormalAxisMinValue())
 #set($yunit = $productMetaData.getLatAxis().getUnitsString())
 #end
 ##if lon axis and geoX axis with lon equivalence, don't get lon min. value, it's to slow 
 ## because in lon axis can have also time dimension.
-#if(($productMetaData.hasLonAxis()) && (!$product.hasGeoXAxisWithLonEquivalence()))
+#if(($productMetaData.hasLonAxis()) && (!$productMetaData.hasGeoXAxisWithLonEquivalence()))
 #set($xmin = $productMetaData.getLonNormalAxisMinValue())
 #set($xunit = $productMetaData.getLonAxis().getUnitsString())
 #end
 #if($productMetaData.hasGeoYAxis())
-#if ($product.hasGeoYAxisWithLatEquivalence())
+#if ($productMetaData.hasGeoYAxisWithLatEquivalence())
 #set($ymin = $productMetaData.getGeoYAxisMinValueAsLatNormal(${product}))
 #set($yunit = $productMetaData.getGeoYAxisAsLat(${product}).getUnitsString())
 #else				
@@ -47,7 +47,7 @@
 #set($yunit = $productMetaData.getNorthSouthUnits())
 #end
 #if($productMetaData.hasGeoXAxis())
-#if ($product.hasGeoXAxisWithLonEquivalence())
+#if ($productMetaData.hasGeoXAxisWithLonEquivalence())
 #set($xmin = $productMetaData.getGeoXAxisMinValueAsLonNormal(${product}))
 #set($xunit = $productMetaData.getGeoXAxisAsLon(${product}).getUnitsString())
 #else				
@@ -61,16 +61,16 @@
 #end		
 ##if lat axis and geoY axis with lat equivalence, don't get lat max. value, it's to slow 
 ## because in lat axis can have also time dimension.
-#if(($productMetaData.hasLatAxis()) && (!$product.hasGeoYAxisWithLatEquivalence()))
+#if(($productMetaData.hasLatAxis()) && (!$productMetaData.hasGeoYAxisWithLatEquivalence()))
 #set($ymax = $productMetaData.getLatNormalAxisMinValue())
 #end
 ##if lon axis and geoX axis with lon equivalence, don't get lon max. value, it's to slow 
 ## because in lon axis can have also time dimension.
-#if(($productMetaData.hasLonAxis()) && (!$product.hasGeoXAxisWithLonEquivalence()))
+#if(($productMetaData.hasLonAxis()) && (!$productMetaData.hasGeoXAxisWithLonEquivalence()))
 #set($xmax = $productMetaData.getLonNormalAxisMaxValue())
 #end
 #if($productMetaData.hasGeoYAxis())
-#if ($product.hasGeoYAxisWithLatEquivalence())
+#if ($productMetaData.hasGeoYAxisWithLatEquivalence())
 #set($ymax = $productMetaData.getGeoYAxisMaxValueAsLatNormal(${product}))
 #else				
 #set($yLabel = "y")
@@ -80,7 +80,7 @@
 #set($ymax = $productMetaData.getGeoBBoxLatMaxAsString())
 #end
 #if($productMetaData.hasGeoXAxis())
-#if ($product.hasGeoXAxisWithLonEquivalence())
+#if ($productMetaData.hasGeoXAxisWithLonEquivalence())
 #set($xmax = $productMetaData.getGeoXAxisMaxValueAsLonNormal(${product}))
 #else				
 #set($xLabel = "x")
