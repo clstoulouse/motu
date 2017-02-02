@@ -158,4 +158,10 @@ public interface IProductMetadata {
 
     String getDepthUnits();
 
+    boolean hasGeoYAxisWithLatEquivalence();
+
+    boolean hasGeoXAxisWithLonEquivalence();
+
+    String getProductType();
+
 }

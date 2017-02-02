@@ -61,7 +61,7 @@ public class VelocityModelConverter {
         return convertToService(mc, cs, null);
     }
 
-    public static IService convertToService(final MotuConfig mc_, final ConfigService cs, final CatalogData c) {
+    public static IService convertToService(final MotuConfig mc_, final ConfigService cs, final CatalogData catalogData) {
         return new IService() {
 
             @Override
@@ -100,7 +100,7 @@ public class VelocityModelConverter {
 
             @Override
             public ICatalog getCatalog() {
-                return convertToICatalog(c);
+                return convertToICatalog(catalogData);
             }
 
             @Override
@@ -261,22 +261,12 @@ public class VelocityModelConverter {
 
             @Override
             public boolean hasGeoXAxisWithLonEquivalence() {
-                try {
-                    return requestProduct_.getProduct().hasGeoXAxisWithLonEquivalence();
-                } catch (MotuException e) {
-                    LOGGER.error("Converting Product to be used in Velocity", e);
-                    return false;
-                }
+                return requestProduct_.getProduct().getProductMetaData().hasGeoXAxisWithLonEquivalence();
             }
 
             @Override
             public boolean hasGeoYAxisWithLatEquivalence() {
-                try {
-                    return requestProduct_.getProduct().hasGeoYAxisWithLatEquivalence();
-                } catch (MotuException e) {
-                    LOGGER.error("Converting Product to be used in Velocity", e);
-                    return false;
-                }
+                return requestProduct_.getProduct().getProductMetaData().hasGeoYAxisWithLatEquivalence();
             }
 
             @Override
@@ -905,6 +895,21 @@ public class VelocityModelConverter {
             public String getDepthUnits() {
                 String depthUnits = productMetaData_.getDepthUnits();
                 return depthUnits == null ? "" : depthUnits;
+            }
+
+            @Override
+            public boolean hasGeoYAxisWithLatEquivalence() {
+                return productMetaData_.hasGeoYAxisWithLatEquivalence();
+            }
+
+            @Override
+            public boolean hasGeoXAxisWithLonEquivalence() {
+                return productMetaData_.hasGeoXAxisWithLonEquivalence();
+            }
+
+            @Override
+            public String getProductType() {
+                return productMetaData_.getProductType();
             }
 
         };

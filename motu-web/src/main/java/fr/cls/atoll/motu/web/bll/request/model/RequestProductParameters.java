@@ -97,7 +97,7 @@ public class RequestProductParameters {
 
                     ParameterMetaData pm = product_.getProductMetaData().getParameterMetaDatas(trimmedStandardName);
                     if (pm == null) {
-                        NetCdfReader r = new NetCdfReader(product_.getLocationData(), false);
+                        NetCdfReader r = new NetCdfReader(product_.getLocationData());
                         try {
                             r.open(true);
                             try {

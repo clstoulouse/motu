@@ -12,6 +12,7 @@ import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeNotFoundException;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
+import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -35,12 +36,11 @@ public class OpenDapProductMetadataReader {
     /** NetCdfReader object. */
     private NetCdfReader netCdfReader = null;
     private String productId;
-    private ProductMetaData productMetaData;
 
-    public OpenDapProductMetadataReader(String productId_, String locationData, boolean useSSO) {
-        netCdfReader = new NetCdfReader(locationData, useSSO);
+    public OpenDapProductMetadataReader(String productId_, String locationData) {
+        netCdfReader = new NetCdfReader(locationData);
         productId = productId_;
-        productMetaData = new ProductMetaData();
+
     }
 
     /**
@@ -52,25 +52,27 @@ public class OpenDapProductMetadataReader {
         return productId;
     }
 
+    public ProductMetaData loadMetaData() throws MotuException {
+        return loadMetaData(null);
+    }
+
     /**
      * Reads product global metadata from an (NetCDF file).
      * 
      * @throws MotuException the motu exception
      */
-    public ProductMetaData loadMetaData() throws MotuException {
-        productMetaData.setProductId(productId);
-
-        netCdfReader.open(true);
-
+    public ProductMetaData loadMetaData(ProductMetaData productMetaDataOnlyForUpdate) throws MotuException {
+        ProductMetaData productMetaData = productMetaDataOnlyForUpdate != null ? productMetaDataOnlyForUpdate : new ProductMetaData();
+        productMetaData.setProductId(getProductId());
         productMetaData.setTitle(getProductId());
 
+        netCdfReader.open(true);
         try {
             // Gets global attribute 'title' if not set.
             if (productMetaData.getTitle().equals("")) {
                 String title = netCdfReader.getStringValue("title");
                 productMetaData.setTitle(title);
             }
-
         } catch (Exception e) {
             throw new MotuException(ErrorType.LOADING_CATALOG, "Error in loadOpendapGlobalMetaData", e);
         }
@@ -105,9 +107,65 @@ public class OpenDapProductMetadataReader {
             productMetaData.setTimeCoverage(productMetaData.getTimeAxisMinValue(), productMetaData.getTimeAxisMaxValue());
         }
 
-        getOpendapVariableMetadata();
+        getOpendapVariableMetadata(productMetaData);
+
+        initGeoYAxisWithLatEquivalence(productMetaData);
+        initGeoXAxisWithLatEquivalence(productMetaData);
 
         return productMetaData;
+    }
+
+    /**
+     * Checks for geo Y axis with lat equivalence.
+     * 
+     * @param netCdfReader the net cdf reader
+     * 
+     * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable equivalence
+     *         (Variable whose name is 'longitude' and with at least two dimensions X/Y).
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void initGeoYAxisWithLatEquivalence(ProductMetaData productMetaData) throws MotuException {
+        CoordinateAxis coord = productMetaData.getGeoYAxis();
+        if (coord == null) {
+            productMetaData.setGeoYAxisWithLatEquivalence(false);
+        }
+
+        ParameterMetaData parameterMetaData = productMetaData.findLatitudeIgnoreCase();
+
+        if (parameterMetaData == null) {
+            productMetaData.setGeoYAxisWithLatEquivalence(false);
+        } else {
+            List<Dimension> listDims = parameterMetaData.getDimensions();
+            productMetaData.setGeoYAxisWithLatEquivalence(netCdfReader.hasGeoXYDimensions(listDims));
+        }
+
+    }
+
+    /**
+     * Checks for geo X axis with lon equivalence.
+     * 
+     * @param netCdfReader the net cdf reader
+     * 
+     * @return true if GeoX axis exists among coordinate axes and if there is a longitude variable equivalence
+     *         (Variable whose name is 'longitude' and with at least two dimensions X/Y).
+     * 
+     * @throws MotuException the motu exception
+     */
+    public void initGeoXAxisWithLatEquivalence(ProductMetaData productMetaData) throws MotuException {
+        CoordinateAxis coord = productMetaData.getGeoXAxis();
+        if (coord == null) {
+            productMetaData.setGeoXAxisWithLatEquivalence(false);
+        }
+
+        ParameterMetaData parameterMetaData = productMetaData.findLongitudeIgnoreCase();
+
+        if (parameterMetaData == null) {
+            productMetaData.setGeoXAxisWithLatEquivalence(false);
+        } else {
+            List<Dimension> listDims = parameterMetaData.getDimensions();
+            productMetaData.setGeoXAxisWithLatEquivalence(netCdfReader.hasGeoXYDimensions(listDims));
+        }
     }
 
     /**
@@ -116,13 +174,11 @@ public class OpenDapProductMetadataReader {
      * @return the opendap variable metadata
      * @throws MotuException the motu exception
      */
-    private void getOpendapVariableMetadata() throws MotuException {
+    private void getOpendapVariableMetadata(ProductMetaData productMetaData) throws MotuException {
         // Gets variables metadata.
         String unitLong;
         String standardName;
         String longName;
-
-        // openNetCdfReader();
 
         List<Variable> variables = netCdfReader.getVariables();
         for (Iterator<Variable> it = variables.iterator(); it.hasNext();) {
@@ -187,15 +243,6 @@ public class OpenDapProductMetadataReader {
             }
             productMetaData.putParameterMetaDatas(variable.getName(), parameterMetaData);
         }
-    }
-
-    /**
-     * Valeur de productMetaData.
-     * 
-     * @return la valeur.
-     */
-    public ProductMetaData getProductMetaData() {
-        return productMetaData;
     }
 
 }

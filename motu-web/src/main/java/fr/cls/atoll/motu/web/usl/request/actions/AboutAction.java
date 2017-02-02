@@ -54,7 +54,7 @@ public class AboutAction extends AbstractAction {
             displayVersion("Motu-configuration: ", versionMgr.getConfigurationVersion());
 
             displayStaticFilesVersion("Motu-static-files (Graphic chart): ");
-
+            getResponse().setHeader("Access-Control-Allow-Origin", "*");
             getResponse().getWriter().write("</body></html>");
         } catch (IOException e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while writing response", e);
@@ -80,19 +80,30 @@ public class AboutAction extends AbstractAction {
         } else {
             urlStaticFilesContent = "<span id=\"staticFilesVersion\">loading...</span>";
         }
-
         displayVersion(entity, urlStaticFilesContent);
         if (!StringUtils.isNullOrEmpty(urlStaticFiles)) {
-            // Load view AJAX the version of static files from the Web server
-            getResponse().getWriter()
-                    .write("\n<script>" + "\n" + "  var xhttp = new XMLHttpRequest();\n" + "  xhttp.onreadystatechange = function() {\n"
-                            + "    if (this.readyState == 4 ) {\n      var versionSpan = document.getElementById('staticFilesVersion');\n      if (this.status == 200) {\n"
-                            + "        if (versionSpan.innerText) {\n" + "           versionSpan.innerText = this.responseText;\n"
-                            + "        } else if (versionSpan.textContent) {\n" + "           versionSpan.textContent = this.responseText;   \n"
-                            + "        }\n" + "      } else {\n        if (versionSpan.innerText) {\n"
-                            + "          versionSpan.innerText = \"Unknown\"\n" + "        } else if (versionSpan.textContent) {\n"
-                            + "          versionSpan.textContent = \"Unknown\";   \n" + "        }\n      }\n    }\n" + "  };\n"
-                            + "  xhttp.open('GET', '" + urlStaticFiles + "', true);\n" + "  xhttp.send();\n" + "\n" + "</script>\n");
+            // Load version of static files from the Web server
+
+            // In order to avoid Cross-Domain restriction as the web server which contain the version file is
+            // not the same as Motu one,
+            // we have a script on the static files web server which, once loaded, call directly the JS method
+            // displayStaticFilesVersion.
+
+            // @formatter:off
+            getResponse().getWriter().write("\n"
+                    + "<script>\n" + ""
+                    + "    function displayStaticFilesVersion(version){\n"
+                    + "        var versionSpan = document.getElementById('staticFilesVersion');\n"
+                    + "        if (versionSpan.innerText) {\n"
+                    + "            versionSpan.innerText = version;\n"
+                    + "        } else if (versionSpan.textContent) {\n"
+                    + "            versionSpan.textContent = version;\n"
+                    + "        }\n"
+                    + "    };\n"
+                    + "\n"
+                    + "</script>\n"
+                    + "<script src=\"" + urlStaticFiles + "\"></script>\n");
+            // @formatter:on
         }
     }
 

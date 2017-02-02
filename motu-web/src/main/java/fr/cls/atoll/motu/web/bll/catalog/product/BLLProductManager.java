@@ -23,39 +23,50 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 public class BLLProductManager implements IBLLProductManager {
 
     @Override
-    public Product getProduct(String productId) {
-        return BLLManager.getInstance().getCatalogManager().getProductCacheManager().getProduct(productId);
+    public Product getProduct(String configServiceName, String productId) {
+        return BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getProductCache().getProduct(configServiceName,
+                                                                                                                            productId);
     }
 
     @Override
-    public Product getProductFromLocation(String catalogName, String URLPath) throws MotuException {
+    public Product getProductFromLocation(String configServiceCatalogName, String URLPath) throws MotuException {
         Product productFound = null;
+        ConfigService cFound = null;
         for (ConfigService c : BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService()) {
-            String currentCatalogName = c.getCatalog().getName();
-            if (currentCatalogName.equals(catalogName)) {
-                CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(c);
+            cFound = c;
+            String curConfigServiceCatalogName = c.getCatalog().getName();
+            if (curConfigServiceCatalogName.equals(configServiceCatalogName)) {
+                CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache()
+                        .getCatalog(c.getName());
                 if (cd != null) {
-                    Map<String, Product> products = cd.getProducts();
-                    for (Map.Entry<String, Product> product : products.entrySet()) {
-                        if (product.getValue().getTdsUrlPath().equals(URLPath)) {
-                            productFound = product.getValue();
-                            break;
-                        }
+                    productFound = cd.getProductsByTdsUrl(URLPath);
+                    if (productFound != null) {
+                        break;
                     }
-                    break;
+                    // Map<String, Product> products = cd.getProducts();
+                    // for (Product curP : products.values()){
+                    // if (curP.getTdsUrlPath().equals(URLPath)) {
+                    // productFound = curP;
+                    // break;
+                    // }
+                    // }
+                    // break;
                 }
             }
         }
 
-        Product pWithMetadata = getProduct(productFound.getProductId());
+        Product pWithMetadata = getProduct(cFound.getName(), productFound.getProductId());
         return pWithMetadata != null ? pWithMetadata : productFound;
     }
 
     @Override
     public Product getProductFromLocation(String URLPath) throws MotuException {
         Product productFound = null;
+        ConfigService cFound = null;
         for (ConfigService c : BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService()) {
-            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogData(c);
+            cFound = c;
+            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache()
+                    .getCatalog(c.getName());
             if (cd != null) {
                 Map<String, Product> products = cd.getProducts();
                 for (Map.Entry<String, Product> product : products.entrySet()) {
@@ -72,7 +83,7 @@ public class BLLProductManager implements IBLLProductManager {
             }
         }
 
-        Product pWithMetadata = getProduct(productFound.getProductId());
+        Product pWithMetadata = getProduct(cFound.getName(), productFound.getProductId());
         return pWithMetadata != null ? pWithMetadata : productFound;
     }
 

@@ -57,28 +57,24 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
 
             CatalogData catalogData = new CatalogData();
             catalogData.setUrlSite(catalogService.getUrlSite());
-            catalogData.setCasAuthentication(false);
             catalogData.setTitle(topLevelDataset.getName());
 
             for (Iterator<Object> it = list.iterator(); it.hasNext();) {
                 Object o = it.next();
-                if (o != null) {
-                    if (o instanceof Dataset) {
-                        catalogData.setCurrentProductType("");
-                        catalogData.getSameProductTypeDataset().clear();
+                if (o != null && o instanceof Dataset) {
+                    catalogData.setCurrentProductType("");
+                    catalogData.getSameProductTypeDataset().clear();
 
-                        loadOpendapProducts((Dataset) o, catalogData, catalogService.getCasAuthentication());
+                    loadOpendapProducts((Dataset) o, catalogData);
 
-                        if (catalogData.getSameProductTypeDataset().size() > 0) {
-                            catalogData.getListProductTypeDataset().add(catalogData.getSameProductTypeDataset());
-                        }
-
+                    if (!catalogData.getSameProductTypeDataset().isEmpty()) {
+                        catalogData.getListProductTypeDataset().add(catalogData.getSameProductTypeDataset());
                     }
                 }
             }
 
             // Remove products that are not anymore in the catalog
-            catalogData.productsKeySet().retainAll(catalogData.getProductsLoaded());
+            catalogData.getProducts().keySet().retainAll(catalogData.getProductsLoaded());
 
             return catalogData;
         } catch (Exception e) {
@@ -94,27 +90,23 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
      * 
      * @throws MotuException the motu exception
      */
-    private void loadOpendapProducts(Dataset dataset, CatalogData catalogData, boolean useSSO) throws MotuException {
+    private void loadOpendapProducts(Dataset dataset, CatalogData catalogData) throws MotuException {
         if (dataset == null) {
             return;
         }
 
         // When Url path of the dataset is not null or not empty,
         // we are at the last level --> Create Product and add to the list.
-        if (dataset.getUrlPath() != null) {
-            if (!dataset.getUrlPath().equals("")) {
-
-                initializeProductFromOpendap(dataset, catalogData, useSSO);
-
-                return;
-            }
+        if (fr.cls.atoll.motu.web.common.utils.StringUtils.isNullOrEmpty(dataset.getUrlPath())) {
+            initializeProductFromOpendap(dataset, catalogData);
+            return;
         }
 
         // Saves - the product type at the top level product (on the first call,
         // level 0)
         // - the product sub-type, if not top level product
         // (type or sub-type correspond to the dataser name)
-        if (catalogData.getCurrentProductType() == null || catalogData.getCurrentProductType().length() <= 0) {
+        if (fr.cls.atoll.motu.web.common.utils.StringUtils.isNullOrEmpty(catalogData.getCurrentProductType())) {
             catalogData.setCurrentProductType(dataset.getName());
         } else {
             catalogData.getCurrentProductSubTypes().add(dataset.getName());
@@ -124,14 +116,11 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
 
         for (Iterator<Object> it = list.iterator(); it.hasNext();) {
             Object o = it.next();
-
-            if (o != null) {
-                if (o instanceof Dataset) {
-                    loadOpendapProducts((Dataset) o, catalogData, useSSO);
-                }
+            if (o != null && o instanceof Dataset) {
+                loadOpendapProducts((Dataset) o, catalogData);
             }
         }
-        if (catalogData.getSameProductTypeDataset().size() > 0) {
+        if (!catalogData.getSameProductTypeDataset().isEmpty()) {
             catalogData.getListProductTypeDataset().add(catalogData.getSameProductTypeDataset());
             catalogData.getSameProductTypeDataset().clear();
         }
@@ -150,7 +139,7 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
      * 
      * @throws MotuException the motu exception
      */
-    private void initializeProductFromOpendap(Dataset dataset, CatalogData cd, boolean useSSO) throws MotuException {
+    private void initializeProductFromOpendap(Dataset dataset, CatalogData cd) throws MotuException {
 
         if (dataset == null) {
             throw new MotuException(ErrorType.LOADING_CATALOG, "Error in intializeProductFromOpendap - Opendap dataset is null");
@@ -184,7 +173,7 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
 
         Product product = cd.getProducts(productId);
         if (product == null) {
-            product = new Product(useSSO);
+            product = new Product();
             productMetaData = new ProductMetaData();
             productMetaData.setProductId(productId);
             productMetaData.setTdsUrlPath(tdsUrlPath);

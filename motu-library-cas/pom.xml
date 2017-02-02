@@ -3,8 +3,9 @@
 
     <parent>
         <groupId>cls.motu</groupId>
+
         <artifactId>motu-parent</artifactId>
-        <version>3.2.00-SNAPSHOT</version>
+        <version>3.3.00-SNAPSHOT</version>
         <relativePath>../motu-parent</relativePath>
     </parent>
 	<artifactId>motu-library-cas</artifactId>
@@ -12,7 +13,6 @@
     <description>This package holds the components of CAS utilities and tools.</description>
 
 	<dependencies>
-
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>

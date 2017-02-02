@@ -86,7 +86,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      * 
      * @throws MotuException the motu exception
      */
-    private int loadTdsCatalogRef(CatalogRef catalogRef, boolean useSSO, CatalogData cd) throws MotuException {
+    private int loadTdsCatalogRef(CatalogRef catalogRef, CatalogData cd) throws MotuException {
         List<String> listCatalogRefSubPaths = new ArrayList<String>();
         if (catalogRef == null || catalogRef.getHref() == null || catalogRef.getHref().trim().length() <= 0) {
             return 0;
@@ -103,7 +103,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
             }
         }
 
-        StringBuffer location = new StringBuffer();
+        StringBuilder location = new StringBuilder();
         String catalogRefUrlPath = catalogRef.getUrlPath();
         if (catalogRefUrlPath == null) {
             catalogRefUrlPath = cd.getUrlSite();
@@ -125,7 +125,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         }
         location.append(catalogXmlName);
 
-        loadTdsSubCatalog(location.toString(), useSSO, cd);
+        loadTdsSubCatalog(location.toString(), cd);
         cd.setUrlSite(oldCDUrlSite);
 
         return catalogHrefSplit.length - 1;
@@ -138,9 +138,9 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      * 
      * @throws MotuException the motu exception
      */
-    private void loadTdsSubCatalog(String path, boolean useSSO, CatalogData cd) throws MotuException {
+    private void loadTdsSubCatalog(String path, CatalogData cd) throws MotuException {
         try {
-            Catalog catalogXml = getCatalogFromTDS(path, useSSO);
+            Catalog catalogXml = getCatalogFromTDS(path);
 
             List<JAXBElement<? extends DatasetType>> list = catalogXml.getDataset();
 
@@ -149,21 +149,21 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
                 DatasetType datasetType = o.getValue();
                 if (datasetType != null) {
                     if (datasetType instanceof CatalogRef) {
-                        int numberSubPaths = loadTdsCatalogRef((CatalogRef) datasetType, useSSO, cd);
+                        int numberSubPaths = loadTdsCatalogRef((CatalogRef) datasetType, cd);
                         removeListCatalogRefSubPaths(cd, numberSubPaths);
                     } else if (datasetType instanceof DatasetType) {
                         // if (StringUtils.isNullOrEmpty(datasetType.getUrlPath())) {
                         // datasetType.setUrlPath(org.apache.commons.lang.StringUtils.substringBeforeLast(path,
                         // "/") + "/");
                         // }
-                        loadTdsProducts(datasetType, catalogXml, useSSO, cd);
+                        loadTdsProducts(datasetType, catalogXml, cd);
                     }
                 }
 
             }
 
             // Remove products that are not anymore in the catalog
-            cd.productsKeySet().retainAll(cd.getProductsLoaded());
+            cd.getProducts().keySet().retainAll(cd.getProductsLoaded());
         } catch (Exception e) {
             LOGGER.error("Error while reading catalog from TDS", e);
             // throw new MotuException(ErrorType.LOADING_CATALOG, "Error while reading catalog from TDS", e);
@@ -180,7 +180,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      * 
      * @throws MotuException the motu exception
      */
-    private void loadTdsProducts(DatasetType tdsDatasetType, Catalog tdsCatalogXml, boolean useSSO, CatalogData cd) throws MotuException {
+    private void loadTdsProducts(DatasetType tdsDatasetType, Catalog tdsCatalogXml, CatalogData cd) throws MotuException {
         if (tdsDatasetType == null) {
             return;
         }
@@ -188,7 +188,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         // When Url path of the dataset is not null or not empty,
         // we are at the last level --> Create Product and add to the list.
         if (!StringUtils.isNullOrEmpty(tdsDatasetType.getUrlPath())) {
-            initializeProductFromTds(tdsDatasetType, tdsCatalogXml, useSSO, cd);
+            initializeProductFromTds(tdsDatasetType, tdsCatalogXml, cd);
             return;
         }
 
@@ -218,10 +218,10 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
             DatasetType tdsDatasetTypeChild = it.next().getValue();
             if (tdsDatasetTypeChild != null) {
                 if (tdsDatasetTypeChild instanceof CatalogRef) {
-                    int numberSubPaths = loadTdsCatalogRef((CatalogRef) tdsDatasetTypeChild, useSSO, cd);
+                    int numberSubPaths = loadTdsCatalogRef((CatalogRef) tdsDatasetTypeChild, cd);
                     removeListCatalogRefSubPaths(cd, numberSubPaths);
                 } else if (tdsDatasetType instanceof DatasetType) {
-                    loadTdsProducts(tdsDatasetTypeChild, tdsCatalogXml, useSSO, cd);
+                    loadTdsProducts(tdsDatasetTypeChild, tdsCatalogXml, cd);
                 }
             }
         }
@@ -284,7 +284,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      * 
      * @throws MotuException the motu exception
      */
-    private void initializeProductFromTds(DatasetType tdsDatasetType, Catalog tdsCatalogXml, boolean isSSO, CatalogData cd) throws MotuException {
+    private void initializeProductFromTds(DatasetType tdsDatasetType, Catalog tdsCatalogXml, CatalogData cd) throws MotuException {
         if (tdsDatasetType == null) {
             throw new MotuException(ErrorType.LOADING_CATALOG, "Error in initializeProductFromTds - Tds dataset is null");
         }
@@ -299,7 +299,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
                     "Error in initializeProductFromTds - Invalid dataset branch - Tds dataset has an empty url path");
         }
 
-        String productId = "";
+        String productId;
         String tdsUrlPath = "";
         boolean newProduct = true;
 
@@ -317,11 +317,11 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
             productId = tdsUrlPath;
         }
 
-        ProductMetaData productMetaData = null;
+        ProductMetaData productMetaData;
 
         Product product = cd.getProducts(productId);
         if (product == null) {
-            product = new Product(isSSO);
+            product = new Product();
             productMetaData = new ProductMetaData();
             productMetaData.setProductId(productId);
             productMetaData.setTdsUrlPath(tdsUrlPath);
@@ -334,7 +334,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
 
         productMetaData.setProductType(cd.getCurrentProductType());
 
-        List<String> productSubTypesWork = new ArrayList<String>();
+        List<String> productSubTypesWork = new ArrayList<>();
         productSubTypesWork.addAll(cd.getCurrentProductSubTypes());
 
         productMetaData.setProductSubTypes(productSubTypesWork);
@@ -786,28 +786,16 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      */
     private void loadTdsGeoAndDepthCoverage(DatasetType datasetType, ProductMetaData productMetaData, CatalogData cd) throws MotuException {
         List<Object> listGeoCoverageObject = JAXBTDSModel.findJaxbElement(datasetType.getThreddsMetadataGroup(), GeospatialCoverage.class);
-
         productMetaData.setGeoBBox(null);
-        // productMetaData.setNorthSouthResolution(null);
-        // productMetaData.setNorthSouthUnits(null);
-        // productMetaData.setEastWestResolution(null);
-        // productMetaData.setEastWestUnits(null);
-        // productMetaData.setDepthCoverage(null);
-        // productMetaData.setDepthResolution(null);
-        // productMetaData.setDepthUnits(null);
-
         boolean foundGeospatialCoverage = false;
 
         for (Object objectElt : listGeoCoverageObject) {
-
             if (!(objectElt instanceof GeospatialCoverage)) {
                 continue;
             }
-
             GeospatialCoverage geospatialCoverage = (GeospatialCoverage) objectElt;
 
             foundGeospatialCoverage = initializeGeoAndDepthCoverage(geospatialCoverage, productMetaData);
-
         }
 
         // if there is no geo coverage for this dataset, use geo coverage of the parent datasets
@@ -880,7 +868,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      */
     private void removeListCatalogRefSubPaths(CatalogData catalogData, int numberToRemove) {
         for (int i = 0; i < numberToRemove; i++) {
-            if (catalogData.getListCatalogRefSubPaths().size() > 0) {
+            if (!catalogData.getListCatalogRefSubPaths().isEmpty()) {
                 catalogData.getListCatalogRefSubPaths().remove(catalogData.getListCatalogRefSubPaths().size() - 1);
             }
         }
@@ -898,7 +886,6 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
             Catalog tdsCatalogXml = getCatalogFromTDS(catalogService);
             CatalogData catalogData = new CatalogData();
             catalogData.setUrlSite(catalogService.getUrlSite());
-            catalogData.setCasAuthentication(false);
             catalogData.setTitle(tdsCatalogXml.getName());
 
             // Loop over all datasets
@@ -908,12 +895,12 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
                 if (tdsDatasetType != null) {
                     if (tdsDatasetType instanceof CatalogRef) {
                         catalogData.setCurrentProductType("");
-                        int numberSubPaths = loadTdsCatalogRef((CatalogRef) tdsDatasetType, catalogService.getCasAuthentication(), catalogData);
+                        int numberSubPaths = loadTdsCatalogRef((CatalogRef) tdsDatasetType, catalogData);
                         removeListCatalogRefSubPaths(catalogData, numberSubPaths);
                     } else if (tdsDatasetType instanceof DatasetType) {
                         catalogData.setCurrentProductType("");
                         List<Product> sameProductTypeDataset = new ArrayList<Product>();
-                        loadTdsProducts(tdsDatasetType, tdsCatalogXml, catalogService.getCasAuthentication(), catalogData);
+                        loadTdsProducts(tdsDatasetType, tdsCatalogXml, catalogData);
                         if (catalogData.getSameProductTypeDataset().size() > 0) {// sameProductTypeDataset
                             catalogData.getListProductTypeDataset().add(sameProductTypeDataset);
                         }
@@ -923,7 +910,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
             }
 
             // Remove products that are not anymore in the catalog
-            catalogData.productsKeySet().retainAll(catalogData.getProductsLoaded());
+            catalogData.getProducts().keySet().retainAll(catalogData.getProductsLoaded());
 
             return catalogData;
         } catch (Exception e) {
@@ -935,12 +922,12 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
     }
 
     private Catalog getCatalogFromTDS(CatalogService catalogService) throws MalformedURLException, IOException, MotuCasException, JAXBException {
-        return getCatalogFromTDS(getCatalogURL(catalogService), catalogService.getCasAuthentication());
+        return getCatalogFromTDS(getCatalogURL(catalogService));
     }
 
-    private Catalog getCatalogFromTDS(String catalogUrl, boolean useSSO_) throws MalformedURLException, IOException, MotuCasException, JAXBException {
+    private Catalog getCatalogFromTDS(String catalogUrl) throws MalformedURLException, IOException, MotuCasException, JAXBException {
         Catalog catalog = null;
-        URL url = new URL(getUrlWithSSO(catalogUrl, useSSO_));
+        URL url = new URL(getUrlWithSSO(catalogUrl, false));
         URLConnection conn = url.openConnection();
         InputStream in = conn.getInputStream();
         try {

@@ -12,7 +12,7 @@
 	<groupId>cls.motu</groupId>
 	<artifactId>motu-parent</artifactId>
 	<name>Motu Parent</name>
-	<version>3.2.00-SNAPSHOT</version>
+	<version>3.3.00-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<description>Motu is a high efficient and robust Web Server which fills the gap between heterogeneous Data Providers to End Users.
@@ -29,7 +29,6 @@
 		<project.version.java>1.7</project.version.java>
 
 		<!-- Plugin versions -->
-		<plugin.version.sonar>2.0</plugin.version.sonar>
 		<plugin.version.compiler>3.2</plugin.version.compiler>
 
 		<jdk.source.version>1.7</jdk.source.version>
@@ -482,23 +481,36 @@
 
 	<build>
 		<plugins>
-			<!-- SONAR -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>sonar-maven-plugin</artifactId>
-				<version>${plugin.version.sonar}</version><!--$NO-MVN-MAN-VER$ -->
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${plugin.version.compiler}</version>
-				<configuration>
-					<source>${project.version.java}</source>
-					<target>${project.version.java}</target>
-					<encoding>${project.build.sourceEncoding}</encoding>
-				</configuration>
-			</plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-toolchains-plugin</artifactId>
+			<version>1.1</version>
+			<executions>
+				<execution>
+					<goals>
+				  		<goal>toolchain</goal>
+					</goals>
+				</execution>
+			</executions>
+			<configuration>
+				<toolchains>
+					<jdk>
+						<version>${project.version.java}</version>
+						<vendor>sun</vendor>
+					</jdk>
+				</toolchains>
+			</configuration>
+		</plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>${plugin.version.compiler}</version>
+			<configuration>
+				<source>${project.version.java}</source>
+				<target>${project.version.java}</target>
+				<encoding>${project.build.sourceEncoding}</encoding>
+			</configuration>
+		</plugin>
 		</plugins>
 
 	</build>

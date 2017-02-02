@@ -25,7 +25,6 @@
 package fr.cls.atoll.motu.web.dal.request.netcdf.data;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,7 +40,6 @@ import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.library.inventory.Inventory;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
-import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.dal.tds.ncss.model.GeospatialCoverage;
 import fr.cls.atoll.motu.web.dal.tds.ncss.model.SpatialRange;
 
@@ -60,16 +58,21 @@ public class CatalogData {
     /** Logger for this class. */
     private static final Logger LOG = LogManager.getLogger();
 
+    /** ServiceName XML tag element. */
+    public static final String XML_TAG_SERVICENAME = "serviceName";
     public static final String FTP_MISSING_FILE_REGEXP = "unknown.*";
 
-    /** Does Service needs CAS authentication to access catalog resources and data. */
-    private boolean casAuthentication = false;
-
-    /** List contains lists of products from the catalog, group product of the same type/subtypes. */
+    /**
+     * |REAL CACHE| List contains lists of products from the catalog, group product of the same type/subtypes.
+     */
     private List<List<Product>> listProductTypeDataset = null;
 
-    /** List contains products from the catalog, which have the same type/subtypes. */
+    /**
+     * |TEMP USED TO BUILD CACHE| List contains products from the catalog, which have the same type/subtypes.
+     * This list is used to build the listProductTypeDataset
+     */
     protected List<Product> sameProductTypeDataset = null;
+
     /** The products map. Key is product id */
     private Map<String, Product> productsMap;
     /**
@@ -80,27 +83,20 @@ public class CatalogData {
     /** List contains each ath element to a Xml Tds catalog. */
     protected List<String> listCatalogRefSubPaths = null;
 
-    /** URL where the catalog is stored. */
-    private String urlSite = "";
-
-    /** The products map. Key is product tds url path */
+    /** |REAL CACHE| Key is product tds url path */
     private Map<String, Product> productsByTdsUrlMap;
 
     /** The current product sub-types. */
     private List<String> currentProductSubTypes;
 
-    /** The current product metadata. */
-    private ProductMetaData currentProductMetaData;
-
     /** The catalog title. */
     private String title = "";
+    /** URL where the catalog is stored. */
+    private String urlSite = "";
 
     private boolean loadTDSExtraMetadata = false;
 
     private String currentProductType = "";
-
-    private Product currentProduct;
-
     private GeospatialCoverage currentGeospatialCoverage;
 
     /**
@@ -172,9 +168,6 @@ public class CatalogData {
 
     }
 
-    /** ServiceName XML tag element. */
-    static public final String XML_TAG_SERVICENAME = "serviceName";
-
     /**
      * Default constructor.
      */
@@ -195,14 +188,12 @@ public class CatalogData {
      * @return the matcher
      */
     public static Matcher matchFTPMissingFile(String name) {
-
         Pattern pattern = Pattern.compile(CatalogData.FTP_MISSING_FILE_REGEXP);
         Matcher matcher = pattern.matcher(name);
         if (!(matcher.find())) {
             return null;
         }
         return matcher;
-
     }
 
     /**
@@ -277,15 +268,6 @@ public class CatalogData {
     }
 
     /**
-     * Initialize product's collection.
-     * 
-     * @param catalogLocation URL of a XML file containing the catalog.
-     */
-    public void listProducts(String catalogLocation) {
-
-    }
-
-    /**
      * Gets the title.
      * 
      * @return the title
@@ -306,50 +288,6 @@ public class CatalogData {
      */
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    /**
-     * Gets the current product.
-     * 
-     * @return the currentProduct.
-     * 
-     * @uml.property name="currentProduct"
-     */
-    public Product getCurrentProduct() {
-        return this.currentProduct;
-    }
-
-    /**
-     * Sets the current product.
-     * 
-     * @param currentProduct the currentProduct to set.
-     * 
-     * @uml.property name="currentProduct"
-     */
-    public void setCurrentProduct(Product currentProduct) {
-        this.currentProduct = currentProduct;
-    }
-
-    /**
-     * Gets the current product meta data.
-     * 
-     * @return the currentProductMetaData
-     * 
-     * @uml.property name="currentProductMetaData"
-     */
-    public ProductMetaData getCurrentProductMetaData() {
-        return this.currentProductMetaData;
-    }
-
-    /**
-     * Sets the current product meta data.
-     * 
-     * @param currentProductMetaData the currentProductMetaData to set
-     * 
-     * @uml.property name="currentProductMetaData"
-     */
-    public void setCurrentProductMetaData(ProductMetaData currentProductMetaData) {
-        this.currentProductMetaData = currentProductMetaData;
     }
 
     /**
@@ -440,61 +378,9 @@ public class CatalogData {
     }
 
     /**
-     * Returns a set view of the keys contained in this map.
-     * 
-     * @return a set view of the keys contained in this map.
-     * 
-     * @see java.util.Map#keySet()
-     * @uml.property name="products"
-     */
-    public Set<String> productsKeySet() {
-        return this.productsMap.keySet();
-    }
-
-    /**
-     * Returns a collection view of the values contained in this map.
-     * 
-     * @return a collection view of the values contained in this map.
-     * 
-     * @see java.util.Map#values()
-     * @uml.property name="products"
-     */
-    public Collection<Product> productsValues() {
-        return this.productsMap.values();
-    }
-
-    /**
-     * Returns <tt>true</tt> if this map contains a mapping for the specified key.
-     * 
-     * @param key key whose presence in this map is to be tested.
-     * 
-     * @return <tt>true</tt> if this map contains a mapping for the specified key.
-     * 
-     * @see java.util.Map#containsKey(Object)
-     * @uml.property name="products"
-     */
-    public boolean productsContainsKey(String key) {
-        return this.productsMap.containsKey(key);
-    }
-
-    /**
-     * Returns <tt>true</tt> if this map maps one or more keys to the specified value.
-     * 
-     * @param value value whose presence in this map is to be tested.
-     * 
-     * @return <tt>true</tt> if this map maps one or more keys to the specified value.
-     * 
-     * @see java.util.Map#containsValue(Object)
-     * @uml.property name="products"
-     */
-    public boolean productsContainsValue(Product value) {
-        return this.productsMap.containsValue(value);
-    }
-
-    /**
      * Returns the value to which this map maps the specified key.
      * 
-     * @param key key whose associated value is to be returned.
+     * @param productId key whose associated value is to be returned.
      * 
      * @return the value to which this map maps the specified key, or <tt>null</tt> if the map contains no
      *         mapping for this key.
@@ -502,86 +388,19 @@ public class CatalogData {
      * @see java.util.Map#get(Object)
      * @uml.property name="products"
      */
-    public Product getProducts(String key) {
-        if (key == null) {
-            return null;
-        }
-        String keyTrimmed = key.trim();
+    public Product getProducts(String productId) {
         Product p = null;
-        Iterator<String> keysIt = this.productsMap.keySet().iterator();
-        while (p == null && keysIt.hasNext()) {
-            String k = keysIt.next();
-            if (k.equalsIgnoreCase(keyTrimmed)) {
-                p = this.productsMap.get(k);
+        if (productId != null) {
+            String keyTrimmed = productId.trim();
+            Iterator<String> keysIt = this.productsMap.keySet().iterator();
+            while (p == null && keysIt.hasNext()) {
+                String k = keysIt.next();
+                if (k.equalsIgnoreCase(keyTrimmed)) {
+                    p = this.productsMap.get(k);
+                }
             }
         }
         return p;
-    }
-
-    /**
-     * Returns <tt>true</tt> if this map contains no key-value mappings.
-     * 
-     * @return <tt>true</tt> if this map contains no key-value mappings.
-     * 
-     * @see java.util.Map#isEmpty()
-     * @uml.property name="products"
-     */
-    public boolean isProductsEmpty() {
-        return this.productsMap.isEmpty();
-    }
-
-    /**
-     * Returns the number of key-value mappings in this map.
-     * 
-     * @return the number of key-value mappings in this map.
-     * 
-     * @see java.util.Map#size()
-     * @uml.property name="products"
-     */
-    public int productsSize() {
-        return this.productsMap.size();
-    }
-
-    /**
-     * Setter of the property <tt>products</tt>.
-     * 
-     * @param value the productsMap to set.
-     * 
-     * @uml.property name="products"
-     */
-    public void setProducts(Map<String, Product> value) {
-        this.productsMap = value;
-    }
-
-    /**
-     * Removes the mapping for this key from this map if it is present (optional operation).
-     * 
-     * @param key key whose mapping is to be removed from the map.
-     * 
-     * @return previous value associated with specified key, or <tt>null</tt> if there was no mapping for key.
-     * 
-     * @see java.util.Map#remove(Object)
-     * @uml.property name="products"
-     */
-    public Product removeProducts(String key) {
-        Product product = this.productsMap.get(key);
-        if (product == null) {
-            return null;
-        }
-
-        this.productsByTdsUrlMap.clear();
-        return this.productsMap.remove(key);
-    }
-
-    /**
-     * Removes all mappings from this map (optional operation).
-     * 
-     * @see java.util.Map#clear()
-     * @uml.property name="products"
-     */
-    public void clearProducts() {
-        this.productsByTdsUrlMap.clear();
-        this.productsMap.clear();
     }
 
     /**
@@ -596,23 +415,11 @@ public class CatalogData {
     /**
      * Gets the products by tds url map.
      * 
-     * @param key the key
+     * @param tdsURL the key
      * @return the products by tds url map
      */
-    public Product getProductsByTdsUrl(String key) {
-        if (key == null) {
-            return null;
-        }
-        return this.productsByTdsUrlMap.get(key.trim());
-    }
-
-    /**
-     * Sets the products by tds url map.
-     * 
-     * @param productsByTdsUrlMap the products by tds url map
-     */
-    public void setProductsByTdsUrl(Map<String, Product> productsByTdsUrlMap) {
-        this.productsByTdsUrlMap = productsByTdsUrlMap;
+    public Product getProductsByTdsUrl(String tdsURL) {
+        return tdsURL == null ? null : this.getProductsByTdsUrl().get(tdsURL.trim());
     }
 
     /**
@@ -629,34 +436,16 @@ public class CatalogData {
     /**
      * Setter of the property <tt>urlSite</tt>.
      * 
-     * @param urlSite The urlSite to set.
+     * @param urlSite_ The urlSite to set.
      * 
      * @uml.property name="urlSite"
      */
-    public void setUrlSite(String urlSite) {
-        if (!urlSite.endsWith("/")) {
-            this.urlSite = urlSite + "/";
-        } else {
-            this.urlSite = urlSite;
+    public void setUrlSite(String urlSite_) {
+        String lastSlash = "";
+        if (!urlSite_.endsWith("/")) {
+            lastSlash = "/";
         }
-    }
-
-    /**
-     * Checks if is cas authentication.
-     * 
-     * @return true, if is cas authentication
-     */
-    public boolean isCasAuthentication() {
-        return casAuthentication;
-    }
-
-    /**
-     * Sets the cas authentication.
-     * 
-     * @param casAuthentication the new cas authentication
-     */
-    public void setCasAuthentication(boolean casAuthentication) {
-        this.casAuthentication = casAuthentication;
+        this.urlSite = urlSite_ + lastSlash;
     }
 
     public Set<String> getProductsLoaded() {
