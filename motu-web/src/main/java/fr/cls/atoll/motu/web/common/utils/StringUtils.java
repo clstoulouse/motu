@@ -75,8 +75,7 @@ public class StringUtils {
      * @return a name which matches the name attribute of the dataset tag in the TDS xml file.
      */
     public static final String getDataSetName(String catalogName) {
-        String result = catalogName.toUpperCase().replace(".XML", "");
-        return result.replace("M_", "");
+        return catalogName.toUpperCase().replace(".XML", "");
     }
 
     /**
