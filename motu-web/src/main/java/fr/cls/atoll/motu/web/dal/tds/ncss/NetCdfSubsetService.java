@@ -31,6 +31,7 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer.Type;
+import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import ucar.ma2.Array;
 import ucar.ma2.Range;
 
@@ -402,7 +403,7 @@ public class NetCdfSubsetService {
                 // Single request: Vertical subset (1-level) || Default case: ALL depth levels
                 if (depthAxis != null) {
                     if (depthRange.length() == 1)
-                        queryParams.add(NCSS_ATTR_VERTCOORD, depthSubset.getFromAsString());
+                        queryParams.add(NCSS_ATTR_VERTCOORD, Double.toString(NetCdfReader.unconvertDepth(depthSubset.getFromAsString())));
                 }
             }
 
@@ -417,49 +418,54 @@ public class NetCdfSubsetService {
             ClientResponse response = webResource.get(ClientResponse.class);
 
             readingTimeInNanoSec += (System.nanoTime() - readingTimeInNanoSecStartEvent);
-
-            if (response.getType().toString().contains("application/x-netcdf")) {
-                long writingTimeInNanoSecStartEvent = System.nanoTime();
-                // Output file and directory depending on concatenation
-                InputStream is = response.getEntity(InputStream.class);
-                String extractFolder = outputDir;
-                String extractFileName = outputFile;
-                if (multipleRequest) {
-                    extractFolder = depthTempDir.toFile().getAbsolutePath();
-                    extractFileName = depthTempFname;
-                }
-                File extractFolderFile = new File(extractFolder);
-                if (!extractFolderFile.exists()) {
-                    boolean folderCreated = extractFolderFile.mkdirs();
-                    if (folderCreated) {
-                        LOGGER.info("Creation of the folder: " + extractFolder);
-                    } else {
-                        LOGGER.error("Error while creating folder: " + extractFolder);
+            if (response.getClientResponseStatus().getStatusCode() == 200) {
+                if (response.getType().toString().contains("application/x-netcdf")) {
+                    long writingTimeInNanoSecStartEvent = System.nanoTime();
+                    // Output file and directory depending on concatenation
+                    InputStream is = response.getEntity(InputStream.class);
+                    String extractFolder = outputDir;
+                    String extractFileName = outputFile;
+                    if (multipleRequest) {
+                        extractFolder = depthTempDir.toFile().getAbsolutePath();
+                        extractFileName = depthTempFname;
                     }
-                }
-                FileOutputStream fos = new FileOutputStream(new File(extractFolderFile, extractFileName));
+                    File extractFolderFile = new File(extractFolder);
+                    if (!extractFolderFile.exists()) {
+                        boolean folderCreated = extractFolderFile.mkdirs();
+                        if (folderCreated) {
+                            LOGGER.info("Creation of the folder: " + extractFolder);
+                        } else {
+                            LOGGER.error("Error while creating folder: " + extractFolder);
+                        }
+                    }
+                    FileOutputStream fos = new FileOutputStream(new File(extractFolderFile, extractFileName));
 
-                // Read/Write by chunks the REST response (avoid Heap over-usage)
-                int bytesRead = 0;
-                byte[] buff = new byte[BSIZE_READ];
-                while ((bytesRead = is.read(buff)) != -1) {
-                    fos.write(buff, 0, bytesRead);
-                }
+                    // Read/Write by chunks the REST response (avoid Heap over-usage)
+                    int bytesRead = 0;
+                    byte[] buff = new byte[BSIZE_READ];
+                    while ((bytesRead = is.read(buff)) != -1) {
+                        fos.write(buff, 0, bytesRead);
+                    }
 
-                // Close inputs/outputs
-                fos.close();
-                is.close();
-                writingTimeInNanoSec += (System.nanoTime() - writingTimeInNanoSecStartEvent);
-            } else if (response.getType().toString().equals("text/plain")) {
-                // TDS error message handle (plain/text)
-                String msg = response.getEntity(String.class);
-                throw new MotuException(ErrorType.NETCDF_GENERATION, msg);
+                    // Close inputs/outputs
+                    fos.close();
+                    is.close();
+                    writingTimeInNanoSec += (System.nanoTime() - writingTimeInNanoSecStartEvent);
+                } else if (response.getType().toString().equals("text/plain")) {
+                    // TDS error message handle (plain/text)
+                    String msg = response.getEntity(String.class);
+                    throw new MotuException(ErrorType.NETCDF_GENERATION, msg);
+                } else {
+                    // Other error handling
+                    String msg = "Unkown response type -> " + response.getType().toString();
+                    throw new MotuException(ErrorType.NETCDF_GENERATION, msg);
+                }
             } else {
-                // Other error handling
-                String msg = "Unkown response type -> " + response.getType().toString();
-                throw new MotuException(ErrorType.NETCDF_GENERATION, msg);
+                throw new MotuException(
+                        ErrorType.SYSTEM,
+                        "HTTP call to " + ncssURL + " returns code=" + response.getClientResponseStatus().getStatusCode() + ", Query params="
+                                + queryParams);
             }
-
         } catch (MotuException e) {
             throw e;
         } catch (Exception e) {
