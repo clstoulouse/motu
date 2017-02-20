@@ -465,6 +465,7 @@
 
 	<modules>
 		<module>../motu-api-message</module>
+		<module>../motu-api-rest</module>
 
 		<module>../motu-library-converter</module>
 		<module>../motu-library-cas</module>
