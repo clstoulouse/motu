@@ -280,7 +280,8 @@ public class AssertionUtils {
                                       String username,
                                       String password,
                                       String casRestUrlSuffix,
-                                      boolean useAssertion) throws IOException, MotuCasBadRequestException {
+                                      boolean useAssertion)
+            throws IOException, MotuCasBadRequestException {
 
         return AssertionUtils.addCASTicket(client, method, targetService, username, password, casRestUrlSuffix, null);
     }
@@ -303,7 +304,8 @@ public class AssertionUtils {
                                       String targetService,
                                       String username,
                                       String password,
-                                      String casRestUrlSuffix) throws IOException, MotuCasBadRequestException {
+                                      String casRestUrlSuffix)
+            throws IOException, MotuCasBadRequestException {
 
         return AssertionUtils.addCASTicket(client, method, targetService, username, password, casRestUrlSuffix, true);
     }
@@ -328,7 +330,8 @@ public class AssertionUtils {
                                       String password,
                                       String casRestUrlSuffix,
                                       String casUrlToUse,
-                                      boolean useAssertion) throws IOException, MotuCasBadRequestException {
+                                      boolean useAssertion)
+            throws IOException, MotuCasBadRequestException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(Client, RestUtil.HttpMethod, String, String, String, String) - start");
         }
@@ -379,7 +382,8 @@ public class AssertionUtils {
                                       String username,
                                       String password,
                                       String casRestUrlSuffix,
-                                      String casUrlToUse) throws IOException, MotuCasBadRequestException {
+                                      String casUrlToUse)
+            throws IOException, MotuCasBadRequestException {
         return AssertionUtils.addCASTicket(client, method, targetService, username, password, casRestUrlSuffix, casUrlToUse, true);
 
     }
@@ -401,9 +405,7 @@ public class AssertionUtils {
      */
     public static String addCASTicket(String targetService, String username, String password, String casRestUrlSuffix, boolean useAssertion)
             throws IOException, MotuCasBadRequestException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("addCASTicket(String, String, String, String) - entering");
-        }
+        LOG.debug("addCASTicket(String, String, String, String) - entering: (" + username + ") " + targetService);
 
         String returnString = targetService;
         String casRestUrlSuffixToUse = casRestUrlSuffix;
@@ -421,9 +423,7 @@ public class AssertionUtils {
             returnString = AssertionUtils.addCASTicketFromTGT(casRestUrlSuffixToUse, username, password, targetService);
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("addCASTicket(String, String, String, String) - exiting");
-        }
+        LOG.debug("addCASTicket(String, String, String, String) - exiting: (" + username + ") " + targetService);
         return returnString;
 
     }
@@ -514,7 +514,8 @@ public class AssertionUtils {
                                       MultivaluedMap<String, String> data,
                                       String username,
                                       String password,
-                                      String casRestUrlSuffix) throws IOException, MotuCasBadRequestException {
+                                      String casRestUrlSuffix)
+            throws IOException, MotuCasBadRequestException {
         return AssertionUtils.addCASTicket(targetService.toString(), data, username, password, casRestUrlSuffix);
     }
 
@@ -534,7 +535,8 @@ public class AssertionUtils {
                                       MultivaluedMap<String, String> data,
                                       String username,
                                       String password,
-                                      String casRestUrlSuffix) throws IOException, MotuCasBadRequestException {
+                                      String casRestUrlSuffix)
+            throws IOException, MotuCasBadRequestException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicket(String, MultivaluedMap<String,String>, String, String, String) - start");
         }
@@ -632,7 +634,8 @@ public class AssertionUtils {
                                              String username,
                                              String password,
                                              String targetService,
-                                             String casUrlToUse) throws IOException, MotuCasBadRequestException {
+                                             String casUrlToUse)
+            throws IOException, MotuCasBadRequestException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicketFromTGT(Client, RestUtil.HttpMethod, String, String, String, String) - start");
         }
@@ -722,26 +725,19 @@ public class AssertionUtils {
      */
     public static String addCASTicketFromTGT(String casRestUrlSuffix, String username, String password, String targetService, String casUrlToUse)
             throws IOException, MotuCasBadRequestException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("addCASTicketFromTGT(String, String, String, String) - entering");
-        }
+        LOG.debug("addCASTicketFromTGT(String, String, String, String) - entering (" + username + ") " + targetService);
 
         if (AssertionUtils.isNullOrEmpty(username)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("addCASTicketFromTGT(String, String, String, String) - exiting");
-            }
+            LOG.debug("addCASTicketFromTGT(String, String, String, String) - exiting (" + username + ") " + targetService);
             return targetService;
         }
         if (AssertionUtils.isNullOrEmpty(targetService)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("addCASTicketFromTGT(String, String, String, String) - exiting");
-            }
+            LOG.debug("addCASTicketFromTGT(String, String, String, String) - exiting (" + username + ") " + targetService);
             return targetService;
         }
         if (AssertionUtils.hasCASTicket(targetService)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("addCASTicketFromTGT(String, String, String, String) - exiting - URL has already a cas ticket");
-            }
+            LOG.debug("addCASTicketFromTGT(String, String, String, String) - exiting - URL has already a cas ticket (" + username + ") "
+                    + targetService);
             return targetService;
         }
 
@@ -756,16 +752,12 @@ public class AssertionUtils {
         String ticket = RestUtil.loginToCAS(casRestUrl, username, password, targetService);
 
         if (AssertionUtils.isNullOrEmpty(ticket)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("addCASTicketFromTGT(String, String, String, String) - exiting");
-            }
+            LOG.debug("addCASTicketFromTGT(String, String, String, String) - exiting (" + username + ") " + targetService);
             return targetService;
         }
 
         String returnString = AssertionUtils.addCASTicket(ticket, targetService);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("addCASTicketFromTGT(String, String, String, String) - exiting");
-        }
+        LOG.debug("addCASTicketFromTGT(String, String, String, String) - exiting (" + username + ") " + targetService);
         return returnString;
 
     }
@@ -774,7 +766,8 @@ public class AssertionUtils {
                                              String username,
                                              String password,
                                              String targetService,
-                                             MultivaluedMap<String, String> data) throws IOException, MotuCasBadRequestException {
+                                             MultivaluedMap<String, String> data)
+            throws IOException, MotuCasBadRequestException {
 
         return AssertionUtils.addCASTicketFromTGT(casRestUrlSuffix, username, password, targetService, data, null);
     }
@@ -796,7 +789,8 @@ public class AssertionUtils {
                                              String password,
                                              String targetService,
                                              MultivaluedMap<String, String> data,
-                                             String casUrlToUse) throws IOException, MotuCasBadRequestException {
+                                             String casUrlToUse)
+            throws IOException, MotuCasBadRequestException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("addCASTicketFromTGT(String, String, String, String, MultivaluedMap<String,String>) - start");
         }

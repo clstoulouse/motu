@@ -389,7 +389,6 @@ public class HttpClientCAS extends HttpClient {
         }
 
         return true;
-
     }
 
     public static String debugHttpMethod(HttpMethod method) {
