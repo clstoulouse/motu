@@ -149,7 +149,7 @@ public class MotuRequestMainTest {
         MotuRequestParameters motuRequestParameters = new MotuRequestParameters();
 
         String login = "adminweb";
-        String password = "adminweb";
+        String password = "XXXX";
         // String login = "xxx";
         // String password = "xxx";
 
