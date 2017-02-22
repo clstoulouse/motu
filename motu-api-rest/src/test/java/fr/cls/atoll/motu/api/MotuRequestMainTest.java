@@ -198,7 +198,7 @@ public class MotuRequestMainTest {
             out.write(c);
             ++nb;
         }
-        System.out.println(nb);
+        System.out.println("Nb bytes read" + nb);
 
         in.close();
         out.close();

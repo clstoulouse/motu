@@ -86,6 +86,12 @@ public class MotuRequest {
 
     private int connectTimeout = 60000;
 
+    /** The servlet url. */
+    private String servletUrl = null;
+
+    /** The motu request parameters. */
+    private MotuRequestParameters motuRequestParameters = null;
+
     // private static Map<String, String> requestExtraInfo = null;
 
     // private static CookieStore cookieStore = new sun.net.www.protocol.http.InMemoryCookieStore();
@@ -147,12 +153,6 @@ public class MotuRequest {
         }
     }
 
-    /** The servlet url. */
-    private String servletUrl = null;
-
-    /** The motu request parameters. */
-    private MotuRequestParameters motuRequestParameters = null;
-
     /**
      * Gets the request url.
      * 
@@ -161,14 +161,13 @@ public class MotuRequest {
      * @throws MotuRequestException the motu request exception
      */
     public String getRequestUrl() throws MotuRequestException {
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
         try {
             stringBuffer.append(servletUrl);
             stringBuffer.append("?");
             stringBuffer.append(getRequestParams());
         } catch (UnsupportedEncodingException ex) {
             LOGGER.error("getRequestUrl()", ex);
-
             throw new MotuRequestException("Request parameters encoding error", ex);
         }
 
@@ -284,6 +283,108 @@ public class MotuRequest {
 
     }
 
+    private AuthenticationMode getAuthenticationModeParameter() {
+        String authModeString = (String) motuRequestParameters.getParameter(MotuRequestParametersConstant.PARAM_AUTHENTICATION_MODE);
+        AuthenticationMode authMode = null;
+        if (!AssertionUtils.isNullOrEmpty(authModeString)) {
+            authMode = AuthenticationMode.fromValue(authModeString);
+        }
+        return authMode;
+    }
+
+    private void initCookieManager() {
+        cookieStore.removeAll();
+        CookieManager cm = new CookieManager(cookieStore, CookiePolicy.ACCEPT_ALL);
+        CookieHandler.setDefault(cm);
+    }
+
+    private UserBase createUserBase(String login, String password) {
+        UserBase user = new UserBase();
+        if (!AssertionUtils.isNullOrEmpty(login)) {
+            user.setLogin(login);
+            if (AssertionUtils.isNullOrEmpty(password)) {
+                password = "";
+            }
+            user.setPwd(password);
+        }
+        return user;
+    }
+
+    private AuthenticationMode onGuessAuthentication(String login, String password) throws MotuRequestException {
+        UserBase user = createUserBase(login, password);
+        try {
+            RestUtil.checkAuthenticationMode(servletUrl, user);
+            return user.getAuthenticationMode();
+        } catch (MotuCasException e) {
+            String msg = String.format("Unable to check authentication mode from url '%s'. Reason is:%n %s", servletUrl, e.notifyException());
+            throw new MotuRequestException(msg, e);
+        } catch (IOException e) {
+            String msg = String.format("Unable to check authentication mode from url '%s'. Reason is:%n %s", servletUrl, e.getMessage());
+            throw new MotuRequestException(msg, e);
+        }
+    }
+
+    private String onCasAuthentication(String login, String password, String targetUrl_) throws MotuRequestException {
+        String targetUrl = targetUrl_;
+        try {
+            // Add CAS ticket to the query parameters
+            // If url is CASified then a CAS ticket is added to the returned url.
+            // If url is not CASified then the original url is returned.
+            // If login or password is null or empty, then the original url is returned.
+            targetUrl = AssertionUtils.addCASTicket(targetUrl, login, password, null);
+        } catch (MotuCasBadRequestException e) {
+            LOGGER.error("executeV2()", e);
+            throw new MotuRequestException("Invalid url", e);
+        } catch (IOException e) {
+            LOGGER.error("executeV2()", e);
+            throw new MotuRequestException("Invalid url", e);
+        }
+        return targetUrl;
+    }
+
+    private void onBasicAuthentication(String login, String password, HttpURLConnection urlConnection) throws MotuRequestException {
+        // Set basic authentication
+        StringBuilder stringBuffer = new StringBuilder();
+        stringBuffer.append(login);
+        stringBuffer.append(":");
+        stringBuffer.append(password);
+        byte[] encoding = new org.apache.commons.codec.binary.Base64().encode(stringBuffer.toString().getBytes());
+        urlConnection.setRequestProperty("Authorization", "Basic " + new String(encoding));
+    }
+
+    private void cleanMotuRequestAuthParameters() {
+        // Authentication mode is not an extraction criteria, remove it now
+        motuRequestParameters.removeParameter(MotuRequestParametersConstant.PARAM_AUTHENTICATION_MODE);
+        // Login/password are not extraction criteria, remove them now
+        motuRequestParameters.removeParameter(MotuRequestParametersConstant.PARAM_LOGIN);
+        motuRequestParameters.removeParameter(MotuRequestParametersConstant.PARAM_PWD);
+    }
+
+    private String getTargetURL(AuthenticationMode authMode_, String login, String password, String requestUrl) throws MotuRequestException {
+        String targetUrl = requestUrl;
+        AuthenticationMode authMode = authMode_;
+        // Check is authentication mode is set or not
+        // if not set, guess the authentication mode
+        if ((authMode == null) && (!AssertionUtils.isNullOrEmpty(login))) {
+            // Here, authMode could have been omitted as a request parameter, but a redirection could be
+            // detected to a CAS server, and authMode is so set to CAS
+            authMode = onGuessAuthentication(login, password);
+        }
+
+        if (authMode == AuthenticationMode.CAS) {
+            targetUrl = onCasAuthentication(login, password, targetUrl);
+        }
+
+        return targetUrl;
+    }
+
+    private void checkToAddBasicAutenticationSettings(AuthenticationMode authMode, String login, String password, HttpURLConnection urlConnection)
+            throws MotuRequestException {
+        if ((authMode == AuthenticationMode.BASIC) && (!AssertionUtils.isNullOrEmpty(login)) && (!AssertionUtils.isNullOrEmpty(password))) {
+            onBasicAuthentication(login, password, urlConnection);
+        }
+    }
+
     /**
      * Executes the request and returns the result as a stream. The stream contains: - the extracted netcdf
      * file if mode is 'console' - the url the extracted netcdf file if mode is 'url' url - the url of the XML
@@ -297,151 +398,58 @@ public class MotuRequest {
      * @throws MotuRequestException the motu request exception
      */
     public InputStream executeV2() throws MotuRequestException {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("executeV2() - entering");
-        }
         // First set the default cookie manager.
         // Must be set before the first http request.
-        // This is essential for cookie session managment with CAS authentication
-        cookieStore.removeAll();
-        CookieManager cm = new CookieManager(cookieStore, CookiePolicy.ACCEPT_ALL);
-        CookieHandler.setDefault(cm);
+        // This is essential for cookie session management with CAS authentication
+        initCookieManager();
 
-        URL url = null;
-
-        // Get the authentication mode parameter
-        String authModeString = (String) motuRequestParameters.getParameter(MotuRequestParametersConstant.PARAM_AUTHENTICATION_MODE);
-        AuthenticationMode authMode = null;
-        if (!AssertionUtils.isNullOrEmpty(authModeString)) {
-            authMode = AuthenticationMode
-                    .fromValue((String) motuRequestParameters.getParameter(MotuRequestParametersConstant.PARAM_AUTHENTICATION_MODE));
-        }
-        // Authentication mode is not an extraction criteria, remove it now
-        motuRequestParameters.removeParameter(MotuRequestParametersConstant.PARAM_AUTHENTICATION_MODE);
-
-        // Get login / password parameters,
+        AuthenticationMode authMode = getAuthenticationModeParameter();
         String login = (String) motuRequestParameters.getParameter(MotuRequestParametersConstant.PARAM_LOGIN);
         String password = (String) motuRequestParameters.getParameter(MotuRequestParametersConstant.PARAM_PWD);
-        // Login/password are not extraction criteria, remove them now
-        motuRequestParameters.removeParameter(MotuRequestParametersConstant.PARAM_LOGIN);
-        motuRequestParameters.removeParameter(MotuRequestParametersConstant.PARAM_PWD);
+        cleanMotuRequestAuthParameters();
 
-        // String requestParams = null;
-
-        String targetUrl = getRequestUrl();
-
-        // Check is authentication mode is set or not
-        // if not set, guess the authentication mode
-
-        boolean guessAuthentication = (authMode == null) && (!AssertionUtils.isNullOrEmpty(login));
-
-        if (guessAuthentication) {
-            UserBase user = new UserBase();
-
-            if (!AssertionUtils.isNullOrEmpty(login)) {
-                user.setLogin(login);
-                if (AssertionUtils.isNullOrEmpty(password)) {
-                    password = "";
-                }
-                user.setPwd(password);
-            }
-
-            try {
-                RestUtil.checkAuthenticationMode(servletUrl, user);
-                authMode = user.getAuthenticationMode();
-            } catch (MotuCasException e) {
-                String msg = String.format("Unable to check authentication mode from url '%s'. Reason is:\n %s", servletUrl, e.notifyException());
-                throw new MotuRequestException(msg, e);
-            } catch (IOException e) {
-                String msg = String.format("Unable to check authentication mode from url '%s'. Reason is:\n %s", servletUrl, e.getMessage());
-                throw new MotuRequestException(msg, e);
-            }
-        }
-
-        try {
-            if (authMode == AuthenticationMode.CAS) {
-                // Add CAS ticket to the query parameters
-                // If url is CASified then a CAS ticket is added to the returned url.
-                // If url is not CASified then the original url is returned.
-                // If login or password is null or empty, then the original url is returned.
-                targetUrl = AssertionUtils.addCASTicket(targetUrl, login, password, null);
-            }
-
-            url = new URL(targetUrl);
-        } catch (MalformedURLException e) {
-            LOGGER.error("executeV2()", e);
-            throw new MotuRequestException("Invalid url", e);
-        } catch (MotuCasBadRequestException e) {
-            LOGGER.error("executeV2()", e);
-            throw new MotuRequestException("Invalid url", e);
-        } catch (IOException e) {
-            LOGGER.error("executeV2()", e);
-            throw new MotuRequestException("Invalid url", e);
-        }
-
-        LOGGER.info("URL=" + targetUrl);
+        // The target URL can be either the origin one, or a new one with a CAS ticket once user has been
+        // authenticated
+        String requestURL = getRequestUrl();
+        String targetUrl = getTargetURL(authMode, login, password, getRequestUrl());
+        LOGGER.info("RequestURL=" + requestURL + ", target URL=" + targetUrl);
         HttpURLConnection urlConnection = null;
-
         try {
+            URL url = new URL(targetUrl);
+
+            // Connect to Motu URL
+            HttpURLConnection.setFollowRedirects(false);
             urlConnection = (HttpURLConnection) url.openConnection();
-
             urlConnection.setConnectTimeout(connectTimeout);
-            if ((authMode == AuthenticationMode.BASIC) && (!AssertionUtils.isNullOrEmpty(login)) && (!AssertionUtils.isNullOrEmpty(password))) {
-                // Set basic authentication
-                StringBuffer stringBuffer = new StringBuffer();
-                stringBuffer.append(login);
-                stringBuffer.append(":");
-                stringBuffer.append(password);
-                byte[] encoding = new org.apache.commons.codec.binary.Base64().encode(stringBuffer.toString().getBytes());
-                urlConnection.setRequestProperty("Authorization", "Basic " + new String(encoding));
-            }
-
-        } catch (IOException ex) {
-            LOGGER.error("executeV2()", ex);
-
-            throw new MotuRequestException("Request connection failed", ex);
-        }
-
-        try {
+            checkToAddBasicAutenticationSettings(authMode, login, password, urlConnection);
             // Loop while a redirection is there
-            String location = "";
-            urlConnection.setFollowRedirects(false);
+            LOGGER.info("Connect to " + targetUrl);
             urlConnection.connect();
+            int i = 0;
             while (urlConnection.getResponseCode() >= 300 && urlConnection.getResponseCode() < 400) {
-                if (urlConnection.getHeaderField(RestUtil.LOCATION_HTTP_HEADER_KEY) != null) {
-                    location = urlConnection.getHeaderField(RestUtil.LOCATION_HTTP_HEADER_KEY).toString();
-                }
-                // get the cookie if need, for login
-                String cookies = urlConnection.getHeaderField("Set-Cookie");
-                String referer = urlConnection.getURL().toString();
-                // urlConnection.getHeaderFields()
-                URL urlRedirection = new URL(location);
-                HttpURLConnection newUrlConnection = (HttpURLConnection) urlRedirection.openConnection();
-                newUrlConnection.addRequestProperty("Referer", referer);
-                newUrlConnection.setRequestProperty("Cookie", cookies);
-                newUrlConnection.setFollowRedirects(false);
+                String location = RestUtil.getLocationHttpHeader(urlConnection);
+                LOGGER.debug("(R" + i + ") Response code: " + urlConnection.getResponseCode() + ", Redirection to location: " + location);
+                // get the cookie if needed, for login
+                HttpURLConnection newUrlConnection = (HttpURLConnection) new URL(location).openConnection();
+                newUrlConnection.addRequestProperty("Referer", urlConnection.getURL().toString());
+                newUrlConnection.setRequestProperty("Cookie", urlConnection.getHeaderField("Set-Cookie"));
+                LOGGER.debug("(R" + i + ") Connect to: " + location);
                 newUrlConnection.connect();
                 urlConnection = newUrlConnection;
+                i++;
             }
-
-            InputStream returnInputStream = urlConnection.getInputStream();
-
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("executeV2() - exiting");
-            }
-            return returnInputStream;
-
+            LOGGER.debug("Return InputStream from URL: " + urlConnection.getURL().toString());
+            return urlConnection.getInputStream();
         } catch (IOException ex) {
-            LOGGER.error("executeV2()", ex);
-
             MotuRequestException motuRequestException;
             try {
+                String httpResponseCode = urlConnection != null ? Integer.toString(urlConnection.getResponseCode()) : "Unknow";
+                String httpResponseMessage = urlConnection != null ? urlConnection.getResponseMessage() : "Unknow";
                 motuRequestException = new MotuRequestException(
-                        "Request failed - errorCode: " + urlConnection.getResponseCode() + ", errorMsg: " + urlConnection.getResponseMessage(),
+                        "Request failed - errorCode: " + httpResponseCode + ", errorMsg: " + httpResponseMessage,
                         ex);
             } catch (IOException e) {
                 LOGGER.error("executeV2()", e);
-
                 motuRequestException = new MotuRequestException("Request connection failed", ex);
             }
             throw motuRequestException;
@@ -1107,8 +1115,7 @@ public class MotuRequest {
      * @throws UnsupportedEncodingException the unsupported encoding exception
      */
     public String getRequestParams() throws UnsupportedEncodingException {
-
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (Map.Entry<String, Object> pv : motuRequestParameters.monoValuedParamMap.entrySet()) {
             if (first) {
