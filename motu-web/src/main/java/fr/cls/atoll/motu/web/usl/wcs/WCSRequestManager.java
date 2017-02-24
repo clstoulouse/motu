@@ -3,10 +3,13 @@ package fr.cls.atoll.motu.web.usl.wcs;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.usl.request.USLRequestManager;
-import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
+import fr.cls.atoll.motu.web.usl.wcs.actions.Action;
+import fr.cls.atoll.motu.web.usl.wcs.actions.GetCapabilitiesAction;
 import fr.cls.atoll.motu.web.usl.wcs.request.actions.WCSGetCapabilitiesAction;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.WCSHTTPParameters;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.RequestHTTPParameterValidator;
@@ -23,6 +26,9 @@ import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.RequestHTTPPara
  */
 public class WCSRequestManager implements IWCSRequestManager {
 
+    /** Logger for this class. */
+    private static final Logger LOGGER = LogManager.getLogger();
+
     /**
      * {@inheritDoc}
      * 
@@ -32,15 +38,15 @@ public class WCSRequestManager implements IWCSRequestManager {
     @Override
     public void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws MotuException, InvalidHTTPParameterException {
         String requestValue = WCSHTTPParameters.getRequestFromRequest(request);
-        AbstractAction actionInst = null;
+        Action actionInst = null;
         try {
             if (requestValue != null) {
                 switch (requestValue) {
                 case WCSGetCapabilitiesAction.ACTION_NAME:
-                    actionInst = new WCSGetCapabilitiesAction("101", request, response);
+                    actionInst = new GetCapabilitiesAction();
                 }
                 if (actionInst != null) {
-                    actionInst.doAction();
+                    actionInst.process(request, response);
                 }
             } else {
                 throw new InvalidHTTPParameterException(
@@ -50,7 +56,6 @@ public class WCSRequestManager implements IWCSRequestManager {
             }
         } catch (Exception e) {
             // TODO Manage exception with WCS standard exception response
-            USLRequestManager.onException(-1L, actionInst, e, response);
         }
     }
 

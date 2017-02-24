@@ -16,9 +16,9 @@ import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
  */
 public class WCSHTTPParameters {
 
-    public static final String SERVICE = "SERVICE";
-    public static final String ACCEPT_VERSIONS = "ACCEPTVERSIONS";
-    public static final String REQUEST = "REQUEST";
+    public static final String SERVICE = "service";
+    public static final String ACCEPT_VERSIONS = "version";
+    public static final String REQUEST = "request";
     public static final String COVERAGE_ID = "COVERAGEID";
 
     public static String getServiceFromRequest(HttpServletRequest request) {
@@ -30,7 +30,7 @@ public class WCSHTTPParameters {
     }
 
     public static String getRequestFromRequest(HttpServletRequest request) {
-        return CommonHTTPParameters.getRequestParameterIgnoreCase(request, "request");
+        return CommonHTTPParameters.getRequestParameterIgnoreCase(request, REQUEST);
     }
 
     public static String getCoverageIdFromRequest(HttpServletRequest request) {
