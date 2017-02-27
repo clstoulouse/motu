@@ -46,11 +46,13 @@ public class Capabilities {
 
     private ObjectFactory wcsFactory = new ObjectFactory();
 
-    private Capabilities() {
+    private Marshaller marshaller = JAXBContext.newInstance(CapabilitiesType.class).createMarshaller();
 
+    private Capabilities() throws JAXBException {
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
     }
 
-    public static Capabilities getInstance() {
+    public static Capabilities getInstance() throws JAXBException {
         if (instance == null) {
             instance = new Capabilities();
         }
@@ -68,10 +70,6 @@ public class Capabilities {
                                                                         data.getServiceTypeVersion(),
                                                                         data.getProfiles()));
         responseWCS.setServiceMetadata(buildServiceMetadataType(data.getSupportedFormat()));
-
-        JAXBContext context = JAXBContext.newInstance(CapabilitiesType.class);
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
         JAXBElement<CapabilitiesType> root = wcsFactory.createCapabilities(responseWCS);
         StringWriter sw = new StringWriter();
