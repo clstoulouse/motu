@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.web.usl.wcs.actions;
+package fr.cls.atoll.motu.web.usl.wcs.exceptions;
 
 public class ActionException extends Exception {
 

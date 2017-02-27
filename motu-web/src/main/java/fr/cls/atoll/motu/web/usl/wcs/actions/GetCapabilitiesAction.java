@@ -17,6 +17,7 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.wcs.data.CapabilitiesData;
 import fr.cls.atoll.motu.web.usl.wcs.data.SubTypeCoverage;
+import fr.cls.atoll.motu.web.usl.wcs.exceptions.ActionException;
 import fr.cls.atoll.motu.web.usl.wcs.responses.Capabilities;
 
 public class GetCapabilitiesAction extends Action {
