@@ -14,7 +14,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.validator.AbstractHTTPParamet
  * @author Sylvain MARTY
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class CoverageIdHTTPParameterValidator extends AbstractHTTPParameterValidator<String> {
+public class CoverageIdHTTPParameterValidator extends AbstractHTTPParameterValidator<String[]> {
 
     public CoverageIdHTTPParameterValidator(String parameterName_, String parameterValue_) {
         super(parameterName_, parameterValue_);
@@ -32,20 +32,26 @@ public class CoverageIdHTTPParameterValidator extends AbstractHTTPParameterValid
      * 
      */
     @Override
-    public String onValidateAction() throws InvalidHTTPParameterException {
-        String serviceStr = getParameterValue();
+    public String[] onValidateAction() throws InvalidHTTPParameterException {
+        String parameterValue = getParameterValue();
+        String[] coverageIds = null;
         try {
-            if (serviceStr == null || serviceStr.trim().length() <= 0) {
+            if (parameterValue == null) {
                 throw new InvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
+            } else {
+                coverageIds = parameterValue.split(",");
+                if (coverageIds.length == 0) {
+                    throw new InvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
+                }
             }
-            return serviceStr;
         } catch (Exception e) {
             throw new InvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
         }
+        return coverageIds;
     }
 
     @Override
     protected String getParameterBoundaries() {
-        return "[Length > 0]";
+        return "Cannot be null or empty";
     }
 }
