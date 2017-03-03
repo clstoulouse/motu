@@ -1,31 +1,32 @@
 package fr.cls.atoll.motu.web.usl.wcs.request.actions;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
+import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
+import fr.cls.atoll.motu.web.usl.wcs.data.CapabilitiesData;
+import fr.cls.atoll.motu.web.usl.wcs.data.SubTypeCoverage;
+import fr.cls.atoll.motu.web.usl.wcs.exceptions.ActionException;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.WCSHTTPParameters;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.AcceptVersionsHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.RequestHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.ServiceHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.wcs.responses.Capabilities;
 
 /**
  * <br>
@@ -82,71 +83,57 @@ public class WCSGetCapabilitiesAction extends AbstractAction {
         String request = requestHTTPParameterValidator.getParameterValueValidated();
 
         try {
-            onGetCapabilitiesAction(service, acceptVersions, request);
+            String xmlResponses;
+            try {
+                xmlResponses = Capabilities.getInstance().buildResponse(buildCapabilitiesData());
+                getResponse().getWriter().write(xmlResponses);
+            } catch (JAXBException | IOException e) {
+                throw new ActionException(e);
+            }
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while writing response", e);
         }
-        // getResponse().setContentType(CONTENT_TYPE_HTML);
-        // try {
-        // // TODO response to a successful GetCapabilities request shall be a valid XML document of type
-        // // wcs:CapabilitiesType.
-        // getResponse().getWriter().write("<!DOCTYPE html><html><body> TODO");
-        // getResponse().getWriter().write("<BR />service=" + service);
-        // getResponse().getWriter().write("<BR />acceptVersions=" + acceptVersions);
-        // getResponse().getWriter().write("<BR />request=" + request);
-        // getResponse().getWriter().write("</body></html>");
-        // } catch (IOException e) {
-        // throw new MotuException(ErrorType.SYSTEM, "Error while writing response", e);
-        // }
     }
 
-    /**
-     * .
-     * 
-     * @param service
-     * @param acceptVersions
-     * @param request
-     * @throws IOException
-     * @throws DOMException
-     * @throws SAXException
-     * @throws ParserConfigurationException
-     */
-    private void onGetCapabilitiesAction(String service, String acceptVersions, String request)
-            throws DOMException, IOException, ParserConfigurationException, SAXException {
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-
-        Document responseTpl = getCapabilitiesResponseXMLDoc(dbFactory);
-        Node nlContents = responseTpl.getElementsByTagName("wcs:Contents").item(0);
-
-        // TODO Loop over the catalog
-        nlContents.appendChild(createContent(dbFactory, "id01", "GridCoverage"));
-        nlContents.appendChild(createContent(dbFactory, "id02", "GridCoverage"));
-
-        getResponse().setContentType(CONTENT_TYPE_XML);
-        getResponse().getWriter().write(responseTpl.getTextContent());
-    }
-
-    private Document getCapabilitiesResponseXMLDoc(DocumentBuilderFactory dbFactory)
-            throws ParserConfigurationException, FileNotFoundException, SAXException, IOException {
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        return dBuilder.parse(getClass().getClassLoader().getResourceAsStream("wcs/tpl/getCapabilitiesResponse.tpl.xml"));
-    }// fr.cls.atoll.motu.web.usl.wcs.request.actions.tpl.
-
-    private Element createContent(DocumentBuilderFactory dbFactory, String coverageId, String coverageSubtype)
-            throws ParserConfigurationException, FileNotFoundException, SAXException, IOException {
-        Element res = null;
-        try (Scanner sc = new Scanner(
-                getClass().getClassLoader().getResourceAsStream("wcs/tpl/getCapabilitiesResponse-CoverageSummary.tpl.xml"),
-                "UTF-8")) {
-            String content = sc.useDelimiter("\\Z").next();
-            content = content.replaceAll("@@CoverageId@@", coverageId);
-            content = content.replaceAll("@@CoverageSubtype@@", coverageSubtype);
-
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(new InputSource(new StringReader(content)));
-            res = doc.getDocumentElement();
+    private CapabilitiesData buildCapabilitiesData() {
+        List<String> productList = new ArrayList<>();
+        List<QName> subTypeList = new ArrayList<>();
+        MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
+        List<ConfigService> configService = mc.getConfigService();
+        for (ConfigService cs : configService) {
+            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache()
+                    .getCatalog(cs.getName());
+            Map<String, Product> mapOfProduct = cd.getProducts();
+            for (Map.Entry<String, Product> currentProduct : mapOfProduct.entrySet()) {
+                productList.add(cs.getName() + "@" + currentProduct.getValue().getProductId());
+                subTypeList.add(SubTypeCoverage.GRID_COVERAGE);
+            }
         }
-        return res;
+        List<String> profiles = new ArrayList<>();
+        profiles.add("http://www.opengis.net/spec/WCS/2.0/conf/core");
+        profiles.add("http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0/conf/get-kvp");
+
+        List<String> supportedFormats = new ArrayList<>();
+        supportedFormats.add("application/netcdf");
+
+        List<String> operationList = new ArrayList<>();
+        operationList.add("GetCapabilities");
+        operationList.add("DescribeCoverage");
+        operationList.add("GetCoverage");
+        CapabilitiesData currentCapabilitiesData = new CapabilitiesData();
+        currentCapabilitiesData.setVersion("2.0.1");
+        currentCapabilitiesData.setTitle("Motu");
+        currentCapabilitiesData.setAbstractId("Motu WCS service");
+        currentCapabilitiesData.setServiceType("OGC WCS");
+        currentCapabilitiesData.setServiceTypeVersion("2.0.1");
+        currentCapabilitiesData.setProfiles(profiles);
+        currentCapabilitiesData.setRequestURL(getRequest().getRequestURL().toString());
+        currentCapabilitiesData.setProductList(productList);
+        currentCapabilitiesData.setSubTypeList(subTypeList);
+        currentCapabilitiesData.setOperationList(operationList);
+        currentCapabilitiesData.setSupportedFormat(supportedFormats);
+
+        return currentCapabilitiesData;
     }
 
 }
