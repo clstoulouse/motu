@@ -46,8 +46,6 @@ public class WCSDescribeCoverageAction extends AbstractAction {
 
     private static final String DATE_DESCRIPTION = "date in seconds since 1970, 1 jan";
 
-    private AxisType[] availableAxis = { AxisType.Lat, AxisType.Lon, AxisType.Height };
-
     private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
     private VersionHTTPParameterValidator versionHTTPParameterValidator;
     private RequestHTTPParameterValidator requestHTTPParameterValidator;
@@ -89,33 +87,28 @@ public class WCSDescribeCoverageAction extends AbstractAction {
     /** {@inheritDoc} */
     @Override
     protected void process() throws MotuException {
-        String service = serviceHTTPParameterValidator.getParameterValueValidated();
-        String version = versionHTTPParameterValidator.getParameterValueValidated();
-        String request = requestHTTPParameterValidator.getParameterValueValidated();
-        String[] coverageIds = coverageIdHTTPParameterValidator.getParameterValueValidated();
+        String coverageId = coverageIdHTTPParameterValidator.getParameterValueValidated();
 
-        for (String coverageId : coverageIds) {
-            String[] coverageIdSplited = coverageId.split("@");
-            String serviceName = coverageIdSplited[0];
-            String productId = coverageIdSplited[1];
-            if (coverageIdSplited.length == 2) {
-                List<fr.cls.atoll.motu.web.usl.wcs.data.DescribeCoverageData> listOfCoverageDescriptionData = new ArrayList<>();
+        String[] coverageIdSplited = coverageId.split("@");
+        String serviceName = coverageIdSplited[0];
+        String productId = coverageIdSplited[1];
+        if (coverageIdSplited.length == 2) {
+            List<fr.cls.atoll.motu.web.usl.wcs.data.DescribeCoverageData> listOfCoverageDescriptionData = new ArrayList<>();
 
-                listOfCoverageDescriptionData.add(buildCoverageDescription(coverageId, serviceName, productId));
+            listOfCoverageDescriptionData.add(buildCoverageDescription(coverageId, serviceName, productId));
 
-                DescribeCoveragesData currentDescribeCoverageData = new DescribeCoveragesData();
-                currentDescribeCoverageData.setCoverageDescriptions(listOfCoverageDescriptionData);
+            DescribeCoveragesData currentDescribeCoverageData = new DescribeCoveragesData();
+            currentDescribeCoverageData.setCoverageDescriptions(listOfCoverageDescriptionData);
 
-                String xmlResponses;
-                try {
-                    xmlResponses = DescribeCoverage.getInstance().buildResponse(currentDescribeCoverageData);
-                    getResponse().getWriter().write(xmlResponses);
-                } catch (JAXBException | IOException e) {
-                    throw new MotuException(ErrorType.SYSTEM, e);
-                }
-            } else {
-                // TODO error on the coverageID parameter to manage
+            String xmlResponses;
+            try {
+                xmlResponses = DescribeCoverage.getInstance().buildResponse(currentDescribeCoverageData);
+                getResponse().getWriter().write(xmlResponses);
+            } catch (JAXBException | IOException e) {
+                throw new MotuException(ErrorType.SYSTEM, e);
             }
+        } else {
+            // TODO error on the coverageID parameter to manage
         }
     }
 
@@ -161,7 +154,7 @@ public class WCSDescribeCoverageAction extends AbstractAction {
         List<BigInteger> lowerValues = new ArrayList<>();
         List<BigInteger> upperValues = new ArrayList<>();
 
-        labels.add(AxisType.Time.name());
+        labels.add(Constants.TIME_AXIS.name());
         uomLabels.add(DATE_DESCRIPTION);
 
         lowersCorner.add(Long.valueOf(product.getProductMetaData().getTimeCoverage().getStart().getMillis() / 1000).doubleValue());
@@ -199,18 +192,22 @@ public class WCSDescribeCoverageAction extends AbstractAction {
 
         // p.getTimeAxisData()
 
-        for (AxisType currentAxisType : availableAxis) {
+        for (AxisType currentAxisType : Constants.AVAILABLE_AXIS) {
             CoordinateAxis currentCoordinateAxis = product.getProductMetaData().getCoordinateAxes().get(currentAxisType);
+            BigInteger minValue = BigInteger
+                    .valueOf(BigDecimal.valueOf(currentCoordinateAxis.getMinValue()).setScale(0, BigDecimal.ROUND_HALF_DOWN).intValue());
+            BigInteger maxValue = BigInteger
+                    .valueOf(BigDecimal.valueOf(currentCoordinateAxis.getMaxValue()).setScale(0, BigDecimal.ROUND_HALF_UP).intValue());
             labels.add(currentAxisType.name());
             uomLabels.add(currentCoordinateAxis.getDimensionsString());
-            lowersCorner.add(currentCoordinateAxis.getMinValue());
-            upperCorner.add(currentCoordinateAxis.getMaxValue());
-            lowerValues.add(BigInteger.valueOf(BigDecimal.valueOf(currentCoordinateAxis.getMinValue()).intValue()));
-            upperValues.add(BigInteger.valueOf(BigDecimal.valueOf(currentCoordinateAxis.getMaxValue()).intValue()));
+            lowersCorner.add(minValue.doubleValue());
+            upperCorner.add(maxValue.doubleValue());
+            lowerValues.add(minValue);
+            upperValues.add(maxValue);
         }
 
         CoordinateAxis currentCoordinateAxis = product.getProductMetaData().getCoordinateAxes().get(AxisType.Time);
-        labels.add(AxisType.Time.name());
+        labels.add(Constants.TIME_AXIS.name());
         uomLabels.add(DATE_DESCRIPTION);
         currentCoordinateAxis.getMinValue();
         currentCoordinateAxis.getDescription();
