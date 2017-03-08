@@ -991,9 +991,25 @@ If value is zero: no delete.
 Default value = 0.
 
 ##### describeProductCacheRefreshInMilliSec
-Provide the delay between two refresh of the Describe product cache.
-This delay is provided in millisecond.
-The default value is 60000 meaning 1 minute.
+Provide the delay to wait to refresh the meta-data of products cache after the last refresh.  
+Motu has a cache which is refreshed asynchronously. Cache is first refreshed as soon as Motu starts.   
+Then Motu waits for this delay before refreshing again the cache.  
+This delay is provided in millisecond.  
+The default value is 60000 meaning 1 minute.  
+  
+Logbook file (motu/log/logbook.log) gives details about time taken to refresh cache, for example:   
+```  
+INFO  CatalogAndProductCacheRefreshThread.runProcess Product and catalog caches refreshed in 2min 19sec 75msec  
+```
+Logbook file gives details per config service ($configServiceId) about dedicated time taken to refresh cache, for example:   
+```  
+INFO  CatalogAndProductCacheRefreshThread.runProcess Refreshed statistics: $configServiceId@Index=0min 34sec 180msec, $configServiceId@Index=0min 31sec 46msec, ...   
+```  
+They are sorted by config service which has taken the most time first.  
+@Index All config services are refreshed sequentially. This index is the sequence number for which this cached has been refreshed.
+  
+Example of archived data with several To of data. Cache is refreshed daily: describeProductCacheRefreshInMilliSec=86400000   
+Example of real time data with several Go of data. Cache is refreshed each minute: describeProductCacheRefreshInMilliSec=60000    
 
 
 ##### runGCInterval
