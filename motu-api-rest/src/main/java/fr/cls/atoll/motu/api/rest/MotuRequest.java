@@ -411,7 +411,7 @@ public class MotuRequest {
         // The target URL can be either the origin one, or a new one with a CAS ticket once user has been
         // authenticated
         String requestURL = getRequestUrl();
-        String targetUrl = getTargetURL(authMode, login, password, getRequestUrl());
+        String targetUrl = getTargetURL(authMode, login, password, requestURL);
         LOGGER.info("RequestURL=" + requestURL + ", target URL=" + targetUrl);
         HttpURLConnection urlConnection = null;
         try {
