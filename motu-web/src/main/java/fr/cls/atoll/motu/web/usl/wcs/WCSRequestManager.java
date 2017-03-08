@@ -11,6 +11,7 @@ import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.wcs.request.actions.WCSDescribeCoverageAction;
 import fr.cls.atoll.motu.web.usl.wcs.request.actions.WCSGetCapabilitiesAction;
+import fr.cls.atoll.motu.web.usl.wcs.request.actions.WCSGetCoverageAction;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.WCSHTTPParameters;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.RequestHTTPParameterValidator;
 
@@ -47,6 +48,9 @@ public class WCSRequestManager implements IWCSRequestManager {
                     break;
                 case WCSDescribeCoverageAction.ACTION_NAME:
                     actionInst = new WCSDescribeCoverageAction("002", request, response);
+                    break;
+                case WCSGetCoverageAction.ACTION_NAME:
+                    actionInst = new WCSGetCoverageAction("003", request, response);
                     break;
                 default:
                     throw new IllegalArgumentException("Te request doesn't exist");
