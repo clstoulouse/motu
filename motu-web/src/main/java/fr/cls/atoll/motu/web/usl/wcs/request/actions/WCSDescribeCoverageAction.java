@@ -160,7 +160,7 @@ public class WCSDescribeCoverageAction extends AbstractAction {
         lowersCorner.add(Long.valueOf(product.getProductMetaData().getTimeCoverage().getStart().getMillis() / 1000).doubleValue());
         upperCorner.add(Long.valueOf(product.getProductMetaData().getTimeCoverage().getEnd().getMillis() / 1000).doubleValue());
         lowerValues.add(BigInteger.valueOf(product.getProductMetaData().getTimeCoverage().getStart().getMillis() / 1000));
-        upperValues.add(BigInteger.valueOf(product.getProductMetaData().getTimeCoverage().getStart().getMillis() / 1000));
+        upperValues.add(BigInteger.valueOf(product.getProductMetaData().getTimeCoverage().getEnd().getMillis() / 1000));
 
         List<String> fieldNames = new ArrayList<>();
         List<String> fieldUoms = new ArrayList<>();
@@ -211,10 +211,10 @@ public class WCSDescribeCoverageAction extends AbstractAction {
         uomLabels.add(DATE_DESCRIPTION);
         currentCoordinateAxis.getMinValue();
         currentCoordinateAxis.getDescription();
-        lowersCorner.add((double) product.getProductMetaData().getTimeAxisMinValue().getTime());
-        upperCorner.add((double) product.getProductMetaData().getTimeAxisMaxValue().getTime());
-        lowerValues.add(BigInteger.valueOf(product.getProductMetaData().getTimeAxisMinValue().getTime()));
-        upperValues.add(BigInteger.valueOf(product.getProductMetaData().getTimeAxisMaxValue().getTime()));
+        lowersCorner.add((double) product.getProductMetaData().getTimeAxisMinValue().getTime() / 1000);
+        upperCorner.add((double) product.getProductMetaData().getTimeAxisMaxValue().getTime() / 1000);
+        lowerValues.add(BigInteger.valueOf(product.getProductMetaData().getTimeAxisMinValue().getTime() / 1000));
+        upperValues.add(BigInteger.valueOf(product.getProductMetaData().getTimeAxisMaxValue().getTime() / 1000));
 
         Map<String, ParameterMetaData> parameters = product.getProductMetaData().getParameterMetaDatas();
 
