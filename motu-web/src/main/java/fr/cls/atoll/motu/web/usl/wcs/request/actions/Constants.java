@@ -11,4 +11,5 @@ public class Constants {
 
     public static final AxisType[] AVAILABLE_AXIS = { LAT_AXIS, LON_AXIS, HEIGHT_AXIS };
 
+    public static final String NETCDF_MIME_TYPE = "application/netcdf";
 }

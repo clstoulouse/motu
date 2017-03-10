@@ -24,6 +24,7 @@ public class WCSHTTPParameters {
     public static final String COVERAGE_ID = "COVERAGEID";
     public static final String SUBSET = "SUBSET";
     public static final String RANGE_SUBSET = "RANGESUBSET";
+    public static final String FORMAT = "FORMAT";
 
     public static String getServiceFromRequest(HttpServletRequest request) {
         return CommonHTTPParameters.getRequestParameterIgnoreCase(request, SERVICE);
@@ -47,6 +48,10 @@ public class WCSHTTPParameters {
 
     public static String getRangeSubsetFromRequest(HttpServletRequest request) {
         return CommonHTTPParameters.getRequestParameterIgnoreCase(request, RANGE_SUBSET);
+    }
+
+    public static String getFormatFromRequest(HttpServletRequest request) {
+        return CommonHTTPParameters.getRequestParameterIgnoreCase(request, FORMAT);
     }
 
     public static String[] getRequestParametersIgnoreCase(HttpServletRequest request, String parameter) {

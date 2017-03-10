@@ -2,7 +2,6 @@ package fr.cls.atoll.motu.web.usl.wcs.request.actions;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.DateFormat;
@@ -20,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jasig.cas.client.util.AssertionHolder;
 
+import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
@@ -32,6 +32,7 @@ import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.WCSHTTPParameters;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.CoverageIdHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.FormatHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.RangeSubsetHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.RequestHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.ServiceHTTPParameterValidator;
@@ -53,8 +54,12 @@ public class WCSGetCoverageAction extends AbstractAction {
     public static final String ACTION_NAME = "GetCoverage";
 
     public static final int SUBSET_MIN_INDEX = 0;
-
     public static final int SUBSET_MAX_INDEX = 1;
+
+    public static final double DEFAULT_LAT_MIN = -90;
+    public static final double DEFAULT_LAT_MAX = 90;
+    public static final double DEFAULT_LON_MIN = -180;
+    public static final double DEFAULT_LON_MAX = 180;
 
     private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
     private VersionHTTPParameterValidator versionHTTPParameterValidator;
@@ -62,6 +67,7 @@ public class WCSGetCoverageAction extends AbstractAction {
     private CoverageIdHTTPParameterValidator coverageIdHTTPParameterValidator;
     private List<SubsetHTTPParameterValidator> subsetHTTPParameterValidator;
     private RangeSubsetHTTPParameterValidator rangeSubsetHTTParameterValidator;
+    private FormatHTTPParameterValidator formatHTTPParameterValidator;
 
     private Map<String, BigInteger[]> subsetValues;
     // TODO Add Subset, format, mediaType, ...
@@ -98,6 +104,10 @@ public class WCSGetCoverageAction extends AbstractAction {
                 WCSHTTPParameters.RANGE_SUBSET,
                 WCSHTTPParameters.getRangeSubsetFromRequest(getRequest()));
         rangeSubsetHTTParameterValidator.setOptional(true);
+        formatHTTPParameterValidator = new FormatHTTPParameterValidator(
+                WCSHTTPParameters.FORMAT,
+                WCSHTTPParameters.getFormatFromRequest(getRequest()));
+        formatHTTPParameterValidator.setOptional(true);
     }
 
     /** {@inheritDoc} */
@@ -108,6 +118,7 @@ public class WCSGetCoverageAction extends AbstractAction {
         requestHTTPParameterValidator.validate();
         coverageIdHTTPParameterValidator.validate();
         rangeSubsetHTTParameterValidator.validate();
+        formatHTTPParameterValidator.validate();
         managerSubsetParameter();
     }
 
@@ -142,33 +153,75 @@ public class WCSGetCoverageAction extends AbstractAction {
 
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceName);
         Product p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(cs.getName(), productId);
-        RequestProduct rp = new RequestProduct(p, createExtractionParameters(serviceName, productId));
+        String catalogType = BLLManager.getInstance().getCatalogManager().getCatalogType(cs);
+        ExtractionParameters parameters = null;
+        switch (catalogType.toUpperCase()) {
+        case "FILE":
+        case "FTP":
+            parameters = createExtractionParametersDGF(serviceName, productId);
+            break;
+        case "TDS":
+            parameters = createExtractionParameters(serviceName, productId);
+            break;
+        default:
+            break;
+        }
+
+        RequestProduct rp = new RequestProduct(p, parameters);
 
         ProductResult pr = BLLManager.getInstance().getRequestManager().download(cs, rp, this);
-        getResponse().setContentType("application/octet-stream");
-        getResponse().setHeader("Content-Disposition", "attachment;filename=" + pr.getProductFileName());
+        if (pr.getRunningException() == null) {
+            uploadfile(pr.getProductFileName());
+        } else {
+            // TODO manage the motu error
+        }
+    }
 
-        File file = new File(BLLManager.getInstance().getCatalogManager().getProductManager().getProductPhysicalFilePath(pr.getProductFileName()));
+    private void uploadfile(String fileName) throws MotuException {
+        getResponse().setContentType("application/octet-stream");
+        getResponse().setHeader("Content-Disposition", "attachment;filename=" + fileName);
+        File file = new File(BLLManager.getInstance().getCatalogManager().getProductManager().getProductPhysicalFilePath(fileName));
         FileInputStream fileIn;
         try {
             fileIn = new FileInputStream(file);
             ServletOutputStream out = getResponse().getOutputStream();
 
             byte[] outputByte = new byte[4096];
-            // copy binary contect to output stream
             while (fileIn.read(outputByte, 0, 4096) != -1) {
                 out.write(outputByte, 0, 4096);
             }
             fileIn.close();
             out.flush();
             out.close();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new MotuException(ErrorType.SYSTEM, e);
         }
+    }
+
+    private ExtractionParameters createExtractionParametersDGF(String serviceName, String productId) {
+        ExtractionParameters extractionParameters = new ExtractionParameters(
+                serviceName,
+                null,
+                new ArrayList(),
+                computeDate(subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MIN_INDEX]),
+                computeDate(subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MAX_INDEX]),
+                -90,
+                90,
+                -180,
+                180,
+                0,
+                0,
+                productId,
+                computeOutputFormat(formatHTTPParameterValidator.getParameterValueValidated()),
+                null,
+                null,
+                true,
+                "");
+
+        // Set assertion to manage CAS.
+        extractionParameters.setAssertion(AssertionHolder.getAssertion());
+        return extractionParameters;
     }
 
     private ExtractionParameters createExtractionParameters(String serviceName, String productId) {
@@ -189,7 +242,7 @@ public class WCSGetCoverageAction extends AbstractAction {
                 subsetValues.get(Constants.HEIGHT_AXIS.name())[SUBSET_MAX_INDEX].doubleValue(),
 
                 productId,
-                OutputFormat.NETCDF,
+                computeOutputFormat(formatHTTPParameterValidator.getParameterValueValidated()),
                 null,
                 null,
                 true,
@@ -201,7 +254,7 @@ public class WCSGetCoverageAction extends AbstractAction {
     }
 
     private String computeDate(BigInteger timeStamp) {
-        Date date = new Date(timeStamp.longValue());
+        Date date = new Date(timeStamp.longValue() * 1000);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return dateFormat.format(date);
     }
@@ -210,8 +263,12 @@ public class WCSGetCoverageAction extends AbstractAction {
         if (rangeValue != null) {
             return Arrays.asList(rangeValue.split(","));
         } else {
-            return null;
+            return new ArrayList();
         }
+    }
+
+    private OutputFormat computeOutputFormat(String formatValue) {
+        return OutputFormat.NETCDF;
     }
 
 }
