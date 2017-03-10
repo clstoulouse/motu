@@ -132,7 +132,7 @@ public class WCSDescribeCoverageAction extends AbstractAction {
                 coverageDescription = buildDGFDescribeCoverage(coverageId, product);
                 break;
             case "TDS":
-                coverageDescription = buildNetCDDFDescribecoverage(coverageId, product);
+                coverageDescription = buildNetCDFDescribecoverage(coverageId, product);
                 break;
             default:
                 break;
@@ -181,7 +181,7 @@ public class WCSDescribeCoverageAction extends AbstractAction {
         return coverageDescription;
     }
 
-    private fr.cls.atoll.motu.web.usl.wcs.data.DescribeCoverageData buildNetCDDFDescribecoverage(String coverageId, Product product)
+    private fr.cls.atoll.motu.web.usl.wcs.data.DescribeCoverageData buildNetCDFDescribecoverage(String coverageId, Product product)
             throws MotuException {
         List<String> labels = new ArrayList<>();
         List<String> uomLabels = new ArrayList<>();
