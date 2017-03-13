@@ -1,5 +1,8 @@
 package fr.cls.atoll.motu.web.usl.wcs.request.parameter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,8 +45,25 @@ public class WCSHTTPParameters {
         return CommonHTTPParameters.getRequestParameterIgnoreCase(request, COVERAGE_ID);
     }
 
-    public static String[] getSubsetFromRequest(HttpServletRequest request) {
-        return getRequestParametersIgnoreCase(request, SUBSET);
+    /**
+     * Retrieve the subset parameter from the request. The subset parameters which respect the WCS 2.0 KVP
+     * extension (doc 09-147 : Req 9) have the format SUBSET_* to disambiguate the different parameters. It
+     * still possible to use many times the word Subset to define the different parameters without
+     * disambiguation. .
+     * 
+     * @param request
+     * @return
+     */
+    public static List<String> getSubsetFromRequest(HttpServletRequest request) {
+        List<String> paramValues = new ArrayList<>();
+        if (request.getParameterMap() != null) {
+            for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
+                if (entry.getKey().startsWith(SUBSET)) {
+                    paramValues.addAll(Arrays.asList(entry.getValue()));
+                }
+            }
+        }
+        return paramValues;
     }
 
     public static String getRangeSubsetFromRequest(HttpServletRequest request) {
@@ -52,18 +72,5 @@ public class WCSHTTPParameters {
 
     public static String getFormatFromRequest(HttpServletRequest request) {
         return CommonHTTPParameters.getRequestParameterIgnoreCase(request, FORMAT);
-    }
-
-    public static String[] getRequestParametersIgnoreCase(HttpServletRequest request, String parameter) {
-        String[] paramValue = null;
-        if (request.getParameterMap() != null) {
-            for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
-                if (entry.getKey().equalsIgnoreCase(parameter)) {
-                    paramValue = entry.getValue();
-                    break;
-                }
-            }
-        }
-        return paramValue;
     }
 }

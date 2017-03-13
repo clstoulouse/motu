@@ -96,7 +96,7 @@ public class WCSGetCoverageAction extends AbstractAction {
                 WCSHTTPParameters.getCoverageIdFromRequest(getRequest()));
         subsetHTTPParameterValidator = new ArrayList<>();
         subsetValues = new HashMap<>();
-        String[] subsets = WCSHTTPParameters.getRequestParametersIgnoreCase(getRequest(), WCSHTTPParameters.SUBSET);
+        List<String> subsets = WCSHTTPParameters.getSubsetFromRequest(getRequest());
         for (String subset : subsets) {
             subsetHTTPParameterValidator.add(new SubsetHTTPParameterValidator(WCSHTTPParameters.SUBSET, subset));
         }
