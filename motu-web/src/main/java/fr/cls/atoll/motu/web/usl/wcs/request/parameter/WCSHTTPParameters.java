@@ -58,7 +58,7 @@ public class WCSHTTPParameters {
         List<String> paramValues = new ArrayList<>();
         if (request.getParameterMap() != null) {
             for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
-                if (entry.getKey().startsWith(SUBSET)) {
+                if (entry.getKey().toUpperCase().startsWith(SUBSET)) {
                     paramValues.addAll(Arrays.asList(entry.getValue()));
                 }
             }
