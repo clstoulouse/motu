@@ -17,7 +17,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
  */
 public class TemporalHTTPParameterValidator extends AbstractHTTPParameterValidator<Date> {
 
-    private static final String[] DATE_FORMATS = new String[] { "yyyy-dd h:m:s", "yyyy-dd'T'h:m:s", "yyy-mm-dd" };
+    private static final String[] DATE_FORMATS = new String[] { "yyyy-mm-dd h:m:s", "yyyy-mm-dd'T'h:m:s", "yyyy-mm-dd" };
 
     public TemporalHTTPParameterValidator(String parameterName_, String parameterValue_) {
         super(parameterName_, parameterValue_);
