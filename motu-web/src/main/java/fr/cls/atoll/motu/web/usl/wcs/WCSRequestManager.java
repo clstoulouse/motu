@@ -44,16 +44,16 @@ public class WCSRequestManager implements IWCSRequestManager {
             if (requestValue != null) {
                 switch (requestValue) {
                 case WCSGetCapabilitiesAction.ACTION_NAME:
-                    actionInst = new WCSGetCapabilitiesAction("001", request, response);
+                    actionInst = new WCSGetCapabilitiesAction("101", request, response);
                     break;
                 case WCSDescribeCoverageAction.ACTION_NAME:
-                    actionInst = new WCSDescribeCoverageAction("002", request, response);
+                    actionInst = new WCSDescribeCoverageAction("102", request, response);
                     break;
                 case WCSGetCoverageAction.ACTION_NAME:
-                    actionInst = new WCSGetCoverageAction("003", request, response);
+                    actionInst = new WCSGetCoverageAction("103", request, response);
                     break;
                 default:
-                    throw new IllegalArgumentException("Te request doesn't exist");
+                    throw new IllegalArgumentException("The request doesn't exist");
                 }
                 if (actionInst != null) {
                     actionInst.doAction();
