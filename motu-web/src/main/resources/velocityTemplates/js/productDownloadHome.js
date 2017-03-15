@@ -792,7 +792,7 @@ function setRegionRanges() {
 	  var ylo = parseFloat(theForm.y_lo.value);
 	  var yhi = parseFloat(theForm.y_hi.value);
 	  
-	  xvals = intersect(xlo, xhi, -180, 360);
+	  xvals = intersect(xlo, xhi, -180, 360+xlo);
 	  yvals = intersect(ylo, yhi, -90, 90);
 	  
 	  theForm.xlo_text.value = xvals[0];	
