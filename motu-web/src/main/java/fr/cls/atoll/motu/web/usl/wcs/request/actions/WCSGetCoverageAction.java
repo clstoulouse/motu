@@ -3,6 +3,7 @@ package fr.cls.atoll.motu.web.usl.wcs.request.actions;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -30,7 +31,9 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
+import fr.cls.atoll.motu.web.usl.wcs.Utils;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.WCSHTTPParameters;
+import fr.cls.atoll.motu.web.usl.wcs.request.parameter.exception.InvalidSubsettingException;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.CoverageIdHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.FormatHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.RangeSubsetHTTPParameterValidator;
@@ -38,6 +41,8 @@ import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.RequestHTTPPara
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.ServiceHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.SubsetHTTPParameterValidator;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.VersionHTTPParameterValidator;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis;
 
 /**
  * <br>
@@ -131,11 +136,22 @@ public class WCSGetCoverageAction extends AbstractAction {
             int middleSepIndex = subsetValue.indexOf(',');
             int endSepIndex = subsetValue.indexOf(')');
 
-            String subsetName = subsetValue.substring(0, startSepIndex);
-            BigInteger[] subsetMinMaxValues = new BigInteger[2];
-            subsetMinMaxValues[0] = new BigInteger(subsetValue.substring(startSepIndex + 1, middleSepIndex));
-            subsetMinMaxValues[1] = new BigInteger(subsetValue.substring(middleSepIndex + 1, endSepIndex));
-            subsetValues.put(subsetName, subsetMinMaxValues);
+            if (startSepIndex > 0 && middleSepIndex > startSepIndex && endSepIndex > middleSepIndex) {
+                String subsetName = subsetValue.substring(0, startSepIndex);
+                if (Utils.contains(Constants.AVAILABLE_AXIS, subsetName)) {
+                    BigInteger[] subsetMinMaxValues = new BigInteger[2];
+                    subsetMinMaxValues[0] = new BigInteger(subsetValue.substring(startSepIndex + 1, middleSepIndex));
+                    subsetMinMaxValues[1] = new BigInteger(subsetValue.substring(middleSepIndex + 1, endSepIndex));
+                    subsetValues.put(subsetName, subsetMinMaxValues);
+                } else {
+                    throw new InvalidHTTPParameterException(subsetName, subsetValue, "");
+                }
+            } else {
+                throw new InvalidHTTPParameterException(
+                        subsetValidator.getParameterName(),
+                        subsetValidator.getParameterValue(),
+                        subsetValidator.getParameterBoundariesAsString());
+            }
         }
     }
 
@@ -146,41 +162,77 @@ public class WCSGetCoverageAction extends AbstractAction {
         versionHTTPParameterValidator.getParameterValueValidated();
         requestHTTPParameterValidator.getParameterValueValidated();
         String coverageId = coverageIdHTTPParameterValidator.getParameterValueValidated();
+        if (coverageId != null) {
 
-        String[] coverageIdSplited = coverageId.split("@");
-        String serviceName = coverageIdSplited[0];
-        String productId = coverageIdSplited[1];
+            String[] coverageIdSplited = coverageId.split("@");
+            if (coverageIdSplited.length == 2) {
+                String serviceName = coverageIdSplited[0];
+                String productId = coverageIdSplited[1];
 
-        ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceName);
-        Product p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(cs.getName(), productId);
-        String catalogType = BLLManager.getInstance().getCatalogManager().getCatalogType(cs);
-        ExtractionParameters parameters = null;
-        switch (catalogType.toUpperCase()) {
-        case "FILE":
-        case "FTP":
-            parameters = createExtractionParametersDGF(serviceName, productId);
-            break;
-        case "TDS":
-            parameters = createExtractionParameters(serviceName, productId);
-            break;
-        default:
-            break;
-        }
+                ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceName);
+                if (cs != null) {
+                    Product p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(cs.getName(), productId);
+                    if (p != null) {
+                        try {
+                            String catalogType = BLLManager.getInstance().getCatalogManager().getCatalogType(cs);
+                            ExtractionParameters parameters = null;
+                            switch (catalogType.toUpperCase()) {
+                            case "FILE":
+                            case "FTP":
+                                parameters = createExtractionParametersDGF(serviceName, productId, p);
+                                break;
+                            case "TDS":
+                                parameters = createExtractionParameters(serviceName, productId, p);
+                                break;
+                            default:
+                                break;
+                            }
 
-        RequestProduct rp = new RequestProduct(p, parameters);
+                            RequestProduct rp = new RequestProduct(p, parameters);
 
-        ProductResult pr = BLLManager.getInstance().getRequestManager().download(cs, rp, this);
-        if (pr.getRunningException() == null) {
-            uploadfile(pr.getProductFileName());
+                            ProductResult pr = BLLManager.getInstance().getRequestManager().download(cs, rp, this);
+                            if (pr.getRunningException() == null) {
+                                uploadfile(pr.getProductFileName());
+                            } else {
+                                throw new MotuException(ErrorType.SYSTEM, pr.getRunningException());
+                            }
+                        } catch (InvalidSubsettingException e) {
+                            Utils.onError(getResponse(),
+                                          getActionCode(),
+                                          e.getParameterName(),
+                                          Constants.INVALID_SUBSETTING_CODE,
+                                          ErrorType.WCS_INVALID_SUBSETTING,
+                                          e.getParameterName());
+                        }
+                    } else {
+                        Utils.onError(getResponse(),
+                                      getActionCode(),
+                                      Constants.NO_SUCH_COVERAGE,
+                                      ErrorType.WCS_NO_SUCH_COVERAGE,
+                                      coverageId,
+                                      coverageId);
+                    }
+                } else {
+                    Utils.onError(getResponse(), getActionCode(), coverageId, Constants.NO_SUCH_COVERAGE, ErrorType.WCS_NO_SUCH_COVERAGE, coverageId);
+                }
+            } else {
+                Utils.onError(getResponse(), getActionCode(), coverageId, Constants.NO_SUCH_COVERAGE, ErrorType.WCS_NO_SUCH_COVERAGE, coverageId);
+            }
         } else {
-            // TODO manage the motu error
+            Utils.onError(getResponse(),
+                          getActionCode(),
+                          WCSHTTPParameters.COVERAGE_ID,
+                          Constants.MISSING_PARAMETER_VALUE_CODE,
+                          ErrorType.WCS_MISSING_PARAMETER_VALUE,
+                          WCSHTTPParameters.COVERAGE_ID);
         }
     }
 
     private void uploadfile(String fileName) throws MotuException {
-        getResponse().setContentType("application/octet-stream");
+        getResponse().setContentType("application/netcdf");
         getResponse().setHeader("Content-Disposition", "attachment;filename=" + fileName);
         File file = new File(BLLManager.getInstance().getCatalogManager().getProductManager().getProductPhysicalFilePath(fileName));
+        getResponse().setContentLength(Double.valueOf(file.length()).intValue());
         FileInputStream fileIn;
         try {
             fileIn = new FileInputStream(file);
@@ -199,13 +251,20 @@ public class WCSGetCoverageAction extends AbstractAction {
         }
     }
 
-    private ExtractionParameters createExtractionParametersDGF(String serviceName, String productId) {
+    private ExtractionParameters createExtractionParametersDGF(String serviceName, String productId, Product product)
+            throws InvalidSubsettingException {
+        Long minTime = product.getProductMetaData().getTimeCoverage().getStart().getMillis() / 1000;
+        Long maxTime = product.getProductMetaData().getTimeCoverage().getEnd().getMillis() / 1000;
+        Long subsetTimeLowValue = subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MIN_INDEX].longValue();
+        Long subsetTimeHighValue = subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MAX_INDEX].longValue();
+
+        manageSubsetting(Constants.TIME_AXIS, product, minTime, maxTime, subsetTimeLowValue, subsetTimeHighValue);
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 serviceName,
                 null,
                 new ArrayList(),
-                computeDate(subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MIN_INDEX]),
-                computeDate(subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MAX_INDEX]),
+                computeDate(subsetTimeLowValue),
+                computeDate(subsetTimeHighValue),
                 -90,
                 90,
                 -180,
@@ -218,20 +277,28 @@ public class WCSGetCoverageAction extends AbstractAction {
                 null,
                 true,
                 "");
-
         // Set assertion to manage CAS.
         extractionParameters.setAssertion(AssertionHolder.getAssertion());
         return extractionParameters;
     }
 
-    private ExtractionParameters createExtractionParameters(String serviceName, String productId) {
+    private ExtractionParameters createExtractionParameters(String serviceName, String productId, Product product)
+            throws InvalidSubsettingException, MotuException {
+        Long minTime = product.getProductMetaData().getTimeAxisMinValue().getTime() / 1000;
+        Long maxTime = product.getProductMetaData().getTimeAxisMaxValue().getTime() / 1000;
+        Long subsetTimeLowValue = subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MIN_INDEX].longValue();
+        Long subsetTimeHighValue = subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MAX_INDEX].longValue();
+
+        manageSubsetting(Constants.TIME_AXIS, product, minTime, maxTime, subsetTimeLowValue, subsetTimeHighValue);
+        manageSubsettings(product);
+
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 serviceName,
                 null,
                 computeVariableList(rangeSubsetHTTParameterValidator.getParameterValueValidated()),
 
-                computeDate(subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MIN_INDEX]),
-                computeDate(subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MAX_INDEX]),
+                computeDate(subsetTimeLowValue),
+                computeDate(subsetTimeHighValue),
 
                 subsetValues.get(Constants.LON_AXIS.name())[SUBSET_MIN_INDEX].doubleValue(),
                 subsetValues.get(Constants.LON_AXIS.name())[SUBSET_MAX_INDEX].doubleValue(),
@@ -253,8 +320,30 @@ public class WCSGetCoverageAction extends AbstractAction {
         return extractionParameters;
     }
 
-    private String computeDate(BigInteger timeStamp) {
-        Date date = new Date(timeStamp.longValue() * 1000);
+    private void manageSubsettings(Product product) throws InvalidSubsettingException {
+        for (AxisType currentAxis : Constants.AVAILABLE_AXIS) {
+            CoordinateAxis currentCoordinateAxis = product.getProductMetaData().getCoordinateAxes().get(currentAxis);
+            if (currentCoordinateAxis != null) {
+                manageSubsetting(currentAxis,
+                                 product,
+                                 BigDecimal.valueOf(currentCoordinateAxis.getMinValue()).setScale(0, BigDecimal.ROUND_HALF_DOWN).doubleValue(),
+                                 BigDecimal.valueOf(currentCoordinateAxis.getMaxValue()).setScale(0, BigDecimal.ROUND_HALF_UP).doubleValue(),
+                                 subsetValues.get(currentAxis.name())[SUBSET_MIN_INDEX].doubleValue(),
+                                 subsetValues.get(currentAxis.name())[SUBSET_MAX_INDEX].doubleValue());
+            }
+        }
+    }
+
+    private void manageSubsetting(AxisType axis, Product product, double minValue, double maxValue, double subSetLowValue, double subSetHighValue)
+            throws InvalidSubsettingException {
+        if (!(subSetLowValue >= minValue && subSetLowValue <= maxValue && subSetHighValue >= minValue && subSetHighValue <= maxValue
+                && subSetLowValue < subSetHighValue)) {
+            throw new InvalidSubsettingException(Constants.TIME_AXIS.name());
+        }
+    }
+
+    private String computeDate(long timeStamp) {
+        Date date = new Date(timeStamp * 1000);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return dateFormat.format(date);
     }

@@ -5,13 +5,11 @@
 // Generated on: 2016.09.19 at 09:56:17 AM CEST 
 //
 
-
 package fr.cls.atoll.motu.api.message.xml;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
-
 
 /**
  * <p>Java class for errorType.
@@ -128,7 +126,23 @@ public enum ErrorType {
     @XmlEnumValue("31")
     TOO_DEPTH_REQUESTED(31),
     @XmlEnumValue("32")
-    NETCDF4_NOT_SUPPORTED_BY_TDS(32);
+    NETCDF4_NOT_SUPPORTED_BY_TDS(32),
+    @XmlEnumValue("101")
+    WCS_MISSING_PARAMETER_VALUE(101),
+    @XmlEnumValue("102")
+    WCS_INVALID_PARAMETER_VALUE(102),
+    @XmlEnumValue("103")
+    WCS_VERSION_NEGOTIATION_FAILED(103),
+    @XmlEnumValue("104")
+    WCS_NO_APPLICABLE_CODE(104),
+    @XmlEnumValue("105")
+    WCS_NO_SUCH_COVERAGE(105),
+    @XmlEnumValue("106")
+    WCS_EMPTY_COVERAGE_ID_LIST(106),
+    @XmlEnumValue("107")
+    WCS_INVALID_SUBSETTING(107);
+    
+    
 	
     private final int value;
 

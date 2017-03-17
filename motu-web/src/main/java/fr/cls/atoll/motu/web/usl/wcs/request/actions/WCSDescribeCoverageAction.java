@@ -11,15 +11,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
-import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
+import fr.cls.atoll.motu.web.usl.wcs.Utils;
+import fr.cls.atoll.motu.web.usl.wcs.data.DescribeCoverageData;
 import fr.cls.atoll.motu.web.usl.wcs.data.DescribeCoveragesData;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.WCSHTTPParameters;
 import fr.cls.atoll.motu.web.usl.wcs.request.parameter.validator.CoverageIdHTTPParameterValidator;
@@ -41,6 +45,9 @@ import ucar.nc2.dataset.CoordinateAxis;
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
 public class WCSDescribeCoverageAction extends AbstractAction {
+
+    /** Logger for this class. */
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "DescribeCoverage";
 
@@ -87,62 +94,86 @@ public class WCSDescribeCoverageAction extends AbstractAction {
     /** {@inheritDoc} */
     @Override
     protected void process() throws MotuException {
-        String coverageId = coverageIdHTTPParameterValidator.getParameterValueValidated();
+        String coverageIds = coverageIdHTTPParameterValidator.getParameterValueValidated();
+        if (coverageIds.length() != 0) {
+            String[] coverageList = coverageIds.split(",");
+            List<DescribeCoverageData> listOfCoverageDescriptionData = new ArrayList<>();
+            boolean onError = false;
+            String coverageOnError = "";
 
-        String[] coverageIdSplited = coverageId.split("@");
-        String serviceName = coverageIdSplited[0];
-        String productId = coverageIdSplited[1];
-        if (coverageIdSplited.length == 2) {
-            List<fr.cls.atoll.motu.web.usl.wcs.data.DescribeCoverageData> listOfCoverageDescriptionData = new ArrayList<>();
+            for (String coverageId : coverageList) {
+                String[] coverageIdSplited = coverageId.split("@");
+                if (coverageIdSplited.length == 2) {
+                    String serviceName = coverageIdSplited[0];
+                    String productId = coverageIdSplited[1];
+                    DescribeCoverageData currentCoverageDescriptionData = buildCoverageDescription(coverageId, serviceName, productId);
+                    if (currentCoverageDescriptionData != null) {
+                        listOfCoverageDescriptionData.add(currentCoverageDescriptionData);
+                    } else {
+                        onError = true;
+                        coverageOnError = coverageId;
+                        break;
+                    }
+                } else {
+                    onError = true;
+                    coverageOnError = coverageId;
+                    break;
+                }
+            }
 
-            listOfCoverageDescriptionData.add(buildCoverageDescription(coverageId, serviceName, productId));
+            if (!onError) {
+                DescribeCoveragesData currentDescribeCoverageData = new DescribeCoveragesData();
+                currentDescribeCoverageData.setCoverageDescriptions(listOfCoverageDescriptionData);
 
-            DescribeCoveragesData currentDescribeCoverageData = new DescribeCoveragesData();
-            currentDescribeCoverageData.setCoverageDescriptions(listOfCoverageDescriptionData);
-
-            String xmlResponses;
-            try {
-                xmlResponses = DescribeCoverage.getInstance().buildResponse(currentDescribeCoverageData);
-                getResponse().getWriter().write(xmlResponses);
-            } catch (JAXBException | IOException e) {
-                throw new MotuException(ErrorType.SYSTEM, e);
+                String xmlResponses;
+                try {
+                    xmlResponses = DescribeCoverage.getInstance().buildResponse(currentDescribeCoverageData);
+                    getResponse().getWriter().write(xmlResponses);
+                } catch (JAXBException | IOException e) {
+                    throw new MotuException(ErrorType.SYSTEM, e);
+                }
+            } else {
+                noSuchCoverageError(coverageOnError);
             }
         } else {
-            // TODO error on the coverageID parameter to manage
+            emptyCoverageIdListError();
         }
     }
 
-    private fr.cls.atoll.motu.web.usl.wcs.data.DescribeCoverageData buildCoverageDescription(String coverageId,
-                                                                                             String serviceName,
-                                                                                             String productId) {
-        fr.cls.atoll.motu.web.usl.wcs.data.DescribeCoverageData coverageDescription = null;
+    private DescribeCoverageData buildCoverageDescription(String coverageId, String serviceName, String productId) throws MotuException {
+        DescribeCoverageData coverageDescriptions = null;
 
-        try {
-            ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceName);
+        ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceName);
 
+        if (cs != null) {
             String catalogType;
             catalogType = BLLManager.getInstance().getCatalogManager().getCatalogType(cs);
-            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache()
-                    .getCatalog(cs.getName());
             Product product = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(cs.getName(), productId);
-
-            switch (catalogType.toUpperCase()) {
-            case "FILE":
-            case "FTP":
-                coverageDescription = buildDGFDescribeCoverage(coverageId, product);
-                break;
-            case "TDS":
-                coverageDescription = buildNetCDFDescribecoverage(coverageId, product);
-                break;
-            default:
-                break;
+            if (product != null) {
+                switch (catalogType.toUpperCase()) {
+                case "FILE":
+                case "FTP":
+                    coverageDescriptions = buildDGFDescribeCoverage(coverageId, product);
+                    break;
+                case "TDS":
+                    coverageDescriptions = buildNetCDFDescribecoverage(coverageId, product);
+                    break;
+                default:
+                    break;
+                }
             }
-        } catch (MotuException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
 
-        return coverageDescription;
+        return coverageDescriptions;
+
+    }
+
+    private void noSuchCoverageError(String coverageId) throws MotuException {
+        Utils.onError(getResponse(), getActionCode(), coverageId, Constants.NO_SUCH_COVERAGE, ErrorType.WCS_NO_SUCH_COVERAGE, coverageId);
+    }
+
+    private void emptyCoverageIdListError() throws MotuException {
+        Utils.onError(getResponse(), getActionCode(), Constants.EMPTY_COVERAGE_ID_LIST, ErrorType.WCS_EMPTY_COVERAGE_ID_LIST);
     }
 
     private fr.cls.atoll.motu.web.usl.wcs.data.DescribeCoverageData buildDGFDescribeCoverage(String coverageId, Product product)
@@ -194,16 +225,18 @@ public class WCSDescribeCoverageAction extends AbstractAction {
 
         for (AxisType currentAxisType : Constants.AVAILABLE_AXIS) {
             CoordinateAxis currentCoordinateAxis = product.getProductMetaData().getCoordinateAxes().get(currentAxisType);
-            BigInteger minValue = BigInteger
-                    .valueOf(BigDecimal.valueOf(currentCoordinateAxis.getMinValue()).setScale(0, BigDecimal.ROUND_HALF_DOWN).intValue());
-            BigInteger maxValue = BigInteger
-                    .valueOf(BigDecimal.valueOf(currentCoordinateAxis.getMaxValue()).setScale(0, BigDecimal.ROUND_HALF_UP).intValue());
-            labels.add(currentAxisType.name());
-            uomLabels.add(currentCoordinateAxis.getDimensionsString());
-            lowersCorner.add(minValue.doubleValue());
-            upperCorner.add(maxValue.doubleValue());
-            lowerValues.add(minValue);
-            upperValues.add(maxValue);
+            if (currentCoordinateAxis != null) {
+                BigInteger minValue = BigInteger
+                        .valueOf(BigDecimal.valueOf(currentCoordinateAxis.getMinValue()).setScale(0, BigDecimal.ROUND_HALF_DOWN).intValue());
+                BigInteger maxValue = BigInteger
+                        .valueOf(BigDecimal.valueOf(currentCoordinateAxis.getMaxValue()).setScale(0, BigDecimal.ROUND_HALF_UP).intValue());
+                labels.add(currentAxisType.name());
+                uomLabels.add(currentCoordinateAxis.getDimensionsString());
+                lowersCorner.add(minValue.doubleValue());
+                upperCorner.add(maxValue.doubleValue());
+                lowerValues.add(minValue);
+                upperValues.add(maxValue);
+            }
         }
 
         CoordinateAxis currentCoordinateAxis = product.getProductMetaData().getCoordinateAxes().get(AxisType.Time);

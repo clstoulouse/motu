@@ -31,17 +31,16 @@ public class ExceptionBuilder {
     }
 
     public String buildResponse(ExceptionData exceptionData) throws JAXBException {
-        String result = "";
-
         ExceptionType exception = new ExceptionType();
         exception.setExceptionCode(exceptionData.getErrorCode());
         exception.setExceptionText(exceptionData.getErrorMessage());
+        exception.setLocator(exceptionData.getLocator());
 
         JAXBElement<ExceptionType> root = owsFactory.createException(exception);
         StringWriter sw = new StringWriter();
         marshaller.marshal(root, sw);
 
-        return result;
+        return sw.toString();
     }
 
 }

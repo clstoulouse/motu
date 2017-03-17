@@ -52,6 +52,10 @@ public class SubsetHTTPParameterValidator extends AbstractHTTPParameterValidator
 
     @Override
     protected String getParameterBoundaries() {
+        return getParameterBoundariesAsString();
+    }
+
+    public String getParameterBoundariesAsString() {
         return "[paramName(lowerValue,upperValue)]";
     }
 }

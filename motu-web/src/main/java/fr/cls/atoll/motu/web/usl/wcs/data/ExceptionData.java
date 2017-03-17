@@ -7,6 +7,7 @@ public class ExceptionData {
 
     private String errorCode;
     private List<String> errorMessage;
+    private String locator;
 
     public ExceptionData() {
         errorCode = "";
@@ -29,4 +30,11 @@ public class ExceptionData {
         this.errorMessage = errorMessage;
     }
 
+    public String getLocator() {
+        return locator;
+    }
+
+    public void setLocator(String locator) {
+        this.locator = locator;
+    }
 }

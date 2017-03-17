@@ -46,6 +46,10 @@ public class ServiceHTTPParameterValidator extends AbstractHTTPParameterValidato
 
     @Override
     protected String getParameterBoundaries() {
+        return getParameterBoundariesAsString();
+    }
+
+    public static String getParameterBoundariesAsString() {
         return "[WCS]";
     }
 }

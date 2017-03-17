@@ -46,6 +46,10 @@ public class AcceptVersionsHTTPParameterValidator extends AbstractHTTPParameterV
 
     @Override
     protected String getParameterBoundaries() {
+        return getParameterBoundariesAsString();
+    }
+
+    public static String getParameterBoundariesAsString() {
         return "[2.0.1]";
     }
 }
