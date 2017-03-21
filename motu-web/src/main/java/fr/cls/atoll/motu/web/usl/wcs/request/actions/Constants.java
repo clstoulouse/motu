@@ -12,8 +12,9 @@ public class Constants {
     public static final String INVALID_PARAMETER_VALUE_CODE = "InvalidParameterValue";
     public static final String NO_APPLICABLE_CODE_CODE = "NoApplicableCode";
     public static final String INVALID_SUBSETTING_CODE = "InvalidSubsetting";
-    public static final String NO_SUCH_COVERAGE = "NoSuchCoverage";
-    public static final String EMPTY_COVERAGE_ID_LIST = "emptyCoverageIdList";
+    public static final String NO_SUCH_COVERAGE_CODE = "NoSuchCoverage";
+    public static final String EMPTY_COVERAGE_ID_LIST_CODE = "emptyCoverageIdList";
+    public static final String INVALID_AXIS_LABEL_CODE = "InvalidAxisLabel";
 
     public static final AxisType TIME_AXIS = AxisType.Time;
     public static final AxisType LAT_AXIS = AxisType.Lat;

@@ -7,6 +7,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.api.message.xml.StatusModeType;
+import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
@@ -43,19 +45,55 @@ public class WCSRequestManager implements IWCSRequestManager {
     @Override
     public void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws MotuException {
         String serviceValue = WCSHTTPParameters.getServiceFromRequest(request);
+        Long requestId = -1L;
         if (validateService(response, serviceValue)) {
             String versionValue = WCSHTTPParameters.getAcceptVersionsFromRequest(request);
             if (validateVersion(response, versionValue)) {
                 try {
-                    executeRequest(request, response);
+                    String action = WCSHTTPParameters.getRequestFromRequest(request);
+                    AbstractAction actionInst = retrieveActionFromHTTPParameters(request, response);
+                    if (actionInst != null) {
+                        try {
+                            if (WCSGetCoverageAction.ACTION_NAME.equals(action)) {
+                                actionInst.doAction();
+                            } else {
+                                requestId = BLLManager.getInstance().getRequestManager().initRequest(actionInst);
+                                BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.INPROGRESS);
+                                actionInst.doAction();
+                                BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.DONE);
+                            }
+                        } catch (InvalidHTTPParameterException e) {
+                            if (requestId != -1L) {
+                                BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.ERROR);
+                            }
+                            if (e.getParameterValue() == null) {
+                                Utils.onError(response,
+                                              "",
+                                              Constants.MISSING_PARAMETER_VALUE_CODE,
+                                              ErrorType.WCS_MISSING_PARAMETER_VALUE,
+                                              e.getParameterName());
+                            } else {
+                                Utils.onError(response,
+                                              "",
+                                              Constants.INVALID_PARAMETER_VALUE_CODE,
+                                              ErrorType.WCS_INVALID_PARAMETER_VALUE,
+                                              e.getParameterName(),
+                                              e.getParameterValue(),
+                                              e.getParameterBoundaries());
+                            }
+                        }
+                    }
                 } catch (Exception e) {
+                    if (requestId != -1L) {
+                        BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.ERROR);
+                    }
                     Utils.onException(response, "", Constants.NO_APPLICABLE_CODE_CODE, ErrorType.WCS_NO_APPLICABLE_CODE, e);
                 }
             }
         }
     }
 
-    private void executeRequest(HttpServletRequest request, HttpServletResponse response) throws MotuException {
+    private AbstractAction retrieveActionFromHTTPParameters(HttpServletRequest request, HttpServletResponse response) throws MotuException {
         String requestValue = WCSHTTPParameters.getRequestFromRequest(request);
         AbstractAction actionInst = null;
         if (requestValue != null) {
@@ -78,30 +116,10 @@ public class WCSRequestManager implements IWCSRequestManager {
                               requestValue,
                               RequestHTTPParameterValidator.getParameterBoundariesAsString());
             }
-            if (actionInst != null) {
-                try {
-                    actionInst.doAction();
-                } catch (InvalidHTTPParameterException e) {
-                    if (e.getParameterValue() == null) {
-                        Utils.onError(response,
-                                      "",
-                                      Constants.MISSING_PARAMETER_VALUE_CODE,
-                                      ErrorType.WCS_MISSING_PARAMETER_VALUE,
-                                      e.getParameterName());
-                    } else {
-                        Utils.onError(response,
-                                      "",
-                                      Constants.INVALID_PARAMETER_VALUE_CODE,
-                                      ErrorType.WCS_INVALID_PARAMETER_VALUE,
-                                      e.getParameterName(),
-                                      e.getParameterValue(),
-                                      e.getParameterBoundaries());
-                    }
-                }
-            }
         } else {
             Utils.onError(response, "", Constants.MISSING_PARAMETER_VALUE_CODE, ErrorType.WCS_MISSING_PARAMETER_VALUE, WCSHTTPParameters.REQUEST);
         }
+        return actionInst;
     }
 
     private boolean validateService(HttpServletResponse response, String serviceValue) throws MotuException {

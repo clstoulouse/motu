@@ -169,11 +169,11 @@ public class WCSDescribeCoverageAction extends AbstractAction {
     }
 
     private void noSuchCoverageError(String coverageId) throws MotuException {
-        Utils.onError(getResponse(), getActionCode(), coverageId, Constants.NO_SUCH_COVERAGE, ErrorType.WCS_NO_SUCH_COVERAGE, coverageId);
+        Utils.onError(getResponse(), getActionCode(), coverageId, Constants.NO_SUCH_COVERAGE_CODE, ErrorType.WCS_NO_SUCH_COVERAGE, coverageId);
     }
 
     private void emptyCoverageIdListError() throws MotuException {
-        Utils.onError(getResponse(), getActionCode(), Constants.EMPTY_COVERAGE_ID_LIST, ErrorType.WCS_EMPTY_COVERAGE_ID_LIST);
+        Utils.onError(getResponse(), getActionCode(), Constants.EMPTY_COVERAGE_ID_LIST_CODE, ErrorType.WCS_EMPTY_COVERAGE_ID_LIST);
     }
 
     private fr.cls.atoll.motu.web.usl.wcs.data.DescribeCoverageData buildDGFDescribeCoverage(String coverageId, Product product)

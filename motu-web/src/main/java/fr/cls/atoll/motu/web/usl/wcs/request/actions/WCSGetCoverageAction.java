@@ -138,7 +138,7 @@ public class WCSGetCoverageAction extends AbstractAction {
 
             if (startSepIndex > 0 && middleSepIndex > startSepIndex && endSepIndex > middleSepIndex) {
                 String subsetName = subsetValue.substring(0, startSepIndex);
-                if (Utils.contains(Constants.AVAILABLE_AXIS, subsetName)) {
+                if (Utils.contains(Constants.AVAILABLE_AXIS, subsetName) || AxisType.Time.name().equals(subsetName)) {
                     BigInteger[] subsetMinMaxValues = new BigInteger[2];
                     subsetMinMaxValues[0] = new BigInteger(subsetValue.substring(startSepIndex + 1, middleSepIndex));
                     subsetMinMaxValues[1] = new BigInteger(subsetValue.substring(middleSepIndex + 1, endSepIndex));
@@ -207,16 +207,16 @@ public class WCSGetCoverageAction extends AbstractAction {
                     } else {
                         Utils.onError(getResponse(),
                                       getActionCode(),
-                                      Constants.NO_SUCH_COVERAGE,
+                                      Constants.NO_SUCH_COVERAGE_CODE,
                                       ErrorType.WCS_NO_SUCH_COVERAGE,
                                       coverageId,
                                       coverageId);
                     }
                 } else {
-                    Utils.onError(getResponse(), getActionCode(), coverageId, Constants.NO_SUCH_COVERAGE, ErrorType.WCS_NO_SUCH_COVERAGE, coverageId);
+                    Utils.onError(getResponse(), getActionCode(), coverageId, Constants.NO_SUCH_COVERAGE_CODE, ErrorType.WCS_NO_SUCH_COVERAGE, coverageId);
                 }
             } else {
-                Utils.onError(getResponse(), getActionCode(), coverageId, Constants.NO_SUCH_COVERAGE, ErrorType.WCS_NO_SUCH_COVERAGE, coverageId);
+                Utils.onError(getResponse(), getActionCode(), coverageId, Constants.NO_SUCH_COVERAGE_CODE, ErrorType.WCS_NO_SUCH_COVERAGE, coverageId);
             }
         } else {
             Utils.onError(getResponse(),
