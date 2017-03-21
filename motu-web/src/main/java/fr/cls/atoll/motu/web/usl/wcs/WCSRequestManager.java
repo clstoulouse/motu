@@ -87,7 +87,17 @@ public class WCSRequestManager implements IWCSRequestManager {
                     if (requestId != -1L) {
                         BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.ERROR);
                     }
-                    Utils.onException(response, "", Constants.NO_APPLICABLE_CODE_CODE, ErrorType.WCS_NO_APPLICABLE_CODE, e);
+                    if (e instanceof MotuException && ((MotuException) e).getErrorType().equals(ErrorType.WCS_INVALID_AXIS_LABEL)) {
+                        MotuException motuException = (MotuException) e;
+                        Utils.onException(response,
+                                          "103",
+                                          Constants.INVALID_AXIS_LABEL_CODE,
+                                          ErrorType.WCS_INVALID_AXIS_LABEL,
+                                          e,
+                                          motuException.getErrorArguments());
+                    } else {
+                        Utils.onException(response, "", Constants.NO_APPLICABLE_CODE_CODE, ErrorType.WCS_NO_APPLICABLE_CODE, e);
+                    }
                 }
             }
         }
@@ -150,8 +160,8 @@ public class WCSRequestManager implements IWCSRequestManager {
         } else if (!versionValue.toUpperCase().contains(Constants.WCS_VERSION_VALUE)) {
             Utils.onError(response,
                           "",
-                          Constants.INVALID_PARAMETER_VALUE_CODE,
-                          ErrorType.WCS_INVALID_PARAMETER_VALUE,
+                          Constants.VERSION_NEGOTIATION_FAILED_CODE,
+                          ErrorType.WCS_VERSION_NEGOTIATION_FAILED,
                           WCSHTTPParameters.ACCEPT_VERSIONS,
                           versionValue,
                           AcceptVersionsHTTPParameterValidator.getParameterBoundariesAsString());

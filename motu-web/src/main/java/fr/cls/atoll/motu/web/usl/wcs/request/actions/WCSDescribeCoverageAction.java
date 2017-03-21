@@ -223,7 +223,7 @@ public class WCSDescribeCoverageAction extends AbstractAction {
 
         // p.getTimeAxisData()
 
-        for (AxisType currentAxisType : Constants.AVAILABLE_AXIS) {
+        for (AxisType currentAxisType : Constants.SUBSETTER_AVAILABLE_AXIS) {
             CoordinateAxis currentCoordinateAxis = product.getProductMetaData().getCoordinateAxes().get(currentAxisType);
             if (currentCoordinateAxis != null) {
                 BigInteger minValue = BigInteger

@@ -140,7 +140,9 @@ public enum ErrorType {
     @XmlEnumValue("106")
     WCS_EMPTY_COVERAGE_ID_LIST(106),
     @XmlEnumValue("107")
-    WCS_INVALID_SUBSETTING(107);
+    WCS_INVALID_SUBSETTING(107),
+    @XmlEnumValue("108")
+    WCS_INVALID_AXIS_LABEL(108);
     
     
 	

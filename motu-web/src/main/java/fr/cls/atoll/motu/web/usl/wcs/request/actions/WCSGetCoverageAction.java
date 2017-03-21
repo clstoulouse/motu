@@ -138,14 +138,10 @@ public class WCSGetCoverageAction extends AbstractAction {
 
             if (startSepIndex > 0 && middleSepIndex > startSepIndex && endSepIndex > middleSepIndex) {
                 String subsetName = subsetValue.substring(0, startSepIndex);
-                if (Utils.contains(Constants.AVAILABLE_AXIS, subsetName) || AxisType.Time.name().equals(subsetName)) {
-                    BigInteger[] subsetMinMaxValues = new BigInteger[2];
-                    subsetMinMaxValues[0] = new BigInteger(subsetValue.substring(startSepIndex + 1, middleSepIndex));
-                    subsetMinMaxValues[1] = new BigInteger(subsetValue.substring(middleSepIndex + 1, endSepIndex));
-                    subsetValues.put(subsetName, subsetMinMaxValues);
-                } else {
-                    throw new InvalidHTTPParameterException(subsetName, subsetValue, "");
-                }
+                BigInteger[] subsetMinMaxValues = new BigInteger[2];
+                subsetMinMaxValues[0] = new BigInteger(subsetValue.substring(startSepIndex + 1, middleSepIndex));
+                subsetMinMaxValues[1] = new BigInteger(subsetValue.substring(middleSepIndex + 1, endSepIndex));
+                subsetValues.put(subsetName, subsetMinMaxValues);
             } else {
                 throw new InvalidHTTPParameterException(
                         subsetValidator.getParameterName(),
@@ -153,6 +149,7 @@ public class WCSGetCoverageAction extends AbstractAction {
                         subsetValidator.getParameterBoundariesAsString());
             }
         }
+
     }
 
     /** {@inheritDoc} */
@@ -182,7 +179,7 @@ public class WCSGetCoverageAction extends AbstractAction {
                                 parameters = createExtractionParametersDGF(serviceName, productId, p);
                                 break;
                             case "TDS":
-                                parameters = createExtractionParameters(serviceName, productId, p);
+                                parameters = createExtractionParametersSubsetter(serviceName, productId, p);
                                 break;
                             default:
                                 break;
@@ -213,10 +210,20 @@ public class WCSGetCoverageAction extends AbstractAction {
                                       coverageId);
                     }
                 } else {
-                    Utils.onError(getResponse(), getActionCode(), coverageId, Constants.NO_SUCH_COVERAGE_CODE, ErrorType.WCS_NO_SUCH_COVERAGE, coverageId);
+                    Utils.onError(getResponse(),
+                                  getActionCode(),
+                                  coverageId,
+                                  Constants.NO_SUCH_COVERAGE_CODE,
+                                  ErrorType.WCS_NO_SUCH_COVERAGE,
+                                  coverageId);
                 }
             } else {
-                Utils.onError(getResponse(), getActionCode(), coverageId, Constants.NO_SUCH_COVERAGE_CODE, ErrorType.WCS_NO_SUCH_COVERAGE, coverageId);
+                Utils.onError(getResponse(),
+                              getActionCode(),
+                              coverageId,
+                              Constants.NO_SUCH_COVERAGE_CODE,
+                              ErrorType.WCS_NO_SUCH_COVERAGE,
+                              coverageId);
             }
         } else {
             Utils.onError(getResponse(),
@@ -252,12 +259,13 @@ public class WCSGetCoverageAction extends AbstractAction {
     }
 
     private ExtractionParameters createExtractionParametersDGF(String serviceName, String productId, Product product)
-            throws InvalidSubsettingException {
+            throws InvalidSubsettingException, MotuException {
         Long minTime = product.getProductMetaData().getTimeCoverage().getStart().getMillis() / 1000;
         Long maxTime = product.getProductMetaData().getTimeCoverage().getEnd().getMillis() / 1000;
         Long subsetTimeLowValue = subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MIN_INDEX].longValue();
         Long subsetTimeHighValue = subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MAX_INDEX].longValue();
 
+        checkValidityOfSubsetParameterName(Constants.DGF_AVAILABLE_AXIS);
         manageSubsetting(Constants.TIME_AXIS, product, minTime, maxTime, subsetTimeLowValue, subsetTimeHighValue);
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 serviceName,
@@ -282,13 +290,14 @@ public class WCSGetCoverageAction extends AbstractAction {
         return extractionParameters;
     }
 
-    private ExtractionParameters createExtractionParameters(String serviceName, String productId, Product product)
+    private ExtractionParameters createExtractionParametersSubsetter(String serviceName, String productId, Product product)
             throws InvalidSubsettingException, MotuException {
         Long minTime = product.getProductMetaData().getTimeAxisMinValue().getTime() / 1000;
         Long maxTime = product.getProductMetaData().getTimeAxisMaxValue().getTime() / 1000;
         Long subsetTimeLowValue = subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MIN_INDEX].longValue();
         Long subsetTimeHighValue = subsetValues.get(Constants.TIME_AXIS.name())[SUBSET_MAX_INDEX].longValue();
 
+        checkValidityOfSubsetParameterName(Constants.ALL_AVAILABLE_AXIS);
         manageSubsetting(Constants.TIME_AXIS, product, minTime, maxTime, subsetTimeLowValue, subsetTimeHighValue);
         manageSubsettings(product);
 
@@ -320,8 +329,25 @@ public class WCSGetCoverageAction extends AbstractAction {
         return extractionParameters;
     }
 
+    private void checkValidityOfSubsetParameterName(AxisType[] authorizedParameters) throws MotuException {
+        StringBuffer badSubsetParameterNames = new StringBuffer();
+        for (Map.Entry<String, BigInteger[]> subsetParam : subsetValues.entrySet()) {
+            if (!(Utils.contains(authorizedParameters, subsetParam.getKey()))) {
+                badSubsetParameterNames.append(subsetParam.getKey());
+            }
+        }
+        for (AxisType currentAxisType : authorizedParameters) {
+            if (!subsetValues.containsKey(currentAxisType.name())) {
+                badSubsetParameterNames.append(currentAxisType.name());
+            }
+        }
+        if (badSubsetParameterNames.length() != 0) {
+            throw new MotuException(ErrorType.WCS_INVALID_AXIS_LABEL, "", badSubsetParameterNames.toString());
+        }
+    }
+
     private void manageSubsettings(Product product) throws InvalidSubsettingException {
-        for (AxisType currentAxis : Constants.AVAILABLE_AXIS) {
+        for (AxisType currentAxis : Constants.SUBSETTER_AVAILABLE_AXIS) {
             CoordinateAxis currentCoordinateAxis = product.getProductMetaData().getCoordinateAxes().get(currentAxis);
             if (currentCoordinateAxis != null) {
                 manageSubsetting(currentAxis,
@@ -331,6 +357,7 @@ public class WCSGetCoverageAction extends AbstractAction {
                                  subsetValues.get(currentAxis.name())[SUBSET_MIN_INDEX].doubleValue(),
                                  subsetValues.get(currentAxis.name())[SUBSET_MAX_INDEX].doubleValue());
             }
+
         }
     }
 

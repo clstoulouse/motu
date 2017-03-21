@@ -21,7 +21,9 @@ public class Constants {
     public static final AxisType LON_AXIS = AxisType.Lon;
     public static final AxisType HEIGHT_AXIS = AxisType.Height;
 
-    public static final AxisType[] AVAILABLE_AXIS = { LAT_AXIS, LON_AXIS, HEIGHT_AXIS };
+    public static final AxisType[] SUBSETTER_AVAILABLE_AXIS = { LAT_AXIS, LON_AXIS, HEIGHT_AXIS };
+    public static final AxisType[] DGF_AVAILABLE_AXIS = { TIME_AXIS };
+    public static final AxisType[] ALL_AVAILABLE_AXIS = { TIME_AXIS, LAT_AXIS, LON_AXIS, HEIGHT_AXIS };
 
     public static final String NETCDF_MIME_TYPE = "application/netcdf";
 }
