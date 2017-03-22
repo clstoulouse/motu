@@ -1686,7 +1686,54 @@ You can connect to Motu by using a web browser or a client.
 ## <a name="ClientPython">Python client</a>   
 Motu offers an easy to use Python client. Very useful in machine to machine context, it enables to download data by running a python script. Project and all its documentation is available at [https://github.com/clstoulouse/motu-client-python](https://github.com/clstoulouse/motu-client-python).
   
-  
+## <a name="OGC_WCS_API">OGC WCS API</a>  
+Motu offers a Web Service interface which respect the OGC WCS standard. To have more details about this standard, it's possible to consult the following document on the OGC web site:
+* 09-110r4_WCS_Core_2.0.1.pdf
+* 09-147_WCS_2.0_Extension_--_KVP_Protocol.pdf
+
+The available Web Services are
+* GetCapabilities
+* DescribeCoverage
+* GetCoverage 
+
+### <a name="GetCapabilities">Get Capabilities</a>
+
+The GetCapabilities request retrieve all the available product on the motu WCS Web Services.
+
+The required parameters are
+* service: the possible value is "WCS".
+* version : the possible value is "2.0.1".
+* request : the required value is "GetCapabilties"
+
+### <a name="DescribeCoverage">Describe Coverage</a>
+
+The DescribeCoverage request retrieve the parameters description and the list of available  variables.
+For the parameters description, the low and high possible value are provided.
+
+The required parameters are
+* service: the possible value is "WCS".
+* version : the possible value is "2.0.1".
+* request : the required value is "DescribeCoverage"
+* coverageId : the list of ident of the required coverage. Each coverage ident are separated by a comma (,).
+
+### <a name="GetCoverage">Get Coverage</a>
+
+The GetCoverage request retrieve the coverage of a product using some filtering parameters and a list of required variables.
+
+The required parameters are
+* service: the possible value is "WCS".
+* version : the possible value is "2.0.1".
+* request : the required value is "DescribeCoverage"
+* coverageId : the ident of the required coverage
+* subset : the list of filtering parameters. 
+	* To define a filtering parameter, the following format have to be respected:<br/>
+	For the Time parameter:<br/>
+	SUBSET=Time(lowTimeValue,highTimeValue)
+	* To define multiple filtering parameter, the following format have to be respected:<br/>
+	For the Latitude and the Longitue:<br/> 
+	SUBSET=Lat(lowLatValue,highLatValue)&SUBSET=Lon(lowLonValue,highLonValue)
+*rangesubset : the list of required variable for the coverage. Each variable have to be separated by a comma (,)
+
 ## <a name="ClientRESTAPI">MOTU REST API</a>   
 __MOTU REST API__ lets you use Motu server services.  
 All URLs have always the same pattern: http://motuServer/${context}/Motu?action=$actionName  
