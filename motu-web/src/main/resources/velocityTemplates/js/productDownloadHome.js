@@ -852,6 +852,8 @@ function closeScriptCmdWin() {
   var z_lo = theForm.elements['z_lo'];
   var z_hi = theForm.elements['z_hi'];
 
+  var output_format = theForm.elements['output'].value;
+  
   var variables = theForm.elements['variable'];
 
   var url = new String(location.href);
@@ -905,6 +907,11 @@ function closeScriptCmdWin() {
   if (z_hi != null) {
 	  cmd += " -Z " + q + z_hi.value + q;
   }
+  
+  if(output_format != null){
+	  cmd += " -outputWritten " + q + output_format + q;
+  }
+  
   var nVar = 0;
   var varOptions = "";
   if (variables != null) {
