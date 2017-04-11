@@ -135,8 +135,6 @@ public class NetCdfSubsetService {
     private long readingTimeInNanoSec = 0L;
     private long writingTimeInNanoSec = 0L;
 
-    private Double rightLonIn360;
-
     /**
      * Setter of the time subset setup .
      * 
@@ -330,28 +328,30 @@ public class NetCdfSubsetService {
 
         // Create folder to store intermediate files
         depthTempDir = Files.createTempDirectory("motu_depth_concat");
-        depthTempDir.toFile().deleteOnExit();
+        try {
+            depthTempDir.toFile().deleteOnExit();
 
-        // For every depth
-        for (int z = depthRange.first(); z <= depthRange.last(); z += depthRange.stride()) {
-            depthSelected = depthAxis.getDouble(z);
-            depthTempFname = "depth_concat_" + depthSelected;
-            unitRequestNCSS();
+            // For every depth
+            for (int z = depthRange.first(); z <= depthRange.last(); z += depthRange.stride()) {
+                depthSelected = depthAxis.getDouble(z);
+                depthTempFname = "depth_concat_" + depthSelected;
+                unitRequestNCSS();
+            }
+
+            // Concatenate with NCO
+            String cmd = "cdo.sh merge " + depthTempDir + "/* " + outputDir + "/" + outputFile;
+            Process p = Runtime.getRuntime().exec(cmd);
+            new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(p.getInputStream())), LOGGER, Type.INFO)).start();
+            new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(p.getErrorStream())), LOGGER, Type.ERROR)).start();
+            int exitValue = p.waitFor();
+
+            if (exitValue != 0) {
+                throw new MotuException(ErrorType.NETCDF_GENERATION, "The generation of the NC file failled. See the log for more information.");
+            }
+        } finally {
+            // Cleanup directory and intermediate files (right away once concat)
+            FileUtils.deleteDirectory(depthTempDir.toFile());
         }
-
-        // Concatenate with NCO
-        String cmd = "cdo.sh merge " + depthTempDir + "/* " + outputDir + "/" + outputFile;
-        Process p = Runtime.getRuntime().exec(cmd);
-        new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(p.getInputStream())), LOGGER, Type.INFO)).start();
-        new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(p.getErrorStream())), LOGGER, Type.ERROR)).start();
-        int exitValue = p.waitFor();
-
-        if (exitValue != 0) {
-            throw new MotuException(ErrorType.NETCDF_GENERATION, "The generation of the NC file failled. See the log for more information.");
-        }
-
-        // Cleanup directory and intermediate files (right away once concat)
-        FileUtils.deleteDirectory(depthTempDir.toFile());
     }
 
     /**
@@ -364,12 +364,13 @@ public class NetCdfSubsetService {
 
         // Geographical subset
         String north = String.valueOf(geoSubset.getUpperLeftLat());
-        String west = String.valueOf(geoSubset.getUpperLeftLon());
-        String east = String.valueOf(geoSubset.getUpperRightLon());
-        // Hack to manage request on dataset boundaries 0 360 with TDS successfully
-        if (rightLonIn360 != null) {
-            east = String.valueOf(rightLonIn360);
+        double westDbl = geoSubset.getUpperLeftLon();
+        String west = String.valueOf(westDbl);
+        double eastSuperiorToWestLong = geoSubset.getUpperRightLon();
+        while (eastSuperiorToWestLong < westDbl) {
+            eastSuperiorToWestLong += 360;
         }
+        String east = String.valueOf(eastSuperiorToWestLong);
         String south = String.valueOf(geoSubset.getLowerLeftLat());
 
         // Temporal subset (W3C format supported by TDS)
@@ -463,7 +464,7 @@ public class NetCdfSubsetService {
             } else {
                 throw new MotuException(
                         ErrorType.SYSTEM,
-                        "HTTP call to " + ncssURL + " returns code=" + response.getClientResponseStatus().getStatusCode() + ", Query params="
+                        "HTTP request returns code=" + response.getClientResponseStatus().getStatusCode() + " call to " + ncssURL + ", Query params="
                                 + queryParams);
             }
         } catch (MotuException e) {
@@ -487,15 +488,6 @@ public class NetCdfSubsetService {
 
     public void setWritingTimeInNanoSec(long writingTimeInNanoSec) {
         this.writingTimeInNanoSec = writingTimeInNanoSec;
-    }
-
-    /**
-     * Hack to manage 0-360 datasets with ncss
-     * 
-     * @param rightLon
-     */
-    public void setRightLonIn360(double rightLonIn360_) {
-        rightLonIn360 = rightLonIn360_;
     }
 
 }
