@@ -16,11 +16,14 @@ import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.common.utils.CoordinateUtils;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer.Type;
 import fr.cls.atoll.motu.web.dal.request.IDALRequestManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis1D;
 
 /**
  * <br>
@@ -82,50 +85,54 @@ public class CDOJob implements Runnable {
 
             // Create a temporary directory into tmp directory to save the 2 generated files
             Path tempDirectory = Files.createTempDirectory("LeftAndRightRequest");
-            ncss.setOutputDir(tempDirectory.toString());
+            try {
+                ncss.setOutputDir(tempDirectory.toString());
 
-            List<String> filesPath = new ArrayList<>();
+                List<String> filesPath = new ArrayList<>();
 
-            int i = 0;
-            long rangesLength = 0;
-            for (ExtractCriteriaLatLon currentRange : rangesToRequest) {
-                rangesLength += Math.abs(Math.abs(currentRange.getLatLonRect().getLonMax()) - Math.abs(currentRange.getLatLonRect().getLonMin()));
-                ncss.setGeoSubset(currentRange);
-                ncss.setOutputFile(i + "-" + fname);
-                dalRequestManager.ncssRequest(rds, ncss);
-                filesPath.add(Paths.get(tempDirectory.toString(), ncss.getOutputFile()).toString());
-                i++;
+                int i = 0;
+                double rangesLength = 0;
+                for (ExtractCriteriaLatLon currentRange : rangesToRequest) {
+                    rangesLength += Math.abs(currentRange.getLatLonRect().getLonMax() - currentRange.getLatLonRect().getLonMin());
+                    ncss.setGeoSubset(currentRange);
+                    ncss.setOutputFile(i + "-" + fname);
+                    dalRequestManager.ncssRequest(rds, ncss);
+                    filesPath.add(Paths.get(tempDirectory.toString(), ncss.getOutputFile()).toString());
+                    i++;
+                }
+
+                // Concatenate with NCO
+                // Set the merge command
+                String cmd = "merge.sh ";
+                // Set the output file path
+                cmd += extractDirPath + "/" + fname;
+                // Set the start point
+                cmd += " " + latlon.getLowerLeftLon();
+                // Set the length
+                cmd += " " + rangesLength;
+
+                // Set the list of files to merge
+                for (String path : filesPath) {
+                    cmd += " " + path;
+                }
+                LOGGER.info("Start: " + cmd);
+                final Process process = Runtime.getRuntime().exec(cmd);
+
+                new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getInputStream())), LOGGER, Type.INFO)).start();
+                new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getErrorStream())), LOGGER, Type.ERROR)).start();
+
+                int exitValue = process.waitFor();
+                LOGGER.info("END [Exit code=" + exitValue + "] : " + cmd);
+
+                if (exitValue != 0) {
+                    throw new MotuException(ErrorType.SYSTEM, "The generation of the NC file failled. See the log for more information.");
+                }
+
+            } finally {
+                // Cleanup directory and intermediate files (right away once concat)
+                FileUtils.deleteDirectory(tempDirectory.toFile());
             }
 
-            // Concatenate with NCO
-            // Set the merge command
-            String cmd = "merge.sh ";
-            // Set the output file path
-            cmd += extractDirPath + "/" + fname;
-            // Set the start point
-            cmd += " " + latlon.getLowerLeftLon();
-            // Set the length
-            cmd += " " + rangesLength;
-
-            // Set the list of files to merge
-            for (String path : filesPath) {
-                cmd += " " + path;
-            }
-            LOGGER.info("Start: " + cmd);
-            final Process process = Runtime.getRuntime().exec(cmd);
-
-            new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getInputStream())), LOGGER, Type.INFO)).start();
-            new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getErrorStream())), LOGGER, Type.ERROR)).start();
-
-            int exitValue = process.waitFor();
-            LOGGER.info("END [Exit code=" + exitValue + "] : " + cmd);
-
-            // Cleanup directory and intermediate files (right away once concat)
-            FileUtils.deleteDirectory(tempDirectory.toFile());
-
-            if (exitValue != 0) {
-                throw new MotuException(ErrorType.SYSTEM, "The generation of the NC file failled. See the log for more information.");
-            }
         } catch (Exception e) {
             runningException = e;
         }
@@ -161,27 +168,38 @@ public class CDOJob implements Runnable {
         double leftLon = latLon.getLowerLeftLon();
         double rightLon = latLon.getLowerRightLon();
 
-        // If the leftLon value is negative
-        if (leftLon < 0) {
-            // The rightLon which is smaller than the leftLon is also negative.
-            // In this case the only possible alternative is 3 ranges (leftLon ; 0), (0 ; 180), (-180 ;
-            // rightLon)
-            ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), leftLon, latLon.getUpperRightLat(), 0));
-            ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), 0, latLon.getUpperRightLat(), 180));
-            ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), -180, latLon.getUpperRightLat(), rightLon));
-        } else {
-            // If the leftLon value is positive
-            if (rightLon > 0) {
-                // And the rightLon is positive also, so the alternative is (leftLon , 180), (-180 ; 0)
-                // (0 ; rightLon)
-                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), leftLon, latLon.getUpperRightLat(), 180));
-                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), -180, latLon.getUpperRightLat(), 0));
-                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), 0, latLon.getUpperRightLat(), rightLon));
+        // Check if it is a full world request
+        double axisXMin = CoordinateUtils.getLongitudeM180P180(p.getProductMetaData().getLonAxisMinValue());
+        double axisXMax = CoordinateUtils.getLongitudeGreaterOrEqualsThanLongitudeMin(p.getProductMetaData().getLonAxisMaxValue(), axisXMin);
+        // Get one resolution step
+        double xInc = ((CoordinateAxis1D) p.getProductMetaData().getCoordinateAxes(AxisType.Lon)).getIncrement();
+        axisXMax += xInc;
+
+        leftLon = CoordinateUtils.getLongitudeJustLowerThanLongitudeMax(CoordinateUtils
+                .getLongitudeGreaterOrEqualsThanLongitudeMin(latlon.getLowerLeftLon(), axisXMin), axisXMax);
+        rightLon = CoordinateUtils.getLongitudeGreaterOrEqualsThanLongitudeMin(latlon.getLowerRightLon(), axisXMin);
+
+        if (leftLon < rightLon) {
+            if (rightLon <= axisXMax) {
+                // [axisXMin] [[leftLon rightLon]] [axisXMax]
+                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), leftLon, latLon.getUpperRightLat(), rightLon));
             } else {
-                // Or if the rightLon is negative also, so the alternative is (leftLon ; 180)
-                // (-180 ; rightLon)
-                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), leftLon, latLon.getUpperRightLat(), 180));
-                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), -180, latLon.getUpperRightLat(), rightLon));
+                // [[leftLon [axisXMin] [axisXMax] rightLon]]
+                // [axisXMin] [[leftLon [axisXMax] rightLon]]
+                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), leftLon, latLon.getUpperRightLat(), axisXMax));
+                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), axisXMax, latLon.getUpperRightLat(), rightLon));
+            }
+        } else {
+            // leftLon >= rightLon
+            if (leftLon <= axisXMax) {
+                // [axisXMin] rightLon]] [[leftLon [axisXMax]
+                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), leftLon, latLon.getUpperRightLat(), axisXMax));
+                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), axisXMin, latLon.getUpperRightLat(), rightLon + xInc));
+            } else {
+                // Here we cut the easter boundary (axisXMax)
+                // 2 requests
+                // [axisXMin] rightLon]] [axisXMax] [[leftLon
+                ranges.add(new ExtractCriteriaLatLon(latLon.getLowerLeftLat(), leftLon, latLon.getUpperRightLat(), axisXMax));
             }
         }
 
