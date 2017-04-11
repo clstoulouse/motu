@@ -1,6 +1,9 @@
 package fr.cls.atoll.motu.web.dal.request;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Set;
 
@@ -34,8 +37,8 @@ import fr.cls.atoll.motu.web.dal.request.extractor.DALDatasetManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
-import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Variable;
@@ -162,8 +165,11 @@ public class DALRequestManager implements IDALRequestManager {
     private void fixSubsetterIssueToKeepOnlyOneLongitude(String ncFilePath_) throws IOException {
         // TODO smarty@cls.fr Here 2 longitudes are returned whereas only one longitude is asked
         // In order to return one point, nc file has to be updated
-        NetcdfFile ncFile = NetcdfFile.open(ncFilePath_);
-        NetcdfFileWriteable writer = NetcdfFileWriteable.createNew(ncFilePath_ + ".updated.nc");
+        String ncFilePath = ncFilePath_ + "-orig.nc";
+        Files.move(Paths.get(ncFilePath_), Paths.get(ncFilePath), StandardCopyOption.REPLACE_EXISTING);
+
+        NetcdfFile ncFile = NetcdfFile.open(ncFilePath);
+        NetcdfFileWriteable writer = NetcdfFileWriteable.createNew(ncFilePath_);
         ucar.nc2.Dimension dR;
         for (ucar.nc2.Dimension d : ncFile.getDimensions()) {
             String dimensionname = d.getName();
@@ -179,24 +185,32 @@ public class DALRequestManager implements IDALRequestManager {
                 writer.addDimension(null, d);
             }
         }
+
         for (Variable v : ncFile.getVariables()) {
-            if (v.getName().contains("lon")) {
+            if (v.getDimensionsString().contains("lon")) {
                 v.resetShape();
-                // v.invalidateCache();
-            }
-            if (v.getDimensions().size() == 3) {
-                Array data3D = v.read();
-                // Data that we want to keep => First longitude
-                // Array newDataSliced = data3D.slice(2, 0);
-                v.removeAttribute(v.getDimension(2).getName());
-                Attribute lonAttr = new Attribute(v.getDimension(2).getName(), data3D);
-                v.addAttribute(lonAttr);
             }
             writer.addVariable(null, v);
         }
-        writer.finish();
+        // Here ncFile has its longitude variable with only one value
+        // ncFile.close();
+        // ncFile = NetcdfFile.open(ncFilePath_);
         writer.create();
+        for (Variable v : ncFile.getVariables()) {
+            try {
+                Array ar = v.read();
+                // IndexIterator ii = ar.getIndexIterator();
+                // while (ii.hasNext())
+                // System.out.println(ii.getObjectNext());
+                writer.write(v.getName(), ar.copy());
+            } catch (InvalidRangeException e) {
+                LOGGER.error("Fixing one point issue: Error while writing", e);
+            }
+        }
+        writer.finish();
         writer.close();
+        ncFile.close();
+        Files.delete(Paths.get(ncFilePath));
     }
 
     private void runUniqRqt(NetCdfSubsetService ncss,
