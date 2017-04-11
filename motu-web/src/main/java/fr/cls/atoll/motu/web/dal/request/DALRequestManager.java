@@ -12,6 +12,7 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceedingCapacityException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateRangeException;
+import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDepthRangeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidLatLonRangeException;
 import fr.cls.atoll.motu.web.bll.exception.MotuNoVarException;
@@ -23,16 +24,23 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
+import fr.cls.atoll.motu.web.common.utils.CoordinateUtils;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.DALConfigManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.cdo.CDOManager;
 import fr.cls.atoll.motu.web.dal.request.cdo.ICDOManager;
 import fr.cls.atoll.motu.web.dal.request.extractor.DALDatasetManager;
+import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 import ucar.ma2.Array;
 import ucar.ma2.Range;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileWriteable;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis1D;
 
 /**
  * <br>
@@ -105,46 +113,128 @@ public class DALRequestManager implements IDALRequestManager {
         ncss.setOutputFormat(rds_.getRequestProduct().getExtractionParameters().getDataOutputFormat());
         ncss.setncssURL(rds_.getRequestProduct().getProduct().getLocationDataNCSS());
 
-        // Check if it is an antimeridien request
-        double rightLon = latlon.getLowerRightLon();
-        if (rds_.getRequestProduct().getProduct().getProductMetaData().getLonAxisMaxValue() > 350) {
-            rightLon = LatLonPointImpl.lonNormal360(rightLon);
-            ncss.setRightLonIn360(rightLon);
-        }
+        double leftLonRequested = latlon.getLowerLeftLon();
+        double rightLonRequested = latlon.getLowerRightLon();
 
-        // Check if the left longitude is greater than the right longitude
-        if (latlon.getLowerLeftLon() > rightLon) {
-            boolean canRequest = true;
-            if (rds_.getRequestProduct().getProduct().getProductMetaData().hasZAxis()) {
-                // Check if only one depth is requested. This is because the merge of two netcdf file needs a
-                // lot
-                // of RAM resources, so to avoid the server miss RAM we do not authorized request on several
-                // depths.
-                int fromDepthIndex = searchDepthIndex(rds_.getRequestProduct().getProduct().getZAxisRoundedDownDataAsString(2), depth.getFrom());
-                int toDepthIndex = searchDepthIndex(rds_.getRequestProduct().getProduct().getZAxisRoundedUpDataAsString(2), depth.getTo());
-                canRequest = fromDepthIndex != -1 && toDepthIndex != -1 && fromDepthIndex == toDepthIndex;
+        // Check if it is a full world request
+        // axisXMin coordinates always < 180
+        double axisXMin = CoordinateUtils.getLongitudeM180P180(rds_.getRequestProduct().getProduct().getProductMetaData().getLonAxisMinValue());
+        double axisXMax = CoordinateUtils
+                .getLongitudeGreaterOrEqualsThanLongitudeMin(rds_.getRequestProduct().getProduct().getProductMetaData().getLonAxisMaxValue(),
+                                                             axisXMin);
+        double leftLon = CoordinateUtils.getLongitudeJustLowerThanLongitudeMax(CoordinateUtils
+                .getLongitudeGreaterOrEqualsThanLongitudeMin(latlon.getLowerLeftLon(), axisXMin), axisXMax);
+        double rightLon = CoordinateUtils.getLongitudeGreaterOrEqualsThanLongitudeMin(latlon.getLowerRightLon(), axisXMin);
+
+        if (leftLon < rightLon) {
+            runUniqRqt(ncss,
+                       fname,
+                       extractDirPath,
+                       rds_,
+                       new ExtractCriteriaLatLon(latlon.getLatLonRect().getLatMin(), leftLon, latlon.getLatLonRect().getLatMax(), rightLon));
+        } else if (leftLon == rightLon && leftLonRequested == rightLonRequested) {
+            double xInc = ((CoordinateAxis1D) rds_.getRequestProduct().getProduct().getProductMetaData().getCoordinateAxes(AxisType.Lon))
+                    .getIncrement();
+            runUniqRqt(ncss,
+                       fname,
+                       extractDirPath,
+                       rds_,
+                       new ExtractCriteriaLatLon(latlon.getLatLonRect().getLatMin(), leftLon, latlon.getLatLonRect().getLatMax(), rightLon + xInc));
+            fixSubsetterIssueToKeepOnlyOneLongitude(extractDirPath + "/" + fname);
+        } else {
+            if (leftLon <= axisXMax) {
+                // [axisXMin] rightLon]] [[leftLon [axisXMax]
+                runWithSeveralRqt(ncss, fname, extractDirPath, rds_, rightLon);
+            } else {
+                // Here we cut the easter boundary (axisXMax)
+                // 2 requests
+                // [axisXMin] rightLon]] [axisXMax] [[leftLon
+                runUniqRqt(ncss,
+                           fname,
+                           extractDirPath,
+                           rds_,
+                           new ExtractCriteriaLatLon(latlon.getLowerLeftLat(), leftLon, latlon.getUpperRightLat(), axisXMax));
             }
-            if (canRequest) {
-                try {
-                    runRequestWithCDOMergeTool(rds_, ncss, latlon, extractDirPath, fname);
-                } catch (MotuException e) {
-                    throw e;
-                } catch (Exception e) {
-                    throw new MotuException(ErrorType.SYSTEM, "Error while running request with CDO merge tool", e);
+
+        }
+    }
+
+    private void fixSubsetterIssueToKeepOnlyOneLongitude(String ncFilePath_) throws IOException {
+        // TODO smarty@cls.fr Here 2 longitudes are returned whereas only one longitude is asked
+        // In order to return one point, nc file has to be updated
+        NetcdfFile ncFile = NetcdfFile.open(ncFilePath_);
+        NetcdfFileWriteable writer = NetcdfFileWriteable.createNew(ncFilePath_ + ".updated.nc");
+        ucar.nc2.Dimension dR;
+        for (ucar.nc2.Dimension d : ncFile.getDimensions()) {
+            String dimensionname = d.getName();
+            if (dimensionname.contains("lon")) {
+                if (d.getLength() > 1) {
+                    ucar.nc2.Dimension d2 = new ucar.nc2.Dimension(dimensionname, 1);
+                    writer.addDimension(null, d2);
+                    d.setLength(1);
+                } else {
+                    writer.addDimension(null, d);
                 }
             } else {
-                throw new MotuException(ErrorType.TOO_DEPTH_REQUESTED, "There is more than one depth in this request which needs merge procedure.");
+                writer.addDimension(null, d);
+            }
+        }
+        for (Variable v : ncFile.getVariables()) {
+            if (v.getName().contains("lon")) {
+                v.resetShape();
+                // v.invalidateCache();
+            }
+            if (v.getDimensions().size() == 3) {
+                Array data3D = v.read();
+                // Data that we want to keep => First longitude
+                // Array newDataSliced = data3D.slice(2, 0);
+                v.removeAttribute(v.getDimension(2).getName());
+                Attribute lonAttr = new Attribute(v.getDimension(2).getName(), data3D);
+                v.addAttribute(lonAttr);
+            }
+            writer.addVariable(null, v);
+        }
+        writer.finish();
+        writer.create();
+        writer.close();
+    }
+
+    private void runUniqRqt(NetCdfSubsetService ncss,
+                            String fname,
+                            String extractDirPath,
+                            RequestDownloadStatus rds_,
+                            ExtractCriteriaLatLon extractCriteriaLatLon)
+            throws MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, IOException, InterruptedException {
+        ncss.setOutputFile(fname);
+        ncss.setOutputDir(extractDirPath);
+        ncss.setGeoSubset(extractCriteriaLatLon);
+        ncssRequest(rds_, ncss);
+    }
+
+    private void runWithSeveralRqt(NetCdfSubsetService ncss, String fname, String extractDirPath, RequestDownloadStatus rds_, double rightLon)
+            throws MotuInvalidDepthRangeException, NetCdfVariableException, MotuException, IOException, InterruptedException {
+        ExtractCriteriaLatLon latlon = rds_.getRequestProduct().getCriteriaLatLon();
+        ExtractCriteriaDepth depth = rds_.getRequestProduct().getCriteriaDepth();
+        boolean canRequest = true;
+        if (rds_.getRequestProduct().getProduct().getProductMetaData().hasZAxis()) {
+            // Check if only one depth is requested. This is because the merge of two netcdf file needs a
+            // lot
+            // of RAM resources, so to avoid the server miss RAM we do not authorized request on several
+            // depths.
+            int fromDepthIndex = searchDepthIndex(rds_.getRequestProduct().getProduct().getZAxisRoundedDownDataAsString(2), depth.getFrom());
+            int toDepthIndex = searchDepthIndex(rds_.getRequestProduct().getProduct().getZAxisRoundedUpDataAsString(2), depth.getTo());
+            canRequest = fromDepthIndex != -1 && toDepthIndex != -1 && fromDepthIndex == toDepthIndex;
+        }
+        if (canRequest) {
+            try {
+                runRequestWithCDOMergeTool(rds_, ncss, latlon, extractDirPath, fname);
+            } catch (MotuException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new MotuException(ErrorType.SYSTEM, "Error while running request with CDO merge tool", e);
             }
         } else {
-            ncss.setOutputFile(fname);
-            ncss.setOutputDir(extractDirPath);
-            ncss.setGeoSubset(new ExtractCriteriaLatLon(
-                    latlon.getLatLonRect().getLatMin(),
-                    latlon.getLatLonRect().getLonMin(),
-                    latlon.getLatLonRect().getLatMax(),
-                    rightLon));
-
-            ncssRequest(rds_, ncss);
+            throw new MotuException(ErrorType.TOO_DEPTH_REQUESTED, "There is more than one depth in this request which needs merge procedure.");
         }
     }
 
@@ -166,7 +256,8 @@ public class DALRequestManager implements IDALRequestManager {
                                             NetCdfSubsetService ncss,
                                             ExtractCriteriaLatLon latlon,
                                             String extractDirPath,
-                                            String fname) throws Exception {
+                                            String fname)
+            throws Exception {
         cdoManager.runRequestWithCDOMergeTool(rds_, ncss, latlon, extractDirPath, fname, this);
     }
 
@@ -174,8 +265,12 @@ public class DALRequestManager implements IDALRequestManager {
         int i = -1;
         for (String currentDepth : listOfDepth) {
             i++;
-            if (Double.valueOf(currentDepth).equals(depthToSearch)) {
-                return i;
+            try {
+                if (NetCdfReader.unconvertDepth(currentDepth) == depthToSearch) {
+                    return i;
+                }
+            } catch (MotuInvalidDepthException e) {
+                LOGGER.error(e.getMessage());
             }
         }
         return i;
