@@ -83,9 +83,8 @@ public class WCSGetCapabilitiesAction extends AbstractAction {
         String request = requestHTTPParameterValidator.getParameterValueValidated();
 
         try {
-            String xmlResponses;
             try {
-                xmlResponses = Capabilities.getInstance().buildResponse(buildCapabilitiesData());
+                String xmlResponses = Capabilities.getInstance().buildResponse(buildCapabilitiesData());
                 getResponse().getWriter().write(xmlResponses);
             } catch (JAXBException | IOException e) {
                 throw new ActionException(e);
