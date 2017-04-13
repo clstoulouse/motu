@@ -60,7 +60,9 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
      * [Action codes](#LogCodeErrorsActionCode)  
      * [Error types](#LogCodeErrorsErrorType)  
 * [Motu clients & REST API](#ClientsAPI)
-  
+  * [Python client](#ClientPython)
+  * [OGC WCS API](#OGC_WCS_API)
+  * [REST API](#ClientRESTAPI) 
 # <a name="Overview">Overview</a>  
 Motu is a robust web server allowing the distribution of met/ocean gridded data files through the web. 
 Subsetter allows user to extract the data of a dataset, with geospatial, temporal and variable criterias. 
@@ -1713,9 +1715,225 @@ The Error Type Code    =>    A number defining a specific error on the server.
 You can connect to Motu by using a web browser or a client.
 
 ## <a name="ClientPython">Python client</a>   
-Motu offers an easy to use Python client. Very useful in machine to machine context, it enables to download data by running a python script. Project and all its documentation is available at [https://github.com/clstoulouse/motu-client-python](https://github.com/clstoulouse/motu-client-python).
+Motu offers an easy to use Python client. Very useful in machine to machine context, it enables to download data by running a python script.   
+Project and all its documentation is available at [https://github.com/clstoulouse/motu-client-python](https://github.com/clstoulouse/motu-client-python).
   
+## <a name="OGC_WCS_API">OGC WCS API</a>  
+Motu offers a Web Service interface which implements the OGC WCS standard described, in particular, by the two following documents on the OGC web site:  
+
+* [09-110r4_WCS_Core_2.0.1.pdf](https://portal.opengeospatial.org/files/09-110r4)
+* [09-147_WCS_2.0_Extension_--_KVP_Protocol.pdf](http://portal.opengeospatial.org/files/?artifact_id=36263&format=pdf)
+
+Available Web Services are:  
+
+* [Get capabilities](#GetCapabilities)
+* [Describe coverage](#DescribeCoverage)
+* [Get coverage](#GetCoverage)
+
+### <a name="GetCapabilities">WCS: Get Capabilities</a>
+
+The GetCapabilities request retrieves all available products defined on Motu server.
+
+
+__URL__: http://localhost:8080/motu-web/wcs?service=WCS&version=2.0.1&request=GetCapabilities
+
+__Parameters__:  
+
+* __service:__ Value is fixed to "WCS"
+* __version:__ Value is fixed to "2.0.1"
+* __request:__ Value is fixed to "GetCapabilties"
+
+__Return__: 
+A XML document as shown below:
+
+<pre>
+  <code>
+&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+&lt;ns3:Capabilities version="2.0.1" xmlns:ns6="http://www.opengis.net/swe/2.0" xmlns:ns5="http://www.opengis.net/gmlcov/1.0" xmlns:ns2="http://www.w3.org/1999/xlink" xmlns:ns1="http://www.opengis.net/ows/2.0" xmlns:ns4="http://www.opengis.net/gml/3.2" xmlns:ns3="http://www.opengis.net/wcs/2.0"&gt;
+    &lt;ns1:ServiceIdentification&gt;
+        &lt;ns1:Title&gt;Motu&lt;/ns1:Title&gt;
+        &lt;ns1:Abstract&gt;Motu WCS service&lt;/ns1:Abstract&gt;
+        &lt;ns1:ServiceType&gt;OGC WCS&lt;/ns1:ServiceType&gt;
+        &lt;ns1:ServiceTypeVersion&gt;2.0.1&lt;/ns1:ServiceTypeVersion&gt;
+        &lt;ns1:Profile&gt;http://www.opengis.net/spec/WCS/2.0/conf/core&lt;/ns1:Profile&gt;
+        &lt;ns1:Profile&gt;http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0/conf/get-kvp&lt;/ns1:Profile&gt;
+    &lt;/ns1:ServiceIdentification&gt;
+    &lt;ns1:OperationsMetadata&gt;
+        &lt;ns1:Operation name="GetCapabilities"&gt;
+            &lt;ns1:DCP&gt;
+                &lt;ns1:HTTP&gt;
+                    &lt;ns1:Get ns2:href="http://localhost:8080/motu-web/wcs"/&gt;
+                &lt;/ns1:HTTP&gt;
+            &lt;/ns1:DCP&gt;
+        &lt;/ns1:Operation&gt;
+        &lt;ns1:Operation name="DescribeCoverage"&gt;
+            &lt;ns1:DCP&gt;
+                &lt;ns1:HTTP&gt;
+                    &lt;ns1:Get ns2:href="http://localhost:8080/motu-web/wcs"/&gt;
+                &lt;/ns1:HTTP&gt;
+            &lt;/ns1:DCP&gt;
+        &lt;/ns1:Operation&gt;
+        &lt;ns1:Operation name="GetCoverage"&gt;
+            &lt;ns1:DCP&gt;
+                &lt;ns1:HTTP&gt;
+                    &lt;ns1:Get ns2:href="http://localhost:8080/motu-web/wcs"/&gt;
+                &lt;/ns1:HTTP&gt;
+            &lt;/ns1:DCP&gt;
+        &lt;/ns1:Operation&gt;
+    &lt;/ns1:OperationsMetadata&gt;
+    &lt;ns3:ServiceMetadata&gt;
+        &lt;ns3:formatSupported&gt;application/netcdf&lt;/ns3:formatSupported&gt;
+    &lt;/ns3:ServiceMetadata&gt;
+    &lt;ns3:Contents&gt;
+        &lt;ns3:CoverageSummary&gt;
+            &lt;ns3:CoverageId&gt;HR_MOD_NCSS-TDS@HR_MOD&lt;/ns3:CoverageId&gt;
+            &lt;ns3:CoverageSubtype&gt;ns3:GridCoverage&lt;/ns3:CoverageSubtype&gt;
+        &lt;/ns3:CoverageSummary&gt;
+
+            ...
+
+		&lt;/ns3:Contents&gt;
+&lt;/ns3:Capabilities&gt;
+  </code>
+</pre>
+
+
+
+### <a name="DescribeCoverage">WCS: Describe Coverage</a>
+
+The DescribeCoverage request retrieves the parameters description and the list of available  variables.
+For the parameters description, low and high values are provided.
+
+__URL__: http://localhost:8080/motu-web/wcs?service=WCS&version=2.0.1&request=DescribeCoverage&coverageId=$coverageId
+
+__Parameters__:  
+
+* __service:__ Value is fixed to "WCS"
+* __version:__ Value is fixed to "2.0.1"
+* __request:__ Value is fixed to "DescribeCoverage"
+* __coverageId:__ list of identifiers of the required coverages. Each coverage identifiers are separated by a comma (,). CoverageId are returned by the [GetCapabilities](#GetCapabilities) service.
+
+__Return__: 
+A XML document as shown below:
+
+<pre>
+  <code>
+  &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+&lt;ns4:CoverageDescriptions xmlns:ns6="http://www.opengis.net/ows/2.0"
+	xmlns:ns5="http://www.opengis.net/swe/2.0" xmlns:ns2="http://www.w3.org/1999/xlink"
+	xmlns:ns1="http://www.opengis.net/gml/3.2" xmlns:ns4="http://www.opengis.net/wcs/2.0"
+	xmlns:ns3="http://www.opengis.net/gmlcov/1.0"&gt;
+	&lt;ns4:CoverageDescription ns1:id="$covergaeId"&gt;
+		&lt;ns1:boundedBy&gt;
+			&lt;ns1:Envelope
+				uomLabels="latitude longitude depth date in seconds since 1970, 1 jan"
+				axisLabels="Lat Lon Height Time"&gt;
+				&lt;ns1:lowerCorner&gt;-80.0 -180.0 0.0 1.3565232E9&lt;/ns1:lowerCorner&gt;
+				&lt;ns1:upperCorner&gt;90.0 180.0 5728.0 1.4657328E9&lt;/ns1:upperCorner&gt;
+			&lt;/ns1:Envelope&gt;
+		&lt;/ns1:boundedBy&gt;
+		&lt;ns4:CoverageId&gt;$covergaeId&lt;/ns4:CoverageId&gt;
+		&lt;ns1:domainSet&gt;
+			&lt;ns1:Grid dimension="4"
+				uomLabels="latitude longitude depth date in seconds since 1970, 1 jan"
+				axisLabels="Lat Lon Height Time" ns1:id="Grid000"&gt;
+				&lt;ns1:limits&gt;
+					&lt;ns1:GridEnvelope&gt;
+						&lt;ns1:low&gt;-80 -180 0 1356523200&lt;/ns1:low&gt;
+						&lt;ns1:high&gt;90 180 5728 1465732800&lt;/ns1:high&gt;
+					&lt;/ns1:GridEnvelope&gt;
+				&lt;/ns1:limits&gt;
+			&lt;/ns1:Grid&gt;
+		&lt;/ns1:domainSet&gt;
+		&lt;ns3:rangeType&gt;
+			&lt;ns5:DataRecord&gt;
+				&lt;ns5:field name="uice"&gt;
+					&lt;ns5:Quantity&gt;
+						&lt;ns5:uom code="m s-1" /&gt;
+					&lt;/ns5:Quantity&gt;
+				&lt;/ns5:field&gt;
+				&lt;ns5:field name="salinity"&gt;
+					&lt;ns5:Quantity&gt;
+						&lt;ns5:uom code="1e-3" /&gt;
+					&lt;/ns5:Quantity&gt;
+				&lt;/ns5:field&gt;
+				&lt;ns5:field name="vice"&gt;
+					&lt;ns5:Quantity&gt;
+						&lt;ns5:uom code="m s-1" /&gt;
+					&lt;/ns5:Quantity&gt;
+				&lt;/ns5:field&gt;
+				&lt;ns5:field name="hice"&gt;
+					&lt;ns5:Quantity&gt;
+						&lt;ns5:uom code="m" /&gt;
+					&lt;/ns5:Quantity&gt;
+				&lt;/ns5:field&gt;
+				&lt;ns5:field name="u"&gt;
+					&lt;ns5:Quantity&gt;
+						&lt;ns5:uom code="m s-1" /&gt;
+					&lt;/ns5:Quantity&gt;
+				&lt;/ns5:field&gt;
+				&lt;ns5:field name="v"&gt;
+					&lt;ns5:Quantity&gt;
+						&lt;ns5:uom code="m s-1" /&gt;
+					&lt;/ns5:Quantity&gt;
+				&lt;/ns5:field&gt;
+				&lt;ns5:field name="temperature"&gt;
+					&lt;ns5:Quantity&gt;
+						&lt;ns5:uom code="K" /&gt;
+					&lt;/ns5:Quantity&gt;
+				&lt;/ns5:field&gt;
+				&lt;ns5:field name="ssh"&gt;
+					&lt;ns5:Quantity&gt;
+						&lt;ns5:uom code="m" /&gt;
+					&lt;/ns5:Quantity&gt;
+				&lt;/ns5:field&gt;
+				&lt;ns5:field name="fice"&gt;
+					&lt;ns5:Quantity&gt;
+						&lt;ns5:uom code="1" /&gt;
+					&lt;/ns5:Quantity&gt;
+				&lt;/ns5:field&gt;
+			&lt;/ns5:DataRecord&gt;
+		&lt;/ns3:rangeType&gt;
+	&lt;/ns4:CoverageDescription&gt;
+&lt;/ns4:CoverageDescriptions&gt;
+  </code>
+</pre>
+
   
+### <a name="GetCoverage">WCS: Get Coverage</a>
+
+The GetCoverage request is used to run an extraction on a dataset using some filtering parameters and a list of required variables.
+
+__URL__:  
+
+* __DGF__: http://localhost:8080/motu-web/wcs?service=WCS&version=2.0.1&request=GetCoverage&coverageId=$coverageId&subset=Time(1412157600,1412244000)
+* __Subetter__: http://localhost:8080/motu-web/wcs?service=WCS&version=2.0.1&request=GetCoverage&coverageId=$coverageId&subset=Time(1412157600,1412244000)&subset=Lat(50,70)&subset=Lon(0,10)&subset=Height(0,5728)&rangeSubset=temperature,salinity
+
+
+__Parameters__:   
+
+* __service:__ Value is fixed to "WCS"
+* __version:__ Value is fixed to "2.0.1"
+* __request:__ Value is fixed to "GetCoverage"
+* __coverageId:__ the identifier of the required coverage. CoverageId are returned by the [GetCapabilities](#GetCapabilities) service.
+* __subset:__ the list of filtering parameters.  
+	* To define one filtering parameter, the following format have to be respected:<br/>
+	For the Time parameter:
+	```
+	SUBSET=Time(lowTimeValue,highTimeValue)
+	```
+	* To define multiple filtering parameters, the following format have to be respected:<br/>
+	For the Latitude and the Longitue:
+	```
+	SUBSET=Lat(lowLatValue,highLatValue)&SUBSET=Lon(lowLonValue,highLonValue)
+	```  
+	In order to know which subset filters can be applied, you have to run a [DescribeCoverage](#DescribeCoverage) request.
+* __rangesubset:__ the list of required variables for the coverage. Each variable have to be separated by a comma (,)
+
+__Return__: 
+A Netcdf file.
+
+
 ## <a name="ClientRESTAPI">MOTU REST API</a>   
 __MOTU REST API__ lets you use Motu server services.  
 All URLs have always the same pattern: http://motuServer/${context}/Motu?action=$actionName  

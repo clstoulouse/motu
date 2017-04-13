@@ -113,4 +113,13 @@ public class BLLProductManager implements IBLLProductManager {
         return productDownloadHttpUrl;
     }
 
+    @Override
+    public String getProductPhysicalFilePath(String productFileName_) {
+        String productFilePath = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath();
+        if (!(productFilePath.endsWith("/"))) {
+            productFilePath += "/";
+        }
+        productFilePath += productFileName_;
+        return productFilePath;
+    }
 }

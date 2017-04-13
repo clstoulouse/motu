@@ -54,6 +54,14 @@ public interface IBLLProductManager {
     /**
      * .
      * 
+     * @param productFileName_
+     * @return
+     */
+    String getProductPhysicalFilePath(String productFileName_);
+
+    /**
+     * .
+     * 
      * @param productId
      * @return
      */

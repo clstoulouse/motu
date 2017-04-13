@@ -2,6 +2,7 @@ package fr.cls.atoll.motu.web.usl.request.parameter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -44,6 +45,19 @@ public class CommonHTTPParameters {
     /** Logger for this class. */
     private static final Logger LOGGER = LogManager.getLogger();
 
+    public static String getRequestParameterIgnoreCase(HttpServletRequest request, String parameter) {
+        String paramValue = null;
+        if (request.getParameterMap() != null) {
+            for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
+                if (entry.getKey().equalsIgnoreCase(parameter)) {
+                    paramValue = entry.getValue()[0];
+                    break;
+                }
+            }
+        }
+        return paramValue;
+    }
+
     /**
      * Gets the action.
      * 
@@ -52,7 +66,7 @@ public class CommonHTTPParameters {
      * @return the action
      */
     public static String getActionFromRequest(HttpServletRequest request) {
-        String action = request.getParameter(MotuRequestParametersConstant.PARAM_ACTION);
+        String action = getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_ACTION);
         if (StringUtils.isNullOrEmpty(action)) {
             action = (String) request.getAttribute(MotuRequestParametersConstant.PARAM_ACTION);
             if (StringUtils.isNullOrEmpty(action)) {
@@ -118,7 +132,7 @@ public class CommonHTTPParameters {
      * @return how to return the result (mode=console : url file, otherwhise HTML pages)
      */
     public static String getModeFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_MODE);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_MODE);
     }
 
     /**
@@ -128,23 +142,23 @@ public class CommonHTTPParameters {
      * @return 0 if the request id has not the good format, otherwise the request Id
      */
     public static String getRequestIdFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_REQUEST_ID);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_REQUEST_ID);
     }
 
     public static String getLatitudeLowFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_LOW_LAT);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_LOW_LAT);
     }
 
     public static String getLatitudeHighFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_HIGH_LAT);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_HIGH_LAT);
     }
 
     public static String getLongitudeLowFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_LOW_LON);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_LOW_LON);
     }
 
     public static String getLongitudeHighFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_HIGH_LON);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_HIGH_LON);
     }
 
     /**
@@ -154,7 +168,7 @@ public class CommonHTTPParameters {
      * @return
      */
     public static String getDepthLowFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_LOW_Z);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_LOW_Z);
     }
 
     /**
@@ -164,7 +178,7 @@ public class CommonHTTPParameters {
      * @return
      */
     public static String getDepthHighFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_HIGH_Z);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_HIGH_Z);
     }
 
     /**
@@ -174,7 +188,7 @@ public class CommonHTTPParameters {
      * @return
      */
     public static String getStartDateFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_START_DATE);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_START_DATE);
     }
 
     /**
@@ -184,15 +198,15 @@ public class CommonHTTPParameters {
      * @return
      */
     public static String getEndDateFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_END_DATE);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_END_DATE);
     }
 
     public static String getServiceFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_SERVICE);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_SERVICE);
     }
 
     public static String getDataFromParameter(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_DATA);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_DATA);
     }
 
     public static String[] getListOfDataFromParameter(HttpServletRequest request) {
@@ -218,59 +232,59 @@ public class CommonHTTPParameters {
     }
 
     public static String getPriorityFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_PRIORITY);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_PRIORITY);
     }
 
     public static String getOutputFormatFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_OUTPUT);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_OUTPUT);
     }
 
     public static String getCatalogTypeFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_CATALOG_TYPE);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_CATALOG_TYPE);
     }
 
     public static String getLanguageFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_LANGUAGE);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_LANGUAGE);
     }
 
     public static String getPasswordFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_PWD);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_PWD);
     }
 
     public static String getAnonymousParameterFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_ANONYMOUS);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_ANONYMOUS);
     }
 
     public static String getProductFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_PRODUCT);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_PRODUCT);
     }
 
     public static String getDatasetIdFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_DATASET_ID);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_DATASET_ID);
     }
 
     public static String getXmlFileFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_XML_FILE);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_XML_FILE);
     }
 
     public static String getExtraMetaDataFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_EXTRA_METADATA);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_EXTRA_METADATA);
     }
 
     public static String getDebugOrderFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_DEBUG_ORDER);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_DEBUG_ORDER);
     }
 
     public static String getScriptVersionFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_SCRIPT_VERSION);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_SCRIPT_VERSION);
     }
 
     public static String getHttpErrorCodeFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_HTTP_ERROR_CODE);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_HTTP_ERROR_CODE);
     }
 
     public static String getFileNameFromRequest(HttpServletRequest request) {
-        return request.getParameter(MotuRequestParametersConstant.PARAM_FILE_NAME);
+        return getRequestParameterIgnoreCase(request, MotuRequestParametersConstant.PARAM_FILE_NAME);
     }
 
 }

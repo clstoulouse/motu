@@ -3,6 +3,7 @@ package fr.cls.atoll.motu.web.usl;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.usl.request.IUSLRequestManager;
 import fr.cls.atoll.motu.web.usl.user.IUSLUserManager;
+import fr.cls.atoll.motu.web.usl.wcs.IWCSRequestManager;
 
 /**
  * <br>
@@ -36,5 +37,12 @@ public interface IUSLManager {
      * @return
      */
     IUSLRequestManager getRequestManager();
+
+    /**
+     * .
+     * 
+     * @return
+     */
+    IWCSRequestManager getWCSRequestManager();
 
 }
