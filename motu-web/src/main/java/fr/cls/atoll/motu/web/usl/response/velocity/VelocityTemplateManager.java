@@ -180,7 +180,7 @@ public class VelocityTemplateManager implements IVelocityTemplateManager {
         velocityEngine = new VelocityEngine();
 
         Properties conf = new Properties();
-        // TO disable logs: VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS,
+        // To disable logs: VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS,
         // "org.apache.velocity.runtime.log.NullLogChute"
         conf.put(VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.SimpleLog4JLogSystem");
         conf.put(VelocityEngine.RUNTIME_LOG, System.getProperty("motu-log-dir") + "/velocity.log");

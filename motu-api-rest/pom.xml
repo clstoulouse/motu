@@ -5,7 +5,7 @@
     <parent>
         <groupId>cls.motu</groupId>
         <artifactId>motu-parent</artifactId>
-        <version>3.1.00-SNAPSHOT</version>
+        <version>3.4.00-SNAPSHOT</version>
         <relativePath>../motu-parent</relativePath>
     </parent>
     <artifactId>motu-api-rest</artifactId>
@@ -33,4 +33,13 @@
         </dependency>
     </dependencies>
 
+	<build>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+    </build>
+    
 </project>

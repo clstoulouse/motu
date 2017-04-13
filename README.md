@@ -24,6 +24,7 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
      * [Motu-web project](#ArchitectureDesignDMW)
      * [Other projects](#ArchitectureDesignDOthers)	 
 * [Development](#Development)
+  * [Source code](#DEVSRC)
   * [Development environment](#DEV)
   * [Compilation](#COMPILATION)
   * [Packaging](#Packaging)
@@ -174,6 +175,21 @@ requests that require CDO to be processed are in sequence and only one is proces
 
 # <a name="Development">Development</a>  
 
+## <a name="DEVSRC">Source code</a>
+Source code can be downloaded directly from Github.  
+
+```  
+mkdir motugithub  
+cd motugithub  
+git clone https://github.com/clstoulouse/motu.git  
+    #In order to work on a specific version  
+git tag -l  
+git checkout motu-X.Y.Z  
+git status  
+cd motu  
+cd motu-parent  
+```
+
 ## <a name="DEV">Development environment</a>  
 
 ### Configure Eclipse development environment
@@ -230,75 +246,72 @@ Maven is used in order to compile Motu.
 You have to set maven settings in order to compile.  
 Copy/paste content below in a new file settings.xml and adapt it to your information system by reading comments inside.
 
-```
-<settings>
-     <!-- localRepository: Path to the maven local repository used to store artifacts. (Default: ~/.m2/repository) --> 
-	<localRepository>J:/dev/cmems-cis-motu/testGitHub/m2/repository</localRepository>
-	
-	<!-- proxies: Optional. Set it if you need to connect to a proxy to access to Internet -->
-	<!-- 
-	<proxies>
-	   <proxy>
-		  <id>cls-proxy</id>
-		  <active>true</active>
-		  <protocol>http</protocol>
-		  <host></host>
-		  <port></port>
-		  <username></username>
-		  <password></password>
-		  <nonProxyHosts></nonProxyHosts>
-		</proxy>
-	  </proxies>
-	--> 
-	
-	<!-- Repositories used to download Maven artifacts in addition to https://repo.maven.apache.org 
-	     cls-to-ext-thirdparty : contains patched libraries and non public maven packaged libraries
-		 geotoolkit: contains geographical tools libraries
-	-->
-	<profiles>
-	   <profile>
-		 <id>profile-cls-cmems-motu</id>
-		 <repositories>
-			<repository>
-			  <id>cls-to-ext-thirdparty</id>
-			  <name>CLS maven central repository, used for CMEMS Motu project</name>
-			  <url>http://mvnrepo.cls.fr:8081/nexus/content/repositories/cls-to-ext-thirdparty</url>
-			</repository>
-			
-			<repository>
-			  <id>geotoolkit</id>
-			  <name>geotoolkit</name>
-			  <url>http://maven.geotoolkit.org/</url>
-			</repository>
-		</repositories>
-	   </profile>
-	 </profiles>
-</settings> 
-```
-
-
-This step is used to generate JAR (Java ARchives) and WAR (Web application ARchive).  
-```
-mkdir motu
-cd motu
-
-#Copy paste the content above inside settings.xml
-vi settings.xml
-
-#Get source code of the last Motu version
-git clone https://github.com/clstoulouse/motu.git
-
-cd motu/motu-parent  
-
-#This remove the maven parent artifact from pom.xml
-sed -i '6,10d' pom.xml
-
-#Compile the source code
-mvn -s ../../settings.xml -gs ../../settings.xml -Pprofile-cls-cmems-motu -Dmaven.test.skip=true clean install
-...
-[INFO] BUILD SUCCESS
-...
 ```  
+    <settings>  
+    <!-- localRepository: Path to the maven local repository used to store artifacts. (Default: ~/.m2/repository) -->  
+    <localRepository>J:/dev/cmems-cis-motu/testGitHub/m2/repository&lt;/localRepository>  
+    <!-- proxies: Optional. Set it if you need to connect to a proxy to access to Internet -->  
+    <!--   
+    <proxies>  
+       <proxy>  
+          <id>cls-proxy</id>  
+          <active>true</active>  
+          <protocol>http</protocol>  
+          <host></host>  
+          <port></port>  
+          <username></username>  
+          <password></password>  
+          <nonProxyHosts></nonProxyHosts>  
+        </proxy>  
+      </proxies>  
+    -->   
+    <!-- Repositories used to download Maven artifacts in addition to https://repo.maven.apache.org   
+         cls-to-ext-thirdparty : contains patched libraries and non public maven packaged libraries  
+         geotoolkit: contains geographical tools libraries  
+    -->  
+    <profiles>    
+       <profile>  
+         <id>profile-cls-cmems-motu</id>  
+         <repositories>  
+            <repository>  
+              <id>cls-to-ext-thirdparty</id>  
+              <name>CLS maven central repository, used for CMEMS Motu project</name>  
+              <url>http://mvnrepo.cls.fr:8081/nexus/content/repositories/cls-to-ext-thirdparty</url>  
+            </repository>  
+            <repository>  
+              <id>geotoolkit</id>  
+              <name>geotoolkit</name>  
+              <url>http://maven.geotoolkit.org/</url>  
+            </repository>  
+        </repositories>  
+       </profile>  
+     </profiles>  
+     </settings>
+```
+
+This step is used to generate JAR (Java ARchives) and WAR (Web application ARchive).   
+
+```  
+mkdir motu  
+cd motu   
+  #Copy paste the content above inside settings.xml  
+vi settings.xml  
+  #Get source code of the last Motu version  
+git clone https://github.com/clstoulouse/motu.git  
+cd motu/motu-parent  
+  #  This remove the maven parent artifact from pom.xml, or remove lines below manually:  
+  #  <parent>  
+  #        <artifactId>cls-project-config&lt;/artifactId>  
+  #        <groupId>cls.commons&lt;/groupId>  
+  #        <version>1.2.00&lt;/version>  
+  # </parent>  
+sed -i '6,10d' pom.xml  
+  #Compile the source code  
+mvn -s ../../settings.xml -gs ../../settings.xml -Pprofile-cls-cmems-motu -Dmaven.test.skip=true clean install  
+...  
+[INFO] BUILD SUCCESS  
+...    
+``` 
 
 All projects are built under target folder.  
 The Motu war is built under "/motu-web/target/motu-web-X.Y.Z-classifier.war".  
@@ -442,11 +455,11 @@ Then update attributes below:
 * use the TDS subsetter protocol to improve performance of product download  
    * __motuConfig/configService/catalog__
       * __ncss__: See [ncss protocol](#BSmotuConfigNCSS)
-	  * __urlSite__: Update URL to use the TDS subsetter URL. See [Add a dataset, TDS NCSS protocol](#AdminDataSetAdd)
+      * __urlSite__: Update URL to use the TDS subsetter URL. See [Add a dataset, TDS NCSS protocol](#AdminDataSetAdd)
 * check the attributes used to serve downloaded datasets  
    * __motuConfig__
       * __extractionPath__ See [extractionPath](#motuConfig-extractionPath)
-	  * __downloadHttpUrl__ Set the URL used to serve files from extractionPath
+      * __downloadHttpUrl__ Set the URL used to serve files from extractionPath
 * remove all @deprecated attributes listed below to ease future migrations. You can read the attribute description in [Business configuration](#ConfigurationBusiness).  
    * __XML header__ Remove header below  
 ```
@@ -456,23 +469,23 @@ Then update attributes below:
 ```
    * __motuConfig__
       * __maxSizePerFile__ This attribute definition has been updated. See [maxSizePerFile parameter configuration](#motuConfig-defaultService)  
-	  * __maxSizePerFileTDS__ Rename this attribute to maxSizePerFileSub. See [maxSizePerFileSub parameter configuration](#motuConfig-defaultService)  
-	  * __runGCInterval__ Remove the attribute
-	  * __httpDocumentRoot__ Remove the attribute
-	  * __useAuthentication__ Remove the attribute
-	  * __defaultActionIsListServices__ Remove the attribute
-	  * __useProxy__, __proxyHost__, __proxyPort__, __proxyLogin__, __proxyPwd__ Remove the attributes
-	  * __defaultService__  Remove the attribute, See [defaultService](#motuConfig-defaultService) . It was previously used to declare a default config Service. Now this attribute sets a default action. If the action set is unknown, an error log will be written and user is redirected to the listServices action which is the default one.
+      * __maxSizePerFileTDS__ Rename this attribute to maxSizePerFileSub. See [maxSizePerFileSub parameter configuration](#motuConfig-defaultService)  
+      * __runGCInterval__ Remove the attribute
+      * __httpDocumentRoot__ Remove the attribute
+      * __useAuthentication__ Remove the attribute
+      * __defaultActionIsListServices__ Remove the attribute
+      * __useProxy__, __proxyHost__, __proxyPort__, __proxyLogin__, __proxyPwd__ Remove the attributes
+      * __defaultService__  Remove the attribute, See [defaultService](#motuConfig-defaultService) . It was previously used to declare a default config Service. Now this attribute sets a default action. If the action set is unknown, an error log will be written and user is redirected to the listServices action which is the default one.
    * __motuConfig/configService__
       * __defaultLanguage__ Remove the attribute
-	  * __defaultPriority__ Remove the attribute
-	  * __httpBaseRef__ Remove the attribute
-	  * __veloTemplatePrefix__ Remove the attribute
+      * __defaultPriority__ Remove the attribute
+      * __httpBaseRef__ Remove the attribute
+      * __veloTemplatePrefix__ Remove the attribute
    * __motuConfig/queueServerConfig__
       * __defaultPriority__ Remove the attribute
    * __motuConfig/queues__
       * __batch__ Remove the attribute
-	  * __lowPriorityWaiting__ Remove the attribute
+      * __lowPriorityWaiting__ Remove the attribute
    * __motuConfig/configFileSystem__ Remove the node
 * after starting Motu, if there is issues with the graphic chart, check the attributes below.
    * __motuConfig__
@@ -822,7 +835,7 @@ ProxyPass /mis-gateway-servlet http://$motuTomcatIp:$motuTomcatPort/motu-web
 ProxyPassReverse /mis-gateway-servlet http://$motuTomcatIp:$motuTomcatPort/motu-web  
 ProxyPreserveHost On  
     # /motu-web-servlet This URL is sometimes used.  
-	# It can be customized depending of your current installation. If you have any doubt, keep this rule.  
+    # It can be customized depending of your current installation. If you have any doubt, keep this rule.  
 ProxyPass /motu-web-servlet http://$motuTomcatIp:$motuTomcatPort/motu-web  
 ProxyPassReverse /motu-web-servlet http://$motuTomcatIp:$motuTomcatPort/motu-web  
                 
@@ -858,8 +871,8 @@ You have two choices:
 ### <a name="InstallSecuritySSO">Motu and Single Sign On</a>  
 In order to manage SSO (Single Sign On) connections to Motu web server, Motu uses an HTTPs client.  
 All documentation about how to setup is written in chapter [CAS SSO server](#ConfigurationSystemCASSSO).
-	 
-	 
+     
+     
 # <a name="Configuration">Configuration</a>  
 
 This chapter describes the Motu configuration settings.  
@@ -993,9 +1006,25 @@ If value is zero: no delete.
 Default value = 0.
 
 ##### describeProductCacheRefreshInMilliSec
-Provide the delay between two refresh of the Describe product cache.
-This delay is provided in millisecond.
-The default value is 60000 meaning 1 minute.
+Provide the delay to wait to refresh the meta-data of products cache after the last refresh.  
+Motu has a cache which is refreshed asynchronously. Cache is first refreshed as soon as Motu starts.   
+Then Motu waits for this delay before refreshing again the cache.  
+This delay is provided in millisecond.  
+The default value is 60000 meaning 1 minute.  
+  
+Logbook file (motu/log/logbook.log) gives details about time taken to refresh cache, for example:   
+```  
+INFO  CatalogAndProductCacheRefreshThread.runProcess Product and catalog caches refreshed in 2min 19sec 75msec  
+```
+Logbook file gives details per config service ($configServiceId) about dedicated time taken to refresh cache, for example:   
+```  
+INFO  CatalogAndProductCacheRefreshThread.runProcess Refreshed statistics: $configServiceId@Index=0min 34sec 180msec, $configServiceId@Index=0min 31sec 46msec, ...   
+```  
+They are sorted by config service which has taken the most time first.  
+@Index All config services are refreshed sequentially. This index is the sequence number for which this cached has been refreshed.
+  
+Example of archived data with several To of data. Cache is refreshed daily: describeProductCacheRefreshInMilliSec=86400000   
+Example of real time data with several Go of data. Cache is refreshed each minute: describeProductCacheRefreshInMilliSec=60000    
 
 
 ##### runGCInterval
@@ -1225,7 +1254,7 @@ __tomcat-motu-urlrewrite-statusEnabledOnHosts__=localhost,*.cls.fr
 This parameter is used to set the property below in the WEB.XML file:  
 ```
         <!-- Documentation from http://tuckey.org/urlrewrite/manual/3.0/
-		you may want to allow more hosts to look at the status page
+        you may want to allow more hosts to look at the status page
         statusEnabledOnHosts is a comma delimited list of hosts, * can
         be used as a wildcard (defaults to "localhost, local, 127.0.0.1") -->
         <init-param>  
@@ -1254,16 +1283,16 @@ A string either "xml" or "csv" to select the format in which log message are wri
 Also update the log file name extension of the attributes "fileName" and "filePattern" in order to get a coherent content in relationship with value set for MotuCustomLayout file format.  
 If this attribute is not set, the default format is "xml".  
 ``` 
-		<RollingFile name="log-file-infos.queue"   
-		    fileName="${sys:motu-log-dir}/motuQSlog.xml"   
-			filePattern="${sys:motu-log-dir}/motuQSlog.xml.%d{MM-yyyy}"    
-			append="true">   
-			<!-- fileFormat=xml or csv -->  
-			<MotuCustomLayout fileFormat="xml" />  
-			<Policies>  
-				<TimeBasedTriggeringPolicy interval="1" modulate="true"/>  
-			</Policies>  
-		</RollingFile>  
+        <RollingFile name="log-file-infos.queue"   
+            fileName="${sys:motu-log-dir}/motuQSlog.xml"   
+            filePattern="${sys:motu-log-dir}/motuQSlog.xml.%d{MM-yyyy}"    
+            append="true">   
+            <!-- fileFormat=xml or csv -->  
+            <MotuCustomLayout fileFormat="xml" />  
+            <Policies>  
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>  
+            </Policies>  
+        </RollingFile>  
 ``` 
 
 ##### Log path
@@ -1275,12 +1304,12 @@ For example, if you want to share account transaction log files, you edit config
 Update content below:  
 ``` 
 <RollingFile name="log-file-infos.queue" fileName="${sys:motu-log-dir}/motuQSlog.xml"
-			filePattern="${sys:motu-log-dir}/motuQSlog.xml.%d{MM-yyyy}"
+            filePattern="${sys:motu-log-dir}/motuQSlog.xml.%d{MM-yyyy}"
 ```   
  with:  
 ``` 
 <RollingFile name="log-file-infos.queue" fileName="/opt/cmems-cis/motu/data/public/transaction/motuQSlog.xml"
-			filePattern="/opt/cmems-cis/motu/data/public/transaction/motuQSlog.xml.%d{MM-yyyy}"
+            filePattern="/opt/cmems-cis/motu/data/public/transaction/motuQSlog.xml.%d{MM-yyyy}"
 ```   
 Note that both attributes __fileName__ and __filePattern__ have been updated.  
 Then the frontal [Apache HTTPd server](#InstallFrontal) has to serve this folder.
@@ -1471,7 +1500,7 @@ To be noticed:
 * The value of the "name" attribute of the element <dataset> shall be identical to the Product Name (from CMEMS Product Information Table). 
 In the example below named “CMEMS DU xxx Thredds Catalog” there are three datasets. The following catalog tree presents a hierarchical organization for this catalog.
       
-``` 	  
+```       
 <  CMEMS DU xxx Thredds Catalog >  
 | ------ < GLOBAL_ANALYSIS_PHYS_001_016  >   
 |------- < dataset-armor-3d-v5-myocean >  
@@ -1557,7 +1586,7 @@ File __dataset-armor-3d-v5-myocean-cls-toulouse-fr-armor-motu-rest-file.xml__:
     <file name="ARMOR3D_TSHUV_20141001.nc" weight="327424008" modelPrediction="http://www.myocean.eu.org/2009/resource/vocabulary/forecasting#" startCoverageDate="2014-10-01T00:00:00+00:00" endCoverageDate="2014-10-07T23:59:59+00:00" creationDate="2015-03-17T00:00:00+00:00" availabilitySIDate="2016-01-27T00:10:10+00:00" availabilityServiceDate="2016-01-27T00:10:10+00:00" theoreticalAvailabilityDate="2015-03-17T00:00:00+00:00"/>  
     <file name="ARMOR3D_TSHUV_20141008.nc" weight="327424008" modelPrediction="http://www.myocean.eu.org/2009/resource/vocabulary/forecasting#" startCoverageDate="2014-10-08T00:00:00+00:00" endCoverageDate="2014-10-14T23:59:59+00:00" creationDate="2015-03-17T00:00:00+00:00" availabilitySIDate="2016-01-27T00:10:10+00:00" availabilityServiceDate="2016-01-27T00:10:10+00:00" theoreticalAvailabilityDate="2015-03-17T00:00:00+00:00"/>  
     ...  
-	<file name="ARMOR3D_TSHUV_20160120.nc" weight="327424008" modelPrediction="http://www.myocean.eu.org/2009/resource/vocabulary/forecasting#" startCoverageDate="2016-01-20T00:00:00+00:00" endCoverageDate="2016-01-26T23:59:59+00:00" creationDate="2016-01-26T11:11:00+00:00" availabilitySIDate="2016-01-27T00:10:10+00:00" availabilityServiceDate="2016-01-27T00:10:10+00:00" theoreticalAvailabilityDate="2016-01-26T11:11:00+00:00"/>  
+    <file name="ARMOR3D_TSHUV_20160120.nc" weight="327424008" modelPrediction="http://www.myocean.eu.org/2009/resource/vocabulary/forecasting#" startCoverageDate="2016-01-20T00:00:00+00:00" endCoverageDate="2016-01-26T23:59:59+00:00" creationDate="2016-01-26T11:11:00+00:00" availabilitySIDate="2016-01-27T00:10:10+00:00" availabilityServiceDate="2016-01-27T00:10:10+00:00" theoreticalAvailabilityDate="2016-01-26T11:11:00+00:00"/>  
   </files>  
 </inventory>  
 ```  
@@ -1625,61 +1654,61 @@ Here, we have the error code in order to understand better what happens. But the
 
 ### <a name="LogCodeErrorsActionCode">Action codes</a>  
 
-The Action Code		=>	A number matching the HTTP request with the action parameter.
+The Action Code        =>    A number matching the HTTP request with the action parameter.
 
-001		=>	UNDETERMINED\_ACTION           
-002		=>	PING\_ACTION                   
-003		=>	DEBUG\_ACTION                  
-004		=>	GET\_REQUEST\_STATUS\_ACTION     
-005		=>	GET\_SIZE\_ACTION               
-006		=>	DESCRIBE\_PRODUCT\_ACTION       
-007		=>	TIME\_COVERAGE\_ACTION          
-008		=>	LOGOUT\_ACTION                 
-010		=>	DOWNLOAD\_PRODUCT\_ACTION       
-011		=>	LIST\_CATALOG\_ACTION           
-012		=>	PRODUCT\_METADATA\_ACTION       
-013		=>	PRODUCT\_DOWNLOAD\_HOME\_ACTION  
-014		=>	LIST\_SERVICES\_ACTION              
-015		=>	DESCRIBE\_COVERAGE\_ACTION         
-016		=>	ABOUT\_ACTION  
-017		=>	WELCOME\_ACTION  
+001        =>    UNDETERMINED\_ACTION           
+002        =>    PING\_ACTION                   
+003        =>    DEBUG\_ACTION                  
+004        =>    GET\_REQUEST\_STATUS\_ACTION     
+005        =>    GET\_SIZE\_ACTION               
+006        =>    DESCRIBE\_PRODUCT\_ACTION       
+007        =>    TIME\_COVERAGE\_ACTION          
+008        =>    LOGOUT\_ACTION                 
+010        =>    DOWNLOAD\_PRODUCT\_ACTION       
+011        =>    LIST\_CATALOG\_ACTION           
+012        =>    PRODUCT\_METADATA\_ACTION       
+013        =>    PRODUCT\_DOWNLOAD\_HOME\_ACTION  
+014        =>    LIST\_SERVICES\_ACTION              
+015        =>    DESCRIBE\_COVERAGE\_ACTION         
+016        =>    ABOUT\_ACTION  
+017        =>    WELCOME\_ACTION  
 
 ### <a name="LogCodeErrorsErrorType">Error types</a>  
 
-The Error Type Code	=>	A number defining a specific error on the server.
+The Error Type Code    =>    A number defining a specific error on the server.
 
-0       =>  No error.  
-1		=>	There is a system error. Please contact the Administrator.    
-2		=>	There is an error with the parameters. There are inconsistent.         
-3		=>	The date provided into the parameters is invalid.         
-4		=>	The latitude provided into the parameters is invalid.  
-5		=>	The longitude provided into the parameters is invalid.         
-6		=>	The range defined by the provided dates is invalid.         
-7		=>	The memory capacity of the motu server is exceeded.         
-8		=>	The range defined by the provided latitude/longitude parameters is invalid.         
-9		=>	The range defined by the provided depth parameters is invalid.         
-10		=>	The functionality is not yet implemented.         
-11		=>	There is an error with the provided NetCDF variables.         
-12		=>	There is not variables into the variable parameter.         
-13		=>	NetCDF parameter error. Example: Invalid date range, invalid depth range, ...         
-14		=>	There is an error with the provided NetCDF variable. Have a look at the log file to have more information.         
-15		=>	The number of maximum request in the queue server pool is reached. it's necessary to wait that some requests are finished.         
-16		=>	The number of maximum request for the user is reached. It's necessary to wait that some requests are finished for the user.         
-18		=>	The priority of the request is invalid in the queue server manager. Have a look at the log file to have more information.         
-19		=>	The id of the request is not know by the server. Have a look at the log file to have more information.         
-20		=>	The size of the request is greater than the maximum data managed by the available queue. It's impossible to select a queue for this request. It's necessary to narrow the request.         
-21		=>	The application is shutting down. it's necessary to wait a while before the application is again available.         
-22		=>	There is a problem with the loading of the motu configuration file. Have a look at the log file to have more information.         
-23		=>	There is a problem with the loading of the catalog configuration file. Have a look at the log file to have more information.         
-24		=>	There is a problem with the loading of the error message configuration file. Have a look at the log file to have more information.         
-25		=>	There is a problem with the loading of the netcdf file. Have a look at the log file to have more information.         
-26		=>	There is a problem with the provided parameters. Have a look at the log file to have more information.         
-27		=>	There is a problem with the NetCDF generation engine. Have a look at the log file to have more information.         
-28		=>	The required action is unknown. Have a look at the log file to have more information.
-29		=>	The product is unknown.
-30		=>	The service is unknown.
-31		=>	The request cut the ante meridian. In this case, it's not possible to request more than one depth. It's necessary to change the depth selection and to select in the "from" and the "to" the values that have the same index into the depth list.
-32      =>  Due to a known bug in Thredds Data Server, a request cannot be satisfied wit netCDF4. User has to request a netCDF3 output file.
+0         =>    No error.  
+1         =>    There is a system error. Please contact the Administrator.    
+2         =>    There is an error with the parameters. There are inconsistent.         
+3         =>    The date provided into the parameters is invalid.         
+4         =>    The latitude provided into the parameters is invalid.  
+5         =>    The longitude provided into the parameters is invalid.         
+6         =>    The range defined by the provided dates is invalid.         
+7         =>    The memory capacity of the motu server is exceeded.         
+8         =>    The range defined by the provided latitude/longitude parameters is invalid.         
+9         =>    The range defined by the provided depth parameters is invalid.         
+10        =>    The functionality is not yet implemented.         
+11        =>    There is an error with the provided NetCDF variables.         
+12        =>    There is not variables into the variable parameter.         
+13        =>    NetCDF parameter error. Example: Invalid date range, invalid depth range, ...         
+14        =>    There is an error with the provided NetCDF variable. Have a look at the log file to have more information.         
+15        =>    The number of maximum request in the queue server pool is reached. it's necessary to wait that some requests are finished.         
+16        =>    The number of maximum request for the user is reached. It's necessary to wait that some requests are finished for the user.         
+18        =>    The priority of the request is invalid in the queue server manager. Have a look at the log file to have more information.         
+19        =>    The id of the request is not know by the server. Have a look at the log file to have more information.         
+20        =>    The size of the request is greater than the maximum data managed by the available queue. It's impossible to select a queue for this request. It's necessary to narrow the request.         
+21        =>    The application is shutting down. it's necessary to wait a while before the application is again available.         
+22        =>    There is a problem with the loading of the motu configuration file. Have a look at the log file to have more information.         
+23        =>    There is a problem with the loading of the catalog configuration file. Have a look at the log file to have more information.         
+24        =>    There is a problem with the loading of the error message configuration file. Have a look at the log file to have more information.         
+25        =>    There is a problem with the loading of the netcdf file. Have a look at the log file to have more information.         
+26        =>    There is a problem with the provided parameters. Have a look at the log file to have more information.         
+27        =>    There is a problem with the NetCDF generation engine. Have a look at the log file to have more information.         
+28        =>    The required action is unknown. Have a look at the log file to have more information.
+29        =>    The product is unknown.
+30        =>    The service is unknown.
+31        =>    The request cut the ante meridian. In this case, it's not possible to request more than one depth. It's necessary to change the depth selection and to select in the "from" and the "to" the values that have the same index into the depth list.
+32        =>  Due to a known bug in Thredds Data Server, a request cannot be satisfied wit netCDF4. User has to request a netCDF3 output file.
   
 # <a name="ClientsAPI">Motu clients & REST API</a>  
 

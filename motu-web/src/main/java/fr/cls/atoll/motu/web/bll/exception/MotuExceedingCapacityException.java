@@ -70,9 +70,9 @@ public class MotuExceedingCapacityException extends MotuExceptionBase {
     }
 
     private static String getErrorMessage(double actual, double max) {
-        StringBuffer stringBuffer = new StringBuffer("Exceeding capacity.");
+        StringBuilder stringBuffer = new StringBuilder("Exceeding capacity.");
 
-        if (actual != Double.MAX_VALUE) {
+        if (actual < Double.MAX_VALUE) {
             stringBuffer.append("\nActual is ");
             stringBuffer.append(getActualAsString(actual));
             stringBuffer.append(".");

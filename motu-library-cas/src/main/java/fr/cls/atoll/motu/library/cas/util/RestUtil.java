@@ -157,6 +157,10 @@ public class RestUtil {
         return RestUtil.checkAuthenticationMode(url, null, user);
     }
 
+    public static String getLocationHttpHeader(HttpURLConnection urlConnection) {
+        return urlConnection.getHeaderField(RestUtil.LOCATION_HTTP_HEADER_KEY);
+    }
+
     /**
      * Check authentication mode.
      * 
@@ -167,26 +171,20 @@ public class RestUtil {
      * @throws MotuCasException the motu cas exception
      */
     public static AuthenticationMode checkAuthenticationMode(String url, Proxy proxy, UserBase user) throws IOException, MotuCasException {
-
         AuthenticationMode authenticationMode = AuthenticationMode.NONE;
         String casUrl = null;
-
         try {
             casUrl = RestUtil.getRedirectUrl(url, proxy);
-            boolean isCasified = (!AssertionUtils.isNullOrEmpty(casUrl));
-
+            boolean isCasified = !AssertionUtils.isNullOrEmpty(casUrl);
             if (isCasified) {
                 authenticationMode = AuthenticationMode.CAS;
             }
         } catch (MotuCasBadRequestException e) {
-
             switch (e.getCode()) {
-
             case HttpURLConnection.HTTP_UNAUTHORIZED:
             case HttpURLConnection.HTTP_FORBIDDEN:
                 authenticationMode = checkAuthenticationMode(e);
                 break;
-
             default:
                 throw e;
             }
@@ -198,7 +196,6 @@ public class RestUtil {
         }
 
         return authenticationMode;
-
     }
 
     /**
@@ -257,9 +254,7 @@ public class RestUtil {
 
         try {
             casUrl = RestUtil.getRedirectUrl(targetService, client, method);
-            boolean isCasified = (!AssertionUtils.isNullOrEmpty(casUrl));
-
-            if (isCasified) {
+            if (!AssertionUtils.isNullOrEmpty(casUrl)) {
                 authenticationMode = AuthenticationMode.CAS;
             }
         } catch (MotuCasBadRequestException e) {
@@ -294,9 +289,7 @@ public class RestUtil {
      * @throws MotuCasBadRequestException
      */
     public static boolean isCasifiedUrl(URI serviceURL) throws IOException, MotuCasBadRequestException {
-
         return isCasifiedUrl(serviceURL.toString(), null, false);
-
     }
 
     /**
@@ -462,7 +455,6 @@ public class RestUtil {
         }
         String casServerPrefix = RestUtil.getRedirectUrl(serviceURL, client, method);
         if (AssertionUtils.isNullOrEmpty(casServerPrefix)) {
-
             return null;
         }
 
@@ -500,7 +492,6 @@ public class RestUtil {
 
         String casServerPrefix = RestUtil.getRedirectUrl(serviceURL);
         if (AssertionUtils.isNullOrEmpty(casServerPrefix)) {
-
             return null;
         }
 
@@ -519,7 +510,6 @@ public class RestUtil {
         // return stringBuffer.toString();
 
         return RestUtil.appendPath(casServerPrefix, casRestUrlSuffix);
-
     }
 
     /**
@@ -535,7 +525,6 @@ public class RestUtil {
      */
     public static String getRedirectUrl(String path) throws IOException, MotuCasBadRequestException {
         return RestUtil.getRedirectUrl(path, null);
-
     }
 
     /**
@@ -547,54 +536,46 @@ public class RestUtil {
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws MotuCasBadRequestException
      */
-    public static String getRedirectUrl(String path, Proxy proxy) throws IOException, MotuCasBadRequestException {
-
-        String redirectUrl = "";
-
+    public static String getRedirectUrl(String path, Proxy proxy) throws MotuCasBadRequestException, IOException {
         if (AssertionUtils.isNullOrEmpty(path)) {
             return null;
         }
 
         URL url = new URL(path);
         String protocol = url.getProtocol();
-        HttpURLConnection conn = null;
 
-        if ((protocol.equalsIgnoreCase("http")) || (protocol.equalsIgnoreCase("https"))) {
+        HttpURLConnection conn;
 
-            if (proxy == null) {
-                conn = (HttpURLConnection) url.openConnection();
-            } else {
-                conn = (HttpURLConnection) url.openConnection(proxy);
-            }
+        if ("http".equalsIgnoreCase(protocol) || "https".equalsIgnoreCase(protocol)) {
+            HttpURLConnection.setFollowRedirects(false);
+            conn = (proxy == null) ? (HttpURLConnection) url.openConnection() : (HttpURLConnection) url.openConnection(proxy);
         } else {
-            return redirectUrl;
+            return "";
         }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getRedirectUrl(String) - HttpURLConnection response code=" + conn.getResponseCode());
-        }
+        LOG.debug("getRedirectUrl(String) - Origin HttpURLConnection: " + path + " (" + conn.getResponseCode() + ")");
         int responseCode = conn.getResponseCode();
+        conn.disconnect();
         if (responseCode >= 400) {
-            conn.disconnect();
             throw new MotuCasBadRequestException(
                     conn,
                     responseCode,
                     path,
                     "Error while trying to retrieve CAS url (RestUtil.getRedirectUrl(String path, Proxy proxy)");
+        } else {
+            String location = getLocationHttpHeader(conn);
+            LOG.debug("getRedirectUrl(String) - New location: " + location);
+            if (location != null && location.contains("login")) {
+                // This is a CAS URL
+                return RestUtil.extractRedirectUrl(location, responseCode);
+            } else if (responseCode >= 300 && responseCode < 400) {
+                // Recursive case while a redirection is done, but not directly to the CAS server
+                // We try to follow it until found a CAS URL
+                return getRedirectUrl(location, proxy);
+            } else {
+                return "";
+            }
         }
 
-        redirectUrl = RestUtil.extractRedirectUrl(conn.getHeaderField(RestUtil.LOCATION_HTTP_HEADER_KEY), responseCode);
-
-        // Iterator<?> it = conn.getHeaderFields().entrySet().iterator();
-        // while (it.hasNext()) {
-        // Map.Entry entry = (Map.Entry) it.next();
-        // System.out.print(entry.getKey());
-        // System.out.print(" --> ");
-        // System.out.println(entry.getValue());
-        // }
-
-        conn.disconnect();
-        return redirectUrl;
     }
 
     /**
@@ -607,13 +588,9 @@ public class RestUtil {
      * @throws MotuCasBadRequestException
      */
     public static String getRedirectUrl(String path, Client client, RestUtil.HttpMethod method) throws MotuCasBadRequestException {
-
         WebResource webResource = client.resource(path);
-
         ClientResponse response = webResource.accept(MediaType.WILDCARD).method(method.toString(), ClientResponse.class);
-
         Integer responseCode = response.getStatus();
-
         if (responseCode >= 400) {
             throw MotuCasBadRequestException
                     .createMotuCasBadRequestException(response,
@@ -625,8 +602,17 @@ public class RestUtil {
         if (response.getLocation() != null) {
             location = response.getLocation().toString();
         }
-        return RestUtil.extractRedirectUrl(location, responseCode);
-
+        if (location.contains("login")) {
+            // This is a CAS URL
+            return RestUtil.extractRedirectUrl(location, responseCode);
+        } else if (responseCode >= 300 && responseCode < 400) {
+            // Recursive case while a redirection is done not directly to the CAS server
+            // There is a redirection, not directly to the CAS, we try to follow it
+            client.setFollowRedirects(false);
+            return getRedirectUrl(location, client, method);
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -672,7 +658,7 @@ public class RestUtil {
      */
     public static String getTicketGrantingTicket(String casRestUrl, String username, String password) throws IOException {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("getTicketGrantingTicket(String, String, String) - entering");
+            LOG.debug("getTicketGrantingTicket(String, String, String) - entering: " + casRestUrl);
         }
 
         if (AssertionUtils.isNullOrEmpty(casRestUrl)) {
@@ -683,68 +669,45 @@ public class RestUtil {
         }
 
         if (AssertionUtils.isNullOrEmpty(username)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getTicketGrantingTicket(String, String, String) - username is null - exiting");
-            }
+            LOG.debug("getTicketGrantingTicket(String, String, String) - username is null - exiting");
             return null;
         }
 
-        HttpsURLConnection hsu = (HttpsURLConnection) RestUtil.openHttpsConnection(casRestUrl);
-        StringBuffer stringBuffer = new StringBuffer();
-
-        stringBuffer.append(URLEncoder.encode("username", "UTF-8"));
+        HttpsURLConnection casHttpsCnx = (HttpsURLConnection) RestUtil.openHttpsConnection(casRestUrl);
+        StringBuilder stringBuffer = new StringBuilder();
+        final String encoding = "UTF-8";
+        stringBuffer.append(URLEncoder.encode("username", encoding));
         stringBuffer.append("=");
-        stringBuffer.append(URLEncoder.encode(username, "UTF-8"));
+        stringBuffer.append(URLEncoder.encode(username, encoding));
 
         stringBuffer.append("&");
 
-        stringBuffer.append(URLEncoder.encode("password", "UTF-8"));
+        stringBuffer.append(URLEncoder.encode("password", encoding));
         stringBuffer.append("=");
+        LOG.debug("getTicketGrantingTicket(String, String, String) : " + stringBuffer.toString());
         String passwordToEncode = ((password == null) ? "" : password);
-        stringBuffer.append(URLEncoder.encode(passwordToEncode, "UTF-8"));
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getTicketGrantingTicket(String, String, String) : " + stringBuffer.toString());
-        }
+        stringBuffer.append(URLEncoder.encode(passwordToEncode, encoding));
 
-        OutputStreamWriter out = new OutputStreamWriter(hsu.getOutputStream());
+        OutputStreamWriter out = new OutputStreamWriter(casHttpsCnx.getOutputStream());
         BufferedWriter bwr = new BufferedWriter(out);
         bwr.write(stringBuffer.toString());
         bwr.flush();
         bwr.close();
         out.close();
+        LOG.debug("getTicketGrantingTicket(String, String, String) - Cas connection (" + casHttpsCnx.getResponseCode() + ") - " + casRestUrl);
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getTicketGrantingTicket(String, String, String) - hsu.getResponseCode()=" + hsu.getResponseCode());
-        }
-
-        String ticketGrantingTicket = hsu.getHeaderField(RestUtil.LOCATION_HTTP_HEADER_KEY);
-
-        //
-        // Iterator<?> it = hsu.getHeaderFields().entrySet().iterator();
-        // while (it.hasNext()) {
-        // Map.Entry entry = (Map.Entry) it.next();
-        // System.out.print(entry.getKey());
-        // System.out.print(" --> ");
-        // System.out.println(entry.getValue());
-        // }
-
-        if (ticketGrantingTicket == null || hsu.getResponseCode() != 201) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getTicketGrantingTicket(String, String, String) - exiting");
-            }
+        String ticketGrantingTicket = getLocationHttpHeader(casHttpsCnx);
+        if (ticketGrantingTicket == null || casHttpsCnx.getResponseCode() != 201) {
+            LOG.debug("getTicketGrantingTicket(String, String, String) - exiting: " + casRestUrl);
             return null;
         }
         ticketGrantingTicket = ticketGrantingTicket.substring(ticketGrantingTicket.lastIndexOf("/") + 1);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getTGT(String, String, String) - String tgt=" + ticketGrantingTicket);
-        }
+        LOG.debug("getTGT(String, String, String) - String tgt=" + ticketGrantingTicket);
 
         bwr.close();
-        RestUtil.closeConn(hsu);
+        RestUtil.closeConn(casHttpsCnx);
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getTicketGrantingTicket(String, String, String) - exiting");
-        }
+        LOG.debug("getTicketGrantingTicket(String, String, String) - exiting: " + casRestUrl);
         return ticketGrantingTicket;
 
     }
@@ -793,35 +756,18 @@ public class RestUtil {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public static String loginToCASWithTGT(String casRestUrl, String ticketGrantingTicket, String serviceURL) throws IOException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("loginToCAS(String, String, String) - entering");
-        }
+        LOG.debug("loginToCAS(String, String, String) - entering: " + casRestUrl);
 
-        if (AssertionUtils.isNullOrEmpty(casRestUrl)) {
+        if (AssertionUtils.isNullOrEmpty(casRestUrl) || AssertionUtils.isNullOrEmpty(ticketGrantingTicket)
+                || AssertionUtils.isNullOrEmpty(serviceURL)) {
             return null;
-
-        }
-
-        if (AssertionUtils.isNullOrEmpty(ticketGrantingTicket)) {
-            return null;
-
-        }
-
-        if (AssertionUtils.isNullOrEmpty(serviceURL)) {
-            return null;
-
         }
 
         String encodedServiceURL = URLEncoder.encode("service", "utf-8") + "=" + URLEncoder.encode(serviceURL, "utf-8");
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("loginToCAS(String, String, String) - Service url is : " + encodedServiceURL);
-        }
+        LOG.debug("loginToCAS(String, String, String) - Service url is : " + encodedServiceURL);
 
         String casURL = casRestUrl + "/" + ticketGrantingTicket;
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("loginToCAS(String, String, String) - url is: " + casURL);
-        }
-        // System.out.println(casURL);
+        LOG.debug("loginToCAS(String, String, String) - url is: " + casURL);
         HttpsURLConnection hsu = (HttpsURLConnection) RestUtil.openHttpsConnection(casURL);
         OutputStreamWriter out = new OutputStreamWriter(hsu.getOutputStream());
         BufferedWriter bwr = new BufferedWriter(out);
@@ -830,9 +776,7 @@ public class RestUtil {
         bwr.close();
         out.close();
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("loginToCAS(String, String, String) - Response code is: " + hsu.getResponseCode());
-        }
+        LOG.debug("loginToCAS(String, String, String) - Response code is: " + hsu.getResponseCode());
 
         BufferedReader isr = new BufferedReader(new InputStreamReader(hsu.getInputStream()));
         String ticket = "";
@@ -846,9 +790,7 @@ public class RestUtil {
         isr.close();
         hsu.disconnect();
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("loginToCAS(String, String, String) - exiting");
-        }
+        LOG.debug("loginToCAS(String, String, String) - exiting: " + casRestUrl);
         return ticket;
 
     }

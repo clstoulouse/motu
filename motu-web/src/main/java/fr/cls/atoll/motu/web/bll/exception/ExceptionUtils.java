@@ -22,6 +22,7 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.messageserror.BLLMessagesErrorManager;
 import fr.cls.atoll.motu.web.bll.messageserror.IBLLMessagesErrorManager;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 
 /**
  * <br>
@@ -39,6 +40,10 @@ public class ExceptionUtils {
 
     private static String getErrorMessage(ErrorType errorType) throws MotuException {
         return BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType);
+    }
+
+    private static String getErrorMessage(ErrorType errorType, Object... arguments) throws MotuException {
+        return BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, arguments);
     }
 
     public static void setStatusModeResponseException(String actionCode, Exception e, StatusModeResponse statusModeResponse) {
@@ -121,7 +126,9 @@ public class ExceptionUtils {
     public static void setError(String actionCode, RequestSize requestSize, Exception e) {
         try {
             ErrorType errorType = getErrorType(e);
-            requestSize.setMsg(getErrorMessage(errorType));
+            requestSize.setMsg(getErrorMessage(errorType,
+                                               UnitUtils.toMegaBytes(requestSize.getSize() * 1024),
+                                               UnitUtils.toMegaBytes(requestSize.getMaxAllowedSize() * 1024)));
             requestSize.setCode(StringUtils.getErrorCode(actionCode, errorType));
         } catch (MotuException errorMessageException) {
             requestSize.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));

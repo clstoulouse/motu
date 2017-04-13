@@ -1,7 +1,10 @@
 package fr.cls.atoll.motu.web.bll.catalog.product.cache;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,18 +49,36 @@ public class CatalogAndProductCacheRefreshThread extends StoppableDaemonThread {
     @Override
     public void runProcess() {
         long startRefresh = System.currentTimeMillis();
+
+        long startRefreshCS = System.currentTimeMillis();
         List<ConfigService> services = BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService();
         int i = 0;
+        Map<Long, String> statisticsRefreshMap = new TreeMap<Long, String>(Collections.reverseOrder());
+        boolean isFirstStart = catalogCache.getCatalogDataMap().size() <= 0;
         CatalogCache curCatalogCache = new CatalogCache();
         while (!isDaemonStoppedASAP() && i < services.size()) {
+            startRefreshCS = System.currentTimeMillis();
             ConfigService configService = services.get(i);
             processConfigService(configService, curCatalogCache);
+            long updateDurationMSec = System.currentTimeMillis() - startRefreshCS;
+            if (isFirstStart) {
+                LOGGER.info("First start, cache ready for: " + configService.getName() + ": "
+                        + fr.cls.atoll.motu.web.common.utils.DateUtils.getDurationMinSecMsec(updateDurationMSec));
+                catalogCache.update(curCatalogCache);
+            }
             i++;
+            statisticsRefreshMap.put(updateDurationMSec, configService.getName() + "@" + i);
         }
         catalogCache.clear();
         catalogCache.update(curCatalogCache);
         LOGGER.info("Product and catalog caches refreshed in "
                 + fr.cls.atoll.motu.web.common.utils.DateUtils.getDurationMinSecMsec(System.currentTimeMillis() - startRefresh));
+
+        StringBuffer sb = new StringBuffer();
+        for (Entry<Long, String> kv : statisticsRefreshMap.entrySet()) {
+            sb.append(kv.getValue() + "=" + fr.cls.atoll.motu.web.common.utils.DateUtils.getDurationMinSecMsec(kv.getKey()) + ", ");
+        }
+        LOGGER.info("Refreshed statistics: " + sb.toString());
     }
 
     /**
@@ -85,7 +106,7 @@ public class CatalogAndProductCacheRefreshThread extends StoppableDaemonThread {
                         // currentProduct.setProductMetaData(pmd);
                         // }
                         productCache.setProduct(configService.getName(), currentProduct);
-                    } catch (MotuException e) {
+                    } catch (Exception e) {
                         LOGGER.error("Error during refresh of the describe product cache, config service=" + configService.getName() + ", productId="
                                 + currentProduct.getProductId(), e);
                     }

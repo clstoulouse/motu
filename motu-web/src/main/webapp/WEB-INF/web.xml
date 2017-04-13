@@ -131,8 +131,8 @@ ${project.name} - v. ${project.version}
 			<param-name>casServerLoginUrl</param-name>
 			<param-value>${cas-server-url}/login</param-value>
             <!--
-			<param-value>https://atoll-app2.vlandata.cls.fr:7943/cas/login</param-value>        
-                               -->
+				<param-value>https://atoll-app2.vlandata.cls.fr:7943/cas/login</param-value>        
+            -->
 		</init-param>
 		
 		<init-param>
