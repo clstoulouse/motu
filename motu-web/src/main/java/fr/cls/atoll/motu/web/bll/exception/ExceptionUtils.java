@@ -22,7 +22,6 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.messageserror.BLLMessagesErrorManager;
 import fr.cls.atoll.motu.web.bll.messageserror.IBLLMessagesErrorManager;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
-import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 
 /**
  * <br>
@@ -125,10 +124,10 @@ public class ExceptionUtils {
      */
     public static void setError(String actionCode, RequestSize requestSize, Exception e) {
         try {
+            double requestSizeD = (requestSize.getSize() == null) ? -1 : requestSize.getSize() * 1024;
+            double requestMaxAllowedSizeD = (requestSize.getMaxAllowedSize() == null) ? -1 : requestSize.getMaxAllowedSize() * 1024;
             ErrorType errorType = getErrorType(e);
-            requestSize.setMsg(getErrorMessage(errorType,
-                                               UnitUtils.toMegaBytes(requestSize.getSize() * 1024),
-                                               UnitUtils.toMegaBytes(requestSize.getMaxAllowedSize() * 1024)));
+            requestSize.setMsg(getErrorMessage(errorType, requestSizeD, requestMaxAllowedSizeD));
             requestSize.setCode(StringUtils.getErrorCode(actionCode, errorType));
         } catch (MotuException errorMessageException) {
             requestSize.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
