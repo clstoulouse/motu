@@ -62,7 +62,9 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
 * [Motu clients & REST API](#ClientsAPI)
   * [Python client](#ClientPython)
   * [OGC WCS API](#OGC_WCS_API)
-  * [REST API](#ClientRESTAPI) 
+  * [REST API](#ClientRESTAPI)  
+  
+  
 # <a name="Overview">Overview</a>  
 Motu is a robust web server allowing the distribution of met/ocean gridded data files through the web. 
 Subsetter allows user to extract the data of a dataset, with geospatial, temporal and variable criterias. 
