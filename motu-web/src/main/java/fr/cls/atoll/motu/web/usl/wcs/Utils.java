@@ -13,7 +13,10 @@ import org.apache.logging.log4j.Logger;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.usl.request.USLRequestManager;
+import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.wcs.data.ExceptionData;
 import fr.cls.atoll.motu.web.usl.wcs.responses.ExceptionBuilder;
 import ucar.nc2.constants.AxisType;
@@ -27,14 +30,49 @@ public class Utils {
                                    String actionCode,
                                    String wcsErrorCode,
                                    ErrorType errorType,
-                                   Exception exception,
+                                   Exception e,
                                    Object... parameters)
             throws MotuException {
-        LOGGER.error(StringUtils.getLogMessage(actionCode,
-                                               errorType,
-                                               BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, parameters)),
-                     exception);
-        onError(response, actionCode, wcsErrorCode, errorType, parameters);
+        Throwable t = e.getCause();
+        Exception me = null;
+        while (t != null && !(t instanceof MotuExceptionBase)) {
+            if (t instanceof MotuException) {
+                me = (Exception) t;
+            }
+            t = t.getCause();
+        }
+
+        String errMessage = "";
+        if (me instanceof MotuException) {
+            errorType = ((MotuException) me).getErrorType();
+            errMessage = BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, me);
+        } else if (me instanceof InvalidHTTPParameterException) {
+            errorType = ErrorType.BAD_PARAMETERS;
+            errMessage = e.getMessage();
+        } else {
+            errMessage = BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, parameters);
+        }
+
+        if (USLRequestManager.isErrorTypeToLog(errorType)) {
+            LOGGER.error(StringUtils.getLogMessage(actionCode, errorType, errMessage), e);
+        }
+
+        ExceptionData data = new ExceptionData();
+        data.setErrorCode(wcsErrorCode);
+        // if (!"".equals(locator)) {
+        // data.setLocator(locator);
+        // }
+
+        List<String> messageLine = new ArrayList<>();
+        messageLine.add(errMessage);
+        data.setErrorMessage(messageLine);
+
+        try {
+            response.getWriter().write(ExceptionBuilder.getInstance().buildResponse(data));
+        } catch (IOException | JAXBException e2) {
+            LOGGER.error("Error while processing HTTP request", e2);
+            throw new MotuException(ErrorType.SYSTEM, "Error while processing HTTP request", e2);
+        }
 
     }
 
@@ -55,10 +93,10 @@ public class Utils {
         if (!"".equals(locator)) {
             data.setLocator(locator);
         }
+
         List<String> messageLine = new ArrayList<>();
         messageLine.add((StringUtils
                 .getLogMessage(actionCode, errorType, BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, parameters))));
-
         data.setErrorMessage(messageLine);
 
         try {

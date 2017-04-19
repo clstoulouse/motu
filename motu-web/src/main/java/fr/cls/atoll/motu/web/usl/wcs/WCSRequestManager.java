@@ -49,9 +49,10 @@ public class WCSRequestManager implements IWCSRequestManager {
         if (validateService(response, serviceValue)) {
             String versionValue = WCSHTTPParameters.getAcceptVersionsFromRequest(request);
             if (validateVersion(response, versionValue)) {
+                AbstractAction actionInst = null;
                 try {
                     String action = WCSHTTPParameters.getRequestFromRequest(request);
-                    AbstractAction actionInst = retrieveActionFromHTTPParameters(request, response);
+                    actionInst = retrieveActionFromHTTPParameters(request, response);
                     if (actionInst != null) {
                         try {
                             if (WCSGetCoverageAction.ACTION_NAME.equals(action)) {

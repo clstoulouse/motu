@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -74,7 +73,7 @@ public class WCSGetCoverageAction extends AbstractAction {
     private RangeSubsetHTTPParameterValidator rangeSubsetHTTParameterValidator;
     private FormatHTTPParameterValidator formatHTTPParameterValidator;
 
-    private Map<String, BigInteger[]> subsetValues;
+    private Map<String, BigDecimal[]> subsetValues;
     // TODO Add Subset, format, mediaType, ...
 
     /**
@@ -87,6 +86,7 @@ public class WCSGetCoverageAction extends AbstractAction {
      */
     public WCSGetCoverageAction(String actionCode_, HttpServletRequest request_, HttpServletResponse response_) {
         super(ACTION_NAME, actionCode_, request_, response_);
+
         serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
                 WCSHTTPParameters.SERVICE,
                 WCSHTTPParameters.getServiceFromRequest(getRequest()));
@@ -99,6 +99,7 @@ public class WCSGetCoverageAction extends AbstractAction {
         coverageIdHTTPParameterValidator = new CoverageIdHTTPParameterValidator(
                 WCSHTTPParameters.COVERAGE_ID,
                 WCSHTTPParameters.getCoverageIdFromRequest(getRequest()));
+
         subsetHTTPParameterValidator = new ArrayList<>();
         subsetValues = new HashMap<>();
         List<String> subsets = WCSHTTPParameters.getSubsetFromRequest(getRequest());
@@ -138,9 +139,11 @@ public class WCSGetCoverageAction extends AbstractAction {
 
             if (startSepIndex > 0 && middleSepIndex > startSepIndex && endSepIndex > middleSepIndex) {
                 String subsetName = subsetValue.substring(0, startSepIndex);
-                BigInteger[] subsetMinMaxValues = new BigInteger[2];
-                subsetMinMaxValues[0] = new BigInteger(subsetValue.substring(startSepIndex + 1, middleSepIndex));
-                subsetMinMaxValues[1] = new BigInteger(subsetValue.substring(middleSepIndex + 1, endSepIndex));
+                BigDecimal[] subsetMinMaxValues = new BigDecimal[2];
+                String subset0 = subsetValue.substring(startSepIndex + 1, middleSepIndex);
+                subsetMinMaxValues[0] = new BigDecimal(subset0); // new BigInteger(subset0);
+                String subset1 = subsetValue.substring(middleSepIndex + 1, endSepIndex);
+                subsetMinMaxValues[1] = new BigDecimal(subset1); // new BigInteger(subset1);
                 subsetValues.put(subsetName, subsetMinMaxValues);
             } else {
                 throw new InvalidHTTPParameterException(
@@ -149,7 +152,6 @@ public class WCSGetCoverageAction extends AbstractAction {
                         subsetValidator.getParameterBoundariesAsString());
             }
         }
-
     }
 
     /** {@inheritDoc} */
@@ -331,7 +333,7 @@ public class WCSGetCoverageAction extends AbstractAction {
 
     private void checkValidityOfSubsetParameterName(AxisType[] authorizedParameters) throws MotuException {
         StringBuffer badSubsetParameterNames = new StringBuffer();
-        for (Map.Entry<String, BigInteger[]> subsetParam : subsetValues.entrySet()) {
+        for (Map.Entry<String, BigDecimal[]> subsetParam : subsetValues.entrySet()) {
             if (!(Utils.contains(authorizedParameters, subsetParam.getKey()))) {
                 badSubsetParameterNames.append(subsetParam.getKey());
             }
@@ -364,8 +366,10 @@ public class WCSGetCoverageAction extends AbstractAction {
     private void manageSubsetting(AxisType axis, Product product, double minValue, double maxValue, double subSetLowValue, double subSetHighValue)
             throws InvalidSubsettingException {
         if (!(subSetLowValue >= minValue && subSetLowValue <= maxValue && subSetHighValue >= minValue && subSetHighValue <= maxValue
-                && subSetLowValue < subSetHighValue)) {
-            throw new InvalidSubsettingException(Constants.TIME_AXIS.name());
+                && subSetLowValue <= subSetHighValue)) {
+            throw new InvalidSubsettingException(
+                    axis.name() + " (which boundaries are [" + minValue + ";" + maxValue + "] and requested values are [" + subSetLowValue + ";"
+                            + subSetHighValue + "])");
         }
     }
 
@@ -379,7 +383,7 @@ public class WCSGetCoverageAction extends AbstractAction {
         if (rangeValue != null) {
             return Arrays.asList(rangeValue.split(","));
         } else {
-            return new ArrayList();
+            return new ArrayList<String>();
         }
     }
 
