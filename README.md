@@ -133,6 +133,7 @@ The main project is "motu-web". This project is divided in three main layers det
 * __usl/servlet/context/MotuWebEngineContextListener.java__: Apache tomcat ServletContextListener used to init and stop the application.  
 * __usl/request__: All requests are managed with the "motu/web/servlet/MotuServlet.java" by following a command pattern. "action" HTTP parameter matches one of the "usl/request/actions" classes.  
 * __usl/response__: XML and [Apache velocity](https://velocity.apache.org/) data model.  
+* __usl/wcs__: All WCS requests and responses are managed in this package. The servlet entry point is defined with the class "motu/web/servlet/MotuWCSServlet.java".
 
 #### <a name="ArchitectureDesignDBLL">BLL</a>  
 * __bll/catalog__: Catalog and Product managers. Package "bll/catalog/product/cache" contains the product cache.
