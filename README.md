@@ -978,7 +978,7 @@ In minutes, oldest result files from extraction request are deleted. This check 
 Default = 60min
 
 ##### <a name="BScleanRequestInterval">cleanRequestInterval</a>  
-In minutes, oldest status than this time are removed from Motu. This check is done each "runCleanInterval" minutes.  
+In minutes, oldest status (visible in [debug](#ExploitDebug) view) than this time are removed from Motu. This check is done each "runCleanInterval" minutes.  
 Default = 60min
 
 ##### runCleanInterval
@@ -1003,8 +1003,8 @@ Default is ".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|.*\.extract$"
 
 ##### extractionFileCacheSize
 Size in Mbytes.  
-A clean job runs each <runCleanInterval>. File with a size higher than this value are deleted by this job.
-If value is zero: no delete.  
+A clean job runs each "runCleanInterval". All files with a size higher than this value are deleted by this job.
+If value is zero, files are not deleted.  
 Default value = 0.
 
 ##### describeProductCacheRefreshInMilliSec
