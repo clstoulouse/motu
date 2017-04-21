@@ -7,6 +7,8 @@ import fr.cls.atoll.motu.web.usl.request.USLRequestManager;
 import fr.cls.atoll.motu.web.usl.response.velocity.VelocityTemplateManager;
 import fr.cls.atoll.motu.web.usl.user.IUSLUserManager;
 import fr.cls.atoll.motu.web.usl.user.USLUserManager;
+import fr.cls.atoll.motu.web.usl.wcs.IWCSRequestManager;
+import fr.cls.atoll.motu.web.usl.wcs.WCSRequestManager;
 
 /**
  * <br>
@@ -23,6 +25,7 @@ public class USLManager implements IUSLManager {
     private static IUSLManager s_instance;
     private USLUserManager userManager;
     private IUSLRequestManager requestManager;
+    private IWCSRequestManager wcsRequestManager;
 
     public static IUSLManager getInstance() {
         if (s_instance == null) {
@@ -34,6 +37,7 @@ public class USLManager implements IUSLManager {
     private USLManager() {
         userManager = new USLUserManager();
         requestManager = new USLRequestManager();
+        wcsRequestManager = new WCSRequestManager();
     }
 
     @Override
@@ -64,6 +68,12 @@ public class USLManager implements IUSLManager {
     @Override
     public IUSLRequestManager getRequestManager() {
         return requestManager;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public IWCSRequestManager getWCSRequestManager() {
+        return wcsRequestManager;
     }
 
 }

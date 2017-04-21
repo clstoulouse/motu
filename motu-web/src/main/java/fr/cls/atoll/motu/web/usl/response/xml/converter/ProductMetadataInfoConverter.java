@@ -288,7 +288,6 @@ public class ProductMetadataInfoConverter {
      * @throws NetCdfVariableException the net cdf variable exception
      */
     private static AvailableDepths initAvailableDepths(Product product) throws MotuException, NetCdfVariableException {
-
         AvailableDepths availableDepths = createAvailableDepth();
 
         if (product == null) {
@@ -302,12 +301,8 @@ public class ProductMetadataInfoConverter {
         if (!productMetaData.hasZAxis()) {
             return null;
         }
-        StringBuffer stringBuffer = new StringBuffer();
-
-        List<String> list = product.getZAxisDataAsString();
-
-        Iterator<String> i = list.iterator();
-
+        StringBuilder stringBuffer = new StringBuilder();
+        Iterator<String> i = product.getZAxisDataAsString().iterator();
         if (i.hasNext()) {
             for (;;) {
                 String value = i.next();
@@ -318,9 +313,7 @@ public class ProductMetadataInfoConverter {
                 stringBuffer.append(";");
             }
         }
-
         availableDepths.setValue(stringBuffer.toString());
-
         availableDepths.setCode(Integer.toString(ErrorType.OK.value()));
         availableDepths.setMsg(ErrorType.OK.toString());
 

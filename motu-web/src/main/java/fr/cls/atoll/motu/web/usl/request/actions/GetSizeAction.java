@@ -217,9 +217,10 @@ public class GetSizeAction extends AbstractProductInfoAction {
             LOGGER.error(StringUtils.getLogMessage(getActionCode(), e.getErrorType(), e.getMessage()), e);
             return requestSize;
         }
+        requestSize.setMaxAllowedSize(UnitUtils.toKBytes(maxAllowedSizeInBytes));
+        requestSize.setUnit("kb");
 
         MotuExceptionBase exceptionBase = null;
-
         if (sizeInBytes > maxAllowedSizeInBytes) {
             exceptionBase = new MotuExceedingCapacityException(
                     convertFromBytesToMegabytes(sizeInBytes),
@@ -229,10 +230,6 @@ public class GetSizeAction extends AbstractProductInfoAction {
         if (exceptionBase != null) {
             ExceptionUtils.setError(getActionCode(), requestSize, exceptionBase);
         }
-
-        requestSize.setMaxAllowedSize(UnitUtils.toKBytes(maxAllowedSizeInBytes));
-
-        requestSize.setUnit("kb");
 
         return requestSize;
     }

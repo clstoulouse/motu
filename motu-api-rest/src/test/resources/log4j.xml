@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration packages="fr.cls.atoll.motu.web.common.log.log4j">
+	<!-- ######################################################################################################################## -->
+	<!-- ### OVERVIEW LOG4J ### -->
+	<!-- ######################################################################################################################## -->
+	<!-- [LEVEL] LOGGER APPENDERS ### -->
+	<!-- ######################################################################################################################## -->
+	<!-- [ERROR] root logbook.log[INFO] warning.log[WARN] errors.log[ERROR] -->
+	<!-- [INFO] fr.cls.atoll.motu // // // -->
+	<!-- ######################################################################################################################## -->
+
+	<!-- ######################################################################################################################## -->
+	<!-- ######################################################################################################################## -->
+	<Properties>
+		<!-- This property is read from Java option -dmotu-log-dir=$absoluteDirPath
+			 And here is the property if not found
+		 -->
+		<Property name="motu-log-dir">/opt/cmems-cis/motu/log</Property>
+	</Properties>
+
+	<Appenders>
+		<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n" />
+		</Console>
+	</Appenders>
+
+	<Loggers>
+		<Root level="DEBUG">
+			<AppenderRef ref="STDOUT" level="DEBUG"/>
+		</Root>
+	</Loggers>
+
+</Configuration>

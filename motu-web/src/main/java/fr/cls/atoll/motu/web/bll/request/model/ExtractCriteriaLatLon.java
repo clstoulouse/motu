@@ -265,12 +265,12 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         // to fix problem with LatLonrect width computation
         // if ((Math.abs(lonHigh - lonLow) >= 360.) && ((Math.abs(lonHigh) >= 360.) || (Math.abs(lonLow) >=
         // 360.))) {
-        if ((Math.abs(lonHigh - lonLow) >= 360.)) {
-            // lonHigh -= 0.000000001;
-            setLatLonRect(new LatLonPointImpl(latLow, -180.), new LatLonPointImpl(latHigh, 180.));
-        } else {
-            setLatLonRect(new LatLonPointImpl(latLow, lonLow), new LatLonPointImpl(latHigh, lonHigh));
-        }
+        // if ((Math.abs(lonHigh - lonLow) > 360.)) {
+        // // lonHigh -= 0.000000001;
+        // setLatLonRect(new LatLonPointImpl(latLow, -180.), new LatLonPointImpl(latHigh, 180.));
+        // } else {
+        setLatLonRect(new LatLonPointImpl(latLow, lonLow), new LatLonPointImpl(latHigh, lonHigh));
+        // }
 
     }
 
@@ -1083,7 +1083,8 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                                     int maxj,
                                     int maxi,
                                     double minx,
-                                    double maxx) throws MotuException {
+                                    double maxx)
+            throws MotuException {
         computeLonMinMax(lonAxis, minj, mini, maxj, maxi, minx, maxx);
         computeLatMinMax(latAxis, minj, mini, maxj, maxi);
     }

@@ -27,6 +27,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.DebugOrderHTTParameterValidator;
 import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
+import fr.cls.atoll.motu.web.usl.wcs.request.actions.WCSGetCoverageAction;
 
 /**
  * <br>
@@ -174,7 +175,7 @@ public class DebugAction extends AbstractAction {
                 if (userId == null) {
                     userId = "Anonymous";
                 }
-                if (action instanceof DownloadProductAction) {
+                if (action instanceof DownloadProductAction || action instanceof WCSGetCoverageAction) {
                     if (manageTheDownloadProductActionLog(stringBuffer, requestId, statusModeType, action, userId)) {
                         requestCount++;
                     }

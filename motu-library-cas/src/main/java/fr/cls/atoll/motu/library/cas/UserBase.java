@@ -38,18 +38,56 @@ import fr.cls.atoll.motu.library.cas.util.RestUtil;
  */
 public class UserBase {
 
-    /**
-     * Default constructor.
-     */
-    public UserBase() {
-    }
+    /** The cas authentication. */
+    private AuthenticationMode authenticationMode = AuthenticationMode.NONE;
 
     /**
      * FirstName of the user.
      * 
      * @uml.property name="firstName"
      */
-    private String firstName = "";
+    private String firstName;
+
+    /**
+     * LastName of the user.
+     * 
+     * @uml.property name="lastName"
+     */
+    private String lastName;
+
+    /**
+     * Email adress of the user.
+     * 
+     * @uml.property name="email"
+     */
+    private String email;
+
+    /** Is it an anonymous user. */
+    private boolean anonymousUser;
+
+    /** The login. */
+    private String login;
+
+    /** The pwd. */
+    private String pwd;
+
+    /** The cas rest suff url. */
+    protected String casRestSuffURL;
+
+    /** The cas url. */
+    protected String casURL;
+
+    /**
+     * Default constructor.
+     */
+    public UserBase() {
+        firstName = "";
+        lastName = "";
+        email = "";
+        anonymousUser = true;
+        login = "";
+        pwd = "";
+    }
 
     /**
      * Getter of the property <tt>firstName</tt>.
@@ -72,13 +110,6 @@ public class UserBase {
     }
 
     /**
-     * LastName of the user.
-     * 
-     * @uml.property name="lastName"
-     */
-    private String lastName = "";
-
-    /**
      * Getter of the property <tt>lastName</tt>.
      * 
      * @return Returns the lastName.
@@ -98,15 +129,6 @@ public class UserBase {
         this.lastName = lastName;
     }
 
-    // CSOFF: StrictDuplicateCode : normal duplication code.
-
-    /**
-     * Email adress of the user.
-     * 
-     * @uml.property name="email"
-     */
-    private String email = "";
-
     /**
      * Getter of the property <tt>email</tt>.
      * 
@@ -117,8 +139,6 @@ public class UserBase {
         return this.email;
     }
 
-    // CSON: StrictDuplicateCode
-
     /**
      * Setter of the property <tt>email</tt>.
      * 
@@ -128,9 +148,6 @@ public class UserBase {
     public void setEmail(String email) {
         this.email = email;
     }
-
-    /** Is it an anonymous user. */
-    private boolean anonymousUser = true;
 
     /**
      * Checks if is anonymous user.
@@ -150,9 +167,6 @@ public class UserBase {
         this.anonymousUser = anonymousUser;
     }
 
-    /** The login. */
-    private String login = "";
-
     public String getLogin() {
         return login;
     }
@@ -164,9 +178,6 @@ public class UserBase {
             this.login = "";
         }
     }
-
-    /** The pwd. */
-    private String pwd = "";
 
     /**
      * Gets the pwd.
@@ -185,13 +196,8 @@ public class UserBase {
     public void setPwd(String pwd) {
         if (pwd != null) {
             this.pwd = pwd;
-        } else {
-            this.pwd = "";
         }
     }
-
-    /** The cas authentication. */
-    private AuthenticationMode authenticationMode = AuthenticationMode.NONE;
 
     /**
      * Gets the authentication mode.
@@ -275,11 +281,8 @@ public class UserBase {
     }
 
     public void setCASAuthentication(boolean casAuthentication) {
-        this.authenticationMode = (casAuthentication) ? AuthenticationMode.CAS : AuthenticationMode.NONE;
+        this.authenticationMode = casAuthentication ? AuthenticationMode.CAS : AuthenticationMode.NONE;
     }
-
-    /** The cas rest suff url. */
-    protected String casRestSuffURL = null;
 
     /**
      * Gets the cas rest suff url.
@@ -300,9 +303,6 @@ public class UserBase {
     public void setCasRestSuffURL(String casRestSuffURL) {
         this.casRestSuffURL = casRestSuffURL;
     }
-
-    /** The cas url. */
-    protected String casURL = null;
 
     /**
      * Gets the cas url.

@@ -41,6 +41,10 @@ public class ExceptionUtils {
         return BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType);
     }
 
+    private static String getErrorMessage(ErrorType errorType, Object... arguments) throws MotuException {
+        return BLLManager.getInstance().getMessagesErrorManager().getMessageError(errorType, arguments);
+    }
+
     public static void setStatusModeResponseException(String actionCode, Exception e, StatusModeResponse statusModeResponse) {
         try {
             ErrorType errorType = getErrorType(e);
@@ -120,8 +124,10 @@ public class ExceptionUtils {
      */
     public static void setError(String actionCode, RequestSize requestSize, Exception e) {
         try {
+            double requestSizeD = (requestSize.getSize() == null) ? -1 : requestSize.getSize() * 1024;
+            double requestMaxAllowedSizeD = (requestSize.getMaxAllowedSize() == null) ? -1 : requestSize.getMaxAllowedSize() * 1024;
             ErrorType errorType = getErrorType(e);
-            requestSize.setMsg(getErrorMessage(errorType));
+            requestSize.setMsg(getErrorMessage(errorType, requestSizeD, requestMaxAllowedSizeD));
             requestSize.setCode(StringUtils.getErrorCode(actionCode, errorType));
         } catch (MotuException errorMessageException) {
             requestSize.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));

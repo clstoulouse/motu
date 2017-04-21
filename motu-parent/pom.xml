@@ -42,6 +42,7 @@
 		<dependencies.version.commons-io>1.4</dependencies.version.commons-io>
 		<dependencies.version.jaxb2-basics-jaxb-xjc>2.1.13.MR3</dependencies.version.jaxb2-basics-jaxb-xjc>
 		<dependencies.version.jaxb2_commons>0.6.1</dependencies.version.jaxb2_commons>
+		<dependencies.version.ogc-schema>2.6.1</dependencies.version.ogc-schema>
 	</properties>
 
 	<dependencies>
@@ -118,6 +119,11 @@
 
 	<dependencyManagement>
 		<dependencies>
+        <dependency>
+		    <groupId>org.jvnet.ogc</groupId>
+		    <artifactId>wcs-v_2_0</artifactId>
+		    <version>${dependencies.version.ogc-schema}</version>
+		</dependency>
 
 			<!-- XML -->
 			<dependency>
@@ -465,6 +471,7 @@
 
 	<modules>
 		<module>../motu-api-message</module>
+		<module>../motu-api-rest</module>
 
 		<module>../motu-library-converter</module>
 		<module>../motu-library-cas</module>
