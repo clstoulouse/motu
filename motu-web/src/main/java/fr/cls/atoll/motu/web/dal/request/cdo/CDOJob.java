@@ -17,6 +17,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.common.utils.CoordinateUtils;
+import fr.cls.atoll.motu.web.common.utils.NetCDFUtils;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer.Type;
 import fr.cls.atoll.motu.web.dal.request.IDALRequestManager;
@@ -92,42 +93,56 @@ public class CDOJob implements Runnable {
 
                 int i = 0;
                 double rangesLength = 0;
+                Path currentFilePath = null;
                 for (ExtractCriteriaLatLon currentRange : rangesToRequest) {
                     rangesLength += Math.abs(currentRange.getLatLonRect().getLonMax() - currentRange.getLatLonRect().getLonMin());
                     ncss.setGeoSubset(currentRange);
                     ncss.setOutputFile(i + "-" + fname);
                     dalRequestManager.ncssRequest(rds, ncss);
-                    filesPath.add(Paths.get(tempDirectory.toString(), ncss.getOutputFile()).toString());
+                    currentFilePath = Paths.get(tempDirectory.toString(), ncss.getOutputFile());
+                    filesPath.add(currentFilePath.toString());
                     i++;
                 }
 
-                // Concatenate with NCO
-                // Set the merge command
-                String cmd = "merge.sh ";
-                // Set the output file path
-                cmd += extractDirPath + "/" + fname;
-                // Set the start point
-                cmd += " " + latlon.getLowerLeftLon();
-                // Set the length
-                cmd += " " + rangesLength;
+                if (currentFilePath != null) {
 
-                // Set the list of files to merge
-                for (String path : filesPath) {
-                    cmd += " " + path;
+                    String newFileName = "auxFile";
+
+                    // Concatenate with NCO
+                    // Set the merge command
+                    String cmd = "merge.sh ";
+                    // Set the output file path
+                    cmd += Paths.get(currentFilePath.getParent().toString(), newFileName).toString();
+                    // Set the start point
+                    cmd += " " + latlon.getLowerLeftLon();
+                    // Set the length
+                    cmd += " " + rangesLength;
+
+                    // Set the list of files to merge
+                    for (String path : filesPath) {
+                        cmd += " " + path;
+                    }
+                    LOGGER.info("Start: " + cmd);
+                    final Process process = Runtime.getRuntime().exec(cmd);
+
+                    new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getInputStream())), LOGGER, Type.INFO))
+                            .start();
+                    new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getErrorStream())), LOGGER, Type.ERROR))
+                            .start();
+
+                    int exitValue = process.waitFor();
+                    LOGGER.info("END [Exit code=" + exitValue + "] : " + cmd);
+
+                    if (exitValue != 0) {
+                        throw new MotuException(ErrorType.SYSTEM, "The generation of the NC file failled. See the log for more information.");
+                    }
+
+                    NetCDFUtils.changeDimensionAndVariableName(currentFilePath.getParent(),
+                                                               currentFilePath.getFileName().toString(),
+                                                               newFileName,
+                                                               Paths.get(extractDirPath, fname));
+
                 }
-                LOGGER.info("Start: " + cmd);
-                final Process process = Runtime.getRuntime().exec(cmd);
-
-                new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getInputStream())), LOGGER, Type.INFO)).start();
-                new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(process.getErrorStream())), LOGGER, Type.ERROR)).start();
-
-                int exitValue = process.waitFor();
-                LOGGER.info("END [Exit code=" + exitValue + "] : " + cmd);
-
-                if (exitValue != 0) {
-                    throw new MotuException(ErrorType.SYSTEM, "The generation of the NC file failled. See the log for more information.");
-                }
-
             } finally {
                 // Cleanup directory and intermediate files (right away once concat)
                 FileUtils.deleteDirectory(tempDirectory.toFile());
