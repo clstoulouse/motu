@@ -3,13 +3,17 @@ package fr.cls.atoll.motu.web.dal.tds.ncss;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -34,6 +38,9 @@ import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer.Type;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import ucar.ma2.Array;
 import ucar.ma2.Range;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 
 /**
  * Class to handle NCSS requests
@@ -332,14 +339,16 @@ public class NetCdfSubsetService {
             depthTempDir.toFile().deleteOnExit();
 
             // For every depth
+            int numberOfDigit = computeNumberOfDigit(depthRange.last());
             for (int z = depthRange.first(); z <= depthRange.last(); z += depthRange.stride()) {
                 depthSelected = depthAxis.getDouble(z);
-                depthTempFname = "depth_concat_" + depthSelected;
+                depthTempFname = "depth_concat_" + String.format("%0" + numberOfDigit + "d", z);
                 unitRequestNCSS();
             }
 
+            String auxFileName = "auxFile";
             // Concatenate with NCO
-            String cmd = "cdo.sh merge " + depthTempDir + "/* " + outputDir + "/" + outputFile;
+            String cmd = "cdo.sh merge " + depthTempDir.toString() + "/* " + Paths.get(depthTempDir.toString(), auxFileName);
             Process p = Runtime.getRuntime().exec(cmd);
             new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(p.getInputStream())), LOGGER, Type.INFO)).start();
             new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(p.getErrorStream())), LOGGER, Type.ERROR)).start();
@@ -348,10 +357,75 @@ public class NetCdfSubsetService {
             if (exitValue != 0) {
                 throw new MotuException(ErrorType.NETCDF_GENERATION, "The generation of the NC file failled. See the log for more information.");
             }
+
+            changeDimensionAndVariableName(depthTempDir, depthTempFname, auxFileName, Paths.get(outputDir, outputFile));
         } finally {
             // Cleanup directory and intermediate files (right away once concat)
             FileUtils.deleteDirectory(depthTempDir.toFile());
         }
+    }
+
+    private int computeNumberOfDigit(int maxValue) {
+        int numberOfDigit = 1;
+        int currentMaxValue = maxValue;
+
+        while (currentMaxValue / 10 >= 1) {
+            numberOfDigit++;
+            currentMaxValue = currentMaxValue / 10;
+        }
+
+        return numberOfDigit;
+    }
+
+    private void changeDimensionAndVariableName(Path netCDFDirectoryPath, String originalFileName, String newFileName, Path outputFilePath)
+            throws MotuException {
+        try {
+            String ncMLDataFile = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+            ncMLDataFile += "<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\" location=\""
+                    + Paths.get(netCDFDirectoryPath.toString(), newFileName).toString() + "\">";
+
+            NetcdfFile ncFileOriginel = NetcdfFile.open(Paths.get(netCDFDirectoryPath.toString(), originalFileName).toString());
+            NetcdfFile ncFileNewFile = NetcdfFile.open(Paths.get(netCDFDirectoryPath.toString(), newFileName).toString());
+
+            List<Variable> originelVariableList = ncFileOriginel.getVariables();
+            List<Variable> resultVariableList = ncFileNewFile.getVariables();
+            List<String> alreadyTreatedDimension = new ArrayList<>();
+
+            for (Variable resultVariable : resultVariableList) {
+                for (Variable originelVariable : originelVariableList) {
+                    if (resultVariable.findAttribute("standard_name").getStringValue()
+                            .equals(originelVariable.findAttribute("standard_name").getStringValue())) {
+                        if (!resultVariable.getShortName().equals(originelVariable.getShortName())) {
+                            ncMLDataFile += "<variable name=\"" + originelVariable.getShortName() + "\" orgName=\"" + resultVariable.getShortName()
+                                    + "\"" + "/>";
+
+                        }
+                        List<Dimension> originalDims = originelVariable.getDimensions();
+                        List<Dimension> newFileDims = resultVariable.getDimensions();
+                        if (originalDims.size() == 1 && newFileDims.size() == 1) {
+                            Dimension originalDim = originalDims.get(0);
+                            Dimension newFileDim = newFileDims.get(0);
+                            if (!alreadyTreatedDimension.contains(originalDim.getName()) && !originalDim.getName().equals(newFileDim.getName())) {
+                                ncMLDataFile += "<dimension name=\"" + originalDim.getName() + "\" orgName=\"" + newFileDim.getName() + "\" length=\""
+                                        + originalDim.getLength() + "\"/>";
+                                alreadyTreatedDimension.add(originalDim.getName());
+                            }
+                        }
+                    }
+                }
+            }
+            ncMLDataFile += "</netcdf>";
+
+            FileWriter fw = new FileWriter(Paths.get(netCDFDirectoryPath.toString(), "rename.xml").toFile());
+            fw.write(ncMLDataFile);
+            fw.close();
+
+            String[] mainParams = { "-in", Paths.get(netCDFDirectoryPath.toString(), "rename.xml").toString(), "-out", outputFilePath.toString() };
+            ucar.nc2.dataset.NetcdfDataset.main(mainParams);
+        } catch (IOException e) {
+            throw new MotuException(ErrorType.SYSTEM, e);
+        }
+
     }
 
     /**
