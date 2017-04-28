@@ -339,9 +339,10 @@ public class NetCdfSubsetService {
             depthTempDir.toFile().deleteOnExit();
 
             // For every depth
+            int numberOfDigit = computeNumberOfDigit(depthRange.last());
             for (int z = depthRange.first(); z <= depthRange.last(); z += depthRange.stride()) {
                 depthSelected = depthAxis.getDouble(z);
-                depthTempFname = "depth_concat_" + depthSelected;
+                depthTempFname = "depth_concat_" + String.format("%0" + numberOfDigit + "d", z);
                 unitRequestNCSS();
             }
 
@@ -362,6 +363,18 @@ public class NetCdfSubsetService {
             // Cleanup directory and intermediate files (right away once concat)
             FileUtils.deleteDirectory(depthTempDir.toFile());
         }
+    }
+
+    private int computeNumberOfDigit(int maxValue) {
+        int numberOfDigit = 1;
+        int currentMaxValue = maxValue;
+
+        while (currentMaxValue / 10 >= 1) {
+            numberOfDigit++;
+            currentMaxValue = currentMaxValue / 10;
+        }
+
+        return numberOfDigit;
     }
 
     private void changeDimensionAndVariableName(Path netCDFDirectoryPath, String originalFileName, String newFileName, Path outputFilePath)
