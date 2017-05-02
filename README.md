@@ -1068,6 +1068,8 @@ If this attribute is not present, default value is: "@@productId@@_@@requestId@@
 
 ##### <a name="BSconfigServiceName">name</a>  
 String to set the config service name
+If the value of this attribute contains some special caracters, those caracters have not to be encoded.
+For example, if the value is an URL, the caracters ":" and "/" have not to be encoded like "%2E" or "%3A".
 
 ##### group
 String which describes the group
