@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Set;
@@ -29,6 +30,7 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.common.utils.NetCDFUtils;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer.Type;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
@@ -332,14 +334,16 @@ public class NetCdfSubsetService {
             depthTempDir.toFile().deleteOnExit();
 
             // For every depth
+            int numberOfDigit = computeNumberOfDigit(depthRange.last());
             for (int z = depthRange.first(); z <= depthRange.last(); z += depthRange.stride()) {
                 depthSelected = depthAxis.getDouble(z);
-                depthTempFname = "depth_concat_" + depthSelected;
+                depthTempFname = "depth_concat_" + String.format("%0" + numberOfDigit + "d", z);
                 unitRequestNCSS();
             }
 
+            String auxFileName = "auxFile";
             // Concatenate with NCO
-            String cmd = "cdo.sh merge " + depthTempDir + "/* " + outputDir + "/" + outputFile;
+            String cmd = "cdo.sh merge " + depthTempDir.toString() + "/* " + Paths.get(depthTempDir.toString(), auxFileName);
             Process p = Runtime.getRuntime().exec(cmd);
             new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(p.getInputStream())), LOGGER, Type.INFO)).start();
             new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(p.getErrorStream())), LOGGER, Type.ERROR)).start();
@@ -348,10 +352,24 @@ public class NetCdfSubsetService {
             if (exitValue != 0) {
                 throw new MotuException(ErrorType.NETCDF_GENERATION, "The generation of the NC file failled. See the log for more information.");
             }
+
+            NetCDFUtils.changeDimensionAndVariableName(depthTempDir, depthTempFname, auxFileName, Paths.get(outputDir, outputFile));
         } finally {
             // Cleanup directory and intermediate files (right away once concat)
             FileUtils.deleteDirectory(depthTempDir.toFile());
         }
+    }
+
+    private int computeNumberOfDigit(int maxValue) {
+        int numberOfDigit = 1;
+        int currentMaxValue = maxValue;
+
+        while (currentMaxValue / 10 >= 1) {
+            numberOfDigit++;
+            currentMaxValue = currentMaxValue / 10;
+        }
+
+        return numberOfDigit;
     }
 
     /**
