@@ -30,7 +30,6 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
-import fr.cls.atoll.motu.web.common.utils.NetCDFUtils;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer.Type;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
@@ -352,8 +351,6 @@ public class NetCdfSubsetService {
             if (exitValue != 0) {
                 throw new MotuException(ErrorType.NETCDF_GENERATION, "The generation of the NC file failled. See the log for more information.");
             }
-
-            NetCDFUtils.changeDimensionAndVariableName(depthTempDir, depthTempFname, auxFileName, Paths.get(outputDir, outputFile));
         } finally {
             // Cleanup directory and intermediate files (right away once concat)
             FileUtils.deleteDirectory(depthTempDir.toFile());

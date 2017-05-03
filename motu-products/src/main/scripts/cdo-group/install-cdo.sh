@@ -52,10 +52,10 @@ if [ ! -z "$1" ]; then
   MOTU_HOME=$1
 fi
 CDO_GROUP_FOLDER_ABSPATH=$MOTU_HOME/products/cdo-group
-ZLIB_FOLDER_NAME=zlib-1.2.8
+ZLIB_FOLDER_NAME=zlib-1.2.11
 HDF_FOLDER_NAME=hdf5-1.8.17
 NETCDF_FOLDER_NAME=netcdf-4.4.1
-CDO_FOLDER_NAME=cdo-1.7.1
+CDO_FOLDER_NAME=cdo-1.8.1
 
 
 # Zlib
