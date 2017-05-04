@@ -17,7 +17,6 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.common.utils.CoordinateUtils;
-import fr.cls.atoll.motu.web.common.utils.NetCDFUtils;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer.Type;
 import fr.cls.atoll.motu.web.dal.request.IDALRequestManager;
@@ -106,13 +105,11 @@ public class CDOJob implements Runnable {
 
                 if (currentFilePath != null) {
 
-                    String newFileName = "auxFile";
-
                     // Concatenate with NCO
                     // Set the merge command
                     String cmd = "merge.sh ";
                     // Set the output file path
-                    cmd += Paths.get(currentFilePath.getParent().toString(), newFileName).toString();
+                    cmd += Paths.get(extractDirPath, fname).toString();
                     // Set the start point
                     cmd += " " + latlon.getLowerLeftLon();
                     // Set the length
@@ -136,12 +133,6 @@ public class CDOJob implements Runnable {
                     if (exitValue != 0) {
                         throw new MotuException(ErrorType.SYSTEM, "The generation of the NC file failled. See the log for more information.");
                     }
-
-                    NetCDFUtils.changeDimensionAndVariableName(currentFilePath.getParent(),
-                                                               currentFilePath.getFileName().toString(),
-                                                               newFileName,
-                                                               Paths.get(extractDirPath, fname));
-
                 }
             } finally {
                 // Cleanup directory and intermediate files (right away once concat)

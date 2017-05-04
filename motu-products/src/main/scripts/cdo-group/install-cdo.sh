@@ -93,7 +93,10 @@ CDO_HOME_PATH=$CDO_GROUP_FOLDER_ABSPATH/$CDO_FOLDER_NAME-install
 mkdir $CDO_HOME_PATH
 cd $CDO_FOLDER_NAME
 ./configure --with-hdf5=$HDF_INSTALL_PATH --with-netcdf=$NETCDF_INSTALL_PATH --prefix=$CDO_HOME_PATH
-compileAndInstall "CDO" false
+make
+make check
+make install
+make check-install        # verify installation.
 
 # Set execution rights 
 echo "Add execution rights to cdo.sh and merge.sh"

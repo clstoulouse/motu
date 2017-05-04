@@ -340,9 +340,8 @@ public class NetCdfSubsetService {
                 unitRequestNCSS();
             }
 
-            String auxFileName = "auxFile";
             // Concatenate with NCO
-            String cmd = "cdo.sh merge " + depthTempDir.toString() + "/* " + Paths.get(depthTempDir.toString(), auxFileName);
+            String cmd = "cdo.sh merge " + depthTempDir.toString() + "/* " + Paths.get(outputDir, outputFile);
             Process p = Runtime.getRuntime().exec(cmd);
             new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(p.getInputStream())), LOGGER, Type.INFO)).start();
             new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(p.getErrorStream())), LOGGER, Type.ERROR)).start();
