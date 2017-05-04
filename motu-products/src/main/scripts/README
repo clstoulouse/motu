@@ -10,7 +10,7 @@
 #     gcc, gcc-c++ and m4 libraries have to be installed on the system.
 #
 #     First set the version variable:
-MOTU_PRODUCTS_VERSION=3.0.01
+MOTU_PRODUCTS_VERSION=3.4.0
 #     Then run this file as a shell script to build this archive: ./README
 #     WARN: You need an Internet Access to download products. So optionally, set your proxy parameters:
 #         vi ~/.wgetrc
@@ -52,8 +52,12 @@ fi
 
 echo
 echo "### Download Oracle JDK"
-wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-linux-x64.tar.gz
-JDKArchiveFileName=jdk-8u102-linux-x64.tar.gz
+#JDKArchiveFileName=jdk-8u102-linux-x64.tar.gz
+#JDKRemoteURL=http://download.oracle.com/otn-pub/java/jdk/8u102-b14/$JDKArchiveFileName
+JDKArchiveFileName=jdk-7u79-linux-x64.tar.gz
+JDKRemoteURL=http://download.oracle.com/otn-pub/java/jdk/7u79-b15/$JDKArchiveFileName
+wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" $JDKRemoteURL
+
 while [ ! -f $JDKArchiveFileName ]; do
   echo
   echo "ERROR $JDKArchiveFileName cannot be downloaded, or is not present in $PWD"
@@ -77,8 +81,8 @@ cp $PRODUCT_INSTALL_DIR/cdo-group/merge.sh ./
 cp $PRODUCT_INSTALL_DIR/cdo-group/install-cdo.sh ./
 
 echo "- download zlib"
-wget http://zlib.net/zlib-1.2.8.tar.gz
-tar xvf zlib-1.2.8.tar.gz
+wget http://zlib.net/zlib-1.2.11.tar.gz
+tar xvf zlib-1.2.11.tar.gz
 echo
 
 echo "- download hdf5"
@@ -92,8 +96,8 @@ tar xvzf netcdf-4.4.1.tar.gz
 echo
 
 echo "- download cdo"
-wget https://code.zmaw.de/attachments/download/12070/cdo-1.7.1.tar.gz
-tar xvzf cdo-1.7.1.tar.gz
+wget https://code.zmaw.de/attachments/download/14271/cdo-1.8.1.tar.gz
+tar xvzf cdo-1.8.1.tar.gz
 echo
 
 

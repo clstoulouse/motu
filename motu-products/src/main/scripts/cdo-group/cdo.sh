@@ -8,7 +8,7 @@ CUR_DIR=$(pwd)
 
 HDF_DIR=$CUR_DIR/hdf5-1.8.17-install
 GLIBC_DIR=$CUR_DIR/glibc-2.14-install
-ZLIB_DIR=$CUR_DIR/zlib-1.2.8-install
+ZLIB_DIR=$CUR_DIR/zlib-1.2.11-install
 NETCDF_DIR=$CUR_DIR/netcdf-4.4.1-install
 
 # Check if the SYSTEM GLIBC version if greater than 1.14
@@ -20,5 +20,5 @@ fi
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HDF_DIR/share/:$HDF_DIR/lib:$GLIBC_DIR/lib:$NETCDF_DIR/lib:$ZLIB_DIR/lib
 
-$CUR_DIR/cdo-1.7.1-install/bin/cdo --history $*
+$CUR_DIR/cdo-1.8.1-install/bin/cdo --history $*
 exit $?
