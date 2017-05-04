@@ -480,10 +480,7 @@ public class NetCdfSubsetService {
                     throw new MotuException(ErrorType.NETCDF_GENERATION, msg);
                 }
             } else {
-                throw new MotuException(
-                        ErrorType.SYSTEM,
-                        "HTTP request returns code=" + response.getClientResponseStatus().getStatusCode() + " call to " + ncssURL + ", Query params="
-                                + queryParams);
+                throw new MotuException(ErrorType.NETCDF_GENERATION, response.getEntity(String.class));
             }
         } catch (MotuException e) {
             throw e;
