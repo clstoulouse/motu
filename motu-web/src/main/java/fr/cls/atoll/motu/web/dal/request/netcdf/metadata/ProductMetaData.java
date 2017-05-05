@@ -2077,6 +2077,18 @@ public class ProductMetaData {
         return parameterMetaData;
     }
 
+    public ParameterMetaData findVariable(String variableName) {
+
+        ParameterMetaData parameterMetaData = null;
+        parameterMetaData = getParameterMetaDatas(variableName);
+        if (parameterMetaData == null) {
+
+            parameterMetaData = getParameterMetaDataFromStandardName(variableName);
+        }
+
+        return parameterMetaData;
+    }
+
     /**
      * Find coordinate axis.
      * 
