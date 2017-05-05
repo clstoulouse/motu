@@ -150,7 +150,6 @@ public class DALRequestManager implements IDALRequestManager {
                 runWithSeveralRqt(ncss, fname, extractDirPath, rds_, rightLon);
             } else {
                 // Here we cut the easter boundary (axisXMax)
-                // 2 requests
                 // [axisXMin] rightLon]] [axisXMax] [[leftLon
                 runUniqRqt(ncss,
                            fname,

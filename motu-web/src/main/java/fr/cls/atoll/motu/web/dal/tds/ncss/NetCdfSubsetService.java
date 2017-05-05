@@ -357,14 +357,24 @@ public class NetCdfSubsetService {
                 throw new MotuException(ErrorType.NETCDF_GENERATION, "The generation of the NC file failled. See the log for more information.");
             }
 
-            changeDimensionAndVariableName(depthTempDir, depthTempFname, auxFileName, Paths.get(outputDir, outputFile));
+            cdoFixByChangingDimensionAndVariableName(depthTempDir, depthTempFname, auxFileName, Paths.get(outputDir, outputFile));
         } finally {
             // Cleanup directory and intermediate files (right away once concat)
             FileUtils.deleteDirectory(depthTempDir.toFile());
         }
     }
 
-    private void changeDimensionAndVariableName(Path netCDFDirectoryPath, String originalFileName, String newFileName, Path outputFilePath)
+    /**
+     * Used to FIX CDO issue which changes the original variable and dimension names, in particular, it rename
+     * latitude to "lat" and longitude to "lon" but it does not change the standard_name .
+     * 
+     * @param netCDFDirectoryPath
+     * @param originalFileName
+     * @param newFileName
+     * @param outputFilePath
+     * @throws MotuException
+     */
+    private void cdoFixByChangingDimensionAndVariableName(Path netCDFDirectoryPath, String originalFileName, String newFileName, Path outputFilePath)
             throws MotuException {
         try {
             String ncMLDataFile = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
