@@ -57,17 +57,28 @@ public class HTTPUtils {
         return stringBuffer.toString();
     }
 
+    /**
+     * .
+     * 
+     * @param httpServletResponse_
+     * @param responseStr_
+     * @param responseContentType_
+     * @param headerArrayMultipleOf2Elements An array of [Key, Value, K, V, K, V, ...], this array has always
+     *            a pair size
+     * @throws UnsupportedEncodingException
+     * @throws IOException
+     */
     public static void writeHttpResponse(HttpServletResponse httpServletResponse_,
                                          String responseStr_,
                                          String responseContentType_,
-                                         String[] headerMap)
+                                         String[] headerArrayMultipleOf2Elements)
             throws UnsupportedEncodingException, IOException {
         if (responseContentType_ != null) {
             httpServletResponse_.setContentType(responseContentType_);
         }
-        if (headerMap != null && headerMap.length > 0) {
-            for (int i = 0; i < headerMap.length; i = i + 2) {
-                httpServletResponse_.setHeader(headerMap[i], headerMap[i + 1]);
+        if (headerArrayMultipleOf2Elements != null && headerArrayMultipleOf2Elements.length > 0) {
+            for (int i = 0; i < headerArrayMultipleOf2Elements.length; i = i + 2) {
+                httpServletResponse_.setHeader(headerArrayMultipleOf2Elements[i], headerArrayMultipleOf2Elements[i + 1]);
             }
         }
         httpServletResponse_.getOutputStream().write(responseStr_.getBytes("UTF-8"));

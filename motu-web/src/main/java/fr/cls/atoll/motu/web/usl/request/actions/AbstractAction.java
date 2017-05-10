@@ -91,8 +91,18 @@ public abstract class AbstractAction {
 
     protected abstract void process() throws MotuException;
 
-    public void writeResponse(String responseStr_, String responseContentType_, String[] headerMap) throws UnsupportedEncodingException, IOException {
-        HTTPUtils.writeHttpResponse(getResponse(), responseStr_, responseContentType_, headerMap);
+    /**
+     * .
+     * 
+     * @param responseStr_
+     * @param responseContentType_
+     * @param headerArrayMultipleOf2Elements : An array of K, V, K, V, K, V, this array has always a pair size
+     * @throws UnsupportedEncodingException
+     * @throws IOException
+     */
+    public void writeResponse(String responseStr_, String responseContentType_, String[] headerArrayMultipleOf2Elements)
+            throws UnsupportedEncodingException, IOException {
+        HTTPUtils.writeHttpResponse(getResponse(), responseStr_, responseContentType_, headerArrayMultipleOf2Elements);
     }
 
     public void writeResponse(String responseStr_, String responseContentType_) throws UnsupportedEncodingException, IOException {
