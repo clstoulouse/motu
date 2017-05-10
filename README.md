@@ -703,13 +703,13 @@ __Now check if "cdo" runs well__:
 ```
 export MotuInstallDir=/opt/cmems-cis  
 $MotuInstallDir/motu/products/cdo-group/cdo.sh --version  
-Climate Data Operators version 1.7.1 (http://mpimet.mpg.de/cdo)  
+Climate Data Operators version x.y.z (http://mpimet.mpg.de/cdo)  
 [...]  
 ```  
 
 If error appear like ones below, it certainly means that GLIC is not in the LD_LIBRARY_PATH.
 ```
-$MotuInstallDir/motu/products/cdo-group/cdo-1.7.1-home/bin/cdo: error while loading shared libraries: libhdf5.so.10: cannot open shared object file: No such file or directory
+$MotuInstallDir/motu/products/cdo-group/cdo-x.z.z-home/bin/cdo: error while loading shared libraries: libhdf5.so.10: cannot open shared object file: No such file or directory
 ```  
 or  
 ```
@@ -1047,7 +1047,12 @@ Document root of the servlet server.
 
 ##### Configure the Proxy settings  
 @Deprecated from v3 This parameter is not used.
-Proxy settings are not used on Motu:  
+To use a proxy in order to access to a Threads, use the [JVM properties](#ConfigurationSystem), for example:  
+
+```  
+tomcat-motu-jvm-javaOpts=-server -Xmx4096M  ... -Dhttp.proxyHost=monProxy.host.fr -Dhttp.proxyPort=XXXX -Dhttp.nonProxyHosts='localhost|127.0.0.1'
+```  
+
 
 * __useProxy__  
 * __proxyHost__  

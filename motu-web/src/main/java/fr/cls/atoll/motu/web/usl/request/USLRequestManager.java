@@ -21,6 +21,7 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.actions.AboutAction;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 import fr.cls.atoll.motu.web.usl.request.actions.DebugAction;
@@ -200,7 +201,7 @@ public class USLRequestManager implements IUSLRequestManager {
 
     private static void writeErrorMessage(String actionCode, ErrorType errorType, String errMessage, HttpServletResponse response_)
             throws MotuException {
-        response_.setContentType(AbstractAction.CONTENT_TYPE_HTML);
+        response_.setContentType(HTTPUtils.CONTENT_TYPE_HTML_UTF8);
 
         Map<String, Object> velocityContext = new HashMap<String, Object>(2);
         velocityContext.put("body_template", VelocityTemplateManager.getTemplatePath("exception", VelocityTemplateManager.DEFAULT_LANG));

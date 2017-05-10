@@ -1,6 +1,7 @@
 package fr.cls.atoll.motu.web.usl.request.actions;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.USLManager;
+import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ServiceHTTPParameterValidator;
@@ -41,15 +43,6 @@ public abstract class AbstractAction {
     public static final String UNDETERMINED_ACTION = "001";
 
     private static final Logger LOGGER = LogManager.getLogger();
-
-    /** The Constant CONTENT_TYPE_PLAIN. */
-    public static final String CONTENT_TYPE_PLAIN = "text/plain";
-
-    /** The Constant CONTENT_TYPE_XML. */
-    public static final String CONTENT_TYPE_XML = "text/xml";
-
-    /** The Constant CONTENT_TYPE_HTML. */
-    public static final String CONTENT_TYPE_HTML = "text/html";
 
     private String actionName;
     private String parameters;
@@ -97,6 +90,18 @@ public abstract class AbstractAction {
     }
 
     protected abstract void process() throws MotuException;
+
+    public void writeResponse(String responseStr_, String responseContentType_, String[] headerMap) throws UnsupportedEncodingException, IOException {
+        HTTPUtils.writeHttpResponse(getResponse(), responseStr_, responseContentType_, headerMap);
+    }
+
+    public void writeResponse(String responseStr_, String responseContentType_) throws UnsupportedEncodingException, IOException {
+        writeResponse(responseStr_, null, null);
+    }
+
+    public void writeResponse(String responseStr_) throws UnsupportedEncodingException, IOException {
+        writeResponse(responseStr_, null);
+    }
 
     protected void onActionStarts() {
         if (LOGGER.isDebugEnabled()) {

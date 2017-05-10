@@ -63,6 +63,7 @@ public class JAXBWriter {
         jaxbContextMotuMsg = JAXBContext.newInstance(MotuMsgConstant.MOTU_MSG_SCHEMA_PACK_NAME);
         marshallerMotuMsg = jaxbContextMotuMsg.createMarshaller();
         marshallerMotuMsg.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        marshallerMotuMsg.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("initJAXBMotuMsg() - exiting");

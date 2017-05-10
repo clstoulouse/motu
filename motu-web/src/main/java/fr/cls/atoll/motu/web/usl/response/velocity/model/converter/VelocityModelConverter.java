@@ -3,6 +3,7 @@ package fr.cls.atoll.motu.web.usl.response.velocity.model.converter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -943,27 +944,27 @@ public class VelocityModelConverter {
 
             @Override
             public String getName() {
-                return pmd.getName();
+                return StringEscapeUtils.escapeHtml(pmd.getName());
             }
 
             @Override
             public String getLabel() {
-                return pmd.getLabel();
+                return StringEscapeUtils.escapeHtml(pmd.getLabel());
             }
 
             @Override
             public String getStandardName() {
-                return pmd.getStandardName();
+                return StringEscapeUtils.escapeHtml(pmd.getStandardName());
             }
 
             @Override
             public String getUnit() {
-                return pmd.getUnit();
+                return StringEscapeUtils.escapeHtml(pmd.getUnit());
             }
 
             @Override
             public String getUnitLong() {
-                return pmd.getUnitLong();
+                return StringEscapeUtils.escapeHtml(pmd.getUnitLong());
             }
 
             @Override

@@ -29,6 +29,7 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.USLManager;
+import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.USLRequestManager;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
@@ -202,9 +203,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     @Override
     protected void onArgumentError(MotuException motuException) throws MotuException {
         try {
-            getResponse().setContentType(CONTENT_TYPE_XML);
             String response = XMLConverter.toXMLString(motuException, getActionCode(), scriptVersionParameterValidator.getParameterValueValidated());
-            getResponse().getWriter().write(response);
+            writeResponse(response, HTTPUtils.CONTENT_TYPE_XML_UTF8);
         } catch (IOException e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while writing HTTP response ", e);
         }
@@ -242,9 +242,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     private void onAsynchronousMode(ConfigService cs, RequestProduct requestProduct) throws MotuException {
         long requestId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(cs, requestProduct, this);
         try {
-            getResponse().setContentType(CONTENT_TYPE_XML);
             String response = XMLConverter.toXMLString(requestId, getActionCode(), scriptVersionParameterValidator.getParameterValueValidated());
-            getResponse().getWriter().write(response);
+            writeResponse(response, HTTPUtils.CONTENT_TYPE_XML_UTF8);
         } catch (IOException e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while writing HTTP response ", e);
         }
@@ -260,7 +259,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
     private void onSynchronousURLMode(MotuConfig mc, ConfigService cs, CatalogData cd, RequestProduct requestProduct) throws MotuException {
         try {
-            ProductDownloadHomeAction.writeResponseWithVelocity(mc, cs, cd, requestProduct, getResponse().getWriter());
+            String response = ProductDownloadHomeAction.getResponseWithVelocity(mc, cs, cd, requestProduct);
+            writeResponse(response, HTTPUtils.CONTENT_TYPE_HTML_UTF8);
         } catch (IOException e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
         }
@@ -292,7 +292,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
             if (e_ != null && USLRequestManager.isErrorTypeToLog(e_.getErrorType())) {
                 LOGGER.error(e_);
             }
-            ProductDownloadHomeAction.writeResponseWithVelocity(mc_, cs, cd, reqProduct, getResponse().getWriter());
+            String response = ProductDownloadHomeAction.getResponseWithVelocity(mc_, cs, cd, reqProduct);
+            writeResponse(response, HTTPUtils.CONTENT_TYPE_HTML_UTF8);
         } catch (IOException e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
         }

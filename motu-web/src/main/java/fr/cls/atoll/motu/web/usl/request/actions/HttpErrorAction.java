@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.HttpErrorCodeHTTPParameterValidator;
@@ -52,8 +53,6 @@ public class HttpErrorAction extends AbstractAction {
 
     @Override
     public void process() throws MotuException {
-        getResponse().setContentType(CONTENT_TYPE_HTML);
-
         Map<String, Object> velocityContext = new HashMap<String, Object>(2);
         velocityContext.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
         velocityContext.put("httpErrorCode", httpErrorCodeHTTPParameterValidator.getParameterValueValidated());
@@ -61,7 +60,7 @@ public class HttpErrorAction extends AbstractAction {
 
         String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, null);
         try {
-            getResponse().getWriter().write(response);
+            writeResponse(response, HTTPUtils.CONTENT_TYPE_HTML_UTF8);
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
         }
