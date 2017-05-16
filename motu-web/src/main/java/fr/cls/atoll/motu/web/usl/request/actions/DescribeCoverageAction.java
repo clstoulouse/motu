@@ -96,8 +96,7 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
             Template template = VelocityTemplateManager.getInstance().getVelocityEngine()
                     .getTemplate(VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG, true));
             String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, template);
-
-            getResponse().getWriter().write(response);
+            writeResponse(response);
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
         }

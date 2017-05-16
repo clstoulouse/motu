@@ -76,17 +76,11 @@ public class Utils {
 
     }
 
-    public static void onError(HttpServletResponse response, String actionCode, String wcsErrorCode, ErrorType errorType, Object... parameters)
-            throws MotuException {
-        onError(response, actionCode, "", wcsErrorCode, errorType, parameters);
+    public static String onError(String actionCode, String wcsErrorCode, ErrorType errorType, Object... parameters) throws MotuException {
+        return onError(actionCode, "", wcsErrorCode, errorType, parameters);
     }
 
-    public static void onError(HttpServletResponse response,
-                               String actionCode,
-                               String locator,
-                               String wcsErrorCode,
-                               ErrorType errorType,
-                               Object... parameters)
+    public static String onError(String actionCode, String locator, String wcsErrorCode, ErrorType errorType, Object... parameters)
             throws MotuException {
         ExceptionData data = new ExceptionData();
         data.setErrorCode(wcsErrorCode);
@@ -100,8 +94,8 @@ public class Utils {
         data.setErrorMessage(messageLine);
 
         try {
-            response.getWriter().write(ExceptionBuilder.getInstance().buildResponse(data));
-        } catch (IOException | JAXBException e) {
+            return ExceptionBuilder.getInstance().buildResponse(data);
+        } catch (JAXBException e) {
             LOGGER.error("Error while processing HTTP request", e);
             throw new MotuException(ErrorType.SYSTEM, "Error while processing HTTP request", e);
         }

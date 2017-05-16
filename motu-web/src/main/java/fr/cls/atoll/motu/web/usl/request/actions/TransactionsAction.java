@@ -24,6 +24,7 @@ import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
+import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.AbstractHTTPParameterValidator;
@@ -162,8 +163,7 @@ public class TransactionsAction extends AbstractAction {
 
         String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, null);
         try {
-            getResponse().setContentType(CONTENT_TYPE_HTML);
-            getResponse().getWriter().write(response);
+            writeResponse(response, HTTPUtils.CONTENT_TYPE_HTML_UTF8);
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
         }

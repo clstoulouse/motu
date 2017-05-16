@@ -20,6 +20,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
+import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.wcs.Utils;
@@ -128,7 +129,7 @@ public class WCSDescribeCoverageAction extends AbstractAction {
                 String xmlResponses;
                 try {
                     xmlResponses = DescribeCoverage.getInstance().buildResponse(currentDescribeCoverageData);
-                    getResponse().getWriter().write(xmlResponses);
+                    writeResponse(xmlResponses, HTTPUtils.CONTENT_TYPE_XML_UTF8);
                 } catch (JAXBException | IOException e) {
                     throw new MotuException(ErrorType.SYSTEM, e);
                 }
@@ -169,11 +170,27 @@ public class WCSDescribeCoverageAction extends AbstractAction {
     }
 
     private void noSuchCoverageError(String coverageId) throws MotuException {
-        Utils.onError(getResponse(), getActionCode(), coverageId, Constants.NO_SUCH_COVERAGE_CODE, ErrorType.WCS_NO_SUCH_COVERAGE, coverageId);
+        try {
+            String errResponse = Utils.onError(getActionCode(),
+                                               coverageId,
+                                               Constants.NO_SUCH_COVERAGE_CODE,
+                                               ErrorType.WCS_NO_SUCH_COVERAGE,
+                                               coverageId);
+            writeResponse(errResponse, HTTPUtils.CONTENT_TYPE_XML_UTF8);
+        } catch (IOException e) {
+            LOGGER.error("Error while processing HTTP request", e);
+            throw new MotuException(ErrorType.SYSTEM, "Error while processing HTTP request", e);
+        }
     }
 
     private void emptyCoverageIdListError() throws MotuException {
-        Utils.onError(getResponse(), getActionCode(), Constants.EMPTY_COVERAGE_ID_LIST_CODE, ErrorType.WCS_EMPTY_COVERAGE_ID_LIST);
+        try {
+            String errResponse = Utils.onError(getActionCode(), Constants.EMPTY_COVERAGE_ID_LIST_CODE, ErrorType.WCS_EMPTY_COVERAGE_ID_LIST);
+            writeResponse(errResponse, HTTPUtils.CONTENT_TYPE_XML_UTF8);
+        } catch (IOException e) {
+            LOGGER.error("Error while processing HTTP request", e);
+            throw new MotuException(ErrorType.SYSTEM, "Error while processing HTTP request", e);
+        }
     }
 
     private fr.cls.atoll.motu.web.usl.wcs.data.DescribeCoverageData buildDGFDescribeCoverage(String coverageId, Product product)

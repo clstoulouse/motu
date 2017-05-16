@@ -1,9 +1,9 @@
 package fr.cls.atoll.motu.web.usl.wcs.request.actions;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,10 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.util.AssertionHolder;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
@@ -28,6 +29,7 @@ import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.wcs.Utils;
@@ -54,6 +56,9 @@ import ucar.nc2.dataset.CoordinateAxis;
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
 public class WCSGetCoverageAction extends AbstractAction {
+
+    /** Logger for this class. */
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "GetCoverage";
 
@@ -196,44 +201,69 @@ public class WCSGetCoverageAction extends AbstractAction {
                                 throw new MotuException(ErrorType.SYSTEM, pr.getRunningException());
                             }
                         } catch (InvalidSubsettingException e) {
-                            Utils.onError(getResponse(),
-                                          getActionCode(),
-                                          e.getParameterName(),
-                                          Constants.INVALID_SUBSETTING_CODE,
-                                          ErrorType.WCS_INVALID_SUBSETTING,
-                                          e.getParameterName());
+                            try {
+                                String responseErr = Utils.onError(getActionCode(),
+                                                                   e.getParameterName(),
+                                                                   Constants.INVALID_SUBSETTING_CODE,
+                                                                   ErrorType.WCS_INVALID_SUBSETTING,
+                                                                   e.getParameterName());
+                                writeResponse(responseErr, HTTPUtils.CONTENT_TYPE_XML_UTF8);
+                            } catch (IOException e2) {
+                                LOGGER.error("Error while processing HTTP request", e2);
+                                throw new MotuException(ErrorType.SYSTEM, "Error while processing HTTP request", e2);
+                            }
                         }
                     } else {
-                        Utils.onError(getResponse(),
-                                      getActionCode(),
-                                      Constants.NO_SUCH_COVERAGE_CODE,
-                                      ErrorType.WCS_NO_SUCH_COVERAGE,
-                                      coverageId,
-                                      coverageId);
+                        try {
+                            String responseErr = Utils.onError(getActionCode(),
+                                                               Constants.NO_SUCH_COVERAGE_CODE,
+                                                               ErrorType.WCS_NO_SUCH_COVERAGE,
+                                                               coverageId,
+                                                               coverageId);
+                            writeResponse(responseErr, HTTPUtils.CONTENT_TYPE_XML_UTF8);
+                        } catch (IOException e2) {
+                            LOGGER.error("Error while processing HTTP request", e2);
+                            throw new MotuException(ErrorType.SYSTEM, "Error while processing HTTP request", e2);
+                        }
                     }
                 } else {
-                    Utils.onError(getResponse(),
-                                  getActionCode(),
-                                  coverageId,
-                                  Constants.NO_SUCH_COVERAGE_CODE,
-                                  ErrorType.WCS_NO_SUCH_COVERAGE,
-                                  coverageId);
+                    try {
+                        String responseErr = Utils.onError(getActionCode(),
+                                                           coverageId,
+                                                           Constants.NO_SUCH_COVERAGE_CODE,
+                                                           ErrorType.WCS_NO_SUCH_COVERAGE,
+                                                           coverageId);
+                        writeResponse(responseErr, HTTPUtils.CONTENT_TYPE_XML_UTF8);
+                    } catch (IOException e2) {
+                        LOGGER.error("Error while processing HTTP request", e2);
+                        throw new MotuException(ErrorType.SYSTEM, "Error while processing HTTP request", e2);
+                    }
                 }
             } else {
-                Utils.onError(getResponse(),
-                              getActionCode(),
-                              coverageId,
-                              Constants.NO_SUCH_COVERAGE_CODE,
-                              ErrorType.WCS_NO_SUCH_COVERAGE,
-                              coverageId);
+                try {
+                    String responseErr = Utils.onError(getActionCode(),
+                                                       coverageId,
+                                                       Constants.NO_SUCH_COVERAGE_CODE,
+                                                       ErrorType.WCS_NO_SUCH_COVERAGE,
+                                                       coverageId);
+                    writeResponse(responseErr, HTTPUtils.CONTENT_TYPE_XML_UTF8);
+                } catch (IOException e2) {
+                    LOGGER.error("Error while processing HTTP request", e2);
+                    throw new MotuException(ErrorType.SYSTEM, "Error while processing HTTP request", e2);
+                }
             }
         } else {
-            Utils.onError(getResponse(),
-                          getActionCode(),
-                          WCSHTTPParameters.COVERAGE_ID,
-                          Constants.MISSING_PARAMETER_VALUE_CODE,
-                          ErrorType.WCS_MISSING_PARAMETER_VALUE,
-                          WCSHTTPParameters.COVERAGE_ID);
+            try {
+                String responseErr = Utils.onError(getActionCode(),
+                                                   WCSHTTPParameters.COVERAGE_ID,
+                                                   Constants.MISSING_PARAMETER_VALUE_CODE,
+                                                   ErrorType.WCS_MISSING_PARAMETER_VALUE,
+                                                   WCSHTTPParameters.COVERAGE_ID);
+                writeResponse(responseErr, HTTPUtils.CONTENT_TYPE_XML_UTF8);
+            } catch (IOException e2) {
+                LOGGER.error("Error while processing HTTP request", e2);
+                throw new MotuException(ErrorType.SYSTEM, "Error while processing HTTP request", e2);
+            }
         }
     }
 
@@ -242,19 +272,8 @@ public class WCSGetCoverageAction extends AbstractAction {
         getResponse().setHeader("Content-Disposition", "attachment;filename=" + fileName);
         File file = new File(BLLManager.getInstance().getCatalogManager().getProductManager().getProductPhysicalFilePath(fileName));
         getResponse().setContentLength(Double.valueOf(file.length()).intValue());
-        FileInputStream fileIn;
         try {
-            fileIn = new FileInputStream(file);
-            ServletOutputStream out = getResponse().getOutputStream();
-
-            byte[] outputByte = new byte[4096];
-            while (fileIn.read(outputByte, 0, 4096) != -1) {
-                out.write(outputByte, 0, 4096);
-            }
-            fileIn.close();
-            out.flush();
-            out.close();
-
+            Files.copy(file.toPath(), getResponse().getOutputStream());
         } catch (IOException e) {
             throw new MotuException(ErrorType.SYSTEM, e);
         }

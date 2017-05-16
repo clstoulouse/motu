@@ -35,7 +35,6 @@ import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer.Type;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import ucar.ma2.Array;
 import ucar.ma2.Range;
-
 /**
  * Class to handle NCSS requests
  * 
@@ -358,15 +357,14 @@ public class NetCdfSubsetService {
 
     private int computeNumberOfDigit(int maxValue) {
         int numberOfDigit = 1;
-        int currentMaxValue = maxValue;
-
+        int currentMaxValue = maxValue;        
+        
         while (currentMaxValue / 10 >= 1) {
             numberOfDigit++;
             currentMaxValue = currentMaxValue / 10;
         }
-
         return numberOfDigit;
-    }
+}
 
     /**
      * REST unitary request to NCSS subset service and redirect output to file .

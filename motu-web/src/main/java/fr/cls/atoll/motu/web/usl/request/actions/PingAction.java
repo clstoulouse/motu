@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 
 /**
@@ -45,9 +46,8 @@ public class PingAction extends AbstractAction {
 
     @Override
     public void process() throws MotuException {
-        getResponse().setContentType(CONTENT_TYPE_PLAIN);
         try {
-            getResponse().getWriter().write("OK - response action=ping");
+            writeResponse("OK - response action=ping", HTTPUtils.CONTENT_TYPE_PLAIN_UTF8);
         } catch (IOException e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while writing response", e);
         }

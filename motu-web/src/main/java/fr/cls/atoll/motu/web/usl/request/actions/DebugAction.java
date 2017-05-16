@@ -23,6 +23,7 @@ import fr.cls.atoll.motu.web.bll.request.queueserver.IQueueServerManager;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueManagement;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
+import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.DebugOrderHTTParameterValidator;
@@ -86,9 +87,8 @@ public class DebugAction extends AbstractAction {
         stringBuffer.append("</body>\n");
         stringBuffer.append("<html>\n");
 
-        getResponse().setContentType(CONTENT_TYPE_HTML);
         try {
-            getResponse().getWriter().write(stringBuffer.toString());
+            writeResponse(stringBuffer.toString(), HTTPUtils.CONTENT_TYPE_HTML_UTF8);
         } catch (IOException e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while wirting the response", e);
         }
