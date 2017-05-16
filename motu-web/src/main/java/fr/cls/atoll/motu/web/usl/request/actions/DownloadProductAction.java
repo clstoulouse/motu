@@ -21,6 +21,7 @@ import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
@@ -197,8 +198,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                     try {
                         rp = new RequestProduct(p, createExtractionParameters(p.getProductMetaData()));
                         downloadProduct(mc, cs, cd, rp);
-                    } catch (InvalidHTTPParameterException e) {
-                        onArgumentError(new MotuException(ErrorType.BAD_PARAMETERS, e));
+                    } catch (InvalidHTTPParameterException | NetCdfVariableNotFoundException e) {
+                        onArgumentError(new MotuException(ErrorType.NETCDF_VARIABLE_NOT_FOUND, e));
                     }
                 }
             } else {
@@ -307,7 +308,8 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         }
     }
 
-    private ExtractionParameters createExtractionParameters(ProductMetaData productMetaData) throws InvalidHTTPParameterException {
+    private ExtractionParameters createExtractionParameters(ProductMetaData productMetaData)
+            throws InvalidHTTPParameterException, NetCdfVariableNotFoundException {
 
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 serviceHTTPParameterValidator.getParameterValueValidated(),
@@ -337,7 +339,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         return extractionParameters;
     }
 
-    private List<String> getVariableList(ProductMetaData productMetaData) throws InvalidHTTPParameterException {
+    private List<String> getVariableList(ProductMetaData productMetaData) throws NetCdfVariableNotFoundException {
         List<String> parameterVariableList = CommonHTTPParameters.getVariablesAsListFromParameter(getRequest());
         List<String> variableList = new ArrayList<>();
         List<String> errorVariableList = new ArrayList<>();
@@ -358,10 +360,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
             }
 
             parametersListString = parametersListString.substring(0, parametersListString.length() - 1);
-            throw new InvalidHTTPParameterException(
-                    MotuRequestParametersConstant.PARAM_VARIABLE,
-                    parametersListString,
-                    "The provided variable name doesn't exist in the available variable");
+            throw new NetCdfVariableNotFoundException(parametersListString);
         }
 
         return variableList;
