@@ -6,6 +6,8 @@ import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_
 import static fr.cls.atoll.motu.api.message.MotuRequestParametersConstant.PARAM_START_DATE;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +21,7 @@ import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
+import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractionParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
@@ -28,6 +31,8 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import fr.cls.atoll.motu.web.usl.USLManager;
 import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.USLRequestManager;
@@ -190,8 +195,13 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 String productId = productHTTPParameterValidator.getParameterValueValidated();
                 Product p = BLLManager.getInstance().getCatalogManager().getProductManager().getProduct(cs.getName(), productId);
                 if (checkProduct(p, productId)) {
-                    RequestProduct rp = new RequestProduct(p, createExtractionParameters());
-                    downloadProduct(mc, cs, cd, rp);
+                    RequestProduct rp;
+                    try {
+                        rp = new RequestProduct(p, createExtractionParameters(p.getProductMetaData()));
+                        downloadProduct(mc, cs, cd, rp);
+                    } catch (InvalidHTTPParameterException | NetCdfVariableNotFoundException e) {
+                        onArgumentError(new MotuException(ErrorType.NETCDF_VARIABLE_NOT_FOUND, e));
+                    }
                 }
             } else {
                 throw new MotuException(ErrorType.SYSTEM, "Error while get catalog data for config service " + cs.getName());
@@ -299,11 +309,13 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         }
     }
 
-    private ExtractionParameters createExtractionParameters() {
+    private ExtractionParameters createExtractionParameters(ProductMetaData productMetaData)
+            throws InvalidHTTPParameterException, NetCdfVariableNotFoundException {
+
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 serviceHTTPParameterValidator.getParameterValueValidated(),
                 CommonHTTPParameters.getDataFromParameter(getRequest()),
-                CommonHTTPParameters.getVariablesAsListFromParameter(getRequest()),
+                getVariableList(productMetaData),
 
                 startDateTemporalHTTPParameterValidator.getParameterValue(),
                 endDateTemporalHighHTTPParameterValidator.getParameterValue(),
@@ -326,6 +338,33 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
         // Set assertion to manage CAS.
         extractionParameters.setAssertion(AssertionHolder.getAssertion());
         return extractionParameters;
+    }
+
+    private List<String> getVariableList(ProductMetaData productMetaData) throws NetCdfVariableNotFoundException {
+        List<String> parameterVariableList = CommonHTTPParameters.getVariablesAsListFromParameter(getRequest());
+        List<String> variableList = new ArrayList<>();
+        List<String> errorVariableList = new ArrayList<>();
+
+        for (String currentVariableName : parameterVariableList) {
+            ParameterMetaData variable = productMetaData.findVariable(currentVariableName);
+            if (variable == null) {
+                errorVariableList.add(currentVariableName);
+            } else {
+                variableList.add(variable.getName());
+            }
+        }
+
+        if (errorVariableList.size() != 0) {
+            String parametersListString = "";
+            for (String currentParameter : errorVariableList) {
+                parametersListString += currentParameter + ",";
+            }
+
+            parametersListString = parametersListString.substring(0, parametersListString.length() - 1);
+            throw new NetCdfVariableNotFoundException(parametersListString);
+        }
+
+        return variableList;
     }
 
     /** {@inheritDoc} */
