@@ -1,8 +1,6 @@
 # Motu Project
-@author Project manager <rdedianous@cls.fr>  
-@author Product owner <tjolibois@cls.fr>  
-@author Scrum master, software architect <smarty@cls.fr>  
-@author Quality assurance, continuous integration manager <bpirrotta@cls.fr> 
+@author <tjolibois@cls.fr>: Project manager & Product owner  
+@author <smarty@cls.fr>: Scrum master, Software architect, Quality assurance, Continuous Integration manager   
 
 >How to read this file? 
 Use a markdown reader: 
