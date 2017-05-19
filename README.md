@@ -1,8 +1,6 @@
 # Motu Project
-@author Project manager <rdedianous@cls.fr>  
-@author Product owner <tjolibois@cls.fr>  
-@author Scrum master, software architect <smarty@cls.fr>  
-@author Quality assurance, continuous integration manager <bpirrotta@cls.fr> 
+@author <tjolibois@cls.fr>: Project manager & Product owner  
+@author <smarty@cls.fr>: Scrum master, Software architect, Quality assurance, Continuous Integration manager   
 
 >How to read this file? 
 Use a markdown reader: 
@@ -703,13 +701,13 @@ __Now check if "cdo" runs well__:
 ```
 export MotuInstallDir=/opt/cmems-cis  
 $MotuInstallDir/motu/products/cdo-group/cdo.sh --version  
-Climate Data Operators version 1.7.1 (http://mpimet.mpg.de/cdo)  
+Climate Data Operators version x.y.z (http://mpimet.mpg.de/cdo)  
 [...]  
 ```  
 
 If error appear like ones below, it certainly means that GLIC is not in the LD_LIBRARY_PATH.
 ```
-$MotuInstallDir/motu/products/cdo-group/cdo-1.7.1-home/bin/cdo: error while loading shared libraries: libhdf5.so.10: cannot open shared object file: No such file or directory
+$MotuInstallDir/motu/products/cdo-group/cdo-x.z.z-home/bin/cdo: error while loading shared libraries: libhdf5.so.10: cannot open shared object file: No such file or directory
 ```  
 or  
 ```
@@ -1047,7 +1045,12 @@ Document root of the servlet server.
 
 ##### Configure the Proxy settings  
 @Deprecated from v3 This parameter is not used.
-Proxy settings are not used on Motu:  
+To use a proxy in order to access to a Threads, use the [JVM properties](#ConfigurationSystem), for example:  
+
+```  
+tomcat-motu-jvm-javaOpts=-server -Xmx4096M  ... -Dhttp.proxyHost=monProxy.host.fr -Dhttp.proxyPort=XXXX -Dhttp.nonProxyHosts='localhost|127.0.0.1'
+```  
+
 
 * __useProxy__  
 * __proxyHost__  
@@ -1068,6 +1071,8 @@ If this attribute is not present, default value is: "@@productId@@_@@requestId@@
 
 ##### <a name="BSconfigServiceName">name</a>  
 String to set the config service name
+If the value of this attribute contains some special caracters, those caracters have not to be encoded.
+For example, if the value is an URL, the caracters ":" and "/" have not to be encoded like "%2E" or "%3A".
 
 ##### group
 String which describes the group
@@ -1637,7 +1642,7 @@ crontab -e
 0 * * * * find /opt/cmems-cis/motu/log/*.xml* -type f -mmin +144000 -delete >/dev/null 2>&1  
 0 * * * * find /opt/cmems-cis/motu/log/*.csv* -type f -mmin +144000 -delete >/dev/null 2>&1  
   
-Note that Motu is often tuned to write the motuQSLog in a dedicated folder. So you have to clean log files in this folder too. For example:
+Note that Motu is often tuned to write the motuQSLog in a dedicated folder. So you have to clean log files in this folder too. For example:  
 0 * * * * find /opt/cmems-cis/motu/data/public/transaction/*.xml* -type f -mmin +144000 -delete >/dev/null 2>&1  
 0 * * * * find /opt/cmems-cis/motu/data/public/transaction/*.csv* -type f -mmin +144000 -delete >/dev/null 2>&1 
 

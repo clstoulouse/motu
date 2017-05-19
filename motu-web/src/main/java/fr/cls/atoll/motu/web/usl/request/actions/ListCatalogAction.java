@@ -55,7 +55,6 @@ public class ListCatalogAction extends AbstractAuthorizedAction {
         serviceHTTPParameterValidator = new ServiceHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_SERVICE,
                 CommonHTTPParameters.getServiceFromRequest(getRequest()));
-
     }
 
     @Override
@@ -63,7 +62,8 @@ public class ListCatalogAction extends AbstractAuthorizedAction {
         MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
         if (checkConfigService(cs, serviceHTTPParameterValidator)) {
-            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache().getCatalog(cs.getName());
+            CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache()
+                    .getCatalog(cs.getName());
             if (cd != null) {
                 writeResponseWithVelocity(mc, cs, cd);
             } else {
@@ -80,7 +80,7 @@ public class ListCatalogAction extends AbstractAuthorizedAction {
 
         String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, cs_.getVeloTemplatePrefix());
         try {
-            getResponse().getWriter().write(response);
+            writeResponse(response);
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
         }

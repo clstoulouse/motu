@@ -17,6 +17,7 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.wcs.data.CapabilitiesData;
@@ -78,14 +79,13 @@ public class WCSGetCapabilitiesAction extends AbstractAction {
     /** {@inheritDoc} */
     @Override
     protected void process() throws MotuException {
-        String service = serviceHTTPParameterValidator.getParameterValueValidated();
-        String acceptVersions = acceptVersionsHTTPParameterValidator.getParameterValueValidated();
-        String request = requestHTTPParameterValidator.getParameterValueValidated();
-
+        // String service = serviceHTTPParameterValidator.getParameterValueValidated();
+        // String acceptVersions = acceptVersionsHTTPParameterValidator.getParameterValueValidated();
+        // String request = requestHTTPParameterValidator.getParameterValueValidated();
         try {
             try {
                 String xmlResponses = Capabilities.getInstance().buildResponse(buildCapabilitiesData());
-                getResponse().getWriter().write(xmlResponses);
+                writeResponse(xmlResponses, HTTPUtils.CONTENT_TYPE_XML_UTF8);
             } catch (JAXBException | IOException e) {
                 throw new ActionException(e);
             }

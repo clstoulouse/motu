@@ -110,7 +110,7 @@
 	
 	<tr>
 		<td align="center">
-			<input type="checkbox" name="variable" ${checked} value="${parameterMetadata.getName()}" />			
+			<input type="checkbox" name="variable" ${checked} value="${parameterMetadata.getStandardName()}" />			
 		</td>
 		<td>
 			<strong>${parameterMetadata.getName()}</strong>

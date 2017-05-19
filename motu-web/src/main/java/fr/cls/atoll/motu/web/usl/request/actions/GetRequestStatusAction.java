@@ -11,6 +11,7 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidRequestIdException;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.RequestIdHTTPParameterValidator;
@@ -67,14 +68,12 @@ public class GetRequestStatusAction extends AbstractAction {
                 if (rds == null) {
                     throw new MotuException(ErrorType.UNKNOWN_REQUEST_ID, "Oops, request id '" + requestId + "' does not exist.");
                 } else {
-                    getResponse().setContentType(CONTENT_TYPE_XML);
                     String response = XMLConverter.toXMLString(rds, getActionCode());
-                    getResponse().getWriter().write(response);
+                    writeResponse(response, HTTPUtils.CONTENT_TYPE_XML_UTF8);
                 }
             } else {
-                getResponse().setContentType(CONTENT_TYPE_XML);
                 String response = XMLConverter.toXMLString(new MotuInvalidRequestIdException(-1L), getActionCode());
-                getResponse().getWriter().write(response);
+                writeResponse(response, HTTPUtils.CONTENT_TYPE_XML_UTF8);
             }
         } catch (IOException e) {
             try {

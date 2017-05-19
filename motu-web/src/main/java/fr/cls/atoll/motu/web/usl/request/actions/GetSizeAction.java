@@ -36,6 +36,7 @@ import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.USLManager;
+import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.DepthHTTPParameterValidator;
@@ -157,9 +158,8 @@ public class GetSizeAction extends AbstractProductInfoAction {
                 double productMaxAllowedDataSizeInBytes = BLLManager.getInstance().getRequestManager().getProductMaxAllowedDataSizeIntoByte(p);
                 RequestSize requestSize = getRequestSize(productDataSizeInBytes, productMaxAllowedDataSizeInBytes);
 
-                getResponse().setContentType(CONTENT_TYPE_XML);
                 String response = XMLConverter.toXMLString(requestSize, getActionCode());
-                getResponse().getWriter().write(response);
+                writeResponse(response, HTTPUtils.CONTENT_TYPE_XML_UTF8);
             }
         } catch (IOException e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while computing getAmountDataSize", e);

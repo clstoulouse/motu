@@ -15,6 +15,7 @@ import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.AbstractHTTPParameterValidator;
@@ -110,9 +111,8 @@ public class TimeCoverageAction extends AbstractProductInfoAction {
                     Interval datePeriod = null;
                     if (product.getProductMetaData() != null) {
                         datePeriod = product.getProductMetaData().getTimeCoverage();
-                        getResponse().setContentType(CONTENT_TYPE_XML);
                         String response = XMLConverter.toXMLString(datePeriod, getActionCode());
-                        getResponse().getWriter().write(response);
+                        writeResponse(response, HTTPUtils.CONTENT_TYPE_XML_UTF8);
                     } else {
                         throw new MotuException(
                                 ErrorType.BAD_PARAMETERS,

@@ -1,5 +1,7 @@
 package fr.cls.atoll.motu.web.usl.request.parameter.validator;
 
+import java.io.UnsupportedEncodingException;
+
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.NullOrEmptyInvalidHTTPParameterException;
@@ -37,7 +39,14 @@ public class ServiceHTTPParameterValidator extends AbstractHTTPParameterValidato
             throw new NullOrEmptyInvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
         }
 
-        return getParameterValue();
+        String serviceValue;
+        try {
+            serviceValue = java.net.URLDecoder.decode(getParameterValue(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new InvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
+        }
+
+        return serviceValue;
     }
 
     @Override

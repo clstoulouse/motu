@@ -1,6 +1,7 @@
 package fr.cls.atoll.motu.web.usl.request.actions;
 
 import java.io.IOException;
+import java.io.StringWriter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,6 +11,7 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.config.version.IBLLVersionManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 
 /**
@@ -44,25 +46,27 @@ public class AboutAction extends AbstractAction {
 
     @Override
     public void process() throws MotuException {
-        getResponse().setContentType(CONTENT_TYPE_HTML);
+        StringWriter sw = new StringWriter();
         try {
-            getResponse().getWriter().write("<!DOCTYPE html><html><body>");
+            sw.write("<!DOCTYPE html><html><body>");
 
             IBLLVersionManager versionMgr = BLLManager.getInstance().getConfigManager().getVersionManager();
-            displayVersion("Motu-products: ", versionMgr.getProductsVersion());
-            displayVersion("Motu-distribution: ", versionMgr.getDistributionVersion());
-            displayVersion("Motu-configuration: ", versionMgr.getConfigurationVersion());
+            sw.write(getVersionOnOneLineAsHtml("Motu-products: ", versionMgr.getProductsVersion()));
+            sw.write(getVersionOnOneLineAsHtml("Motu-distribution: ", versionMgr.getDistributionVersion()));
+            sw.write(getVersionOnOneLineAsHtml("Motu-configuration: ", versionMgr.getConfigurationVersion()));
 
-            displayStaticFilesVersion("Motu-static-files (Graphic chart): ");
-            getResponse().setHeader("Access-Control-Allow-Origin", "*");
-            getResponse().getWriter().write("</body></html>");
+            sw.write(displayStaticFilesVersion("Motu-static-files (Graphic chart): "));
+            sw.write("</body></html>");
+
+            String response = sw.toString();
+            writeResponse(response, HTTPUtils.CONTENT_TYPE_HTML_UTF8, new String[] { "Access-Control-Allow-Origin", "*" });
         } catch (IOException e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while writing response", e);
         }
     }
 
-    private void displayVersion(String entity, String version) throws IOException {
-        getResponse().getWriter().write(entity + version + "<BR/>");
+    private String getVersionOnOneLineAsHtml(String entity, String version) throws IOException {
+        return entity + version + "<BR/>";
     }
 
     /**
@@ -72,7 +76,8 @@ public class AboutAction extends AbstractAction {
      * @param entity
      * @throws IOException
      */
-    private void displayStaticFilesVersion(String entity) throws IOException {
+    private String displayStaticFilesVersion(String entity) throws IOException {
+        StringWriter sw = new StringWriter();
         String urlStaticFiles = BLLManager.getInstance().getConfigManager().getVersionManager().getStaticFilesVersion();
         String urlStaticFilesContent = "";
         if (StringUtils.isNullOrEmpty(urlStaticFiles)) {
@@ -80,7 +85,7 @@ public class AboutAction extends AbstractAction {
         } else {
             urlStaticFilesContent = "<span id=\"staticFilesVersion\">loading...</span>";
         }
-        displayVersion(entity, urlStaticFilesContent);
+        sw.write(getVersionOnOneLineAsHtml(entity, urlStaticFilesContent));
         if (!StringUtils.isNullOrEmpty(urlStaticFiles)) {
             // Load version of static files from the Web server
 
@@ -90,7 +95,7 @@ public class AboutAction extends AbstractAction {
             // displayStaticFilesVersion.
 
             // @formatter:off
-            getResponse().getWriter().write("\n"
+            sw.write("\n"
                     + "<script>\n" + ""
                     + "    function displayStaticFilesVersion(version){\n"
                     + "        var versionSpan = document.getElementById('staticFilesVersion');\n"
@@ -105,6 +110,7 @@ public class AboutAction extends AbstractAction {
                     + "<script src=\"" + urlStaticFiles + "\"></script>\n");
             // @formatter:on
         }
+        return sw.toString();
     }
 
     /** {@inheritDoc} */
