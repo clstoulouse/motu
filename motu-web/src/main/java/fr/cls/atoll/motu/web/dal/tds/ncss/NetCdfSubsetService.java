@@ -11,6 +11,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -30,11 +32,18 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
+import fr.cls.atoll.motu.web.common.utils.DateUtils;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer;
 import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer.Type;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import ucar.ma2.Array;
 import ucar.ma2.Range;
+import ucar.nc2.Dimension;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis;
+
 /**
  * Class to handle NCSS requests
  * 
@@ -123,6 +132,7 @@ public class NetCdfSubsetService {
     protected String outputFile;
     protected OutputFormat outputFormat;
     protected String ncssURL;
+    protected ProductMetaData productMetadata;
 
     /** Control boolean for concatenation */
     private boolean multipleRequest;
@@ -326,18 +336,48 @@ public class NetCdfSubsetService {
         // Prepare multiple request mode
         multipleRequest = true;
 
+        long startConcat = System.currentTimeMillis();
+
         // Create folder to store intermediate files
         depthTempDir = Files.createTempDirectory("motu_depth_concat");
         try {
             depthTempDir.toFile().deleteOnExit();
 
-            // For every depth
-            int numberOfDigit = computeNumberOfDigit(depthRange.last());
-            for (int z = depthRange.first(); z <= depthRange.last(); z += depthRange.stride()) {
-                depthSelected = depthAxis.getDouble(z);
-                depthTempFname = "depth_concat_" + String.format("%0" + numberOfDigit + "d", z);
-                unitRequestNCSS();
+            Set<String> depthVariable = new HashSet<>();
+            Set<String> noDepthVariable = new HashSet<>();
+
+            CoordinateAxis heigthCoordAxis = productMetadata.getCoordinateAxes().get(AxisType.Height);
+
+            for (String currentVariableName : varSubset) {
+                ParameterMetaData currentVariable = productMetadata.findVariable(currentVariableName);
+                List<Dimension> currentVarDimensionList = currentVariable.getDimensions();
+                for (Dimension currentDimension : currentVarDimensionList) {
+                    if (currentDimension.getName().equals(heigthCoordAxis.getName())) {
+                        depthVariable.add(currentVariableName);
+                    }
+                }
+
+                if (!depthVariable.contains(currentVariableName)) {
+                    noDepthVariable.add(currentVariableName);
+                }
             }
+
+            if (noDepthVariable.size() > 0) {
+                depthTempFname = "no_depth_concat";
+                unitRequestNCSS(noDepthVariable);
+            }
+
+            // For every depth
+            if (depthVariable.size() > 0) {
+                int numberOfDigit = computeNumberOfDigit(depthRange.last());
+                for (int z = depthRange.first(); z <= depthRange.last(); z += depthRange.stride()) {
+                    depthSelected = depthAxis.getDouble(z);
+                    depthTempFname = "depth_concat_" + String.format("%0" + numberOfDigit + "d", z);
+                    unitRequestNCSS(depthVariable);
+                }
+            }
+
+            long startCdo = System.currentTimeMillis();
 
             // Concatenate with NCO
             String cmd = "cdo.sh merge " + depthTempDir.toString() + "/* " + Paths.get(outputDir, outputFile);
@@ -345,6 +385,10 @@ public class NetCdfSubsetService {
             new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(p.getInputStream())), LOGGER, Type.INFO)).start();
             new Thread(new ProcessOutputLogguer(new BufferedReader(new InputStreamReader(p.getErrorStream())), LOGGER, Type.ERROR)).start();
             int exitValue = p.waitFor();
+
+            LOGGER.info("Generate " + outputFile + " Concat duration : " + DateUtils.getDurationMinSecMsec(System.currentTimeMillis() - startConcat));
+            LOGGER.info("Generate " + outputFile + " Cdo script duration : "
+                    + DateUtils.getDurationMinSecMsec(System.currentTimeMillis() - startCdo));
 
             if (exitValue != 0) {
                 throw new MotuException(ErrorType.NETCDF_GENERATION, "The generation of the NC file failled. See the log for more information.");
@@ -357,21 +401,21 @@ public class NetCdfSubsetService {
 
     private int computeNumberOfDigit(int maxValue) {
         int numberOfDigit = 1;
-        int currentMaxValue = maxValue;        
-        
+        int currentMaxValue = maxValue;
+
         while (currentMaxValue / 10 >= 1) {
             numberOfDigit++;
             currentMaxValue = currentMaxValue / 10;
         }
         return numberOfDigit;
-}
+    }
 
     /**
      * REST unitary request to NCSS subset service and redirect output to file .
      * 
      * @throws MotuException
      */
-    public void unitRequestNCSS() throws MotuException {
+    public void unitRequestNCSS(Set<String> variableToRequest) throws MotuException {
         long readingTimeInNanoSecStartEvent = System.nanoTime();
 
         // Geographical subset
@@ -395,7 +439,7 @@ public class NetCdfSubsetService {
             MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
 
             // Variables subset
-            for (String var : varSubset) {
+            for (String var : variableToRequest) {
                 queryParams.add(NCSS_ATTR_VARIABLES, var);
             }
 
@@ -499,4 +543,11 @@ public class NetCdfSubsetService {
         this.writingTimeInNanoSec = writingTimeInNanoSec;
     }
 
+    public ProductMetaData getProductMetadata() {
+        return productMetadata;
+    }
+
+    public void setProductMetadata(ProductMetaData productMetadata) {
+        this.productMetadata = productMetadata;
+    }
 }

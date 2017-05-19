@@ -115,6 +115,7 @@ public class DALRequestManager implements IDALRequestManager {
         ncss.setVariablesSubset(var);
         ncss.setOutputFormat(rds_.getRequestProduct().getExtractionParameters().getDataOutputFormat());
         ncss.setncssURL(rds_.getRequestProduct().getProduct().getLocationDataNCSS());
+        ncss.setProductMetadata(rds_.getRequestProduct().getProduct().getProductMetaData());
 
         double leftLonRequested = latlon.getLowerLeftLon();
         double rightLonRequested = latlon.getLowerRightLon();
@@ -315,12 +316,13 @@ public class DALRequestManager implements IDALRequestManager {
             // Z-Range selection update
             int zlev = zRange.length();
             if (zlev == 1 || zlev == alev) {
-                ncss.unitRequestNCSS(); // 1-level or ALL levels (can be done with TDS-NCSS)
+                ncss.unitRequestNCSS(ncss.getVariablesSubset()); // 1-level or ALL levels (can be done with
+                                                                 // TDS-NCSS)
             } else {
                 ncss.concatDepths(); // True depth Subset with CDO operators (needs concatenation)
             }
         } else {
-            ncss.unitRequestNCSS(); // No depth axis -> request without depths
+            ncss.unitRequestNCSS(ncss.getVariablesSubset()); // No depth axis -> request without depths
         }
         rds_.getDataBaseExtractionTimeCounter().addReadingTime(ncss.getReadingTimeInNanoSec());
         rds_.getDataBaseExtractionTimeCounter().addWritingTime(ncss.getWritingTimeInNanoSec());
