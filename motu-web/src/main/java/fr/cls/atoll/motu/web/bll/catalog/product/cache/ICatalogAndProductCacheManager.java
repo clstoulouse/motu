@@ -10,4 +10,7 @@ public interface ICatalogAndProductCacheManager {
 
     ICatalogCache getCatalogCache();
 
+    void updateCache();
+
+    void updateAllTheCache();
 }

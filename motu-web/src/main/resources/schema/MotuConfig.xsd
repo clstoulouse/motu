@@ -623,6 +623,8 @@
 				</xs:simpleType>
 			</xs:attribute>
 
+			<xs:attribute name="updateCachePassPhrase" type="xs:string" default="a7de6d69afa2111e7fa7038a0e89f7e2"/>
+
 		</xs:complexType>
 
 	</xs:element>
@@ -694,6 +696,18 @@
 					Used only Motu HTML Interface (mode REST).
 					True (default): links the dataset url (shows on the catalog dataset list) links to the download HTML page.
 					False: links the dataset url (shows on the catalog dataset list) links to the metadata HTML page.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		
+		<xs:attribute name="refreshCacheAutomaticallyEnabled" type="xs:boolean"
+			default="true">
+			<xs:annotation>
+				<xs:documentation>
+					Used to enable/disable the automatic refresh of the cache pour the current config service
+					True: the cache is automatically refreshed.
+					False: the cache is not automaatically refreshed
+					By default the value is true.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>

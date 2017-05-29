@@ -363,6 +363,16 @@
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
+			<xsd:enumeration value="33">
+				<xsd:annotation>
+					<xsd:documentation>
+						The provided passphrase doesn't match the configured passphrase. Please retry with the good one.
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember name="WRONG_PASS_PHRASE" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
 			<xsd:enumeration value="101">
 				<xsd:annotation>
 					<xsd:documentation>

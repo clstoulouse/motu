@@ -1028,6 +1028,13 @@ Example of archived data with several To of data. Cache is refreshed daily: desc
 Example of real time data with several Go of data. Cache is refreshed each minute: describeProductCacheRefreshInMilliSec=60000    
 
 
+##### updateCachePassPhrase
+Provide the pass phrase which is check if a request "updateCache" is received by the server.
+If the request passphrase is not the same as the configured passphrase, the update is not executed.
+If the passphrase is not filled, a default passphrase is used. This case doesn't stop the launching of the server but
+it's a security breach an error is generated in the error log.
+
+
 ##### runGCInterval
 @Deprecated from v3 This parameter is not used. 
 
