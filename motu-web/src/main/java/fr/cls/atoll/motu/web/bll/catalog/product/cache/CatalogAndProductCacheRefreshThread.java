@@ -1,15 +1,16 @@
 package fr.cls.atoll.motu.web.bll.catalog.product.cache;
 
+import java.util.Set;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.common.thread.StoppableDaemonThread;
-import fr.cls.atoll.motu.web.common.utils.Status;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 
 /**
- * <br>
+ * Manage the automatique cache refresh. <br>
  * <br>
  * Copyright : Copyright (c) 2016 <br>
  * <br>
@@ -22,43 +23,27 @@ public abstract class CatalogAndProductCacheRefreshThread extends StoppableDaemo
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private ICatalogCache catalogCache;
-    private IProductCache productCache;
-
-    private CacheUpdateService cacheUpdateService;
-
-    private Status stopStatus;
+    /**
+     * Save the list of configService to update automatically
+     */
+    private Set<ConfigService> configServiceToUpdate;
 
     /**
-     * Constructeur.
+     * 
+     * Constructor.
+     * 
+     * @param configServiceToUpdate_ The list of ConfigService that needs to be refresh automatically.
      */
-    public CatalogAndProductCacheRefreshThread(ICatalogCache catalogCache_, IProductCache productCache_) {
+    public CatalogAndProductCacheRefreshThread(Set<ConfigService> configServiceToUpdate_) {
         super(
             "Product and Catalog Cache Thread Daemon",
             BLLManager.getInstance().getConfigManager().getMotuConfig().getDescribeProductCacheRefreshInMilliSec());
-        catalogCache = catalogCache_;
-        productCache = productCache_;
-
-        cacheUpdateService = new CacheUpdateService(catalogCache_, productCache_) {
-
-            @Override
-            boolean isProductToUpdate(ConfigService configService) {
-                return isFirstStart() || configService.getRefreshCacheAutomaticallyEnabled();
-            }
-        };
-
-        stopStatus = new Status() {
-            @Override
-            public synchronized boolean isOK() {
-                return isDaemonStoppedASAP();
-            }
-        };
-
+        this.configServiceToUpdate = configServiceToUpdate_;
     }
 
     /** {@inheritDoc} */
     @Override
     public void runProcess() {
-        cacheUpdateService.update(stopStatus);
+        BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().updateCache();
     }
 }

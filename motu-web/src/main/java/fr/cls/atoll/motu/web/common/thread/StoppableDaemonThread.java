@@ -40,11 +40,11 @@ public class StoppableDaemonThread extends Thread {
 
             if (!isDaemonStoppedASAP()) {
                 try {
-                    sleep(getRefreshDelayInMSec());
-                } catch (InterruptedException e) {
-                    if (!isDaemonStoppedASAP()) {
-                        LOGGER.error("Error during refresh of daemon" + getName(), e);
+                    synchronized (this) {
+                        wait(getRefreshDelayInMSec());
                     }
+                } catch (InterruptedException e) {
+                    LOGGER.error("Error during refresh of daemon" + getName(), e);
                 }
             }
         }
@@ -83,7 +83,7 @@ public class StoppableDaemonThread extends Thread {
     public synchronized void setDaemonStoppingASAP(boolean isDaemonStoppingASAP_) {
         isDaemonStoppingASAP = isDaemonStoppingASAP_;
         // Unlock the sleep methods
-        this.interrupt();
+        notify();
     }
 
     /**

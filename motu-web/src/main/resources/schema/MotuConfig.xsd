@@ -623,7 +623,7 @@
 				</xs:simpleType>
 			</xs:attribute>
 
-			<xs:attribute name="updateCachePassPhrase" type="xs:string" default="a7de6d69afa2111e7fa7038a0e89f7e2"/>
+			<xs:attribute name="updateCacheToken" type="xs:string" default="a7de6d69afa2111e7fa7038a0e89f7e2"/>
 
 		</xs:complexType>
 

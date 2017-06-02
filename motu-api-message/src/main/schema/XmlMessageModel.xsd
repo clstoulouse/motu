@@ -373,6 +373,16 @@
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:enumeration>
+			<xsd:enumeration value="34">
+				<xsd:annotation>
+					<xsd:documentation>
+						The provided cache type to update doesn't exist.
+					</xsd:documentation>
+					<xsd:appinfo>
+						<jaxb:typesafeEnumMember name="BAD_CACHE_TYPE" />
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:enumeration>
 			<xsd:enumeration value="101">
 				<xsd:annotation>
 					<xsd:documentation>
