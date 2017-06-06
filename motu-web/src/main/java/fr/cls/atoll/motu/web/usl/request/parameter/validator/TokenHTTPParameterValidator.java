@@ -13,7 +13,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
  * @author Pierre LACOSTE
  * @version $Revision: 1456 $ - $Date: 2011-04-08 18:37:34 +0200 $
  */
-public class PassPhraseHTTPParameterValidator extends AbstractHTTPParameterValidator<String> {
+public class TokenHTTPParameterValidator extends AbstractHTTPParameterValidator<String> {
 
     /**
      * Constructor.
@@ -21,7 +21,7 @@ public class PassPhraseHTTPParameterValidator extends AbstractHTTPParameterValid
      * @param parameterName_
      * @param parameterValue_
      */
-    public PassPhraseHTTPParameterValidator(String parameterName_, String parameterValue_) {
+    public TokenHTTPParameterValidator(String parameterName_, String parameterValue_) {
         super(parameterName_, parameterValue_);
     }
 
@@ -37,7 +37,7 @@ public class PassPhraseHTTPParameterValidator extends AbstractHTTPParameterValid
 
     @Override
     protected String getParameterBoundaries() {
-        return "[The passphrase is a not empty string]";
+        return "[The token is not an empty string]";
     }
 
 }

@@ -129,9 +129,9 @@ public class DALConfigManager implements IDALConfigManager {
 
         ObjectFactory motuConfigObjectFactory = new ObjectFactory();
         MotuConfig blankMotuConfig = motuConfigObjectFactory.createMotuConfig();
-        if (motuConfig.getUpdateCacheToken().equals(blankMotuConfig.getUpdateCacheToken())) {
-            LOGGER.error("Security breach : The pass phrase for the update of the cache is still set to the default value.\n"
-                    + "To improve the security of the server please change this pass phrase into the motuConfiguration.xml file.");
+        if (motuConfig.getRefreshCacheToken().equals(blankMotuConfig.getRefreshCacheToken())) {
+            LOGGER.error("Security breach : The token for the update of the cache is still set to the default value.\n"
+                    + "To improve the security of the server please change this token into the motuConfiguration.xml file.");
         }
 
         try {

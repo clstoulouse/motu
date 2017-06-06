@@ -13,7 +13,7 @@ import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.CacheTypeHTTPParameterValidator;
-import fr.cls.atoll.motu.web.usl.request.parameter.validator.PassPhraseHTTPParameterValidator;
+import fr.cls.atoll.motu.web.usl.request.parameter.validator.TokenHTTPParameterValidator;
 
 public class RefreshCacheAction extends AbstractAction {
 
@@ -22,12 +22,12 @@ public class RefreshCacheAction extends AbstractAction {
     private static final String ALL_CACHE_TO_REFRESH = "ALL";
     private static final String ONLY_AUTO_CACHE_TO_REFRESH = "ONLYAUTO";
 
-    private PassPhraseHTTPParameterValidator passPhraseValidator;
+    private TokenHTTPParameterValidator passPhraseValidator;
     private CacheTypeHTTPParameterValidator cacheTypeValidator;
 
     public RefreshCacheAction(String actionCode_, HttpServletRequest request_, HttpServletResponse response_) {
         super(ACTION_NAME, actionCode_, request_, response_);
-        passPhraseValidator = new PassPhraseHTTPParameterValidator(
+        passPhraseValidator = new TokenHTTPParameterValidator(
                 MotuRequestParametersConstant.PARAM_PASS_PHRASE,
                 CommonHTTPParameters.getRequestParameterIgnoreCase(getRequest(), MotuRequestParametersConstant.PARAM_PASS_PHRASE));
         cacheTypeValidator = new CacheTypeHTTPParameterValidator(
@@ -45,8 +45,8 @@ public class RefreshCacheAction extends AbstractAction {
     protected void process() throws MotuException {
         String passPhrase = passPhraseValidator.getParameterValueValidated();
 
-        if (passPhrase.equals(BLLManager.getInstance().getConfigManager().getMotuConfig().getUpdateCacheToken())) {
-            String cacheType = cacheTypeValidator.getParameterValueValidated();
+        if (passPhrase.equals(BLLManager.getInstance().getConfigManager().getMotuConfig().getRefreshCacheToken())) {
+            String cacheType = cacheTypeValidator.getParameterValueValidated().toUpperCase();
             if (cacheType.equals(ALL_CACHE_TO_REFRESH)) {
                 BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().updateAllTheCache();
             } else if (cacheType.equals(ONLY_AUTO_CACHE_TO_REFRESH)) {
@@ -66,14 +66,17 @@ public class RefreshCacheAction extends AbstractAction {
         } else {
             throw new MotuException(
                     ErrorType.WRONG_PASS_PHRASE,
-                    StringUtils.getLogMessage(getActionCode(), ErrorType.WRONG_PASS_PHRASE, "The provided passphrase is not correct"));
+                    StringUtils.getLogMessage(getActionCode(), ErrorType.WRONG_PASS_PHRASE, "The provided token is not correct"));
         }
     }
 
     @Override
     protected void generateParameterString() {
         super.generateParameterString();
-        parameters = parameters.replace(getRequest().getParameter(MotuRequestParametersConstant.PARAM_PASS_PHRASE), "XXX");
+        String passPhraseParam = getRequest().getParameter(MotuRequestParametersConstant.PARAM_PASS_PHRASE);
+        if (passPhraseParam != null) {
+            parameters = parameters.replace(passPhraseParam, "XXX");
+        }
     }
 
 }
