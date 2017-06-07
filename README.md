@@ -1028,6 +1028,13 @@ Example of archived data with several To of data. Cache is refreshed daily: desc
 Example of real time data with several Go of data. Cache is refreshed each minute: describeProductCacheRefreshInMilliSec=60000    
 
 
+##### updateCachePassPhrase
+Provide the pass phrase which is check if a request "updateCache" is received by the server.
+If the request passphrase is not the same as the configured passphrase, the update is not executed.
+If the passphrase is not filled, a default passphrase is used. This case doesn't stop the launching of the server but
+it's a security breach an error is generated in the error log.
+
+
 ##### runGCInterval
 @Deprecated from v3 This parameter is not used. 
 
@@ -1717,7 +1724,16 @@ The Error Type Code    =>    A number defining a specific error on the server.
 29        =>    The product is unknown.
 30        =>    The service is unknown.
 31        =>    The request cut the ante meridian. In this case, it's not possible to request more than one depth. It's necessary to change the depth selection and to select in the "from" and the "to" the values that have the same index into the depth list.
-32        =>  Due to a known bug in Thredds Data Server, a request cannot be satisfied wit netCDF4. User has to request a netCDF3 output file.
+32        =>  	Due to a known bug in Thredds Data Server, a request cannot be satisfied wit netCDF4. User has to request a netCDF3 output file.
+101		  =>	WCS specific error code : A WCS mandatory parameter is missing
+102		  =>	WCS specific error code : A WCS parameter doesn't match the mandatory format
+103		  =>	WCS specific error code : The WCS version parameter is not compatible with the Motu WCS server
+104		  =>	WCS specific error code : A system error append.
+105		  =>	WCS specific error code : The coverage ident doesn't exist
+106		  =>	WCS specific error code : The list of coverage id is empty
+107		  =>	WCS specific error code : The provided parameter used to define a subset is invalid
+108		  =>	WCS specific error code : The provided axis label doesn't match any available label
+
   
 # <a name="ClientsAPI">Motu clients & REST API</a>  
 
@@ -1976,6 +1992,7 @@ __Summary of all actions:__
    * [Welcome](#ClientAPI_welcome)  
 * Plain Text 
    * [Ping](#ClientAPI_Ping)  
+   * [RefreshCache](#ClientAPI_RefreshCache) 
 * JSON
    * [Supervision](#ClientAPI_supervision)  
 
@@ -2224,6 +2241,22 @@ __Return__: An plain text
 
 ```  
 OK - response action=ping    
+```     
+
+### <a name="ClientAPI_RefreshCache">Refresh Cache</a>    
+This request is to force the refresh of the cache instead of waiting the automatic refresh. 
+
+__URL__: http://localhost:8080/motu-web/Motu?action=refreshcache&token=tokenValid&caches=all  
+
+__Parameters__: 2 parameters  
+
+* __token__ : The token configured on the motuConfiguration.xml file which allowed the execution of the refresh
+* __caches__ [all,onlyauto]: The refresh type of the cache. all is the refresh of all the configservice. onlyauto is the refresh of only the configservice which enable the automatic refresh.
+
+__Return__: A plain text which specify if the refresh is launched or if an error occured  
+
+```  
+OK cache refresh in progress   
 ```  
 
 ### <a name="ClientAPI_ProductDownloadHome">Product download home</a>    

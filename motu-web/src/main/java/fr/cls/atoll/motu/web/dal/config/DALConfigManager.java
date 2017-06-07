@@ -22,6 +22,7 @@ import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardNames;
 import fr.cls.atoll.motu.web.dal.config.version.DALVersionManager;
 import fr.cls.atoll.motu.web.dal.config.version.IDALVersionManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ObjectFactory;
 
 /**
  * <br>
@@ -124,6 +125,13 @@ public class DALConfigManager implements IDALConfigManager {
 
         if (motuConfig == null) {
             throw new MotuException(ErrorType.MOTU_CONFIG, "Unable to load Motu configuration (motuConfig is null)");
+        }
+
+        ObjectFactory motuConfigObjectFactory = new ObjectFactory();
+        MotuConfig blankMotuConfig = motuConfigObjectFactory.createMotuConfig();
+        if (motuConfig.getRefreshCacheToken().equals(blankMotuConfig.getRefreshCacheToken())) {
+            LOGGER.error("Security breach : The token for the update of the cache is still set to the default value.\n"
+                    + "To improve the security of the server please change this token into the motuConfiguration.xml file.");
         }
 
         try {
