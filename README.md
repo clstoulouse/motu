@@ -1992,6 +1992,7 @@ __Summary of all actions:__
    * [Welcome](#ClientAPI_welcome)  
 * Plain Text 
    * [Ping](#ClientAPI_Ping)  
+   * [RefreshCache](#ClientAPI_RefreshCache) 
 * JSON
    * [Supervision](#ClientAPI_supervision)  
 
@@ -2240,6 +2241,22 @@ __Return__: An plain text
 
 ```  
 OK - response action=ping    
+```     
+
+### <a name="ClientAPI_RefreshCache">Refresh Cache</a>    
+This request is to force the refresh of the cache instead of waiting the automatic refresh. 
+
+__URL__: http://localhost:8080/motu-web/Motu?action=refreshcache&token=tokenValid&caches=all  
+
+__Parameters__: 2 parameters  
+
+* __token__ : The token configured on the motuConfiguration.xml file which allowed the execution of the refresh
+* __caches__ [all,onlyauto]: The refresh type of the cache. all is the refresh of all the configservice. onlyauto is the refresh of only the configservice which enable the automatic refresh.
+
+__Return__: A plain text which specify if the refresh is launched or if an error occured  
+
+```  
+OK cache refresh in progress   
 ```  
 
 ### <a name="ClientAPI_ProductDownloadHome">Product download home</a>    
