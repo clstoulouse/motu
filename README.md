@@ -1201,7 +1201,7 @@ All parameters can be updated in the file.
 
 #### Java options
 The three parameters below are used to tune the Java Virtual Machine:  
-   # -server: tells the Hostspot compiler to run the JVM in "server" mode (for performance)  
+   &#35; -server: tells the Hostspot compiler to run the JVM in "server" mode (for performance)  
 __tomcat-motu-jvm-javaOpts__=-server -Xmx4096M -Xms512M -XX:PermSize=128M -XX:MaxPermSize=512M  
 __tomcat-motu-jvm-port-jmx__=9010  
 __tomcat-motu-jvm-address-debug__=9090  
@@ -1213,7 +1213,7 @@ At startup, these ports are set in the file "$installdir/motu/tomcat-motu/conf/s
 But if this file already exist, it won't be replaced. So in order to apply these parameters, remove the file "$installdir/motu/tomcat-motu/conf/server.xml".  
   
 __tomcat-motu-port-http__=9080  
-  # HTTPs is in a common way managed from a frontal Apache HTTPd server. If you really need to use it from Tomcat, you have to tune the SSL certificates and the protocols directly in the file "$installdir/motu/tomcat-motu/conf/server.xml".  
+  &#35; HTTPs is in a common way managed from a frontal Apache HTTPd server. If you really need to use it from Tomcat, you have to tune the SSL certificates and the protocols directly in the file "$installdir/motu/tomcat-motu/conf/server.xml".  
 __tomcat-motu-port-https__=9443  
 __tomcat-motu-port-ajp__=9009  
 __tomcat-motu-port-shutdown__=9005  
@@ -1221,21 +1221,21 @@ __tomcat-motu-port-shutdown__=9005
 
 #### <a name="ConfigurationSystemCASSSO">CAS SSO server</a>
 
-   # true or false to enable the SSO connection to a CAS server  
+   &#35;  true or false to enable the SSO connection to a CAS server  
 __cas-activated__=false  
   
-   # Cas server configuration to allow Motu to access it  
-   # @see https://wiki.jasig.org/display/casc/configuring+the+jasig+cas+client+for+java+in+the+web.xml  
+   &#35;  Cas server configuration to allow Motu to access it  
+   &#35;  @see https://wiki.jasig.org/display/casc/configuring+the+jasig+cas+client+for+java+in+the+web.xml  
      
-   # The  start of the CAS server URL, i.e. https://cas-cis.cls.fr/cas  
+   &#35;  The  start of the CAS server URL, i.e. https://cas-cis.cls.fr/cas  
 __cas-server-url__=https://cas-cis.cls.fr/cas   
 
-   # The Motu HTTP server URL, for example: http://misgw-ddo-qt.cls.fr:9080 or http://motu.cls.fr   
-   # If you use a frontal HTTPd server, you have to known if its URL will be called once the user will be login on CAS server.  
-   # In this case, set the Apache HTTPd server. The value will be http://$apacheHTTPdServer/motu-web/Motu So, in Apache HTTPd, you have to redirect this URL to the Motu Web server  
+   &#35;  The Motu HTTP server URL, for example: http://misgw-ddo-qt.cls.fr:9080 or http://motu.cls.fr   
+   &#35;  If you use a frontal HTTPd server, you have to known if its URL will be called once the user will be login on CAS server.  
+   &#35;  In this case, set the Apache HTTPd server. The value will be http://$apacheHTTPdServer/motu-web/Motu So, in Apache HTTPd, you have to redirect this URL to the Motu Web server  
 __cas-auth-serverName__=http://$motuServerIp:$motuServerPort   
 
-   # The proxy callback HTTPs URL of the Motu server ($motuServerIp is either the Motu host or the frontal Apache HTTPs host ip or name. $motuServerHttpsPort is optional if default HTTPs port 443 is used, otherwise it is the same value as defined above with the key "tomcat-motu-port-https", or it is the port defined for the HTTPs server on the frontal Apache HTTPd)  
+   &#35;  The proxy callback HTTPs URL of the Motu server ($motuServerIp is either the Motu host or the frontal Apache HTTPs host ip or name. $motuServerHttpsPort is optional if default HTTPs port 443 is used, otherwise it is the same value as defined above with the key "tomcat-motu-port-https", or it is the port defined for the HTTPs server on the frontal Apache HTTPd)  
 __cas-validationFilter-proxyCallbackUrl__=https://$motuServerIp:$motuServerHttpsPort/motu-web/proxyCallback  
   
   
