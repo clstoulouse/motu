@@ -239,23 +239,21 @@
 
 ## -------------------------------------------- product_downloadhome_uk_timeSelection --------------------------------
 #macro(product_downloadhome_uk_timeSelection)
-
 #if($catalogType != "DGF")	
 	#set ($listdate = $product.getTimeAxisDataAsString())
 #else
 	#set ($listdate = $product.getTimeCoverageFromDataFiles())
 #end
-
 #set ($listdateSize = $listdate.size())
 #if($listdateSize > 0)
 	#set ($lastIndex = ${listdateSize} - 1)
-	#set ($lastdate = $listdate.get(${lastIndex}))
+	#set ($minDateValue = $listdate.get(0))
+	#set ($maxDateValue = $listdate.get($lastIndex))
 	
-##	#set ($timeLowValue = $listdate.get(0))
+	#set ($lastdate = $listdate.get(${lastIndex}))
 	#set ($timeLowValue = $lastdate)
 	
 	#set ($timeHighValue = $lastdate)
-##	#set ($timeHighValue = $listdate.get(0))
 	#product_downloadhome_uk_setTimeMinMax()
 #end
 <table width="100%" cellpadding="1" cellspacing="0" border="0">
@@ -264,46 +262,152 @@
 		  &nbsp;&nbsp;&nbsp;Select&nbsp;time&nbsp;range:
 		</td>
 	    <td align="left"><font size="2">
-	  		<select name="t_lo_0" >
-		  	#set ($selected = "")
-			#foreach( $date in $listdate )	
-                #if($date.equalsIgnoreCase($lastdate))
-                    #set ($selected = "selected")
-                #end
-                #if($date.startsWith($lastdate))
-                    #set ($selected = "selected")
-                #end
-				<option value="${date}"  ${selected}>${date}</option>
-			#end
+			#set ($timeByDate = $product.getListTimeByDate())
+			#set ($defaultMinDate = $product.computeDateFromDateTime($minDateValue))
+			#set ($defaultListOfTime = $timeByDate.get($defaultMinDate))
+			
+			<input id="fromDate"/>
+			<select id="fromTimeSelect" onchange="onChangeTime('from');"
+				#if($defaultListOfTime.size() > 0)
+					>
+					#set ($isFirst = true)
+					#foreach($currentTime in $defaultListOfTime)
+						<option value="$currentTime"
+						#if($isFirst)
+							selected
+							#set($isFirst = false)
+						#end
+						>$currentTime</option>
+					#end
+				#else
+					disabled />
+					<option value="00:00:00"  selected>00:00:00</option>
+				#end
 			</select>
-			<input type="text" name="t_lo" size="12" value="${timeLowValue}"/>
-			<script language="JavaScript">
-			  var widget30 = new MultiWidget("${formName}", ["t_lo_0","t_lo"], "rtime"); 
-			  widget30.onChange();
-			  widget30.setValue("${timeLowValue}");
-			  widget30.mWidgets[0].setSelected("${timeLowValue}");
-			</script>		
-		      
-		      
+			<input type="text" id="t_lo" hidden name="t_lo" size="12" value="${minDateValue}"/>
 		       to <br/>
-		       
-		       
-		    <select name="t_hi_0" >
-			#set ($selected = "")			
-			#foreach( $date in $listdate )	
-				#if($date.equalsIgnoreCase($lastdate))
-			  		#set ($selected = "selected")
-			  	#end
-				<option value="${date}"  ${selected}>${date}</option>
-			#end
+		    <input id="toDate"/>
+			<select id="toTimeSelect" onchange="onChangeTime('to');"
+				#if($defaultListOfTime.size() > 0)
+					>
+					#set ($isFirst = true)
+					#foreach($currentTime in $defaultListOfTime)
+						<option value="$currentTime"
+						#if($isFirst)
+							selected
+							#set($isFirst = false)
+						#end
+						>$currentTime</option>
+					#end
+				#else
+					disabled />
+					<option value="00:00:00"  selected>00:00:00</option>
+				#end
 			</select>
-			<input type="text" name="t_hi" size="12" value="${timeHighValue}"/>
-			<script language="JavaScript">
-				var widget31 = new MultiWidget("${formName}", ["t_hi_0","t_hi"], "rtime");
-				widget31.onChange();
-				widget31.setValue("${timeHighValue}");		
-				widget31.mWidgets[0].setSelected("${timeHighValue}");				
-			</script>				
+			<input type="text" hidden id="t_hi" name="t_hi" size="12" value="${minDateValue}"/>
+			<br/>
+			<script>
+				dateLowValue = "${minDateValue}";
+				dateLowValue = dateLowValue.split(" ")[0];
+				dateLowValueArray = dateLowValue.split("-");
+				dateLow = new Date(dateLowValueArray[0], dateLowValueArray[1]-1, dateLowValueArray[2]);
+				dateHightValue = "${maxDateValue}";
+				dateHightValue = dateHightValue.split(" ")[0];
+				dateHightValueArray = dateHightValue.split("-");
+				dateHight = new Date(dateHightValueArray[0], dateHightValueArray[1]-1, dateHightValueArray[2]);
+				
+				$( "#fromDate" ).datepicker({
+					minDate: dateLow, maxDate: dateHight 
+				});
+				$( "#fromDate" ).datepicker(
+				 	"option", "dateFormat", "yy-mm-dd"
+				);
+				$( "#fromDate" ).datepicker().on( "input change", function(event){
+				 	onChangeDate("from", event.target.value);
+				 }
+				);
+				$( "#fromDate" ).datepicker("setDate", dateLow)
+				
+				$( "#toDate" ).datepicker({
+				minDate: dateLow, maxDate: dateHight 
+				});
+				$( "#toDate" ).datepicker(
+				 "option", "dateFormat", "yy-mm-dd"
+				);
+				$( "#toDate" ).datepicker().on( "input change", function(event){
+				 	onChangeDate("to", event.target.value);
+				 }
+				);
+				$( "#toDate" ).datepicker("setDate", dateLow)
+				
+				// Hover states on the static widgets
+				$( "#dialog-link, #icons li" ).hover(
+					function() {
+						$( this ).addClass( "ui-state-hover" );
+					},
+					function() {
+						$( this ).removeClass( "ui-state-hover" );
+					}
+				);
+				
+				#set ($timeByDateSize = $timeByDate.size())
+				
+				timebydatesize : $timeByDateSize
+				
+				var timeByDateJSMap = {
+					#foreach($key in $timeByDate.keySet())
+						"$key" :
+						#set($currentTimeValues=$timeByDate.get($key))
+						[
+						#set($first = true)
+						#foreach( $currentTimeValue in $currentTimeValues )
+							#if($first) #set($first=false) #else ,#end "$currentTimeValue"
+						#end
+						],
+					#end
+				}
+				
+				function onChangeDate(ident, selectedDate){
+					var timeIdent = "#" + ident + "TimeSelect"
+					$(timeIdent).empty()
+					if(selectedDate in timeByDateJSMap){
+						var timeList = timeByDateJSMap[selectedDate]
+						for(currentTime in timeList){
+							$(timeIdent).append($("<option></option>").attr("value",timeList[currentTime]).text(timeList[currentTime]))
+						}
+						$(timeIdent).removeAttr("disabled")
+					}
+					else{
+						$(timeIdent).append($("<option></option>").attr("value","00:00:00").text("00:00:00"))
+						$(timeIdent).attr("disabled", "disabled")
+					}
+					
+					
+					selectedDateTime = selectedDate
+					if(! $(timeIdent).prop('disabled')){
+						selectedDateTime = selectedDateTime + " " + $(timeIdent).val()
+					}
+					if(ident==="from"){
+						$("#t_lo").val(selectedDateTime)
+					}
+					else{
+						$("#t_hi").val(selectedDateTime)
+					}
+				}
+				
+				function onChangeTime(ident){
+					var dateident = "#" + ident + "Date"
+					var timeIdent = "#" + ident + "TimeSelect"
+					selectedDateTime = $(dateident).datepicker().val() + " " + $(timeIdent).val()
+					if(ident==="from"){
+						$("#t_lo").val(selectedDateTime)
+					}
+					else{
+						$("#t_hi").val(selectedDateTime)
+					}
+				}
+				
+			</script>			
 		    </font>
 		</td>
 	</tr>
@@ -376,6 +480,9 @@
 #product_downloadhome_uk_setXYMinMax()
 
 #include("velocityTemplates/html/noscript.html")
+
+<script src="js/jquery.js"></script>
+<script src="js/jquery-ui.js"></script>
 
 <script language="JavaScript" type="text/javascript">
 

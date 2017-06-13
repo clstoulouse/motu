@@ -56,7 +56,6 @@ import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.DocMetaData;
 import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
-import fr.cls.atoll.motu.web.dal.catalog.tds.TDSCatalogLoader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
@@ -92,28 +91,28 @@ public class Product implements Comparator<Product> {
 
     /** The data files. */
     private List<DataFile> dataFiles = null;
-    
+
     /** URL to find the product (URL NetcdfSubsetService NCSS , ...). */
     private String locationDataNCSS = "";
-    
+
     /** URL to find the product (URL Opendap , ...). */
     private String locationData = "";
-    
+
     /**
      * URL of a XML file that describes product's metadata. If there is no XML file, product's metadata will
      * be loaded from netCDF file (dataset).
      */
     private String locationMetaData = "";
-    
+
     /** The tds service type. */
     private String tdsServiceType;
-    
+
     /** NetCdfReader object. */
     private NetCdfReader netCdfReader = null;
 
     /** The product meta data. */
     private ProductMetaData productMetaData;
-    
+
     /**
      * Default constructor.
      *
@@ -910,6 +909,45 @@ public class Product implements Comparator<Product> {
         }
 
         return list;
+    }
+
+    public Map<String, List<String>> getListTimeByDate() throws MotuException {
+        Map<String, List<String>> timeByDate = new HashMap<>();
+        List<String> dateList = getTimeAxisDataAsString();
+
+        for (String currentDateTime : dateList) {
+            String[] dateTimeSplit = currentDateTime.split(" ");
+            if (dateTimeSplit.length > 1) {
+                String currentDate = dateTimeSplit[0];
+                String currentTime = dateTimeSplit[1];
+                if (!timeByDate.containsKey(currentDate)) {
+                    timeByDate.put(currentDate, new ArrayList<String>());
+                }
+                List<String> currentListOfTime = timeByDate.get(currentDate);
+                currentListOfTime.add(currentTime);
+            }
+        }
+        return timeByDate;
+    }
+
+    public String getMinTimeAxisDataAsString() throws MotuException {
+        String date = "";
+        List<String> dateList = getTimeAxisDataAsString();
+        if (!dateList.isEmpty()) {
+            date = dateList.get(0);
+        }
+
+        return date;
+    }
+
+    public String getMaxTimeAxisDataAsString() throws MotuException {
+        String date = "";
+        List<String> dateList = getTimeAxisDataAsString();
+        if (!dateList.isEmpty()) {
+            date = dateList.get(dateList.size() - 1);
+        }
+
+        return date;
     }
 
     /**
