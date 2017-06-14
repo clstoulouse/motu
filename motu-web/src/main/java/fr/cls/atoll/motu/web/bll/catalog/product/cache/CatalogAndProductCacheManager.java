@@ -127,6 +127,11 @@ public class CatalogAndProductCacheManager implements ICatalogAndProductCacheMan
     }
 
     @Override
+    public void updateCache(List<ConfigService> configServiceList) {
+        CacheRefreshScheduler.getInstance().update(new HashSet<>(configServiceList));
+    }
+
+    @Override
     public void updateCache() {
         CacheRefreshScheduler.getInstance().update(partialConfigServiceToUpdate);
     }
