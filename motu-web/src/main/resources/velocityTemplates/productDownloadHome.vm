@@ -280,7 +280,7 @@
 						>$currentTime</option>
 					#end
 				#else
-					disabled />
+					hidden />
 					<option value="00:00:00"  selected>00:00:00</option>
 				#end
 			</select>
@@ -300,7 +300,7 @@
 						>$currentTime</option>
 					#end
 				#else
-					disabled />
+					hidden />
 					<option value="00:00:00"  selected>00:00:00</option>
 				#end
 			</select>
@@ -315,40 +315,6 @@
 				dateHightValue = dateHightValue.split(" ")[0];
 				dateHightValueArray = dateHightValue.split("-");
 				dateHight = new Date(dateHightValueArray[0], dateHightValueArray[1]-1, dateHightValueArray[2]);
-				
-				$( "#fromDate" ).datepicker({
-					minDate: dateLow, maxDate: dateHight 
-				});
-				$( "#fromDate" ).datepicker(
-				 	"option", "dateFormat", "yy-mm-dd"
-				);
-				$( "#fromDate" ).datepicker().on( "input change", function(event){
-				 	onChangeDate("from", event.target.value);
-				 }
-				);
-				$( "#fromDate" ).datepicker("setDate", dateLow)
-				
-				$( "#toDate" ).datepicker({
-				minDate: dateLow, maxDate: dateHight 
-				});
-				$( "#toDate" ).datepicker(
-				 "option", "dateFormat", "yy-mm-dd"
-				);
-				$( "#toDate" ).datepicker().on( "input change", function(event){
-				 	onChangeDate("to", event.target.value);
-				 }
-				);
-				$( "#toDate" ).datepicker("setDate", dateLow)
-				
-				// Hover states on the static widgets
-				$( "#dialog-link, #icons li" ).hover(
-					function() {
-						$( this ).addClass( "ui-state-hover" );
-					},
-					function() {
-						$( this ).removeClass( "ui-state-hover" );
-					}
-				);
 				
 				#set ($timeByDateSize = $timeByDate.size())
 				
@@ -367,6 +333,87 @@
 					#end
 				}
 				
+				tlo_param = purl(window.location.href).param("t_lo")
+				if(tlo_param !== undefined){
+					tlo_split = tlo_param.split(" ")
+					dateSplitted = tlo_split[0].split("-")
+					selectedDateLow = new Date(dateSplitted[0], dateSplitted[1]-1, dateSplitted[2])
+					selectedDateLowStr = tlo_split[0]
+					selectedTimeLow=undefined
+					if(tlo_split.length === 2){
+						selectedTimeLow = tlo_split[1]
+					}
+				}
+				else{
+					selectedDateLow = dateLow
+				}
+				
+				thi_param = purl(window.location.href).param("t_hi")
+				if(thi_param !== undefined){
+					thi_split = thi_param.split(" ")
+					dateSplitted = thi_split[0].split("-")
+					selectedDateHight = new Date(dateSplitted[0], dateSplitted[1]-1, dateSplitted[2])
+					selectedDateHightStr = thi_split[0]
+					selectedTimeHight=undefined
+					if(thi_split.length === 2){
+						selectedTimeHight = thi_split[1]
+					}
+				}
+				else{
+					selectedDateHight = dateLow
+				}
+				
+				
+				$( "#fromDate" ).datepicker({
+					minDate: dateLow, maxDate: dateHight 
+				});
+				$( "#fromDate" ).datepicker(
+				 	"option", "dateFormat", "yy-mm-dd"
+				);
+				$( "#fromDate" ).datepicker().on( "input change", function(event){
+				 	onChangeDate("from", event.target.value);
+				 }
+				);
+				$( "#fromDate" ).datepicker("setDate", selectedDateLow)
+				//alert("tlo_param : " + tlo_param)
+				if(tlo_param !== undefined){
+					onChangeDate("from", selectedDateLowStr);
+					if(selectedTimeLow !== undefined){
+						$('#fromTimeSelect option[value="' + selectedTimeLow + '"').prop('selected', true)
+						onChangeTime("from")	
+					}
+					//alert("selectedTimeLow : " + selectedTimeLow)
+				}
+				
+				$( "#toDate" ).datepicker({
+				minDate: dateLow, maxDate: dateHight 
+				});
+				$( "#toDate" ).datepicker(
+				 "option", "dateFormat", "yy-mm-dd"
+				);
+				$( "#toDate" ).datepicker().on( "input change", function(event){
+				 	onChangeDate("to", event.target.value);
+				 }
+				);
+				$( "#toDate" ).datepicker("setDate", selectedDateHight)
+				if(thi_param !== undefined){
+					onChangeDate("to", selectedDateHightStr);
+					if(selectedTimeHight !== undefined){
+						$('#toTimeSelect option[value="' + selectedTimeHight + '"').prop('selected', true)
+						onChangeTime("to")
+					}
+				}
+				
+				// Hover states on the static widgets
+				$( "#dialog-link, #icons li" ).hover(
+					function() {
+						$( this ).addClass( "ui-state-hover" );
+					},
+					function() {
+						$( this ).removeClass( "ui-state-hover" );
+					}
+				);
+				
 				function onChangeDate(ident, selectedDate){
 					var timeIdent = "#" + ident + "TimeSelect"
 					$(timeIdent).empty()
@@ -375,16 +422,16 @@
 						for(currentTime in timeList){
 							$(timeIdent).append($("<option></option>").attr("value",timeList[currentTime]).text(timeList[currentTime]))
 						}
-						$(timeIdent).removeAttr("disabled")
+						$(timeIdent).removeAttr("hidden")
 					}
 					else{
 						$(timeIdent).append($("<option></option>").attr("value","00:00:00").text("00:00:00"))
-						$(timeIdent).attr("disabled", "disabled")
+						$(timeIdent).attr("hidden", "hidden")
 					}
 					
 					
 					selectedDateTime = selectedDate
-					if(! $(timeIdent).prop('disabled')){
+					if(! $(timeIdent).prop('hidden')){
 						selectedDateTime = selectedDateTime + " " + $(timeIdent).val()
 					}
 					if(ident==="from"){
@@ -481,8 +528,9 @@
 
 #include("velocityTemplates/html/noscript.html")
 
-<script src="js/jquery.js"></script>
-<script src="js/jquery-ui.js"></script>
+<script src="$httpSite/js/jquery.js"></script>
+<script src="$httpSite/js/jquery-ui.js"></script>
+<script src="$httpSite/js/purl.js"></script>
 
 <script language="JavaScript" type="text/javascript">
 
