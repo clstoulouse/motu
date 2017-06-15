@@ -2267,16 +2267,11 @@ __URL__: http://localhost:8080/motu-web/Motu?action=refreshcache&token=tokenVali
 
 __Parameters__:
 
-<<<<<<< HEAD
 * __token__ [1] : Used to secure this action. The token configured in the motuConfiguration.xml file which allowed the execution of the refresh
 * __configServiceNames__ [1] : [all,onlyauto,$configServiceNames] 3 options to tune how the cache will be resfreshed.  
    * __all__ [1]: Refresh all the config service immediately. 
    * __onlyauto__ [1]: Refresh only the config service which enable the automatic refresh immediately.
    * __$configServiceNames__[1,n]: Refresh all the config services set immediately. The list of all config service name is separated by a comma character, e.g. configServiceNames=AAA,BBB,CCC
-=======
-* __token__ : The token configured on the motuConfiguration.xml file which allowed the execution of the refresh
-* __configServiceNames__ [all,onlyauto, List of configService name]: The refresh type of the cache. all is the refresh of all the configservice. onlyauto is the refresh of only the configservice which enable the automatic refresh. A list of configService name launch the refresh of the provided configservice. Each configService name are separated by a comma.
->>>>>>> fa14b049b1dd93a7ef1bd0229277c0bf3bf347d3
 
 __Return__: A plain text which specify if the refresh is launched or if an error occurred, e.g. "OK: config service AAA cache refresh in progress" or "ERROR: Unknwon config service UnknownConfigService"
 
