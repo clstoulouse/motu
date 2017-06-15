@@ -1,6 +1,7 @@
 package fr.cls.atoll.motu.web.bll.config;
 
 import java.util.List;
+import java.util.Map;
 
 import fr.cls.atoll.motu.web.bll.config.version.IBLLVersionManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
@@ -85,4 +86,12 @@ public interface IBLLConfigManager {
      * @return
      */
     IBLLVersionManager getVersionManager();
+
+    /**
+     * Return the map of the available ConfigService. The keys are the name of the ConfigService. The values
+     * are the ConfigService himself. .
+     * 
+     * @return the ConfigService map
+     */
+    Map<String, ConfigService> getConfigServiceMap();
 }

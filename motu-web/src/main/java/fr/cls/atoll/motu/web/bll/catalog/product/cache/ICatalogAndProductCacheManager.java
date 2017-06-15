@@ -1,5 +1,9 @@
 package fr.cls.atoll.motu.web.bll.catalog.product.cache;
 
+import java.util.List;
+
+import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
+
 public interface ICatalogAndProductCacheManager {
 
     void init();
@@ -19,6 +23,13 @@ public interface ICatalogAndProductCacheManager {
      * @return the catalog cache instance
      */
     ICatalogCache getCatalogCache();
+
+    /**
+     * Refresh the cache only for ConfigService present in the provided list .
+     * 
+     * @param configServiceList the list of config service to update the cache
+     */
+    void updateCache(List<ConfigService> configServiceList);
 
     /**
      * Refresh the cache only for ConfigService defines as automatic refresh .
