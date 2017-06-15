@@ -2246,12 +2246,12 @@ OK - response action=ping
 ### <a name="ClientAPI_RefreshCache">Refresh Cache</a>    
 This request is to force the refresh of the cache instead of waiting the automatic refresh. 
 
-__URL__: http://localhost:8080/motu-web/Motu?action=refreshcache&token=tokenValid&caches=all  
+__URL__: http://localhost:8080/motu-web/Motu?action=refreshcache&token=tokenValid&configServiceNames=all  
 
 __Parameters__: 2 parameters  
 
 * __token__ : The token configured on the motuConfiguration.xml file which allowed the execution of the refresh
-* __caches__ [all,onlyauto]: The refresh type of the cache. all is the refresh of all the configservice. onlyauto is the refresh of only the configservice which enable the automatic refresh.
+* __configServiceNames__ [all,onlyauto, List of configService name]: The refresh type of the cache. all is the refresh of all the configservice. onlyauto is the refresh of only the configservice which enable the automatic refresh. A list of configService name launch the refresh of the provided configservice. Each configService name are separated by a comma.
 
 __Return__: A plain text which specify if the refresh is launched or if an error occured  
 
