@@ -365,7 +365,7 @@
 				
 				
 				$( "#fromDate" ).datepicker({
-					minDate: dateLow, maxDate: dateHight 
+					minDate: dateLow, maxDate: dateHight, changeYear:true, changeMonth:true 
 				});
 				$( "#fromDate" ).datepicker(
 				 	"option", "dateFormat", "yy-mm-dd"
@@ -386,7 +386,7 @@
 				}
 				
 				$( "#toDate" ).datepicker({
-				minDate: dateLow, maxDate: dateHight 
+				minDate: dateLow, maxDate: dateHight, changeYear:true, changeMonth:true
 				});
 				$( "#toDate" ).datepicker(
 				 "option", "dateFormat", "yy-mm-dd"
