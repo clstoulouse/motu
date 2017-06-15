@@ -1063,7 +1063,16 @@ tomcat-motu-jvm-javaOpts=-server -Xmx4096M  ... -Dhttp.proxyHost=monProxy.host.f
 * __proxyHost__  
 * __proxyPort__  
 * __proxyLogin__  
-* __proxyPwd__  
+* __proxyPwd__ 
+
+
+##### <a name="refreshCacheToken">refreshCacheToken</a>   
+
+This token is a key value which is checked to authorize the execution of the cache refresh when it is request by the administrator .
+If the token value provided by the administrator doesn't match the configured token value, the refresh is not executed and an error is returned.
+A default value is configured but it's hardly recommended to change this value. Even if this is a security breach.
+The value can contains the characters [A-Za-z] and specials listed here ( -_@$*!:;.,?()[] )
+It's recommended to configure a token with a length of 29 characters minimum.
 
 ##### downloadFileNameFormat  
 Format of the file name result of a download request.  
@@ -1106,6 +1115,10 @@ In LDAP, "memberUid" attribute can be empty, contains one value or several value
 Optional, string used to target the default velocity template. It is used to set a specific theme.  
 Value is the velocity template file name without the extension.  
 Default value is "index".
+
+##### refreshCacheAutomaticallyEnabled
+Optional, boolean used to determine if the current config service have its cache updated automatically by Motu or not.
+The default value is true, which means that the config service cache update is executed automatically by Motu.
 
 ##### httpBaseRef
 Optional, used to override [motuConfig httpBaseRef](#motuConfig-httpBaseRef) attribute for this specific service.
