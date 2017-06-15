@@ -2041,7 +2041,7 @@ Tables are sorted by time ascending.
 __URL__: http://localhost:8080/motu-web/Motu?action=debug  
 
 __Parameters__:  
-* __order__ [0-1]: Change the order of items INPROGRESS,PENDING,ERROR,DONE. All items shall be set.  
+* __order__ [0,1]: Change the order of items INPROGRESS,PENDING,ERROR,DONE. All items shall be set.  
 example: http://localhost:8080/motu-web/Motu?action=Debug&order=DONE,ERROR,PENDING,INPROGRESS  
 Without this parameter, default order is: INPROGRESS,PENDING,ERROR,DONE  
 
@@ -2257,16 +2257,28 @@ OK - response action=ping
 ```     
 
 ### <a name="ClientAPI_RefreshCache">Refresh Cache</a>    
-This request is to force the refresh of the cache instead of waiting the automatic refresh. 
+Force the refresh of the cache instead of waiting the [automatic refresh](#describeproductcacherefreshinmillisec). 
+This action is secured and is only triggered then a valid token is given.   
+Moreover a list of config service needed to be refreshed is shared with the automatic update process.   
+This add robustness because when a job refreshes only the cache of the config service that are is the list. So when this action is called several times or at the same time from several clients, if a config service in already in this waiting list, it is not added twice.
+A soon as a cache for a config service is refreshed, config service is removed from this waiting list.
 
 __URL__: http://localhost:8080/motu-web/Motu?action=refreshcache&token=tokenValid&configServiceNames=all  
 
-__Parameters__: 2 parameters  
+__Parameters__:
 
+<<<<<<< HEAD
+* __token__ [1] : Used to secure this action. The token configured in the motuConfiguration.xml file which allowed the execution of the refresh
+* __configServiceNames__ [1] : [all,onlyauto,$configServiceNames] 3 options to tune how the cache will be resfreshed.  
+   * __all__ [1]: Refresh all the config service immediately. 
+   * __onlyauto__ [1]: Refresh only the config service which enable the automatic refresh immediately.
+   * __$configServiceNames__[1,n]: Refresh all the config services set immediately. The list of all config service name is separated by a comma character, e.g. configServiceNames=AAA,BBB,CCC
+=======
 * __token__ : The token configured on the motuConfiguration.xml file which allowed the execution of the refresh
 * __configServiceNames__ [all,onlyauto, List of configService name]: The refresh type of the cache. all is the refresh of all the configservice. onlyauto is the refresh of only the configservice which enable the automatic refresh. A list of configService name launch the refresh of the provided configservice. Each configService name are separated by a comma.
+>>>>>>> fa14b049b1dd93a7ef1bd0229277c0bf3bf347d3
 
-__Return__: A plain text which specify if the refresh is launched or if an error occured  
+__Return__: A plain text which specify if the refresh is launched or if an error occurred, e.g. "OK: config service AAA cache refresh in progress" or "ERROR: Unknwon config service UnknownConfigService"
 
 ```  
 OK cache refresh in progress   
