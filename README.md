@@ -2267,7 +2267,7 @@ __URL__: http://localhost:8080/motu-web/Motu?action=refreshcache&token=tokenVali
 
 __Parameters__:
 
-* __token__ [1] : Used to secure this action. The token configured in the motuConfiguration.xml file which allowed the execution of the refresh
+* __token__ [1] : Used to secure this action. The token configured in the motuConfiguration.xml file which allowed the execution of the refresh. See this section for [the token configured](#refreshCacheToken)
 * __configServiceNames__ [1] : [all,onlyauto,$configServiceNames] 3 options to tune how the cache will be resfreshed.  
    * __all__ [1]: Refresh all the config service immediately. 
    * __onlyauto__ [1]: Refresh only the config service which enable the automatic refresh immediately.
