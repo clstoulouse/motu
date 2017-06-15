@@ -1,6 +1,7 @@
 package fr.cls.atoll.motu.web.bll.config;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -128,4 +129,8 @@ public class BLLConfigManager implements IBLLConfigManager {
         return bllVersionManager;
     }
 
+    @Override
+    public Map<String, ConfigService> getConfigServiceMap() {
+        return dalConfigManager.getConfigServiceMap();
+    }
 }

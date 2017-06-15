@@ -220,5 +220,5 @@ public interface MotuRequestParametersConstant {
 
     final String PARAM_PASS_PHRASE = "token";
 
-    final String PARAM_CACHE_TYPE = "caches";
+    final String PARAM_CONFIG_SERVICE_LIST = "configServiceNames";
 }

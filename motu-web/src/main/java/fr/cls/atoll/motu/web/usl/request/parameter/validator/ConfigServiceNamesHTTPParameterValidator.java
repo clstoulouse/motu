@@ -13,7 +13,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
  * @author Pierre LACOSTE
  * @version $Revision: 1456 $ - $Date: 2011-04-08 18:37:34 +0200 $
  */
-public class CacheTypeHTTPParameterValidator extends AbstractHTTPParameterValidator<String> {
+public class ConfigServiceNamesHTTPParameterValidator extends AbstractHTTPParameterValidator<String> {
 
     /**
      * Constructor.
@@ -21,7 +21,7 @@ public class CacheTypeHTTPParameterValidator extends AbstractHTTPParameterValida
      * @param parameterName_
      * @param parameterValue_
      */
-    public CacheTypeHTTPParameterValidator(String parameterName_, String parameterValue_) {
+    public ConfigServiceNamesHTTPParameterValidator(String parameterName_, String parameterValue_) {
         super(parameterName_, parameterValue_);
     }
 
@@ -37,7 +37,7 @@ public class CacheTypeHTTPParameterValidator extends AbstractHTTPParameterValida
 
     @Override
     protected String getParameterBoundaries() {
-        return "[The cache is a not empty string]";
+        return "[A least one config service shall be defined. Several config service can be defined separated by a comma. Config service names are defined in config/motuConfiguration.xml#motuConfig/configService@name. The value can be ALL or ONLYAUTO for specific behaviour]";
     }
 
 }
