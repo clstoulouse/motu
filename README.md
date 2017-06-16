@@ -2028,7 +2028,7 @@ Motu-static-files (Graphic chart): 3.0.00-RC1-20160914162955422
 
 
 ### <a name="ClientAPI_Debug">Debug</a>    
-Display all requests status managed by Motu server in the last [cleanRequestInterval](#BScleanRequestInterval] minutes.
+Display all requests status managed by Motu server in the last [cleanRequestInterval](#BScleanRequestInterval) minutes.
 Tables are sorted by time ascending.  
 4 status are defined:
 
