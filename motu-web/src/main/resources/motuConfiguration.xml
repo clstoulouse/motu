@@ -18,6 +18,8 @@ runCleanInterval="15"
 extractionFilePatterns=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|.*\.extract$" 
 extractionFileCacheSize="10000" 
 runGCInterval="0"
+
+refreshCacheToken="changeIt"
 >
 
 	<!--======================================================================================-->
@@ -30,7 +32,7 @@ runGCInterval="0"
 	1) TDS NCSS protocol: 
 	This is the fastest protocol implemented by Motu. Motu select this protocol because type is set to "tds" and ncss is set to "enabled".
 	
-	<configService description="Free text to describe your dataSet" group="HR-Sample" httpBaseRef="" name="HR_MOD-TDS" veloTemplatePrefix="" profiles="external"> 
+	<configService description="Free text to describe your dataSet" group="HR-Sample" httpBaseRef="" name="HR_MOD-TDS" veloTemplatePrefix="" profiles="external"  refreshCacheAutomaticallyEnabled="true"> 
 		<catalog name="m_HR_MOD.xml" type="tds" ncss="enabled" urlSite="http://$tdsUrl/thredds/"/> 
 	</configService>
 
