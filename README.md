@@ -52,6 +52,7 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
   * [Monitor performance](#ExpMonitorPerf)
   * [Logbooks](#Logbooks)
   * [Add a dataset](#AdminDataSetAdd)
+  * [Tune the dataset metadata cache](#AdminMetadataCache)
   * [Debug view](#ExploitDebug)
   * [Clean files](#ExploitCleanDisk)
   * [Log Errors](#LogCodeErrors)
@@ -1621,6 +1622,26 @@ File __dataset-armor-3d-v5-myocean-cls-toulouse-fr-armor-motu-rest-file.xml__:
 ```  
 
 
+## <a name="AdminMetadataCache">Tune the dataset metadata cache</a>  
+In order to improve response time, Motu has a cache which stores datasets metadata. This cache is indexed by config service.
+You can tune the cache behaviour in order to manage both real time and archived datasets effectively.    
+
+For config services which manages real time datasets, meaning datasets which are daily updated, you can set the following configuration in motuConfiguration.xml:
+```  
+<?xml version="1.0"?>
+<motuConfig  ...
+<configService ... refreshCacheAutomaticallyEnabled="true"
+...
+```  
+
+For config services which manages archived datasets, meaning dataset which not updated frequently for example only once a week, you can set the following configuration in motuConfiguration.xml:
+```  
+<?xml version="1.0"?>
+<motuConfig  ...
+<configService ... refreshCacheAutomaticallyEnabled="false"
+...
+```  
+In this case, when you want to refresh metadata cache of these datasets, you can a dedicated [action](#ClientAPI_RefreshCache).
 
 
 ## <a name="ExploitDebug">Debug view</a>  
@@ -2258,7 +2279,7 @@ OK - response action=ping
 
 ### <a name="ClientAPI_RefreshCache">Refresh config services metadata cache</a>    
 Force the refresh of the cache of [config service](#BSconfigService) metadata instead of waiting the [automatic refresh](#describeproductcacherefreshinmillisec).   
-This action is secured and is only triggered then a valid [token](#refreshCacheToken) is given.    
+This action is secured and is only triggered when a valid [token](#refreshCacheToken) is given.    
 Moreover a list of config services needed to be refreshed is shared with the automatic update process.     
 This add robustness because a job refreshes only cache of the config services which are is the list. So when this action is called several times, if a config service in already in this waiting list, it is not added a second time.
 A soon as a cache for a config service is refreshed, config service is removed from this waiting list.   
