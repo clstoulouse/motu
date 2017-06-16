@@ -1,6 +1,7 @@
 package fr.cls.atoll.motu.web.usl.response.velocity.model.catalog;
 
 import java.util.List;
+import java.util.Map;
 
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 
@@ -57,6 +58,8 @@ public interface IProduct {
 
     List<String> getTimeAxisDataAsString();
 
+    Map<String, List<String>> getListTimeByDate();
+
     List<String> getTimeCoverageFromDataFiles();
 
     boolean hasLastError();
@@ -67,4 +70,5 @@ public interface IProduct {
 
     ExtractCriteriaLatLon getCriteriaLatLon();
 
+    String computeDateFromDateTime(String dateTime);
 }

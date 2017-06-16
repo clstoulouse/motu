@@ -20,5 +20,5 @@ fi
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HDF_DIR/share/:$HDF_DIR/lib:$GLIBC_DIR/lib:$NETCDF_DIR/lib:$ZLIB_DIR/lib
 
-$CUR_DIR/cdo-1.8.1-install/bin/cdo --history $*
+$CUR_DIR/cdo-1.8.1-install/bin/cdo -s --history $*
 exit $?

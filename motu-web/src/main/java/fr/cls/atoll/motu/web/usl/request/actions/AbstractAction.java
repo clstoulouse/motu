@@ -45,7 +45,7 @@ public abstract class AbstractAction {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private String actionName;
-    private String parameters;
+    protected String parameters;
     private String userId;
     private HttpServletRequest request;
     private HttpServletResponse response;
@@ -279,7 +279,7 @@ public abstract class AbstractAction {
     /**
      * This method save the parameters of the request into a unic string. .
      */
-    private void generateParameterString() {
+    protected void generateParameterString() {
         StringBuffer parameterStr = new StringBuffer();
         for (Map.Entry<String, String[]> parameter : request.getParameterMap().entrySet()) {
             parameterStr.append(parameter.getKey());

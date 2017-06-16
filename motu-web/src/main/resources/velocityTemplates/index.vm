@@ -101,6 +101,7 @@
 	<![endif]-->
     <link rel="stylesheet" type="text/css" href="$httpSite/css/motu/screen/content_cc.css" media="all" />
     <link rel="stylesheet" type="text/css" href="$httpSite/css/motu/screen/mis-gw.css" media="all" />
+    <link href="$httpSite/css/jquery-ui/jquery-ui.css" rel="stylesheet"/>
 </head>
 
 <body>

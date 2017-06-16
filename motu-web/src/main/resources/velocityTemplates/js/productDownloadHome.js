@@ -851,8 +851,11 @@ function closeScriptCmdWin() {
 
   var z_lo = theForm.elements['z_lo'];
   var z_hi = theForm.elements['z_hi'];
-
-  var output_format = theForm.elements['output'].value;
+  
+  var output_format = null
+  if(theForm.elements['output'] !== undefined){
+  	output_format = theForm.elements['output'].value;
+  }
   
   var variables = theForm.elements['variable'];
 

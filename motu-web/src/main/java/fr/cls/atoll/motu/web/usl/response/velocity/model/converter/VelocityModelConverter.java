@@ -1,7 +1,9 @@
 package fr.cls.atoll.motu.web.usl.response.velocity.model.converter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
@@ -326,6 +328,16 @@ public class VelocityModelConverter {
             }
 
             @Override
+            public Map<String, List<String>> getListTimeByDate() {
+                try {
+                    return requestProduct_.getProduct().getListTimeByDate();
+                } catch (MotuException e) {
+                    LOGGER.error("Error while converting Product", e);
+                    return new HashMap<>();
+                }
+            }
+
+            @Override
             public List<String> getTimeCoverageFromDataFiles() {
                 return requestProduct_.getProduct().getTimeCoverageFromDataFiles();
             }
@@ -374,6 +386,16 @@ public class VelocityModelConverter {
             @Override
             public ExtractCriteriaLatLon getCriteriaLatLon() {
                 return requestProduct_.getCriteriaLatLon();
+            }
+
+            @Override
+            public String computeDateFromDateTime(String dateTime) {
+                String[] splitDateTime = dateTime.split(" ");
+                if (splitDateTime.length > 0) {
+                    return splitDateTime[0];
+                } else {
+                    return "";
+                }
             }
 
         };

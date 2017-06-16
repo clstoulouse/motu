@@ -10,7 +10,7 @@
 #     gcc, gcc-c++ and m4 libraries have to be installed on the system.
 #
 #     First set the version variable:
-MOTU_PRODUCTS_VERSION=3.5.0
+MOTU_PRODUCTS_VERSION=3.6.0
 #     Then run this file as a shell script to build this archive: ./README
 #     WARN: You need an Internet Access to download products. So optionally, set your proxy parameters:
 #         vi ~/.wgetrc

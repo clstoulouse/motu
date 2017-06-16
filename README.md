@@ -1006,7 +1006,7 @@ A clean job runs each "runCleanInterval". All files with a size higher than this
 If value is zero, files are not deleted.  
 Default value = 0.
 
-##### describeProductCacheRefreshInMilliSec
+##### <a name="describeProductCacheRefreshInMilliSec">describeProductCacheRefreshInMilliSec</a>
 Provide the delay to wait to refresh the meta-data of products cache after the last refresh.  
 Motu has a cache which is refreshed asynchronously. Cache is first refreshed as soon as Motu starts.   
 Then Motu waits for this delay before refreshing again the cache.  
@@ -1026,6 +1026,13 @@ They are sorted by config service which has taken the most time first.
   
 Example of archived data with several To of data. Cache is refreshed daily: describeProductCacheRefreshInMilliSec=86400000   
 Example of real time data with several Go of data. Cache is refreshed each minute: describeProductCacheRefreshInMilliSec=60000    
+
+
+##### updateCachePassPhrase
+Provide the pass phrase which is check if a request "updateCache" is received by the server.
+If the request passphrase is not the same as the configured passphrase, the update is not executed.
+If the passphrase is not filled, a default passphrase is used. This case doesn't stop the launching of the server but
+it's a security breach an error is generated in the error log.
 
 
 ##### runGCInterval
@@ -1056,7 +1063,16 @@ tomcat-motu-jvm-javaOpts=-server -Xmx4096M  ... -Dhttp.proxyHost=monProxy.host.f
 * __proxyHost__  
 * __proxyPort__  
 * __proxyLogin__  
-* __proxyPwd__  
+* __proxyPwd__ 
+
+
+##### <a name="refreshCacheToken">refreshCacheToken</a>   
+
+This token is a key value which is checked to authorize the execution of the cache refresh when it is request by the administrator .
+If the token value provided by the administrator doesn't match the configured token value, the refresh is not executed and an error is returned.
+A default value is configured but it's hardly recommended to change this value. Even if this is a security breach.
+The value can contains the characters [A-Za-z] and specials listed here ( -_@$*!:;.,?()[] )
+It's recommended to configure a token with a length of 29 characters minimum.
 
 ##### downloadFileNameFormat  
 Format of the file name result of a download request.  
@@ -1094,11 +1110,15 @@ Profiles are configured in LDAP within the attribute "memberUid" of each user. T
 once a user is logged in, in order to check if it matches profiles configured in Motu to allow a user accessing the data.  
 In LDAP, "memberUid" attribute can be empty, contains one value or several values separated by a comma.  
 
-
 ##### veloTemplatePrefix
 Optional, string used to target the default velocity template. It is used to set a specific theme.  
 Value is the velocity template file name without the extension.  
 Default value is "index".
+
+##### <a name="refreshCacheAutomaticallyEnabled">refreshCacheAutomaticallyEnabled</a>
+Optional, boolean used to determine if the current config service have its cache updated automatically by Motu or not.
+Default value is "true". 
+"true" means that the config service cache update is executed automatically by Motu.
 
 ##### httpBaseRef
 Optional, used to override [motuConfig httpBaseRef](#motuConfig-httpBaseRef) attribute for this specific service.
@@ -1194,7 +1214,7 @@ All parameters can be updated in the file.
 
 #### Java options
 The three parameters below are used to tune the Java Virtual Machine:  
-   # -server: tells the Hostspot compiler to run the JVM in "server" mode (for performance)  
+   &#35; -server: tells the Hostspot compiler to run the JVM in "server" mode (for performance)  
 __tomcat-motu-jvm-javaOpts__=-server -Xmx4096M -Xms512M -XX:PermSize=128M -XX:MaxPermSize=512M  
 __tomcat-motu-jvm-port-jmx__=9010  
 __tomcat-motu-jvm-address-debug__=9090  
@@ -1206,7 +1226,7 @@ At startup, these ports are set in the file "$installdir/motu/tomcat-motu/conf/s
 But if this file already exist, it won't be replaced. So in order to apply these parameters, remove the file "$installdir/motu/tomcat-motu/conf/server.xml".  
   
 __tomcat-motu-port-http__=9080  
-  # HTTPs is in a common way managed from a frontal Apache HTTPd server. If you really need to use it from Tomcat, you have to tune the SSL certificates and the protocols directly in the file "$installdir/motu/tomcat-motu/conf/server.xml".  
+  &#35; HTTPs is in a common way managed from a frontal Apache HTTPd server. If you really need to use it from Tomcat, you have to tune the SSL certificates and the protocols directly in the file "$installdir/motu/tomcat-motu/conf/server.xml".  
 __tomcat-motu-port-https__=9443  
 __tomcat-motu-port-ajp__=9009  
 __tomcat-motu-port-shutdown__=9005  
@@ -1214,21 +1234,21 @@ __tomcat-motu-port-shutdown__=9005
 
 #### <a name="ConfigurationSystemCASSSO">CAS SSO server</a>
 
-   # true or false to enable the SSO connection to a CAS server  
+   &#35;  true or false to enable the SSO connection to a CAS server  
 __cas-activated__=false  
   
-   # Cas server configuration to allow Motu to access it  
-   # @see https://wiki.jasig.org/display/casc/configuring+the+jasig+cas+client+for+java+in+the+web.xml  
+   &#35;  Cas server configuration to allow Motu to access it  
+   &#35;  @see https://wiki.jasig.org/display/casc/configuring+the+jasig+cas+client+for+java+in+the+web.xml  
      
-   # The  start of the CAS server URL, i.e. https://cas-cis.cls.fr/cas  
+   &#35;  The  start of the CAS server URL, i.e. https://cas-cis.cls.fr/cas  
 __cas-server-url__=https://cas-cis.cls.fr/cas   
 
-   # The Motu HTTP server URL, for example: http://misgw-ddo-qt.cls.fr:9080 or http://motu.cls.fr   
-   # If you use a frontal HTTPd server, you have to known if its URL will be called once the user will be login on CAS server.  
-   # In this case, set the Apache HTTPd server. The value will be http://$apacheHTTPdServer/motu-web/Motu So, in Apache HTTPd, you have to redirect this URL to the Motu Web server  
+   &#35;  The Motu HTTP server URL, for example: http://misgw-ddo-qt.cls.fr:9080 or http://motu.cls.fr   
+   &#35;  If you use a frontal HTTPd server, you have to known if its URL will be called once the user will be login on CAS server.  
+   &#35;  In this case, set the Apache HTTPd server. The value will be http://$apacheHTTPdServer/motu-web/Motu So, in Apache HTTPd, you have to redirect this URL to the Motu Web server  
 __cas-auth-serverName__=http://$motuServerIp:$motuServerPort   
 
-   # The proxy callback HTTPs URL of the Motu server ($motuServerIp is either the Motu host or the frontal Apache HTTPs host ip or name. $motuServerHttpsPort is optional if default HTTPs port 443 is used, otherwise it is the same value as defined above with the key "tomcat-motu-port-https", or it is the port defined for the HTTPs server on the frontal Apache HTTPd)  
+   &#35;  The proxy callback HTTPs URL of the Motu server ($motuServerIp is either the Motu host or the frontal Apache HTTPs host ip or name. $motuServerHttpsPort is optional if default HTTPs port 443 is used, otherwise it is the same value as defined above with the key "tomcat-motu-port-https", or it is the port defined for the HTTPs server on the frontal Apache HTTPd)  
 __cas-validationFilter-proxyCallbackUrl__=https://$motuServerIp:$motuServerHttpsPort/motu-web/proxyCallback  
   
   
@@ -1717,7 +1737,16 @@ The Error Type Code    =>    A number defining a specific error on the server.
 29        =>    The product is unknown.
 30        =>    The service is unknown.
 31        =>    The request cut the ante meridian. In this case, it's not possible to request more than one depth. It's necessary to change the depth selection and to select in the "from" and the "to" the values that have the same index into the depth list.
-32        =>  Due to a known bug in Thredds Data Server, a request cannot be satisfied wit netCDF4. User has to request a netCDF3 output file.
+32        =>  	Due to a known bug in Thredds Data Server, a request cannot be satisfied wit netCDF4. User has to request a netCDF3 output file.
+101		  =>	WCS specific error code : A WCS mandatory parameter is missing
+102		  =>	WCS specific error code : A WCS parameter doesn't match the mandatory format
+103		  =>	WCS specific error code : The WCS version parameter is not compatible with the Motu WCS server
+104		  =>	WCS specific error code : A system error append.
+105		  =>	WCS specific error code : The coverage ident doesn't exist
+106		  =>	WCS specific error code : The list of coverage id is empty
+107		  =>	WCS specific error code : The provided parameter used to define a subset is invalid
+108		  =>	WCS specific error code : The provided axis label doesn't match any available label
+
   
 # <a name="ClientsAPI">Motu clients & REST API</a>  
 
@@ -1976,6 +2005,7 @@ __Summary of all actions:__
    * [Welcome](#ClientAPI_welcome)  
 * Plain Text 
    * [Ping](#ClientAPI_Ping)  
+   * [Refresh config services metadata cache](#ClientAPI_RefreshCache) 
 * JSON
    * [Supervision](#ClientAPI_supervision)  
 
@@ -1998,7 +2028,7 @@ Motu-static-files (Graphic chart): 3.0.00-RC1-20160914162955422
 
 
 ### <a name="ClientAPI_Debug">Debug</a>    
-Display all requests status managed by Motu server in the last [cleanRequestInterval](#BScleanRequestInterval] minutes.
+Display all requests status managed by Motu server in the last [cleanRequestInterval](#BScleanRequestInterval) minutes.
 Tables are sorted by time ascending.  
 4 status are defined:
 
@@ -2011,7 +2041,7 @@ Tables are sorted by time ascending.
 __URL__: http://localhost:8080/motu-web/Motu?action=debug  
 
 __Parameters__:  
-* __order__ [0-1]: Change the order of items INPROGRESS,PENDING,ERROR,DONE. All items shall be set.  
+* __order__ [0,1]: Change the order of items INPROGRESS,PENDING,ERROR,DONE. All items shall be set.  
 example: http://localhost:8080/motu-web/Motu?action=Debug&order=DONE,ERROR,PENDING,INPROGRESS  
 Without this parameter, default order is: INPROGRESS,PENDING,ERROR,DONE  
 
@@ -2224,6 +2254,29 @@ __Return__: An plain text
 
 ```  
 OK - response action=ping    
+```     
+
+### <a name="ClientAPI_RefreshCache">Refresh config services metadata cache</a>    
+Force the refresh of the cache of [config service](#BSconfigService) metadata instead of waiting the [automatic refresh](#describeproductcacherefreshinmillisec).   
+This action is secured and is only triggered then a valid [token](#refreshCacheToken) is given.    
+Moreover a list of config services needed to be refreshed is shared with the automatic update process.     
+This add robustness because a job refreshes only cache of the config services which are is the list. So when this action is called several times, if a config service in already in this waiting list, it is not added a second time.
+A soon as a cache for a config service is refreshed, config service is removed from this waiting list.   
+
+__URL__: http://localhost:8080/motu-web/Motu?action=refreshcache&token=tokenValid&configServiceNames=all  
+
+__Parameters__:
+
+* __token__ [1] : Used to secure this action. The [token](#refreshCacheToken) configured in the motuConfiguration.xml file which allowed the execution of the refresh. See this section for [the token configured](#refreshCacheToken)
+* __configServiceNames__ [1] : [all,onlyauto,$configServiceNames] 3 options to tune how the cache will be resfreshed.  
+   * __all__ : Refresh immediately all the config service. 
+   * __onlyauto__ : Refresh immediately only the config services which enable the [automatic refresh](#refreshCacheAutomaticallyEnabled).
+   * __$configServiceNames__ : Refresh immediately all the config services listed. Value of this parameter is a list of all [config service](#BSconfigServiceName) name is separated by a comma character, e.g. configServiceNames=AAA,BBB,CCC
+
+__Return__: A plain text which specify if the refresh is launched or if an error occurred, e.g. "OK: config service AAA cache refresh in progress" or "ERROR: Unknwon config service UnknownConfigService"
+
+```  
+OK cache refresh in progress   
 ```  
 
 ### <a name="ClientAPI_ProductDownloadHome">Product download home</a>    

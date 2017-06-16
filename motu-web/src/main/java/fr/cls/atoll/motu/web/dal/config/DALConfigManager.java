@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -21,7 +23,9 @@ import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardName;
 import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardNames;
 import fr.cls.atoll.motu.web.dal.config.version.DALVersionManager;
 import fr.cls.atoll.motu.web.dal.config.version.IDALVersionManager;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ObjectFactory;
 
 /**
  * <br>
@@ -45,8 +49,11 @@ public class DALConfigManager implements IDALConfigManager {
     public static final String FILENAME_FORMAT_REQUESTID = "@@requestId@@";
     public static final String FILENAME_FORMAT_PRODUCT_ID = "@@productId@@";
 
+    private Map<String, ConfigService> configServiceMap;
+
     public DALConfigManager() {
         dalVersionManager = new DALVersionManager();
+        configServiceMap = new HashMap<>();
     }
 
     /** {@inheritDoc} */
@@ -118,12 +125,23 @@ public class DALConfigManager implements IDALConfigManager {
             motuConfig = (MotuConfig) unmarshaller.unmarshal(in);
             motuConfig.setExtractionPath(PropertiesUtilities.replaceSystemVariable(motuConfig.getExtractionPath()));
             motuConfig.setDownloadHttpUrl(PropertiesUtilities.replaceSystemVariable(motuConfig.getDownloadHttpUrl()));
+
+            for (ConfigService currentConfigService : motuConfig.getConfigService()) {
+                configServiceMap.put(currentConfigService.getName(), currentConfigService);
+            }
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error in getMotuConfigInstance", e);
         }
 
         if (motuConfig == null) {
             throw new MotuException(ErrorType.MOTU_CONFIG, "Unable to load Motu configuration (motuConfig is null)");
+        }
+
+        ObjectFactory motuConfigObjectFactory = new ObjectFactory();
+        MotuConfig blankMotuConfig = motuConfigObjectFactory.createMotuConfig();
+        if (motuConfig.getRefreshCacheToken().equals(blankMotuConfig.getRefreshCacheToken())) {
+            LOGGER.error("Security breach : The token for the update of the cache is still set to the default value.\n"
+                    + "To improve the security of the server please change this token into the motuConfiguration.xml file.");
         }
 
         try {
@@ -142,5 +160,10 @@ public class DALConfigManager implements IDALConfigManager {
     @Override
     public IDALVersionManager getVersionManager() {
         return dalVersionManager;
+    }
+
+    @Override
+    public Map<String, ConfigService> getConfigServiceMap() {
+        return configServiceMap;
     }
 }
