@@ -1641,7 +1641,7 @@ For config services which manages archived datasets, meaning dataset which not u
 <configService ... refreshCacheAutomaticallyEnabled="false"
 ...
 ```  
-In this case, when you want to refresh metadata cache of these datasets, you can a dedicated [action](#ClientAPI_RefreshCache).
+In this case, when you want to refresh metadata cache of these datasets, you can use this dedicated [action](#ClientAPI_RefreshCache).
 
 
 ## <a name="ExploitDebug">Debug view</a>  
