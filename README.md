@@ -1006,7 +1006,7 @@ A clean job runs each "runCleanInterval". All files with a size higher than this
 If value is zero, files are not deleted.  
 Default value = 0.
 
-##### describeProductCacheRefreshInMilliSec
+##### <a name="describeProductCacheRefreshInMilliSec">describeProductCacheRefreshInMilliSec</a>
 Provide the delay to wait to refresh the meta-data of products cache after the last refresh.  
 Motu has a cache which is refreshed asynchronously. Cache is first refreshed as soon as Motu starts.   
 Then Motu waits for this delay before refreshing again the cache.  
@@ -1110,15 +1110,15 @@ Profiles are configured in LDAP within the attribute "memberUid" of each user. T
 once a user is logged in, in order to check if it matches profiles configured in Motu to allow a user accessing the data.  
 In LDAP, "memberUid" attribute can be empty, contains one value or several values separated by a comma.  
 
-
 ##### veloTemplatePrefix
 Optional, string used to target the default velocity template. It is used to set a specific theme.  
 Value is the velocity template file name without the extension.  
 Default value is "index".
 
-##### refreshCacheAutomaticallyEnabled
+##### <a name="refreshCacheAutomaticallyEnabled">refreshCacheAutomaticallyEnabled</a>
 Optional, boolean used to determine if the current config service have its cache updated automatically by Motu or not.
-The default value is true, which means that the config service cache update is executed automatically by Motu.
+Default value is "true". 
+"true" means that the config service cache update is executed automatically by Motu.
 
 ##### httpBaseRef
 Optional, used to override [motuConfig httpBaseRef](#motuConfig-httpBaseRef) attribute for this specific service.
@@ -2005,7 +2005,7 @@ __Summary of all actions:__
    * [Welcome](#ClientAPI_welcome)  
 * Plain Text 
    * [Ping](#ClientAPI_Ping)  
-   * [RefreshCache](#ClientAPI_RefreshCache) 
+   * [Refresh config services metadata cache](#ClientAPI_RefreshCache) 
 * JSON
    * [Supervision](#ClientAPI_supervision)  
 
@@ -2256,22 +2256,22 @@ __Return__: An plain text
 OK - response action=ping    
 ```     
 
-### <a name="ClientAPI_RefreshCache">Refresh Cache</a>    
-Force the refresh of the cache instead of waiting the [automatic refresh](#describeproductcacherefreshinmillisec). 
-This action is secured and is only triggered then a valid token is given.   
-Moreover a list of config service needed to be refreshed is shared with the automatic update process.   
-This add robustness because when a job refreshes only the cache of the config service that are is the list. So when this action is called several times or at the same time from several clients, if a config service in already in this waiting list, it is not added twice.
-A soon as a cache for a config service is refreshed, config service is removed from this waiting list.
+### <a name="ClientAPI_RefreshCache">Refresh config services metadata cache</a>    
+Force the refresh of the cache of [config service](#BSconfigService) metadata instead of waiting the [automatic refresh](#describeproductcacherefreshinmillisec).   
+This action is secured and is only triggered then a valid [token](#refreshCacheToken) is given.    
+Moreover a list of config services needed to be refreshed is shared with the automatic update process.     
+This add robustness because a job refreshes only cache of the config services which are is the list. So when this action is called several times, if a config service in already in this waiting list, it is not added a second time.
+A soon as a cache for a config service is refreshed, config service is removed from this waiting list.   
 
 __URL__: http://localhost:8080/motu-web/Motu?action=refreshcache&token=tokenValid&configServiceNames=all  
 
 __Parameters__:
 
-* __token__ [1] : Used to secure this action. The token configured in the motuConfiguration.xml file which allowed the execution of the refresh. See this section for [the token configured](#refreshCacheToken)
+* __token__ [1] : Used to secure this action. The [token](#refreshCacheToken) configured in the motuConfiguration.xml file which allowed the execution of the refresh. See this section for [the token configured](#refreshCacheToken)
 * __configServiceNames__ [1] : [all,onlyauto,$configServiceNames] 3 options to tune how the cache will be resfreshed.  
-   * __all__ [1]: Refresh all the config service immediately. 
-   * __onlyauto__ [1]: Refresh only the config service which enable the automatic refresh immediately.
-   * __$configServiceNames__[1,n]: Refresh all the config services set immediately. The list of all config service name is separated by a comma character, e.g. configServiceNames=AAA,BBB,CCC
+   * __all__ : Refresh immediately all the config service. 
+   * __onlyauto__ : Refresh immediately only the config services which enable the [automatic refresh](#refreshCacheAutomaticallyEnabled).
+   * __$configServiceNames__ : Refresh immediately all the config services listed. Value of this parameter is a list of all [config service](#BSconfigServiceName) name is separated by a comma character, e.g. configServiceNames=AAA,BBB,CCC
 
 __Return__: A plain text which specify if the refresh is launched or if an error occurred, e.g. "OK: config service AAA cache refresh in progress" or "ERROR: Unknwon config service UnknownConfigService"
 
