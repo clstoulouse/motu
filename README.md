@@ -21,6 +21,8 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
   * [Design details](#ArchitectureDesignD)  
      * [Motu-web project](#ArchitectureDesignDMW)
      * [Other projects](#ArchitectureDesignDOthers)	 
+  * [Algorithm details](#ArchiAlgo)  
+     * [Downloading 1 point](#ArchiAlgoDownloading1Point)
 * [Development](#Development)
   * [Source code](#DEVSRC)
   * [Development environment](#DEV)
@@ -173,8 +175,17 @@ requests that require CDO to be processed are in sequence and only one is proces
 * __motu-poducts__: Source code and scripts used to build archive motu-products.tar.gz (JDK, Apache tomcat, CDO tools)
 * __motu-scripts__: ./motu bash script
 * __motu-web__: Main Motu project. See [Motu-web project](#ArchitectureDesignDMW) for details.
+  
+  
+## <a name="ArchiAlgo">Algorithm details</a>  
 
+### <a name="ArchiAlgoDownloading1Point">Downloading 1 point</a>  
+Schema below displays a subset of a dataset variable as an array of 2 longitudes and 2 latitudes. At each intersection, we have got 1 real value (10, 11, 12, 13) as defined in the gridded data.  
+But which result value is returned by Motu when the request target a location between those longitudes and latitudes ?   
+As we can see below, 4 areas are display and the nearest value from the requested location is returned.
 
+![Downloading 1 point](./motu-parent/src/doc/downwloading1point.png "Motu algorithm: Downloading 1 point")
+	 
 # <a name="Development">Development</a>  
 
 ## <a name="DEVSRC">Source code</a>
@@ -1623,8 +1634,10 @@ File __dataset-armor-3d-v5-myocean-cls-toulouse-fr-armor-motu-rest-file.xml__:
 
 
 ## <a name="AdminMetadataCache">Tune the dataset metadata cache</a>  
-In order to improve response time, Motu has a cache which stores datasets metadata. This cache is indexed by config service.
-You can tune the cache behaviour in order to manage both real time and archived datasets effectively.    
+In order to improve response time, Motu uses an in-memory cache which stores datasets metadata. This cache is indexed by config service.    
+You can tune the cache behaviour in order to manage both real time and archived datasets effectively.      
+At startup, Motu loads datasets metadata of each configService by turn. Once done, cache is refreshed either periodically in an automatic manner or either when asked by triggering a [specific action](#ClientAPI_RefreshCache).  
+The cache is kept in memory and all Motu requests are based on it. When a cache refresh is asked, a second cache loads new metadata and when fully loaded, Motu main cache is replaced. So until the full loading, old cache is used in Motu responses.   
 
 For config services which manages real time datasets, meaning datasets which are daily updated, you can set the following configuration in motuConfiguration.xml:
 ```  
@@ -1990,7 +2003,7 @@ __Parameters__:
 * __rangesubset:__ the list of required variables for the coverage. Each variable have to be separated by a comma (,)
 
 __Return__: 
-A Netcdf file.
+A Netcdf file. When you request for one point, a specific algorithm is used, see [Downloading 1 point](#ArchiAlgoDownloading1Point).
 
 
 ## <a name="ClientRESTAPI">MOTU REST API</a>   
@@ -2184,7 +2197,7 @@ __Parameters__:
    Then Web Portal redirects response to this url. 
    The Web Browser opens a binary stream of the file to download and shows a dialog box to allow the user saving it as a local file.  
 
-__Return__: Several ways depending of the selected http parameter mode.  
+__Return__: Several ways depending of the selected http parameter mode. When you request for one point, a specific algorithm is used, see [Downloading 1 point](#ArchiAlgoDownloading1Point).  
 
 
 
