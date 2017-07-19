@@ -1399,7 +1399,7 @@ public class Product implements Comparator<Product> {
             }
 
             if (fileStart != null) {
-                timeCoverage.add(fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_FORMATTERS.get(format).print(fileStart));
+                timeCoverage.add(0, fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_FORMATTERS.get(format).print(fileStart));
             }
 
         }
