@@ -905,7 +905,7 @@ public class Product implements Comparator<Product> {
 
         for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
             datetime = it.getDoubleNext();
-            list.add(NetCdfReader.getDateAsGMTNoZeroTimeString(datetime, productMetaData.getTimeAxis().getUnitsString()));
+            list.add(0, NetCdfReader.getDateAsGMTNoZeroTimeString(datetime, productMetaData.getTimeAxis().getUnitsString()));
         }
 
         return list;
