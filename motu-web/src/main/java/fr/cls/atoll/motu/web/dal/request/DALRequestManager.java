@@ -39,6 +39,7 @@ import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
+import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Variable;
@@ -129,16 +130,16 @@ public class DALRequestManager implements IDALRequestManager {
         double leftLon = CoordinateUtils.getLongitudeJustLowerThanLongitudeMax(CoordinateUtils
                 .getLongitudeGreaterOrEqualsThanLongitudeMin(latlon.getLowerLeftLon(), axisXMin), axisXMax);
         double rightLon = CoordinateUtils.getLongitudeGreaterOrEqualsThanLongitudeMin(latlon.getLowerRightLon(), axisXMin);
-
+        double xInc = ((CoordinateAxis1D) rds_.getRequestProduct().getProduct().getProductMetaData().getCoordinateAxes(AxisType.Lon)).getIncrement();
         if (leftLon < rightLon) {
             runUniqRqt(ncss,
                        fname,
                        extractDirPath,
                        rds_,
                        new ExtractCriteriaLatLon(latlon.getLatLonRect().getLatMin(), leftLon, latlon.getLatLonRect().getLatMax(), rightLon));
-        } else if (leftLon == rightLon && leftLonRequested == rightLonRequested) {
-            double xInc = ((CoordinateAxis1D) rds_.getRequestProduct().getProduct().getProductMetaData().getCoordinateAxes(AxisType.Lon))
-                    .getIncrement();
+            // Also compare with Math.abs and xInc, just to avoid using BigDecimal to avoid double precision
+        } else if ((leftLon == rightLon && leftLonRequested == rightLonRequested)
+                || (Math.abs(rightLon - leftLon) < xInc && Math.abs(leftLonRequested - rightLonRequested) < xInc)) {
             runUniqRqt(ncss,
                        fname,
                        extractDirPath,
@@ -163,54 +164,82 @@ public class DALRequestManager implements IDALRequestManager {
     }
 
     private void fixSubsetterIssueToKeepOnlyOneLongitude(String ncFilePath_) throws IOException {
-        // TODO smarty@cls.fr Here 2 longitudes are returned whereas only one longitude is asked
+        // Hack: Here 2 longitudes are returned whereas only one longitude is asked
         // In order to return one point, nc file has to be updated
-        String ncFilePath = ncFilePath_ + "-orig.nc";
-        Files.move(Paths.get(ncFilePath_), Paths.get(ncFilePath), StandardCopyOption.REPLACE_EXISTING);
+        String ncFilePathOrig = ncFilePath_ + "-orig.nc";
+        Files.move(Paths.get(ncFilePath_), Paths.get(ncFilePathOrig), StandardCopyOption.REPLACE_EXISTING);
 
-        NetcdfFile ncFile = NetcdfFile.open(ncFilePath);
+        NetcdfFile ncFileOrig = NetcdfFile.open(ncFilePathOrig);
         NetcdfFileWriteable writer = NetcdfFileWriteable.createNew(ncFilePath_);
-        ucar.nc2.Dimension dR;
-        for (ucar.nc2.Dimension d : ncFile.getDimensions()) {
-            String dimensionname = d.getName();
-            if (dimensionname.contains("lon")) {
-                if (d.getLength() > 1) {
-                    ucar.nc2.Dimension d2 = new ucar.nc2.Dimension(dimensionname, 1);
+
+        for (Attribute att : ncFileOrig.getGlobalAttributes()) {
+            writer.addGlobalAttribute(att);
+        }
+
+        ucar.nc2.Dimension dLongDest = null;
+        ucar.nc2.Dimension dLongOrig = null;
+        for (ucar.nc2.Dimension dOrig : ncFileOrig.getDimensions()) {
+            String dimensionNameOrig = dOrig.getName();
+            if (dimensionNameOrig.contains("lon")) {
+                if (dOrig.getLength() > 1) {
+                    dLongOrig = dOrig;
+                    ucar.nc2.Dimension d2 = new ucar.nc2.Dimension(dimensionNameOrig, 1);
+                    dLongDest = d2;
                     writer.addDimension(null, d2);
-                    d.setLength(1);
                 } else {
-                    writer.addDimension(null, d);
+                    writer.addDimension(null, dOrig);
                 }
             } else {
-                writer.addDimension(null, d);
+                writer.addDimension(null, dOrig);
             }
         }
 
-        for (Variable v : ncFile.getVariables()) {
-            if (v.getDimensionsString().contains("lon")) {
-                v.resetShape();
+        for (Variable vOrig : ncFileOrig.getVariables()) {
+            Variable vDest = new Variable(vOrig);
+            if (isLongitudeVar(vOrig) && vOrig.getShape()[0] == 2) {
+                vDest = new Variable(vOrig);
+                vDest.getDimension(0).setLength(1);
+                vDest.resetShape();
+            } else if (vOrig.getDimensions().contains(dLongOrig) && !isLongitudeVar(vOrig)) {
+                int longIndex = vOrig.getDimensions().indexOf(dLongOrig);
+                vDest = new Variable(vOrig);
+                vDest.getDimension(longIndex).setLength(1);
+                vDest.resetShape();
             }
-            writer.addVariable(null, v);
+            writer.addVariable(null, vDest);
         }
-        // Here ncFile has its longitude variable with only one value
-        // ncFile.close();
-        // ncFile = NetcdfFile.open(ncFilePath_);
+
         writer.create();
-        for (Variable v : ncFile.getVariables()) {
+        for (Variable vOrig : ncFileOrig.getVariables()) {
             try {
-                Array ar = v.read();
-                // IndexIterator ii = ar.getIndexIterator();
-                // while (ii.hasNext())
-                // System.out.println(ii.getObjectNext());
-                writer.write(v.getName(), ar.copy());
+                Array ar = vOrig.read();
+                if (isLongitudeVar(vOrig) && ar.getSize() == 2) {
+                    Variable vDest = new Variable(vOrig);
+                    vDest.getDimension(0).setLength(1);
+                    vDest.resetShape();
+                    ar = vOrig.read(null, new int[] { 1 });
+                } else if (vOrig.getDimensions().contains(dLongDest) && !isLongitudeVar(vOrig)) {
+                    int longIndex = vOrig.getDimensions().indexOf(dLongDest);
+                    int[] arShape = ar.getShape();
+                    if (arShape[longIndex] > 1) {
+                        arShape[longIndex] = arShape[longIndex] - 1;
+                    }
+                    ar = vOrig.read(null, arShape);
+                }
+                writer.write(vOrig.getName(), ar);
             } catch (InvalidRangeException e) {
                 LOGGER.error("Fixing one point issue: Error while writing", e);
             }
         }
         writer.finish();
         writer.close();
-        ncFile.close();
-        Files.delete(Paths.get(ncFilePath));
+        ncFileOrig.close();
+        Files.delete(Paths.get(ncFilePathOrig));
+    }
+
+    private boolean isLongitudeVar(Variable v) {
+        ucar.nc2.Attribute sn = v.findAttribute("standard_name");
+        return sn != null && sn.getStringValue().equalsIgnoreCase("longitude");
     }
 
     private void runUniqRqt(NetCdfSubsetService ncss,

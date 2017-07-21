@@ -905,7 +905,7 @@ public class Product implements Comparator<Product> {
 
         for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
             datetime = it.getDoubleNext();
-            list.add(NetCdfReader.getDateAsGMTNoZeroTimeString(datetime, productMetaData.getTimeAxis().getUnitsString()));
+            list.add(0, NetCdfReader.getDateAsGMTNoZeroTimeString(datetime, productMetaData.getTimeAxis().getUnitsString()));
         }
 
         return list;
@@ -1399,7 +1399,7 @@ public class Product implements Comparator<Product> {
             }
 
             if (fileStart != null) {
-                timeCoverage.add(fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_FORMATTERS.get(format).print(fileStart));
+                timeCoverage.add(0, fr.cls.atoll.motu.library.converter.DateUtils.DATETIME_FORMATTERS.get(format).print(fileStart));
             }
 
         }

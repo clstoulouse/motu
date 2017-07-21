@@ -41,12 +41,12 @@ public class CoordinateUtils {
 
     public static double getLongitudeJustLowerThanLongitudeMax(double longitude, double axisXMax) {
         double newLong = getLongitudeM180P180(longitude);
-        if (longitude != (axisXMax - 360)) {
+        if (longitude != (axisXMax - 360.0)) {
             while (newLong < axisXMax) {
-                newLong += 360;
+                newLong += 360.0;
             }
             while (newLong > axisXMax) {
-                newLong -= 360;
+                newLong -= 360.0;
             }
         }
         return newLong;

@@ -247,8 +247,9 @@
 #set ($listdateSize = $listdate.size())
 #if($listdateSize > 0)
 	#set ($lastIndex = ${listdateSize} - 1)
-	#set ($minDateValue = $listdate.get(0))
-	#set ($maxDateValue = $listdate.get($lastIndex))
+	#set ($minDateValue = $listdate.get($lastIndex))
+	#set ($maxDateValue = $listdate.get(0))
+	#set ($defaultDateValue = $maxDateValue)
 	
 	#set ($lastdate = $listdate.get(${lastIndex}))
 	#set ($timeLowValue = $lastdate)
@@ -263,8 +264,8 @@
 		</td>
 	    <td align="left"><font size="2">
 			#set ($timeByDate = $product.getListTimeByDate())
-			#set ($defaultMinDate = $product.computeDateFromDateTime($minDateValue))
-			#set ($defaultListOfTime = $timeByDate.get($defaultMinDate))
+			#set ($defaultDate = $product.computeDateFromDateTime($defaultDateValue))
+			#set ($defaultListOfTime = $timeByDate.get($defaultDate))
 			
 			<input id="fromDate"/>
 			<select id="fromTimeSelect" onchange="onChangeTime('from');"
@@ -284,7 +285,7 @@
 					<option value="00:00:00"  selected>00:00:00</option>
 				#end
 			</select>
-			<input type="text" id="t_lo" hidden name="t_lo" size="12" value="${minDateValue}"/>
+			<input type="text" id="t_lo" hidden name="t_lo" size="12" value="${defaultDateValue}"/>
 		       to <br/>
 		    <input id="toDate"/>
 			<select id="toTimeSelect" onchange="onChangeTime('to');"
@@ -304,7 +305,7 @@
 					<option value="00:00:00"  selected>00:00:00</option>
 				#end
 			</select>
-			<input type="text" hidden id="t_hi" name="t_hi" size="12" value="${minDateValue}"/>
+			<input type="text" hidden id="t_hi" name="t_hi" size="12" value="${defaultDateValue}"/>
 			<br/>
 			<script>
 				dateLowValue = "${minDateValue}";
@@ -315,6 +316,7 @@
 				dateHightValue = dateHightValue.split(" ")[0];
 				dateHightValueArray = dateHightValue.split("-");
 				dateHight = new Date(dateHightValueArray[0], dateHightValueArray[1]-1, dateHightValueArray[2]);
+				defaultDate = dateHight;
 				
 				#set ($timeByDateSize = $timeByDate.size())
 				
@@ -345,7 +347,7 @@
 					}
 				}
 				else{
-					selectedDateLow = dateLow
+					selectedDateLow = defaultDate
 				}
 				
 				thi_param = purl(window.location.href).param("t_hi")
@@ -360,7 +362,7 @@
 					}
 				}
 				else{
-					selectedDateHight = dateLow
+					selectedDateHight = defaultDate
 				}
 				
 				
