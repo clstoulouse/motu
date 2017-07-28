@@ -20,6 +20,8 @@ public interface IParameterMetadata {
 
     String getStandardName();
 
+    String getVariableIdent();
+
     String getUnit();
 
     String getUnitLong();
