@@ -980,6 +980,15 @@ public class VelocityModelConverter {
             }
 
             @Override
+            public String getVariableIdent() {
+                String ident = getStandardName();
+                if (StringUtils.isNullOrEmpty(ident)) {
+                    ident = getName();
+                }
+                return ident;
+            }
+
+            @Override
             public String getUnit() {
                 return StringEscapeUtils.escapeHtml(pmd.getUnit());
             }
