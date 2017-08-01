@@ -112,8 +112,10 @@ public class QueueServerManager implements IQueueServerManager {
     public void execute(RequestDownloadStatus rds_, ConfigService cs_, double requestSizeInMB_) throws MotuException {
         QueueManagement queueManagement = findQueue(requestSizeInMB_);
         if (queueManagement == null) {
-            throw new MotuException(ErrorType.EXCEEDING_QUEUE_DATA_CAPACITY, "Oops, the size of the data to download (" + (int) requestSizeInMB_
-                    + " Megabyte) is not managed by the Motu queue management system.");
+            throw new MotuException(
+                    ErrorType.EXCEEDING_QUEUE_DATA_CAPACITY,
+                    "Oops, the size of the data to download (" + (int) requestSizeInMB_
+                            + " Megabyte) is not managed by the Motu queue management system.");
         }
         rds_.setQueueId(queueManagement.getQueueConfig().getId());
         rds_.setQueueDescription(queueManagement.getQueueConfig().getDescription());
@@ -171,7 +173,7 @@ public class QueueServerManager implements IQueueServerManager {
 
                 synchronized (QueueServerManager.this) {
                     isJobEnded = true;
-                    QueueServerManager.this.notify();
+                    QueueServerManager.this.notifyAll();
                 }
             }
 
