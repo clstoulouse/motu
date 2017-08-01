@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>cls.motu</groupId>
 		<artifactId>motu-parent</artifactId>
-		<version>3.7.01-SNAPSHOT</version>
+		<version>3.7.01</version>
 		<relativePath>../motu-parent</relativePath>
 	</parent>
 
