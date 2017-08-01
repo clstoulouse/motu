@@ -106,7 +106,7 @@ public abstract class AbstractAction {
     }
 
     public void writeResponse(String responseStr_, String responseContentType_) throws UnsupportedEncodingException, IOException {
-        writeResponse(responseStr_, null, null);
+        writeResponse(responseStr_, responseContentType_, null);
     }
 
     public void writeResponse(String responseStr_) throws UnsupportedEncodingException, IOException {
