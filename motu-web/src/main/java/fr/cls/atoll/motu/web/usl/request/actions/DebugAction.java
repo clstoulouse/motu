@@ -333,7 +333,7 @@ public class DebugAction extends AbstractAction {
         // stringBuffer.append(" Default priority: ");
         // stringBuffer.append(queueServerManagement.getDefaultPriority());
         stringBuffer.append(" Max. data threshold: ");
-        stringBuffer.append(String.format("%8.2f Mo", BLLManager.getInstance().getRequestManager().getQueueServerManager().getMaxDataThreshold()));
+        stringBuffer.append(String.format("%8.2f Mo", BLLManager.getInstance().getRequestManager().getQueueServerManager().getMaxDataThresholdInMegabyte()));
         stringBuffer.append("</p>\n");
 
         // stringBuffer.append("<h2>\n");

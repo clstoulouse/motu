@@ -12,38 +12,39 @@ package fr.cls.atoll.motu.web.common.utils;
  */
 public class UnitUtils {
 
-    public static double bitsToBytes(double sizeInBits) {
-        return sizeInBits / 8;
+    private UnitUtils() {
     }
 
-    public static double bytesToBits(double sizeInBytes) {
-        return sizeInBytes * 8;
+    public static double bitToByte(double sizeInBit) {
+        return sizeInBit / 8;
     }
 
-    public static double bitsToMegaBytes(double sizeInBits) {
-        return toMegaBytes(bitsToBytes(sizeInBits));
+    public static double byteToBit(double sizeInByte) {
+        return sizeInByte * 8;
     }
 
-    public static double toMegaBytes(double sizeInByte) {
-        return sizeInByte / (1000000);
+    public static double bitToMegaByte(double sizeInBit) {
+        return byteToMegaByte(bitToByte(sizeInBit));
     }
 
-    public static double toMegaBytes(long sizeInBits) {
-        return sizeInBits / (1024 * 1024);
+    public static Double bytetoKilobyte(double sizeInByte) {
+        return sizeInByte / 1000;
     }
 
-    public static double toBytes(double sizeInMegaBytes) {
-        return sizeInMegaBytes * (1024 * 1024);
+    public static double byteToMegaByte(double sizeInByte) {
+        return sizeInByte / 1000000;
     }
 
-    /**
-     * .
-     * 
-     * @param maxAllowedSizeInBytes
-     * @return
-     */
-    public static Double toKBytes(double sizeInBytes) {
-        return sizeInBytes / 1024;
+    public static double kilobyteToByte(double sizeInKilobyte) {
+        return sizeInKilobyte * 1000;
+    }
+
+    public static double kilobyteToMegabyte(double sizeInKilobyte) {
+        return sizeInKilobyte / 1000;
+    }
+
+    public static double megabyteToByte(double sizeInMegabyte) {
+        return sizeInMegabyte * 1000000;
     }
 
 }

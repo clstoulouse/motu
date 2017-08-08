@@ -107,7 +107,7 @@ public class RequestCleaner implements IRequestCleaner {
         // gets disk space used by files (in Megabytes).
         int extractionFileCacheSize = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionFileCacheSize();
         if (extractionFileCacheSize > 0) {
-            long length = Math.round(UnitUtils.toMegaBytes(getRecurseFileLength(folderExtractionPath)));
+            long length = Math.round(UnitUtils.byteToMegaByte(getRecurseFileLength(folderExtractionPath)));
             if (length > extractionFileCacheSize) {
                 File[] files = folderToScan.listFiles(new FileFilter() {
 
@@ -124,7 +124,7 @@ public class RequestCleaner implements IRequestCleaner {
                     for (File fileToDelete : listFiles) {
                         boolean isDeleted = fileToDelete.delete();
                         LOGGER.info(String.format("deleteOlderFilesBeyondCacheSize - Deleting file '%s : %b' ", fileToDelete.getPath(), isDeleted));
-                        length = Math.round(UnitUtils.toMegaBytes(getRecurseFileLength(folderToScan)));
+                        length = Math.round(UnitUtils.byteToMegaByte(getRecurseFileLength(folderToScan)));
                         if (length <= extractionFileCacheSize) {
                             break;
                         }

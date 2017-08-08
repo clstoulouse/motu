@@ -56,7 +56,7 @@ public interface IQueueServerManager {
      * 
      * @return
      */
-    double getMaxDataThreshold();
+    double getMaxDataThresholdInMegabyte();
 
     /**
      * .

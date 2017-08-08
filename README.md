@@ -1206,7 +1206,7 @@ Default value is -1
 
 
 ##### Child node: dataThreshold
-Size in Mbytes. A request has a size. The queue in which this request will be processed is defined by the request size.
+Size in Megabyte. A request has a size. The queue in which this request will be processed is defined by the request size.
 All queues are sorted by size ascending. A request is put in the last queue which has a size lower than the request size.
 If the request size if higher than the bigger queue dataThreshold, request is not treated and an error message is returned.  
 This parameter is really useful when a Motu is used to server several kind of file size and you want to be sure that file with a specific size does no slow down request of small data size.  
@@ -2246,7 +2246,7 @@ Parameters below are exactly the same as for [Download product](#ClientAPI_Downl
 * __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is yyy-mm-dd or yyyy-dd h:m:s or yyyy-ddTh:m:s.  
   
 __Return__: An XML document.    
-The unit is "kb" means kilobits.
+The unit is "KB" means Kilobyte.
 Validated by the schema /motu-api-message/src/main/schema/XmlMessageModel.xsd#RequestSize  
 Example:  
 

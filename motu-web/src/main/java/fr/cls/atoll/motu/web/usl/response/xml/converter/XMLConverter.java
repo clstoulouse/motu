@@ -288,7 +288,7 @@ public class XMLConverter {
                 + requestDownloadStatus.getRequestProduct().getRequestProductParameters().getExtractFilename());
         smr.setRequestId(requestDownloadStatus.getRequestId());
 
-        smr.setSize(UnitUtils.toMegaBytes(requestDownloadStatus.getSizeInBits()));
+        smr.setSize(UnitUtils.bitToMegaByte(requestDownloadStatus.getSizeInBit()));
         smr.setStatus(convertStatusModeResponse(requestDownloadStatus.getRequestStatus()));
         smr.setUserHost(requestDownloadStatus.getRequestProduct().getExtractionParameters().getUserHost());
         smr.setUserId(requestDownloadStatus.getRequestProduct().getExtractionParameters().getUserId());

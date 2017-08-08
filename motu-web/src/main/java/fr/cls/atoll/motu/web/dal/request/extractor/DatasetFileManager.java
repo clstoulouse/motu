@@ -28,6 +28,7 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.common.utils.ListUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 import fr.cls.atoll.motu.web.common.utils.Zip;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataFile;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
@@ -89,11 +90,11 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
             break;
 
         default:
-            throw new MotuException(
-                    ErrorType.BAD_PARAMETERS,
-                    String.format("Unknown data output format '%s' (%d) ",
-                                  getRequestDownloadStatus().getRequestProduct().getExtractionParameters().getDataOutputFormat().name(),
-                                  getRequestDownloadStatus().getRequestProduct().getExtractionParameters().getDataOutputFormat().value()));
+            throw new MotuException(ErrorType.BAD_PARAMETERS, String.format("Unknown data output format '%s' (%d) ",
+                                                                            getRequestDownloadStatus().getRequestProduct().getExtractionParameters()
+                                                                                    .getDataOutputFormat().name(),
+                                                                            getRequestDownloadStatus().getRequestProduct().getExtractionParameters()
+                                                                                    .getDataOutputFormat().value()));
 
         }
     }
@@ -135,7 +136,8 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
         List<String> uriFiles = extractPrepare(false, true, true);
 
         try {
-            FileWriter outputFile = new FileWriter(getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getExtractLocationDataTemp());
+            FileWriter outputFile = new FileWriter(
+                    getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getExtractLocationDataTemp());
 
             for (String uriFile : uriFiles) {
                 outputFile.write(uriFile);
@@ -247,7 +249,8 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
      */
     protected List<DataFile> selectDataFile() {
 
-        ExtractCriteriaDatetime extractCriteriaDatetime = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().findCriteriaDatetime();
+        ExtractCriteriaDatetime extractCriteriaDatetime = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters()
+                .findCriteriaDatetime();
         if (extractCriteriaDatetime == null) {
             return getRequestDownloadStatus().getRequestProduct().getProduct().getDataFiles();
         }
@@ -407,7 +410,7 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
      * @return the amount data size
      */
     public static double getAmountDataSize(List<DataFile> dataFiles) {
-        return (computeSize(dataFiles)) / (1024 * 1024);
+        return UnitUtils.byteToMegaByte(computeSize(dataFiles));// (computeSize(dataFiles)) / (1024 * 1024);
     }
 
 }

@@ -199,32 +199,30 @@ public class GetSizeAction extends AbstractProductInfoAction {
      * Inits the request size.
      * 
      * @param batchQueue the batch queue
-     * @param sizeInBytes the size
+     * @param sizeInByte the size
      * @param isFtp type of request
      * 
      * @return the request size
      */
-    private RequestSize getRequestSize(double sizeInBytes, double maxAllowedSizeInBytes) {
+    private RequestSize getRequestSize(double sizeInByte, double maxAllowedSizeInByte) {
         RequestSize requestSize = createRequestSize();
 
-        requestSize.setSize(UnitUtils.toKBytes(sizeInBytes));
+        requestSize.setSize(UnitUtils.bytetoKilobyte(sizeInByte));
         requestSize.setCode(StringUtils.getErrorCode(getActionCode(), ErrorType.OK));
         requestSize.setMsg(ErrorType.OK.toString());
 
-        if (sizeInBytes < 0) {
+        if (sizeInByte < 0) {
             MotuException e = new MotuException(ErrorType.SYSTEM, "size can't be computed and the cause is unspecified");
             ExceptionUtils.setError(getActionCode(), requestSize, e);
             LOGGER.error(StringUtils.getLogMessage(getActionCode(), e.getErrorType(), e.getMessage()), e);
             return requestSize;
         }
-        requestSize.setMaxAllowedSize(UnitUtils.toKBytes(maxAllowedSizeInBytes));
-        requestSize.setUnit("kb");
+        requestSize.setMaxAllowedSize(UnitUtils.bytetoKilobyte(maxAllowedSizeInByte));
+        requestSize.setUnit("kB");
 
         MotuExceptionBase exceptionBase = null;
-        if (sizeInBytes > maxAllowedSizeInBytes) {
-            exceptionBase = new MotuExceedingCapacityException(
-                    convertFromBytesToMegabytes(sizeInBytes),
-                    convertFromBytesToMegabytes(maxAllowedSizeInBytes));
+        if (sizeInByte > maxAllowedSizeInByte) {
+            exceptionBase = new MotuExceedingCapacityException(UnitUtils.byteToMegaByte(sizeInByte), UnitUtils.byteToMegaByte(maxAllowedSizeInByte));
         }
 
         if (exceptionBase != null) {
@@ -232,28 +230,6 @@ public class GetSizeAction extends AbstractProductInfoAction {
         }
 
         return requestSize;
-    }
-
-    /**
-     * Convert from bytes to kilobytes.
-     * 
-     * @param value the value
-     * 
-     * @return the double
-     */
-    public static double convertFromBytesToKilobytes(double value) {
-        return value / 1024d;
-    }
-
-    /**
-     * Convert from bytes to megabytes.
-     * 
-     * @param value the value
-     * 
-     * @return the double
-     */
-    public static double convertFromBytesToMegabytes(double value) {
-        return convertFromBytesToKilobytes(value / 1024d);
     }
 
     /**

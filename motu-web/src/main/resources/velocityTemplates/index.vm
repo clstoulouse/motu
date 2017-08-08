@@ -15,10 +15,10 @@
 #macro(printSubTitleCatalog)
 <li>
 	<a href="?action=listservices">Access Services</a>
-<li>
+</li>
 <li>
 	<a href="">&gt;&nbsp;Data Product Catalogue</a>
-<li>
+</li>
 
 #end
 

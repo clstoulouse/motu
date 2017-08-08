@@ -188,7 +188,7 @@ public class BLLRequestManager implements IBLLRequestManager {
      */
     private void logQueueInfo(RequestDownloadStatus rds) {
         QueueLogInfo qli = new QueueLogInfo();
-        qli.setAmountDataSizeInMegaBytes(UnitUtils.bitsToMegaBytes(rds.getSizeInBits()));
+        qli.setAmountDataSizeInMegaBytes(UnitUtils.bitToMegaByte(rds.getSizeInBit()));
         qli.setCompressingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getCompressingTime()));
         qli.setCopyingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getCopyingTime()));
         qli.setReadingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getReadingTime()));
@@ -311,8 +311,8 @@ public class BLLRequestManager implements IBLLRequestManager {
         try {
             try {
                 double requestSizeInByte = getProductDataSizeIntoByte(rds_);
-                rds_.setSizeInBits(new Double(UnitUtils.bytesToBits(requestSizeInByte)).longValue());
-                double requestSizeInMBytes = UnitUtils.toMegaBytes(requestSizeInByte);
+                rds_.setSizeInBits(Double.doubleToLongBits(UnitUtils.byteToBit(requestSizeInByte)));
+                double requestSizeInMBytes = UnitUtils.byteToMegaByte(requestSizeInByte);
 
                 checkNumberOfRunningRequestForUser(userId);
                 checkMaxSizePerFile(cs_.getCatalog().getType(), requestSizeInMBytes);
@@ -329,32 +329,30 @@ public class BLLRequestManager implements IBLLRequestManager {
         }
     }
 
-    private void checkFreeSpace(double fileSizeInMBytes) throws MotuException {
+    private void checkFreeSpace(double fileSizeInMegabyte) throws MotuException {
         File extractionDirectory = new File(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath());
         if (!extractionDirectory.exists()) {
             LOGGER.error("The extraction folder does not exists: " + extractionDirectory.exists());
             throw new MotuException(ErrorType.SYSTEM, "The extraction folder does not exists: " + extractionDirectory.exists());
         } else {
-            if (UnitUtils.toMegaBytes(extractionDirectory.getFreeSpace()) <= fileSizeInMBytes) {
+            if (UnitUtils.byteToMegaByte(extractionDirectory.getFreeSpace()) <= fileSizeInMegabyte) {
                 throw new NotEnoughSpaceException("There is not enough disk space available to generate the file result and to satisfy this request");
             }
         }
     }
 
     private void checkMaxSizePerFile(String catalogType, double fileSizeInMegaBytes) throws MotuException {
-        double maxSizePerFileInMegaBytes = -1;
-        if (CatalogType.FILE.name().toUpperCase().equals(catalogType.toUpperCase())) {
+        double maxSizePerFileInMegaBytes;
+        if (CatalogType.FILE.name().equalsIgnoreCase(catalogType.toUpperCase())) {
             maxSizePerFileInMegaBytes = BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFile().doubleValue();
         } else {
             maxSizePerFileInMegaBytes = BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue();
         }
-        if (maxSizePerFileInMegaBytes < fileSizeInMegaBytes) {
+        if (fileSizeInMegaBytes > maxSizePerFileInMegaBytes) {
             throw new MotuException(
                     ErrorType.EXCEEDING_CAPACITY,
-                    "The result file size " + fileSizeInMegaBytes + "MBytes shall be less than " + maxSizePerFileInMegaBytes + "MBytes",
-                    new String[] {
-                            Integer.toString(new Double(fileSizeInMegaBytes).intValue()),
-                            Integer.toString(new Double(maxSizePerFileInMegaBytes).intValue()) });
+                    "",
+                    new String[] { Double.toString(Math.ceil(fileSizeInMegaBytes)), Double.toString(maxSizePerFileInMegaBytes) });
         }
     }
 
@@ -374,7 +372,7 @@ public class BLLRequestManager implements IBLLRequestManager {
     }
 
     private double getProductDataSizeIntoByte(RequestDownloadStatus rds_) throws MotuException {
-        return UnitUtils.toBytes(DALManager.getInstance().getCatalogManager().getProductManager().getProductDataSizeRequest(rds_));
+        return UnitUtils.megabyteToByte(DALManager.getInstance().getCatalogManager().getProductManager().getProductDataSizeRequestInMegabyte(rds_));
     }
 
     /** {@inheritDoc} */
@@ -386,7 +384,7 @@ public class BLLRequestManager implements IBLLRequestManager {
     /** {@inheritDoc} */
     @Override
     public double getProductMaxAllowedDataSizeIntoByte(Product product) throws MotuException {
-        return UnitUtils.toBytes(BLLManager.getInstance().getRequestManager().getQueueServerManager().getMaxDataThreshold());
+        return UnitUtils.megabyteToByte(BLLManager.getInstance().getRequestManager().getQueueServerManager().getMaxDataThresholdInMegabyte());
     }
 
     /** {@inheritDoc} */

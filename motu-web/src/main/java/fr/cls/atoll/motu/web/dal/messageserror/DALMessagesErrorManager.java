@@ -102,7 +102,7 @@ public class DALMessagesErrorManager implements IDALMessagesErrorManager {
             messageError = MessageFormat.format(messageError, messageArguments);
         }
         if (messageError == null) {
-            LOGGER.error("Impossible to find the error code " + errorCode + " into the file " + MESSAGES_ERROR_FILE_NAME);
+            LOGGER.error("Unable to find the error code " + errorCode + " into the file " + MESSAGES_ERROR_FILE_NAME);
             messageError = "Sorry, the system is currently not available. Please try again later. If the error persists, please contact the service desk.";
         }
         return messageError;

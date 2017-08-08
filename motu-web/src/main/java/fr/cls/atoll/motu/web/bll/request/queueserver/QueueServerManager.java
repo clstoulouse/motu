@@ -274,7 +274,7 @@ public class QueueServerManager implements IQueueServerManager {
      * @return the max data threshold
      */
     @Override
-    public double getMaxDataThreshold() {
+    public double getMaxDataThresholdInMegabyte() {
         List<QueueType> queuesConfig = getQueueServerConfig().getQueues();
         double size = -1.0;
         for (QueueType queueType : queuesConfig) {

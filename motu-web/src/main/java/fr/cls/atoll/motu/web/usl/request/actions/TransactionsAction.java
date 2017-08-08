@@ -142,7 +142,7 @@ public class TransactionsAction extends AbstractAction {
         DateFormat df = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss.SSS");
         for (String fileName : fileNames) {
             File f = new File(logFolder, fileName);
-            double sizeInMBytes = UnitUtils.toMegaBytes(new Double(f.length()));
+            double sizeInMBytes = UnitUtils.byteToMegaByte(new Double(f.length()));
             long lastModifiedDate = f.lastModified();
             logTransactionList.add(new LogTransaction(fileName, sizeInMBytes, lastModifiedDate, df.format(lastModifiedDate)));
         }

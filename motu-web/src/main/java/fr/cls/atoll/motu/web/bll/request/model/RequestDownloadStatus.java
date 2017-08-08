@@ -205,7 +205,7 @@ public class RequestDownloadStatus {
      * 
      * @return la valeur.
      */
-    public long getSizeInBits() {
+    public long getSizeInBit() {
         return sizeInBits;
     }
 
