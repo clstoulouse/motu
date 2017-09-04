@@ -73,7 +73,7 @@
 	#if ( $product.hasDownloadUrlPath() && ! $product.hasLastError() )
 		<form method="post" action="${product.getDownloadUrlPath()}" name="dlform">
 			<script language="JavaScript">
-				document.write('<h3>Your download should begin shortly.  If it does not, try <a href="${product.getDownloadUrlPath()}" target="_blank">${product.getExtractFilename()}</a></h3>');
+				document.write('<h3>Your download should begin shortly.  If it does not, try <a href="${product.getDownloadUrlPath()}" target="_blank" rel="noopener">${product.getExtractFilename()}</a></h3>');
 				#if ( ${product.isAutoDownloadTimeOutEnable()})
 					window.setTimeout('document.dlform.submit()', ${product.getAutoDownloadTimeOut()});
 				#end

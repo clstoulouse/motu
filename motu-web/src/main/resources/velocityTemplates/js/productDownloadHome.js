@@ -836,10 +836,10 @@ function closeScriptCmdWin() {
   doc.write("<p>To resquest data, you can also use the Python script. This page should help you to enter your command line from the shell of you system (Linux/Unix/windows).</p>");
 
   doc.write('<p>You can download the Motu Python Client package ');
-  doc.write('<a href="https://github.com/clstoulouse/motu-client-python/releases" target="_blank">here</a>.</p>');
+  doc.write('<a href="https://github.com/clstoulouse/motu-client-python/releases" target="_blank" rel="noopener">here</a>.</p>');
   
   doc.write('<p><b>Python 2.7</b> or higher is required in order to execute the Motu Python script.');
-  doc.write('Python can be downloaded <a href="https://www.python.org/downloads/" target="_blank">here</a>.</p>');
+  doc.write('Python can be downloaded <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">here</a>.</p>');
 
   var x_lo = theForm.elements['x_lo'];
   var x_hi = theForm.elements['x_hi'];
@@ -947,7 +947,7 @@ function closeScriptCmdWin() {
   doc.write('<p/>');
   
   doc.write('<p/>');
-  doc.write('<p>Full documentation is available <a href="https://github.com/clstoulouse/motu-client-python#Usage" target="_blank">here</a>.</p>');
+  doc.write('<p>Full documentation is available <a href="https://github.com/clstoulouse/motu-client-python#Usage" target="_blank" rel="noopener">here</a>.</p>');
   doc.write('<p>To get help on the Motu Python Client, type : \'');
   doc.write(motu_client_py);
   doc.write(' --help\' on your system command prompt.</p>');
