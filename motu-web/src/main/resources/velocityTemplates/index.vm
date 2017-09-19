@@ -93,7 +93,8 @@
 	<meta name="robots" content="noindex, nofollow" />
 	<meta name="language" content="en" />
 	<meta name="copyright" content="Motu" />
-
+	<meta name="theme-color" content="#0e7ac2">
+	
 	<link rel="stylesheet" href="$httpSite/css/motu/motu.css" type="text/css" />
 	<link rel="stylesheet" href="$httpSite/css/motu/screen/nav_services.css" type="text/css" />
 	<!--[if lte IE 7]>
