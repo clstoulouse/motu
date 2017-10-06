@@ -35,8 +35,8 @@
 		<jdk.source.encoding>UTF-8</jdk.source.encoding>
 
 		<dependencies.version.slf4j>1.7.21</dependencies.version.slf4j>
-		<dependencies.version.log4j>2.9.0</dependencies.version.log4j>
-		<dependencies.version.log4j-slf4j-impl>2.1</dependencies.version.log4j-slf4j-impl>
+		<dependencies.version.log4j>2.9.1</dependencies.version.log4j>
+		<dependencies.version.log4j-slf4j-impl>2.9.1</dependencies.version.log4j-slf4j-impl>
 		<dependencies.version.spring>2.5.6</dependencies.version.spring>
 		<dependencies.version.jersey>1.5</dependencies.version.jersey>
 		<dependencies.version.commons-io>1.4</dependencies.version.commons-io>
