@@ -12,8 +12,8 @@
 </mapAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.ALLOW_TERMINATE" value="false"/>
 <mapAttribute key="org.eclipse.jdt.launching.CONNECT_MAP">
-<mapEntry key="hostname" value="misgw-ddo-qt2"/>
-<mapEntry key="port" value="9095"/>
+<mapEntry key="hostname" value="misgw-ddo.qt.cls.fr"/>
+<mapEntry key="port" value="12090"/>
 </mapAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="motu-web"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_CONNECTOR_ID" value="org.eclipse.jdt.launching.socketAttachConnector"/>
