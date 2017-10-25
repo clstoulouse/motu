@@ -793,7 +793,8 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         // int minyIndex = yaxis1.findCoordElementBounded(miny);
         int minyIndex = findCoordElementBounded(yaxis1, miny, -1);
         // int maxxIndex = xaxis1.findCoordElementBounded(maxx);
-        int maxxIndex = findCoordElementBounded(xaxis1, maxx, minxIndex + 1);
+        // FIX JIRA MOTU-133: Replace findCoordElementBounded(xaxis1, maxx, minxIndex+1);
+        int maxxIndex = findCoordElementBounded(xaxis1, maxx, minxIndex);
         // int maxyIndex = yaxis1.findCoordElementBounded(maxy);
         int maxyIndex = findCoordElementBounded(yaxis1, maxy, -1);
 
