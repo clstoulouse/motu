@@ -2126,7 +2126,7 @@ __Parameters__:
 * __product__ [1]: The product id  
   
   
-#### Way 2   
+#### Way 2  (Deprecated) 
 
 __URL__: http://localhost:8080/motu-web/Motu?action=describeproduct&data=http://$tdsServer/thredds/dodsC/path_HR_MOD&xmlfile=http://$tdsServer/thredds/m_HR_MOD.xml  
 
