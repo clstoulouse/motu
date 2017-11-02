@@ -277,7 +277,7 @@ public class XMLConverter {
                                                     requestDownloadStatus.getRunningException().getErrorType(),
                                                     BLLManager.getInstance().getMessagesErrorManager()
                                                             .getMessageError(requestDownloadStatus.getRunningException().getErrorType(),
-                                                                             requestDownloadStatus.getRunningException().getMessage()));
+                                                                             requestDownloadStatus.getRunningException())); // .getMessage()
                 }
             }
         }

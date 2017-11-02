@@ -199,7 +199,9 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                     try {
                         rp = new RequestProduct(p, createExtractionParameters(p.getProductMetaData()));
                         downloadProduct(mc, cs, cd, rp);
-                    } catch (InvalidHTTPParameterException | NetCdfVariableNotFoundException e) {
+                    } catch (NetCdfVariableNotFoundException e) {
+                        onArgumentError(new MotuException(ErrorType.NETCDF_VARIABLE_NOT_FOUND, e.getMessage()));
+                    } catch (InvalidHTTPParameterException e) {
                         onArgumentError(new MotuException(ErrorType.NETCDF_VARIABLE_NOT_FOUND, e));
                     }
                 }
