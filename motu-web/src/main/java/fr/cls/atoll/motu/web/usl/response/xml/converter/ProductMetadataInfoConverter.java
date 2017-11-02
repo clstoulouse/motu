@@ -31,6 +31,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataFile;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
@@ -87,8 +88,7 @@ public class ProductMetadataInfoConverter {
      * @throws MotuExceptionBase the motu exception base
      * @throws MotuException
      */
-    public static ProductMetadataInfo getProductMetadataInfo(Product product) throws MotuExceptionBase, MotuException {
-
+    public static ProductMetadataInfo getProductMetadataInfo(ConfigService cs, Product product) throws MotuExceptionBase, MotuException {
         ProductMetadataInfo productMetadataInfo = createProductMetadataInfo();
 
         if (product == null) {
@@ -104,7 +104,11 @@ public class ProductMetadataInfoConverter {
         productMetadataInfo.setId(product.getProductId());
         productMetadataInfo.setTitle(productMetaData.getTitle());
         productMetadataInfo.setLastUpdate(productMetaData.getLastUpdate());
-
+        String url = null;
+        if (cs != null) {
+            url = "enabled".equalsIgnoreCase(cs.getCatalog().getNcss()) ? product.getLocationDataNCSS() : product.getLocationData();
+        }
+        productMetadataInfo.setUrl(url);
         productMetadataInfo.setGeospatialCoverage(initGeospatialCoverage(productMetaData));
         productMetadataInfo.setProperties(initProperties(productMetaData));
         productMetadataInfo.setTimeCoverage(initTimeCoverage(productMetaData));
@@ -117,7 +121,6 @@ public class ProductMetadataInfoConverter {
 
         productMetadataInfo.setCode(Integer.toString(ErrorType.OK.value()));
         productMetadataInfo.setMsg(ErrorType.OK.toString());
-        productMetadataInfo.setUrl(product.getLocationMetaData());
 
         return productMetadataInfo;
     }

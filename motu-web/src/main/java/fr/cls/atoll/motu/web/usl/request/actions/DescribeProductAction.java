@@ -18,6 +18,7 @@ import fr.cls.atoll.motu.web.bll.catalog.product.IBLLProductManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
@@ -114,7 +115,12 @@ public class DescribeProductAction extends AbstractProductInfoAction {
                 Product currentProduct = getProduct();
                 if (checkProduct(currentProduct, httpParameterProductId)) {
                     try {
-                        ProductMetadataInfo pmdi = ProductMetadataInfoConverter.getProductMetadataInfo(currentProduct);
+                        ConfigService cs = BLLManager.getInstance().getConfigManager()
+                                .getConfigService(getServiceHTTPParameterValidator().getParameterValueValidated());
+                        // Do not check ConfigService because can be requested from locationData and has a
+                        // null value in this case
+                        // if (checkConfigService(cs, getServiceHTTPParameterValidator())) {
+                        ProductMetadataInfo pmdi = ProductMetadataInfoConverter.getProductMetadataInfo(cs, currentProduct);
                         if (checkProductMetaDataInfo(pmdi, httpParameterProductId)) {
                             String response = XMLConverter.toXMLString(pmdi);
                             writeResponse(response, HTTPUtils.CONTENT_TYPE_XML_UTF8);

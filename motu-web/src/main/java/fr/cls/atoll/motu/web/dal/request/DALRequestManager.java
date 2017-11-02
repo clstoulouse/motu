@@ -68,15 +68,12 @@ public class DALRequestManager implements IDALRequestManager {
 
     @Override
     public void downloadProduct(ConfigService cs, RequestDownloadStatus rds_) throws MotuException {
-        boolean ncssStatus = false;
         String ncssValue = cs.getCatalog().getNcss();
-        if ("enabled".equalsIgnoreCase(ncssValue)) {
-            ncssStatus = true;
-        }
+        boolean isNcssStatusEnabled = "enabled".equalsIgnoreCase(ncssValue);
 
         // Detect NCSS or OpenDAP
         try {
-            if (ncssStatus) {
+            if (isNcssStatusEnabled) {
                 downloadWithNCSS(rds_);
             } else {
                 downloadWithOpenDap(rds_);
@@ -84,8 +81,8 @@ public class DALRequestManager implements IDALRequestManager {
         } catch (MotuException e) {
             throw e;
         } catch (Exception e) {
-            LOGGER.error("Error while downloading product ncss=" + ncssStatus, e);
-            throw new MotuException(ErrorType.SYSTEM, "Error while downloading product ncss=" + ncssStatus, e);
+            LOGGER.error("Error while downloading product ncss=" + isNcssStatusEnabled, e);
+            throw new MotuException(ErrorType.SYSTEM, "Error while downloading product ncss=" + isNcssStatusEnabled, e);
         }
     }
 

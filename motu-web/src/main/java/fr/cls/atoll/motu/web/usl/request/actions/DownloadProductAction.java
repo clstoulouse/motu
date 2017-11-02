@@ -186,7 +186,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
     @Override
     public void process() throws MotuException {
-        MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
         if (checkConfigService(cs, serviceHTTPParameterValidator)) {
             CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache()
@@ -198,7 +197,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                     RequestProduct rp;
                     try {
                         rp = new RequestProduct(p, createExtractionParameters(p.getProductMetaData()));
-                        downloadProduct(mc, cs, cd, rp);
+                        downloadProduct(BLLManager.getInstance().getConfigManager().getMotuConfig(), cs, cd, rp);
                     } catch (NetCdfVariableNotFoundException e) {
                         onArgumentError(new MotuException(ErrorType.NETCDF_VARIABLE_NOT_FOUND, e.getMessage()));
                     } catch (InvalidHTTPParameterException e) {
