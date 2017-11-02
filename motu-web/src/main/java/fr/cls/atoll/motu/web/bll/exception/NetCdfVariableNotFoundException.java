@@ -39,7 +39,7 @@ public class NetCdfVariableNotFoundException extends MotuExceptionBase {
     /**
      * NetCDF attribute which causes the exception.
      */
-    final private String varName;
+    private final String varName;
 
     /**
      * @param varName name of the 'not found' variable.
@@ -50,10 +50,13 @@ public class NetCdfVariableNotFoundException extends MotuExceptionBase {
     }
 
     public static String getErrorMessage(String varName) {
-        StringBuffer stringBuffer = new StringBuffer("NetCdf variable not found. ");
-
-        stringBuffer.append(String.format("Variable name: %s\n", varName));
+        StringBuilder stringBuffer = new StringBuilder("NetCdf variable not found. ");
+        stringBuffer.append(String.format("Variable name: %s%n", varName));
         return stringBuffer.toString();
+    }
+
+    public String getVarName() {
+        return varName;
     }
 
 }
