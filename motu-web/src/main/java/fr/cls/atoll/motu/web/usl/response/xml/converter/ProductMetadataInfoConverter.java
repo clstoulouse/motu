@@ -1,7 +1,10 @@
 package fr.cls.atoll.motu.web.usl.response.xml.converter;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -9,6 +12,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Interval;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import fr.cls.atoll.motu.api.message.xml.AvailableDepths;
 import fr.cls.atoll.motu.api.message.xml.AvailableTimes;
@@ -342,6 +347,142 @@ public class ProductMetadataInfoConverter {
 
     }
 
+    static class AvailablePeriod {
+        private long startPeriod;
+        private long endPeriod;
+        private long stepPeriod;
+        private int stepsNumber;
+
+        public AvailablePeriod(long startPeriod, long endPeriod, long stepPeriod, int stepsNumber) {
+            super();
+            setStartPeriod(startPeriod);
+            setEndPeriod(endPeriod);
+            setStepPeriod(stepPeriod);
+            setStepsNumber(stepsNumber);
+        }
+
+        public int getStepsNumber() {
+            return stepsNumber;
+        }
+
+        public void setStepsNumber(int stepsNumber) {
+            this.stepsNumber = stepsNumber;
+        }
+
+        public long getStartPeriod() {
+            return startPeriod;
+        }
+
+        public void setStartPeriod(long startPeriod) {
+            this.startPeriod = startPeriod;
+        }
+
+        public long getEndPeriod() {
+            return endPeriod;
+        }
+
+        public void setEndPeriod(long endPeriod) {
+            this.endPeriod = endPeriod;
+        }
+
+        public long getStepPeriod() {
+            return stepPeriod;
+        }
+
+        public void setStepPeriod(long stepPeriod) {
+            this.stepPeriod = stepPeriod;
+        }
+
+        @Override
+        public String toString() {
+            return "AvailablePeriod [startPeriod=" + startPeriod + ", endPeriod=" + endPeriod + ", stepPeriod=" + stepPeriod + "]";
+        }
+
+        public String toString(String dateFormat) {
+            SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+            return sdf.format(new Date(startPeriod)) + "/" + sdf.format(new Date(endPeriod)) + "/" // + "R" +
+                                                                                                   // stepsNumber
+                                                                                                   // + "/"
+                    + fr.cls.atoll.motu.web.common.utils.DateUtils.getDurationISO8601(stepPeriod);
+            // + ", dataset duration="
+            // + fr.cls.atoll.motu.web.common.utils.DateUtils.getDurationDayHourMinSecMsec(endPeriod -
+            // startPeriod) + "]";
+        }
+    }
+
+    /**
+     * Used to create the durations with ISO_8601 format
+     * 
+     * @param listPeriods A list of string with format "yyyy-MM-dd HH:mm:ss" or "yyyy-MM-dd"
+     * @return Display the result on sysout
+     */
+    private static String buildDurations(List<String> listPeriods) {
+        /** Date/time format. */
+        String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+        DateTimeFormatter dtf = DateTimeFormat.forPattern(DATETIME_FORMAT);
+
+        /** Date format. */
+        String DATE_FORMAT = "yyyy-MM-dd";
+        DateTimeFormatter df = DateTimeFormat.forPattern(DATE_FORMAT);
+        List<Long> timeList = new ArrayList<>();
+        for (String iDateTime : listPeriods) {
+            try {
+                Long dt = dtf.parseMillis(iDateTime);
+                timeList.add(dt);
+            } catch (java.lang.IllegalArgumentException e) {
+                Long dt = df.parseMillis(iDateTime);
+                timeList.add(dt);
+            }
+        }
+        Collections.sort(timeList);
+
+        List<AvailablePeriod> availablePeriodList = new ArrayList<>();
+        Long periodStart = null;
+        Long periodEnd = null;
+        Long periodStep = null;
+        int stepNumber = 0;
+        for (int i = 0; i < timeList.size(); i++) {
+            stepNumber++;
+            Long iTime = timeList.get(i);
+            if (periodStart == null) {
+                periodStart = iTime;
+                continue;
+            }
+
+            if (periodEnd == null) {
+                periodEnd = iTime;
+                periodStep = periodEnd - periodStart;
+                continue;
+            }
+
+            Long newPeriodStep = iTime - periodEnd;
+            if (newPeriodStep.equals(periodStep)) {
+                periodEnd = iTime;
+            } else {
+                availablePeriodList.add(new AvailablePeriod(periodStart, periodEnd, periodStep, stepNumber));
+                periodStart = iTime;
+                periodEnd = null;
+                periodStep = null;
+                stepNumber = 0;
+            }
+        }
+        // Last step
+        availablePeriodList.add(new AvailablePeriod(periodStart, periodEnd, periodStep, stepNumber));
+
+        System.out.println("########################");
+        StringBuilder sb = new StringBuilder();
+        for (AvailablePeriod ap : availablePeriodList) {
+            sb.append(ap.toString("yyyy-MM-dd'T'HH:mm:ss'Z'") + ",");
+        }
+        System.out.println(sb.substring(0, sb.length() - 1));
+        System.out.println("########################");
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");
+
+        return sb.substring(0, sb.length() - 1);
+    }
+
     /**
      * Inits the available times.
      * 
@@ -365,6 +506,7 @@ public class ProductMetadataInfoConverter {
         // TDS catalog
         if (df == null) {
             List<String> list = product.getTimeAxisDataAsString();
+            buildDurations(list);
             Iterator<String> i = list.iterator();
 
             if (i.hasNext()) {
