@@ -19,7 +19,7 @@ Then in order to runs well, your Motu server needs to add the CAS server CA cert
 ```
                  cd /opt/atoll/tomcat-cas-server/  
                  # LDAP configuration file  
-                 vi /opt/atoll/tomcat-cas-server/webapps/mis-cas/WEB-INF/deployerConfigContext.xml  
+                 vi /opt/atoll/tomcat-cas-server/webapps/cas/WEB-INF/deployerConfigContext.xml  
                  # QT CAS server uses its own SSL certificates defined in:  
                  vi /opt/atoll/tomcat-cas-server/conf/server.xml  
 	 			 @see <Connector port="8443"   
@@ -93,12 +93,12 @@ tail -f tomcat-cas-server/logs/catalina.out
 
 ### [WEB BROWSER]  
 * First logout from CAS server  
-https://atoll-qt2.vlandata.cls.fr:8443/mis-cas/logout  
+https://atoll-qt2.vlandata.cls.fr:8443/cas/logout  
 
 *Try to access to   
 http://%COMPUTERNAME%.pc.cls.fr:8080/motu-web/Motu  
 => As the certificate is autosigned, and the browser does not trust the CA certificate, it warns: "Your connection is not   private", click "advanced", then "Proceed to atoll-qt2.vlandata.cls.fr (unsafe)"  
-Your are redirected to the login page of the CAS server: https://atoll-qt2.vlandata.cls.fr:8443/mis-cas/login  
+Your are redirected to the login page of the CAS server: https://atoll-qt2.vlandata.cls.fr:8443/cas/login  
 Enter login and password  
 => If your are authenticated successfully, you have now access to the Motu web page  
 
@@ -112,5 +112,5 @@ Enter login and password
 
 # Motu localhost Tomcat v7.0 Server - CAS SSO QO.launch
 
-Same as the QT but here the CAS SSO server points to https://coremis-cas.cls.fr/cas  
+Same as the QT but here the CAS SSO server points to https://corecas.cls.fr/cas  
 On the QO machine the SSL certificates are signed by a CA known by Java, so there is nothing to set on that side.  
