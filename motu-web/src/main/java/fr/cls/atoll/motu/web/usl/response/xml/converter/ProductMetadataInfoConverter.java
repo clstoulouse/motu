@@ -2,6 +2,8 @@ package fr.cls.atoll.motu.web.usl.response.xml.converter;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -430,6 +432,19 @@ public class ProductMetadataInfoConverter {
         for (ParameterMetaData parameterMetaData : parameterMetaDataList) {
             variableList.add(initVariable(parameterMetaData));
         }
+
+        Collections.sort(variableList, new Comparator<Variable>() {
+
+            @Override
+            public int compare(Variable v1, Variable v2) {
+                int compareResult = 0;
+                if (v1 != null && v2 != null && v1.getName() != null) {
+                    compareResult = v1.getName().compareTo(v2.getName());
+                }
+                return compareResult;
+            }
+
+        });
 
         variables.setCode(Integer.toString(ErrorType.OK.value()));
         variables.setMsg(ErrorType.OK.toString());
