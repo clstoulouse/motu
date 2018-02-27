@@ -182,6 +182,18 @@ public class ProductMetadataInfoConverter {
         for (CoordinateAxis coordinateAxis : coordinateAxes) {
             axisList.add(initAxis(coordinateAxis, productMetaData));
         }
+        Collections.sort(axisList, new Comparator<Axis>() {
+
+            @Override
+            public int compare(Axis a1, Axis a2) {
+                int compareResult = 0;
+                if (a1 != null && a2 != null && a1.getName() != null) {
+                    compareResult = a1.getName().compareTo(a2.getName());
+                }
+                return compareResult;
+            }
+
+        });
 
         dataGeospatialCoverage.setCode(Integer.toString(ErrorType.OK.value()));
         dataGeospatialCoverage.setMsg(ErrorType.OK.toString());
