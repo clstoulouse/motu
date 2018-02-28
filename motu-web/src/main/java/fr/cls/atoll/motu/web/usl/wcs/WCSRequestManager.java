@@ -48,7 +48,7 @@ public class WCSRequestManager implements IWCSRequestManager {
     @Override
     public void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws MotuException {
         String serviceValue = WCSHTTPParameters.getServiceFromRequest(request);
-        Long requestId = -1L;
+        String requestId = null;
         if (validateService(response, serviceValue)) {
             String versionValue = WCSHTTPParameters.getAcceptVersionsFromRequest(request);
             if (validateVersion(response, versionValue)) {
@@ -67,7 +67,7 @@ public class WCSRequestManager implements IWCSRequestManager {
                                 BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.DONE);
                             }
                         } catch (InvalidHTTPParameterException e) {
-                            if (requestId != -1L) {
+                            if (requestId != null) {
                                 BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.ERROR);
                             }
                             if (e.getParameterValue() == null) {
@@ -88,7 +88,7 @@ public class WCSRequestManager implements IWCSRequestManager {
                         }
                     }
                 } catch (Exception e) {
-                    if (requestId != -1L) {
+                    if (requestId != null) {
                         BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.ERROR);
                     }
                     if (e instanceof MotuException && ((MotuException) e).getErrorType().equals(ErrorType.WCS_INVALID_AXIS_LABEL)) {

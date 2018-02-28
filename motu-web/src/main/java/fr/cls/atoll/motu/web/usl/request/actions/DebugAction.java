@@ -2,33 +2,32 @@ package fr.cls.atoll.motu.web.usl.request.actions;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
-import fr.cls.atoll.motu.web.bll.request.IBLLRequestManager;
 import fr.cls.atoll.motu.web.bll.request.queueserver.IQueueServerManager;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueManagement;
+import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.status.data.NormalStatus;
+import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
 import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.DebugOrderHTTParameterValidator;
-import fr.cls.atoll.motu.web.usl.response.xml.converter.XMLConverter;
-import fr.cls.atoll.motu.web.usl.wcs.request.actions.WCSGetCoverageAction;
 
 /**
  * <br>
@@ -69,6 +68,7 @@ public class DebugAction extends AbstractAction {
         debugOrderHTTParameterValidator = new DebugOrderHTTParameterValidator(
                 MotuRequestParametersConstant.PARAM_DEBUG_ORDER,
                 CommonHTTPParameters.getDebugOrderFromRequest(getRequest()));
+        MotuConfig config = BLLManager.getInstance().getConfigManager().getMotuConfig();
     }
 
     @Override
@@ -129,9 +129,6 @@ public class DebugAction extends AbstractAction {
             return;
         }
 
-        IBLLRequestManager requestManager = BLLManager.getInstance().getRequestManager();
-        List<Long> requestIds = requestManager.getRequestIds();
-        Collections.sort(requestIds, Collections.reverseOrder());
         String requestCountToken = "@@requestCountForStatus@@";
         stringBuffer.append("<h2>\n");
         stringBuffer.append(statusModeType.toString() + " (x" + requestCountToken + ")");
@@ -168,24 +165,23 @@ public class DebugAction extends AbstractAction {
         stringBuffer.append("</tr>\n");
 
         int requestCount = 0;
-        for (Long requestId : requestIds) {
-            AbstractAction action = requestManager.getRequestAction(requestId);
-            if (action != null) {
-                String userId = action.getUserId();
+        Map<String, RequestStatus> status = BLLManager.getInstance().getRequestManager().getBllRequestStatusManager().getAllRequestStatus();
+        for (Map.Entry<String, RequestStatus> currentRequest : status.entrySet()) {
+            RequestStatus requestStatus = currentRequest.getValue();
+            String requestId = currentRequest.getKey();
+            if (requestStatus != null) {
+                String userId = requestStatus.getUserId();
                 if (userId == null) {
                     userId = "Anonymous";
                 }
-                if (action instanceof DownloadProductAction || action instanceof WCSGetCoverageAction) {
-                    if (manageTheDownloadProductActionLog(stringBuffer, requestId, statusModeType, action, userId)) {
+                if (requestStatus instanceof DownloadStatus) {
+                    DownloadStatus downloadStatus = (DownloadStatus) requestStatus;
+                    if (manageTheDownloadProductActionLog(stringBuffer, requestId, statusModeType, downloadStatus)) {
                         requestCount++;
                     }
-                } else if (requestManager.getRequestStatus(requestId) == statusModeType) {
+                } else if (requestStatus.getStatus().equals(statusModeType.name())) {
                     requestCount++;
-                    manageTheActionLog(stringBuffer,
-                                       requestId,
-                                       requestManager.getRequestAction(requestId),
-                                       requestManager.getRequestStatus(requestId),
-                                       userId);
+                    manageTheActionLog(stringBuffer, requestId, requestStatus);
                 }
             }
         }
@@ -194,119 +190,119 @@ public class DebugAction extends AbstractAction {
         stringBuffer.replace(startIndex, startIndex + requestCountToken.length(), Integer.toString(requestCount));
     }
 
-    private void manageTheActionLog(StringBuffer stringBuffer, Long requestId, AbstractAction action, StatusModeType status, String userId) {
-        stringBuffer.append("<tr>\n");
-        stringBuffer.append("<td>\n");
-        stringBuffer.append(requestId.toString());
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("<td>\n");
-        stringBuffer.append(action.getActionName());
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("<td>\n");
-        stringBuffer.append(userId);
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("<td>\n");
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(requestId);
-        stringBuffer.append(cal.getTime().toString());
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("<td>\n");
-        stringBuffer.append(status.name());
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("<td>\n");
-        stringBuffer.append(status.value());
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("<td>\n");
-        stringBuffer.append(action.getParameters());
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("<td>\n");
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("<td>\n");
-        stringBuffer.append("</td>\n");
-        stringBuffer.append("</tr>\n");
-        stringBuffer.append("\n");
-    }
-
-    private boolean manageTheDownloadProductActionLog(StringBuffer stringBuffer,
-                                                      Long requestId,
-                                                      StatusModeType statusModeType,
-                                                      AbstractAction action,
-                                                      String userId) {
-        StatusModeResponse statusModeResponse;
-        try {
-            statusModeResponse = XMLConverter
-                    .convertStatusModeResponse(getActionCode(), BLLManager.getInstance().getRequestManager().getDownloadRequestStatus(requestId));
-            if (statusModeResponse.getStatus() != statusModeType) {
-                return false;
-            }
-
+    private void manageTheActionLog(StringBuffer stringBuffer, String requestId, RequestStatus requestStatus) {
+        if (requestStatus instanceof NormalStatus) {
             stringBuffer.append("<tr>\n");
             stringBuffer.append("<td>\n");
-            stringBuffer.append(requestId.toString());
+            stringBuffer.append(requestId);
             stringBuffer.append("</td>\n");
             stringBuffer.append("<td>\n");
-            stringBuffer.append(action.getActionName());
+            stringBuffer.append(requestStatus.getActionName());
             stringBuffer.append("</td>\n");
             stringBuffer.append("<td>\n");
-            stringBuffer.append(userId);
+            stringBuffer.append(requestStatus.getUserId());
             stringBuffer.append("</td>\n");
             stringBuffer.append("<td>\n");
             Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(requestId);
+            cal.setTimeInMillis(Long.valueOf(requestStatus.getTime()));
             stringBuffer.append(cal.getTime().toString());
             stringBuffer.append("</td>\n");
             stringBuffer.append("<td>\n");
-            stringBuffer.append(statusModeResponse.getStatus().toString());
+            stringBuffer.append(requestStatus.getStatus());
             stringBuffer.append("</td>\n");
             stringBuffer.append("<td>\n");
-            stringBuffer.append(statusModeResponse.getCode().toString());
+            stringBuffer.append("1");
             stringBuffer.append("</td>\n");
             stringBuffer.append("<td>\n");
-            if (!StringUtils.isNullOrEmpty(statusModeResponse.getMsg())) {
-                stringBuffer.append(statusModeResponse.getMsg());
-                stringBuffer.append("<BR>");
-            }
-            stringBuffer.append("Length : ");
-            if (statusModeResponse.getSize() != null) {
-                stringBuffer.append(statusModeResponse.getSize());
-                stringBuffer.append("Mbits");
-            }
-            stringBuffer.append("<BR>Last modified: ");
-            if (statusModeResponse.getDateProc() != null) {
-                XMLGregorianCalendar lastModified = statusModeResponse.getDateProc().normalize();
-                if (lastModified.getYear() == 1970) {
-                    stringBuffer.append("Unknown");
-                } else {
-                    stringBuffer.append(lastModified.toString());
-                }
-            }
-            if (!StringUtils.isNullOrEmpty(statusModeResponse.getScriptVersion())) {
-                stringBuffer.append("<BR> ScriptVersion:" + statusModeResponse.getScriptVersion());
-            }
+            stringBuffer.append(((NormalStatus) requestStatus).getParameters());
             stringBuffer.append("</td>\n");
             stringBuffer.append("<td>\n");
-            if (statusModeResponse.getRemoteUri().endsWith("/")) {
-                stringBuffer.append("No file.");
-            } else if (!statusModeResponse.getRemoteUri().endsWith("null")) {
-                stringBuffer.append(statusModeResponse.getRemoteUri());
-            } else {
-                stringBuffer.append("In progress...");
-            }
             stringBuffer.append("</td>\n");
             stringBuffer.append("<td>\n");
-            if (statusModeResponse.getLocalUri().endsWith("/")) {
-                stringBuffer.append("No file.");
-            } else if (!statusModeResponse.getLocalUri().endsWith("null")) {
-                stringBuffer.append(statusModeResponse.getLocalUri());
-            } else {
-                stringBuffer.append("In progress...");
-            }
             stringBuffer.append("</td>\n");
             stringBuffer.append("</tr>\n");
             stringBuffer.append("\n");
-        } catch (MotuException e) {
-            LOGGER.error(e);
         }
+    }
+
+    private boolean manageTheDownloadProductActionLog(StringBuffer stringBuffer,
+                                                      String requestId,
+                                                      StatusModeType statusModeType,
+                                                      DownloadStatus downloadRequestStatus) {
+        if (!downloadRequestStatus.getStatus().equals(statusModeType.name())) {
+            return false;
+        }
+
+        stringBuffer.append("<tr>\n");
+        stringBuffer.append("<td>\n");
+        stringBuffer.append(requestId);
+        stringBuffer.append("</td>\n");
+        stringBuffer.append("<td>\n");
+        stringBuffer.append(downloadRequestStatus.getActionName());
+        stringBuffer.append("</td>\n");
+        stringBuffer.append("<td>\n");
+        stringBuffer.append(downloadRequestStatus.getUserId());
+        stringBuffer.append("</td>\n");
+        stringBuffer.append("<td>\n");
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(Long.valueOf(downloadRequestStatus.getTime()));
+        stringBuffer.append(cal.getTime().toString());
+        stringBuffer.append("</td>\n");
+        stringBuffer.append("<td>\n");
+        stringBuffer.append(downloadRequestStatus.getStatus());
+        stringBuffer.append("</td>\n");
+        stringBuffer.append("<td>\n");
+        stringBuffer.append(downloadRequestStatus.getStatusCode());
+        stringBuffer.append("</td>\n");
+        stringBuffer.append("<td>\n");
+        if (!StringUtils.isNullOrEmpty(downloadRequestStatus.getMessage())) {
+            stringBuffer.append(downloadRequestStatus.getMessage());
+            stringBuffer.append("<BR>");
+        }
+        stringBuffer.append("Length : ");
+        if (downloadRequestStatus.getSize() != null) {
+            stringBuffer.append(downloadRequestStatus.getSize());
+            stringBuffer.append("Mbits");
+        }
+        stringBuffer.append("<BR>Last modified: ");
+
+        if (downloadRequestStatus.getDateProc() != null) {
+            Calendar calDateProc = Calendar.getInstance();
+            calDateProc.setTimeInMillis(Long.valueOf(downloadRequestStatus.getTime()));
+            if (calDateProc.get(Calendar.YEAR) == 1970) {
+                stringBuffer.append("Unknown");
+            } else {
+                stringBuffer.append(calDateProc.getTime().toString());
+            }
+        }
+        if (!StringUtils.isNullOrEmpty(downloadRequestStatus.getScriptVersion())) {
+            stringBuffer.append("<BR> ScriptVersion:" + downloadRequestStatus.getScriptVersion());
+        }
+        stringBuffer.append("</td>\n");
+        stringBuffer.append("<td>\n");
+        String remoteURL = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath() + "/"
+                + downloadRequestStatus.getOutputFileName();
+        if (remoteURL.endsWith("/")) {
+            stringBuffer.append("No file.");
+        } else if (!remoteURL.endsWith("null")) {
+            stringBuffer.append(remoteURL);
+        } else {
+            stringBuffer.append("In progress...");
+        }
+        stringBuffer.append("</td>\n");
+        stringBuffer.append("<td>\n");
+        String localPath = BLLManager.getInstance().getConfigManager().getMotuConfig().getDownloadHttpUrl() + "/"
+                + downloadRequestStatus.getOutputFileName();
+        if (localPath.endsWith("/")) {
+            stringBuffer.append("No file.");
+        } else if (!localPath.endsWith("null")) {
+            stringBuffer.append(localPath);
+        } else {
+            stringBuffer.append("In progress...");
+        }
+        stringBuffer.append("</td>\n");
+        stringBuffer.append("</tr>\n");
+        stringBuffer.append("\n");
         return true;
     }
 
@@ -330,20 +326,12 @@ public class DebugAction extends AbstractAction {
             return;
         }
         stringBuffer.append("<p>\n");
-        // stringBuffer.append(" Default priority: ");
-        // stringBuffer.append(queueServerManagement.getDefaultPriority());
         stringBuffer.append(" Max. data threshold: ");
-        stringBuffer.append(String.format("%8.2f Mo", BLLManager.getInstance().getRequestManager().getQueueServerManager().getMaxDataThresholdInMegabyte()));
+        stringBuffer.append(String.format("%8.2f Mo",
+                                          BLLManager.getInstance().getRequestManager().getQueueServerManager().getMaxDataThresholdInMegabyte()));
         stringBuffer.append("</p>\n");
 
-        // stringBuffer.append("<h2>\n");
-        // stringBuffer.append("Non-Batch Queues");
-        // stringBuffer.append("</h2>\n");
-        debugPendingRequest(stringBuffer, queueServerManagement); // , false
-        // stringBuffer.append("<h2>\n");
-        // stringBuffer.append("Batch Queues");
-        // stringBuffer.append("</h2>\n");
-        // debugPendingRequest(stringBuffer, queueServerManagement, true);
+        debugPendingRequest(stringBuffer, queueServerManagement);
     }
 
     /**

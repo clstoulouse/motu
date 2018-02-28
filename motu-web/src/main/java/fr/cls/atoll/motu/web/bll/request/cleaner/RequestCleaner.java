@@ -178,7 +178,7 @@ public class RequestCleaner implements IRequestCleaner {
      */
     @Override
     public void cleanRequestStatus() {
-        for (Long requestId : getAllNonRunningRequestIds()) {
+        for (String requestId : getAllNonRunningRequestIds()) {
             bllRequestManager.deleteRequest(requestId);
             LOGGER.info("cleanRequestStatus - requestId=" + requestId);
         }
@@ -191,9 +191,9 @@ public class RequestCleaner implements IRequestCleaner {
      * 
      * @return
      */
-    private List<Long> getAllNonRunningRequestIds() {
-        List<Long> allNonRunningRequestIdList = new ArrayList<Long>();
-        for (long id : bllRequestManager.getRequestIds()) {
+    private List<String> getAllNonRunningRequestIds() {
+        List<String> allNonRunningRequestIdList = new ArrayList<String>();
+        for (String id : bllRequestManager.getRequestIds()) {
             RequestDownloadStatus rds = BLLManager.getInstance().getRequestManager().getDownloadRequestStatus(id);
             if (rds == null
                     || (rds.getEndProcessingDateTime() > 0

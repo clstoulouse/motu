@@ -30,6 +30,7 @@ import fr.cls.atoll.motu.web.common.utils.ListUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 import fr.cls.atoll.motu.web.common.utils.Zip;
+import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataFile;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.vfs.VFSManager;
@@ -130,8 +131,11 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
      */
     protected void extractDataAsUrlList() throws MotuException, FileNotFoundException, MotuExceedingCapacityException {
         // Create output file
-        getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().setExtractFilename(StringUtils
-                .getUniqueFileName(getRequestDownloadStatus().getRequestProduct().getProduct().getProductId(), TXT_FILE_EXTENSION_FINAL));
+        String fileName = StringUtils.getUniqueFileName(getRequestDownloadStatus().getRequestProduct().getProduct().getProductId(),
+                                                        TXT_FILE_EXTENSION_FINAL);
+        getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().setExtractFilename(fileName);
+        DALManager.getInstance().getRequestManager().getDalRequestStatusManager().setOutputFileName(getRequestDownloadStatus().getRequestId(),
+                                                                                                    fileName);
 
         List<String> uriFiles = extractPrepare(false, true, true);
 
@@ -166,8 +170,10 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
      */
     protected void extractDataAsZip() throws MotuException, FileNotFoundException, MotuExceedingCapacityException {
         // Create output file
-        getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().setExtractFilename(StringUtils
-                .getUniqueFileName(getRequestDownloadStatus().getRequestProduct().getProduct().getProductId(), ".zip"));
+        String fileName = StringUtils.getUniqueFileName(getRequestDownloadStatus().getRequestProduct().getProduct().getProductId(), ".zip");
+        getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().setExtractFilename(fileName);
+        DALManager.getInstance().getRequestManager().getDalRequestStatusManager().setOutputFileName(getRequestDownloadStatus().getRequestId(),
+                                                                                                    fileName);
 
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(Product.getExtractionPath());

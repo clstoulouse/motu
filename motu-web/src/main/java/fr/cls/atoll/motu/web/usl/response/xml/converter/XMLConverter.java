@@ -207,11 +207,11 @@ public class XMLConverter {
         return convertToStringWithJAXBtoString(productMetaDataInfo);
     }
 
-    public static String toXMLString(long requestId, String actionCode, String scriptVersion) throws MotuException {
+    public static String toXMLString(String requestId, String actionCode, String scriptVersion) throws MotuException {
         return convertToStringWithJAXBtoString(createStatusModeResponse(requestId, actionCode, scriptVersion));
     }
 
-    private static StatusModeResponse createStatusModeResponse(long requestId, String actionCode, String scriptVersion) {
+    private static StatusModeResponse createStatusModeResponse(String requestId, String actionCode, String scriptVersion) {
         ObjectFactory objectFactory = new ObjectFactory();
         StatusModeResponse statusModeResponse = objectFactory.createStatusModeResponse();
         statusModeResponse.setCode(StringUtils.getErrorCode(actionCode, ErrorType.OK));
@@ -243,7 +243,7 @@ public class XMLConverter {
                                                             motuException.getErrorType(),
                                                             BLLManager.getInstance().getMessagesErrorManager()
                                                                     .getMessageError(motuException.getErrorType(), motuException.getMessage())));
-        statusModeResponse.setRequestId(-1L);
+        statusModeResponse.setRequestId(null);
         statusModeResponse.setScriptVersion(scriptVersion);
         return statusModeResponse;
     }

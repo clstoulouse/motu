@@ -27,6 +27,7 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
+import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
 import fr.cls.atoll.motu.web.common.utils.CoordinateUtils;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.DALConfigManager;
@@ -35,6 +36,9 @@ import fr.cls.atoll.motu.web.dal.request.cdo.CDOManager;
 import fr.cls.atoll.motu.web.dal.request.cdo.ICDOManager;
 import fr.cls.atoll.motu.web.dal.request.extractor.DALDatasetManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.web.dal.request.status.DALLocalStatusManager;
+import fr.cls.atoll.motu.web.dal.request.status.DALRedisStatusManager;
+import fr.cls.atoll.motu.web.dal.request.status.IDALRequestStatusManager;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -61,9 +65,20 @@ public class DALRequestManager implements IDALRequestManager {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private ICDOManager cdoManager;
+    private IDALRequestStatusManager dalRequestStatusManager;
 
     public DALRequestManager() {
         cdoManager = new CDOManager();
+    }
+
+    @Override
+    public void init() {
+        if (DALManager.getInstance().getConfigManager().getMotuConfig().getRedisConfig() != null) {
+            dalRequestStatusManager = new DALRedisStatusManager();
+        } else {
+            dalRequestStatusManager = new DALLocalStatusManager();
+        }
+        dalRequestStatusManager.init();
     }
 
     @Override
@@ -104,6 +119,7 @@ public class DALRequestManager implements IDALRequestManager {
         // String fname = NetCdfWriter.getUniqueNetCdfFileName(p.getProductId());
         String fname = computeDownloadFileName(rds_.getRequestProduct().getProduct().getProductId(), rds_.getRequestId());
         rds_.getRequestProduct().getRequestProductParameters().setExtractFilename(fname);
+        DALManager.getInstance().getRequestManager().getDalRequestStatusManager().setOutputFileName(rds_.getRequestId(), fname);
         String extractDirPath = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath();
 
         // Create and initialize selection
@@ -316,10 +332,11 @@ public class DALRequestManager implements IDALRequestManager {
         return i;
     }
 
-    private String computeDownloadFileName(String productId, Long requestId) {
+    private String computeDownloadFileName(String productId, String requestId) {
         String fileName = DALManager.getInstance().getConfigManager().getMotuConfig().getDownloadFileNameFormat();
+        RequestStatus requestStatus = dalRequestStatusManager.getRequestStatus(requestId);
         fileName = fileName.replace(DALConfigManager.FILENAME_FORMAT_PRODUCT_ID, productId);
-        fileName = fileName.replace(DALConfigManager.FILENAME_FORMAT_REQUESTID, requestId.toString());
+        fileName = fileName.replace(DALConfigManager.FILENAME_FORMAT_REQUESTID, requestStatus.getTime());
         return fileName;
     }
 
@@ -379,5 +396,10 @@ public class DALRequestManager implements IDALRequestManager {
         }
 
         return zRange;
+    }
+
+    @Override
+    public IDALRequestStatusManager getDalRequestStatusManager() {
+        return dalRequestStatusManager;
     }
 }

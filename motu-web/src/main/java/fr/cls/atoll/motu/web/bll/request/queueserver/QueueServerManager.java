@@ -152,7 +152,7 @@ public class QueueServerManager implements IQueueServerManager {
             boolean isJobEnded = false;
 
             @Override
-            public void onJobStarted() {
+            public void onJobStarted() throws MotuException {
                 rds_.setStartProcessingDateTime(System.currentTimeMillis());
             }
 

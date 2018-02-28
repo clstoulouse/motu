@@ -417,6 +417,7 @@
 				<xs:element name="configFileSystem" minOccurs="0"
 					maxOccurs="unbounded" type="configFileSystemType">
 				</xs:element>
+				<xs:element name="redisConfig" minOccurs="0" maxOccurs="1" type="requestStatusRedisConfig"></xs:element>
 			</xs:sequence>
 			<!--
 				defaultService : The service name when no service is specified.
@@ -628,6 +629,21 @@
 		</xs:complexType>
 
 	</xs:element>
+	
+	<xs:complexType name="requestStatusRedisConfig">
+		<!-- host :
+			Host where the redis server is available.
+		-->
+		<xs:attribute name="host" type="xs:string" default="localhost"/>
+		<!-- port :
+			Port of the redis server.
+		-->
+		<xs:attribute name="port" type="xs:int" default="6379"/>
+		<!-- prefix :
+			The prefix used for the redis keys.
+		-->
+		<xs:attribute name="prefix" type="xs:string" default="requestStatus"/>
+	</xs:complexType>
 
 
 	<!-- ===================  -->
