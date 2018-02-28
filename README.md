@@ -2182,8 +2182,8 @@ __Parameters__:
 * __x_hi__ [0,1]: high longitude of a geographic extraction. Default value is 180.  
 * __z_lo__ [0,1]: low vertical depth . Default value is 0.  
 * __z_hi__ [0,1]: high vertical depth. Default value is 180.  
-* __t_lo__ [0,1]: Start date of a temporal extraction. If not set, the default value is the first date/time available for the dataset. Format is "yyy-mm-dd" or "yyyy-dd h:m:s" or "yyyy-ddTh:m:s".  
-* __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is "yyy-mm-dd" or "yyyy-dd h:m:s" or "yyyy-ddTh:m:s".  
+* __t_lo__ [0,1]: Start date of a temporal extraction. If not set, the default value is the first date/time available for the dataset. Format is  "yyy-mm-dd" or "yyyy-mm-dd h:m:s" or "yyyy-mm-ddTh:m:s" and depends on the requested dataset.  
+* __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is "yyy-mm-dd" or "yyyy-mm-dd h:m:s" or "yyyy-mm-ddTh:m:s" and depends on the requested dataset.    
 * __output__ [0,1]: netcdf. Due to a TDS issue, only netcdf is available. netcdf4 will be available as soon as TDS will have resolved its issue.
 * __mode__ [0,1]: Specify the desired result mode. Enumeration value from [url, console, status] represented as a string. If no mode, "url" value is the default mode.  
 

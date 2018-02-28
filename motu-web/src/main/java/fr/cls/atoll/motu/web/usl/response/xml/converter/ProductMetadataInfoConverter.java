@@ -2,6 +2,8 @@ package fr.cls.atoll.motu.web.usl.response.xml.converter;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -180,6 +182,18 @@ public class ProductMetadataInfoConverter {
         for (CoordinateAxis coordinateAxis : coordinateAxes) {
             axisList.add(initAxis(coordinateAxis, productMetaData));
         }
+        Collections.sort(axisList, new Comparator<Axis>() {
+
+            @Override
+            public int compare(Axis a1, Axis a2) {
+                int compareResult = 0;
+                if (a1 != null && a2 != null && a1.getName() != null) {
+                    compareResult = a1.getName().compareTo(a2.getName());
+                }
+                return compareResult;
+            }
+
+        });
 
         dataGeospatialCoverage.setCode(Integer.toString(ErrorType.OK.value()));
         dataGeospatialCoverage.setMsg(ErrorType.OK.toString());
@@ -430,6 +444,19 @@ public class ProductMetadataInfoConverter {
         for (ParameterMetaData parameterMetaData : parameterMetaDataList) {
             variableList.add(initVariable(parameterMetaData));
         }
+
+        Collections.sort(variableList, new Comparator<Variable>() {
+
+            @Override
+            public int compare(Variable v1, Variable v2) {
+                int compareResult = 0;
+                if (v1 != null && v2 != null && v1.getName() != null) {
+                    compareResult = v1.getName().compareTo(v2.getName());
+                }
+                return compareResult;
+            }
+
+        });
 
         variables.setCode(Integer.toString(ErrorType.OK.value()));
         variables.setMsg(ErrorType.OK.toString());
