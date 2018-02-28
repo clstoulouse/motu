@@ -74,7 +74,7 @@ public class QueueLogInfo {
     private String queueDesc = "";
 
     /** The request id. */
-    private long requestId = -1;
+    private String requestId = null;
 
     /** The elapse wait queue time. */
     private long elapsedWaitQueueTime = 0L;
@@ -283,7 +283,7 @@ public class QueueLogInfo {
             // Queue information
             outputStream.write(queueId.concat(CSV_SEPARATOR).getBytes(encoding));
             outputStream.write(queueDesc.concat(CSV_SEPARATOR).getBytes(encoding));
-            outputStream.write(Long.toString(requestId).concat(CSV_SEPARATOR).getBytes(encoding));
+            outputStream.write(requestId.concat(CSV_SEPARATOR).getBytes(encoding));
 
             // Time information (Long)
             outputStream.write(Long.toString(elapsedWaitQueueTime).concat(CSV_SEPARATOR).getBytes(encoding));
@@ -869,7 +869,7 @@ public class QueueLogInfo {
      * 
      * @return the request id
      */
-    public long getRequestId() {
+    public String getRequestId() {
         return requestId;
     }
 
@@ -878,7 +878,7 @@ public class QueueLogInfo {
      * 
      * @param requestId the request id
      */
-    public void setRequestId(long requestId) {
+    public void setRequestId(String requestId) {
         this.requestId = requestId;
     }
 }

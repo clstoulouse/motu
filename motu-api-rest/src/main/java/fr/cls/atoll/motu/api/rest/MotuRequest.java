@@ -887,7 +887,7 @@ public class MotuRequest {
      * 
      * @param requestId the request id
      */
-    public void setActionGetStatusParams(long requestId) {
+    public void setActionGetStatusParams(String requestId) {
         if (motuRequestParameters != null) {
             motuRequestParameters.clearParameters();
         } else {
@@ -908,7 +908,7 @@ public class MotuRequest {
      * 
      * @throws MotuRequestException the motu request exception
      */
-    public StatusModeResponse executeActionGetStatusParams(long requestId) throws MotuRequestException {
+    public StatusModeResponse executeActionGetStatusParams(String requestId) throws MotuRequestException {
 
         setActionGetStatusParams(requestId);
         StatusModeResponse statusModeResponse = (StatusModeResponse) executeAsXML();

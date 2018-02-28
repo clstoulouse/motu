@@ -77,7 +77,7 @@ public class USLRequestManager implements IUSLRequestManager {
     public void onNewRequest(HttpServletRequest request, HttpServletResponse response) throws MotuException, InvalidHTTPParameterException {
         String action = CommonHTTPParameters.getActionFromRequest(request).toLowerCase();
         AbstractAction actionInst = retrieveActionFromHTTPParameters(action, request, response);
-        Long requestId = -1L;
+        String requestId = null;
         try {
             if (actionInst != null) {
                 if (!(actionInst instanceof DownloadProductAction)) {
@@ -161,8 +161,8 @@ public class USLRequestManager implements IUSLRequestManager {
         return actionInst;
     }
 
-    public static void onException(Long requestId, AbstractAction actionInst, Exception e, HttpServletResponse response) throws MotuException {
-        if (requestId != -1L) {
+    public static void onException(String requestId, AbstractAction actionInst, Exception e, HttpServletResponse response) throws MotuException {
+        if (requestId != null) {
             BLLManager.getInstance().getRequestManager().setActionStatus(requestId, StatusModeType.ERROR);
         }
         ErrorType errorType = ErrorType.SYSTEM;

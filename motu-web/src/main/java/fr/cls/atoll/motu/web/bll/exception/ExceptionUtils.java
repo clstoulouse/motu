@@ -143,28 +143,6 @@ public class ExceptionUtils {
     /**
      * Sets the error.
      * 
-     * @param statusModeResponse the status mode response
-     * @param errorType the error type
-     */
-    public static void setError(String actionCode, StatusModeResponse statusModeResponse, ErrorType errorType) {
-        try {
-            statusModeResponse.setStatus(StatusModeType.ERROR);
-            String message = errorType.toString();
-            statusModeResponse.setMsg(getErrorMessage(errorType));
-            statusModeResponse.setCode(StringUtils.getErrorCode(actionCode, errorType));
-            LOGGER.error(StringUtils.getLogMessage(actionCode, errorType, message));
-        } catch (MotuException errorMessageException) {
-            statusModeResponse.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
-            statusModeResponse.setCode(StringUtils.getErrorCode(actionCode, BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
-            LOGGER.error(StringUtils.getLogMessage(actionCode, BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
-                         errorMessageException);
-        }
-
-    }
-
-    /**
-     * Sets the error.
-     * 
      * @param e the e
      * @param timeCoverage the time coverage
      */

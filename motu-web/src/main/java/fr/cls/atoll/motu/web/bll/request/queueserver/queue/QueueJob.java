@@ -49,7 +49,7 @@ public class QueueJob implements IQueueJob, Comparable<IQueueJob> {
         DALManager.getInstance().getRequestManager().downloadProduct(cs, rds);
     }
 
-    private void onJobStarted() {
+    private void onJobStarted() throws MotuException {
         queueJobListener.onJobStarted();
     }
 

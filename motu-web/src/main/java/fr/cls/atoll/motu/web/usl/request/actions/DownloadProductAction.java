@@ -251,7 +251,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     }
 
     private void onAsynchronousMode(ConfigService cs, RequestProduct requestProduct) throws MotuException {
-        long requestId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(cs, requestProduct, this);
+        String requestId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(cs, requestProduct, this);
         try {
             String response = XMLConverter.toXMLString(requestId, getActionCode(), scriptVersionParameterValidator.getParameterValueValidated());
             writeResponse(response, HTTPUtils.CONTENT_TYPE_XML_UTF8);

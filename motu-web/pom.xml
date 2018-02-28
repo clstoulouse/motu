@@ -18,39 +18,39 @@
 		<application.tomcat.context>motu-web</application.tomcat.context>
 	</properties>
 	<dependencies>
-        <dependency>
-		    <groupId>org.jvnet.ogc</groupId>
-		    <artifactId>wcs-v_2_0</artifactId>
+		<dependency>
+			<groupId>org.jvnet.ogc</groupId>
+			<artifactId>wcs-v_2_0</artifactId>
 		</dependency>
 		<dependency>
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
-        </dependency>      
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+		</dependency>
 		<dependency>
-            <groupId>velocity</groupId>
-            <artifactId>velocity</artifactId>
-        </dependency>
-        
+			<groupId>velocity</groupId>
+			<artifactId>velocity</artifactId>
+		</dependency>
+
 		<dependency>
-		    <groupId>commons-jxpath</groupId>
-		    <artifactId>commons-jxpath</artifactId>
-		</dependency>        
+			<groupId>commons-jxpath</groupId>
+			<artifactId>commons-jxpath</artifactId>
+		</dependency>
 		<dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-        </dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>cls.motu</groupId>
 			<artifactId>motu-library-converter</artifactId>
-		</dependency>	
-        <dependency>
-            <groupId>cls.motu</groupId>
-            <artifactId>motu-library-inventory</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cls.motu</groupId>
-            <artifactId>motu-library-cas</artifactId>
-        </dependency>
+		</dependency>
+		<dependency>
+			<groupId>cls.motu</groupId>
+			<artifactId>motu-library-inventory</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cls.motu</groupId>
+			<artifactId>motu-library-cas</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.jasig.cas.client</groupId>
@@ -77,22 +77,30 @@
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-catalina</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-vfs2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.globus</groupId>
-            <artifactId>cog-jglobus</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-vfs2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.globus</groupId>
+			<artifactId>cog-jglobus</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.jedis-lock</groupId>
+			<artifactId>jedis-lock</artifactId>
+		</dependency>
 
 	</dependencies>
 

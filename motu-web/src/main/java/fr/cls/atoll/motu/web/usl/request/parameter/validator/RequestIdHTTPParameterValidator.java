@@ -12,7 +12,7 @@ import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParamete
  * @author Sylvain MARTY
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
-public class RequestIdHTTPParameterValidator extends AbstractHTTPParameterValidator<Long> {
+public class RequestIdHTTPParameterValidator extends AbstractHTTPParameterValidator<String> {
 
     public RequestIdHTTPParameterValidator(String parameterName_, String parameterValue_) {
         super(parameterName_, parameterValue_);
@@ -23,14 +23,8 @@ public class RequestIdHTTPParameterValidator extends AbstractHTTPParameterValida
      * 
      */
     @Override
-    public Long onValidateAction() throws InvalidHTTPParameterException {
-        String requestIdStr = getParameterValue();
-        try {
-            Long rqtId = Long.parseLong(requestIdStr);
-            return rqtId;
-        } catch (Exception e) {
-            throw new InvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
-        }
+    public String onValidateAction() throws InvalidHTTPParameterException {
+        return getParameterValue();
     }
 
     @Override

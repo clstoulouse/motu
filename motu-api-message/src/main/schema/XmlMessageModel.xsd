@@ -532,7 +532,7 @@
 			</xsd:annotation>
 
 			<xsd:attribute name="status" type="statusModeType" />
-			<xsd:attribute name="requestId" type="xsd:long" />
+			<xsd:attribute name="requestId" type="xsd:string" />
 			<xsd:attributeGroup ref="codeMsg"/>
 			<xsd:attribute name="dateProc" type="xsd:dateTime" />
 			<xsd:attribute name="size" type="xsd:double" />

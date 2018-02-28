@@ -1,6 +1,6 @@
 package fr.cls.atoll.motu.web.bll.request;
 
-import java.util.List;
+import java.util.Set;
 
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
@@ -9,6 +9,7 @@ import fr.cls.atoll.motu.web.bll.request.model.ProductResult;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.bll.request.queueserver.IQueueServerManager;
+import fr.cls.atoll.motu.web.bll.request.status.IBLLRequestStatusManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
@@ -30,7 +31,7 @@ public interface IBLLRequestManager {
      * 
      * @return
      */
-    List<Long> getRequestIds();
+    Set<String> getRequestIds();
 
     /**
      * .
@@ -38,7 +39,7 @@ public interface IBLLRequestManager {
      * @param requestId
      * @return
      */
-    RequestDownloadStatus getDownloadRequestStatus(Long requestId_);
+    RequestDownloadStatus getDownloadRequestStatus(String requestId_);
 
     /**
      * Return the status of the request associated with the provided request id.
@@ -46,7 +47,7 @@ public interface IBLLRequestManager {
      * @param requestId_ The id of the request
      * @return The status of the request.
      */
-    StatusModeType getRequestStatus(Long requestId_);
+    StatusModeType getRequestStatus(String requestId_);
 
     /**
      * Return the action of the request associated with the provided request id.
@@ -54,14 +55,7 @@ public interface IBLLRequestManager {
      * @param requestId_ The id of the request
      * @return The action of the request.
      */
-    AbstractAction getRequestAction(Long requestId_);
-
-    /**
-     * .
-     * 
-     * @return
-     */
-    long getNewRequestId();
+    AbstractAction getRequestAction(String requestId_);
 
     /**
      * Return the QueueServerManagement object
@@ -77,8 +71,9 @@ public interface IBLLRequestManager {
      * @param product_
      * @param extractionParameters
      * @return
+     * @throws MotuException
      */
-    ProductResult download(ConfigService cs_, RequestProduct product_, AbstractAction action);
+    ProductResult download(ConfigService cs_, RequestProduct product_, AbstractAction action) throws MotuException;
 
     /**
      * .
@@ -87,8 +82,9 @@ public interface IBLLRequestManager {
      * @param product_
      * @param extractionParameters
      * @return
+     * @throws MotuException
      */
-    long downloadAsynchonously(ConfigService cs_, RequestProduct product_, AbstractAction action);
+    String downloadAsynchonously(ConfigService cs_, RequestProduct product_, AbstractAction action) throws MotuException;
 
     /**
      * Delete the files associated to the provided URL. .
@@ -132,15 +128,16 @@ public interface IBLLRequestManager {
      * 
      * @param requestId
      */
-    void deleteRequest(Long requestId);
+    void deleteRequest(String requestId);
 
     /**
      * Initialize the maps which manage the requests.
      * 
      * @param action The action object associated to the request
      * @return The computed id of the current new request.
+     * @throws MotuException
      */
-    Long initRequest(AbstractAction action);
+    String initRequest(AbstractAction action) throws MotuException;
 
     /**
      * Sets the new status of the request associated with the provided request Id.
@@ -148,10 +145,12 @@ public interface IBLLRequestManager {
      * @param requestId The id of the request to update the status
      * @param status The new status of the request.
      */
-    void setActionStatus(Long requestId, StatusModeType status);
+    void setActionStatus(String requestId, StatusModeType status);
 
     /**
      * .
      */
     void stop();
+
+    IBLLRequestStatusManager getBllRequestStatusManager();
 }

@@ -16,8 +16,10 @@ public interface QueueJobListener {
 
     /**
      * .
+     * 
+     * @throws MotuException
      */
-    void onJobStarted();
+    void onJobStarted() throws MotuException;
 
     /**
      * .
