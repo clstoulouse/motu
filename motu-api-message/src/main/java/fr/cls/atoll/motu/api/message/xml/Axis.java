@@ -5,25 +5,26 @@
 // Generated on: 2018.02.26 at 11:10:46 AM CET 
 //
 
-
 package fr.cls.atoll.motu.api.message.xml;
 
 import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
  * 
- * 					Response on axis geospatial coverage of a product.
- * 				
+ * Response on axis geospatial coverage of a product.
  * 
- * <p>Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for anonymous complex type.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -42,7 +43,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
+@XmlType(name = "", propOrder = { "name", "standardName", "longName", "units", "description", "axisType", "lower", "upper", "code", "msg" })
 @XmlRootElement(name = "axis")
 public class Axis {
 
@@ -70,10 +71,8 @@ public class Axis {
     /**
      * Gets the value of the axisType property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getAxisType() {
         return axisType;
@@ -82,10 +81,8 @@ public class Axis {
     /**
      * Sets the value of the axisType property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setAxisType(String value) {
         this.axisType = value;
@@ -94,10 +91,8 @@ public class Axis {
     /**
      * Gets the value of the lower property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
+     * @return possible object is {@link BigDecimal }
+     * 
      */
     public BigDecimal getLower() {
         return lower;
@@ -106,10 +101,8 @@ public class Axis {
     /**
      * Sets the value of the lower property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
+     * @param value allowed object is {@link BigDecimal }
+     * 
      */
     public void setLower(BigDecimal value) {
         this.lower = value;
@@ -118,10 +111,8 @@ public class Axis {
     /**
      * Gets the value of the upper property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
+     * @return possible object is {@link BigDecimal }
+     * 
      */
     public BigDecimal getUpper() {
         return upper;
@@ -130,10 +121,8 @@ public class Axis {
     /**
      * Sets the value of the upper property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
+     * @param value allowed object is {@link BigDecimal }
+     * 
      */
     public void setUpper(BigDecimal value) {
         this.upper = value;
@@ -142,10 +131,8 @@ public class Axis {
     /**
      * Gets the value of the msg property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getMsg() {
         return msg;
@@ -154,10 +141,8 @@ public class Axis {
     /**
      * Sets the value of the msg property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setMsg(String value) {
         this.msg = value;
@@ -166,10 +151,8 @@ public class Axis {
     /**
      * Gets the value of the code property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getCode() {
         return code;
@@ -178,10 +161,8 @@ public class Axis {
     /**
      * Sets the value of the code property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setCode(String value) {
         this.code = value;
@@ -190,10 +171,8 @@ public class Axis {
     /**
      * Gets the value of the name property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getName() {
         return name;
@@ -202,10 +181,8 @@ public class Axis {
     /**
      * Sets the value of the name property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setName(String value) {
         this.name = value;
@@ -214,10 +191,8 @@ public class Axis {
     /**
      * Gets the value of the standardName property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getStandardName() {
         return standardName;
@@ -226,10 +201,8 @@ public class Axis {
     /**
      * Sets the value of the standardName property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setStandardName(String value) {
         this.standardName = value;
@@ -238,10 +211,8 @@ public class Axis {
     /**
      * Gets the value of the longName property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getLongName() {
         return longName;
@@ -250,10 +221,8 @@ public class Axis {
     /**
      * Sets the value of the longName property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setLongName(String value) {
         this.longName = value;
@@ -262,10 +231,8 @@ public class Axis {
     /**
      * Gets the value of the units property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getUnits() {
         return units;
@@ -274,10 +241,8 @@ public class Axis {
     /**
      * Sets the value of the units property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setUnits(String value) {
         this.units = value;
@@ -286,10 +251,8 @@ public class Axis {
     /**
      * Gets the value of the description property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getDescription() {
         return description;
@@ -298,10 +261,8 @@ public class Axis {
     /**
      * Sets the value of the description property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setDescription(String value) {
         this.description = value;
