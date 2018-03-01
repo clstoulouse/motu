@@ -5,7 +5,6 @@
 // Generated on: 2018.02.26 at 11:10:46 AM CET 
 //
 
-
 package fr.cls.atoll.motu.api.message.xml;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -14,15 +13,16 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
  * 
- * 					Response on variable query of a product.
- * 				
+ * Response on variable query of a product.
  * 
- * <p>Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for anonymous complex type.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
+@XmlType(name = "", propOrder = { "msg", "code", "description", "units", "longName", "standardName", "name" })
 @XmlRootElement(name = "variable")
 public class Variable {
 
@@ -60,10 +60,8 @@ public class Variable {
     /**
      * Gets the value of the name property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getName() {
         return name;
@@ -72,10 +70,8 @@ public class Variable {
     /**
      * Sets the value of the name property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setName(String value) {
         this.name = value;
@@ -84,10 +80,8 @@ public class Variable {
     /**
      * Gets the value of the standardName property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getStandardName() {
         return standardName;
@@ -96,10 +90,8 @@ public class Variable {
     /**
      * Sets the value of the standardName property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setStandardName(String value) {
         this.standardName = value;
@@ -108,10 +100,8 @@ public class Variable {
     /**
      * Gets the value of the longName property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getLongName() {
         return longName;
@@ -120,10 +110,8 @@ public class Variable {
     /**
      * Sets the value of the longName property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setLongName(String value) {
         this.longName = value;
@@ -132,10 +120,8 @@ public class Variable {
     /**
      * Gets the value of the units property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getUnits() {
         return units;
@@ -144,10 +130,8 @@ public class Variable {
     /**
      * Sets the value of the units property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setUnits(String value) {
         this.units = value;
@@ -156,10 +140,8 @@ public class Variable {
     /**
      * Gets the value of the description property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getDescription() {
         return description;
@@ -168,10 +150,8 @@ public class Variable {
     /**
      * Sets the value of the description property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setDescription(String value) {
         this.description = value;
@@ -180,10 +160,8 @@ public class Variable {
     /**
      * Gets the value of the msg property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getMsg() {
         return msg;
@@ -192,10 +170,8 @@ public class Variable {
     /**
      * Sets the value of the msg property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setMsg(String value) {
         this.msg = value;
@@ -204,10 +180,8 @@ public class Variable {
     /**
      * Gets the value of the code property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getCode() {
         return code;
@@ -216,10 +190,8 @@ public class Variable {
     /**
      * Sets the value of the code property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setCode(String value) {
         this.code = value;

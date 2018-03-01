@@ -5,25 +5,26 @@
 // Generated on: 2018.02.26 at 11:10:46 AM CET 
 //
 
-
 package fr.cls.atoll.motu.api.message.xml;
 
 import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
  * 
- * 					Response on geospatial coverage of a product.
- * 				
+ * Response on geospatial coverage of a product.
  * 
- * <p>Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for anonymous complex type.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -50,7 +51,9 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
+@XmlType(name = "", propOrder = {
+        "north", "south", "east", "west", "northSouthResolution", "northSouthUnits", "eastWestResolution", "eastWestUnits", "depthMin", "depthMax",
+        "depthResolution", "depthUnits", "code", "msg" })
 @XmlRootElement(name = "geospatialCoverage")
 public class GeospatialCoverage {
 
@@ -86,10 +89,8 @@ public class GeospatialCoverage {
     /**
      * Gets the value of the north property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
+     * @return possible object is {@link BigDecimal }
+     * 
      */
     public BigDecimal getNorth() {
         if (north == null) {
@@ -102,10 +103,8 @@ public class GeospatialCoverage {
     /**
      * Sets the value of the north property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
+     * @param value allowed object is {@link BigDecimal }
+     * 
      */
     public void setNorth(BigDecimal value) {
         this.north = value;
@@ -114,10 +113,8 @@ public class GeospatialCoverage {
     /**
      * Gets the value of the south property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
+     * @return possible object is {@link BigDecimal }
+     * 
      */
     public BigDecimal getSouth() {
         if (south == null) {
@@ -130,10 +127,8 @@ public class GeospatialCoverage {
     /**
      * Sets the value of the south property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
+     * @param value allowed object is {@link BigDecimal }
+     * 
      */
     public void setSouth(BigDecimal value) {
         this.south = value;
@@ -142,10 +137,8 @@ public class GeospatialCoverage {
     /**
      * Gets the value of the east property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
+     * @return possible object is {@link BigDecimal }
+     * 
      */
     public BigDecimal getEast() {
         if (east == null) {
@@ -158,10 +151,8 @@ public class GeospatialCoverage {
     /**
      * Sets the value of the east property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
+     * @param value allowed object is {@link BigDecimal }
+     * 
      */
     public void setEast(BigDecimal value) {
         this.east = value;
@@ -170,10 +161,8 @@ public class GeospatialCoverage {
     /**
      * Gets the value of the west property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
+     * @return possible object is {@link BigDecimal }
+     * 
      */
     public BigDecimal getWest() {
         if (west == null) {
@@ -186,10 +175,8 @@ public class GeospatialCoverage {
     /**
      * Sets the value of the west property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
+     * @param value allowed object is {@link BigDecimal }
+     * 
      */
     public void setWest(BigDecimal value) {
         this.west = value;
@@ -198,10 +185,8 @@ public class GeospatialCoverage {
     /**
      * Gets the value of the northSouthResolution property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
+     * @return possible object is {@link BigDecimal }
+     * 
      */
     public BigDecimal getNorthSouthResolution() {
         return northSouthResolution;
@@ -210,10 +195,8 @@ public class GeospatialCoverage {
     /**
      * Sets the value of the northSouthResolution property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
+     * @param value allowed object is {@link BigDecimal }
+     * 
      */
     public void setNorthSouthResolution(BigDecimal value) {
         this.northSouthResolution = value;
@@ -222,10 +205,8 @@ public class GeospatialCoverage {
     /**
      * Gets the value of the northSouthUnits property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getNorthSouthUnits() {
         return northSouthUnits;
@@ -234,10 +215,8 @@ public class GeospatialCoverage {
     /**
      * Sets the value of the northSouthUnits property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setNorthSouthUnits(String value) {
         this.northSouthUnits = value;
@@ -246,10 +225,8 @@ public class GeospatialCoverage {
     /**
      * Gets the value of the eastWestResolution property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
+     * @return possible object is {@link BigDecimal }
+     * 
      */
     public BigDecimal getEastWestResolution() {
         return eastWestResolution;
@@ -258,10 +235,8 @@ public class GeospatialCoverage {
     /**
      * Sets the value of the eastWestResolution property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
+     * @param value allowed object is {@link BigDecimal }
+     * 
      */
     public void setEastWestResolution(BigDecimal value) {
         this.eastWestResolution = value;
@@ -270,10 +245,8 @@ public class GeospatialCoverage {
     /**
      * Gets the value of the eastWestUnits property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getEastWestUnits() {
         return eastWestUnits;
@@ -282,10 +255,8 @@ public class GeospatialCoverage {
     /**
      * Sets the value of the eastWestUnits property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setEastWestUnits(String value) {
         this.eastWestUnits = value;
@@ -294,10 +265,8 @@ public class GeospatialCoverage {
     /**
      * Gets the value of the depthMin property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
+     * @return possible object is {@link BigDecimal }
+     * 
      */
     public BigDecimal getDepthMin() {
         return depthMin;
@@ -306,10 +275,8 @@ public class GeospatialCoverage {
     /**
      * Sets the value of the depthMin property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
+     * @param value allowed object is {@link BigDecimal }
+     * 
      */
     public void setDepthMin(BigDecimal value) {
         this.depthMin = value;
@@ -318,10 +285,8 @@ public class GeospatialCoverage {
     /**
      * Gets the value of the depthMax property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
+     * @return possible object is {@link BigDecimal }
+     * 
      */
     public BigDecimal getDepthMax() {
         return depthMax;
@@ -330,10 +295,8 @@ public class GeospatialCoverage {
     /**
      * Sets the value of the depthMax property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
+     * @param value allowed object is {@link BigDecimal }
+     * 
      */
     public void setDepthMax(BigDecimal value) {
         this.depthMax = value;
@@ -342,10 +305,8 @@ public class GeospatialCoverage {
     /**
      * Gets the value of the depthResolution property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
+     * @return possible object is {@link BigDecimal }
+     * 
      */
     public BigDecimal getDepthResolution() {
         return depthResolution;
@@ -354,10 +315,8 @@ public class GeospatialCoverage {
     /**
      * Sets the value of the depthResolution property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
+     * @param value allowed object is {@link BigDecimal }
+     * 
      */
     public void setDepthResolution(BigDecimal value) {
         this.depthResolution = value;
@@ -366,10 +325,8 @@ public class GeospatialCoverage {
     /**
      * Gets the value of the depthUnits property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getDepthUnits() {
         return depthUnits;
@@ -378,10 +335,8 @@ public class GeospatialCoverage {
     /**
      * Sets the value of the depthUnits property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setDepthUnits(String value) {
         this.depthUnits = value;
@@ -390,10 +345,8 @@ public class GeospatialCoverage {
     /**
      * Gets the value of the msg property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getMsg() {
         return msg;
@@ -402,10 +355,8 @@ public class GeospatialCoverage {
     /**
      * Sets the value of the msg property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setMsg(String value) {
         this.msg = value;
@@ -414,10 +365,8 @@ public class GeospatialCoverage {
     /**
      * Gets the value of the code property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getCode() {
         return code;
@@ -426,10 +375,8 @@ public class GeospatialCoverage {
     /**
      * Sets the value of the code property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setCode(String value) {
         this.code = value;

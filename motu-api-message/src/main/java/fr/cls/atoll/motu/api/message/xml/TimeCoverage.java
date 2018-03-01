@@ -5,7 +5,6 @@
 // Generated on: 2018.02.26 at 11:10:46 AM CET 
 //
 
-
 package fr.cls.atoll.motu.api.message.xml;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -16,15 +15,16 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-
 /**
  * 
- * 					Response on temporal coverage of a product.
- * 				
+ * Response on temporal coverage of a product.
  * 
- * <p>Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for anonymous complex type.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -42,7 +42,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
+@XmlType(name = "", propOrder = { "start", "end", "timeResolution", "code", "msg" })
 @XmlRootElement(name = "timeCoverage")
 public class TimeCoverage {
 
@@ -62,10 +62,8 @@ public class TimeCoverage {
     /**
      * Gets the value of the start property.
      * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     * @return possible object is {@link XMLGregorianCalendar }
+     * 
      */
     public XMLGregorianCalendar getStart() {
         return start;
@@ -74,10 +72,8 @@ public class TimeCoverage {
     /**
      * Sets the value of the start property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     * @param value allowed object is {@link XMLGregorianCalendar }
+     * 
      */
     public void setStart(XMLGregorianCalendar value) {
         this.start = value;
@@ -86,10 +82,8 @@ public class TimeCoverage {
     /**
      * Gets the value of the end property.
      * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     * @return possible object is {@link XMLGregorianCalendar }
+     * 
      */
     public XMLGregorianCalendar getEnd() {
         return end;
@@ -98,10 +92,8 @@ public class TimeCoverage {
     /**
      * Sets the value of the end property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     * @param value allowed object is {@link XMLGregorianCalendar }
+     * 
      */
     public void setEnd(XMLGregorianCalendar value) {
         this.end = value;
@@ -110,10 +102,8 @@ public class TimeCoverage {
     /**
      * Gets the value of the timeResolution property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getTimeResolution() {
         return timeResolution;
@@ -122,10 +112,8 @@ public class TimeCoverage {
     /**
      * Sets the value of the timeResolution property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setTimeResolution(String value) {
         this.timeResolution = value;
@@ -134,10 +122,8 @@ public class TimeCoverage {
     /**
      * Gets the value of the msg property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getMsg() {
         return msg;
@@ -146,10 +132,8 @@ public class TimeCoverage {
     /**
      * Sets the value of the msg property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setMsg(String value) {
         this.msg = value;
@@ -158,10 +142,8 @@ public class TimeCoverage {
     /**
      * Gets the value of the code property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getCode() {
         return code;
@@ -170,10 +152,8 @@ public class TimeCoverage {
     /**
      * Sets the value of the code property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setCode(String value) {
         this.code = value;

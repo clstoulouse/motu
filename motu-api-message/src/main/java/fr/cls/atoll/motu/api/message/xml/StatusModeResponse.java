@@ -5,7 +5,6 @@
 // Generated on: 2018.02.26 at 11:10:46 AM CET 
 //
 
-
 package fr.cls.atoll.motu.api.message.xml;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -15,18 +14,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
-import fr.cls.atoll.motu.api.message.mxbean.StatusModeResponseMXBean;
 
+import fr.cls.atoll.motu.api.message.mxbean.StatusModeResponseMXBean;
 
 /**
  * 
- * 					Réponse à une requete d'extraction en mode
- * 					'status'
- * 				
+ * Réponse à une requete d'extraction en mode 'status'
  * 
- * <p>Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for anonymous complex type.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -51,11 +51,10 @@ import fr.cls.atoll.motu.api.message.mxbean.StatusModeResponseMXBean;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
+@XmlType(name = "", propOrder = {
+        "requestId", "status", "dateProc", "size", "remoteUri", "localUri", "dateSubmit", "userId", "userHost", "scriptVersion", "code", "msg" })
 @XmlRootElement(name = "statusModeResponse")
-public class StatusModeResponse
-    implements StatusModeResponseMXBean
-{
+public class StatusModeResponse implements StatusModeResponseMXBean {
 
     @XmlAttribute(name = "status")
     protected StatusModeType status;
@@ -87,11 +86,10 @@ public class StatusModeResponse
     /**
      * Gets the value of the status property.
      * 
-     * @return
-     *     possible object is
-     *     {@link StatusModeType }
-     *     
+     * @return possible object is {@link StatusModeType }
+     * 
      */
+    @Override
     public StatusModeType getStatus() {
         return status;
     }
@@ -99,10 +97,8 @@ public class StatusModeResponse
     /**
      * Sets the value of the status property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link StatusModeType }
-     *     
+     * @param value allowed object is {@link StatusModeType }
+     * 
      */
     public void setStatus(StatusModeType value) {
         this.status = value;
@@ -111,11 +107,10 @@ public class StatusModeResponse
     /**
      * Gets the value of the requestId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
+    @Override
     public String getRequestId() {
         return requestId;
     }
@@ -123,10 +118,8 @@ public class StatusModeResponse
     /**
      * Sets the value of the requestId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setRequestId(String value) {
         this.requestId = value;
@@ -135,11 +128,10 @@ public class StatusModeResponse
     /**
      * Gets the value of the dateProc property.
      * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     * @return possible object is {@link XMLGregorianCalendar }
+     * 
      */
+    @Override
     public XMLGregorianCalendar getDateProc() {
         return dateProc;
     }
@@ -147,10 +139,8 @@ public class StatusModeResponse
     /**
      * Sets the value of the dateProc property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     * @param value allowed object is {@link XMLGregorianCalendar }
+     * 
      */
     public void setDateProc(XMLGregorianCalendar value) {
         this.dateProc = value;
@@ -159,11 +149,10 @@ public class StatusModeResponse
     /**
      * Gets the value of the size property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
+     * @return possible object is {@link Double }
+     * 
      */
+    @Override
     public Double getSize() {
         return size;
     }
@@ -171,10 +160,8 @@ public class StatusModeResponse
     /**
      * Sets the value of the size property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
+     * @param value allowed object is {@link Double }
+     * 
      */
     public void setSize(Double value) {
         this.size = value;
@@ -183,11 +170,10 @@ public class StatusModeResponse
     /**
      * Gets the value of the remoteUri property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
+    @Override
     public String getRemoteUri() {
         return remoteUri;
     }
@@ -195,10 +181,8 @@ public class StatusModeResponse
     /**
      * Sets the value of the remoteUri property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setRemoteUri(String value) {
         this.remoteUri = value;
@@ -207,11 +191,10 @@ public class StatusModeResponse
     /**
      * Gets the value of the localUri property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
+    @Override
     public String getLocalUri() {
         return localUri;
     }
@@ -219,10 +202,8 @@ public class StatusModeResponse
     /**
      * Sets the value of the localUri property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setLocalUri(String value) {
         this.localUri = value;
@@ -231,11 +212,10 @@ public class StatusModeResponse
     /**
      * Gets the value of the dateSubmit property.
      * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     * @return possible object is {@link XMLGregorianCalendar }
+     * 
      */
+    @Override
     public XMLGregorianCalendar getDateSubmit() {
         return dateSubmit;
     }
@@ -243,10 +223,8 @@ public class StatusModeResponse
     /**
      * Sets the value of the dateSubmit property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     * @param value allowed object is {@link XMLGregorianCalendar }
+     * 
      */
     public void setDateSubmit(XMLGregorianCalendar value) {
         this.dateSubmit = value;
@@ -255,11 +233,10 @@ public class StatusModeResponse
     /**
      * Gets the value of the userId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
+    @Override
     public String getUserId() {
         return userId;
     }
@@ -267,10 +244,8 @@ public class StatusModeResponse
     /**
      * Sets the value of the userId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setUserId(String value) {
         this.userId = value;
@@ -279,11 +254,10 @@ public class StatusModeResponse
     /**
      * Gets the value of the userHost property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
+    @Override
     public String getUserHost() {
         return userHost;
     }
@@ -291,10 +265,8 @@ public class StatusModeResponse
     /**
      * Sets the value of the userHost property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setUserHost(String value) {
         this.userHost = value;
@@ -303,10 +275,8 @@ public class StatusModeResponse
     /**
      * Gets the value of the scriptVersion property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getScriptVersion() {
         return scriptVersion;
@@ -315,10 +285,8 @@ public class StatusModeResponse
     /**
      * Sets the value of the scriptVersion property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setScriptVersion(String value) {
         this.scriptVersion = value;
@@ -327,11 +295,10 @@ public class StatusModeResponse
     /**
      * Gets the value of the msg property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
+    @Override
     public String getMsg() {
         return msg;
     }
@@ -339,10 +306,8 @@ public class StatusModeResponse
     /**
      * Sets the value of the msg property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setMsg(String value) {
         this.msg = value;
@@ -351,11 +316,10 @@ public class StatusModeResponse
     /**
      * Gets the value of the code property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
+    @Override
     public String getCode() {
         return code;
     }
@@ -363,10 +327,8 @@ public class StatusModeResponse
     /**
      * Sets the value of the code property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setCode(String value) {
         this.code = value;
