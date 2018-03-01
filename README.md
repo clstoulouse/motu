@@ -14,6 +14,9 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
 # Summary
 * [Overview](#Overview)
 * [Architecture](#Architecture)
+  * [Overall](#ArchitectureOverall)
+       * [One instance](#ArchitectureOneInstance)  
+	   * [Scalability](#ArchitectureScalability)  
   * [Interfaces](#ArchitectureInterfaces)
      * [Server interfaces](#ArchitectureInterfacesServer)  
      * [External interfaces with other systems or tools](#ArchitectureInterfacesExternal)  
@@ -43,6 +46,7 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
   * [Security](#InstallSecurity)
      * [Run Motu as an HTTPS Web server](#InstallSecurityRunHTTPs)
 	 * [Motu and Single Sign On](#InstallSecuritySSO)
+  * [Install a scalable Motu over several instances](#InstallationScalability)
 * [Configuration](#Configuration)
   * [Configuration directory structure](#ConfigurationFolderStructure)
   * [Business settings](#ConfigurationBusiness)
@@ -83,14 +87,38 @@ Motu receives with authentication process user information, including a user pro
 Motu is configured to authorize or not the user to access the dataset or group of datasets which user is trying to access.  
 For administrators, Motu allows to monitor the usage of the server: the logs produced by Motu allow to know who (login) requests what (dataset) and when, with extraction criterias.
 
-
-
-
 # <a name="Architecture">Architecture</a>  
-Motu is a Java Web Application running inside the Apache Tomcat application server.
+Motu is a Java Web Application running inside the Apache Tomcat application server. Motu can be run as a [single application](#ArchitectureSingleInstance) or can be scaled over [several instances](#ArchitectureScalability).
 
-![Software architecture](./motu-parent/src/doc/softwareArchitecture.png "Motu software architecture")
 
+## <a name="ArchitectureOverall">Architecture overall</a>  
+
+### <a name="ArchitectureSingleInstance">Architecture single instance</a>  
+The clients ["motu-client-python"](#ClientPython) or an HTTP client like a [web browser](#ClientRESTAPI) are used to connect to Motu services.  
+A frontal web, [Apache HTTPd](#InstallFrontal) for example, is used as a reverse proxy to redirect request to Motu server and also to serve the [downloaded](#motuConfig-downloadHttpUrl) data from Motu [download folder](#motuConfig-extractionPath).  
+Motu server, runs on a Apache Tomcat server and can serve files either directly ["DGF"](#BSconfigServiceDatasetType) or by delegating extraction to Thredds server with NCSS or OpenDap [protocols](#BSconfigServiceDatasetType).  
+A NFS server is used to share the netcdf files between Thredds and Motu DGF when they are not deployed on the same host.  
+An (SSO CAS server)[#ConfigurationSystemCASSSO] is used for the authentication of users but Motu can also be deployed without any authentication system.  
+The Apache HTTPd, on the top right corner is used to [serve the graphic chart}(#InstallPublicFilesOnCentralServer) when several Motu Web server are deployed.
+
+The schema below shows an example of Motu scalability architecture. The "i1, i2" are the Motu server deployed. They have to share the same [business configuration file](#ConfigurationBusiness) and the [download folder](#motuConfig-extractionPath).      
+
+![Software architecture](./motu-parent/src/doc/softwareArchitecture.png "Motu software architecture, one instance")
+
+
+### <a name="ArchitectureScalability">Architecture scalability</a>  
+To run Motu over several instances, a [Redis server](#RedisServerConfig) has to be deployed in order to share to request id and status. The download folder of Motu has also to be shared between the different Motu instances.  
+If can be on a NFS server or a GLusterFS server.  
+The frontal web server "Apache HTTPd" must server the downloaded files and implements the load balencer between all Motu instances.   
+All other server, CAS, NFS remains as on the single instance architecture.   
+The same source code is used to run Motu with a single architecture or with several instances. It is just done by [configuration](#InstallationScalability).  
+When Motu is scalable, one Motu server instance can run a download request, another distinct Motu server instance can respond to a get status request and a last one can respond the URL on the result file. 
+
+![Software architecture](./motu-parent/src/doc/softwareArchitectureScalability.png "Motu software architecture, scalability")
+
+
+
+	   
 # <a name="ArchitectureInterfaces">Interfaces</a>  
 ## <a name="ArchitectureInterfacesServer">Server interfaces</a>  
 All ports are defined in [motu.properties](#ConfigurationSystem) configuration file.
@@ -366,7 +394,8 @@ cd target-ant/delivery/YYYYMMDDhhmmssSSS
 ## <a name="InstallPrerequisites">Prerequisites</a>  
 
 In this chapter some paths are set. For example "/opt/cmems-cis" is often written to talk about the installation path.
-You are free to install Motu in any other folder, so in the case, replace "/opt/cmems-cis" by your installation folder.
+You are free to install Motu in any other folder, so in the case, replace "/opt/cmems-cis" by your installation folder.  
+This installation is used to install Motu on a [single instance](#ArchitectureSingleInstance). To scale Motu on [several instances](#ArchitectureScalability), refers to [Install a scalable Motu over several instances](#InstallationScalability).
 
 ### <a name="InstallPrerequisitesHard">Motu host, hardware settings</a>
 OS target: Linux 64bits (Tested on centos-7.2.1511)
@@ -884,8 +913,14 @@ You have two choices:
 ### <a name="InstallSecuritySSO">Motu and Single Sign On</a>  
 In order to manage SSO (Single Sign On) connections to Motu web server, Motu uses an HTTPs client.  
 All documentation about how to setup is written in chapter [CAS SSO server](#ConfigurationSystemCASSSO).
-     
-     
+
+
+## <a name="InstallationScalability">Install a scalable Motu over several instances</a>  
+You have to install a [Redis server](https://redis.io/). (Motu has been tested with Redis 4.0.)
+To use Redis in order to share the request ids and status between all Motu instances, you just have to set the Redis settings in the [business configuration file](#RedisServerConfig). If this parameter is not set, the request id and status are stored in RAM.     
+You have to share the [download folder](#motuConfig-extractionPath) folder between all instances with a NFS mount, GlusterFS or any other file sharing system.   
+You have to set a frontal web server to server the [downloaded](#motuConfig-downloadHttpUrl) files from the Motu server and to load balance the requests between all Motu servers. 
+
 # <a name="Configuration">Configuration</a>  
 
 This chapter describes the Motu configuration settings.  
@@ -1219,6 +1254,8 @@ process smallest requests by running the thread on the other processor core. Sp 
 @Deprecated from v3 This parameter is not used.
 
 #### <a name="RedisServerConfig">Attributes defined in redisConfig node</a>  
+This optional node is used to run Motu in a [scalable architecture](#ArchitectureScalability). Do not add this node when you just run one single Motu instance.  
+Once this node is added, Motu stores all its request ids and status in Redis.  
 
 ##### host
 Define the host (ip or server name) where is deployed the Redis server used by Motu to share the RequestId and RequestStatus data.
