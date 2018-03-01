@@ -915,6 +915,7 @@ You can configure 3 main categories:
 * [MotuConfig node : general settings](#BSmotuConfig)
 * [ConfigService node : catalog settings](#BSconfigService)
 * [QueueServerConfig node : request queue settings](#BSqueueServerConfig)
+* [RedisConfig node : Redis server config](#RedisServerConfig)
   
   
 If you have not this file, you can extract it (set the good version motu-web-X.Y.Z.jar):  
@@ -1216,6 +1217,20 @@ process smallest requests by running the thread on the other processor core. Sp 
 
 ##### Child node: lowPriorityWaiting
 @Deprecated from v3 This parameter is not used.
+
+#### <a name="RedisServerConfig">Attributes defined in redisConfig node</a>  
+
+##### host
+Define the host (ip or server name) where is deployed the Redis server used by Motu to share the RequestId and RequestStatus data.
+Default value is localhost
+
+##### port
+Define the port used by the Redis server used by Motu to share the requestId and RequestStatus data.
+Default value is 6379  
+
+##### prefix
+Define the prefix used to build the RequestId value of the shared RequestStatus data.
+Default value is requestStatus 
 
 ## <a name="ConfigurationSystem">System settings</a>  
 
