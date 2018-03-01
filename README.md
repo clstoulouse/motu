@@ -139,7 +139,8 @@ Motu has interfaces with other systems:
 * __CDO command line tool__: [CDO](#InstallCDO) is used to deal with 2 types of download requests, which are not covered by NCSS service of Thredds Data Server:  
   * a download request on a __range of depths__,  
   * a download request that come __across the boundary__ of the datasets (for global datasets)  
-
+* __Redis__: Stores the request id and status into the Redis server when Motu is scaled over several instances.  
+  
 # <a name="ArchitectureDesign">Design</a>  
 The Motu application has been designed by implementing the Three-Layered Services Application design. It takes many advantages in maintenance cost efficiency and in the ease of its future evolutivity.  
 Three layers are set in the core "motu-web" project:  
