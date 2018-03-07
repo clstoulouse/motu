@@ -917,7 +917,7 @@ All documentation about how to setup is written in chapter [CAS SSO server](#Con
 
 
 ## <a name="InstallationScalability">Install a scalable Motu over several instances</a>  
-You have to install a [Redis server](https://redis.io/). (Motu has been tested with Redis 4.0.)
+You have to install a [Redis server](https://redis.io/). (Motu has been tested with Redis version 4.0.8, 64 bit)
 To use Redis in order to share the request ids and status between all Motu instances, you just have to set the Redis settings in the [business configuration file](#RedisServerConfig). If this parameter is not set, the request id and status are stored in RAM.     
 You have to share the [download folder](#motuConfig-extractionPath) folder between all instances with a NFS mount, GlusterFS or any other file sharing system.   
 You have to set a frontal web server to server the [downloaded](#motuConfig-downloadHttpUrl) files from the Motu server and to load balance the requests between all Motu servers. 
