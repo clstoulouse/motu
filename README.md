@@ -14,6 +14,9 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
 # Summary
 * [Overview](#Overview)
 * [Architecture](#Architecture)
+  * [Overall](#ArchitectureOverall)
+       * [One instance](#ArchitectureOneInstance)  
+	   * [Scalability](#ArchitectureScalability)  
   * [Interfaces](#ArchitectureInterfaces)
      * [Server interfaces](#ArchitectureInterfacesServer)  
      * [External interfaces with other systems or tools](#ArchitectureInterfacesExternal)  
@@ -43,6 +46,7 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
   * [Security](#InstallSecurity)
      * [Run Motu as an HTTPS Web server](#InstallSecurityRunHTTPs)
 	 * [Motu and Single Sign On](#InstallSecuritySSO)
+  * [Install a scalable Motu over several instances](#InstallationScalability)
 * [Configuration](#Configuration)
   * [Configuration directory structure](#ConfigurationFolderStructure)
   * [Business settings](#ConfigurationBusiness)
@@ -83,14 +87,38 @@ Motu receives with authentication process user information, including a user pro
 Motu is configured to authorize or not the user to access the dataset or group of datasets which user is trying to access.  
 For administrators, Motu allows to monitor the usage of the server: the logs produced by Motu allow to know who (login) requests what (dataset) and when, with extraction criterias.
 
-
-
-
 # <a name="Architecture">Architecture</a>  
-Motu is a Java Web Application running inside the Apache Tomcat application server.
+Motu is a Java Web Application running inside the Apache Tomcat application server. Motu can be run as a [single application](#ArchitectureSingleInstance) or can be scaled over [several instances](#ArchitectureScalability).
 
-![Software architecture](./motu-parent/src/doc/softwareArchitecture.png "Motu software architecture")
 
+## <a name="ArchitectureOverall">Architecture overall</a>  
+
+### <a name="ArchitectureSingleInstance">Architecture single instance</a>  
+The clients ["motu-client-python"](#ClientPython) or an HTTP client like a [web browser](#ClientRESTAPI) are used to connect to Motu services.  
+A frontal web, [Apache HTTPd](#InstallFrontal) for example, is used as a reverse proxy to redirect request to Motu server and also to serve the [downloaded](#motuConfig-downloadHttpUrl) data from Motu [download folder](#motuConfig-extractionPath).  
+Motu server, runs on a Apache Tomcat server and can serve files either directly ["DGF"](#BSconfigServiceDatasetType) or by delegating extraction to Thredds server with NCSS or OpenDap [protocols](#BSconfigServiceDatasetType).  
+A NFS server is used to share the netcdf files between Thredds and Motu DGF when they are not deployed on the same host.  
+An (SSO CAS server)[#ConfigurationSystemCASSSO] is used for the authentication of users but Motu can also be deployed without any authentication system.  
+The Apache HTTPd, on the top right corner is used to [serve the graphic chart}(#InstallPublicFilesOnCentralServer) when several Motu Web server are deployed.
+
+The schema below shows an example of Motu scalability architecture. The "i1, i2" are the Motu server deployed. They have to share the same [business configuration file](#ConfigurationBusiness) and the [download folder](#motuConfig-extractionPath).      
+
+![Software architecture](./motu-parent/src/doc/softwareArchitecture.png "Motu software architecture, one instance")
+
+
+### <a name="ArchitectureScalability">Architecture scalability</a>  
+To run Motu over several instances, a [Redis server](#RedisServerConfig) has to be deployed in order to share to request id and status. The download folder of Motu has also to be shared between the different Motu instances.  
+If can be on a NFS server or a GLusterFS server.  
+The frontal web server "Apache HTTPd" must server the downloaded files and implements the load balencer between all Motu instances.   
+All other server, CAS, NFS remains as on the single instance architecture.   
+The same source code is used to run Motu with a single architecture or with several instances. It is just done by [configuration](#InstallationScalability).  
+When Motu is scalable, one Motu server instance can run a download request, another distinct Motu server instance can respond to a get status request and a last one can respond the URL on the result file. 
+
+![Software architecture](./motu-parent/src/doc/softwareArchitectureScalability.png "Motu software architecture, scalability")
+
+
+
+	   
 # <a name="ArchitectureInterfaces">Interfaces</a>  
 ## <a name="ArchitectureInterfacesServer">Server interfaces</a>  
 All ports are defined in [motu.properties](#ConfigurationSystem) configuration file.
@@ -111,7 +139,8 @@ Motu has interfaces with other systems:
 * __CDO command line tool__: [CDO](#InstallCDO) is used to deal with 2 types of download requests, which are not covered by NCSS service of Thredds Data Server:  
   * a download request on a __range of depths__,  
   * a download request that come __across the boundary__ of the datasets (for global datasets)  
-
+* __Redis__: Stores the request id and status into the Redis server when Motu is scaled over several instances.  
+  
 # <a name="ArchitectureDesign">Design</a>  
 The Motu application has been designed by implementing the Three-Layered Services Application design. It takes many advantages in maintenance cost efficiency and in the ease of its future evolutivity.  
 Three layers are set in the core "motu-web" project:  
@@ -366,7 +395,8 @@ cd target-ant/delivery/YYYYMMDDhhmmssSSS
 ## <a name="InstallPrerequisites">Prerequisites</a>  
 
 In this chapter some paths are set. For example "/opt/cmems-cis" is often written to talk about the installation path.
-You are free to install Motu in any other folder, so in the case, replace "/opt/cmems-cis" by your installation folder.
+You are free to install Motu in any other folder, so in the case, replace "/opt/cmems-cis" by your installation folder.  
+This installation is used to install Motu on a [single instance](#ArchitectureSingleInstance). To scale Motu on [several instances](#ArchitectureScalability), refers to [Install a scalable Motu over several instances](#InstallationScalability).
 
 ### <a name="InstallPrerequisitesHard">Motu host, hardware settings</a>
 OS target: Linux 64bits (Tested on centos-7.2.1511)
@@ -884,8 +914,14 @@ You have two choices:
 ### <a name="InstallSecuritySSO">Motu and Single Sign On</a>  
 In order to manage SSO (Single Sign On) connections to Motu web server, Motu uses an HTTPs client.  
 All documentation about how to setup is written in chapter [CAS SSO server](#ConfigurationSystemCASSSO).
-     
-     
+
+
+## <a name="InstallationScalability">Install a scalable Motu over several instances</a>  
+You have to install a [Redis server](https://redis.io/). (Motu has been tested with Redis version 4.0.8, 64 bit)
+To use Redis in order to share the request ids and status between all Motu instances, you just have to set the Redis settings in the [business configuration file](#RedisServerConfig). If this parameter is not set, the request id and status are stored in RAM.     
+You have to share the [download folder](#motuConfig-extractionPath) folder between all instances with a NFS mount, GlusterFS or any other file sharing system.   
+You have to set a frontal web server to server the [downloaded](#motuConfig-downloadHttpUrl) files from the Motu server and to load balance the requests between all Motu servers. 
+
 # <a name="Configuration">Configuration</a>  
 
 This chapter describes the Motu configuration settings.  
@@ -915,6 +951,7 @@ You can configure 3 main categories:
 * [MotuConfig node : general settings](#BSmotuConfig)
 * [ConfigService node : catalog settings](#BSconfigService)
 * [QueueServerConfig node : request queue settings](#BSqueueServerConfig)
+* [RedisConfig node : Redis server config](#RedisServerConfig)
   
   
 If you have not this file, you can extract it (set the good version motu-web-X.Y.Z.jar):  
@@ -1216,6 +1253,22 @@ process smallest requests by running the thread on the other processor core. Sp 
 
 ##### Child node: lowPriorityWaiting
 @Deprecated from v3 This parameter is not used.
+
+#### <a name="RedisServerConfig">Attributes defined in redisConfig node</a>  
+This optional node is used to run Motu in a [scalable architecture](#ArchitectureScalability). Do not add this node when you just run one single Motu instance.  
+Once this node is added, Motu stores all its request ids and status in Redis.  
+
+##### host
+Define the host (ip or server name) where is deployed the Redis server used by Motu to share the RequestId and RequestStatus data.
+Default value is localhost
+
+##### port
+Define the port used by the Redis server used by Motu to share the requestId and RequestStatus data.
+Default value is 6379  
+
+##### prefix
+Define the prefix used to build the RequestId value of the shared RequestStatus data.
+Default value is requestStatus 
 
 ## <a name="ConfigurationSystem">System settings</a>  
 
@@ -2182,8 +2235,8 @@ __Parameters__:
 * __x_hi__ [0,1]: high longitude of a geographic extraction. Default value is 180.  
 * __z_lo__ [0,1]: low vertical depth . Default value is 0.  
 * __z_hi__ [0,1]: high vertical depth. Default value is 180.  
-* __t_lo__ [0,1]: Start date of a temporal extraction. If not set, the default value is the first date/time available for the dataset. Format is "yyy-mm-dd" or "yyyy-dd h:m:s" or "yyyy-ddTh:m:s".  
-* __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is "yyy-mm-dd" or "yyyy-dd h:m:s" or "yyyy-ddTh:m:s".  
+* __t_lo__ [0,1]: Start date of a temporal extraction. If not set, the default value is the first date/time available for the dataset. Format is  "yyy-mm-dd" or "yyyy-mm-dd h:m:s" or "yyyy-mm-ddTh:m:s" and depends on the requested dataset.  
+* __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is "yyy-mm-dd" or "yyyy-mm-dd h:m:s" or "yyyy-mm-ddTh:m:s" and depends on the requested dataset.    
 * __output__ [0,1]: netcdf. Due to a TDS issue, only netcdf is available. netcdf4 will be available as soon as TDS will have resolved its issue.
 * __mode__ [0,1]: Specify the desired result mode. Enumeration value from [url, console, status] represented as a string. If no mode, "url" value is the default mode.  
 

@@ -569,14 +569,10 @@ public class MotuRequestMainTest {
                 return;
             }
 
-            Long requestId = statusModeResponse.getRequestId();
+            String requestId = statusModeResponse.getRequestId();
 
             if (requestId == null) {
                 System.out.println("ERROR - no request id set");
-                return;
-            }
-            if (requestId.longValue() < 0) {
-                System.out.println("ERROR - no request id set (< 0) ");
                 return;
             }
 
@@ -620,14 +616,10 @@ public class MotuRequestMainTest {
                 return;
             }
 
-            Long requestId = statusModeResponse.getRequestId();
+            String requestId = statusModeResponse.getRequestId();
 
             if (requestId == null) {
                 System.out.println("ERROR - no request id set");
-                return;
-            }
-            if (requestId.longValue() < 0) {
-                System.out.println("ERROR - no request id set (< 0) ");
                 return;
             }
 

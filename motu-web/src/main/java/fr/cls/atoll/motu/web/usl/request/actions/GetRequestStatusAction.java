@@ -60,7 +60,7 @@ public class GetRequestStatusAction extends AbstractAction {
 
     @Override
     public void process() throws MotuException {
-        Long requestId = rqtIdValidator.getParameterValueValidated();
+        String requestId = rqtIdValidator.getParameterValueValidated();
 
         try {
             if (requestId != null) {

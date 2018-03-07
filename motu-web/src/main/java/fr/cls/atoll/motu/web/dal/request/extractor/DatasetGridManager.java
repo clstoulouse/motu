@@ -21,13 +21,14 @@ import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeNotFoundException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
-import fr.cls.atoll.motu.web.bll.request.model.RequestProductParameters;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.model.RequestProductParameters;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProductParameters.RangeComparator;
 import fr.cls.atoll.motu.web.common.utils.ListUtils;
+import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.VarData;
@@ -611,8 +612,10 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
                     .addReadingTime(getRequestDownloadStatus().getRequestProduct().getProduct().openNetCdfReader());
 
             // Create output NetCdf file
-            getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().setExtractFilename(NetCdfWriter
-                    .getUniqueNetCdfFileName(getRequestDownloadStatus().getRequestProduct().getProduct().getProductId()));
+            String fileName = NetCdfWriter.getUniqueNetCdfFileName(getRequestDownloadStatus().getRequestProduct().getProduct().getProductId());
+            getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().setExtractFilename(fileName);
+            DALManager.getInstance().getRequestManager().getDalRequestStatusManager().setOutputFileName(getRequestDownloadStatus().getRequestId(),
+                                                                                                        fileName);
 
             setHasOutputDimension();
         }
@@ -637,7 +640,8 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
             Array timeAxisData = getRequestDownloadStatus().getRequestProduct().getProduct().getTimeAxisData();
             CoordinateAxis timeAxis = getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getTimeAxis();
 
-            ExtractCriteriaDatetime extractCriteriaDatetime = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().findCriteriaDatetime();
+            ExtractCriteriaDatetime extractCriteriaDatetime = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters()
+                    .findCriteriaDatetime();
             if (extractCriteriaDatetime != null) {
                 tRange = extractCriteriaDatetime.toRange(timeAxisData, timeAxis.getUnitsString(), tRangeValue);
             }
@@ -666,7 +670,8 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
         yxRange = null;
         if (getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().hasLatLonAxis()) {
             yxRange = new Range[2];
-            ExtractCriteriaLatLon extractCriteriaLatLon = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().findCriteriaLatLon();
+            ExtractCriteriaLatLon extractCriteriaLatLon = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters()
+                    .findCriteriaLatLon();
             if (extractCriteriaLatLon != null) {
                 CoordinateSystem cs = new CoordinateSystem(
                         getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReaderDataset(),
@@ -700,7 +705,8 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
         zRange = null;
         if (getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().hasZAxis()) {
             Array zAxisData = getRequestDownloadStatus().getRequestProduct().getProduct().getZAxisData();
-            ExtractCriteriaDepth extractCriteriaDepth = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().findCriteriaDepth();
+            ExtractCriteriaDepth extractCriteriaDepth = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters()
+                    .findCriteriaDepth();
             if (extractCriteriaDepth != null) {
                 zRange = extractCriteriaDepth.toRange(zAxisData, zRangeValue);
             }
@@ -733,7 +739,8 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
         listYXRanges = null;
 
         if (getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().hasLatLonAxis()) {
-            ExtractCriteriaLatLon extractCriteriaLatLon = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().findCriteriaLatLon();
+            ExtractCriteriaLatLon extractCriteriaLatLon = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters()
+                    .findCriteriaLatLon();
             if (extractCriteriaLatLon == null) {
                 extractCriteriaLatLon = new ExtractCriteriaLatLon();
                 getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getListCriteria().add(extractCriteriaLatLon);

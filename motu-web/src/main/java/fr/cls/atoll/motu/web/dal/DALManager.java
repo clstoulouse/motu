@@ -50,6 +50,7 @@ public class DALManager implements IDALManager {
     @Override
     public void init() throws MotuException {
         dalConfigManager.init();
+        dalRequestManager.init();
         dalCatalogManager.init();
         dalMessagesErrorManager.init();
     }

@@ -26,7 +26,7 @@ package fr.cls.atoll.motu.web.usl.servlet.context;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.management.AttributeNotFoundException;
@@ -171,8 +171,8 @@ public class MotuWebEngineContextListener implements ServletContextListener {
     private int[] getPendingAnInProgressRequestNumber() throws MotuException {
         int pendingRequestNbr = 0;
         int inProgressRequestNbr = 0;
-        List<Long> requestIds = BLLManager.getInstance().getRequestManager().getRequestIds();
-        for (Long requestId : requestIds) {
+        Set<String> requestIds = BLLManager.getInstance().getRequestManager().getRequestIds();
+        for (String requestId : requestIds) {
             RequestDownloadStatus rds = BLLManager.getInstance().getRequestManager().getDownloadRequestStatus(requestId);
             if (rds != null) {
                 StatusModeResponse statusModeResponse = XMLConverter.convertStatusModeResponse(rds);

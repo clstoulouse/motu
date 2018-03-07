@@ -61,6 +61,7 @@
 		<RollingFile name="log-file-infos.queue" 
 		    fileName="${sys:motu-log-dir}/motuQSlog.xml"
 			filePattern="${sys:motu-log-dir}/motuQSlog.xml.%d{MM-yyyy}"
+			immediateFlush="true"
 			append="true">
 			<!-- fileFormat=xml or csv -->
 			<MotuCustomLayout fileFormat="xml" />

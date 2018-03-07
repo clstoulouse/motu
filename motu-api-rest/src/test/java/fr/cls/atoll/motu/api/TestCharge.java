@@ -24,14 +24,14 @@
  */
 package fr.cls.atoll.motu.api;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.rest.MotuRequest;
 import fr.cls.atoll.motu.api.rest.MotuRequestException;
 import fr.cls.atoll.motu.api.rest.MotuRequestParameters;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * 
@@ -48,9 +48,9 @@ public class TestCharge {
      * @param args
      */
 
-    private final List<Long> requestIDs = Collections.synchronizedList(new ArrayList<Long>());
-    private final List<Long> requestIDs2 = Collections.synchronizedList(new ArrayList<Long>());
-    private final List<Long> requestIDs3 = Collections.synchronizedList(new ArrayList<Long>());
+    private final List<String> requestIDs = Collections.synchronizedList(new ArrayList<String>());
+    private final List<String> requestIDs2 = Collections.synchronizedList(new ArrayList<String>());
+    private final List<String> requestIDs3 = Collections.synchronizedList(new ArrayList<String>());
     // private List<Long> requestIDs = new ArrayList<Long>();
 
     public Client client = null;
@@ -157,14 +157,10 @@ public class TestCharge {
                 return;
             }
 
-            Long requestId = statusModeResponse.getRequestId();
+            String requestId = statusModeResponse.getRequestId();
 
             if (requestId == null) {
                 System.out.println("ERROR - no request id set");
-                return;
-            }
-            if (requestId.longValue() < 0) {
-                System.out.println("ERROR - no request id set (< 0) ");
                 return;
             }
 
@@ -186,7 +182,7 @@ public class TestCharge {
     }
 
     public class Client extends Thread {
-        public Client(String name, int interval, String servletUrl, List<Long> requestIDs) {
+        public Client(String name, int interval, String servletUrl, List<String> requestIDs) {
             this.servletUrl = servletUrl;
             this.requestIDs = requestIDs;
             this.name = name;
@@ -195,7 +191,7 @@ public class TestCharge {
         }
 
         private boolean running = true;
-        private List<Long> requestIDs = null;
+        private List<String> requestIDs = null;
         private String servletUrl = "";
         private String name = "";
         private int interval = 1000;
@@ -205,13 +201,13 @@ public class TestCharge {
         public void run() {
 
             while (running) {
-                List<Long> requestIDsToDelete = new ArrayList<Long>();
+                List<String> requestIDsToDelete = new ArrayList<String>();
 
                 synchronized (requestIDs) {
                     System.out.print(">>>>>>>>>>>>>>>> ");
                     System.out.print(name);
                     System.out.println(" - Begin Status <<<<<<<<<<<<<<<<<<<<");
-                    for (Long requestId : requestIDs) {
+                    for (String requestId : requestIDs) {
                         StatusModeResponse statusModeResponse = null;
                         try {
                             statusModeResponse = motuRequestGetStatus.executeActionGetStatusParams(requestId);
@@ -226,20 +222,20 @@ public class TestCharge {
 
                         if (MotuRequest.isStatusError(statusModeResponse)) {
 
-                            System.out.print(String.format("%s - request %d in ERROR: ", name, requestId.longValue()));
+                            System.out.print(String.format("%s - request %s in ERROR: ", name, requestId));
                             System.out.println(statusModeResponse.getMsg());
 
                             requestIDsToDelete.add(requestId);
 
                         } else if (MotuRequest.isStatusDone(statusModeResponse)) {
 
-                            System.out.print(String.format("%s - request %d in DONE and extracted file is: ", name, requestId.longValue()));
+                            System.out.print(String.format("%s - request %s in DONE and extracted file is: ", name, requestId));
                             System.out.println(statusModeResponse.getMsg());
 
                             requestIDsToDelete.add(requestId);
 
                         } else {
-                            System.out.print(String.format("%s - request %d: ", name, requestId.longValue()));
+                            System.out.print(String.format("%s - request %s: ", name, requestId));
                             System.out.println(statusModeResponse.getMsg());
                         }
                         try {
