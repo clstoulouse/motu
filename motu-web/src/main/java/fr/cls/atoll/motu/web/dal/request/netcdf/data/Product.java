@@ -683,10 +683,16 @@ public class Product implements Comparator<Product> {
 
         double datetime = 0.0;
 
-        for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
-            datetime = it.getDoubleNext();
+        for (int i = 0; i < array.getSize(); i++) {
+            datetime = array.getDouble(i);
             list.add(0, NetCdfReader.getDateAsGMTNoZeroTimeString(datetime, productMetaData.getTimeAxis().getUnitsString()));
         }
+
+        // for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
+        // datetime = it.getDoubleNext();
+        // list.add(0, NetCdfReader.getDateAsGMTNoZeroTimeString(datetime,
+        // productMetaData.getTimeAxis().getUnitsString()));
+        // }
 
         return list;
     }
