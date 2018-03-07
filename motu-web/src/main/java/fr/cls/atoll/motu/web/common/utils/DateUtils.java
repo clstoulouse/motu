@@ -83,13 +83,13 @@ public class DateUtils {
             sb.insert(0, "." + String.format("%03d", milli));
         }
         if (sec > 0 || sb.length() > 0) {
-            sb.insert(0, ":" + String.format("%02d", sec));
+            sb.insert(0, ":" + String.format("%02d", sec) + "S");
         }
         if (min > 0 || sb.length() > 0) {
-            sb.insert(0, ":" + String.format("%02d", min));
+            sb.insert(0, ":" + String.format("%02d", min) + "M");
         }
         if (hour > 0 || sb.length() > 0) {
-            sb.insert(0, String.format("%02d", hour));
+            sb.insert(0, String.format("%02d", hour) + "H");
         }
         if (sb.length() > 0) {
             sb.insert(0, "T");
