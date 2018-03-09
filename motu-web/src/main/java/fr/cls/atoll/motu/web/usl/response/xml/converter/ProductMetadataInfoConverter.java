@@ -437,17 +437,17 @@ public class ProductMetadataInfoConverter {
         String DATE_FORMAT = "yyyy-MM-dd";
         DateTimeFormatter df = DateTimeFormat.forPattern(DATE_FORMAT);
         List<Long> timeList = new ArrayList<>();
+        List<AvailablePeriod> availablePeriodList = new ArrayList<>();
+        Long periodEnd = null;
+        Long periodStep = null;
+        int stepNumber = 0;
+        Long periodStart = null;
+        StringBuilder sb = new StringBuilder();
         for (Date currentDate : listPeriod) {
             Long dt = currentDate.getTime();
             timeList.add(dt);
         }
         Collections.sort(timeList);
-
-        List<AvailablePeriod> availablePeriodList = new ArrayList<>();
-        Long periodStart = null;
-        Long periodEnd = null;
-        Long periodStep = null;
-        int stepNumber = 0;
         for (int i = 0; i < timeList.size(); i++) {
             stepNumber++;
             Long iTime = timeList.get(i);
@@ -474,9 +474,10 @@ public class ProductMetadataInfoConverter {
             }
         }
         // Last step
-        availablePeriodList.add(new AvailablePeriod(periodStart, periodEnd, periodStep, stepNumber));
+        if (periodEnd != null) {
+            availablePeriodList.add(new AvailablePeriod(periodStart, periodEnd, periodStep, stepNumber));
+        }
 
-        StringBuilder sb = new StringBuilder();
         for (AvailablePeriod ap : availablePeriodList) {
             sb.append(ap.toString("yyyy-MM-dd'T'HH:mm:ss'Z'") + ",");
         }
