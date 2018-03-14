@@ -22,6 +22,13 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
  */
 public class DateUtils {
 
+    public static final long ONE_SECOND_IN_MILLI = 1000L;
+    public static final long ONE_MINUTE_IN_MILLI = 60 * ONE_SECOND_IN_MILLI;
+    public static final long ONE_HOUR_IN_MILLI = 60 * ONE_MINUTE_IN_MILLI;
+    public static final long ONE_DAY_IN_MILLI = 24 * ONE_HOUR_IN_MILLI;
+    public static final long ONE_MONTH_IN_MILLI = 30 * ONE_DAY_IN_MILLI;
+    public static final long ONE_YEAR_IN_MILLI = 365 * ONE_DAY_IN_MILLI;
+
     /**
      * Date to XML gregorian calendar.
      * 
@@ -57,45 +64,45 @@ public class DateUtils {
      * @return A duration example P18Y9M4DT11H9M8S
      */
     public static String getDurationISO8601(long timeInMSec) {
-        // One year = 86400000 * 365 / 12;
         double totalTime = 0.0;
-        int year = (int) Math.floor((timeInMSec - totalTime) / 31536000000L);
-        totalTime += year * 31536000000L;
-        // One month = 86400000 * 365 / 12;
-        int month = (int) Math.floor((timeInMSec - totalTime) / 2628000000L);
-        totalTime += month * 2628000000L;
-        int day = (int) Math.floor((timeInMSec - totalTime) / 86400000L);
-        totalTime += day * 86400000L;
+        int year = (int) Math.floor((timeInMSec - totalTime) / ONE_YEAR_IN_MILLI);
+        totalTime += year * ONE_YEAR_IN_MILLI;
 
-        int hour = (int) Math.floor((timeInMSec - totalTime) / 3600000); // timeInMSec % 360000;
-        totalTime += hour * 3600000;
+        int month = (int) Math.floor((timeInMSec - totalTime) / ONE_MONTH_IN_MILLI);
+        totalTime += month * ONE_MONTH_IN_MILLI;
 
-        int min = (int) Math.floor((timeInMSec - totalTime) / 60000); // timeInMSec % 60000;
-        totalTime += min * 60000;
+        int day = (int) Math.floor((timeInMSec - totalTime) / ONE_DAY_IN_MILLI);
+        totalTime += day * ONE_DAY_IN_MILLI;
 
-        int sec = (int) Math.floor((timeInMSec - totalTime) / 1000); // (timeInMSec % 60000) / 1000;
-        totalTime += sec * 1000;
+        int hour = (int) Math.floor((timeInMSec - totalTime) / ONE_HOUR_IN_MILLI);
+        totalTime += hour * ONE_HOUR_IN_MILLI;
 
-        int milli = (int) Math.floor((timeInMSec - totalTime)); // (timeInMSec % 60000) % 1000;
+        int min = (int) Math.floor((timeInMSec - totalTime) / ONE_MINUTE_IN_MILLI);
+        totalTime += min * ONE_MINUTE_IN_MILLI;
+
+        int sec = (int) Math.floor((timeInMSec - totalTime) / ONE_SECOND_IN_MILLI);
+        totalTime += sec * ONE_SECOND_IN_MILLI;
+
+        int milli = (int) Math.floor((timeInMSec - totalTime));
 
         StringBuilder sb = new StringBuilder();
         if (milli > 0) {
             sb.insert(0, "." + String.format("%03d", milli));
         }
-        if (sec > 0 || sb.length() > 0) {
-            sb.insert(0, ":" + String.format("%02d", sec) + "S");
+        if (sec > 0) {
+            sb.insert(0, sec + "S");
         }
-        if (min > 0 || sb.length() > 0) {
-            sb.insert(0, ":" + String.format("%02d", min) + "M");
+        if (min > 0) {
+            sb.insert(0, min + "M");
         }
-        if (hour > 0 || sb.length() > 0) {
-            sb.insert(0, String.format("%02d", hour) + "H");
+        if (hour > 0) {
+            sb.insert(0, hour + "H");
         }
         if (sb.length() > 0) {
             sb.insert(0, "T");
         }
 
-        if (day > 0 || sb.length() <= 1) {
+        if (day > 0) {
             sb.insert(0, day + "D");
         }
 

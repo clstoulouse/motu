@@ -22,22 +22,40 @@ public class DateUtilsTest {
     @Test
     public void testGetDurationISO8601() {
         // @formatter:off
-            //Time testing
-        assertTrue(DateUtils.getDurationISO8601(       1).equalsIgnoreCase("PT00:00:00.001"));
-        assertTrue(DateUtils.getDurationISO8601(    1000).equalsIgnoreCase("PT00:00:01"));
-        assertTrue(DateUtils.getDurationISO8601(   60000).equalsIgnoreCase("PT00:01"));
-        assertTrue(DateUtils.getDurationISO8601( 3600000).equalsIgnoreCase("PT01"));
-        
-        assertTrue(DateUtils.getDurationISO8601(  2*1000+44).equalsIgnoreCase("PT00:00:02.044"));
-        assertTrue(DateUtils.getDurationISO8601( 2*60*1000+3*1000+44).equalsIgnoreCase("PT00:02:03.044"));
-        assertTrue(DateUtils.getDurationISO8601(2*60*60*1000 + (2*60*1000+3*1000+44)).equalsIgnoreCase("PT02:02:03.044"));
-        
-            //DateTime testing
-        assertTrue(DateUtils.getDurationISO8601(6*24*60*60*1000 + (2*60*60*1000 + 2*60*1000+3*1000+44)).equalsIgnoreCase("P6DT02:02:03.044"));
-        assertTrue(DateUtils.getDurationISO8601(2628000000L + 6*24*60*60*1000 + (2*60*60*1000 + 2*60*1000+3*1000+44)).equalsIgnoreCase("P1M6DT02:02:03.044"));
-        assertTrue(DateUtils.getDurationISO8601(365*24*60*60*1000L + (2*60*60*1000 + 2*60*1000+3*1000L+44)).equalsIgnoreCase("P1YT02:02:03.044"));
-        assertTrue(DateUtils.getDurationISO8601(365*24*60*60*1000L + 3*2628000000L + (2*60*60*1000 + 2*60*1000+3*1000L+44)).equalsIgnoreCase("P1Y3MT02:02:03.044"));
-        assertTrue(DateUtils.getDurationISO8601(365*24*60*60*1000L + 3*2628000000L + 5*24*60*60*1000L + (2*60*60*1000 + 2*60*1000+3*1000L+44)).equalsIgnoreCase("P1Y3M5DT02:02:03.044"));
+        // Time testing
+        assertTrue(DateUtils.getDurationISO8601(1).equalsIgnoreCase("PT.001"));
+        assertTrue(DateUtils.getDurationISO8601(1000).equalsIgnoreCase("PT1S"));
+        assertTrue(DateUtils.getDurationISO8601(60000).equalsIgnoreCase("PT1M"));
+        assertTrue(DateUtils.getDurationISO8601(3600000).equalsIgnoreCase("PT1H"));
+
+        assertTrue(DateUtils.getDurationISO8601(2 * DateUtils.ONE_SECOND_IN_MILLI + 44).equalsIgnoreCase("PT2S.044"));
+        assertTrue(DateUtils.getDurationISO8601(2 * DateUtils.ONE_MINUTE_IN_MILLI + 3 * DateUtils.ONE_SECOND_IN_MILLI + 44)
+                .equalsIgnoreCase("PT2M3S.044"));
+        assertTrue(DateUtils
+                .getDurationISO8601(2 * DateUtils.ONE_HOUR_IN_MILLI + (2 * DateUtils.ONE_MINUTE_IN_MILLI + 3 * DateUtils.ONE_SECOND_IN_MILLI + 44))
+                .equalsIgnoreCase("PT2H2M3S.044"));
+
+        // DateTime testing
+        assertTrue(DateUtils
+                .getDurationISO8601(6 * DateUtils.ONE_DAY_IN_MILLI
+                        + (2 * DateUtils.ONE_HOUR_IN_MILLI + 2 * DateUtils.ONE_MINUTE_IN_MILLI + 3 * DateUtils.ONE_SECOND_IN_MILLI + 44))
+                .equalsIgnoreCase("P6DT2H2M3S.044"));
+        assertTrue(DateUtils
+                .getDurationISO8601(DateUtils.ONE_MONTH_IN_MILLI + 6 * DateUtils.ONE_DAY_IN_MILLI
+                        + (2 * DateUtils.ONE_HOUR_IN_MILLI + 2 * DateUtils.ONE_MINUTE_IN_MILLI + 3 * DateUtils.ONE_SECOND_IN_MILLI + 44))
+                .equalsIgnoreCase("P1M6DT2H2M3S.044"));
+        assertTrue(DateUtils
+                .getDurationISO8601(DateUtils.ONE_YEAR_IN_MILLI
+                        + (2 * DateUtils.ONE_HOUR_IN_MILLI + 2 * DateUtils.ONE_MINUTE_IN_MILLI + 3 * DateUtils.ONE_SECOND_IN_MILLI + 44))
+                .equalsIgnoreCase("P1YT2H2M3S.044"));
+        assertTrue(DateUtils
+                .getDurationISO8601(DateUtils.ONE_YEAR_IN_MILLI + 3 * DateUtils.ONE_MONTH_IN_MILLI
+                        + (2 * DateUtils.ONE_HOUR_IN_MILLI + 2 * DateUtils.ONE_MINUTE_IN_MILLI + 3 * DateUtils.ONE_SECOND_IN_MILLI + 44))
+                .equalsIgnoreCase("P1Y3MT2H2M3S.044"));
+        assertTrue(DateUtils
+                .getDurationISO8601(DateUtils.ONE_YEAR_IN_MILLI + 3 * DateUtils.ONE_MONTH_IN_MILLI + 5 * DateUtils.ONE_DAY_IN_MILLI
+                        + (2 * DateUtils.ONE_HOUR_IN_MILLI + 2 * DateUtils.ONE_MINUTE_IN_MILLI + 3 * DateUtils.ONE_SECOND_IN_MILLI + 44))
+                .equalsIgnoreCase("P1Y3M5DT2H2M3S.044"));
         // @formatter:on
     }
 
