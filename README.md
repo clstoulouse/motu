@@ -2216,6 +2216,48 @@ __Return__: An XML document
 </productMetadataInfo>  
 ```
 
+
+#### availableTimes XML tag 
+In the XML result file the tag "availableTimes" provides the list of date where data are available for the requested product.
+The format of the date follows the convention ISO_8601 used to represent the dates and times. (https://en.wikipedia.org/wiki/ISO_8601)
+Foreach available time period, the period definition format is "StartDatePeriod/EndDatePeriod/DurationBetweenEachAvailableData".
+The "availableTimes" contains a list of time period separated by a ",".
+* __StartDate__ : this the first date of the period where data are available.
+* __EndDate__ : this the last date of the period where data are available.
+* __DurationBetweenEachAvailableData__ : This the period duration between each available data in the interval defined by the the "StartDate" and "EndDate" date.
+
+##### StartDate and EndDate format
+The format of the StartDate and EndDate is YYYY-MM-DDThh:mm:ssZ where:
+* __YYYY__ : is the year defined on 4 digits
+* __MM__ : is the number of the month defined on 2 digits
+* __DD__: is the number of the day in the month on 2 digits
+* __hh__: is the hour of the day on 2 digits
+* __mm__: is the minutes of the hour on 2 digits
+* __ss__: is the seconds of the minutes on 2 digits
+
+Examples:
+* 1993-01-15T12:00:00Z
+* 2016-07-25T06:35:45Z
+* 2017-08-31T15:05:08Z
+
+##### DurationBetweenEachAvailableData
+The formation of the duration is P*nbyers*Y*nbmonths*M*nbdays*DT*nbhours*H*nbminutes*M*nbseconds*S.*nbmillisec* where:
+* __nbyears__ : is the number of years. The ISO_8601 is ambiguous on the number of days in the year. For the Motu project, the number of days is fixed to 365 as in the most of projects.
+* __nbmonths__ : is the number of month. The ISO_8601 is ambiguous on the number of days in the month. For the Motu project, the number of days is fixed to 30 as in the most of projects.
+* __nbdays__ : is the number of day. One day is 24 hours.
+* __nbhours__ : is the number of hours. One hour is 60 minutes.
+* __nbseconds__: is the number of seconds. One seconds is 1000 milliseconds.
+* __nbmillisec__ : is the number of milliseconds.
+
+By convention, P1M defines a duration of 1 month and PT1M defines a duration of 1 minutes.
+
+Examples:
+* each minutes => PT1M
+* each hours => PT1H
+* each 12 hours => PT12H
+* echo days => P1D
+* each 15 days => P15D
+* each 1 months => P1M
  
 ### <a name="ClientAPI_DownloadProduct">Download product</a>    
 Request used to download a product  
