@@ -2194,8 +2194,7 @@ __Return__: An XML document
 <productMetadataInfo code="OK" msg="OK" lastUpdate="Not Available" title="HR_MOD" id="HR_MOD">  
 <timeCoverage code="OK" msg="OK"/>  
 <availableTimes code="OK" msg="OK">  
-2012-12-26 12:00:00;2012-12-27 12:00:00;   
-...  
+1993-01-15T12:00:00ZP2D;2001-01-01T00:00:00ZPT12H;2012-03-01T00:00:00ZPT6H
 </availableTimes>  
 <availableDepths code="OK" msg="OK">  
 0.49402;1.54138;2.64567;...  
