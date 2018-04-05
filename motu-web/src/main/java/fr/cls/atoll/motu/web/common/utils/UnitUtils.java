@@ -31,6 +31,10 @@ public class UnitUtils {
         return sizeInByte / 1000;
     }
 
+    public static Long bytetoKilobyte(long sizeInByte) {
+        return sizeInByte / 1000;
+    }
+
     public static double byteToMegaByte(double sizeInByte) {
         return sizeInByte / 1000000;
     }

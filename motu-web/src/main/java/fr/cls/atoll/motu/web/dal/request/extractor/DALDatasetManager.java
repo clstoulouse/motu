@@ -61,10 +61,11 @@ public class DALDatasetManager {
      * @throws NetCdfVariableException the net cdf variable exception
      * @throws MotuNoVarException the motu no var exception
      * @throws NetCdfVariableNotFoundException the net cdf variable not found exception
+     * @throws IOException
      */
     public double getAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException,
             MotuNotImplementedException, MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
-            NetCdfVariableNotFoundException {
+            NetCdfVariableNotFoundException, IOException {
         if (rds.getRequestProduct().getProduct().isFtpMedia()) {
             return new DatasetFileManager(rds).computeAmountDataSize();
         } else {

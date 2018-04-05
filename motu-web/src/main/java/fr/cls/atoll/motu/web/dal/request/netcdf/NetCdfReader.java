@@ -27,7 +27,6 @@ package fr.cls.atoll.motu.web.dal.request.netcdf;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -45,17 +44,11 @@ import java.util.TimeZone;
 
 import javax.xml.bind.JAXBElement;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.util.datetime.FastDateFormat;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.library.cas.HttpClientCAS;
-import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
-import fr.cls.atoll.motu.library.cas.util.HttpUtil;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
@@ -69,7 +62,6 @@ import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableNotFoundException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardName;
-import opendap.dap.DConnect2;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
@@ -86,8 +78,8 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
+import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.io.http.HTTPRandomAccessFile;
 
 // CSOFF: MultipleStringLiterals : avoid message in constants declaration and trace log.
 
@@ -311,7 +303,7 @@ public class NetCdfReader {
     private final Map<String, Variable> orignalVariables = new HashMap<String, Variable>();
 
     /**
-
+     * 
      * Default constructor.
      */
     public NetCdfReader() {
@@ -429,16 +421,16 @@ public class NetCdfReader {
                 continue;
             }
 
-            if (coord.getName().equalsIgnoreCase("x")) {
-                Dimension dim = getNetcdfDataset().findDimension(coord.getName());
+            if (coord.getShortName().equalsIgnoreCase("x")) {
+                Dimension dim = getNetcdfDataset().findDimension(coord.getFullName());
                 if (dim == null) {
                     continue;
                 }
                 coord.setAxisType(AxisType.GeoX);
                 coord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoX.toString()));
             }
-            if (coord.getName().equalsIgnoreCase("y")) {
-                Dimension dim = getNetcdfDataset().findDimension(coord.getName());
+            if (coord.getShortName().equalsIgnoreCase("y")) {
+                Dimension dim = getNetcdfDataset().findDimension(coord.getFullName());
                 if (dim == null) {
                     continue;
                 }
@@ -797,13 +789,27 @@ public class NetCdfReader {
             this.isOpenWithEnhanceVar = enhanceVar;
             return reOpen(enhanceVar);
         }
-        if (!isClosed()) {
-            d2 = System.nanoTime();
-            return (d2 - d1);
-        }
+        // if (!isClosed()) {
+        // d2 = System.nanoTime();
+        // return (d2 - d1);
+        // }
 
         try {
-            setNetcdfDataset( acquireDataset(locationData, enhanceVar, null) );
+            setNetcdfDataset(acquireDataset(locationData, enhanceVar, new CancelTask() {
+
+                @Override
+                public void setProgress(String arg0, int arg1) {
+                }
+
+                @Override
+                public void setError(String arg0) {
+                }
+
+                @Override
+                public boolean isCancel() {
+                    return false;
+                }
+            }));
             controlAxes();
         } catch (Exception e) {
             throw new MotuException(
@@ -844,103 +850,6 @@ public class NetCdfReader {
 
     }
 
-    public void initNetcdfHttpClient() throws MotuException {
-        try {
-            synchronized (this) {
-                Field field = NetcdfDataset.class.getDeclaredField("httpClient");
-                field.setAccessible(true);
-                HttpClient httpClientNetcdfDataset = (HttpClient) field.get(null);
-                HttpClientCAS httpClientCAS = null;
-
-                field = DConnect2.class.getDeclaredField("_httpClient");
-                field.setAccessible(true);
-                HttpClient httpClientDConnect2 = (HttpClient) field.get(null);
-
-                field = HTTPRandomAccessFile.class.getDeclaredField("_client");
-                field.setAccessible(true);
-                HttpClient httpClientHTTPRandomAccessFile = (HttpClient) field.get(null);
-
-                if ((httpClientNetcdfDataset != null) && (httpClientDConnect2 != null) && (httpClientHTTPRandomAccessFile != null)) {
-                    return;
-                }
-
-                if ((httpClientNetcdfDataset == null) && (httpClientDConnect2 == null) && (httpClientHTTPRandomAccessFile == null)) {
-
-                    final int SO_TIMEOUT_VALUE = 180000; // in milliseconds
-
-                    MultiThreadedHttpConnectionManager connectionManager = HttpUtil.createConnectionManager();
-                    // WARNING: because socket read can raise an infinite time out, set an arbitrary socket
-                    // read time out
-                    connectionManager.getParams().setSoTimeout(SO_TIMEOUT_VALUE); // in milliseconds
-
-                    httpClientCAS = new HttpClientCAS(connectionManager);
-
-                    HttpClientParams httpClientParams = new HttpClientParams();
-                    httpClientParams.setParameter("http.protocol.allow-circular-redirects", true);
-                    httpClientCAS.setParams(httpClientParams);
-
-                    NetcdfDataset.setHttpClient(httpClientCAS);
-
-                    connectionManager = HttpUtil.createConnectionManager();
-                    // WARNING: because socket read can raise an infinite time out, set an arbitrary socket
-                    // read time out
-                    connectionManager.getParams().setSoTimeout(SO_TIMEOUT_VALUE); // in milliseconds
-
-                    httpClientCAS = new HttpClientCAS(connectionManager);
-
-                    httpClientParams = new HttpClientParams();
-                    httpClientParams.setParameter("http.protocol.allow-circular-redirects", true);
-                    httpClientCAS.setParams(httpClientParams);
-
-                    DConnect2.setHttpClient(httpClientCAS);
-
-                    connectionManager = HttpUtil.createConnectionManager();
-                    // WARNING: because socket read can raise an infinite time out, set an arbitrary socket
-                    // read time out
-                    connectionManager.getParams().setSoTimeout(SO_TIMEOUT_VALUE); // in milliseconds
-
-                    httpClientCAS = new HttpClientCAS(connectionManager);
-
-                    httpClientParams = new HttpClientParams();
-                    httpClientParams.setParameter("http.protocol.allow-circular-redirects", true);
-                    httpClientCAS.setParams(httpClientParams);
-
-                    HTTPRandomAccessFile.setHttpClient(httpClientCAS);
-                }
-
-                if ((httpClientNetcdfDataset != null) && !(httpClientNetcdfDataset instanceof HttpClientCAS)) {
-                    throw new MotuException(
-                            ErrorType.SYSTEM,
-                            String.format("Error in NetCdfReader acquireDataset - httpClientNetcdfDataset has been set but is no an HttpClientCAS object:'%s'",
-                                          httpClientNetcdfDataset.getClass().getName()));
-                }
-
-                if ((httpClientDConnect2 != null) && !(httpClientDConnect2 instanceof HttpClientCAS)) {
-                    throw new MotuException(
-                            ErrorType.SYSTEM,
-                            String.format("Error in NetCdfReader acquireDataset - httpClientDConnect2 has been set but is no an HttpClientCAS object:'%s'",
-                                          httpClientDConnect2.getClass().getName()));
-                }
-
-                if ((httpClientHTTPRandomAccessFile != null) && !(httpClientHTTPRandomAccessFile instanceof HttpClientCAS)) {
-                    throw new MotuException(
-                            ErrorType.SYSTEM,
-                            String.format("Error in NetCdfReader acquireDataset - httpClientHTTPRandomAccessFile has been set but is no an HttpClientCAS object:'%s'",
-                                          httpClientHTTPRandomAccessFile.getClass().getName()));
-                }
-
-            }
-        } catch (MotuException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new MotuException(
-                    ErrorType.NETCDF_LOADING,
-                    "Error in NetCdfReader initNetcdfHttpClient - Unable to initialize httpClient object",
-                    e);
-        }
-
-    }
-
     /**
      * Factory method for opening a dataset through the netCDF API, and identifying its coordinate variables.
      * 
@@ -957,10 +866,10 @@ public class NetCdfReader {
      */
     public NetcdfDataset acquireDataset(String location, boolean enhanceVar, ucar.nc2.util.CancelTask cancelTask) throws IOException, MotuException {
 
-        initNetcdfHttpClient();
+        // initNetcdfHttpClient();
 
         // httpClientCAS.getIsCas().set(this.casAuthentication);
-        AuthenticationHolder.setCASAuthentication(this.casAuthentication);
+        // AuthenticationHolder.setCASAuthentication(this.casAuthentication);
 
         // if enhanceVar ==> call NetcdfDataset.acquireDataset method
         // else enhance() is not called but Coordinate Systems are added
@@ -972,12 +881,12 @@ public class NetCdfReader {
         NetcdfDataset ds;
         if (ncfile instanceof NetcdfDataset) {
             ds = (NetcdfDataset) ncfile;
-            ucar.nc2.dataset.CoordSysBuilder.addCoordinateSystems(ds, cancelTask);
+            ucar.nc2.dataset.CoordSysBuilder.factory(ds, cancelTask);
             initOriginalVariables(ds);
             ds.finish(); // recalc the global lists
         } else {
             ds = new NetcdfDataset(ncfile, false);
-            ucar.nc2.dataset.CoordSysBuilder.addCoordinateSystems(ds, null);
+            ucar.nc2.dataset.CoordSysBuilder.factory(ds, cancelTask);
             initOriginalVariables(ds);
             ds.finish(); // rebuild global lists
         }
@@ -1006,9 +915,9 @@ public class NetCdfReader {
      * 
      * @return if the reader already closed?
      */
-    public boolean isClosed() {
-        return getNetcdfDataset() == null ? true : getNetcdfDataset().isClosed();
-    }
+    // public boolean isClosed() {
+    // return getNetcdfDataset() == null ? true : getNetcdfDataset().isClosed();
+    // }
 
     /**
      * Closes the reader.
@@ -1018,10 +927,10 @@ public class NetCdfReader {
     public void close() throws MotuException {
         if (getNetcdfDataset() != null) {
             try {
-                if (!getNetcdfDataset().isClosed()) {
-                    getNetcdfDataset().close();
-                    setNetcdfDataset(null);
-                }
+                // if (!getNetcdfDataset().isClosed()) {
+                getNetcdfDataset().close();
+                setNetcdfDataset(null);
+                // }
             } catch (Exception e) {
                 throw new MotuException(ErrorType.NETCDF_LOADING, String.format("Enable to close NetCDF reader - location: %s", locationData), e);
             }
@@ -2101,8 +2010,8 @@ public class NetCdfReader {
      */
     @SuppressWarnings("unchecked")
     public boolean hasGeoXYDimensions(List<Dimension> listDims) throws MotuException {
-        //TODO SMA Hack to fix issue, because this boolean has to be in a cache
-        if( getNetcdfDataset()== null){
+        // TODO SMA Hack to fix issue, because this boolean has to be in a cache
+        if (getNetcdfDataset() == null) {
             open(true);
         }
         if (listDims.size() < 2) {

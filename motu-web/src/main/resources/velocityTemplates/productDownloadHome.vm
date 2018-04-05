@@ -45,8 +45,7 @@
 		#set($XMax = $productMetaData.getLonNormalAxisMaxValue())
 		#set($YMin = $productMetaData.getLatNormalAxisMinValue())
 		#set($YMax = $productMetaData.getLatNormalAxisMaxValue())
-	#end
-	#if($productMetaData.hasGeoXYAxis())
+	#elseif($productMetaData.hasGeoXYAxis())
 		#if ($product.hasGeoXYAxisWithLonLatEquivalence())
 			#set($XMin = $productMetaData.getGeoXAxisMinValueAsLonNormal(${product}))
 			#set($XMax = $productMetaData.getGeoXAxisMaxValueAsLonNormal(${product}))
@@ -59,6 +58,7 @@
 			#set($YMax = $productMetaData.getGeoYAxisMaxValue())
 		#end
 	#end
+	
 	#if($product.hasCriteriaLatLon())				
 		#set($geoCriteria = $product.getCriteriaLatLon())
 		#set($XMinSel = $geoCriteria.getLowerLeftLon())
@@ -71,7 +71,7 @@
 ## -------------------------------------------- product_downloadhome_uk_printResult --------------------------------
 #macro(product_downloadhome_uk_printResult)
 	#if ( $product.hasDownloadUrlPath() && ! $product.hasLastError() )
-		<form method="post" action="${product.getDownloadUrlPath()}" name="dlform">
+		<form method="get" action="${product.getDownloadUrlPath()}" name="dlform">
 			<script language="JavaScript">
 				document.write('<h3>Your download should begin shortly.  If it does not, try <a href="${product.getDownloadUrlPath()}" target="_blank" rel="noopener">${product.getExtractFilename()}</a></h3>');
 				#if ( ${product.isAutoDownloadTimeOutEnable()})

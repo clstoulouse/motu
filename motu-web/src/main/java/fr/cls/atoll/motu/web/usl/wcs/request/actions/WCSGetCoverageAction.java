@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jasig.cas.client.util.AssertionHolder;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
@@ -306,8 +305,6 @@ public class WCSGetCoverageAction extends AbstractAction {
                 null,
                 true,
                 "");
-        // Set assertion to manage CAS.
-        extractionParameters.setAssertion(AssertionHolder.getAssertion());
         return extractionParameters;
     }
 
@@ -345,8 +342,6 @@ public class WCSGetCoverageAction extends AbstractAction {
                 true,
                 "");
 
-        // Set assertion to manage CAS.
-        extractionParameters.setAssertion(AssertionHolder.getAssertion());
         return extractionParameters;
     }
 

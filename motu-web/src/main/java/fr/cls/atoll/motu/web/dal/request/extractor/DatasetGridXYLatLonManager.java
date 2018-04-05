@@ -33,7 +33,7 @@ import ucar.ma2.MAMath;
 import ucar.ma2.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFileWriteable;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
@@ -160,10 +160,13 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
             NetCdfVariableNotFoundException, IOException {
         initNetCdfExtraction();
 
-        netCdfWriter = new NetCdfWriter(getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getExtractLocationDataTemp(), true);
-        NetcdfFileWriteable ncFile = netCdfWriter.getNcfile();
+        netCdfWriter = new NetCdfWriter(
+                getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getExtractLocationDataTemp(),
+                getRequestDownloadStatus().getRequestProduct().getExtractionParameters().getDataOutputFormat());
+        NetcdfFile ncFile = netCdfWriter.getNcfile().getNetcdfFile();
 
-        ExtractCriteriaLatLon extractCriteriaLatLon = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().findCriteriaLatLon();
+        ExtractCriteriaLatLon extractCriteriaLatLon = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters()
+                .findCriteriaLatLon();
         if (extractCriteriaLatLon == null) {
             getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getListCriteria().add(new ExtractCriteriaLatLon());
         }
@@ -220,11 +223,11 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
                                       varData.getVarName()));
             }
             Variable inputVar = geoGrid.getVariable();
-            Variable outputVar = new Variable(ncFile, null, null, inputVar.getName());
+            Variable outputVar = new Variable(ncFile, null, null, inputVar.getShortName());
             List<Dimension> dims = new ArrayList<Dimension>();
             List<CoordinateAxis> inputDims = geoGrid.getCoordinateSystem().getCoordinateAxes();
             for (CoordinateAxis inputDim : inputDims) {
-                Dimension dimToAdd = outputDims.get(inputDim.getName());
+                Dimension dimToAdd = outputDims.get(inputDim.getFullName());
                 if (dimToAdd == null) {
                     // throw new MotuException(String.format("ERROR - Input dimension %s not found (method
                     // DatasetGridYXLatLon.extractDataNetcdf)",
@@ -239,9 +242,9 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
             outputVar.setDataType(inputVar.getDataType());
             NetCdfWriter.copyAttributes(inputVar, outputVar);
             // outputVar.setIOVar(inputVar);
-            outputVars.put(outputVar.getName(), outputVar);
+            outputVars.put(outputVar.getFullName(), outputVar);
 
-            netCdfWriter.putVariables(outputVar.getName(), outputVar);
+            netCdfWriter.putVariables(outputVar.getFullName(), outputVar);
             netCdfWriter.writeDependentVariables(outputVar, gds);
             // netCdfWriter.writeVariable(outputVar, null);
         }
@@ -305,7 +308,8 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
         listYXRanges = null;
 
         if (getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().hasLatLonAxis()) {
-            ExtractCriteriaLatLon extractCriteriaLatLon = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().findCriteriaLatLon();
+            ExtractCriteriaLatLon extractCriteriaLatLon = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters()
+                    .findCriteriaLatLon();
             if (extractCriteriaLatLon != null) {
                 CoordinateSystem cs = new CoordinateSystem(
                         getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReaderDataset(),
@@ -328,9 +332,9 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
             return;
         }
         timeDim = new Dimension(inputVarTime.getShortName(), tRange.length(), true);
-        outputDims.put(timeDim.getName(), timeDim);
+        outputDims.put(timeDim.getFullName(), timeDim);
 
-        outputVarTime = new Variable(netCdfWriter.getNcfile(), null, null, timeDim.getName());
+        outputVarTime = new Variable(netCdfWriter.getNcfile().getNetcdfFile(), null, null, timeDim.getShortName());
         NetCdfWriter.setDim(outputVarTime, timeDim);
         outputVarTime.setDataType(inputVarTime.getDataType());
         NetCdfWriter.copyAttributes(inputVarTime, outputVarTime);
@@ -351,9 +355,9 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
             return;
         }
         zDim = new Dimension(inputVarZ.getShortName(), zRange.length(), true);
-        outputDims.put(zDim.getName(), zDim);
+        outputDims.put(zDim.getFullName(), zDim);
 
-        outputVarZ = new Variable(netCdfWriter.getNcfile(), null, null, zDim.getName());
+        outputVarZ = new Variable(netCdfWriter.getNcfile().getNetcdfFile(), null, null, zDim.getShortName());
         NetCdfWriter.setDim(outputVarZ, zDim);
         outputVarZ.setDataType(inputVarZ.getDataType());
         NetCdfWriter.copyAttributes(inputVarZ, outputVarZ);
@@ -374,8 +378,8 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
             return;
         }
         latDim = new Dimension(inputVarLat.getShortName(), mapLat.size(), true);
-        outputDims.put(latDim.getName(), latDim);
-        outputVarLat = new Variable(netCdfWriter.getNcfile(), null, null, latDim.getName());
+        outputDims.put(latDim.getFullName(), latDim);
+        outputVarLat = new Variable(netCdfWriter.getNcfile().getNetcdfFile(), null, null, latDim.getShortName());
         NetCdfWriter.setDim(outputVarLat, latDim);
         outputVarLat.setDataType(inputVarLat.getDataType());
         NetCdfWriter.copyAttributes(inputVarLat, outputVarLat);
@@ -396,9 +400,9 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
             return;
         }
         lonDim = new Dimension(inputVarLon.getShortName(), mapLon.size(), true);
-        outputDims.put(lonDim.getName(), lonDim);
+        outputDims.put(lonDim.getFullName(), lonDim);
 
-        outputVarLon = new Variable(netCdfWriter.getNcfile(), null, null, lonDim.getName());
+        outputVarLon = new Variable(netCdfWriter.getNcfile().getNetcdfFile(), null, null, lonDim.getShortName());
         NetCdfWriter.setDim(outputVarLon, lonDim);
         outputVarLon.setDataType(inputVarLon.getDataType());
         NetCdfWriter.copyAttributes(inputVarLon, outputVarLon);

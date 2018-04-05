@@ -56,9 +56,10 @@ public interface IDALDatasetManager {
      * @throws NetCdfVariableException
      * @throws MotuNoVarException
      * @throws NetCdfVariableNotFoundException
+     * @throws IOException
      */
     double computeAmountDataSize() throws MotuException, MotuInvalidDateRangeException, MotuExceedingCapacityException, MotuNotImplementedException,
             MotuInvalidDepthRangeException, MotuInvalidLatLonRangeException, NetCdfVariableException, MotuNoVarException,
-            NetCdfVariableNotFoundException;
+            NetCdfVariableNotFoundException, IOException;
 
 }

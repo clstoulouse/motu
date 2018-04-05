@@ -16,7 +16,6 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jasig.cas.client.util.AssertionHolder;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
@@ -190,8 +189,6 @@ public class GetSizeAction extends AbstractProductInfoAction {
                 USLManager.getInstance().getUserManager().isUserAnonymous(),
                 scriptVersionParameterValidator.getParameterValueValidated());
 
-        // Set assertion to manage CAS.
-        extractionParameters.setAssertion(AssertionHolder.getAssertion());
         return extractionParameters;
     }
 

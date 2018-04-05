@@ -11,11 +11,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.DocMetaData;
 import fr.cls.atoll.motu.web.dal.catalog.AbstractCatalogLoader;
@@ -39,8 +35,6 @@ import fr.cls.atoll.motu.web.dal.tds.opendap.model.Service;
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
 public class OpenDapCatalogReader extends AbstractCatalogLoader {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * Loads an Opendap catalog..
@@ -249,14 +243,9 @@ public class OpenDapCatalogReader extends AbstractCatalogLoader {
         }
     }
 
-    private Catalog getCatalogFromOpenDap(CatalogService catalogService) throws MalformedURLException, IOException, MotuCasException, JAXBException {
-        return getCatalogFromOpenDap(getCatalogURL(catalogService), catalogService.getCasAuthentication());
-    }
-
-    private Catalog getCatalogFromOpenDap(String catalogUrl, boolean useSSO_)
-            throws MalformedURLException, IOException, MotuCasException, JAXBException {
+    private Catalog getCatalogFromOpenDap(CatalogService catalogService) throws MalformedURLException, IOException, JAXBException {
         Catalog catalog = null;
-        URL url = new URL(getUrlWithSSO(catalogUrl, useSSO_));
+        URL url = new URL(getCatalogURL(catalogService));
         URLConnection conn = url.openConnection();
         InputStream in = conn.getInputStream();
         try {
