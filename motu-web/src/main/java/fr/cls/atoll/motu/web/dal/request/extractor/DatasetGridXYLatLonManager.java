@@ -809,11 +809,11 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
 
         // Variable inputVar = outputVar.getIOVar();
         Variable inputVar = outputVar;
-        GeoGrid geoGrid = gds.findGridByName(inputVar.getName());
+        GeoGrid geoGrid = gds.findGridByName(inputVar.getFullName());
         if (geoGrid == null) {
             throw new MotuNotImplementedException(
                     String.format("Variable %s in not geo-referenced - Non-georeferenced data is not implemented (method DatasetGrid.extractData)",
-                                  inputVar.getName()));
+                                  inputVar.getFullName()));
         }
 
         GeoGrid geoGridSubset = null;
@@ -899,31 +899,10 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
                     fillDataInOneGulp(inputVarSubset, dataToFill, origin, fillValue);
                 }
             }
-            // data = var.read(origin, shape);
             netCdfWriter.writeVariableData(outputVar, origin, dataToFill);
             dataToFill = null;
 
         }
-        // } catch (IOException e) {
-        // throw new MotuException("Error IOException in NetcdfWriter writeVariableByBlock", (Throwable) e);
-        // } catch (InvalidRangeException e) {
-        // throw new MotuException("Error InvalidRangeException in NetcdfWriter writeVariableByBlock",
-        // (Throwable) e);
-        // }
-
-        // for (List<Range> listYXRange : listYXRanges) {
-        // try {
-        // geoGridSubset = geoGrid.subset(tRange, zRange, listYXRange.get(0), listYXRange.get(1));
-        // } catch (InvalidRangeException e) {
-        // throw new MotuException("Error in subsetting geo grid", (Throwable) e);
-        // }
-        // inputVarSubset = (Variable) geoGridSubset.getVariable();
-        // if (netCdfWriter.isReadByBlock(inputVarSubset)) {
-        // fillDataByBlock(inputVarSubset, dataToFill);
-        // } else {
-        // fillDataInOneGulp(inputVarSubset, dataToFill);
-        // }
-        // }
     }
 
     /**
@@ -961,9 +940,7 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
                             "Error in DatasetGridXYLatLon fillDataByBlock - unable to find shape - (shape is null)");
                 }
                 // CSOON: StrictDuplicateCode
-
                 data = var.read(origin, shape);
-
                 // writeVariableData(var, data);
             }
         } catch (IOException e) {

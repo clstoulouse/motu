@@ -169,66 +169,70 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
         // getYXRange();
         getZRange();
 
-        GridDataset gds = new GridDataset(getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReaderDataset());
+        try (GridDataset gds = new GridDataset(getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReaderDataset())) {
 
-        NetCdfWriter netCdfWriter = new NetCdfWriter();
+            NetCdfWriter netCdfWriter = new NetCdfWriter();
 
-        netCdfWriter.resetAmountDataSize();
+            netCdfWriter.resetAmountDataSize();
 
-        for (VarData varData : getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getVariables().values()) {
+            for (VarData varData : getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getVariables().values()) {
 
-            GeoGrid geoGrid = gds.findGridByName(varData.getVarName());
-            if (geoGrid == null) {
-                continue;
-            }
-            List<GeoGrid> listGeoGridSubset = new ArrayList<GeoGrid>();
-
-            for (List<Range> yxRanges : listYXRanges) {
-                // GridDatatype geoGridSubset = null;
-                Range yRange = yxRanges.get(0);
-                Range xRange = yxRanges.get(1);
-
-                GeoGrid geoGridSubset = null;
-                try {
-                    // -----------------------------------------------------------------------
-                    // WARNING :
-                    //
-                    // section method of Variable create a new instance of the class VariableDS from the
-                    // original
-                    // variable,
-                    // but some informations are lost (as Fillvalue).
-                    // And Subset of GeoGrid is used section method.
-                    //
-                    // Example :
-                    // ...
-                    // VariableDS v_section = (VariableDS) v.section(rangesList);
-                    //
-                    // v is an instance of class VariableDS and the attribute fillValue of attribute smProxy
-                    // is
-                    // set and hasFillValue is set to true.
-                    // After calling v.section, the attribute fillValue of attribute smProxy of v_section is
-                    // not
-                    // set and hasFillValue is set to false.
-                    //
-                    // So, when you work with v_section variable and you called hasFillValue method, it
-                    // returns
-                    // false, while with the original variable v, hasFillValue method returns true.
-                    // -----------------------------------------------------------------------
-                    geoGridSubset = geoGrid.subset(tRange, zRange, yRange, xRange);
-                    listGeoGridSubset.add(geoGridSubset);
-                    // geoGridSubset = geoGrid.makeSubset(null, null, tRange, zRange, yxRange[0], yxRange[1]);
-                } catch (InvalidRangeException e) {
-
-                    throw new MotuException(ErrorType.BAD_PARAMETERS, "Error in subsetting geo grid", e);
+                GeoGrid geoGrid = gds.findGridByName(varData.getVarName());
+                if (geoGrid == null) {
+                    continue;
                 }
-            }
-            // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get somme information
-            // (lost
-            // in subsetting - See bug above) about the variable of the GeoGrid
-            netCdfWriter.computeAmountDataSize(listGeoGridSubset);
-        }
+                List<GeoGrid> listGeoGridSubset = new ArrayList<GeoGrid>();
 
-        amountDataSize = netCdfWriter.getAmountDataSize();
+                for (List<Range> yxRanges : listYXRanges) {
+                    // GridDatatype geoGridSubset = null;
+                    Range yRange = yxRanges.get(0);
+                    Range xRange = yxRanges.get(1);
+
+                    GeoGrid geoGridSubset = null;
+                    try {
+                        // -----------------------------------------------------------------------
+                        // WARNING :
+                        //
+                        // section method of Variable create a new instance of the class VariableDS from the
+                        // original
+                        // variable,
+                        // but some informations are lost (as Fillvalue).
+                        // And Subset of GeoGrid is used section method.
+                        //
+                        // Example :
+                        // ...
+                        // VariableDS v_section = (VariableDS) v.section(rangesList);
+                        //
+                        // v is an instance of class VariableDS and the attribute fillValue of attribute
+                        // smProxy
+                        // is
+                        // set and hasFillValue is set to true.
+                        // After calling v.section, the attribute fillValue of attribute smProxy of v_section
+                        // is
+                        // not
+                        // set and hasFillValue is set to false.
+                        //
+                        // So, when you work with v_section variable and you called hasFillValue method, it
+                        // returns
+                        // false, while with the original variable v, hasFillValue method returns true.
+                        // -----------------------------------------------------------------------
+                        geoGridSubset = geoGrid.subset(tRange, zRange, yRange, xRange);
+                        listGeoGridSubset.add(geoGridSubset);
+                        // geoGridSubset = geoGrid.makeSubset(null, null, tRange, zRange, yxRange[0],
+                        // yxRange[1]);
+                    } catch (InvalidRangeException e) {
+
+                        throw new MotuException(ErrorType.BAD_PARAMETERS, "Error in subsetting geo grid", e);
+                    }
+                }
+                // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get some information
+                // (lost
+                // in subsetting - See bug above) about the variable of the GeoGrid
+                netCdfWriter.computeAmountDataSize(listGeoGridSubset);
+            }
+
+            amountDataSize = netCdfWriter.getAmountDataSize();
+        }
         return amountDataSize;
     }
 
