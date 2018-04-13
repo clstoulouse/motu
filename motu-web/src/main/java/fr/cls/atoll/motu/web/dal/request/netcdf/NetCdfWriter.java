@@ -295,7 +295,7 @@ public class NetCdfWriter {
      * @throws MotuException the motu exception
      */
     public void writeVariable(Variable var, String[] varAttrToRemove) throws MotuException {
-        List<Dimension> dims = new ArrayList<Dimension>();
+        List<Dimension> dims = new ArrayList<>();
         List<Dimension> dimvList = var.getDimensions();
         for (Dimension dim : dimvList) {
             Dimension dimToWrite = dimHash.get(dim.getFullName());
@@ -346,21 +346,27 @@ public class NetCdfWriter {
      * @param originalVariables the original variables
      */
     private void processAxisAttributes(CoordinateAxis axis, Map<String, Variable> originalVariables) {
-        if (axis == null) {
-            return;
-        }
-        if (originalVariables != null) {
-            Variable orginalVar = originalVariables.get(axis.getFullName());
-            NetCdfWriter.copyAttributes(orginalVar, axis, true);
-        }
+        if (axis != null) {
+            if (originalVariables != null) {
+                Variable orginalVar = originalVariables.get(axis.getFullName());
+                NetCdfWriter.copyAttributes(orginalVar, axis, true);
+            }
 
-        AxisType axisType = axis.getAxisType();
-        if (axisType == null) {
-            return;
-        }
+            AxisType axisType = axis.getAxisType();
+            if (axisType != null) {
+                MAMath.MinMax minMax = createAxisMinMax(axis);
+                axis.addAttribute(createAxisDoubleAttribute(axis, NetCdfReader.VARIABLEATTRIBUTE_VALID_MIN, minMax.min));
+                axis.addAttribute(createAxisDoubleAttribute(axis, NetCdfReader.VARIABLEATTRIBUTE_VALID_MAX, minMax.max));
 
+                checkAxisAttribute(axis, NetCdfReader.VARIABLEATTRIBUTE_AXIS, NetCdfReader.getAxisAttributeValue(axis));
+                checkAxisAttribute(axis, NetCdfReader.VARIABLEATTRIBUTE_LONG_NAME, NetCdfReader.getLongNameAttributeValue(axis));
+                checkAxisAttribute(axis, NetCdfReader.VARIABLEATTRIBUTE_STANDARD_NAME, NetCdfReader.getStandardNameAttributeValue(axis));
+            }
+        }
+    }
+
+    private MAMath.MinMax createAxisMinMax(CoordinateAxis axis) {
         MAMath.MinMax minMax = minMaxHash.get(axis.getFullName());
-
         if (minMax == null) {
             minMax = NetCdfWriter.getMinMaxSkipMissingData(axis, null, this);
         }
@@ -371,88 +377,32 @@ public class NetCdfWriter {
 
         // if axis is longitude ==> Normalize longitude if min value > max value
         if (axis.getAxisType() == AxisType.Lon) {
-
             if (minMax.min > minMax.max) {
-
                 // Apply scale factor and offset before normalization
                 NetCdfWriter.applyScaleFactorAndOffset(minMax, axis);
-
                 // Normalize
                 double center = minMax.min + 180.0;
                 minMax.max = LatLonPointImpl.lonNormal(minMax.max, center);
-
                 // Undo scale factor and offset to get native value
                 NetCdfWriter.undoScaleFactorAndOffset(minMax, axis);
-
             }
-
         }
+        return minMax;
+    }
 
+    private Attribute createAxisDoubleAttribute(CoordinateAxis axis, String attributeName, Double attributeValue) {
+        return NetCdfWriter.createAttribute(attributeName, axis, new Double(attributeValue));
+    }
+
+    private Attribute checkAxisAttribute(CoordinateAxis axis, String attributeName, String defaultAttributeValue) {
         Attribute attribute = null;
-        // Array array = null;
-
-        // -----------------------------
-        // adds or sets valid_min attribute
-        // -----------------------------
-        // attribute = new Attribute(NetCdfReader.VARIABLEATTRIBUTE_VALID_MIN, minMax.min);
-        Number v = new Double(minMax.min);
-        attribute = NetCdfWriter.createAttribute(NetCdfReader.VARIABLEATTRIBUTE_VALID_MIN, axis, v);
-        axis.addAttribute(attribute);
-
-        // try {
-        // attribute = NetCdfReader.getAttribute(axis, NetCdfReader.VARIABLEATTRIBUTE_VALID_MIN);
-        // array = Array.factory( DataType.DOUBLE.getPrimitiveClassType(), new int[] {1}, new double[]
-        // {axis.getMinValue()});
-        // attribute.setValues(array);
-        // } catch (NetCdfAttributeNotFoundException e) {
-        // attribute = new Attribute(NetCdfReader.VARIABLEATTRIBUTE_VALID_MIN, axis.getMinValue());
-        // axis.addAttribute(attribute);
-        // }
-        // -----------------------------
-        // adds or sets valid_max attribute
-        // -----------------------------
-        // attribute = new Attribute(NetCdfReader.VARIABLEATTRIBUTE_VALID_MAX, minMax.max);
-        v = new Double(minMax.max);
-        attribute = NetCdfWriter.createAttribute(NetCdfReader.VARIABLEATTRIBUTE_VALID_MAX, axis, v);
-        axis.addAttribute(attribute);
-        // try {
-        // attribute = NetCdfReader.getAttribute(axis, NetCdfReader.VARIABLEATTRIBUTE_VALID_MAX);
-        // array = Array.factory( DataType.DOUBLE.getPrimitiveClassType(), new int[] {1}, new double[]
-        // {axis.getMaxValue()});
-        // attribute.setValues(array);
-        // } catch (NetCdfAttributeNotFoundException e) {
-        // attribute = new Attribute(NetCdfReader.VARIABLEATTRIBUTE_VALID_MAX, axis.getMaxValue());
-        // axis.addAttribute(attribute);
-        // }
-
-        // -----------------------------
-        // adds axis attribute
-        // -----------------------------
         try {
-            attribute = NetCdfReader.getAttribute(axis, NetCdfReader.VARIABLEATTRIBUTE_AXIS);
+            attribute = NetCdfReader.getAttribute(axis, attributeName);
         } catch (NetCdfAttributeNotFoundException e) {
-            attribute = new Attribute(NetCdfReader.VARIABLEATTRIBUTE_AXIS, NetCdfReader.getAxisAttributeValue(axis));
+            attribute = new Attribute(attributeName, defaultAttributeValue);
             axis.addAttribute(attribute);
         }
-        // -----------------------------
-        // adds long name attribute
-        // -----------------------------
-        try {
-            attribute = NetCdfReader.getAttribute(axis, NetCdfReader.VARIABLEATTRIBUTE_LONG_NAME);
-        } catch (NetCdfAttributeNotFoundException e) {
-            attribute = new Attribute(NetCdfReader.VARIABLEATTRIBUTE_LONG_NAME, NetCdfReader.getLongNameAttributeValue(axis));
-            axis.addAttribute(attribute);
-        }
-        // -----------------------------
-        // adds standard name attribute
-        // -----------------------------
-        try {
-            attribute = NetCdfReader.getAttribute(axis, NetCdfReader.VARIABLEATTRIBUTE_STANDARD_NAME);
-        } catch (NetCdfAttributeNotFoundException e) {
-            attribute = new Attribute(NetCdfReader.VARIABLEATTRIBUTE_STANDARD_NAME, NetCdfReader.getStandardNameAttributeValue(axis));
-            axis.addAttribute(attribute);
-        }
-
+        return attribute;
     }
 
     /**
@@ -571,31 +521,18 @@ public class NetCdfWriter {
      * @param var variable to process
      */
     public void removeValidMinMaxVarAttributes(Variable var) {
-        if (var == null) {
-            return;
+        if (var != null) {
+            try {
+                var.remove(NetCdfReader.getAttribute(var, NetCdfReader.VARIABLEATTRIBUTE_VALID_MIN));
+            } catch (NetCdfAttributeNotFoundException e) {
+                // Nothing to do
+            }
+            try {
+                var.remove(NetCdfReader.getAttribute(var, NetCdfReader.VARIABLEATTRIBUTE_VALID_MAX));
+            } catch (NetCdfAttributeNotFoundException e) {
+                // Nothing to do
+            }
         }
-
-        Attribute attribute = null;
-
-        // -----------------------------
-        // removes valid_min attribute
-        // -----------------------------
-        try {
-            attribute = NetCdfReader.getAttribute(var, NetCdfReader.VARIABLEATTRIBUTE_VALID_MIN);
-            var.remove(attribute);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // Nothing to do
-        }
-        // -----------------------------
-        // removes valid_max attribute
-        // -----------------------------
-        try {
-            attribute = NetCdfReader.getAttribute(var, NetCdfReader.VARIABLEATTRIBUTE_VALID_MAX);
-            var.remove(attribute);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // Nothing to do
-        }
-
     }
 
     /**
@@ -643,34 +580,20 @@ public class NetCdfWriter {
      * @return the number
      */
     public static Number applyScaleFactorAndOffset(Number value, Variable variable) {
-
-        if (variable == null) {
-            return value;
+        Number resNumber = value;
+        if (variable != null) {
+            Number addOffset = NetCdfReader.getAddOffsetAttributeValue(variable);
+            Number scaleFactor = NetCdfReader.getScaleFactorAttributeValue(variable);
+            if ((addOffset != null) && (scaleFactor != null)) {
+                double offset = addOffset.doubleValue();
+                double scale = scaleFactor.doubleValue();
+                if (Double.compare(scale, 0.0) == 0) {
+                    scale = 1.0;
+                }
+                resNumber = (scale * value.doubleValue()) + offset;
+            }
         }
-
-        Number addOffset = NetCdfReader.getAddOffsetAttributeValue(variable);
-        Number scaleFactor = NetCdfReader.getScaleFactorAttributeValue(variable);
-
-        if ((addOffset == null) && (scaleFactor == null)) {
-            return value;
-        }
-
-        double offset = 0.0;
-        double scale = 1.0;
-
-        if (addOffset != null) {
-            offset = addOffset.doubleValue();
-        }
-        if (scaleFactor != null) {
-            scale = scaleFactor.doubleValue();
-        }
-
-        if (scale == 0.0) {
-            scale = 1.0;
-        }
-
-        return new Double((scale * value.doubleValue()) + offset);
-
+        return resNumber;
     }
 
     /**
@@ -680,34 +603,19 @@ public class NetCdfWriter {
      * @param variable the variable
      */
     public static void applyScaleFactorAndOffset(MAMath.MinMax minMax, Variable variable) {
-        if (variable == null) {
-            return;
+        if (variable != null) {
+            Number addOffset = NetCdfReader.getAddOffsetAttributeValue(variable);
+            Number scaleFactor = NetCdfReader.getScaleFactorAttributeValue(variable);
+            if ((addOffset != null) && (scaleFactor != null)) {
+                double offset = addOffset.doubleValue();
+                double scale = scaleFactor.doubleValue();
+                if (Double.compare(scale, 0.0) == 0) {
+                    scale = 1.0;
+                }
+                minMax.min = (scale * minMax.min) + offset;
+                minMax.max = (scale * minMax.max) + offset;
+            }
         }
-
-        Number addOffset = NetCdfReader.getAddOffsetAttributeValue(variable);
-        Number scaleFactor = NetCdfReader.getScaleFactorAttributeValue(variable);
-
-        if ((addOffset == null) && (scaleFactor == null)) {
-            return;
-        }
-
-        double offset = 0.0;
-        double scale = 1.0;
-
-        if (addOffset != null) {
-            offset = addOffset.doubleValue();
-        }
-        if (scaleFactor != null) {
-            scale = scaleFactor.doubleValue();
-        }
-
-        if (scale == 0.0) {
-            scale = 1.0;
-        }
-
-        minMax.min = (scale * minMax.min) + offset;
-        minMax.max = (scale * minMax.max) + offset;
-
     }
 
     /**
@@ -719,34 +627,20 @@ public class NetCdfWriter {
      * @return the number
      */
     public static Number undoScaleFactorAndOffset(Number value, Variable variable) {
-
-        if (variable == null) {
-            return value;
+        Number resNumber = value;
+        if (variable != null) {
+            Number addOffset = NetCdfReader.getAddOffsetAttributeValue(variable);
+            Number scaleFactor = NetCdfReader.getScaleFactorAttributeValue(variable);
+            if ((addOffset != null) && (scaleFactor != null)) {
+                double offset = addOffset.doubleValue();
+                double scale = scaleFactor.doubleValue();
+                if (Double.compare(scale, 0.0) == 0) {
+                    scale = 1.0;
+                }
+                resNumber = castValue(variable, (value.doubleValue() - offset) / scale);
+            }
         }
-
-        Number addOffset = NetCdfReader.getAddOffsetAttributeValue(variable);
-        Number scaleFactor = NetCdfReader.getScaleFactorAttributeValue(variable);
-
-        if ((addOffset == null) && (scaleFactor == null)) {
-            return value;
-        }
-
-        double offset = 0.0;
-        double scale = 1.0;
-
-        if (addOffset != null) {
-            offset = addOffset.doubleValue();
-        }
-        if (scaleFactor != null) {
-            scale = scaleFactor.doubleValue();
-        }
-
-        if (scale == 0.0) {
-            scale = 1.0;
-        }
-
-        return castValue(variable, (value.doubleValue() - offset) / scale);
-
+        return resNumber;
     }
 
     /**
@@ -756,33 +650,19 @@ public class NetCdfWriter {
      * @param variable the variable
      */
     public static void undoScaleFactorAndOffset(MAMath.MinMax minMax, Variable variable) {
-        if (variable == null) {
-            return;
+        if (variable != null) {
+            Number addOffset = NetCdfReader.getAddOffsetAttributeValue(variable);
+            Number scaleFactor = NetCdfReader.getScaleFactorAttributeValue(variable);
+            if ((addOffset != null) && (scaleFactor != null)) {
+                double offset = addOffset.doubleValue();
+                double scale = scaleFactor.doubleValue();
+                if (Double.compare(scale, 0.0) == 0) {
+                    scale = 1.0;
+                }
+                minMax.min = (minMax.min - offset) / scale;
+                minMax.max = (minMax.max - offset) / scale;
+            }
         }
-
-        Number addOffset = NetCdfReader.getAddOffsetAttributeValue(variable);
-        Number scaleFactor = NetCdfReader.getScaleFactorAttributeValue(variable);
-
-        if ((addOffset == null) && (scaleFactor == null)) {
-            return;
-        }
-
-        double offset = 0.0;
-        double scale = 1.0;
-
-        if (addOffset != null) {
-            offset = addOffset.doubleValue();
-        }
-        if (scaleFactor != null) {
-            scale = scaleFactor.doubleValue();
-        }
-
-        if (scale == 0.0) {
-            scale = 1.0;
-        }
-        minMax.min = (minMax.min - offset) / scale;
-        minMax.max = (minMax.max - offset) / scale;
-
     }
 
     /**
@@ -792,10 +672,9 @@ public class NetCdfWriter {
      */
     public void setValidMinMaxVarAttributes(Variable var) {
         MAMath.MinMax minMax = minMaxHash.get(var.getFullName());
-        if (minMax == null) {
-            return;
+        if (minMax != null) {
+            setValidMinMaxVarAttributes(var, minMax);
         }
-        setValidMinMaxVarAttributes(var, minMax);
     }
 
     /**
@@ -816,23 +695,10 @@ public class NetCdfWriter {
      * @param max max. value
      */
     public void setValidMinMaxVarAttributes(Variable var, double min, double max) {
-        if (var == null) {
-            return;
+        if (var != null) {
+            var.addAttribute(new Attribute(NetCdfReader.VARIABLEATTRIBUTE_VALID_MIN, min));
+            var.addAttribute(new Attribute(NetCdfReader.VARIABLEATTRIBUTE_VALID_MAX, max));
         }
-
-        Attribute attribute = null;
-        // Array array = null;
-        // -----------------------------
-        // adds or sets valid_min attribute
-        // -----------------------------
-        attribute = new Attribute(NetCdfReader.VARIABLEATTRIBUTE_VALID_MIN, min);
-        var.addAttribute(attribute);
-        // -----------------------------
-        // adds or sets valid_max attribute
-        // -----------------------------
-        attribute = new Attribute(NetCdfReader.VARIABLEATTRIBUTE_VALID_MAX, max);
-        var.addAttribute(attribute);
-
     }
 
     /**
@@ -1159,13 +1025,13 @@ public class NetCdfWriter {
         if (listGeoGridSubset == null) {
             throw new MotuException(ErrorType.INVALID_LAT_LON_RANGE, "Error in writeVariablesGeoXY - list of geogrids is null");
         }
-        if (listGeoGridSubset.size() <= 0) {
+        if (listGeoGridSubset.isEmpty()) {
             throw new MotuException(ErrorType.INVALID_LAT_LON_RANGE, "Error in writeVariablesGeoXY - list of geoGrids is empty");
         }
 
         putDimensionsGeoXY(listGeoGridSubset);
 
-        Map<AxisType, List<Variable>> mapAxis = new HashMap<AxisType, List<Variable>>();
+        Map<AxisType, List<Variable>> mapAxis = new HashMap<>();
 
         for (GeoGrid geoGridSubset : listGeoGridSubset) {
             if (geoGridSubset == null) {
@@ -1238,11 +1104,9 @@ public class NetCdfWriter {
             // Add axes as variable
             for (int i = 0; i < axes.size(); i++) {
                 axis = axes.get(i);
-
                 computeValidMinMaxVarAttributes(axis);
 
                 AxisType axisType = axis.getAxisType();
-
                 List<Variable> listAxis = mapAxis.get(axisType);
                 if (listAxis == null) {
                     listAxis = new ArrayList<Variable>();
@@ -1254,23 +1118,17 @@ public class NetCdfWriter {
                 }
                 mapAxis.put(axisType, listAxis);
             }
-
             writeDependentVariables(geoGridSubset, gds);
-
         } // end for (GeoGrid geoGridSubset : listGeoGridSubset)
 
         // process axis for the variable
         for (List<Variable> listAxis : mapAxis.values()) {
-            if (listAxis.size() > 0) {
-                List<Variable> vPreviouslyListAdded = getVariables().get(listAxis.get(0).getFullName());
-                if (vPreviouslyListAdded == null) {
-                    putVariables(listAxis.get(0).getFullName(), listAxis);
-
-                    for (Variable var : listAxis) {
-                        if (var instanceof CoordinateAxis) {
-                            CoordinateAxis axis = (CoordinateAxis) var;
-                            processAxisAttributes(axis, originalVariables);
-                        }
+            if (!listAxis.isEmpty() && !getVariables().containsKey(listAxis.get(0).getFullName())) {
+                putVariables(listAxis.get(0).getFullName(), listAxis);
+                for (Variable var : listAxis) {
+                    if (var instanceof CoordinateAxis) {
+                        CoordinateAxis axis = (CoordinateAxis) var;
+                        processAxisAttributes(axis, originalVariables);
                     }
                 }
             }
@@ -1570,78 +1428,9 @@ public class NetCdfWriter {
         }
 
         Dimension computedDim = new Dimension(dim.getFullName(), length, dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
-
-        // -----------------
-        // ==========================
-        //
-        // CoordinateAxis axis = listCoordinateAxis.get(0);
-        // if (axis == null) {
-        // return;
-        // }
-        //
-        // if (!(axis instanceof CoordinateAxis1D)) {
-        // throw new MotuNotImplementedException(
-        // String
-        // .format("ERROR in putDimensionsAxis : Process a coordinate axis with more than one dimensions is
-        // not yet implemented (axis name:'%s')",
-        // axis.getName()));
-        // }
-        //
-        // AxisType axisType = axis.getAxisType();
-        //
-        // axisType = axis.getAxisType();
-        //
-        // if ((axisType != AxisType.GeoX) && (axisType != AxisType.GeoY)) {
-        // throw new MotuNotImplementedException(
-        // String
-        // .format("ERROR in putDimensionsAxis : Process a coordinate axis with type '%s' than one dimensions
-        // is not yet implemented (axis name:'%s'). Only type '%s' and '%s' are accepted",
-        // axisType.toString(),
-        // axis.getName(),
-        // AxisType.GeoX.toString(),
-        // AxisType.GeoY.toString()));
-        //
-        // } else if (axisType != axis.getAxisType()) {
-        // throw new MotuNotImplementedException(String
-        // .format("ERROR in putDimensionsAxis : All of the axis have not the sam type. Expected '%s' but got
-        // '%s' (axis name:'%s')",
-        // axisType.toString(),
-        // axis.getAxisType().toString(),
-        // axis.getName()));
-        // }
-        //
-        // Dimension dim = axis.getDimension(0);
-        // if (dim == null) {
-        // return;
-        // }
-        //
-        // int length = 0;
-        // if (dim.isUnlimited()) {
-        // length = -1;
-        // } else {
-        // Collection<Range> ranges = mapRange.values();
-        //
-        // for (Range range : ranges) {
-        // length = length + range.length();
-        // }
-        // }
-        //
-        // Dimension computedDim = new Dimension(dim.getName(), length, dim.isShared(), dim.isUnlimited(),
-        // dim.isVariableLength());
-        // ==========================
         putDimension(computedDim);
 
     }
-
-    // @SuppressWarnings("unchecked")
-    // public void writeDimensions(NetcdfDataset netCdfDataset) throws MotuException {
-    // if (netCdfDataset == null) {
-    // throw new MotuException("Error in writeDimensions - netCdfDataset is null");
-    // }
-    //
-    // List<Dimension> listDims = (List<Dimension>) netCdfDataset.getDimensions();
-    // writeDimensions(listDims);
-    // }
 
     /**
      * Add a the list of Variables to the file. The data is also copied when finish() is called.
@@ -1691,13 +1480,10 @@ public class NetCdfWriter {
      */
     public void create(String[] varAttrToRemove) throws MotuException, MotuExceedingCapacityException, MotuNotImplementedException {
         // Add variables to file.
-        // amountDataSize = writeVariables(varAttrToRemove);
         writeVariablesToFile(varAttrToRemove);
         checkAmountDataSizeThreshold();
-
         try {
             long d1 = System.nanoTime();
-            // NetcdfFileWriter.createNew(netcdfFileVersion, ncfilePath);
             ncfileWriter.create();
             long d2 = System.nanoTime();
             this.writingTime += (d2 - d1);
@@ -1949,18 +1735,11 @@ public class NetCdfWriter {
      * @throws MotuException the motu exception
      * @throws MotuNotImplementedException the motu not implemented exception
      */
-    // protected void writeVariableByBlock(Variable var, int[] varShape) throws MotuException,
-    // MotuNotImplementedException {
     protected void writeVariableByBlock(Variable var) throws MotuException, MotuNotImplementedException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("writeVariableByBlock() - entering");
-        }
-
         int[] origin = null;
         int[] shape = null;
         Array data = null;
         int rank = var.getRank();
-        // int[] outDimValues = getOutputDimension(var);
         CoordinateAxis axisLon = null;
         if (var instanceof CoordinateAxis) {
             axisLon = (CoordinateAxis) var;
@@ -1983,8 +1762,6 @@ public class NetCdfWriter {
         }
 
         try {
-            // Map<int[], int[]> originAndShape = NetCdfWriter.parseOriginAndShape(varShape,
-            // var.getDataType());
             Map<int[], int[]> originAndShape = NetCdfWriter.parseOriginAndShape(var);
 
             // CSOFF: StrictDuplicateCode : normal duplication code.
@@ -1993,10 +1770,6 @@ public class NetCdfWriter {
 
             for (Iterator<int[]> it = keySet.iterator(); it.hasNext();) {
                 // get a Runtime object
-                // Runtime r = Runtime.getRuntime();
-                // run the garbage collector, to avoid Socket Exception too many files opened ?
-                // r.gc();
-
                 origin = it.next();
 
                 if ((origin == null) && (var.getShape().length != 0)) {
@@ -2014,7 +1787,6 @@ public class NetCdfWriter {
                 }
                 // CSOON: StrictDuplicateCode
 
-                // data = var.read(origin, shape);
                 data = read(var, origin, shape);
                 // Normalize longitude if necessary.
                 if (axisLon != null) {
@@ -2022,11 +1794,6 @@ public class NetCdfWriter {
 
                     MAMath.MinMax minMaxTemp = new MAMath.MinMax(minMax.min, minMax.max);
                     NetCdfWriter.applyScaleFactorAndOffset(minMaxTemp, axisLon);
-
-                    // if ((minMaxTemp.min > minMaxTemp.max) || (minMaxTemp.max > 180.)) {
-                    // longitudeCenter = minMaxTemp.min + 180.0;
-                    // normalizeLongitudeData(data, axisLon);
-                    // }
                     longitudeCenter = (minMaxTemp.min + minMaxTemp.max) / 2;
                     normalizeLongitudeData(data, axisLon);
                 }
@@ -2042,10 +1809,6 @@ public class NetCdfWriter {
             }
             // Computes offset origin of the next data for longitude dim
             originOutOffset = originMax.clone();
-            // int indexDimLongitude =
-            // for (int i = rank - 1; i >= 0; i--) {
-            // originOut[i] += shape[i] - 1;
-            // }
             originOutOffset = getNextOriginOffset(originOutOffset, var);
             originOutOffsetHash.remove(var.getFullName());
             if (originOutOffset != null) {
@@ -2054,16 +1817,10 @@ public class NetCdfWriter {
 
         } catch (IOException e) {
             LOG.error("writeVariableByBlock()", e);
-
             throw new MotuException(ErrorType.NETCDF_GENERATION, "Error IOException in NetcdfWriter writeVariableByBlock", e);
         } catch (InvalidRangeException e) {
             LOG.error("writeVariableByBlock()", e);
-
             throw new MotuException(ErrorType.NETCDF_GENERATION, "Error InvalidRangeException in NetcdfWriter writeVariableByBlock", e);
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("writeVariableByBlock() - exiting");
         }
     }
 
@@ -2120,31 +1877,15 @@ public class NetCdfWriter {
 
         try {
             Map<int[], int[]> originAndShape = NetCdfWriter.parseOriginAndShape(var);
-            // CSOFF: StrictDuplicateCode : normal duplication code.
-
             Set<int[]> keySet = originAndShape.keySet();
-
             for (Iterator<int[]> it = keySet.iterator(); it.hasNext();) {
                 origin = it.next();
-
-                if ((origin == null) && (var.getShape().length != 0)) {
-                    throw new MotuException(
-                            ErrorType.INVALID_LAT_LON_RANGE,
-                            "Error in NetCfdWriter writeVariableByBlockGeoXY - unable to find origin - (origin is null)");
-                }
+                checkOrigin(origin, var);
 
                 shape = originAndShape.get(origin);
+                checkShape(shape, var);
 
-                if ((shape == null) && (var.getShape().length != 0)) {
-                    throw new MotuException(
-                            ErrorType.INVALID_LAT_LON_RANGE,
-                            "Error in NetCfdWriter writeVariableByBlockGeoXY - unable to find shape - (shape is null)");
-                }
-                // CSOON: StrictDuplicateCode
-
-                // data = var.read(origin, shape);
                 data = read(var, origin, shape);
-
                 Variable vToWrite = ncfileWriter.getNetcdfFile().findVariable(var.getFullNameEscaped());
                 if (vToWrite != null) {
                     writeVariableData(vToWrite, origin, data);
@@ -2159,6 +1900,22 @@ public class NetCdfWriter {
         } catch (InvalidRangeException e) {
             LOG.error("writeVariableByBlockGeoXY()", e);
             throw new MotuException(ErrorType.NETCDF_GENERATION, "Error InvalidRangeException in NetcdfWriter writeVariableByBlockGeoXY", e);
+        }
+    }
+
+    private void checkShape(int[] shape, Variable var) throws MotuException {
+        if ((shape == null) && (var.getShape().length != 0)) {
+            throw new MotuException(
+                    ErrorType.INVALID_LAT_LON_RANGE,
+                    "Error in NetCfdWriter writeVariableByBlockGeoXY - unable to find shape - (shape is null)");
+        }
+    }
+
+    private void checkOrigin(int[] origin, Variable var) throws MotuException {
+        if ((origin == null) && (var.getShape().length != 0)) {
+            throw new MotuException(
+                    ErrorType.INVALID_LAT_LON_RANGE,
+                    "Error in NetCfdWriter writeVariableByBlockGeoXY - unable to find origin - (origin is null)");
         }
     }
 
@@ -2179,9 +1936,6 @@ public class NetCdfWriter {
         int diff = 0;
         if (ListUtils.isNullOrEmpty(listDistinctRange)) {
             return diff;
-            // throw new
-            // MotuException("Error in NetcdfWriter computeSectionOffset - listDistinctRange is null or
-            // empty");
         }
 
         if ((dimIndex < 0) || (outDimValue < 0) || (originalSection == null)) {
@@ -2503,8 +2257,29 @@ public class NetCdfWriter {
      * @throws MotuException the motu exception
      */
     public void writeVariableData(Variable var, int[] origin, Array data) throws MotuException {
-        int rank = var.getRank();
+        if (data != null) {
+            try {
+                long d1;
+                if (origin == null) {
+                    d1 = System.nanoTime();
+                    ncfileWriter.write(var, data);
+                } else {
+                    int[] originOut = computeOriginOut(var, origin);
+                    d1 = System.nanoTime();
+                    ncfileWriter.write(var, originOut, data);
+                }
+                ncfileWriter.flush();
+                long d2 = System.nanoTime();
+                this.writingTime += (d2 - d1);
+            } catch (Exception e) {
+                LOG.error("writeVariableData()", e);
+                throw new MotuException(ErrorType.NETCDF_GENERATION, "Error in NetcdfWriter writeVariableData", e);
+            }
+        }
+    }
 
+    private int[] computeOriginOut(Variable var, int[] origin) {
+        int rank = var.getRank();
         int[] originOutOffset = originOutOffsetHash.get(var.getFullName());
         if (originOutOffset == null) {
             originOutOffset = new int[rank];
@@ -2519,22 +2294,7 @@ public class NetCdfWriter {
                 originOut[i] += origin[i];
             }
         }
-        try {
-            if (data != null) {
-                long d1 = System.nanoTime();
-                if (origin != null) {
-                    ncfileWriter.write(var, originOut, data);
-                } else {
-                    ncfileWriter.write(var, data);
-                }
-                ncfileWriter.flush();
-                long d2 = System.nanoTime();
-                this.writingTime += (d2 - d1);
-            }
-        } catch (Exception e) {
-            LOG.error("writeVariableData()", e);
-            throw new MotuException(ErrorType.NETCDF_GENERATION, "Error in NetcdfWriter writeVariableData", e);
-        }
+        return originOut;
     }
 
     /**
@@ -2671,10 +2431,6 @@ public class NetCdfWriter {
 
     public static MAMath.MinMax getMinMaxSkipMissingData(GeoGrid geoGrid, Variable var, NetCdfWriter netCdfWriter)
             throws MotuException, MotuNotImplementedException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getMinMaxSkipMissingData() - entering");
-        }
-
         MAMath.MinMax minMax = null;
         try {
             if (!NetCdfWriter.isReadByBlock(var)) {
@@ -2700,9 +2456,6 @@ public class NetCdfWriter {
             minMax = null;
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getMinMaxSkipMissingData() - exiting");
-        }
         return minMax;
     }
 
@@ -2788,10 +2541,6 @@ public class NetCdfWriter {
      */
     public static MAMath.MinMax getMinMaxSkipMissingDataByBlock(GeoGrid geoGrid, Variable var, NetCdfWriter netCdfWriter)
             throws MotuException, MotuNotImplementedException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getMinMaxSkipMissingDataByBlock() - entering");
-        }
-
         int[] origin = null;
         int[] shape = null;
         Array data = null;
@@ -2801,11 +2550,6 @@ public class NetCdfWriter {
             Set<int[]> keySet = originAndShape.keySet();
 
             for (Iterator<int[]> it = keySet.iterator(); it.hasNext();) {
-                // get a Runtime object
-                // Runtime r = Runtime.getRuntime();
-                // run the garbage collector, to avoid Socket Exception too many files opened ?
-                // r.gc();
-
                 origin = it.next();
 
                 if (origin == null) {
@@ -2823,12 +2567,9 @@ public class NetCdfWriter {
                             String.format("Error in NetCfdWriter getMinMaxSkipMissingDataByBlock - unable to find shape - (shape is null)- Variable %s ",
                                           var.getFullName()));
                 }
-
-                // data = var.read(origin, shape);
                 data = NetCdfWriter.read(var, origin, shape, netCdfWriter);
 
                 // Don't use var but geoGrid.getVariable() to get missing/fill value.
-                // MAMath.MinMax minMaxTemp = geoGrid.getMinMaxSkipMissingData(data);
                 MAMath.MinMax minMaxTemp = NetCdfWriter.getMinMaxSkipMissingData(data, geoGrid.getVariable());
                 if (minMax == null) {
                     minMax = minMaxTemp;
@@ -2844,17 +2585,12 @@ public class NetCdfWriter {
 
         } catch (IOException e) {
             LOG.error("getMinMaxSkipMissingDataByBlock()", e);
-
             throw new MotuException(ErrorType.NETCDF_GENERATION, "I/O Error in NetcdfWriter getMinMaxSkipMissingDataByBlock", e);
         } catch (InvalidRangeException e) {
             LOG.error("getMinMaxSkipMissingDataByBlock()", e);
-
             throw new MotuException(ErrorType.NETCDF_GENERATION, "Error in NetcdfWriter getMinMaxSkipMissingDataByBlock", e);
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getMinMaxSkipMissingDataByBlock() - exiting");
-        }
         return minMax;
     }
 
@@ -2971,18 +2707,14 @@ public class NetCdfWriter {
      * @return number of max. element
      * @throws MotuException the motu exception
      */
-    private static long countMaxElementData(int[] varShape, DataType datatype) throws MotuException {
+    private static long countMaxElementData(int[] varShape, DataType datatype) {
         if (varShape.length <= 0) {
-            // throw new MotuException(String.format("Error in NetCdfWriter.countMaxElementData - incorrect
-            // dimension %d for parameter varShape",
-            // varShape.length));
             return 1;
         }
         int byteSize = datatype.getSize();
         if (byteSize <= 0) {
             byteSize = 1;
         }
-
         return UnitUtils.bytetoKilobyte(BLLManager.getInstance().getConfigManager().getMotuConfig().getDataBlockSize().intValue()) / (byteSize);
     }
 
@@ -3016,23 +2748,11 @@ public class NetCdfWriter {
      * @param varShape variable's shape to process.
      * @param datatype variable's data type to process
      * @return element block size
-     * @throws MotuException the motu exception
-     * @throws MotuNotImplementedException the motu not implemented exception
      */
-    private static int getElementBlockSize(int[] varShape, DataType datatype) throws MotuException, MotuNotImplementedException {
-
+    private static int getElementBlockSize(int[] varShape, DataType datatype) {
         double maxDataToUse = countMaxElementData(varShape, datatype);
-        double elementBlockSize = 1;
-
-        if ((varShape.length <= 0) || (varShape.length > 4)) {
-            // throw new MotuNotImplementedException(String
-            // .format("Error in NetCdfWriter.getElementBlockSize - Processing for %d-dimension is not
-            // implemented",
-            // varShape.length));
-        }
         double pow = 1.0 / varShape.length;
-        elementBlockSize = Math.pow(maxDataToUse, pow);
-        return (int) elementBlockSize;
+        return (int) Math.pow(maxDataToUse, pow);
     }
 
     /**
@@ -3096,19 +2816,13 @@ public class NetCdfWriter {
      * @param overwrite the overwrite
      */
     public static void copyAttributes(Variable src, Variable dest, boolean overwrite) {
-
-        if ((src == null) || (dest == null)) {
-            return;
-        }
-
-        List<Attribute> attributes = src.getAttributes();
-        for (Attribute att : attributes) {
-            if (!overwrite) {
-                if (dest.findAttributeIgnoreCase(att.getFullName()) == null) {
-                    continue;
+        if ((src != null) && (dest != null)) {
+            List<Attribute> attributes = src.getAttributes();
+            for (Attribute att : attributes) {
+                if (overwrite || (!overwrite && dest.findAttributeIgnoreCase(att.getFullName()) != null)) {
+                    dest.addAttribute(new Attribute(att.getFullName(), att));
                 }
             }
-            dest.addAttribute(new Attribute(att.getFullName(), att));
         }
     }
 
@@ -3122,7 +2836,6 @@ public class NetCdfWriter {
      * @throws MotuNotImplementedException the motu not implemented exception
      */
     public static Map<int[], int[]> parseOriginAndShape(Variable var) throws MotuException, MotuNotImplementedException {
-
         return NetCdfWriter.parseOriginAndShape(var.getShape(), var.getDataType());
     }
 
@@ -3136,16 +2849,11 @@ public class NetCdfWriter {
      * @throws MotuException the motu exception
      * @throws MotuNotImplementedException the motu not implemented exception
      */
-    public static Map<int[], int[]> parseOriginAndShape(int[] varShape, DataType datatype) throws MotuException, MotuNotImplementedException {
-
-        Map<int[], int[]> map = null;
+    public static Map<int[], int[]> parseOriginAndShape(int[] varShape, DataType datatype) throws MotuException {
+        Map<int[], int[]> map;
 
         for (int i = 0; i < varShape.length; i++) {
-            if (varShape[i] <= 0) {
-                throw new MotuException(
-                        ErrorType.INVALID_LAT_LON_RANGE,
-                        String.format("Error in NetCdfWriter.parseOriginAndShape - incorrect value %d for varShape[%d]", varShape[i], i));
-            }
+            checkShapeValue(varShape[i], i);
         }
         int nDims = varShape.length;
         int blockElementSize = NetCdfWriter.getElementBlockSize(varShape, datatype);
@@ -3171,12 +2879,20 @@ public class NetCdfWriter {
             map = NetCdfWriter.parseOriginAndShape4Dim(varShape, blockElementSize);
             break;
         default:
-            throw new MotuNotImplementedException(
+            throw new MotuException(
+                    ErrorType.NOT_IMPLEMENTED,
                     String.format("Error in  NetCdfWriter.parseOriginAndShape1Dim - Processing for %d-dimension is not implemented", nDims));
-            // break;
         }
 
         return map;
+    }
+
+    private static void checkShapeValue(int shapeValue, int index) throws MotuException {
+        if (shapeValue <= 0) {
+            throw new MotuException(
+                    ErrorType.INVALID_LAT_LON_RANGE,
+                    String.format("Error in NetCdfWriter.parseOriginAndShape - incorrect value %d for varShape[%d]", shapeValue, index));
+        }
     }
 
     /**

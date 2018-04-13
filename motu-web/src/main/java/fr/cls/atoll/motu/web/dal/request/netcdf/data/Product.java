@@ -295,7 +295,7 @@ public class Product implements Comparator<Product> {
 
         try {
             // Gets global attribute 'title' if not set.
-            if (productMetaData.getTitle().equals("")) {
+            if (productMetaData.getTitle().isEmpty()) {
                 String title = getNetCdfReader().getStringValue("title");
                 productMetaData.setTitle(title);
             }

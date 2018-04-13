@@ -302,6 +302,9 @@ public class NetCdfReader {
 
     private final Map<String, Variable> orignalVariables = new HashMap<String, Variable>();
 
+    /** Does Service needs CAS authentication to access catalog resources and data. */
+    protected boolean casAuthentication = false;
+
     /**
      * 
      * Default constructor.
@@ -326,9 +329,6 @@ public class NetCdfReader {
     private void init() {
         NetcdfDataset.setUseNaNs(false);
     }
-
-    /** Does Service needs CAS authentication to access catalog resources and data. */
-    protected boolean casAuthentication = false;
 
     /**
      * Checks if is cas authentication.
@@ -761,20 +761,6 @@ public class NetCdfReader {
     }
 
     /**
-     * Opens the reader.
-     * 
-     * @param location NetCDF file name or Opendap location data (URL) to read.
-     * @param enhanceVar the enhance var
-     * 
-     * @return the time (in nanoseconds) taken to open the dataset
-     * @throws MotuException the motu exception
-     */
-    public long open(String location, boolean enhanceVar) throws MotuException {
-        this.locationData = location;
-        return open(enhanceVar);
-    }
-
-    /**
      * Opens the reader, if it is closed.
      *
      * @param enhanceVar the enhance var
@@ -783,16 +769,11 @@ public class NetCdfReader {
      */
     public long open(boolean enhanceVar) throws MotuException {
         long d1 = System.nanoTime();
-        long d2 = d1;
 
         if (this.isOpenWithEnhanceVar != enhanceVar) {
             this.isOpenWithEnhanceVar = enhanceVar;
             return reOpen(enhanceVar);
         }
-        // if (!isClosed()) {
-        // d2 = System.nanoTime();
-        // return (d2 - d1);
-        // }
 
         try {
             setNetcdfDataset(acquireDataset(locationData, enhanceVar, new CancelTask() {
@@ -832,9 +813,7 @@ public class NetCdfReader {
                 conv.buildCoordinateSystems(getNetcdfDataset());
             }
         }
-
-        d2 = System.nanoTime();
-        return d2 - d1;
+        return System.nanoTime() - d1;
     }
 
     /**
@@ -845,7 +824,7 @@ public class NetCdfReader {
     private void initOriginalVariables(NetcdfDataset ds) {
         orignalVariables.clear();
         for (Variable var : ds.getVariables()) {
-            orignalVariables.put(var.getName(), var);
+            orignalVariables.put(var.getFullName(), var);
         }
 
     }
@@ -865,32 +844,48 @@ public class NetCdfReader {
      * @see #NetcdfDataset Coordinate Systems are always added
      */
     public NetcdfDataset acquireDataset(String location, boolean enhanceVar, ucar.nc2.util.CancelTask cancelTask) throws IOException, MotuException {
-
-        // initNetcdfHttpClient();
-
-        // httpClientCAS.getIsCas().set(this.casAuthentication);
-        // AuthenticationHolder.setCASAuthentication(this.casAuthentication);
-
+        NetcdfDataset ds;
         // if enhanceVar ==> call NetcdfDataset.acquireDataset method
         // else enhance() is not called but Coordinate Systems are added
         if (enhanceVar) {
-            return NetcdfDataset.acquireDataset(location, cancelTask);
-        }
+            ds = NetcdfDataset.acquireDataset(location, cancelTask);
 
-        NetcdfFile ncfile = NetcdfDataset.acquireFile(location, cancelTask);
-        NetcdfDataset ds;
-        if (ncfile instanceof NetcdfDataset) {
-            ds = (NetcdfDataset) ncfile;
-            ucar.nc2.dataset.CoordSysBuilder.factory(ds, cancelTask);
-            initOriginalVariables(ds);
-            ds.finish(); // recalc the global lists
+            try (NetcdfFile ncfile = NetcdfDataset.acquireFile(location, cancelTask)) {
+                NetcdfDataset dsTmp;
+                if (ncfile instanceof NetcdfDataset) {
+                    dsTmp = (NetcdfDataset) ncfile;
+                } else {
+                    dsTmp = new NetcdfDataset(ncfile, false);
+                }
+
+                // copy missing attributes
+                for (Variable v : dsTmp.getVariables()) {
+                    Variable vDS = ds.findVariable(v.getFullNameEscaped());
+                    if (vDS != null) {
+                        for (Attribute a : v.getAttributes()) {
+                            if (vDS.findAttribute(a.getFullNameEscaped()) == null) {
+                                vDS.addAttribute(a);
+                            }
+                        }
+                    }
+                }
+            }
         } else {
-            ds = new NetcdfDataset(ncfile, false);
-            ucar.nc2.dataset.CoordSysBuilder.factory(ds, cancelTask);
-            initOriginalVariables(ds);
-            ds.finish(); // rebuild global lists
-        }
 
+            NetcdfFile ncfile = NetcdfDataset.acquireFile(location, cancelTask);
+
+            if (ncfile instanceof NetcdfDataset) {
+                ds = (NetcdfDataset) ncfile;
+                ucar.nc2.dataset.CoordSysBuilder.factory(ds, cancelTask);
+                initOriginalVariables(ds);
+                ds.finish(); // recalc the global lists
+            } else {
+                ds = new NetcdfDataset(ncfile, false);
+                ucar.nc2.dataset.CoordSysBuilder.factory(ds, cancelTask);
+                initOriginalVariables(ds);
+                ds.finish(); // rebuild global lists
+            }
+        }
         return ds;
     }
 
@@ -1976,24 +1971,17 @@ public class NetCdfReader {
      * 
      */
     public static CoordinateAxis getCoordinateVariable(Dimension dim, NetcdfDataset ds) throws MotuException {
-
         Variable variable = null;
         try {
-            variable = NetCdfReader.getVariable(dim.getName(), ds);
+            variable = NetCdfReader.getVariable(dim.getFullName(), ds);
         } catch (NetCdfVariableNotFoundException e) {
             throw new MotuException(
                     ErrorType.NETCDF_LOADING,
-                    String.format("Error in getCoordinateVariable - Unable to get variable '%s'", dim.getName()),
+                    String.format("Error in getCoordinateVariable - Unable to get variable '%s'", dim.getFullName()),
                     e);
         }
 
-        if (variable == null) {
-            return null;
-        }
-        if (!variable.isCoordinateVariable()) {
-            return null;
-        }
-        if (!(variable instanceof CoordinateAxis)) {
+        if (!variable.isCoordinateVariable() || !(variable instanceof CoordinateAxis)) {
             return null;
         }
 

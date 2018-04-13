@@ -27,12 +27,14 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProductParameters;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProductParameters.RangeComparator;
+import fr.cls.atoll.motu.web.bll.request.model.metadata.DataProvider;
 import fr.cls.atoll.motu.web.common.utils.ListUtils;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.VarData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
+import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
@@ -293,7 +295,7 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
         String xName = xaxis.getFullName();
         List<Section> listVarOrgRanges = mapVarOrgRanges.get(xName);
         if (ListUtils.isNullOrEmpty(listVarOrgRanges)) {
-            listVarOrgRanges = new ArrayList<Section>();
+            listVarOrgRanges = new ArrayList<>();
             mapVarOrgRanges.put(xName, listVarOrgRanges);
         }
 
@@ -303,7 +305,7 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
         String yName = yaxis.getFullName();
         listVarOrgRanges = mapVarOrgRanges.get(yName);
         if (ListUtils.isNullOrEmpty(listVarOrgRanges)) {
-            listVarOrgRanges = new ArrayList<Section>();
+            listVarOrgRanges = new ArrayList<>();
             mapVarOrgRanges.put(yName, listVarOrgRanges);
         }
 
@@ -319,12 +321,11 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
      * @throws MotuNotImplementedException the motu not implemented exception
      */
     protected void prepareXYWriting() throws MotuException, MotuNotImplementedException {
-
-        listVariableXSubset = new ArrayList<CoordinateAxis>();
-        listVariableYSubset = new ArrayList<CoordinateAxis>();
-        mapXRange = new HashMap<String, Range>();
-        mapYRange = new HashMap<String, Range>();
-        mapVarOrgRanges = new HashMap<String, List<Section>>();
+        listVariableXSubset = new ArrayList<>();
+        listVariableYSubset = new ArrayList<>();
+        mapXRange = new HashMap<>();
+        mapYRange = new HashMap<>();
+        mapVarOrgRanges = new HashMap<>();
 
         for (List<Range> yxRanges : listYXRanges) {
 
@@ -339,10 +340,10 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
 
         RangeComparator rangeComparator = new RangeComparator();
 
-        listDistinctXRange = new ArrayList<Range>(mapXRange.values());
+        listDistinctXRange = new ArrayList<>(mapXRange.values());
         Collections.sort(listDistinctXRange, rangeComparator);
 
-        listDistinctYRange = new ArrayList<Range>(mapYRange.values());
+        listDistinctYRange = new ArrayList<>(mapYRange.values());
         Collections.sort(listDistinctYRange, rangeComparator);
 
         for (Range range : listDistinctYRange) {
@@ -351,10 +352,10 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
             String axisName = axis.getFullName();
             List<Section> listVarOrgRanges = mapVarOrgRanges.get(axisName);
             if (ListUtils.isNullOrEmpty(listVarOrgRanges)) {
-                listVarOrgRanges = new ArrayList<Section>();
+                listVarOrgRanges = new ArrayList<>();
                 mapVarOrgRanges.put(axisName, listVarOrgRanges);
             }
-            List<Range> lr = new ArrayList<Range>();
+            List<Range> lr = new ArrayList<>();
             lr.add(range);
             Section section = new Section(lr);
             listVarOrgRanges.add(section);
@@ -367,10 +368,10 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
             String axisName = axis.getFullName();
             List<Section> listVarOrgRanges = mapVarOrgRanges.get(axisName);
             if (ListUtils.isNullOrEmpty(listVarOrgRanges)) {
-                listVarOrgRanges = new ArrayList<Section>();
+                listVarOrgRanges = new ArrayList<>();
                 mapVarOrgRanges.put(axisName, listVarOrgRanges);
             }
-            List<Range> lr = new ArrayList<Range>();
+            List<Range> lr = new ArrayList<>();
             lr.add(range);
             Section section = new Section(lr);
             listVarOrgRanges.add(section);
@@ -479,86 +480,83 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
 
         for (VarData varData : getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getVariables().values()) {
             GeoGrid geoGrid = gds.findGridByName(varData.getVarName());
-            if (geoGrid == null) {
-                continue;
-            }
-            List<GeoGrid> listGeoGridSubset = new ArrayList<GeoGrid>();
+            if (geoGrid != null) {
+                List<GeoGrid> listGeoGridSubset = new ArrayList<>();
 
-            for (List<Range> yxRanges : listYXRanges) {
-                Range yRange = yxRanges.get(0);
-                Range xRange = yxRanges.get(1);
+                for (List<Range> yxRanges : listYXRanges) {
+                    Range yRange = yxRanges.get(0);
+                    Range xRange = yxRanges.get(1);
 
-                GeoGrid geoGridSubset = null;
-                try {
-                    // -----------------------------------------------------------------------
-                    // WARNING :
-                    //
-                    // section method of Variable create a new instance of the class VariableDS from the
-                    // original
-                    // variable,
-                    // but some informations are lost (as Fillvalue).
-                    // And Subset of GeoGrid is used section method.
-                    //
-                    // Example :
-                    // ...
-                    // VariableDS v_section = (VariableDS) v.section(rangesList);
-                    //
-                    // v is an instance of class VariableDS and the attribute fillValue of attribute smProxy
-                    // is
-                    // set and hasFillValue is set to true.
-                    // After calling v.section, the attribute fillValue of attribute smProxy of v_section is
-                    // not
-                    // set and hasFillValue is set to false.
-                    //
-                    // So, when you work with v_section variable and you called hasFillValue method, it
-                    // returns
-                    // false, while with the original variable v, hasFillValue method returns true.
-                    // -----------------------------------------------------------------------
-                    geoGridSubset = geoGrid.subset(tRange, zRange, yRange, xRange);
-                    listGeoGridSubset.add(geoGridSubset);
+                    GeoGrid geoGridSubset = null;
+                    try {
+                        // -----------------------------------------------------------------------
+                        // WARNING :
+                        //
+                        // section method of Variable create a new instance of the class VariableDS from the
+                        // original variable, but some informations are lost (as Fillvalue).
+                        // And Subset of GeoGrid uses section method.
+                        //
+                        // Example :
+                        // ...
+                        // VariableDS v_section = (VariableDS) v.section(rangesList);
+                        // ...
+                        // v is an instance of class VariableDS and the attribute fillValue of Attribute
+                        // smProxy is set and hasFillValue is set to true.
+                        // After calling v.section, the attribute fillValue of attribute smProxy of v_section
+                        // is not set and hasFillValue is set to false.
+                        //
+                        // So, when you work with v_section variable and you called hasFillValue method, it
+                        // returns false whereas with the original variable v, hasFillValue method returns
+                        // true.
+                        // -----------------------------------------------------------------------
+                        geoGridSubset = geoGrid.subset(tRange, zRange, yRange, xRange);
+                        listGeoGridSubset.add(geoGridSubset);
 
-                    // if GeoXY then compute the original range for the subset variable.
-                    // This is already done in the geo-grid but the information (original range is private and
-                    // there is no getter on it)
-                    if (isGeoXY) {
-                        String varName = geoGridSubset.getVariable().getFullName();
-                        List<Section> listVarOrgRanges = mapVarOrgRanges.get(varName);
-                        if (ListUtils.isNullOrEmpty(listVarOrgRanges)) {
-                            listVarOrgRanges = new ArrayList<Section>();
-                            mapVarOrgRanges.put(varName, listVarOrgRanges);
+                        // if GeoXY then compute the original range for the subset variable.
+                        // This is already done in the geo-grid but the information (original range is private
+                        // and there is no getter on it)
+                        if (isGeoXY) {
+                            String varName = geoGridSubset.getVariable().getFullName();
+                            List<Section> listVarOrgRanges = mapVarOrgRanges.get(varName);
+                            if (ListUtils.isNullOrEmpty(listVarOrgRanges)) {
+                                listVarOrgRanges = new ArrayList<>();
+                                mapVarOrgRanges.put(varName, listVarOrgRanges);
+                            }
+
+                            Section section = getOriginalRangeList(geoGridSubset, tRange, zRange, yRange, xRange);
+                            listVarOrgRanges.add(section);
+
+                            // if coordinate axes of the geogrid are Lat/Lon
+                            // then compute the original range for the subset Lat/lon.
+                            prepareLatLonWriting(geoGridSubset, yRange, xRange);
+
                         }
 
-                        Section section = getOriginalRangeList(geoGridSubset, tRange, zRange, yRange, xRange);
-                        listVarOrgRanges.add(section);
-
-                        // if coordinate axes of the geogrid are Lat/Lon
-                        // then compute the original range for the subset Lat/lon.
-                        prepareLatLonWriting(geoGridSubset, yRange, xRange);
-
+                    } catch (InvalidRangeException e) {
+                        throw new MotuException(ErrorType.BAD_PARAMETERS, "Error in subsetting geo grid", e);
                     }
-
-                } catch (InvalidRangeException e) {
-                    throw new MotuException(ErrorType.BAD_PARAMETERS, "Error in subsetting geo grid", e);
                 }
-            }
-            if (isGeoXY) {
-                // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get some information
-                // (lost
-                // in subsetting - See bug below) about the variable of the GeoGrid
-                netCdfWriter
-                        .writeVariablesWithGeoXY(listGeoGridSubset,
-                                                 geoGrid,
-                                                 gds,
-                                                 getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader().getOrignalVariables());
+                if (isGeoXY) {
+                    // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get some
+                    // information
+                    // (lost
+                    // in subsetting - See bug below) about the variable of the GeoGrid
+                    netCdfWriter.writeVariablesWithGeoXY(listGeoGridSubset,
+                                                         geoGrid,
+                                                         gds,
+                                                         getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader()
+                                                                 .getOrignalVariables());
 
-            } else {
-                // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get some information
-                // (lost
-                // in subsetting - See bug below) about the variable of the GeoGrid
-                netCdfWriter.writeVariables(listGeoGridSubset,
-                                            geoGrid,
-                                            gds,
-                                            getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader().getOrignalVariables());
+                } else {
+                    // pass geoGridsubset and geoGrid (the original geoGrid) to be able to get some
+                    // information
+                    // (lost
+                    // in subsetting - See bug below) about the variable of the GeoGrid
+                    netCdfWriter.writeVariables(listGeoGridSubset,
+                                                geoGrid,
+                                                gds,
+                                                getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader().getOrignalVariables());
+                }
             }
 
         }
@@ -1181,25 +1179,15 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
     }
 
     /**
-     * initializes a list of global attributes ('dynamic' attributes that depend on data). Range values can be
-     * Double.MAX_VALUE if no value
-     *
-     * @return a list of global attributes
-     * @throws MotuException the motu exception
-     * @throws MotuNotImplementedException the motu not implemented exception
+     * adds Time min/max attribute and date Units
+     * 
+     * @param globalAttributes
      */
-    public List<Attribute> initializeNetCdfDynGlobalAttributes() throws MotuException, MotuNotImplementedException {
-        // intialisation
-        List<Attribute> globalAttributes = new ArrayList<Attribute>();
-        Attribute attribute = null;
-
-        double min = 0.0;
-        double max = 0.0;
-
-        // -----------------------------
-        // adds Time min/max attribute and date Units
-        // -----------------------------
+    private void addGlobalAttributesForTime(List<Attribute> globalAttributes) {
         if (hasOutputTimeDimension) {
+            Attribute attribute = null;
+            double min = 0.0;
+            double max = 0.0;
             if (hasTRangeValue()) {
                 min = tRangeValue[0];
                 max = tRangeValue[1];
@@ -1216,10 +1204,18 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
                     getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getTimeAxis().getUnitsString());
             globalAttributes.add(attribute);
         }
-        // -----------------------------
-        // adds Z min/max attribute
-        // -----------------------------
+    }
+
+    /**
+     * adds Z min/max attribute
+     * 
+     * @param globalAttributes
+     */
+    private void addGlobalAttributesForDepth(List<Attribute> globalAttributes) {
         if (hasOutputZDimension) {
+            Attribute attribute = null;
+            double min = 0.0;
+            double max = 0.0;
             if (hasZRangeValue()) {
                 min = zRangeValue[0];
                 max = zRangeValue[1];
@@ -1233,10 +1229,18 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
             attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_Z_MAX, max);
             globalAttributes.add(attribute);
         }
-        // -----------------------------
-        // adds Lat min/max attribute
-        // -----------------------------
+    }
+
+    /**
+     * adds Lat min/max attribute
+     * 
+     * @param globalAttributes
+     */
+    private void addGlobalAttributesForLat(List<Attribute> globalAttributes) {
         if (hasOutputLatDimension) {
+            Attribute attribute = null;
+            double min = 0.0;
+            double max = 0.0;
             if (hasYRangeValue()) {
                 // min = NetCdfReader.getLatNormal(yRangeValue[0]);
                 // max = NetCdfReader.getLatNormal(yRangeValue[1]);
@@ -1252,10 +1256,18 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
             attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_LATITUDE_MAX, max);
             globalAttributes.add(attribute);
         }
-        // -----------------------------
-        // adds Lon min/max attribute
-        // -----------------------------
+    }
+
+    /**
+     * adds Lon min/max attribute
+     * 
+     * @param globalAttributes
+     */
+    private void addGlobalAttributesForLon(List<Attribute> globalAttributes) {
         if (hasOutputLonDimension) {
+            Attribute attribute = null;
+            double min = 0.0;
+            double max = 0.0;
             if (hasXRangeValue()) {
                 min = xRangeValue[0];
                 max = xRangeValue[1];
@@ -1273,132 +1285,94 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
             attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_LONGITUDE_MAX, max);
             globalAttributes.add(attribute);
         }
+    }
+
+    /**
+     * initializes a list of global attributes ('dynamic' attributes that depend on data). Range values can be
+     * Double.MAX_VALUE if no value
+     *
+     * @return a list of global attributes
+     */
+    public List<Attribute> initializeNetCdfDynGlobalAttributes() {
+        List<Attribute> globalAttributes = new ArrayList<>();
+        addGlobalAttributesForTime(globalAttributes);
+        addGlobalAttributesForDepth(globalAttributes);
+        addGlobalAttributesForLat(globalAttributes);
+        addGlobalAttributesForLon(globalAttributes);
+        return globalAttributes;
+    }
+
+    private void checkFromOriginalGlobalAttributeName(Attribute attrToAdd) {
+        String[] listToNotApplyPrefix = new String[] {
+                "title", "Conventions", "netcdf_version_id", "product_version", "software_version", "lat", "lon", "field_type" };
+        String prefixName = "FROM_ORIGINAL_FILE__";
+        for (String s : listToNotApplyPrefix) {
+            if (attrToAdd.getFullName().contains(s)) {
+                attrToAdd.setName(prefixName + attrToAdd.getFullName());
+            }
+        }
+    }
+
+    private List<Attribute> getAllGlobalAttributesList(List<Attribute> globalAttributesRead) {
+        ProductMetaData pmd = getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData();
+        DataProvider dp = pmd.getDataProvider();
+
+        // This map lists all default attributes that have to be added to Global attributes
+        Map<String, String> allDefaultGlobalAttrMap = new HashMap<>();
+        allDefaultGlobalAttrMap.put(NetCdfReader.GLOBALATTRIBUTE_TITLE, pmd.getTitle());
+        allDefaultGlobalAttrMap.put(NetCdfReader.GLOBALATTRIBUTE_INSTITUTION, dp != null ? dp.getName() : " ");
+        allDefaultGlobalAttrMap.put(NetCdfReader.GLOBALATTRIBUTE_REFERENCES, dp != null ? dp.getWebSite() : " ");
+        allDefaultGlobalAttrMap.put(NetCdfReader.GLOBALATTRIBUTE_SOURCE, " ");
+        allDefaultGlobalAttrMap.put(NetCdfReader.GLOBALATTRIBUTE_CONVENTIONS, NetCdfReader.GLOBALATTRIBUTE_CONVENTIONS_VALUE);
+        allDefaultGlobalAttrMap.put(NetCdfReader.GLOBALATTRIBUTE_COMMENT, pmd.getDescription());
+        allDefaultGlobalAttrMap.put(NetCdfReader.GLOBALATTRIBUTE_HISTORY,
+                                    "Data extracted from dataset " + getRequestDownloadStatus().getRequestProduct().getProduct().getLocationData());
+
+        // This map is to know which default attributes have been treated
+        List<String> defaultAddedAttributeDone = new ArrayList<>(allDefaultGlobalAttrMap.size());
+
+        List<Attribute> globalAttributes = new ArrayList<>();
+        for (Attribute readAttr : globalAttributesRead) {
+            String attrFyllName = readAttr.getFullName();
+            Attribute attrToAdd = readAttr;
+            if (allDefaultGlobalAttrMap.keySet().contains(attrFyllName)) {
+                String defaultValue = allDefaultGlobalAttrMap.get(attrFyllName);
+                attrToAdd = checkGlobalAttribute(readAttr, attrFyllName, defaultValue);
+                defaultAddedAttributeDone.add(attrFyllName);
+            } else {
+                checkFromOriginalGlobalAttributeName(attrToAdd);
+            }
+            globalAttributes.add(attrToAdd);
+        }
+
+        for (Entry<String, String> attrKV : allDefaultGlobalAttrMap.entrySet()) {
+            if (!defaultAddedAttributeDone.contains(attrKV.getKey())) {
+                globalAttributes.add(new Attribute(attrKV.getKey(), attrKV.getValue()));
+            }
+        }
 
         return globalAttributes;
+    }
+
+    private Attribute checkGlobalAttribute(Attribute readAttr, String attrFullEspacedName, String attrDefaultValue) {
+        Attribute attribute = null;
+        if (readAttr.getFullNameEscaped() != null) {
+            try {
+                attribute = getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader().getAttribute(attrFullEspacedName);
+            } catch (NetCdfAttributeNotFoundException e) {
+                attribute = new Attribute(attrFullEspacedName, attrDefaultValue);
+            }
+        }
+        return attribute;
     }
 
     /**
      * initializes a list of global attributes ('fixed' attributes that don't depend on data).
      * 
      * @return a list of global attributes
-     * 
-     * @throws MotuException the motu exception
      */
-    public List<Attribute> initializeNetCdfFixedGlobalAttributes() throws MotuException {
-        List<Attribute> globalAttributes = new ArrayList<Attribute>();
-        Attribute attribute = null;
-
-        // -----------------------------
-        // adds title attribute
-        // -----------------------------
-        try {
-            attribute = getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader()
-                    .getAttribute(NetCdfReader.GLOBALATTRIBUTE_TITLE);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
-
-            attribute = new Attribute(
-                    NetCdfReader.GLOBALATTRIBUTE_TITLE,
-                    getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getTitle());
-        }
-        globalAttributes.add(attribute);
-        // -----------------------------
-        // adds institution attribute
-        // -----------------------------
-        try {
-            attribute = getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader()
-                    .getAttribute(NetCdfReader.GLOBALATTRIBUTE_INSTITUTION);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
-
-            if (getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getDataProvider() != null) {
-                attribute = new Attribute(
-                        NetCdfReader.GLOBALATTRIBUTE_INSTITUTION,
-                        getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getDataProvider().getName());
-            } else {
-                attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_INSTITUTION, " ");
-            }
-        }
-        globalAttributes.add(attribute);
-        // -----------------------------
-        // adds references attribute
-        // -----------------------------
-        try {
-            attribute = getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader()
-                    .getAttribute(NetCdfReader.GLOBALATTRIBUTE_REFERENCES);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
-
-            if (getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getDataProvider() != null) {
-                attribute = new Attribute(
-                        NetCdfReader.GLOBALATTRIBUTE_REFERENCES,
-                        getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getDataProvider().getWebSite());
-            } else {
-                attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_REFERENCES, " ");
-            }
-        }
-        globalAttributes.add(attribute);
-        // -----------------------------
-        // adds source attribute
-        // -----------------------------
-        try {
-            attribute = getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader()
-                    .getAttribute(NetCdfReader.GLOBALATTRIBUTE_SOURCE);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
-
-            attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_SOURCE, " ");
-        }
-        globalAttributes.add(attribute);
-        // -----------------------------
-        // adds conventions attribute
-        // -----------------------------
-        attribute = new Attribute(NetCdfReader.GLOBALATTRIBUTE_CONVENTIONS, NetCdfReader.GLOBALATTRIBUTE_CONVENTIONS_VALUE);
-        globalAttributes.add(attribute);
-        // -----------------------------
-        // adds comment attribute
-        // -----------------------------
-        try {
-            attribute = getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader()
-                    .getAttribute(NetCdfReader.GLOBALATTRIBUTE_COMMENT);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
-
-            attribute = new Attribute(
-                    NetCdfReader.GLOBALATTRIBUTE_COMMENT,
-                    getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getDescription());
-        }
-        // -----------------------------
-        // adds history attribute
-        // -----------------------------
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("Data extracted from dataset ");
-        stringBuffer.append(getRequestDownloadStatus().getRequestProduct().getProduct().getLocationData());
-        globalAttributes.add(new Attribute(NetCdfReader.GLOBALATTRIBUTE_HISTORY, stringBuffer.toString()));
-        // -----------------------------
-        // adds easting attribute
-        // -----------------------------
-        try {
-            attribute = getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader()
-                    .getAttribute(NetCdfReader.GLOBALATTRIBUTE_EASTING);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
-
-            // Do nothing
-        }
-        // -----------------------------
-        // adds northing attribute
-        // -----------------------------
-        try {
-            attribute = getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader()
-                    .getAttribute(NetCdfReader.GLOBALATTRIBUTE_NORTHING);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // LOG.error("initializeNetCdfFixedGlobalAttributes()", e);
-
-            // Do nothing
-        }
-
-        return globalAttributes;
+    public List<Attribute> initializeNetCdfFixedGlobalAttributes() {
+        return getAllGlobalAttributesList(getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader().getAttributes());
     }
 
 }

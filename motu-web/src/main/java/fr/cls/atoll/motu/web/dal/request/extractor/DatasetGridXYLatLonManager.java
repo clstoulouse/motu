@@ -210,12 +210,8 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
         List<Attribute> globalFixedAttributes = initializeNetCdfFixedGlobalAttributes();
         List<Attribute> globalDynAttributes = initializeNetCdfDynGlobalAttributes();
 
-        // netCdfWriter.writeDimensions(outputDims.values());
-
         GridDataset gds = new GridDataset(getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReaderDataset());
-
         for (VarData varData : getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getVariables().values()) {
-
             GeoGrid geoGrid = gds.findGridByName(varData.getVarName());
             if (geoGrid == null) {
                 throw new MotuNotImplementedException(
@@ -224,29 +220,23 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
             }
             Variable inputVar = geoGrid.getVariable();
             Variable outputVar = new Variable(ncFile, null, null, inputVar.getShortName());
-            List<Dimension> dims = new ArrayList<Dimension>();
+            List<Dimension> dims = new ArrayList<>();
             List<CoordinateAxis> inputDims = geoGrid.getCoordinateSystem().getCoordinateAxes();
             for (CoordinateAxis inputDim : inputDims) {
                 Dimension dimToAdd = outputDims.get(inputDim.getFullName());
-                if (dimToAdd == null) {
-                    // throw new MotuException(String.format("ERROR - Input dimension %s not found (method
-                    // DatasetGridYXLatLon.extractDataNetcdf)",
-                    // inputDim.getName()));
-                    continue;
+                if (dimToAdd != null) {
+                    dims.add(dimToAdd);
+                    netCdfWriter.putDimension(dimToAdd);
+                    netCdfWriter.putVariable(getCoordinateVariable(dimToAdd));
                 }
-                dims.add(dimToAdd);
-                netCdfWriter.putDimension(dimToAdd);
-                netCdfWriter.putVariable(getCoordinateVariable(dimToAdd));
             }
             outputVar.setDimensions(dims);
             outputVar.setDataType(inputVar.getDataType());
             NetCdfWriter.copyAttributes(inputVar, outputVar);
-            // outputVar.setIOVar(inputVar);
             outputVars.put(outputVar.getFullName(), outputVar);
 
             netCdfWriter.putVariables(outputVar.getFullName(), outputVar);
             netCdfWriter.writeDependentVariables(outputVar, gds);
-            // netCdfWriter.writeVariable(outputVar, null);
         }
 
         netCdfWriter.writeGlobalAttributes(globalFixedAttributes);
@@ -258,11 +248,7 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
         processZAttributes();
 
         netCdfWriter.create(VAR_ATTR_TO_REMOVE);
-        // netCdfWriter.finish(VAR_ATTR_TO_REMOVE);
         for (Variable outputVar : outputVars.values()) {
-
-            // Variable inputVar = outputVar.getIOVar();
-
             writeVariable(outputVar, gds);
         }
 
