@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.quartz.JobExecutionException;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
@@ -179,8 +180,9 @@ public class RequestCleaner implements IRequestCleaner {
     @Override
     public void cleanRequestStatus() {
         for (String requestId : getAllNonRunningRequestIds()) {
+            LOGGER.info("cleanRequestStatus - try to clean requestId=" + requestId);
             bllRequestManager.deleteRequest(requestId);
-            LOGGER.info("cleanRequestStatus - requestId=" + requestId);
+            LOGGER.info("cleanRequestStatus - clean done for requestId=" + requestId);
         }
     }
 

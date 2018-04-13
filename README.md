@@ -1259,16 +1259,22 @@ This optional node is used to run Motu in a [scalable architecture](#Architectur
 Once this node is added, Motu stores all its request ids and status in Redis.  
 
 ##### host
-Define the host (ip or server name) where is deployed the Redis server used by Motu to share the RequestId and RequestStatus data.
+Define the host (ip or server name) where is deployed the Redis server od Redis cluster used by Motu to share the RequestId and RequestStatus data.
 Default value is localhost
 
 ##### port
-Define the port used by the Redis server used by Motu to share the requestId and RequestStatus data.
+Define the port used by the Redis server or Redis cluster used by Motu to share the requestId and RequestStatus data.
 Default value is 6379  
 
 ##### prefix
 Define the prefix used to build the RequestId value of the shared RequestStatus data.
-Default value is requestStatus 
+Default value is requestStatus
+
+##### isRedisCluster 
+Define if the redis server in in cluster mode.
+This is a boolean value.
+By default is set to false and the cluster mode is not activate.
+To activate the cluster, the value have to be set on true.
 
 ## <a name="ConfigurationSystem">System settings</a>  
 

@@ -7,16 +7,13 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.github.jedis.lock.JedisLock;
-
-import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.status.data.NormalStatus;
 import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.RequestStatusRedisConfig;
-import redis.clients.jedis.Jedis;
+import fr.cls.atoll.motu.web.dal.request.status.jedis.MotuJedisClient;
 
 public class DALRedisStatusManager implements IDALRequestStatusManager {
 
@@ -38,8 +35,9 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
     private static final String NORMAL_STATUS_TYPE = "NormalStatus";
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private Jedis jedisClient;
+    private MotuJedisClient jedisClient;
     private String idPrefix;
+    private String identManager;
 
     public DALRedisStatusManager() {
     }
@@ -47,8 +45,12 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
     @Override
     public void init() {
         RequestStatusRedisConfig redisConfig = DALManager.getInstance().getConfigManager().getMotuConfig().getRedisConfig();
+        jedisClient = new MotuJedisClient(redisConfig.getIsRedisCluster(), redisConfig.getHost(), redisConfig.getPort());
         idPrefix = redisConfig.getPrefix() + ":";
-        jedisClient = new Jedis(redisConfig.getHost(), redisConfig.getPort());
+        identManager = redisConfig.getPrefix() + "-identManager";
+        if (!jedisClient.exists(identManager)) {
+            jedisClient.set(identManager, "0");
+        }
     }
 
     @Override
@@ -65,20 +67,8 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
     @Override
     public String addNewRequestStatus(RequestStatus requestStatus) throws MotuException {
         String requestId = null;
-
-        JedisLock lock = new JedisLock(jedisClient, "requestIdLock");
-        try {
-            lock.acquire();
-            do {
-                requestId = idPrefix + Long.toString(System.currentTimeMillis());
-            } while (jedisClient.exists(requestId));
-            jedisClient.hmset(requestId, requestStatusRedisSerialization(requestStatus));
-        } catch (InterruptedException exception) {
-            LOGGER.error("Error while creation of the requestId.", exception);
-            throw new MotuException(ErrorType.SYSTEM, "Error while creation of the requestId.", exception);
-        } finally {
-            lock.release();
-        }
+        requestId = idPrefix + Long.toString(System.currentTimeMillis()) + "-" + jedisClient.getRedisIdent(identManager);
+        jedisClient.hmset(requestId, requestStatusRedisSerialization(requestStatus));
         return requestId;
     }
 
