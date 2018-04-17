@@ -643,6 +643,10 @@
 			The prefix used for the redis keys.
 		-->
 		<xs:attribute name="prefix" type="xs:string" default="requestStatus"/>
+		<!-- isRedisCluster :
+			Define if the provided Redis configuration is for a Redis cluster..
+		-->
+		<xs:attribute name="isRedisCluster" type="xs:boolean" default="false"/>
 	</xs:complexType>
 
 
