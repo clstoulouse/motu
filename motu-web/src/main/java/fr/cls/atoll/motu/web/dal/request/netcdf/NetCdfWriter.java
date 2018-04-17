@@ -218,7 +218,7 @@ public class NetCdfWriter {
     public List<Variable> putVariables(String key, Variable value) {
         List<Variable> listVar = getVariables().get(key);
         if (listVar == null) {
-            listVar = new ArrayList<Variable>();
+            listVar = new ArrayList<>();
         }
         listVar.add(value);
         return putVariables(key, listVar);
@@ -250,17 +250,16 @@ public class NetCdfWriter {
      * @param dim copy this dimension
      */
     public void putDimension(Dimension dim) {
-        if (dimHash.get(dim.getFullName()) != null) {
-            return;
+        if (!dimHash.containsKey(dim.getFullName())) {
+            int length;
+            if (dim.isUnlimited()) {
+                length = -1;
+            } else {
+                length = dim.getLength();
+            }
+            Dimension newDim = ncfileWriter.addDimension(null, dim.getShortName(), length, dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
+            dimHash.put(newDim.getFullName(), newDim);
         }
-        int length;
-        if (dim.isUnlimited()) {
-            length = -1;
-        } else {
-            length = dim.getLength();
-        }
-        Dimension newDim = ncfileWriter.addDimension(null, dim.getShortName(), length, dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
-        dimHash.put(newDim.getFullName(), newDim);
     }
 
     /**
@@ -287,14 +286,7 @@ public class NetCdfWriter {
         this.writingTime += (d2 - d1);
     }
 
-    /**
-     * Add a Variable to the file. The data is also copied when finish() is called.
-     *
-     * @param var copy this Variable (not the data)
-     * @param varAttrToRemove variable attribute to remove
-     * @throws MotuException the motu exception
-     */
-    public void writeVariable(Variable var, String[] varAttrToRemove) throws MotuException {
+    private List<Dimension> getDimentions(Variable var) throws MotuException {
         List<Dimension> dims = new ArrayList<>();
         List<Dimension> dimvList = var.getDimensions();
         for (Dimension dim : dimvList) {
@@ -309,9 +301,13 @@ public class NetCdfWriter {
             }
             dims.add(dimToWrite);
         }
+        return dims;
+    }
 
+    private Variable writeNetCdfVariable(Variable var) throws MotuException {
+        List<Dimension> dims = getDimentions(var);
         long d1 = System.nanoTime();
-        Variable newVar = null;
+        Variable newVar;
         if (!"String".equalsIgnoreCase(var.getDataType().name())) {
             newVar = ncfileWriter.addVariable(null, var.getShortName(), var.getDataType(), dims);
         } else {
@@ -319,7 +315,10 @@ public class NetCdfWriter {
         }
         long d2 = System.nanoTime();
         this.writingTime += (d2 - d1);
+        return newVar;
+    }
 
+    private void writeAttributes(Variable var, String[] varAttrToRemove, Variable newVar) {
         boolean removeAttr = false;
         List<Attribute> attributeList = var.getAttributes();
         for (Attribute attribute : attributeList) {
@@ -336,6 +335,18 @@ public class NetCdfWriter {
                 writeAttribute(newVar, attribute);
             }
         }
+    }
+
+    /**
+     * Add a Variable to the file. The data is also copied when finish() is called.
+     *
+     * @param var copy this Variable (not the data)
+     * @param varAttrToRemove variable attribute to remove
+     * @throws MotuException the motu exception
+     */
+    public void writeVariable(Variable var, String[] varAttrToRemove) throws MotuException {
+        Variable newVar = writeNetCdfVariable(var);
+        writeAttributes(var, varAttrToRemove, newVar);
     }
 
     /**
@@ -787,40 +798,12 @@ public class NetCdfWriter {
         if (geoGridSubset == null) {
             throw new MotuException(ErrorType.INVALID_LAT_LON_RANGE, "Error in writeVariables - geoGrid is null");
         }
-
         putDimensions(geoGridSubset);
-
         Variable v = geoGridSubset.getVariable();
-
         setAmountDataSize(getAmountDataSize() + NetCdfWriter.countVarSize(v));
         checkAmountDataSizeThreshold();
 
         putVariables(v.getFullName(), v);
-        // addShapes(v);
-
-        // Removes valid_min and valid_max attribute from the variables :
-        // because their values can't be modified after file is created.
-        // the valid_min and valid_max can't be calculated after reading the data
-        // of the variable, and it's too late to modify objects (variables, dimensions,
-        // attributes) in the NetCdf file (see NetCdfFileWriteable class).
-        // To have efficient performance, we don't want to read data variable twice :
-        // once before file creation, to compute valid min an valid max value,
-        // and once after file creation, to write data in the file.
-
-        // removeValidMinMaxVarAttributes(v);
-
-        // Valid_min and valid_max attribute from the variables :
-        // because their values can't be modified after file is created.
-        // the valid_min and valid_max can't be calculated after reading the data
-        // of the variable, and it's too late to modify objects (variables, dimensions,
-        // attributes) in the NetCdf file (see NetCdfFileWriteable class).
-        // We have to read data variable twice :
-        // once before file creation, to compute valid min an valid max value,
-        // and once after file creation, to write data in the file.
-
-        // VariableDS vtemp = (VariableDS)geoGridOrigin.getVariable();
-        // DataType dd = vtemp.getOriginalDataType();
-
         MAMath.MinMax minMax = minMaxHash.get(v.getFullName());
 
         if (geoGridOrigin != null) {
@@ -882,18 +865,18 @@ public class NetCdfWriter {
      * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuExceedingCapacityException the motu exceeding capacity exception
      */
-    public void writeVariables(List<GeoGrid> listGeoGridSubset, GeoGrid geoGridOrigin, GridDataset gds, Map<String, Variable> originalVariables)
+    public void prepareVariables(List<GeoGrid> listGeoGridSubset, GeoGrid geoGridOrigin, GridDataset gds, Map<String, Variable> originalVariables)
             throws MotuException, MotuNotImplementedException, MotuExceedingCapacityException {
         if (listGeoGridSubset == null) {
             throw new MotuException(ErrorType.INVALID_LAT_LON_RANGE, "Error in writeVariables - list of geogrids is null");
         }
-        if (listGeoGridSubset.size() <= 0) {
+        if (listGeoGridSubset.isEmpty()) {
             throw new MotuException(ErrorType.INVALID_LAT_LON_RANGE, "Error in writeVariables - list of geoGrids is empty");
         }
 
         putDimensions(listGeoGridSubset);
 
-        Map<AxisType, List<Variable>> mapAxis = new HashMap<AxisType, List<Variable>>();
+        Map<AxisType, List<Variable>> mapAxis = new HashMap<>();
 
         for (GeoGrid geoGridSubset : listGeoGridSubset) {
             if (geoGridSubset == null) {
@@ -906,7 +889,6 @@ public class NetCdfWriter {
             checkAmountDataSizeThreshold();
 
             putVariables(v.getFullName(), v);
-            // addShapes(v);
 
             // Removes valid_min and valid_max attribute from the variables :
             // because their values can't be modified after file is created.
@@ -923,44 +905,8 @@ public class NetCdfWriter {
                 removeValidMinMaxVarAttributes(v);
             }
 
-            // Valid_min and valid_max attribute from the variables :
-            // because their values can't be modified after file is created.
-            // the valid_min and valid_max can't be calculated after reading the data
-            // of the variable, and it's too late to modify objects (variables, dimensions,
-            // attributes) in the NetCdf file (see NetCdfFileWriteable class).
-            // We have to read data variable twice :
-            // once before file creation, to compute valid min an valid max value,
-            // and once after file creation, to write data in the file.
-
-            // VariableDS vtemp = (VariableDS)geoGridOrigin.getVariable();
-            // DataType dd = vtemp.getOriginalDataType();
-
-            // Begin Modif : 21/11/07 : Don't compute MinMax for variable that are not a dimension
-            // Uncomment the line below to comptute MinMax
-            // computeValidMinMaxVarAttributes(v, geoGridSubset, geoGridOrigin);
-            // End Modif : 21/11/07
-
-            //
-            // MAMath.MinMax minMax = minMaxHash.get(v.getFullName());
-            //
-            // if (geoGridOrigin != null) {
-            // minMax = NetCdfWriter.getMinMaxSkipMissingData(geoGridOrigin, v, minMax);
-            // } else {
-            // minMax = NetCdfWriter.getMinMaxSkipMissingData(geoGridSubset, v, minMax);
-            // }
-            //
-            // if (minMax != null) {
-            // setValidMinMaxVarAttributes(v, minMax);
-            // minMaxHash.put(v.getFullName(), minMax);
-            // } else {
-            // removeValidMinMaxVarAttributes(v);
-            // }
-
             CoordinateAxis axis = null;
 
-            // NetCDF 2.2.16
-            // ArrayList axes = geoGrid.getCoordinateSystem().getCoordinateAxes();
-            // NetCDF 2.2.18
             List<CoordinateAxis> axes = geoGridSubset.getCoordinateSystem().getCoordinateAxes();
 
             // Add axes as variable
@@ -983,15 +929,14 @@ public class NetCdfWriter {
 
             writeDependentVariables(geoGridSubset, gds);
 
-        } // end for (GeoGrid geoGridSubset : listGeoGridSubset)
+        }
 
         // process axis for the variable
         for (List<Variable> listAxis : mapAxis.values()) {
-            if (listAxis.size() > 0) {
+            if (listAxis.isEmpty()) {
                 List<Variable> vPreviouslyListAdded = getVariables().get(listAxis.get(0).getFullName());
                 if (vPreviouslyListAdded == null) {
                     putVariables(listAxis.get(0).getFullName(), listAxis);
-
                     for (Variable var : listAxis) {
                         if (var instanceof CoordinateAxis) {
                             CoordinateAxis axis = (CoordinateAxis) var;
@@ -1017,10 +962,10 @@ public class NetCdfWriter {
      * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuExceedingCapacityException the motu exceeding capacity exception
      */
-    public void writeVariablesWithGeoXY(List<GeoGrid> listGeoGridSubset,
-                                        GeoGrid geoGridOrigin,
-                                        GridDataset gds,
-                                        Map<String, Variable> originalVariables)
+    public void prepareVariablesWithGeoXY(List<GeoGrid> listGeoGridSubset,
+                                          GeoGrid geoGridOrigin,
+                                          GridDataset gds,
+                                          Map<String, Variable> originalVariables)
             throws MotuException, MotuNotImplementedException, MotuExceedingCapacityException {
         if (listGeoGridSubset == null) {
             throw new MotuException(ErrorType.INVALID_LAT_LON_RANGE, "Error in writeVariablesGeoXY - list of geogrids is null");
@@ -1044,8 +989,6 @@ public class NetCdfWriter {
             checkAmountDataSizeThreshold();
 
             putVariables(v.getFullName(), v);
-            // addShapes(v);
-
             // Removes valid_min and valid_max attribute from the variables :
             // because their values can't be modified after file is created.
             // the valid_min and valid_max can't be calculated after reading the data
@@ -1060,45 +1003,7 @@ public class NetCdfWriter {
             if (!(v instanceof CoordinateAxis)) {
                 removeValidMinMaxVarAttributes(v);
             }
-
-            // Valid_min and valid_max attribute from the variables :
-            // because their values can't be modified after file is created.
-            // the valid_min and valid_max can't be calculated after reading the data
-            // of the variable, and it's too late to modify objects (variables, dimensions,
-            // attributes) in the NetCdf file (see NetCdfFileWriteable class).
-            // We have to read data variable twice :
-            // once before file creation, to compute valid min an valid max value,
-            // and once after file creation, to write data in the file.
-
-            // VariableDS vtemp = (VariableDS)geoGridOrigin.getVariable();
-            // DataType dd = vtemp.getOriginalDataType();
-
-            // Begin Modif : 21/11/07 : Don't compute MinMax for variable that are not a dimension
-            // Uncomment the line below to comptute MinMax
-            // computeValidMinMaxVarAttributes(v, geoGridSubset, geoGridOrigin);
-            // End Modif : 21/11/07
-
-            //
-            // MAMath.MinMax minMax = minMaxHash.get(v.getName());
-            //
-            // if (geoGridOrigin != null) {
-            // minMax = NetCdfWriter.getMinMaxSkipMissingData(geoGridOrigin, v, minMax);
-            // } else {
-            // minMax = NetCdfWriter.getMinMaxSkipMissingData(geoGridSubset, v, minMax);
-            // }
-            //
-            // if (minMax != null) {
-            // setValidMinMaxVarAttributes(v, minMax);
-            // minMaxHash.put(v.getName(), minMax);
-            // } else {
-            // removeValidMinMaxVarAttributes(v);
-            // }
-
             CoordinateAxis axis = null;
-
-            // NetCDF 2.2.16
-            // ArrayList axes = geoGrid.getCoordinateSystem().getCoordinateAxes();
-            // NetCDF 2.2.18
             List<CoordinateAxis> axes = geoGridSubset.getCoordinateSystem().getCoordinateAxes();
 
             // Add axes as variable
@@ -1151,18 +1056,15 @@ public class NetCdfWriter {
      * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuExceedingCapacityException the motu exceeding capacity exception
      */
-    public void writeVariables(List<CoordinateAxis> listCoordinateAxis, Map<String, Range> mapRange, Map<String, Variable> originalVariables)
+    public void prepareVariablesInMap(List<CoordinateAxis> listCoordinateAxis, Map<String, Range> mapRange, Map<String, Variable> originalVariables)
             throws MotuException, MotuNotImplementedException, MotuExceedingCapacityException {
-        if (ListUtils.isNullOrEmpty(listCoordinateAxis)) {
-            return;
+        if (!ListUtils.isNullOrEmpty(listCoordinateAxis)) {
+            putDimensionsAxis(listCoordinateAxis, mapRange);
+
+            for (CoordinateAxis var : listCoordinateAxis) {
+                writeVariables(var, originalVariables);
+            }
         }
-
-        putDimensionsAxis(listCoordinateAxis, mapRange);
-
-        for (CoordinateAxis var : listCoordinateAxis) {
-            writeVariables(var, originalVariables);
-        }
-
     }
 
     /**
@@ -1176,7 +1078,6 @@ public class NetCdfWriter {
      */
     public void writeVariables(CoordinateAxis axis, Map<String, Variable> originalVariables)
             throws MotuException, MotuNotImplementedException, MotuExceedingCapacityException {
-
         if (axis == null) {
             throw new MotuException(ErrorType.INVALID_LAT_LON_RANGE, "Error in writeVariables - axis is null");
         }
@@ -1364,6 +1265,56 @@ public class NetCdfWriter {
 
     }
 
+    private void checkAxisType(CoordinateAxis axis, AxisType axisType) throws MotuNotImplementedException {
+        if ((axisType != AxisType.GeoX) && (axisType != AxisType.GeoY)) {
+            throw new MotuNotImplementedException(
+                    String.format("ERROR in putDimensionsAxis : Process a coordinate axis with type '%s' than one dimensions is not yet implemented (axis name:'%s'). Only type '%s' and '%s' are accepted",
+                                  axisType.toString(),
+                                  axis.getFullName(),
+                                  AxisType.GeoX.toString(),
+                                  AxisType.GeoY.toString()));
+
+        } else if (axisType != axis.getAxisType()) {
+            throw new MotuNotImplementedException(
+                    String.format("ERROR in putDimensionsAxis : All of the axis have not the sam type. Expected '%s' but got '%s' (axis name:'%s')",
+                                  axisType.toString(),
+                                  axis.getAxisType().toString(),
+                                  axis.getFullName()));
+        }
+    }
+
+    private void checkAxisIsD(CoordinateAxis axis) throws MotuNotImplementedException {
+        if (!(axis instanceof CoordinateAxis1D)) {
+            throw new MotuNotImplementedException(
+                    String.format("ERROR in putDimensionsAxis : Process a coordinate axis with more than one dimensions is not yet implemented (axis name:'%s')",
+                                  axis.getFullName()));
+        }
+    }
+
+    private void checkCoordinateAxisList(List<CoordinateAxis> listCoordinateAxis) throws MotuNotImplementedException {
+        AxisType axisType = null;
+        // Compute output dimension
+        for (CoordinateAxis axis : listCoordinateAxis) {
+            checkAxisIsD(axis);
+            if (axisType == null) {
+                axisType = axis.getAxisType();
+                checkAxisType(axis, axisType);
+            }
+        }
+    }
+
+    private int computeLength(Dimension dim, Map<String, Range> mapRange) {
+        int length = -1;
+
+        if (!dim.isUnlimited()) {
+            length = 0;
+            for (Range r : mapRange.values()) {
+                length = length + r.length();
+            }
+        }
+        return length;
+    }
+
     /**
      * Put dimensions axis.
      *
@@ -1377,58 +1328,17 @@ public class NetCdfWriter {
         if (listCoordinateAxis == null) {
             throw new MotuException(ErrorType.INVALID_LAT_LON_RANGE, "Error in putDimensionsAxis - list of CoordinateAxis is null");
         }
-        if (listCoordinateAxis.size() <= 0) {
+        if (listCoordinateAxis.isEmpty()) {
             throw new MotuException(ErrorType.INVALID_LAT_LON_RANGE, "Error in putDimensionsAxis - list of CoordinateAxis is empty");
         }
-        // -----------------
-        AxisType axisType = null;
-        // Compute output dimension
-        for (CoordinateAxis axis : listCoordinateAxis) {
-            if (!(axis instanceof CoordinateAxis1D)) {
-                throw new MotuNotImplementedException(
-                        String.format("ERROR in putDimensionsAxis : Process a coordinate axis with more than one dimensions is not yet implemented (axis name:'%s')",
-                                      axis.getFullName()));
-            }
 
-            if (axisType == null) {
-
-                axisType = axis.getAxisType();
-
-                if ((axisType != AxisType.GeoX) && (axisType != AxisType.GeoY)) {
-                    throw new MotuNotImplementedException(
-                            String.format("ERROR in putDimensionsAxis : Process a coordinate axis with type '%s' than one dimensions is not yet implemented (axis name:'%s'). Only type '%s' and '%s' are accepted",
-                                          axisType.toString(),
-                                          axis.getFullName(),
-                                          AxisType.GeoX.toString(),
-                                          AxisType.GeoY.toString()));
-
-                } else if (axisType != axis.getAxisType()) {
-                    throw new MotuNotImplementedException(
-                            String.format("ERROR in putDimensionsAxis : All of the axis have not the sam type. Expected '%s' but got '%s' (axis name:'%s')",
-                                          axisType.toString(),
-                                          axis.getAxisType().toString(),
-                                          axis.getFullName()));
-                }
-            }
-        }
+        checkCoordinateAxisList(listCoordinateAxis);
 
         CoordinateAxis axis = listCoordinateAxis.get(0);
         Dimension dim = axis.getDimension(0);
-        if (dim == null) {
-            return;
+        if (dim != null) {
+            putDimension(new Dimension(dim.getFullName(), computeLength(dim, mapRange), dim.isShared(), dim.isUnlimited(), dim.isVariableLength()));
         }
-
-        int length = -1;
-
-        if (!dim.isUnlimited()) {
-            length = 0;
-            for (Range r : mapRange.values()) {
-                length = length + r.length();
-            }
-        }
-
-        Dimension computedDim = new Dimension(dim.getFullName(), length, dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
-        putDimension(computedDim);
 
     }
 
@@ -1443,7 +1353,7 @@ public class NetCdfWriter {
     public void writeVariablesToFile(String[] varAttrToRemove) throws MotuException, MotuNotImplementedException {
         double curAmountDataSize = 0.0;
         for (List<Variable> listVar : getVariables().values()) {
-            if (listVar.size() > 0) {
+            if (!listVar.isEmpty()) {
                 for (Variable v : listVar) {
                     curAmountDataSize += NetCdfWriter.countVarSize(v);
                     if (curAmountDataSize > BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue()) {
@@ -1511,29 +1421,18 @@ public class NetCdfWriter {
             for (List<Variable> listVar : getVariables().values()) {
                 longitudeCenter = 0.0;
                 for (Variable var : listVar) {
-                    // List<int[]> listShapes = shapeHash.get(var.getName());
-                    // if (listShapes == null) {
-                    // throw new MotuException(String.format("ERROR in NetCdfWriter writeVariablesToFile -
-                    // Unable to find shapes for variable %s",
-                    // var.getName()));
-                    // }
                     writeVariableByBlock(var);
-                    // if (NetCdfWriter.isReadByBlock(var)) {
-                    // writeVariableByBlock(var);
-                    // } else {
-                    // writeVariableInOneGulp(var);
-                    // }
-
-                    // for (int[] shape : listShapes) {
-                    // writeVariableByBlock(var, shape);
-                    // }
-
                 }
             }
 
-            ncfileWriter.close();
         } catch (Exception e) {
             throw new MotuException(ErrorType.NETCDF_GENERATION, "Error in NetcdfWriter finish", e);
+        } finally {
+            try {
+                ncfileWriter.close();
+            } catch (IOException e) {
+                throw new MotuException(ErrorType.NETCDF_GENERATION, "Error to close NetcdfWriter", e);
+            }
         }
     }
 
@@ -1575,22 +1474,17 @@ public class NetCdfWriter {
                 }
             }
 
-            ncfileWriter.close();
         } catch (Exception e) {
             throw new MotuException(ErrorType.NETCDF_GENERATION, "Error in NetcdfWriter finish", e);
+        } finally {
+            try {
+                ncfileWriter.close();
+            } catch (IOException e) {
+                throw new MotuException(ErrorType.NETCDF_GENERATION, "Error to close NetcdfWriter", e);
+            }
         }
     }
 
-    /**
-     * Writes variable data in one gulp. It reads the variable data by block and writes each block data in the
-     * netcdf file.
-     *
-     * @param var variable to be written
-     * @return the output dimension values
-     */
-    // protected void writeVariableByBlock(Variable var) throws MotuException, MotuNotImplementedException {
-    // writeVariableByBlock(var, var.getShape());
-    // }
     /**
      * Gets the lengths of each output dimension of a variable .
      * 
