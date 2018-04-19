@@ -106,10 +106,10 @@ public class NetCdfWriter {
     protected String ncfilePath;
 
     /**
-     * Dimensions Map .
+     * Dimensions Map <dimensionName, Dimension>
      * 
      */
-    protected Map<String, Dimension> dimHash;
+    protected Map<String, Dimension> dimensionMap;
 
     /**
      * Min/Max variable's value Map .
@@ -144,18 +144,18 @@ public class NetCdfWriter {
      */
     protected Map<String, List<Variable>> variablesMap;
 
-    public NetcdfFileWriter getNcfile() {
-        return this.ncfileWriter;
-    }
-
     /**
      * Constructeur.
      */
     public NetCdfWriter() {
-        variablesMap = new HashMap<String, List<Variable>>();
-        originOutOffsetHash = new HashMap<String, int[]>();
-        minMaxHash = new HashMap<String, MAMath.MinMax>();
-        dimHash = new HashMap<String, Dimension>();
+        variablesMap = new HashMap<>();
+        originOutOffsetHash = new HashMap<>();
+        minMaxHash = new HashMap<>();
+        dimensionMap = new HashMap<>();
+    }
+
+    public NetcdfFileWriter getNcfileWriter() {
+        return this.ncfileWriter;
     }
 
     /**
@@ -203,25 +203,16 @@ public class NetCdfWriter {
      * @return previous value associated with specified key, or
      * @see java.util.Map#put(Object,Object)
      */
-    public List<Variable> putVariables(String key, List<Variable> value) {
-        return getVariables().put(key, value);
-    }
-
-    /**
-     * Associates the specified value with the specified key in this map (optional operation).
-     *
-     * @param key key with which the specified value is to be associated.
-     * @param value value to be associated with the specified key.
-     * @return previous value associated with specified key, or
-     * @see java.util.Map#put(Object,Object)
-     */
     public List<Variable> putVariables(String key, Variable value) {
         List<Variable> listVar = getVariables().get(key);
-        if (listVar == null) {
+        if (listVar != null) {
+            listVar.add(value);
+        } else {
             listVar = new ArrayList<>();
+            listVar.add(value);
+            getVariables().put(key, listVar);
         }
-        listVar.add(value);
-        return putVariables(key, listVar);
+        return listVar;
     }
 
     /**
@@ -250,15 +241,18 @@ public class NetCdfWriter {
      * @param dim copy this dimension
      */
     public void putDimension(Dimension dim) {
-        if (!dimHash.containsKey(dim.getFullName())) {
-            int length;
-            if (dim.isUnlimited()) {
-                length = -1;
-            } else {
+        if (!dimensionMap.containsKey(dim.getFullName())) {
+            int length = -1;
+            if (!dim.isUnlimited()) {
                 length = dim.getLength();
             }
-            Dimension newDim = ncfileWriter.addDimension(null, dim.getShortName(), length, dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
-            dimHash.put(newDim.getFullName(), newDim);
+            Dimension newDim = getNcfileWriter().addDimension(null,
+                                                              dim.getFullName(),
+                                                              length,
+                                                              dim.isShared(),
+                                                              dim.isUnlimited(),
+                                                              dim.isVariableLength());
+            dimensionMap.put(newDim.getFullName(), newDim);
         }
     }
 
@@ -268,7 +262,7 @@ public class NetCdfWriter {
      * @param att take attribute name, value, from here
      */
     public void writeGlobalAttribute(Attribute att) {
-        ncfileWriter.addGroupAttribute(null, att);
+        getNcfileWriter().addGroupAttribute(null, att);
     }
 
     /**
@@ -279,7 +273,7 @@ public class NetCdfWriter {
      */
     public void writeAttribute(Variable var, Attribute att) {
         long d1 = System.nanoTime();
-        if (!ncfileWriter.addVariableAttribute(var, att)) {
+        if (!getNcfileWriter().addVariableAttribute(var, att)) {
             LOG.warn("Unable to write attribute" + att.getFullName() + ", in variable:" + var.getFullNameEscaped() + " [" + ncfilePath + "]");
         }
         long d2 = System.nanoTime();
@@ -290,7 +284,7 @@ public class NetCdfWriter {
         List<Dimension> dims = new ArrayList<>();
         List<Dimension> dimvList = var.getDimensions();
         for (Dimension dim : dimvList) {
-            Dimension dimToWrite = dimHash.get(dim.getFullName());
+            Dimension dimToWrite = dimensionMap.get(dim.getFullName());
             if (dimToWrite == null) {
                 throw new MotuException(
                         ErrorType.NETCDF_VARIABLE,
@@ -309,9 +303,9 @@ public class NetCdfWriter {
         long d1 = System.nanoTime();
         Variable newVar;
         if (!"String".equalsIgnoreCase(var.getDataType().name())) {
-            newVar = ncfileWriter.addVariable(null, var.getShortName(), var.getDataType(), dims);
+            newVar = getNcfileWriter().addVariable(null, var.getShortName(), var.getDataType(), dims);
         } else {
-            newVar = ncfileWriter.addStringVariable(null, var, dims);
+            newVar = getNcfileWriter().addStringVariable(null, var, dims);
         }
         long d2 = System.nanoTime();
         this.writingTime += (d2 - d1);
@@ -835,7 +829,7 @@ public class NetCdfWriter {
             }
         }
 
-        writeDependentVariables(geoGridSubset, gds);
+        initDependentVariablesInVariableList(geoGridSubset, gds);
     }
 
     /**
@@ -927,7 +921,7 @@ public class NetCdfWriter {
                 mapAxis.put(axisType, listAxis);
             }
 
-            writeDependentVariables(geoGridSubset, gds);
+            initDependentVariablesInVariableList(geoGridSubset, gds);
 
         }
 
@@ -936,13 +930,13 @@ public class NetCdfWriter {
             if (listAxis.isEmpty()) {
                 List<Variable> vPreviouslyListAdded = getVariables().get(listAxis.get(0).getFullName());
                 if (vPreviouslyListAdded == null) {
-                    putVariables(listAxis.get(0).getFullName(), listAxis);
+                    getVariables().put(listAxis.get(0).getFullName(), listAxis);
                     for (Variable var : listAxis) {
                         if (var instanceof CoordinateAxis) {
                             CoordinateAxis axis = (CoordinateAxis) var;
                             processAxisAttributes(axis, originalVariables);
-                            removeValidMinMaxVarAttributes(var); // remove valid_min/max for indeso (even
-                                                                 // dimensions)
+                            // remove valid_min/max for indeso (even // dimensions)
+                            removeValidMinMaxVarAttributes(var);
                         }
                     }
                 }
@@ -1023,13 +1017,13 @@ public class NetCdfWriter {
                 }
                 mapAxis.put(axisType, listAxis);
             }
-            writeDependentVariables(geoGridSubset, gds);
+            initDependentVariablesInVariableList(geoGridSubset, gds);
         } // end for (GeoGrid geoGridSubset : listGeoGridSubset)
 
         // process axis for the variable
         for (List<Variable> listAxis : mapAxis.values()) {
             if (!listAxis.isEmpty() && !getVariables().containsKey(listAxis.get(0).getFullName())) {
-                putVariables(listAxis.get(0).getFullName(), listAxis);
+                getVariables().put(listAxis.get(0).getFullName(), listAxis);
                 for (Variable var : listAxis) {
                     if (var instanceof CoordinateAxis) {
                         CoordinateAxis axis = (CoordinateAxis) var;
@@ -1056,13 +1050,13 @@ public class NetCdfWriter {
      * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuExceedingCapacityException the motu exceeding capacity exception
      */
-    public void prepareVariablesInMap(List<CoordinateAxis> listCoordinateAxis, Map<String, Range> mapRange, Map<String, Variable> originalVariables)
+    public void prepareVariablesInMap(List<CoordinateAxis> listCoordinateAxis, Map<String, Range> mapRange)
             throws MotuException, MotuNotImplementedException, MotuExceedingCapacityException {
         if (!ListUtils.isNullOrEmpty(listCoordinateAxis)) {
             putDimensionsAxis(listCoordinateAxis, mapRange);
 
             for (CoordinateAxis var : listCoordinateAxis) {
-                writeVariables(var, originalVariables);
+                writeVariables(var);
             }
         }
     }
@@ -1076,8 +1070,7 @@ public class NetCdfWriter {
      * @throws MotuNotImplementedException the motu not implemented exception
      * @throws MotuExceedingCapacityException the motu exceeding capacity exception
      */
-    public void writeVariables(CoordinateAxis axis, Map<String, Variable> originalVariables)
-            throws MotuException, MotuNotImplementedException, MotuExceedingCapacityException {
+    public void writeVariables(CoordinateAxis axis) throws MotuException, MotuNotImplementedException, MotuExceedingCapacityException {
         if (axis == null) {
             throw new MotuException(ErrorType.INVALID_LAT_LON_RANGE, "Error in writeVariables - axis is null");
         }
@@ -1096,9 +1089,9 @@ public class NetCdfWriter {
      * @throws MotuException
      * @throws MotuNotImplementedException
      */
-    public void writeDependentVariables(GeoGrid geoGrid, GridDataset gds) throws MotuException, MotuNotImplementedException {
+    public void initDependentVariablesInVariableList(GeoGrid geoGrid, GridDataset gds) throws MotuException, MotuNotImplementedException {
         Variable v = geoGrid.getVariable();
-        writeDependentVariables(v, gds);
+        initDependentVariablesInVariableList(v, gds);
     }
 
     /**
@@ -1109,7 +1102,7 @@ public class NetCdfWriter {
      * @throws MotuException the motu exception
      * @throws MotuNotImplementedException the motu not implemented exception
      */
-    public void writeDependentVariables(Variable v, GridDataset gds) throws MotuException, MotuNotImplementedException {
+    public void initDependentVariablesInVariableList(Variable v, GridDataset gds) throws MotuException, MotuNotImplementedException {
 
         try {
             // Find variable relative to Coordinate Systems attribute
@@ -1388,13 +1381,15 @@ public class NetCdfWriter {
      * @throws MotuExceedingCapacityException the motu exceeding capacity exception
      * @throws MotuNotImplementedException the motu not implemented exception
      */
-    public void create(String[] varAttrToRemove) throws MotuException, MotuExceedingCapacityException, MotuNotImplementedException {
-        // Add variables to file.
+    public void writeVariableInNetCdfFileAndSetNetcdfFileInCreateMode(String[] varAttrToRemove)
+            throws MotuException, MotuExceedingCapacityException, MotuNotImplementedException {
+        // Add variables to netCdf file.
         writeVariablesToFile(varAttrToRemove);
         checkAmountDataSizeThreshold();
+
         try {
             long d1 = System.nanoTime();
-            ncfileWriter.create();
+            getNcfileWriter().create();
             long d2 = System.nanoTime();
             this.writingTime += (d2 - d1);
         } catch (Exception e) {
@@ -1415,7 +1410,7 @@ public class NetCdfWriter {
      */
     public void finish(String[] varAttrToRemove) throws MotuException, MotuExceedingCapacityException, MotuNotImplementedException {
         // Add variables to file and create it.
-        create(varAttrToRemove);
+        writeVariableInNetCdfFileAndSetNetcdfFileInCreateMode(varAttrToRemove);
 
         try {
             for (List<Variable> listVar : getVariables().values()) {
@@ -1429,7 +1424,7 @@ public class NetCdfWriter {
             throw new MotuException(ErrorType.NETCDF_GENERATION, "Error in NetcdfWriter finish", e);
         } finally {
             try {
-                ncfileWriter.close();
+                getNcfileWriter().close();
             } catch (IOException e) {
                 throw new MotuException(ErrorType.NETCDF_GENERATION, "Error to close NetcdfWriter", e);
             }
@@ -1453,7 +1448,7 @@ public class NetCdfWriter {
                             Map<String, List<Section>> mapVarOrgRanges)
             throws MotuException, MotuExceedingCapacityException, MotuNotImplementedException {
         // Add variables to file and create it.
-        create(varAttrToRemove);
+        writeVariableInNetCdfFileAndSetNetcdfFileInCreateMode(varAttrToRemove);
 
         try {
             for (List<Variable> listVar : getVariables().values()) {
@@ -1478,7 +1473,7 @@ public class NetCdfWriter {
             throw new MotuException(ErrorType.NETCDF_GENERATION, "Error in NetcdfWriter finish", e);
         } finally {
             try {
-                ncfileWriter.close();
+                getNcfileWriter().close();
             } catch (IOException e) {
                 throw new MotuException(ErrorType.NETCDF_GENERATION, "Error to close NetcdfWriter", e);
             }
@@ -1498,7 +1493,7 @@ public class NetCdfWriter {
 
         for (int i = 0; i < rank; i++) {
             outDimValues[i] = -1;
-            Dimension outDim = dimHash.get(var.getDimension(i).getFullName());
+            Dimension outDim = dimensionMap.get(var.getDimension(i).getFullName());
             if (outDim != null) {
                 outDimValues[i] = outDim.getLength();
             }
@@ -1745,16 +1740,12 @@ public class NetCdfWriter {
 
         if (geoXAxisIndex != -1) {
             outDimXValue = getOutputDimensionValue(var, geoXAxisIndex);
-            originSectionOffset[geoXAxisIndex] = computeSectionOffset(outDimXValue, geoXAxisIndex, varOrgRanges, listDistinctXRange, true);
+            originSectionOffset[geoXAxisIndex] = computeSectionOffset(outDimXValue, geoXAxisIndex, varOrgRanges, listDistinctXRange);
         }
         if (geoYAxisIndex != -1) {
             outDimYValue = getOutputDimensionValue(var, geoYAxisIndex);
-            originSectionOffset[geoYAxisIndex] = computeSectionOffset(outDimYValue, geoYAxisIndex, varOrgRanges, listDistinctYRange, true);
+            originSectionOffset[geoYAxisIndex] = computeSectionOffset(outDimYValue, geoYAxisIndex, varOrgRanges, listDistinctYRange);
         }
-
-        int[] origin = null;
-        int[] shape = null;
-        Array data = null;
 
         int[] originOutOffset = originOutOffsetHash.get(var.getFullName());
         if (originOutOffset == null) {
@@ -1771,16 +1762,16 @@ public class NetCdfWriter {
 
         try {
             Map<int[], int[]> originAndShape = NetCdfWriter.parseOriginAndShape(var);
-            Set<int[]> keySet = originAndShape.keySet();
-            for (Iterator<int[]> it = keySet.iterator(); it.hasNext();) {
-                origin = it.next();
+            Iterator<int[]> it = originAndShape.keySet().iterator();
+            while (it.hasNext()) {
+                int[] origin = it.next();
                 checkOrigin(origin, var);
 
-                shape = originAndShape.get(origin);
+                int[] shape = originAndShape.get(origin);
                 checkShape(shape, var);
 
-                data = read(var, origin, shape);
-                Variable vToWrite = ncfileWriter.getNetcdfFile().findVariable(var.getFullNameEscaped());
+                Array data = read(var, origin, shape);
+                Variable vToWrite = getNcfileWriter().getNetcdfFile().findVariable(var.getFullNameEscaped());
                 if (vToWrite != null) {
                     writeVariableData(vToWrite, origin, data);
                 }
@@ -1820,49 +1811,23 @@ public class NetCdfWriter {
      * @param dimIndex the dim index
      * @param originalSection the original section
      * @param listDistinctRange the list distinct range
-     * @param fromFirst the from first
      * @return the int
      * @throws MotuException the motu exception
      */
-    protected int computeSectionOffset(int outDimValue, int dimIndex, Section originalSection, List<Range> listDistinctRange, boolean fromFirst)
-            throws MotuException {
-
+    protected int computeSectionOffset(int outDimValue, int dimIndex, Section originalSection, List<Range> listDistinctRange) throws MotuException {
         int diff = 0;
-        if (ListUtils.isNullOrEmpty(listDistinctRange)) {
-            return diff;
-        }
-
-        if ((dimIndex < 0) || (outDimValue < 0) || (originalSection == null)) {
-            return diff;
-        }
-
-        Range rOrg = originalSection.getRange(dimIndex);
-
-        int listDistinctRangeSize = listDistinctRange.size();
-
-        // Loop from first Range
-        if (fromFirst) {
-            for (int i = 0; i < listDistinctRangeSize; i++) {
+        if (!(ListUtils.isNullOrEmpty(listDistinctRange) && ((dimIndex < 0) || (outDimValue < 0) || (originalSection == null)))) {
+            Range refRange = originalSection.getRange(dimIndex);
+            int i = 0;
+            while (i < listDistinctRange.size()) {
                 Range r = listDistinctRange.get(i);
-                if (rOrg.intersects(r)) {
-                    diff += rOrg.first() - r.first();
+                if (refRange.intersects(r)) {
+                    diff += refRange.first() - r.first();
                     break;
                 } else {
                     diff += r.length();
                 }
-            }
-            return diff;
-        }
-
-        diff = outDimValue - 1;
-        // Loop from last Range
-        for (int i = listDistinctRangeSize - 1; i >= 0; i--) {
-            Range r = listDistinctRange.get(i);
-            if (rOrg.intersects(r)) {
-                diff -= (r.last() - rOrg.last());
-                break;
-            } else {
-                diff -= r.length();
+                i++;
             }
         }
 
@@ -2133,8 +2098,8 @@ public class NetCdfWriter {
 
         try {
             if (data != null) {
-                ncfileWriter.write(var, data);
-                ncfileWriter.flush();
+                getNcfileWriter().write(var, data);
+                getNcfileWriter().flush();
             }
         } catch (Exception e) {
             LOG.error("writeVariableData()", e);
@@ -2156,13 +2121,13 @@ public class NetCdfWriter {
                 long d1;
                 if (origin == null) {
                     d1 = System.nanoTime();
-                    ncfileWriter.write(var, data);
+                    getNcfileWriter().write(var, data);
                 } else {
                     int[] originOut = computeOriginOut(var, origin);
                     d1 = System.nanoTime();
-                    ncfileWriter.write(var, originOut, data);
+                    getNcfileWriter().write(var, originOut, data);
                 }
-                ncfileWriter.flush();
+                getNcfileWriter().flush();
                 long d2 = System.nanoTime();
                 this.writingTime += (d2 - d1);
             } catch (Exception e) {

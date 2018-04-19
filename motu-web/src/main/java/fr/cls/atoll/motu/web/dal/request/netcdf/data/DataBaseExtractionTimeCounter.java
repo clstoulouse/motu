@@ -47,8 +47,8 @@ public class DataBaseExtractionTimeCounter {
      *
      * @param readingTime the reading time in nanoSeconds (ns)
      */
-    public void addReadingTime(long readingTime) {
-        this.readingTime += readingTime;
+    public void addReadingTime(long rTime) {
+        this.readingTime += rTime;
     }
 
     /**
@@ -65,8 +65,8 @@ public class DataBaseExtractionTimeCounter {
      *
      * @param writingTime the writing time in nanoSeconds (ns)
      */
-    public void addWritingTime(long writingTime) {
-        this.writingTime += writingTime;
+    public void addWritingTime(long wTime) {
+        this.writingTime += wTime;
     }
 
     /**

@@ -313,11 +313,8 @@ public class ExtractCriteriaDatetime extends ExtractCriteria {
             return null;
         }
 
-        int first = -1;
-        int last = -1;
         double startDate = NetCdfReader.getDate(this.from, udUnits);
         double endDate = NetCdfReader.getDate(this.to, udUnits);
-
         double[] minmax = ExtractCriteria.getMinMax(array);
 
         // criteria value are out of range
@@ -325,17 +322,8 @@ public class ExtractCriteriaDatetime extends ExtractCriteria {
             throw new MotuInvalidDateRangeException(from, to, NetCdfReader.getDate(minmax[0], udUnits), NetCdfReader.getDate(minmax[1], udUnits));
         }
 
-        // if (startDate == endDate) {
-        // first = ExtractCriteria.findMaxIndex(array, startDate);
-        // last = first;
-        // } else {
-        // first = ExtractCriteria.findMinIndex(array, startDate);
-        // last = ExtractCriteria.findMaxIndex(array, endDate);
-        // }
-
-        first = ExtractCriteria.findMinIndex(array, startDate);
-        last = ExtractCriteria.findMaxIndex(array, endDate);
-
+        int first = ExtractCriteria.findMinIndex(array, startDate);
+        int last = ExtractCriteria.findMaxIndex(array, endDate);
         // no index found
         if ((first == -1) || (last == -1)) {
             throw new MotuInvalidDateRangeException(from, to, NetCdfReader.getDate(minmax[0], udUnits), NetCdfReader.getDate(minmax[1], udUnits));
