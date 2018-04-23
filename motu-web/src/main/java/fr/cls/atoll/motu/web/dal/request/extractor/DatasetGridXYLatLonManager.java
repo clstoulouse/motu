@@ -307,7 +307,11 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
                         getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReaderDataset(),
                         getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getLatLonAxis(),
                         null);
-                listYXRanges = extractCriteriaLatLon.toListRanges(cs, rangesLatValue, rangesLonValue);
+                try {
+                    listYXRanges = extractCriteriaLatLon.toListRanges(cs, rangesLatValue, rangesLonValue);
+                } catch (InvalidRangeException e) {
+                    throw new MotuException(ErrorType.SYSTEM, "Error while creating Range");
+                }
             }
         } else if (getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().hasGeoXYAxis()) {
             throw new MotuNotImplementedException("X/Y axis is not implemented (method DatasetGridXYLatLon.getAdjacentYXRange");

@@ -67,10 +67,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 public class DatasetGridManager extends DALAbstractDatasetManager {
 
     /** Contains variable attributes names to remove in output. */
-    static final String[] VAR_ATTR_TO_REMOVE = new String[] { "Date_CNES_JD", "date", "_unsigned", };
-
-    /** Y/X or Lat/Lon dimension range. (Y first, X second) */
-    // protected Range[] yxRange = null;
+    static final String[] VAR_ATTR_TO_REMOVE = new String[] { "Date_CNES_JD", "date", "_unsigned", "_CoordinateAxes" };
 
     /** Time dimension range values. */
     protected double[] tRangeValue;
@@ -199,7 +196,7 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
                 if (geoGrid == null) {
                     continue;
                 }
-                List<GeoGrid> listGeoGridSubset = new ArrayList<GeoGrid>();
+                List<GeoGrid> listGeoGridSubset = new ArrayList<>();
 
                 for (List<Range> yxRanges : listYXRanges) {
                     Range yRange = yxRanges.get(0);
@@ -442,7 +439,7 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
         return getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReader().getCoordinateVariable(dim);
     }
 
-    private NetCdfWriter initNetCdfWriterWinthGlobalAttributes() throws IOException, MotuException {
+    private NetCdfWriter initNetCdfWriterWithGlobalAttributes() throws IOException, MotuException {
         NetCdfWriter netCdfWriter = new NetCdfWriter(
                 getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getExtractLocationDataTemp(),
                 getRequestDownloadStatus().getRequestProduct().getExtractionParameters().getDataOutputFormat());
@@ -577,7 +574,7 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
         // gets ranges to be extracted. Number of ranges for Longitude can be 1 or 2.
         List<List<Range>> listYXRanges = initAdjacentYXRange();
         Range zRange = initZRange();
-        NetCdfWriter netCdfWriter = initNetCdfWriterWinthGlobalAttributes();
+        NetCdfWriter netCdfWriter = initNetCdfWriterWithGlobalAttributes();
 
         // -------------------------------------------------
         // If GeoXY then compute the X/Y dim and subset the X/Y variables
@@ -615,7 +612,7 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
 
     // ======================================
 
-    private void checkVariableListIsNotEmpty() throws MotuNoVarException {
+    private void checkRequestVariableListIsNotEmpty() throws MotuNoVarException {
         if (getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getVariables().isEmpty()) {
             throw new MotuNoVarException("Variable list is empty");
         }
@@ -643,7 +640,7 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
      */
     public void initNetCdfExtraction() throws MotuException, MotuNoVarException, NetCdfVariableNotFoundException {
         if (getRequestDownloadStatus().getRequestProduct().getProduct() != null) {
-            checkVariableListIsNotEmpty();
+            checkRequestVariableListIsNotEmpty();
             openNetCdfReader();
             initNetCdfOutputFileName();
             setHasOutputDimension();
@@ -798,6 +795,23 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
         }
     }
 
+    private int[] fillMinAndMaxVal(List<Range> yxRanges1) throws InvalidRangeException {
+        int latMin = Integer.MAX_VALUE;
+        int latMax = Integer.MIN_VALUE;
+        for (int i = 0; i < yxRanges1.size(); i++) {
+            int r1First = yxRanges1.get(i).first();
+            int r1Last = yxRanges1.get(i).last();
+            if (r1First < latMin) {
+                latMin = r1First;
+            }
+
+            if (r1Last < latMax) {
+                latMax = r1Last;
+            }
+        }
+        return new int[] { latMin, latMax };
+    }
+
     /**
      * Gets a list of Index Ranges for the given lat, lon bounding box. For projection, only an approximation
      * based on lat/lon corners. Must have 2D/LatLon for x and y axis.
@@ -815,7 +829,11 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
                     getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReaderDataset(),
                     getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getLatLonAxis(),
                     null);
-            listYXRanges = extractCriteriaLatLon.toListRanges(cs, rangesLatValue, rangesLonValue);
+            try {
+                listYXRanges = extractCriteriaLatLon.toListRanges(cs, rangesLatValue, rangesLonValue);
+            } catch (InvalidRangeException e) {
+                throw new MotuNotImplementedException("Error during range creation while filling Gaps #initAdjacentYXRange");
+            }
             checklistYXRangesConsistency(listYXRanges);
 
             MAMath.MinMax minMaxLat;

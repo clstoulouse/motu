@@ -2339,18 +2339,12 @@ public class NetCdfWriter {
      * @return both min and max value.
      */
     public static MAMath.MinMax getMinMaxSkipMissingData(CoordinateAxis axis, MAMath.MinMax minMax, NetCdfWriter netCdfWriter) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getMinMaxSkipMissingData() - entering");
-        }
-
         MAMath.MinMax minMaxWork = new MAMath.MinMax(Double.MAX_VALUE, -Double.MAX_VALUE);
-
         if (!axis.hasMissing()) {
             minMaxWork.min = axis.getMinValue();
             minMaxWork.max = axis.getMaxValue();
         } else {
             try {
-                // Array data = axis.read();
                 Array data = NetCdfWriter.read(axis, netCdfWriter);
                 minMaxWork = NetCdfWriter.getMinMaxSkipMissingData(data, axis, false);
             } catch (IOException ioe) { /* what ?? */
@@ -2358,9 +2352,6 @@ public class NetCdfWriter {
         }
 
         if (minMax == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getMinMaxSkipMissingData() - exiting");
-            }
             return minMaxWork;
         }
 
@@ -2368,7 +2359,6 @@ public class NetCdfWriter {
         // this is not the first part (minMax != null)
         // Normalize longitude with first part min value (as center longitude)
         if (axis.getAxisType() == AxisType.Lon) {
-            // double center = ((minMax.min != 0.) ? minMax.min : minMax.max);
             double center = (minMax.min + minMax.max) / 2;
             minMaxWork.min = LatLonPointImpl.lonNormal(minMaxWork.min, center);
             minMaxWork.max = LatLonPointImpl.lonNormal(minMaxWork.max, center);
@@ -2381,9 +2371,6 @@ public class NetCdfWriter {
             minMaxWork.max = minMax.max;
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getMinMaxSkipMissingData() - exiting");
-        }
         return minMaxWork;
     }
 

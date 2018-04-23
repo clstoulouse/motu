@@ -2460,10 +2460,9 @@ public class ProductMetaData {
      */
     public String getGeoYAxisMaxValueAsLatString(Product product) throws MotuException, NetCdfVariableNotFoundException, NetCdfVariableException {
         double max = getGeoYAxisMaxValueAsLat(product);
-        if (max == Double.MAX_VALUE) {
+        if (Double.compare(max, Double.MAX_VALUE) == 0) {
             return null;
         }
-
         return NetCdfReader.getStandardLatAsString(max);
     }
 
@@ -2473,12 +2472,12 @@ public class ProductMetaData {
      * @return list of Latitude and Longitude coordinate axes if both exists. Otherwise, null.
      */
     public List<CoordinateAxis> getLatLonAxis() {
-        if (!hasLatLonAxis()) {
-            return null;
+        List<CoordinateAxis> list = null;
+        if (hasLatLonAxis()) {
+            list = new ArrayList<>();
+            list.add(getLatAxis());
+            list.add(getLonAxis());
         }
-        List<CoordinateAxis> list = new ArrayList<CoordinateAxis>();
-        list.add(getLatAxis());
-        list.add(getLonAxis());
 
         return list;
     }
@@ -2489,12 +2488,12 @@ public class ProductMetaData {
      * @return list of GeoX and GeoY coordinate axes if both exists. Otherwise, null.
      */
     public List<CoordinateAxis> getGeoXYAxis() {
-        if (!hasGeoXYAxis()) {
-            return null;
+        List<CoordinateAxis> list = null;
+        if (hasGeoXYAxis()) {
+            list = new ArrayList<>();
+            list.add(getGeoXAxis());
+            list.add(getGeoYAxis());
         }
-        List<CoordinateAxis> list = new ArrayList<CoordinateAxis>();
-        list.add(getGeoXAxis());
-        list.add(getGeoYAxis());
 
         return list;
     }
@@ -2510,19 +2509,18 @@ public class ProductMetaData {
     public DocMetaData getDocumentation(String name) {
         DocMetaData docMetaData = null;
 
-        if (getDocumentations() == null) {
-            return docMetaData;
-        }
-        boolean found = false;
-        for (Iterator<DocMetaData> it = getDocumentations().iterator(); it.hasNext();) {
-            docMetaData = it.next();
-            if (docMetaData.getTitle().equals(name)) {
-                found = true;
-                break;
+        if (getDocumentations() != null) {
+            boolean found = false;
+            for (Iterator<DocMetaData> it = getDocumentations().iterator(); it.hasNext();) {
+                docMetaData = it.next();
+                if (docMetaData.getTitle().equals(name)) {
+                    found = true;
+                    break;
+                }
             }
-        }
-        if (!found) {
-            docMetaData = null;
+            if (!found) {
+                docMetaData = null;
+            }
         }
 
         return docMetaData;
@@ -2540,7 +2538,7 @@ public class ProductMetaData {
      * @return the URL of the quicklook, or empty string if not found.
      */
     public String getQuickLook(ParameterMetaData parameterMetaData) {
-        StringBuffer quickLook = new StringBuffer();
+        StringBuilder quickLook = new StringBuilder();
         if (parameterMetaData == null) {
             return "";
         }
