@@ -2,8 +2,8 @@
 <!-- Default configuration file as an example which can be overwritten
  
      The CF convention requieres that each variable is defined with a standard name attributes.
-     Due to some production constraint, some netcdf files does not have the standard_name attribute.
-     In the case, you can add directly in the configuration folder, a file named standardNames.xml in order to map a standard_name to a netcdf variable.
+     Due to any production constraints, some netcdf files does not have any standard_name attribute.
+     In the case, you can add directly in the configuration folder, a file named standardNames.xml in order to map a standard_name to a netcdf variable name.
      
      Here is how you can list the standard name variables:
      <standardNames>
