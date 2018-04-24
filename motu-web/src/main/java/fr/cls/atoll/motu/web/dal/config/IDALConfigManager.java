@@ -3,6 +3,7 @@ package fr.cls.atoll.motu.web.dal.config;
 import java.util.List;
 import java.util.Map;
 
+import fr.cls.atoll.motu.web.bll.config.IConfigUpdatedListener;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardName;
 import fr.cls.atoll.motu.web.dal.config.version.IDALVersionManager;
@@ -41,6 +42,8 @@ public interface IDALConfigManager {
      * @throws MotuException
      */
     void init() throws MotuException;
+
+    void setConfigUpdatedListener(IConfigUpdatedListener configUpdatedListener_);
 
     /**
      * .

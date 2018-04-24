@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.StandardWatchEventKinds;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.web.bll.config.IConfigUpdatedListener;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.PropertiesUtilities;
 import fr.cls.atoll.motu.web.dal.config.stdname.StdNameReader;
@@ -23,6 +25,7 @@ import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardName;
 import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardNames;
 import fr.cls.atoll.motu.web.dal.config.version.DALVersionManager;
 import fr.cls.atoll.motu.web.dal.config.version.IDALVersionManager;
+import fr.cls.atoll.motu.web.dal.config.watcher.ConfigWatcher;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ObjectFactory;
@@ -50,6 +53,7 @@ public class DALConfigManager implements IDALConfigManager {
     public static final String FILENAME_FORMAT_PRODUCT_ID = "@@productId@@";
 
     private Map<String, ConfigService> configServiceMap;
+    private IConfigUpdatedListener configUpdatedListener;
 
     public DALConfigManager() {
         dalVersionManager = new DALVersionManager();
@@ -59,13 +63,11 @@ public class DALConfigManager implements IDALConfigManager {
     /** {@inheritDoc} */
     @Override
     public void init() throws MotuException {
-        try {
-            initMotuConfig();
-        } catch (FileNotFoundException e) {
-            throw new MotuException(ErrorType.MOTU_CONFIG, "Error while initializing Motu configuration: ", e);
+        motuConfig = loadMotuConfig(new File(getMotuConfigurationFolderPath(), "motuConfiguration.xml"), true);
+        for (ConfigService currentConfigService : motuConfig.getConfigService()) {
+            configServiceMap.put(currentConfigService.getName(), currentConfigService);
         }
-
-        initStdNames();
+        standardNameList = loadStandardNameList();
     }
 
     /**
@@ -83,13 +85,15 @@ public class DALConfigManager implements IDALConfigManager {
      * 
      * @throws MotuException
      */
-    private void initStdNames() throws MotuException {
+    private List<StandardName> loadStandardNameList() throws MotuException {
+        List<StandardName> curStandardNameList = null;
         StandardNames sn = new StdNameReader().getStdNameEquiv();
         if (sn != null) {
-            standardNameList = sn.getStandardName();
+            curStandardNameList = sn.getStandardName();
         } else {
             LOGGER.warn("No standard names loaded from configuration folder");
         }
+        return curStandardNameList;
     }
 
     /** {@inheritDoc} */
@@ -110,20 +114,71 @@ public class DALConfigManager implements IDALConfigManager {
         return System.getProperty("motu-config-dir", null);
     }
 
-    private void initMotuConfig() throws MotuException, FileNotFoundException {
+    private MotuConfig loadMotuConfig(final File fMotuConfig, boolean initConfigWatcher) throws MotuException {
+        MotuConfig curMotuConfig = null;
+        InputStream in = null;
         try {
-            InputStream in = getMontuConfigInputStream();
-            loadMotuConfig(in);
-            in.close();
+            if (initConfigWatcher) {
+                Thread t = new Thread("ConfigService watcher:" + fMotuConfig.getName()) {
+
+                    @Override
+                    public void run() {
+                        try {
+                            initAndStartConfigWatcher(fMotuConfig);
+                        } catch (IOException e) {
+                            LOGGER.error("Error while initAndStartConfigWatcher: " + fMotuConfig.getAbsolutePath(), e);
+                        }
+                    }
+
+                };
+                t.start();
+            }
+            in = getMotuConfigInputStream(fMotuConfig);
+            curMotuConfig = parseMotuConfig(in);
         } catch (IOException io) {
-            // Do nothing
-            LOGGER.error("Error while closing input stream motuConfiguration.xml", io);
+            LOGGER.error("Error while loading motuConfiguration.xml", io);
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException io) {
+                LOGGER.error("Error while closing input stream motuConfiguration.xml", io);
+            }
+
+        }
+        return curMotuConfig;
+    }
+
+    private void initAndStartConfigWatcher(File fMotuConfig) throws IOException {
+        ConfigWatcher wc = new ConfigWatcher(fMotuConfig, StandardWatchEventKinds.ENTRY_MODIFY) {
+
+            @Override
+            protected void onNewFileEvent(File filename) {
+                DALConfigManager.this.onMotuConfigurationUpdated(filename);
+            }
+
+        };
+        wc.startWatching();
+    }
+
+    private void onMotuConfigurationUpdated(File configFile) {
+        try {
+            MotuConfig mc = loadMotuConfig(configFile, false);
+            onMotuConfigUpdated(mc);
+        } catch (MotuException e) {
+            LOGGER.error("Error while loading motuConfiguration from config watcher", e);
         }
     }
 
-    private InputStream getMontuConfigInputStream() throws FileNotFoundException {
+    private void onMotuConfigUpdated(MotuConfig newMotuConfig) {
+        if (configUpdatedListener != null) {
+            configUpdatedListener.onMotuConfigUpdated(newMotuConfig);
+        }
+    }
+
+    private InputStream getMotuConfigInputStream(File fMotuConfig) throws FileNotFoundException {
         InputStream in;
-        File fMotuConfig = new File(getMotuConfigurationFolderPath(), "motuConfiguration.xml");
         if (fMotuConfig.exists()) {
             in = new FileInputStream(fMotuConfig);
         } else {
@@ -132,28 +187,25 @@ public class DALConfigManager implements IDALConfigManager {
         return in;
     }
 
-    private void loadMotuConfig(InputStream in) throws MotuException {
+    private MotuConfig parseMotuConfig(InputStream in) throws MotuException {
+        MotuConfig curMotuConfig;
         try {
             JAXBContext jc = JAXBContext.newInstance(MotuConfig.class.getPackage().getName());
             Unmarshaller unmarshaller = jc.createUnmarshaller();
-            motuConfig = (MotuConfig) unmarshaller.unmarshal(in);
-            motuConfig.setExtractionPath(PropertiesUtilities.replaceSystemVariable(motuConfig.getExtractionPath()));
-            motuConfig.setDownloadHttpUrl(PropertiesUtilities.replaceSystemVariable(motuConfig.getDownloadHttpUrl()));
-
-            for (ConfigService currentConfigService : motuConfig.getConfigService()) {
-                configServiceMap.put(currentConfigService.getName(), currentConfigService);
-            }
+            curMotuConfig = (MotuConfig) unmarshaller.unmarshal(in);
+            curMotuConfig.setExtractionPath(PropertiesUtilities.replaceSystemVariable(curMotuConfig.getExtractionPath()));
+            curMotuConfig.setDownloadHttpUrl(PropertiesUtilities.replaceSystemVariable(curMotuConfig.getDownloadHttpUrl()));
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error in getMotuConfigInstance", e);
         }
 
         ObjectFactory motuConfigObjectFactory = new ObjectFactory();
         MotuConfig blankMotuConfig = motuConfigObjectFactory.createMotuConfig();
-        if (motuConfig.getRefreshCacheToken().equals(blankMotuConfig.getRefreshCacheToken())) {
+        if (curMotuConfig.getRefreshCacheToken().equals(blankMotuConfig.getRefreshCacheToken())) {
             LOGGER.error("Security breach: The token for the update of the cache is still set to the default value.\n"
                     + "To improve the security of the server please change this token into the motuConfiguration.xml file.");
         }
-
+        return curMotuConfig;
     }
 
     @Override
@@ -170,5 +222,10 @@ public class DALConfigManager implements IDALConfigManager {
     @Override
     public Map<String, ConfigService> getConfigServiceMap() {
         return configServiceMap;
+    }
+
+    @Override
+    public void setConfigUpdatedListener(IConfigUpdatedListener configUpdatedListener_) {
+        configUpdatedListener = configUpdatedListener_;
     }
 }

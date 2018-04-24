@@ -3,6 +3,7 @@ package fr.cls.atoll.motu.web.bll.config;
 import java.util.List;
 import java.util.Map;
 
+import fr.cls.atoll.motu.web.bll.config.model.ConfigServiceUpdater;
 import fr.cls.atoll.motu.web.bll.config.version.BLLVersionManager;
 import fr.cls.atoll.motu.web.bll.config.version.IBLLVersionManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
@@ -27,8 +28,10 @@ public class BLLConfigManager implements IBLLConfigManager {
     private IDALConfigManager dalConfigManager;
     private IBLLQueueServerConfigManager bllQueueServerConfigManager;
     private IBLLVersionManager bllVersionManager;
+    private ConfigServiceUpdater configServiceUpdater;
 
     public BLLConfigManager() {
+        configServiceUpdater = new ConfigServiceUpdater();
         dalConfigManager = DALManager.getInstance().getConfigManager();
         bllQueueServerConfigManager = new BLLQueueServerConfigManager();
         bllVersionManager = new BLLVersionManager();
@@ -36,6 +39,14 @@ public class BLLConfigManager implements IBLLConfigManager {
 
     @Override
     public void init() throws MotuException {
+        dalConfigManager.setConfigUpdatedListener(new IConfigUpdatedListener() {
+
+            @Override
+            public void onMotuConfigUpdated(MotuConfig newMotuConfig) {
+                configServiceUpdater.onMotuConfigUpdated(newMotuConfig);
+            }
+
+        });
         dalConfigManager.init();
         bllVersionManager.init();
     }
