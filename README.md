@@ -937,10 +937,10 @@ All the configuration files are set in the $installDir/motu/config folder.
 cd $installDir/motu/config
   
 * __config:__ Folder which contains the motu configuration files.
-  * __motu.properties:__ JVM memory, network ports of JVM (JMX, Debug) and Tomcat (HTTP, HTTPS, AJP, SHUTDOWN). CAS SSO server settings.
-  * __motuConfiguration.xml:__ Motu settings (Service, Catalog via Thredds, Proxy, Queues, ....)
-  * __log4j.xml:__ Log4j v2 configuration file
-  * __standardNames.xml:__ Contains the standard names [TBD]
+  * __[motu.properties](#ConfigurationSystem):__ JVM memory, network ports of JVM (JMX, Debug) and Tomcat (HTTP, HTTPS, AJP, SHUTDOWN). CAS SSO server settings.
+  * __[motuConfiguration.xml](#ConfigurationBusiness):__ Motu settings (Service, Catalog via Thredds, Proxy, Queues, ....)
+  * __[log4j.xml](#LogSettings):__ Log4j v2 configuration file
+  * __[standardNames.xml](#ConfigStandardNames):__ Contains the standard names
   * __version-configuration.txt:__ Contains the version of the current Motu configuration.
   
 ## <a name="ConfigurationBusiness">Business settings</a>  
@@ -1346,6 +1346,11 @@ How to build the file cacerts-with-cas-qt-ca.jks on Motu server?
   /opt/cmems-cis-validation/motu/products/jdk1.7.0_79/bin/keytool -import -v -trustcacerts -alias $CAS_HOST_NAME -file cas-qt-ca.crt -keystore cacerts-with-cas-qt-ca.jks -keypass XXX  
   ```  
 
+#### <a name="ConfigStandardNames">NetCdf standard names</a>  
+When NetCdf variables are read in data files, either by Threads or directly by Motu, Motu wait for a standard name metadata sttribute to be found for each variable as requiered by the [CF convention](#http://cfconventions.org/Data/cf-standard-names/docs/guidelines.html).
+Due to any production constraints, some netcdf files does not have any standard_name attribute.  
+In the case, you can add directly in the configuration folder, a file named standardNames.xml in order to map a standard_name to a netcdf variable name.  
+You can find an example in Motu source: /motu-web/src/main/resources/standardNames.xml  
 
 #### Supervision
 To enable the status supervision, set the parameter below:  

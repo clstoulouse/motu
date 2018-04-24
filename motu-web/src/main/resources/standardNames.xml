@@ -1,57 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Default configuration file -->
+<!-- Default configuration file as an example which can be overwritten
+ 
+     The CF convention requieres that each variable is defined with a standard name attributes.
+     Due to some production constraint, some netcdf files does not have the standard_name attribute.
+     In the case, you can add directly in the configuration folder, a file named standardNames.xml in order to map a standard_name to a netcdf variable.
+     
+     Here is how you can list the standard name variables:
+     <standardNames>
+     	<standardName name="$variableStandardName01"> 
+     		<netcdfName>$variableNameInNetCdfFile01-1</netcdfName>
+     		<netcdfName>$variableNameInNetCdfFile01-1</netcdfName>
+     	</standardName>
+     	
+        <standardName name="$variableStandardName02"> 
+     		<netcdfName>$variableNameInNetCdfFile02-1</netcdfName>
+     		<netcdfName>$variableNameInNetCdfFile02-2</netcdfName>
+     	</standardName>
+     	
+     	
+        <standardName name="wind_speed"> 
+     		<netcdfName>windOverTheSea</netcdfName>
+     		<netcdfName>windAtLevel0</netcdfName>
+     	</standardName>
+     </standardNames>
+-->
 <standardNames>
+	<!--
 	<standardName name="wind_speed">
 		<netcdfName>Grid_0001</netcdfName>
+		<netcdfName>Grid_1001</netcdfName>
+		<netcdfName>Grid_1101</netcdfName>
 	</standardName>
 	<standardName name="sea_surface_height_above_sea_level">
-		<netcdfName>Grid_0001</netcdfName>
+		<netcdfName>Grid_0002</netcdfName>
 	</standardName>
 	<standardName name="sea_surface_height_above_reference_ellipsoid">
-		<netcdfName>Grid_0001</netcdfName>
+		<netcdfName>Grid_0003</netcdfName>
 	</standardName>
 	<standardName name="sea_surface_height_above_geoid">
-		<netcdfName>Grid_0001</netcdfName>
+		<netcdfName>Grid_0004</netcdfName>
 	</standardName>
 	<standardName name="sea_surface_swell_wave_significant_height">
-		<netcdfName>Grid_0001</netcdfName>
+		<netcdfName>Grid_0005</netcdfName>
 	</standardName>
 	<standardName
 		name="surface_geostrophic_sea_water_x_velocity_assuming_sea_level_for_geoid">
-		<netcdfName>Grid_0001</netcdfName>
+		<netcdfName>Grid_0006</netcdfName>
 	</standardName>
 	<standardName
 		name="surface_geostrophic_sea_water_y_velocity_assuming_sea_level_for_geoid">
-		<netcdfName>Grid_0002</netcdfName>
+		<netcdfName>Grid_0007</netcdfName>
 	</standardName>
 	<standardName
 		name="surface_northward_geostrophic_sea_water_velocity_assuming_sea_level_for_geoid">
-		<netcdfName>Grid_0001</netcdfName>
+		<netcdfName>Grid_0008</netcdfName>
 	</standardName>
 	<standardName
 		name="surface_eastward_geostrophic_sea_water_velocity_assuming_sea_level_for_geoid">
-		<netcdfName>Grid_0002</netcdfName>
+		<netcdfName>Grid_0009</netcdfName>
 	</standardName>
 	<standardName name="surface_geostrophic_sea_water_x_velocity">
-		<netcdfName>Grid_0001</netcdfName>
+		<netcdfName>Grid_0010</netcdfName>
 	</standardName>
 	<standardName name="surface_geostrophic_sea_water_y_velocity">
-		<netcdfName>Grid_0002</netcdfName>
+		<netcdfName>Grid_0011</netcdfName>
 	</standardName>
 	<standardName
 		name="surface_northward_geostrophic_sea_water_velocity">
-		<netcdfName>Grid_0001</netcdfName>
+		<netcdfName>Grid_0012</netcdfName>
 	</standardName>
 	<standardName
 		name="surface_eastward_geostrophic_sea_water_velocity">
-		<netcdfName>Grid_0002</netcdfName>
+		<netcdfName>Grid_0013</netcdfName>
 	</standardName>
 	<standardName
 		name="northward_sea_water_velocity">
-		<netcdfName>Grid_0002</netcdfName>
+		<netcdfName>Grid_0014</netcdfName>
 	</standardName>
 	<standardName
 		name="eastward_sea_water_velocity">
-		<netcdfName>Grid_0001</netcdfName>
+		<netcdfName>Grid_0015</netcdfName>
 	</standardName>
+	-->
 </standardNames>

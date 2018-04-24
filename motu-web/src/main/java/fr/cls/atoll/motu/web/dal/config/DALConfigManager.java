@@ -111,14 +111,28 @@ public class DALConfigManager implements IDALConfigManager {
     }
 
     private void initMotuConfig() throws MotuException, FileNotFoundException {
+        try {
+            InputStream in = getMontuConfigInputStream();
+            loadMotuConfig(in);
+            in.close();
+        } catch (IOException io) {
+            // Do nothing
+            LOGGER.error("Error while closing input stream motuConfiguration.xml", io);
+        }
+    }
+
+    private InputStream getMontuConfigInputStream() throws FileNotFoundException {
+        InputStream in;
         File fMotuConfig = new File(getMotuConfigurationFolderPath(), "motuConfiguration.xml");
-        InputStream in = null;
         if (fMotuConfig.exists()) {
             in = new FileInputStream(fMotuConfig);
         } else {
             in = DALConfigManager.class.getClassLoader().getResourceAsStream("motuConfiguration.xml");
         }
+        return in;
+    }
 
+    private void loadMotuConfig(InputStream in) throws MotuException {
         try {
             JAXBContext jc = JAXBContext.newInstance(MotuConfig.class.getPackage().getName());
             Unmarshaller unmarshaller = jc.createUnmarshaller();
@@ -133,22 +147,13 @@ public class DALConfigManager implements IDALConfigManager {
             throw new MotuException(ErrorType.SYSTEM, "Error in getMotuConfigInstance", e);
         }
 
-        if (motuConfig == null) {
-            throw new MotuException(ErrorType.MOTU_CONFIG, "Unable to load Motu configuration (motuConfig is null)");
-        }
-
         ObjectFactory motuConfigObjectFactory = new ObjectFactory();
         MotuConfig blankMotuConfig = motuConfigObjectFactory.createMotuConfig();
         if (motuConfig.getRefreshCacheToken().equals(blankMotuConfig.getRefreshCacheToken())) {
-            LOGGER.error("Security breach : The token for the update of the cache is still set to the default value.\n"
+            LOGGER.error("Security breach: The token for the update of the cache is still set to the default value.\n"
                     + "To improve the security of the server please change this token into the motuConfiguration.xml file.");
         }
 
-        try {
-            in.close();
-        } catch (IOException io) {
-            // Do nothing
-        }
     }
 
     @Override

@@ -2,8 +2,6 @@ package fr.cls.atoll.motu.web.bll.config;
 
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import fr.cls.atoll.motu.web.bll.config.version.BLLVersionManager;
 import fr.cls.atoll.motu.web.bll.config.version.IBLLVersionManager;
@@ -97,24 +95,6 @@ public class BLLConfigManager implements IBLLConfigManager {
             }
         }
         return csResult;
-    }
-
-    /**
-     * Gets the tDS dataset id.
-     * 
-     * @param locationData the location data
-     * 
-     * @return the tDS dataset id
-     */
-    private String catalogNameFromProductLocation(String locationData) {
-        String patternExpression = "(http://.*thredds/)(dodsC/)(.*)";
-
-        Pattern pattern = Pattern.compile(patternExpression);
-        Matcher matcher = pattern.matcher(locationData);
-
-        matcher.find();
-
-        return matcher.group(matcher.groupCount());
     }
 
     /** {@inheritDoc} */

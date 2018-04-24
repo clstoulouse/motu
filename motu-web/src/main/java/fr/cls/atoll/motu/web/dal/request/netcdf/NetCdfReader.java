@@ -2323,30 +2323,27 @@ public class NetCdfReader {
      * @throws NetCdfAttributeException the neCdf attribute exception
      */
     public List<String> getNetcdfVarNameByStandardName(String standardName) throws NetCdfAttributeException {
-        List<String> listVarName = new ArrayList<String>();
-
+        List<String> listVarName = new ArrayList<>();
         List<Variable> listVariable = getVariables();
-
-        String attrValue = "";
-
+        String attrValue;
         for (Variable variable : listVariable) {
             try {
                 Attribute attribute = NetCdfReader.getAttribute(variable, VARIABLEATTRIBUTE_STANDARD_NAME);
                 attrValue = NetCdfReader.getStringValue(attribute);
                 if (standardName.equalsIgnoreCase(attrValue)) {
-                    listVarName.add(variable.getName());
+                    listVarName.add(variable.getFullName());
                 }
             } catch (NetCdfAttributeNotFoundException e) {
                 // Do Nothing
             }
         }
 
-        // standard name not found, searche in standard name equivalence XML file.
-        if (listVarName.size() <= 0) {
+        // standard name not found, search in standard name equivalence XML file.
+        if (listVarName.isEmpty()) {
             listVarName = getStandardNameEquivalence(standardName);
         }
         // standard name not found, we consider standardName parameter a netcdf variable name.
-        if (listVarName.size() <= 0) {
+        if (listVarName.isEmpty()) {
             listVarName.add(standardName);
         }
 
@@ -2361,13 +2358,12 @@ public class NetCdfReader {
      * @return the standard name equivalence
      */
     public static List<String> getStandardNameEquivalence(String standardName) {
-        List<String> listVarName = new ArrayList<String>();
+        List<String> listVarName = new ArrayList<>();
         List<StandardName> listStd = BLLManager.getInstance().getConfigManager().getStandardNameList();
         if (listStd != null) {
             for (StandardName std : listStd) {
                 if (standardName.equalsIgnoreCase(std.getName())) {
                     List<JAXBElement<String>> ncVars = std.getNetcdfName();
-
                     for (JAXBElement<String> ncVar : ncVars) {
                         listVarName.add(ncVar.getValue());
                     }
