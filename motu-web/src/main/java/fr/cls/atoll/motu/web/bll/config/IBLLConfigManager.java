@@ -34,13 +34,6 @@ public interface IBLLConfigManager {
      * 
      * @return
      */
-    IBLLQueueServerConfigManager getQueueServerConfigManager();
-
-    /**
-     * .
-     * 
-     * @return
-     */
     MotuConfig getMotuConfig();
 
     /**

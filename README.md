@@ -945,6 +945,7 @@ cd $installDir/motu/config
   
 ## <a name="ConfigurationBusiness">Business settings</a>  
 ### motuConfiguration.xml: Motu business settings  
+This file is watched and updated automatically. This means that when Motu is running, this file has to be written in a atomic way.  
 
 You can configure 3 main categories:  
 
@@ -1076,14 +1077,6 @@ They are sorted by config service which has taken the most time first.
 Example of archived data with several To of data. Cache is refreshed daily: describeProductCacheRefreshInMilliSec=86400000   
 Example of real time data with several Go of data. Cache is refreshed each minute: describeProductCacheRefreshInMilliSec=60000    
 
-
-##### updateCachePassPhrase
-Provide the pass phrase which is check if a request "updateCache" is received by the server.
-If the request passphrase is not the same as the configured passphrase, the update is not executed.
-If the passphrase is not filled, a default passphrase is used. This case doesn't stop the launching of the server but
-it's a security breach an error is generated in the error log.
-
-
 ##### runGCInterval
 @Deprecated from v3 This parameter is not used. 
 
@@ -1119,7 +1112,8 @@ tomcat-motu-jvm-javaOpts=-server -Xmx4096M  ... -Dhttp.proxyHost=monProxy.host.f
 
 This token is a key value which is checked to authorize the execution of the cache refresh when it is request by the administrator .
 If the token value provided by the administrator doesn't match the configured token value, the refresh is not executed and an error is returned.
-A default value is configured but it's hardly recommended to change this value. Even if this is a security breach.
+A default value "a7de6d69afa2111e7fa7038a0e89f7e2" is configured but it's hardly recommended to change this value. If this token is not changed, it is a security breach and 
+a log ERROR will be written while the configuration will be loaded.
 The value can contains the characters [A-Za-z] and specials listed here ( -_@$*!:;.,?()[] )
 It's recommended to configure a token with a length of 29 characters minimum.
 
@@ -1593,7 +1587,7 @@ Tomcat log messages are generated in the tomcat-motu/logs folder.
 
 ## <a name="AdminDataSetAdd">Add a dataset</a>    
 In order to add a new Dataset, you have to add a new configService node in the [Motu business configuration](#ConfigurationBusiness).  
-When Motu read data through TDS (Opendap or NCSS service), the data shall be configured in TDS before this configuration in Motu. The TDS configuration is not explained here.  
+When Motu read data through TDS (Opendap or NCSS service) url, the data shall be configured in TDS before this configuration is saved in Motu. The [TDS configuration](https://www.unidata.ucar.edu/software/thredds/v4.6/tds/catalog/index.html) is not explained here.  
 
 Within CMEMS, the datasets are organized in a tree structure, where the product granularity appears above the dataset granularity.  
 To be noticed:  

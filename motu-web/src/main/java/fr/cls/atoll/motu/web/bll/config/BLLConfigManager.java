@@ -26,14 +26,12 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 public class BLLConfigManager implements IBLLConfigManager {
 
     private IDALConfigManager dalConfigManager;
-    private IBLLQueueServerConfigManager bllQueueServerConfigManager;
     private IBLLVersionManager bllVersionManager;
     private ConfigServiceUpdater configServiceUpdater;
 
     public BLLConfigManager() {
         configServiceUpdater = new ConfigServiceUpdater();
         dalConfigManager = DALManager.getInstance().getConfigManager();
-        bllQueueServerConfigManager = new BLLQueueServerConfigManager();
         bllVersionManager = new BLLVersionManager();
     }
 
@@ -71,16 +69,6 @@ public class BLLConfigManager implements IBLLConfigManager {
     @Override
     public List<StandardName> getStandardNameList() {
         return dalConfigManager.getStandardNameList();
-    }
-
-    /**
-     * Valeur de bllQueueServerConfig.
-     * 
-     * @return la valeur.
-     */
-    @Override
-    public IBLLQueueServerConfigManager getQueueServerConfigManager() {
-        return bllQueueServerConfigManager;
     }
 
     /** {@inheritDoc} */

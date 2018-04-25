@@ -67,6 +67,11 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
         listeners = new ArrayList<>();
     }
 
+    @Override
+    public long getRefreshDelayInMSec() {
+        return BLLManager.getInstance().getConfigManager().getMotuConfig().getDescribeProductCacheRefreshInMilliSec();
+    }
+
     /**
      * Initialize if needed and return the unique instance of the singleton class. .
      * 

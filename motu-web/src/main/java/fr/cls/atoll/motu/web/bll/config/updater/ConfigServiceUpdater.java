@@ -32,6 +32,7 @@ public class ConfigServiceUpdater {
             }
         }
 
+        BLLManager.getInstance().getRequestManager().getQueueServerManager().onConfigUpdated(newMotuConfig.getQueueServerConfig());
     }
 
     private List<ConfigService> addOrUpdateNewConfigService(List<ConfigService> newConfigServiceList) {

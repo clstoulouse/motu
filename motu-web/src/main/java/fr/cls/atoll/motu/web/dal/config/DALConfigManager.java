@@ -154,6 +154,7 @@ public class DALConfigManager implements IDALConfigManager {
         if (configUpdatedListener != null) {
             configUpdatedListener.onMotuConfigUpdated(newMotuConfig);
         }
+        motuConfig = newMotuConfig;
     }
 
     private InputStream getMotuConfigInputStream(File fMotuConfig) throws FileNotFoundException {
