@@ -24,11 +24,6 @@ public class CatalogAndProductCacheManager implements ICatalogAndProductCacheMan
     private static final Logger LOGGER = LogManager.getLogger();
 
     /**
-     * The list of ConfigService to refresh configured as automatic refresh
-     */
-    private List<ConfigService> partialConfigServiceToUpdate = new ArrayList<>();
-
-    /**
      * The Daemon which launch regularly a refresh of the cache
      */
     private CatalogAndProductCacheRefreshThread productCacheDaemonThread;
@@ -52,7 +47,7 @@ public class CatalogAndProductCacheManager implements ICatalogAndProductCacheMan
             CacheRefreshScheduler.getInstance().start();
             // Initialize the the refresh scheduler with all the config service to initialize all the cache
             CacheRefreshScheduler.getInstance().update(BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService());
-            productCacheDaemonThread = new CatalogAndProductCacheRefreshThread(partialConfigServiceToUpdate) {
+            productCacheDaemonThread = new CatalogAndProductCacheRefreshThread(getConfigServiceListToRefreshAutomatically()) {
 
                 /** {@inheritDoc} */
                 @Override
@@ -66,6 +61,19 @@ public class CatalogAndProductCacheManager implements ICatalogAndProductCacheMan
             };
             productCacheDaemonThread.start();
         }
+    }
+
+    /**
+     * Retrieve the configured ConfigService to initialize the instance ConfigService list.
+     */
+    private List<ConfigService> getConfigServiceListToRefreshAutomatically() {
+        List<ConfigService> configServiceToRefreshAutomatically = new ArrayList<>();
+        for (ConfigService configService : BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService()) {
+            if (configService.getRefreshCacheAutomaticallyEnabled()) {
+                configServiceToRefreshAutomatically.add(configService);
+            }
+        }
+        return configServiceToRefreshAutomatically;
     }
 
     @Override
@@ -111,11 +119,12 @@ public class CatalogAndProductCacheManager implements ICatalogAndProductCacheMan
     @Override
     public void updateCache(List<ConfigService> configServiceList) {
         CacheRefreshScheduler.getInstance().update(configServiceList);
+
     }
 
     @Override
     public void updateCache() {
-        CacheRefreshScheduler.getInstance().update(partialConfigServiceToUpdate);
+        CacheRefreshScheduler.getInstance().update(getConfigServiceListToRefreshAutomatically());
     }
 
     @Override
