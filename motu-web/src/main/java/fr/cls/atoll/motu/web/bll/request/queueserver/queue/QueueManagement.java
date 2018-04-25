@@ -66,7 +66,7 @@ public class QueueManagement {
      */
     public QueueManagement(QueueType queueConfig) {
         this.queueConfig = queueConfig;
-        this.priorityBlockingQueue = new PriorityBlockingQueue<Runnable>();
+        this.priorityBlockingQueue = new PriorityBlockingQueue<>();
 
         int maxRunningThreads = this.getMaxThreads();
         this.threadPoolExecutor = new ExtractionThreadPoolExecutor(
@@ -76,6 +76,14 @@ public class QueueManagement {
                 0L,
                 TimeUnit.SECONDS,
                 priorityBlockingQueue);
+    }
+
+    public void updateQueueType(QueueType newQueueConfig) {
+        if (getQueueConfig().getMaxThreads() != newQueueConfig.getMaxThreads()) {
+            this.threadPoolExecutor.setCorePoolSize(newQueueConfig.getMaxThreads());
+            this.threadPoolExecutor.setMaximumPoolSize(newQueueConfig.getMaxThreads());
+        }
+        this.queueConfig = newQueueConfig;
     }
 
     /**
@@ -105,8 +113,9 @@ public class QueueManagement {
         checkMaxQueueSize();
 
         try {
-            threadPoolExecutor.onNewRequestForUser(queueJob.getRequestDownloadStatus().getRequestProduct().getExtractionParameters().isAnonymousUser()
-                    ? null : queueJob.getRequestDownloadStatus().getRequestProduct().getExtractionParameters().getUserId());
+            threadPoolExecutor
+                    .onNewRequestForUser(queueJob.getRequestDownloadStatus().getRequestProduct().getExtractionParameters().isAnonymousUser() ? null
+                            : queueJob.getRequestDownloadStatus().getRequestProduct().getExtractionParameters().getUserId());
             threadPoolExecutor.execute(queueJob);
         } catch (RejectedExecutionException e) {
             throw new MotuException(ErrorType.SYSTEM, "ERROR Execute request", e);
@@ -147,13 +156,6 @@ public class QueueManagement {
      */
     public float getDataThreshold() {
         return queueConfig.getDataThreshold();
-    }
-
-    /**
-     * @return the batch flag of the queue
-     */
-    public boolean getBatch() {
-        return queueConfig.getBatch();
     }
 
     /**

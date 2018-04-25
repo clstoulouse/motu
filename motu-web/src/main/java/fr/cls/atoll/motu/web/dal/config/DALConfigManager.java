@@ -5,9 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -16,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.web.bll.config.updater.IConfigUpdatedListener;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.PropertiesUtilities;
 import fr.cls.atoll.motu.web.dal.config.stdname.StdNameReader;
@@ -23,7 +22,7 @@ import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardName;
 import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardNames;
 import fr.cls.atoll.motu.web.dal.config.version.DALVersionManager;
 import fr.cls.atoll.motu.web.dal.config.version.IDALVersionManager;
-import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
+import fr.cls.atoll.motu.web.dal.config.watcher.ConfigWatcherThread;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ObjectFactory;
 
@@ -49,23 +48,21 @@ public class DALConfigManager implements IDALConfigManager {
     public static final String FILENAME_FORMAT_REQUESTID = "@@requestId@@";
     public static final String FILENAME_FORMAT_PRODUCT_ID = "@@productId@@";
 
-    private Map<String, ConfigService> configServiceMap;
+    private IConfigUpdatedListener configUpdatedListener;
 
     public DALConfigManager() {
         dalVersionManager = new DALVersionManager();
-        configServiceMap = new HashMap<>();
     }
 
     /** {@inheritDoc} */
     @Override
     public void init() throws MotuException {
-        try {
-            initMotuConfig();
-        } catch (FileNotFoundException e) {
-            throw new MotuException(ErrorType.MOTU_CONFIG, "Error while initializing Motu configuration: ", e);
+        if (motuConfig == null) {
+            motuConfig = loadMotuConfig(new File(getMotuConfigurationFolderPath(), "motuConfiguration.xml"), true);
         }
-
-        initStdNames();
+        if (standardNameList == null) {
+            standardNameList = loadStandardNameList();
+        }
     }
 
     /**
@@ -83,13 +80,15 @@ public class DALConfigManager implements IDALConfigManager {
      * 
      * @throws MotuException
      */
-    private void initStdNames() throws MotuException {
+    private List<StandardName> loadStandardNameList() throws MotuException {
+        List<StandardName> curStandardNameList = null;
         StandardNames sn = new StdNameReader().getStdNameEquiv();
         if (sn != null) {
-            standardNameList = sn.getStandardName();
+            curStandardNameList = sn.getStandardName();
         } else {
             LOGGER.warn("No standard names loaded from configuration folder");
         }
+        return curStandardNameList;
     }
 
     /** {@inheritDoc} */
@@ -110,45 +109,83 @@ public class DALConfigManager implements IDALConfigManager {
         return System.getProperty("motu-config-dir", null);
     }
 
-    private void initMotuConfig() throws MotuException, FileNotFoundException {
-        File fMotuConfig = new File(getMotuConfigurationFolderPath(), "motuConfiguration.xml");
+    private MotuConfig loadMotuConfig(final File fMotuConfig, boolean initConfigWatcher) throws MotuException {
+        MotuConfig curMotuConfig = null;
         InputStream in = null;
+        try {
+            if (initConfigWatcher) {
+                ConfigWatcherThread t = new ConfigWatcherThread(fMotuConfig) {
+
+                    @Override
+                    public void onMotuConfigurationUpdated(File configFile) {
+                        DALConfigManager.this.onMotuConfigurationUpdated(configFile);
+                    }
+
+                };
+                t.start();
+            }
+            in = getMotuConfigInputStream(fMotuConfig);
+            curMotuConfig = parseMotuConfig(in);
+        } catch (IOException io) {
+            LOGGER.error("Error while loading motuConfiguration.xml", io);
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException io) {
+                LOGGER.error("Error while closing input stream motuConfiguration.xml", io);
+            }
+
+        }
+        return curMotuConfig;
+    }
+
+    private void onMotuConfigurationUpdated(File configFile) {
+        try {
+            MotuConfig mc = loadMotuConfig(configFile, false);
+            onMotuConfigUpdated(mc);
+        } catch (MotuException e) {
+            LOGGER.error("Error while loading motuConfiguration from config watcher", e);
+        }
+    }
+
+    private void onMotuConfigUpdated(MotuConfig newMotuConfig) {
+        if (configUpdatedListener != null) {
+            configUpdatedListener.onMotuConfigUpdated(newMotuConfig);
+        }
+        motuConfig = newMotuConfig;
+    }
+
+    private InputStream getMotuConfigInputStream(File fMotuConfig) throws FileNotFoundException {
+        InputStream in;
         if (fMotuConfig.exists()) {
             in = new FileInputStream(fMotuConfig);
         } else {
             in = DALConfigManager.class.getClassLoader().getResourceAsStream("motuConfiguration.xml");
         }
+        return in;
+    }
 
+    private MotuConfig parseMotuConfig(InputStream in) throws MotuException {
+        MotuConfig curMotuConfig;
         try {
             JAXBContext jc = JAXBContext.newInstance(MotuConfig.class.getPackage().getName());
             Unmarshaller unmarshaller = jc.createUnmarshaller();
-            motuConfig = (MotuConfig) unmarshaller.unmarshal(in);
-            motuConfig.setExtractionPath(PropertiesUtilities.replaceSystemVariable(motuConfig.getExtractionPath()));
-            motuConfig.setDownloadHttpUrl(PropertiesUtilities.replaceSystemVariable(motuConfig.getDownloadHttpUrl()));
-
-            for (ConfigService currentConfigService : motuConfig.getConfigService()) {
-                configServiceMap.put(currentConfigService.getName(), currentConfigService);
-            }
+            curMotuConfig = (MotuConfig) unmarshaller.unmarshal(in);
+            curMotuConfig.setExtractionPath(PropertiesUtilities.replaceSystemVariable(curMotuConfig.getExtractionPath()));
+            curMotuConfig.setDownloadHttpUrl(PropertiesUtilities.replaceSystemVariable(curMotuConfig.getDownloadHttpUrl()));
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error in getMotuConfigInstance", e);
         }
 
-        if (motuConfig == null) {
-            throw new MotuException(ErrorType.MOTU_CONFIG, "Unable to load Motu configuration (motuConfig is null)");
-        }
-
         ObjectFactory motuConfigObjectFactory = new ObjectFactory();
         MotuConfig blankMotuConfig = motuConfigObjectFactory.createMotuConfig();
-        if (motuConfig.getRefreshCacheToken().equals(blankMotuConfig.getRefreshCacheToken())) {
-            LOGGER.error("Security breach : The token for the update of the cache is still set to the default value.\n"
+        if (curMotuConfig.getRefreshCacheToken().equals(blankMotuConfig.getRefreshCacheToken())) {
+            LOGGER.error("Security breach: The token for the update of the cache is still set to the default value.\n"
                     + "To improve the security of the server please change this token into the motuConfiguration.xml file.");
         }
-
-        try {
-            in.close();
-        } catch (IOException io) {
-            // Do nothing
-        }
+        return curMotuConfig;
     }
 
     @Override
@@ -163,7 +200,7 @@ public class DALConfigManager implements IDALConfigManager {
     }
 
     @Override
-    public Map<String, ConfigService> getConfigServiceMap() {
-        return configServiceMap;
+    public void setConfigUpdatedListener(IConfigUpdatedListener configUpdatedListener_) {
+        configUpdatedListener = configUpdatedListener_;
     }
 }

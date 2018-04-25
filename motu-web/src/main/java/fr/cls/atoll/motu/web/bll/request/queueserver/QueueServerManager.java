@@ -24,6 +24,7 @@
  */
 package fr.cls.atoll.motu.web.bll.request.queueserver;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -58,9 +59,6 @@ public class QueueServerManager implements IQueueServerManager {
     /** Logger for this class. */
     private static final Logger LOGGER = LogManager.getLogger();
 
-    /** The queue server config. */
-    private QueueServerType queueServerConfig;
-
     /** The queue management map. */
     private Map<QueueType, QueueManagement> queueManagementMap;
 
@@ -73,7 +71,7 @@ public class QueueServerManager implements IQueueServerManager {
      */
     public QueueServerManager() {
         isStopping = false;
-        queueManagementMap = new HashMap<QueueType, QueueManagement>();
+        queueManagementMap = new HashMap<>();
     }
 
     /**
@@ -81,23 +79,12 @@ public class QueueServerManager implements IQueueServerManager {
      */
     @Override
     public void init() {
-        queueServerConfig = BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig();
         // Order queue by size (threshold) asc
         Collections.sort(getQueueServerConfig().getQueues(), new QueueThresholdComparator());
 
         for (QueueType queueConfig : getQueueServerConfig().getQueues()) {
-            getQueueManagement().put(queueConfig, new QueueManagement(queueConfig));
+            getQueueManagementMap().put(queueConfig, new QueueManagement(queueConfig));
         }
-    }
-
-    /**
-     * Valeur de queueManagementMap.
-     * 
-     * @return la valeur.
-     */
-    @Override
-    public Map<QueueType, QueueManagement> getQueueManagementMap() {
-        return queueManagementMap;
     }
 
     /**
@@ -191,7 +178,7 @@ public class QueueServerManager implements IQueueServerManager {
      * @return la valeur.
      */
     private QueueServerType getQueueServerConfig() {
-        return queueServerConfig;
+        return BLLManager.getInstance().getConfigManager().getMotuConfig().getQueueServerConfig();
     }
 
     /**
@@ -201,7 +188,8 @@ public class QueueServerManager implements IQueueServerManager {
      * 
      * @uml.property name="queueManagement"
      */
-    private Map<QueueType, QueueManagement> getQueueManagement() {
+    @Override
+    public Map<QueueType, QueueManagement> getQueueManagementMap() {
         return queueManagementMap;
     }
 
@@ -237,7 +225,7 @@ public class QueueServerManager implements IQueueServerManager {
      */
     private int countRequestUser(String userId) {
         int count = 0;
-        for (QueueManagement queueManagement : getQueueManagement().values()) {
+        for (QueueManagement queueManagement : getQueueManagementMap().values()) {
             count += queueManagement.countRequestUser(userId);
         }
 
@@ -258,7 +246,7 @@ public class QueueServerManager implements IQueueServerManager {
         // queues are sorted by data threshold (ascending)
         for (QueueType queueType : getQueueServerConfig().getQueues()) {
             if (sizeInMB_ <= queueType.getDataThreshold()) {
-                queueManagement = getQueueManagement().get(queueType);
+                queueManagement = getQueueManagementMap().get(queueType);
                 break;
             }
         }
@@ -294,7 +282,7 @@ public class QueueServerManager implements IQueueServerManager {
      */
     @Override
     public void shutdown() {
-        for (QueueManagement queueManagement : getQueueManagement().values()) {
+        for (QueueManagement queueManagement : getQueueManagementMap().values()) {
             queueManagement.shutdown();
         }
     }
@@ -303,6 +291,46 @@ public class QueueServerManager implements IQueueServerManager {
     @Override
     public void stop() {
         shutdown();
+    }
+
+    @Override
+    public void onConfigUpdated(QueueServerType newQueueServerType) {
+        // Order queue by size (threshold) asc
+        Collections.sort(newQueueServerType.getQueues(), new QueueThresholdComparator());
+
+        removeUnusedQueue(newQueueServerType);
+        addOrUpdateNewQueues(newQueueServerType);
+    }
+
+    private void addOrUpdateNewQueues(QueueServerType newQueueServerType) {
+        for (QueueType queueConfig : newQueueServerType.getQueues()) {
+            if (getQueueManagementMap().containsKey(queueConfig.getId())) {
+                getQueueManagementMap().get(queueConfig.getId()).updateQueueType(queueConfig);
+            }
+            getQueueManagementMap().put(queueConfig, new QueueManagement(queueConfig));
+        }
+    }
+
+    private void removeUnusedQueue(QueueServerType newQueueServerType) {
+        List<QueueType> queueConfigToRemove = new ArrayList<>();
+        for (QueueType queueConfig : getQueueManagementMap().keySet()) {
+            int i = 0;
+            while (i < newQueueServerType.getQueues().size()
+                    && !newQueueServerType.getQueues().get(i).getId().equalsIgnoreCase(queueConfig.getId())) {
+                i++;
+            }
+            if (!(i < newQueueServerType.getQueues().size())) {
+                queueConfigToRemove.add(queueConfig);
+            }
+        }
+
+        for (QueueType q : queueConfigToRemove) {
+            QueueManagement qm = getQueueManagementMap().get(q);
+            if (qm != null) {
+                qm.shutdown();
+            }
+            getQueueManagementMap().remove(q);
+        }
     }
 
 }

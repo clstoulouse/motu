@@ -937,14 +937,15 @@ All the configuration files are set in the $installDir/motu/config folder.
 cd $installDir/motu/config
   
 * __config:__ Folder which contains the motu configuration files.
-  * __motu.properties:__ JVM memory, network ports of JVM (JMX, Debug) and Tomcat (HTTP, HTTPS, AJP, SHUTDOWN). CAS SSO server settings.
-  * __motuConfiguration.xml:__ Motu settings (Service, Catalog via Thredds, Proxy, Queues, ....)
-  * __log4j.xml:__ Log4j v2 configuration file
-  * __standardNames.xml:__ Contains the standard names [TBD]
+  * __[motu.properties](#ConfigurationSystem):__ JVM memory, network ports of JVM (JMX, Debug) and Tomcat (HTTP, HTTPS, AJP, SHUTDOWN). CAS SSO server settings.
+  * __[motuConfiguration.xml](#ConfigurationBusiness):__ Motu settings (Service, Catalog via Thredds, Proxy, Queues, ....)
+  * __[log4j.xml](#LogSettings):__ Log4j v2 configuration file
+  * __[standardNames.xml](#ConfigStandardNames):__ Contains the standard names
   * __version-configuration.txt:__ Contains the version of the current Motu configuration.
   
 ## <a name="ConfigurationBusiness">Business settings</a>  
 ### motuConfiguration.xml: Motu business settings  
+This file is watched and updated automatically. This means that when Motu is running, this file has to be written in a atomic way.  
 
 You can configure 3 main categories:  
 
@@ -1076,14 +1077,6 @@ They are sorted by config service which has taken the most time first.
 Example of archived data with several To of data. Cache is refreshed daily: describeProductCacheRefreshInMilliSec=86400000   
 Example of real time data with several Go of data. Cache is refreshed each minute: describeProductCacheRefreshInMilliSec=60000    
 
-
-##### updateCachePassPhrase
-Provide the pass phrase which is check if a request "updateCache" is received by the server.
-If the request passphrase is not the same as the configured passphrase, the update is not executed.
-If the passphrase is not filled, a default passphrase is used. This case doesn't stop the launching of the server but
-it's a security breach an error is generated in the error log.
-
-
 ##### runGCInterval
 @Deprecated from v3 This parameter is not used. 
 
@@ -1119,7 +1112,8 @@ tomcat-motu-jvm-javaOpts=-server -Xmx4096M  ... -Dhttp.proxyHost=monProxy.host.f
 
 This token is a key value which is checked to authorize the execution of the cache refresh when it is request by the administrator .
 If the token value provided by the administrator doesn't match the configured token value, the refresh is not executed and an error is returned.
-A default value is configured but it's hardly recommended to change this value. Even if this is a security breach.
+A default value "a7de6d69afa2111e7fa7038a0e89f7e2" is configured but it's hardly recommended to change this value. If this token is not changed, it is a security breach and 
+a log ERROR will be written while the configuration will be loaded.
 The value can contains the characters [A-Za-z] and specials listed here ( -_@$*!:;.,?()[] )
 It's recommended to configure a token with a length of 29 characters minimum.
 
@@ -1346,6 +1340,11 @@ How to build the file cacerts-with-cas-qt-ca.jks on Motu server?
   /opt/cmems-cis-validation/motu/products/jdk1.7.0_79/bin/keytool -import -v -trustcacerts -alias $CAS_HOST_NAME -file cas-qt-ca.crt -keystore cacerts-with-cas-qt-ca.jks -keypass XXX  
   ```  
 
+#### <a name="ConfigStandardNames">NetCdf standard names</a>  
+When NetCdf variables are read in data files, either by Threads or directly by Motu, Motu wait for a standard name metadata sttribute to be found for each variable as requiered by the [CF convention](#http://cfconventions.org/Data/cf-standard-names/docs/guidelines.html).
+Due to any production constraints, some netcdf files does not have any standard_name attribute.  
+In the case, you can add directly in the configuration folder, a file named standardNames.xml in order to map a standard_name to a netcdf variable name.  
+You can find an example in Motu source: /motu-web/src/main/resources/standardNames.xml  
 
 #### Supervision
 To enable the status supervision, set the parameter below:  
@@ -1588,7 +1587,7 @@ Tomcat log messages are generated in the tomcat-motu/logs folder.
 
 ## <a name="AdminDataSetAdd">Add a dataset</a>    
 In order to add a new Dataset, you have to add a new configService node in the [Motu business configuration](#ConfigurationBusiness).  
-When Motu read data through TDS (Opendap or NCSS service), the data shall be configured in TDS before this configuration in Motu. The TDS configuration is not explained here.  
+When Motu read data through TDS (Opendap or NCSS service) url, the data shall be configured in TDS before this configuration is saved in Motu. The [TDS configuration](https://www.unidata.ucar.edu/software/thredds/v4.6/tds/catalog/index.html) is not explained here.  
 
 Within CMEMS, the datasets are organized in a tree structure, where the product granularity appears above the dataset granularity.  
 To be noticed:  

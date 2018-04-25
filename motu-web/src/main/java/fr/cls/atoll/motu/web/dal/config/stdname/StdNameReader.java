@@ -36,11 +36,9 @@ public class StdNameReader {
         try {
             in = new FileInputStream(new File(BLLManager.getInstance().getConfigManager().getMotuConfigurationFolderPath(), fileName));
             if (in != null) {
-
                 JAXBContext jc = JAXBContext.newInstance(StandardNames.class.getPackage().getName());
                 Unmarshaller unmarshaller = jc.createUnmarshaller();
                 stdNameEquiv = (StandardNames) unmarshaller.unmarshal(in);
-
             }
         } catch (Exception e) {
         } finally {
