@@ -59,7 +59,6 @@ public class ProductCache implements IProductCache {
         for (String mapKey : productsMap.keySet()) {
             if (isKeyMatchConfigService(mapKey, configServiceName)) {
                 mapKeyToRemove.add(mapKey);
-                productsMap.remove(mapKey);
             }
         }
 
