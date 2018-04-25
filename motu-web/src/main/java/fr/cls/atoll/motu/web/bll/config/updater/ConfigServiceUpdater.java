@@ -66,8 +66,15 @@ public class ConfigServiceUpdater {
         }
 
         for (ConfigService cs : configServiceListToRemove) {
-            BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService().remove(cs);
+            removeConfigService(cs);
             LOGGER.info("Remove old config service: " + cs.getName());
         }
+    }
+
+    private void removeConfigService(ConfigService cs) {
+        if (!BLLManager.getInstance().getConfigManager().getMotuConfig().getConfigService().remove(cs)) {
+            LOGGER.warn("Unable to remove old config service: " + cs.getName());
+        }
+        BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().onConfigServiceRemoved(cs);
     }
 }

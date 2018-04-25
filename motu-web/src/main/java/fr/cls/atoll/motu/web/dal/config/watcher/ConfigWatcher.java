@@ -31,6 +31,11 @@ public abstract class ConfigWatcher {
         watchEvents = watchEvents_;
     }
 
+    /**
+     * Blocking method
+     * 
+     * @throws IOException
+     */
     public void startWatching() throws IOException {
         Path dir = Paths.get(fileToWatch.getParentFile().getAbsolutePath());
         WatchService watcher = FileSystems.getDefault().newWatchService();

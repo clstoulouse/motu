@@ -40,4 +40,6 @@ public interface ICatalogAndProductCacheManager {
      * Refresh the cache for all the available ConfigService. .
      */
     void updateAllTheCache();
+
+    void onConfigServiceRemoved(ConfigService cs);
 }

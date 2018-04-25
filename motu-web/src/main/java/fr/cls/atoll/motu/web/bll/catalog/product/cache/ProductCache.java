@@ -1,7 +1,9 @@
 package fr.cls.atoll.motu.web.bll.catalog.product.cache;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
@@ -45,6 +47,25 @@ public class ProductCache implements IProductCache {
 
     public String getMapKey(String configServiceName, String productId) {
         return new String(configServiceName + "@" + productId).toUpperCase();
+    }
+
+    public boolean isKeyMatchConfigService(String mapKey, String configServiceName) {
+        return configServiceName != null && mapKey != null && mapKey.startsWith(configServiceName.toUpperCase());
+    }
+
+    @Override
+    public void removeProduct(String configServiceName) {
+        List<String> mapKeyToRemove = new ArrayList<>();
+        for (String mapKey : productsMap.keySet()) {
+            if (isKeyMatchConfigService(mapKey, configServiceName)) {
+                mapKeyToRemove.add(mapKey);
+                productsMap.remove(mapKey);
+            }
+        }
+
+        for (String k : mapKeyToRemove) {
+            productsMap.remove(k);
+        }
     }
 
 }

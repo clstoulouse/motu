@@ -3,7 +3,6 @@ package fr.cls.atoll.motu.web.bll.catalog.product.cache;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,7 +58,7 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
      */
     private CacheRefreshScheduler() {
         super(
-            "Product and Catalog Cache Thread Daemon",
+            "CacheRefreshScheduler Thread Daemon",
             BLLManager.getInstance().getConfigManager().getMotuConfig().getDescribeProductCacheRefreshInMilliSec());
         waitingConfigServiceToUpdate = new LinkedList<>();
         catalogCache = new CatalogCache();
@@ -87,7 +86,7 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
      * 
      * @param configServiceToUpadte The list of ConfigService to update
      */
-    public void update(Set<ConfigService> configServiceToUpadte) {
+    public void update(List<ConfigService> configServiceToUpadte) {
         synchronized (waitingConfigServiceToUpdate) {
             for (ConfigService configService : configServiceToUpadte) {
                 if (!waitingConfigServiceToUpdate.contains(configService)) {
@@ -121,24 +120,26 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
 
     @Override
     protected void runProcess() {
-        long startRefresh = System.currentTimeMillis();
-        ConfigService currentConfigService = null;
-        do {
-            synchronized (waitingConfigServiceToUpdate) {
-                // Retrieve the next ConfigService to update in the FIFO stack
-                currentConfigService = waitingConfigServiceToUpdate.pollFirst();
-            }
-            if (currentConfigService != null) {
+        if (!waitingConfigServiceToUpdate.isEmpty()) {
+            long startRefresh = System.currentTimeMillis();
+            ConfigService currentConfigService = null;
+            do {
+                synchronized (waitingConfigServiceToUpdate) {
+                    // Retrieve the next ConfigService to update in the FIFO stack
+                    currentConfigService = waitingConfigServiceToUpdate.pollFirst();
+                }
+                if (currentConfigService != null) {
 
-                long startConfigServiceRefresh = System.currentTimeMillis();
-                // Launch the refresh of the ConfiService
-                refreshService.updateConfigService(currentConfigService);
-                LOGGER.info("Refresh " + currentConfigService.getName() + " cache in: "
-                        + DateUtils.getDurationMinSecMsec((System.currentTimeMillis() - startConfigServiceRefresh)));
-            }
+                    long startConfigServiceRefresh = System.currentTimeMillis();
+                    // Launch the refresh of the ConfiService
+                    refreshService.updateConfigService(currentConfigService);
+                    LOGGER.info("Refresh " + currentConfigService.getName() + " cache in: "
+                            + DateUtils.getDurationMinSecMsec((System.currentTimeMillis() - startConfigServiceRefresh)));
+                }
 
-        } while (currentConfigService != null && !isDaemonStoppedASAP());
-        LOGGER.info("Refresh cache of the waiting list in: " + DateUtils.getDurationMinSecMsec((System.currentTimeMillis() - startRefresh)));
+            } while (currentConfigService != null && !isDaemonStoppedASAP());
+            LOGGER.info("Refresh cache of the waiting list in: " + DateUtils.getDurationMinSecMsec((System.currentTimeMillis() - startRefresh)));
+        }
     }
 
     public void addListener(Object listener) {

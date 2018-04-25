@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.StandardWatchEventKinds;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -23,7 +22,7 @@ import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardName;
 import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardNames;
 import fr.cls.atoll.motu.web.dal.config.version.DALVersionManager;
 import fr.cls.atoll.motu.web.dal.config.version.IDALVersionManager;
-import fr.cls.atoll.motu.web.dal.config.watcher.ConfigWatcher;
+import fr.cls.atoll.motu.web.dal.config.watcher.ConfigWatcherThread;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ObjectFactory;
 
@@ -58,8 +57,12 @@ public class DALConfigManager implements IDALConfigManager {
     /** {@inheritDoc} */
     @Override
     public void init() throws MotuException {
-        motuConfig = loadMotuConfig(new File(getMotuConfigurationFolderPath(), "motuConfiguration.xml"), true);
-        standardNameList = loadStandardNameList();
+        if (motuConfig == null) {
+            motuConfig = loadMotuConfig(new File(getMotuConfigurationFolderPath(), "motuConfiguration.xml"), true);
+        }
+        if (standardNameList == null) {
+            standardNameList = loadStandardNameList();
+        }
     }
 
     /**
@@ -111,15 +114,11 @@ public class DALConfigManager implements IDALConfigManager {
         InputStream in = null;
         try {
             if (initConfigWatcher) {
-                Thread t = new Thread("ConfigService watcher:" + fMotuConfig.getName()) {
+                ConfigWatcherThread t = new ConfigWatcherThread(fMotuConfig) {
 
                     @Override
-                    public void run() {
-                        try {
-                            initAndStartConfigWatcher(fMotuConfig);
-                        } catch (IOException e) {
-                            LOGGER.error("Error while initAndStartConfigWatcher: " + fMotuConfig.getAbsolutePath(), e);
-                        }
+                    public void onMotuConfigurationUpdated(File configFile) {
+                        DALConfigManager.this.onMotuConfigurationUpdated(configFile);
                     }
 
                 };
@@ -140,18 +139,6 @@ public class DALConfigManager implements IDALConfigManager {
 
         }
         return curMotuConfig;
-    }
-
-    private void initAndStartConfigWatcher(File fMotuConfig) throws IOException {
-        ConfigWatcher wc = new ConfigWatcher(fMotuConfig, StandardWatchEventKinds.ENTRY_MODIFY) {
-
-            @Override
-            protected void onNewFileEvent(File filename) {
-                DALConfigManager.this.onMotuConfigurationUpdated(filename);
-            }
-
-        };
-        wc.startWatching();
     }
 
     private void onMotuConfigurationUpdated(File configFile) {
