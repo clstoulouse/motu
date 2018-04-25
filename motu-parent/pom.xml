@@ -101,27 +101,7 @@
 		<dependency>
 			    <groupId>edu.ucar</groupId>
 			    <artifactId>netcdfAll</artifactId>
-			</dependency>
-			
-			<!-- 
-		<dependency>
-			<groupId>ucar</groupId>
-			<artifactId>netcdf</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>stax-api</artifactId>
-					<groupId>stax</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>log4j</artifactId>
-					<groupId>log4j</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>slf4j-log4j12</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>-->
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -448,22 +428,7 @@
 			    <artifactId>netcdfAll</artifactId>
 			    <version>4.6.11</version>
 			</dependency>
-
-	<!--		<dependency>
-				<groupId>ucar</groupId>
-				<artifactId>netcdf</artifactId>
-				<version>4.0.34</version>
-				<version>4.6.1</version>
-				<exclusions>
-					<exclusion>-->
-						<!-- In Java 1.6 it was not included in JRE, but in Java 1.7 it is 
-							so we exclude it -->
-					<!-- 	<groupId>stax</groupId>
-						<artifactId>stax-api</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
--->
+			
 			<!-- MOTU -->
 			<dependency>
 				<groupId>cls.motu</groupId>
@@ -480,8 +445,7 @@
 				<artifactId>motu-library-inventory</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			<!-- <dependency> <groupId>cls.motu</groupId> <artifactId>motu-library-misc</artifactId> 
-				<version>${project.version}</version> </dependency> -->
+			
 			<dependency>
 				<groupId>cls.motu</groupId>
 				<artifactId>motu-api-message</artifactId>
