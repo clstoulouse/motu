@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.web.bll.config;
+package fr.cls.atoll.motu.web.bll.config.updater;
 
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 

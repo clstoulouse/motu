@@ -6,9 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.StandardWatchEventKinds;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -17,7 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.web.bll.config.IConfigUpdatedListener;
+import fr.cls.atoll.motu.web.bll.config.updater.IConfigUpdatedListener;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.common.utils.PropertiesUtilities;
 import fr.cls.atoll.motu.web.dal.config.stdname.StdNameReader;
@@ -26,7 +24,6 @@ import fr.cls.atoll.motu.web.dal.config.stdname.xml.model.StandardNames;
 import fr.cls.atoll.motu.web.dal.config.version.DALVersionManager;
 import fr.cls.atoll.motu.web.dal.config.version.IDALVersionManager;
 import fr.cls.atoll.motu.web.dal.config.watcher.ConfigWatcher;
-import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ObjectFactory;
 
@@ -52,21 +49,16 @@ public class DALConfigManager implements IDALConfigManager {
     public static final String FILENAME_FORMAT_REQUESTID = "@@requestId@@";
     public static final String FILENAME_FORMAT_PRODUCT_ID = "@@productId@@";
 
-    private Map<String, ConfigService> configServiceMap;
     private IConfigUpdatedListener configUpdatedListener;
 
     public DALConfigManager() {
         dalVersionManager = new DALVersionManager();
-        configServiceMap = new HashMap<>();
     }
 
     /** {@inheritDoc} */
     @Override
     public void init() throws MotuException {
         motuConfig = loadMotuConfig(new File(getMotuConfigurationFolderPath(), "motuConfiguration.xml"), true);
-        for (ConfigService currentConfigService : motuConfig.getConfigService()) {
-            configServiceMap.put(currentConfigService.getName(), currentConfigService);
-        }
         standardNameList = loadStandardNameList();
     }
 
@@ -217,11 +209,6 @@ public class DALConfigManager implements IDALConfigManager {
     @Override
     public IDALVersionManager getVersionManager() {
         return dalVersionManager;
-    }
-
-    @Override
-    public Map<String, ConfigService> getConfigServiceMap() {
-        return configServiceMap;
     }
 
     @Override

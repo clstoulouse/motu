@@ -1,9 +1,9 @@
 package fr.cls.atoll.motu.web.bll.config;
 
 import java.util.List;
-import java.util.Map;
 
-import fr.cls.atoll.motu.web.bll.config.model.ConfigServiceUpdater;
+import fr.cls.atoll.motu.web.bll.config.updater.ConfigServiceUpdater;
+import fr.cls.atoll.motu.web.bll.config.updater.IConfigUpdatedListener;
 import fr.cls.atoll.motu.web.bll.config.version.BLLVersionManager;
 import fr.cls.atoll.motu.web.bll.config.version.IBLLVersionManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
@@ -118,10 +118,5 @@ public class BLLConfigManager implements IBLLConfigManager {
     @Override
     public IBLLVersionManager getVersionManager() {
         return bllVersionManager;
-    }
-
-    @Override
-    public Map<String, ConfigService> getConfigServiceMap() {
-        return dalConfigManager.getConfigServiceMap();
     }
 }

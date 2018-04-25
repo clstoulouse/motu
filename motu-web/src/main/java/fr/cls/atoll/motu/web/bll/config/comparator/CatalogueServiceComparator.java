@@ -1,4 +1,4 @@
-package fr.cls.atoll.motu.web.bll.config.model;
+package fr.cls.atoll.motu.web.bll.config.comparator;
 
 import java.util.Comparator;
 
