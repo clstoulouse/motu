@@ -2118,18 +2118,26 @@ public class NetCdfWriter {
     public void writeVariableData(Variable var, int[] origin, Array data) throws MotuException {
         if (data != null) {
             try {
-                long d1;
-                if (origin == null) {
-                    d1 = System.nanoTime();
-                    getNcfileWriter().write(var, data);
+                Variable varToWrite = getNcfileWriter().findVariable(var.getFullName());
+                if (varToWrite != null) {
+                    System.out.println("");
+                    long d1;
+                    if (origin == null) {
+                        d1 = System.nanoTime();
+                        getNcfileWriter().write(varToWrite, data);
+                    } else {
+                        int[] originOut = computeOriginOut(var, origin);
+                        d1 = System.nanoTime();
+                        getNcfileWriter().write(varToWrite, originOut, data);
+                    }
+                    getNcfileWriter().flush();
+                    long d2 = System.nanoTime();
+                    this.writingTime += (d2 - d1);
                 } else {
-                    int[] originOut = computeOriginOut(var, origin);
-                    d1 = System.nanoTime();
-                    getNcfileWriter().write(var, originOut, data);
+                    throw new MotuException(
+                            ErrorType.NETCDF_GENERATION,
+                            "Error in NetcdfWriter, unable to find variable named: " + var.getFullName());
                 }
-                getNcfileWriter().flush();
-                long d2 = System.nanoTime();
-                this.writingTime += (d2 - d1);
             } catch (Exception e) {
                 LOG.error("writeVariableData()", e);
                 throw new MotuException(ErrorType.NETCDF_GENERATION, "Error in NetcdfWriter writeVariableData", e);
