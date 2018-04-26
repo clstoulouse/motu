@@ -2120,7 +2120,6 @@ public class NetCdfWriter {
             try {
                 Variable varToWrite = getNcfileWriter().findVariable(var.getFullName());
                 if (varToWrite != null) {
-                    System.out.println("");
                     long d1;
                     if (origin == null) {
                         d1 = System.nanoTime();
