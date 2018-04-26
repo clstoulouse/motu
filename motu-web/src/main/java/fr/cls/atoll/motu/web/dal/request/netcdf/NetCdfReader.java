@@ -855,7 +855,7 @@ public class NetCdfReader {
                 if (ncfile instanceof NetcdfDataset) {
                     dsTmp = (NetcdfDataset) ncfile;
                 } else {
-                    dsTmp = new NetcdfDataset(ncfile, false);
+                    dsTmp = new NetcdfDataset(ncfile, enhanceVar);
                 }
 
                 // copy missing attributes
