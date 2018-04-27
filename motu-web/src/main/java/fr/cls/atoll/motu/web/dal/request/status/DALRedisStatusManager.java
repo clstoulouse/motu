@@ -49,6 +49,8 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
         RequestStatusRedisConfig newRedisCfg = newMotuConfig.getRedisConfig();
         if (newRedisCfg != null && redisConfig != null && !isRedisCfgEquals(redisConfig, newRedisCfg)) {
             init();
+            LOGGER.info("Redis configuration has been updated to: " + redisConfig.getHost() + ":" + redisConfig.getPort() + ", isRedisCluster:"
+                    + redisConfig.isRedisCluster() + ", prefix=" + redisConfig.getPrefix());
         }
     }
 
