@@ -5,6 +5,7 @@ import java.util.Set;
 
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
+import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 
 public interface IDALRequestStatusManager {
 
@@ -23,4 +24,6 @@ public interface IDALRequestStatusManager {
     boolean removeRequestStatus(String requestId);
 
     void setOutputFileName(String requestId, String fileName);
+
+    void onMotuConfigUpdate(MotuConfig newMotuConfig);
 }

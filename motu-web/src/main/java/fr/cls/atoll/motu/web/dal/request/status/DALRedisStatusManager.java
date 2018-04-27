@@ -12,6 +12,7 @@ import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.status.data.NormalStatus;
 import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
 import fr.cls.atoll.motu.web.dal.DALManager;
+import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.config.xml.model.RequestStatusRedisConfig;
 import fr.cls.atoll.motu.web.dal.request.status.jedis.MotuJedisClient;
 
@@ -38,14 +39,28 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
     private MotuJedisClient jedisClient;
     private String idPrefix;
     private String identManager;
+    private RequestStatusRedisConfig redisConfig;
 
     public DALRedisStatusManager() {
     }
 
     @Override
+    public void onMotuConfigUpdate(MotuConfig newMotuConfig) {
+        RequestStatusRedisConfig newRedisCfg = newMotuConfig.getRedisConfig();
+        if (newRedisCfg != null && redisConfig != null && !isRedisCfgEquals(redisConfig, newRedisCfg)) {
+            init();
+        }
+    }
+
+    private boolean isRedisCfgEquals(RequestStatusRedisConfig mc1, RequestStatusRedisConfig mc2) {
+        return mc1.getHost().equalsIgnoreCase(mc2.getHost()) || mc1.getPort() == mc2.getPort() || mc1.getPrefix().equalsIgnoreCase(mc2.getPrefix())
+                || mc1.isRedisCluster() == mc2.isRedisCluster();
+    }
+
+    @Override
     public void init() {
-        RequestStatusRedisConfig redisConfig = DALManager.getInstance().getConfigManager().getMotuConfig().getRedisConfig();
-        jedisClient = new MotuJedisClient(redisConfig.getIsRedisCluster(), redisConfig.getHost(), redisConfig.getPort());
+        redisConfig = DALManager.getInstance().getConfigManager().getMotuConfig().getRedisConfig();
+        jedisClient = new MotuJedisClient(redisConfig.isRedisCluster(), redisConfig.getHost(), redisConfig.getPort());
         idPrefix = redisConfig.getPrefix() + ":";
         identManager = redisConfig.getPrefix() + "-identManager";
         if (!jedisClient.exists(identManager)) {

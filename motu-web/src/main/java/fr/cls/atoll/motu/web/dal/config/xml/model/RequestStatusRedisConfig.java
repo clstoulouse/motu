@@ -139,7 +139,7 @@ public class RequestStatusRedisConfig {
      *     {@link Boolean }
      *     
      */
-    public boolean getIsRedisCluster() {
+    public boolean isRedisCluster() {
         if (isRedisCluster == null) {
             return false;
         } else {

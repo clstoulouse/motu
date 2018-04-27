@@ -8,6 +8,7 @@ import java.util.Set;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
+import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 
 public class DALLocalStatusManager implements IDALRequestStatusManager {
 
@@ -80,5 +81,10 @@ public class DALLocalStatusManager implements IDALRequestStatusManager {
                 ((DownloadStatus) requestStatus).setOutputFileName(fileName);
             }
         }
+    }
+
+    @Override
+    public void onMotuConfigUpdate(MotuConfig newMotuConfig) {
+        // nothing todo
     }
 }

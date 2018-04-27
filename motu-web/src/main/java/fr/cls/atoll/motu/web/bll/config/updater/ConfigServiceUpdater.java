@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.config.comparator.ConfigServiceComparator;
+import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 
@@ -33,6 +34,7 @@ public class ConfigServiceUpdater {
         }
 
         BLLManager.getInstance().getRequestManager().getQueueServerManager().onConfigUpdated(newMotuConfig.getQueueServerConfig());
+        DALManager.getInstance().getRequestManager().getDalRequestStatusManager().onMotuConfigUpdate(newMotuConfig);
     }
 
     private List<ConfigService> addOrUpdateNewConfigService(List<ConfigService> newConfigServiceList) {
