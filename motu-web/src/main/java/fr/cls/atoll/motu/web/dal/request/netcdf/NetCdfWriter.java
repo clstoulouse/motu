@@ -1771,11 +1771,7 @@ public class NetCdfWriter {
                 checkShape(shape, var);
 
                 Array data = read(var, origin, shape);
-                Variable vToWrite = getNcfileWriter().getNetcdfFile().findVariable(var.getFullNameEscaped());
-                if (vToWrite != null) {
-                    writeVariableData(vToWrite, origin, data);
-                }
-
+                writeVariableData(var, origin, data);
             }
             originOutOffsetHash.remove(var.getFullName());
 
@@ -2058,36 +2054,6 @@ public class NetCdfWriter {
     }
 
     /**
-     * Writes variable data in one gulp. It reads all the variable data in memory and writes them in the
-     * netcdf file.
-     *
-     * @param var variable to be written
-     * @throws MotuException the motu exception
-     */
-    protected void writeVariableInOneGulp(Variable var) throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("writeVariableInOneGulp() - entering");
-        }
-
-        Array data = null;
-        try {
-            // data = var.read();
-            data = read(var);
-
-        } catch (IOException e) {
-            LOG.error("writeVariableInOneGulp()", e);
-
-            throw new MotuException(ErrorType.NETCDF_GENERATION, "Error in NetcdfWriter writeVariableInOneGulp", e);
-        }
-
-        writeVariableData(var, data);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("writeVariableInOneGulp() - exiting");
-        }
-    }
-
-    /**
      * Writes variable data in one gulp. It writes data in the netcdf file.
      *
      * @param var variable to be written
@@ -2095,11 +2061,17 @@ public class NetCdfWriter {
      * @throws MotuException the motu exception
      */
     public void writeVariableData(Variable var, Array data) throws MotuException {
-
         try {
             if (data != null) {
-                getNcfileWriter().write(var, data);
-                getNcfileWriter().flush();
+                Variable varToWrite = getNcfileWriter().findVariable(var.getFullName());
+                if (varToWrite != null) {
+                    getNcfileWriter().write(varToWrite, data);
+                    getNcfileWriter().flush();
+                } else {
+                    throw new MotuException(
+                            ErrorType.NETCDF_GENERATION,
+                            "Error in NetcdfWriter, unable to find variable named: " + var.getFullName());
+                }
             }
         } catch (Exception e) {
             LOG.error("writeVariableData()", e);
