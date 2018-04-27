@@ -1343,7 +1343,7 @@ public class NetCdfWriter {
      * @throws MotuException the motu exception
      * @throws MotuNotImplementedException the motu not implemented exception
      */
-    public void writeVariablesToFile(String[] varAttrToRemove) throws MotuException, MotuNotImplementedException {
+    public void writeVariablesToFile(String[] varAttrToRemove) throws MotuException {
         double curAmountDataSize = 0.0;
         for (List<Variable> listVar : getVariables().values()) {
             if (!listVar.isEmpty()) {
@@ -1381,8 +1381,7 @@ public class NetCdfWriter {
      * @throws MotuExceedingCapacityException the motu exceeding capacity exception
      * @throws MotuNotImplementedException the motu not implemented exception
      */
-    public void writeVariableInNetCdfFileAndSetNetcdfFileInCreateMode(String[] varAttrToRemove)
-            throws MotuException, MotuExceedingCapacityException, MotuNotImplementedException {
+    public void writeVariableInNetCdfFileAndSetNetcdfFileInCreateMode(String[] varAttrToRemove) throws MotuException, MotuExceedingCapacityException {
         // Add variables to netCdf file.
         writeVariablesToFile(varAttrToRemove);
         checkAmountDataSizeThreshold();

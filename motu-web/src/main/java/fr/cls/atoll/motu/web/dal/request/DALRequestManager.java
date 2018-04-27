@@ -28,6 +28,7 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
 import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
+import fr.cls.atoll.motu.web.common.format.OutputFormat;
 import fr.cls.atoll.motu.web.common.utils.CoordinateUtils;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.config.DALConfigManager;
@@ -36,6 +37,7 @@ import fr.cls.atoll.motu.web.dal.request.cdo.CDOManager;
 import fr.cls.atoll.motu.web.dal.request.cdo.ICDOManager;
 import fr.cls.atoll.motu.web.dal.request.extractor.DALDatasetManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
+import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.request.status.DALLocalStatusManager;
 import fr.cls.atoll.motu.web.dal.request.status.DALRedisStatusManager;
 import fr.cls.atoll.motu.web.dal.request.status.IDALRequestStatusManager;
@@ -45,10 +47,11 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis2D;
 
 /**
  * <br>
@@ -143,67 +146,84 @@ public class DALRequestManager implements IDALRequestManager {
         double leftLon = CoordinateUtils.getLongitudeJustLowerThanLongitudeMax(CoordinateUtils
                 .getLongitudeGreaterOrEqualsThanLongitudeMin(latlon.getLowerLeftLon(), axisXMin), axisXMax);
         double rightLon = CoordinateUtils.getLongitudeGreaterOrEqualsThanLongitudeMin(latlon.getLowerRightLon(), axisXMin);
-        double xInc = ((CoordinateAxis1D) rds_.getRequestProduct().getProduct().getProductMetaData().getCoordinateAxes(AxisType.Lon)).getIncrement();
-        if (leftLon < rightLon) {
+        CoordinateAxis cAxisLon = rds_.getRequestProduct().getProduct().getProductMetaData().getCoordinateAxes(AxisType.Lon);
+        double xInc = 0;
+        if (cAxisLon instanceof CoordinateAxis1D) {
+            xInc = ((CoordinateAxis1D) cAxisLon).getIncrement();
+            if (leftLon < rightLon) {
+                runUniqRqt(ncss,
+                           fname,
+                           extractDirPath,
+                           rds_,
+                           new ExtractCriteriaLatLon(latlon.getLatLonRect().getLatMin(), leftLon, latlon.getLatLonRect().getLatMax(), rightLon));
+                // Also compare with Math.abs and xInc, just to avoid using BigDecimal to avoid double
+                // precision
+            } else if ((leftLon == rightLon && leftLonRequested == rightLonRequested)
+                    || (Math.abs(rightLon - leftLon) < xInc && Math.abs(leftLonRequested - rightLonRequested) < xInc)) {
+                runUniqRqt(ncss,
+                           fname,
+                           extractDirPath,
+                           rds_,
+                           new ExtractCriteriaLatLon(
+                                   latlon.getLatLonRect().getLatMin(),
+                                   leftLon,
+                                   latlon.getLatLonRect().getLatMax(),
+                                   rightLon + xInc));
+                fixSubsetterIssueToKeepOnlyOneLongitude(extractDirPath + "/" + fname);
+            } else {
+                if (leftLon <= axisXMax) {
+                    // [axisXMin] rightLon]] [[leftLon [axisXMax]
+                    runWithSeveralRqt(ncss, fname, extractDirPath, rds_, rightLon);
+                } else {
+                    // Here we cut the easter boundary (axisXMax)
+                    // [axisXMin] rightLon]] [axisXMax] [[leftLon
+                    runUniqRqt(ncss,
+                               fname,
+                               extractDirPath,
+                               rds_,
+                               new ExtractCriteriaLatLon(latlon.getLowerLeftLat(), leftLon, latlon.getUpperRightLat(), axisXMax));
+                }
+
+            }
+        } else if (cAxisLon instanceof CoordinateAxis2D) {
+            // Curvilinear projection, mean lat and lon axis depends on XC and YC
             runUniqRqt(ncss,
                        fname,
                        extractDirPath,
                        rds_,
                        new ExtractCriteriaLatLon(latlon.getLatLonRect().getLatMin(), leftLon, latlon.getLatLonRect().getLatMax(), rightLon));
-            // Also compare with Math.abs and xInc, just to avoid using BigDecimal to avoid double precision
-        } else if ((leftLon == rightLon && leftLonRequested == rightLonRequested)
-                || (Math.abs(rightLon - leftLon) < xInc && Math.abs(leftLonRequested - rightLonRequested) < xInc)) {
-            runUniqRqt(ncss,
-                       fname,
-                       extractDirPath,
-                       rds_,
-                       new ExtractCriteriaLatLon(latlon.getLatLonRect().getLatMin(), leftLon, latlon.getLatLonRect().getLatMax(), rightLon + xInc));
-            fixSubsetterIssueToKeepOnlyOneLongitude(extractDirPath + "/" + fname);
-        } else {
-            if (leftLon <= axisXMax) {
-                // [axisXMin] rightLon]] [[leftLon [axisXMax]
-                runWithSeveralRqt(ncss, fname, extractDirPath, rds_, rightLon);
-            } else {
-                // Here we cut the easter boundary (axisXMax)
-                // [axisXMin] rightLon]] [axisXMax] [[leftLon
-                runUniqRqt(ncss,
-                           fname,
-                           extractDirPath,
-                           rds_,
-                           new ExtractCriteriaLatLon(latlon.getLowerLeftLat(), leftLon, latlon.getUpperRightLat(), axisXMax));
-            }
-
         }
+
     }
 
-    private void fixSubsetterIssueToKeepOnlyOneLongitude(String ncFilePath_) throws IOException {
+    private void fixSubsetterIssueToKeepOnlyOneLongitude(String ncFilePath_) throws IOException, MotuException {
         // Hack: Here 2 longitudes are returned whereas only one longitude is asked
         // In order to return one point, nc file has to be updated
         String ncFilePathOrig = ncFilePath_ + "-orig.nc";
         Files.move(Paths.get(ncFilePath_), Paths.get(ncFilePathOrig), StandardCopyOption.REPLACE_EXISTING);
 
         NetcdfFile ncFileOrig = NetcdfFile.open(ncFilePathOrig);
-        NetcdfFileWriteable writer = NetcdfFileWriteable.createNew(ncFilePath_);
+        NetCdfWriter ncW = new NetCdfWriter(ncFilePath_, OutputFormat.NETCDF);
 
         for (Attribute att : ncFileOrig.getGlobalAttributes()) {
-            writer.addGlobalAttribute(att);
+            ncW.writeGlobalAttribute(att);
         }
 
         ucar.nc2.Dimension dLongDest = null;
         ucar.nc2.Dimension dLongOrig = null;
         for (ucar.nc2.Dimension dOrig : ncFileOrig.getDimensions()) {
-            String dimensionNameOrig = dOrig.getName();
+            String dimensionNameOrig = dOrig.getFullName();
             if (dimensionNameOrig.contains("lon")) {
                 if (dOrig.getLength() > 1) {
                     dLongOrig = dOrig;
                     ucar.nc2.Dimension d2 = new ucar.nc2.Dimension(dimensionNameOrig, 1);
                     dLongDest = d2;
-                    writer.addDimension(null, d2);
+                    ncW.putDimension(d2);
                 } else {
-                    writer.addDimension(null, dOrig);
+                    ncW.putDimension(dOrig);
                 }
             } else {
-                writer.addDimension(null, dOrig);
+                ncW.putDimension(dOrig);
             }
         }
 
@@ -219,10 +239,14 @@ public class DALRequestManager implements IDALRequestManager {
                 vDest.getDimension(longIndex).setLength(1);
                 vDest.resetShape();
             }
-            writer.addVariable(null, vDest);
+            ncW.putVariable(vDest);
         }
 
-        writer.create();
+        try {
+            ncW.writeVariableInNetCdfFileAndSetNetcdfFileInCreateMode(null);
+        } catch (MotuExceedingCapacityException e1) {
+            LOGGER.error("Trying to write 1 point", e1);
+        }
         for (Variable vOrig : ncFileOrig.getVariables()) {
             try {
                 Array ar = vOrig.read();
@@ -239,13 +263,13 @@ public class DALRequestManager implements IDALRequestManager {
                     }
                     ar = vOrig.read(null, arShape);
                 }
-                writer.write(vOrig.getName(), ar);
+                ncW.writeVariableData(vOrig, ar);
             } catch (InvalidRangeException e) {
                 LOGGER.error("Fixing one point issue: Error while writing", e);
             }
         }
-        writer.finish();
-        writer.close();
+        ncW.getNcfileWriter().flush();
+        ncW.getNcfileWriter().close();
         ncFileOrig.close();
         Files.delete(Paths.get(ncFilePathOrig));
     }
