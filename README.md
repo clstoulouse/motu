@@ -962,7 +962,7 @@ If you have not this file, you can extract it (set the good version motu-web-X.Y
     
   
 If you have this file from a version anterior to Motu v3.x, you can reuse it. In order to improve global performance, you have to upgrade some fields:  
-* [ncss](#BSmotuConfigNCSS) Set it to "enabled" to use a faster protocol named subsetter rather than OpenDap to communicate with TDS server.  
+* [ncss](#BSmotuConfigNCSS) Set it to "enabled" to use a faster protocol named subsetter rather than OpenDap to communicate with TDS server. ncss must be enabled only with regular grid. The datasets using curvilinear coordinates (like ORCA grid) can not be published with ncss. Thus, ncss option must be set to disable or empty.  
 * [httpBaseRef](#motuConfig-httpBaseRef) shall be set to the ULR of the central repository to display the new theme  
 * [ExtractionFilePatterns](#BSmotuConfigExtractionFilePatterns) to give a custom name to the downloaded dataset file  
   
