@@ -75,6 +75,7 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
@@ -300,7 +301,7 @@ public class NetCdfReader {
     /** The is open with enhance var. */
     protected boolean isOpenWithEnhanceVar = true;
 
-    private final Map<String, Variable> orignalVariables = new HashMap<String, Variable>();
+    private final Map<String, Variable> orignalVariables;
 
     /** Does Service needs CAS authentication to access catalog resources and data. */
     protected boolean casAuthentication = false;
@@ -311,6 +312,7 @@ public class NetCdfReader {
      */
     public NetCdfReader() {
         init();
+        orignalVariables = new HashMap<>();
     }
 
     /**
@@ -319,7 +321,7 @@ public class NetCdfReader {
      * @param locationData NetCDF file name or Opendap location data (URL) to read.
      */
     public NetCdfReader(String locationData) {
-        init();
+        this();
         this.locationData = locationData;
     }
 
@@ -852,14 +854,20 @@ public class NetCdfReader {
 
             try (NetcdfFile ncfile = NetcdfDataset.acquireFile(location, cancelTask)) {
                 NetcdfDataset dsTmp;
+                List<Variable> vList;
                 if (ncfile instanceof NetcdfDataset) {
                     dsTmp = (NetcdfDataset) ncfile;
+                    vList = dsTmp.getVariables();
+                } else if (ncfile instanceof DODSNetcdfFile) {
+                    dsTmp = new NetcdfDataset(ncfile, enhanceVar);
+                    vList = ((DODSNetcdfFile) ncfile).getVariables();
                 } else {
                     dsTmp = new NetcdfDataset(ncfile, enhanceVar);
+                    vList = dsTmp.getVariables();
                 }
 
                 // copy missing attributes
-                for (Variable v : dsTmp.getVariables()) {
+                for (Variable v : vList) {
                     Variable vDS = ds.findVariable(v.getFullNameEscaped());
                     if (vDS != null) {
                         for (Attribute a : v.getAttributes()) {
@@ -868,12 +876,11 @@ public class NetCdfReader {
                             }
                         }
                     }
+                    orignalVariables.put(vDS.getFullName(), vDS);
                 }
             }
         } else {
-
             NetcdfFile ncfile = NetcdfDataset.acquireFile(location, cancelTask);
-
             if (ncfile instanceof NetcdfDataset) {
                 ds = (NetcdfDataset) ncfile;
                 ucar.nc2.dataset.CoordSysBuilder.factory(ds, cancelTask);

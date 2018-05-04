@@ -982,6 +982,7 @@ public class NetCdfWriter {
             setAmountDataSize(getAmountDataSize() + NetCdfWriter.countVarSize(v));
             checkAmountDataSizeThreshold();
 
+            copyAttributes(originalVariables.get(v.getFullName()), v);
             putVariables(v.getFullName(), v);
             // Removes valid_min and valid_max attribute from the variables :
             // because their values can't be modified after file is created.
@@ -1008,7 +1009,7 @@ public class NetCdfWriter {
                 AxisType axisType = axis.getAxisType();
                 List<Variable> listAxis = mapAxis.get(axisType);
                 if (listAxis == null) {
-                    listAxis = new ArrayList<Variable>();
+                    listAxis = new ArrayList<>();
                     listAxis.add(axis);
                 } else if (axisType == AxisType.Lon) {
                     listAxis.add(axis);
