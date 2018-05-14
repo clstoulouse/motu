@@ -38,7 +38,7 @@ public abstract class ConfigWatcher {
      */
     public void startWatching() throws IOException {
         Path dir = Paths.get(fileToWatch.getParentFile().getAbsolutePath());
-        WatchService watcher = FileSystems.getDefault().newWatchService();
+        WatchService watcher = FileSystems.getFileSystem(dir.toUri()).newWatchService();
         try {
             dir.register(watcher, watchEvents);
         } catch (IOException x) {
