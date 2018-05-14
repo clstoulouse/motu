@@ -2,6 +2,8 @@ package fr.cls.atoll.motu.web.dal.config.watcher;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,7 +40,15 @@ public abstract class ConfigWatcher {
      */
     public void startWatching() throws IOException {
         Path dir = Paths.get(fileToWatch.getParentFile().getAbsolutePath());
-        WatchService watcher = FileSystems.getFileSystem(dir.toUri()).newWatchService();
+        URI uri = dir.toFile().toURI();
+        LOGGER.info("ConfigWatcher: Start watching: " + dir.toString() + ", uri=" + uri);
+        FileSystem fs = null;
+        try {
+            fs = FileSystems.getFileSystem(uri);
+        } catch (java.lang.IllegalArgumentException e) {
+            fs = FileSystems.getFileSystem(new File("/").toURI());
+        }
+        WatchService watcher = fs.newWatchService();
         try {
             dir.register(watcher, watchEvents, com.sun.nio.file.SensitivityWatchEventModifier.LOW);
         } catch (IOException x) {
