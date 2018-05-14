@@ -40,7 +40,7 @@ public abstract class ConfigWatcher {
         Path dir = Paths.get(fileToWatch.getParentFile().getAbsolutePath());
         WatchService watcher = FileSystems.getFileSystem(dir.toUri()).newWatchService();
         try {
-            dir.register(watcher, watchEvents);
+            dir.register(watcher, watchEvents, com.sun.nio.file.SensitivityWatchEventModifier.LOW);
         } catch (IOException x) {
             LOGGER.error("Error during watcher registration for file: " + fileToWatch.getAbsolutePath(), x);
         }
