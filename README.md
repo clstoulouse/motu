@@ -1002,6 +1002,7 @@ For example: /opt/cmems-cis/motu/data/public/download
 It is recommended to set this folder on an hard drive with very good performances in write mode.
 It is recommended to have a dedicated partition disk to avoid freezing Motu if the hard drive is full.
 By default value is $MOTU_HOME/data/public/download, this folder can be a symbolic link to another folder.  
+String with format ${var} will be substituted with Java property variables. @See System.getProperty(var)  
 
 ##### <a name="motuConfig-downloadHttpUrl">downloadHttpUrl</a>
 Http URL used to download files stored in the "extractionPath" described above. It is used to allow users to download the result data files.  
