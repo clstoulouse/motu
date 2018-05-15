@@ -1,0 +1,1 @@
+This project is only used to publish motu-products-distrib.tar.gz on Nexus.
