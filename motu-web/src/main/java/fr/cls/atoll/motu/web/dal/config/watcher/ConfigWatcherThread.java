@@ -31,6 +31,7 @@ public abstract class ConfigWatcherThread extends Thread {
 
             @Override
             protected void onNewFileEvent(File filename) {
+                LOGGER.info("[ConfigWatcher] Event on file: " + filename);
                 onMotuConfigurationUpdated(filename);
             }
 
