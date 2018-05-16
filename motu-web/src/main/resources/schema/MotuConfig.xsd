@@ -626,6 +626,16 @@
 
 			<xs:attribute name="refreshCacheToken" type="xs:string" default="a7de6d69afa2111e7fa7038a0e89f7e2"/>
 
+			<xs:attribute name="motuConfigReload" default="inotify">
+				<xs:annotation>
+					<xs:documentation>
+						Configure how motu configuration is reloaded.
+						Arguments are only 'inotify' or an 'integer in seconds'.
+						'inotify': reload as soon as the file is updated (works only on local file system, not for NFS file system).
+						'integer in seconds': reload each X second the configuration in 'polling' mode. If this integer is equals or lower than 0, it disables the refresh of the configuration.
+						</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 
 	</xs:element>

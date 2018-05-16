@@ -13,8 +13,16 @@ import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
+import org.apache.commons.vfs2.FileChangeEvent;
+import org.apache.commons.vfs2.FileListener;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemManager;
+import org.apache.commons.vfs2.VFS;
+import org.apache.commons.vfs2.impl.DefaultFileMonitor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import fr.cls.atoll.motu.web.bll.BLLManager;
 
 public abstract class ConfigWatcher {
 
@@ -39,6 +47,58 @@ public abstract class ConfigWatcher {
      * @throws IOException
      */
     public void startWatching() throws IOException {
+        String reloadOption = BLLManager.getInstance().getConfigManager().getMotuConfig().getMotuConfigReload();
+        if (reloadOption.equalsIgnoreCase("inotify")) {
+            LOGGER.info("ConfigWatcher: Start watching with Inotify");
+            startWatchingWithInotify();
+        } else {
+            try {
+                int reloadPeriodInSeconds = Integer.parseInt(reloadOption);
+                if (reloadPeriodInSeconds <= 0) {
+                    LOGGER.info("ConfigWatcher: Service is disabled (MotuConfigReload=" + reloadPeriodInSeconds + ")");
+                } else {
+                    LOGGER.info("ConfigWatcher: Start watching, polling each " + reloadPeriodInSeconds + "sec");
+                    startWatchingWithPolling(reloadPeriodInSeconds);
+                }
+            } catch (NumberFormatException e) {
+                LOGGER.error("ConfigWatcher: Bad MotuConfigReload value", e);
+            }
+        }
+
+    }
+
+    public void startWatchingWithPolling(int reloadPeriodInSeconds) throws IOException {
+        Path dir = Paths.get(fileToWatch.getParentFile().getAbsolutePath());
+        URI uri = dir.toFile().toURI();
+        LOGGER.info("ConfigWatcher: Start watching: " + dir.toString() + ", uri=" + uri);
+
+        FileSystemManager fsManager = VFS.getManager();
+        FileObject listendir = fsManager.resolveFile(uri.toURL());
+        DefaultFileMonitor fm = new DefaultFileMonitor(new FileListener() {
+
+            @Override
+            public void fileChanged(FileChangeEvent arg0) throws Exception {
+                if (arg0.getFile().getURL().getFile().equals(fileToWatch.getName())) {
+                    onNewFileEvent(fileToWatch);
+                }
+            }
+
+            @Override
+            public void fileCreated(FileChangeEvent arg0) throws Exception {
+            }
+
+            @Override
+            public void fileDeleted(FileChangeEvent arg0) throws Exception {
+            }
+
+        });
+        fm.setRecursive(false);
+        fm.addFile(listendir);
+        fm.setDelay(reloadPeriodInSeconds);
+        fm.start();
+    }
+
+    public void startWatchingWithInotify() throws IOException {
         Path dir = Paths.get(fileToWatch.getParentFile().getAbsolutePath());
         URI uri = dir.toFile().toURI();
         LOGGER.info("ConfigWatcher: Start watching: " + dir.toString() + ", uri=" + uri);

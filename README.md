@@ -1127,6 +1127,13 @@ Format of the file name result of a download request.
 
 If this attribute is not present, default value is: "@@productId@@_@@requestId@@.nc"
 
+##### motuConfigReload  
+Configure how motu configuration is reloaded.  
+Arguments are only 'inotify' or an 'integer in seconds'. 'inotify' is the default value.  
+* __'inotify'__: reload as soon as the file is updated (works only on local file system, not for NFS file system).  
+* __'integer in seconds'__: reload each X second the configuration in 'polling' mode. If this integer is equals or lower than 0, it disables the refresh of the configuration.  
+
+
 #### <a name="BSconfigService">Attributes defined in configService node</a>  
 
 ##### <a name="BSconfigServiceName">name</a>  

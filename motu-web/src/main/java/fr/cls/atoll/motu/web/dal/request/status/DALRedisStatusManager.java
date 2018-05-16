@@ -50,19 +50,19 @@ public class DALRedisStatusManager implements IDALRequestStatusManager {
         if (newRedisCfg != null && redisConfig != null && !isRedisCfgEquals(redisConfig, newRedisCfg)) {
             init();
             LOGGER.info("Redis configuration has been updated to: " + redisConfig.getHost() + ":" + redisConfig.getPort() + ", isRedisCluster:"
-                    + redisConfig.isRedisCluster() + ", prefix=" + redisConfig.getPrefix());
+                    + redisConfig.getIsRedisCluster() + ", prefix=" + redisConfig.getPrefix());
         }
     }
 
     private boolean isRedisCfgEquals(RequestStatusRedisConfig mc1, RequestStatusRedisConfig mc2) {
         return mc1.getHost().equalsIgnoreCase(mc2.getHost()) || mc1.getPort() == mc2.getPort() || mc1.getPrefix().equalsIgnoreCase(mc2.getPrefix())
-                || mc1.isRedisCluster() == mc2.isRedisCluster();
+                || mc1.getIsRedisCluster() == mc2.getIsRedisCluster();
     }
 
     @Override
     public void init() {
         redisConfig = DALManager.getInstance().getConfigManager().getMotuConfig().getRedisConfig();
-        jedisClient = new MotuJedisClient(redisConfig.isRedisCluster(), redisConfig.getHost(), redisConfig.getPort());
+        jedisClient = new MotuJedisClient(redisConfig.getIsRedisCluster(), redisConfig.getHost(), redisConfig.getPort());
         idPrefix = redisConfig.getPrefix() + ":";
         identManager = redisConfig.getPrefix() + "-identManager";
         if (!jedisClient.exists(identManager)) {
