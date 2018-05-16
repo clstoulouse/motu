@@ -58,7 +58,9 @@ public class DALConfigManager implements IDALConfigManager {
     @Override
     public void init() throws MotuException {
         if (motuConfig == null) {
-            motuConfig = loadMotuConfig(new File(getMotuConfigurationFolderPath(), "motuConfiguration.xml"), true);
+            File fMotuConfig = new File(getMotuConfigurationFolderPath(), "motuConfiguration.xml");
+            motuConfig = loadMotuConfig(fMotuConfig, false);
+            startConfigWatcherThread(fMotuConfig);
         }
         if (standardNameList == null) {
             standardNameList = loadStandardNameList();
@@ -109,20 +111,12 @@ public class DALConfigManager implements IDALConfigManager {
         return System.getProperty("motu-config-dir", null);
     }
 
-    private MotuConfig loadMotuConfig(final File fMotuConfig, boolean initConfigWatcher) throws MotuException {
+    private MotuConfig loadMotuConfig(File fMotuConfig, boolean initConfigWatcher) throws MotuException {
         MotuConfig curMotuConfig = null;
         InputStream in = null;
         try {
             if (initConfigWatcher) {
-                ConfigWatcherThread t = new ConfigWatcherThread(fMotuConfig) {
-
-                    @Override
-                    public void onMotuConfigurationUpdated(File configFile) {
-                        DALConfigManager.this.onMotuConfigurationUpdated(configFile);
-                    }
-
-                };
-                t.start();
+                startConfigWatcherThread(fMotuConfig);
             }
             in = getMotuConfigInputStream(fMotuConfig);
             curMotuConfig = parseMotuConfig(in);
@@ -139,6 +133,18 @@ public class DALConfigManager implements IDALConfigManager {
 
         }
         return curMotuConfig;
+    }
+
+    private void startConfigWatcherThread(File fMotuConfig) {
+        ConfigWatcherThread t = new ConfigWatcherThread(fMotuConfig) {
+
+            @Override
+            public void onMotuConfigurationUpdated(File configFile) {
+                DALConfigManager.this.onMotuConfigurationUpdated(configFile);
+            }
+
+        };
+        t.start();
     }
 
     private void onMotuConfigurationUpdated(File configFile) {
