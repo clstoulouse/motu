@@ -78,9 +78,8 @@ public abstract class ConfigWatcher {
 
             @Override
             public void fileChanged(FileChangeEvent arg0) throws Exception {
-                if (arg0.getFile().getURL().getFile().equals(fileToWatch.getName())) {
-                    onNewFileEvent(fileToWatch);
-                }
+                File f = new File(arg0.getFile().getPublicURIString());
+                onFileChanged(f);
             }
 
             @Override
@@ -141,9 +140,7 @@ public abstract class ConfigWatcher {
                 WatchEvent<Path> ev = (WatchEvent<Path>) event;
                 Path filename = ev.context();
 
-                if (filename.toFile().getName().equals(fileToWatch.getName())) {
-                    onNewFileEvent(fileToWatch);
-                }
+                onFileChanged(filename.toFile());
             }
 
             // Reset the key -- this step is critical if you want to
@@ -153,6 +150,12 @@ public abstract class ConfigWatcher {
             if (!valid) {
                 break;
             }
+        }
+    }
+
+    private void onFileChanged(File f) {
+        if (f.getName().equals(fileToWatch.getName())) {
+            onNewFileEvent(f);
         }
     }
 

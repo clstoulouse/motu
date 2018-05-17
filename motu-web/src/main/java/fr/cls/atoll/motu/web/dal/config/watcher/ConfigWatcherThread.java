@@ -27,7 +27,7 @@ public abstract class ConfigWatcherThread extends Thread {
     }
 
     private void initAndStartConfigWatcher(File fMotuConfig_) throws IOException {
-        ConfigWatcher wc = new ConfigWatcher(fMotuConfig_, StandardWatchEventKinds.ENTRY_MODIFY) {
+        ConfigWatcher configW = new ConfigWatcher(fMotuConfig_, StandardWatchEventKinds.ENTRY_MODIFY) {
 
             @Override
             protected void onNewFileEvent(File filename) {
@@ -36,7 +36,7 @@ public abstract class ConfigWatcherThread extends Thread {
             }
 
         };
-        wc.startWatching();
+        configW.startWatching();
     }
 
     public abstract void onMotuConfigurationUpdated(File configFile);
