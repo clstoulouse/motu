@@ -3,14 +3,15 @@
 	All documentation is described in the file README.md#ConfigurationBusiness
 -->
 <motuConfig defaultService="aviso" proxyLogin=""
-	proxyPwd="" useAuthentication="false" dataBlockSize="512000"
-	maxSizePerFile="1024"
-	extractionPath="c:/temp/motu-extract"
-	downloadHttpUrl="http://atoll-qt2.cls.fr:31080/motu-extract"
-	httpDocumentRoot="http://atoll-qt2.cls.fr"
-	cleanExtractionFileInterval="10"
-	cleanRequestInterval="60"
-	runGCInterval="10">
+  proxyPwd="" useAuthentication="false" dataBlockSize="512000"
+  maxSizePerFile="1024"
+  extractionPath="c:/temp/motu-extract"
+  downloadHttpUrl="http://atoll-qt2.cls.fr:31080/motu-extract"
+  httpDocumentRoot="http://atoll-qt2.cls.fr"
+  cleanExtractionFileInterval="10"
+  cleanRequestInterval="60"
+  runGCInterval="10"
+  motuConfigReload="0">
 	
 	<!--=====================   CATSAT FTP ===================-->
 	<configService defaultLanguage="UK" description="Ftp Catsat"
