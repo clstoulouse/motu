@@ -399,6 +399,25 @@ public class NetCdfSubsetService {
         }
     }
 
+    public boolean hasVariablesWithDepthDim() {
+        Set<String> depthVariable = new HashSet<>();
+        Set<String> noDepthVariable = new HashSet<>();
+
+        CoordinateAxis heigthCoordAxis = productMetadata.getCoordinateAxes().get(AxisType.Height);
+
+        for (String currentVariableName : varSubset) {
+            ParameterMetaData currentVariable = productMetadata.findVariable(currentVariableName);
+            List<Dimension> currentVarDimensionList = currentVariable.getDimensions();
+            for (Dimension currentDimension : currentVarDimensionList) {
+                if (currentDimension.getName().equals(heigthCoordAxis.getName())) {
+                    depthVariable.add(currentVariableName);
+                }
+            }
+        }
+
+        return depthVariable.size() != 0;
+    }
+
     private int computeNumberOfDigit(int maxValue) {
         int numberOfDigit = 1;
         int currentMaxValue = maxValue;

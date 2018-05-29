@@ -382,7 +382,7 @@ public class DALRequestManager implements IDALRequestManager {
 
             // Z-Range selection update
             int zlev = zRange.length();
-            if (zlev == 1 || zlev == alev) {
+            if ((zlev == 1 && !ncss.hasVariablesWithDepthDim()) || zlev == alev) {
                 ncss.unitRequestNCSS(ncss.getVariablesSubset()); // 1-level or ALL levels (can be done with
                                                                  // TDS-NCSS)
             } else {
