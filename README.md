@@ -211,7 +211,7 @@ requests that require CDO to be processed are in sequence and only one is proces
 ### <a name="ArchiAlgoDownloading1Point">Downloading 1 point</a>  
 Schema below displays a subset of a dataset variable as an array of 2 longitudes and 2 latitudes. At each intersection, we have got 1 real value (10, 11, 12, 13) as defined in the gridded data.  
 But which result value is returned by Motu when the request target a location between those longitudes and latitudes ?   
-As we can see below, 4 areas are display and the nearest value from the requested location is returned.
+As we can see below, 4 areas are displayed and the nearest value from the requested location is returned.
 
 ![Downloading 1 point](./motu-parent/src/doc/downwloading1point.png "Motu algorithm: Downloading 1 point")
 	 

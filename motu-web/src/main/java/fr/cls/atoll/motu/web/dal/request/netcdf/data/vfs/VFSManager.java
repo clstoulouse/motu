@@ -128,15 +128,7 @@ public class VFSManager {
      * @throws MotuException the motu exception
      */
     public void open() throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("open() - entering");
-        }
-
         open("", "", "", "");
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("open() - exiting");
-        }
     }
 
     /**
@@ -149,10 +141,6 @@ public class VFSManager {
      * @throws MotuException the motu exception
      */
     public void open(String user, String pwd, String scheme, String host) throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("open(String, String, String) - entering");
-        }
-
         if (isOpened()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("open(String, String, String) - exiting");
@@ -184,10 +172,6 @@ public class VFSManager {
 
         setUserInfo(user, pwd);
         setSchemeOpts(scheme, host);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("open(String, String, String) - exiting");
-        }
     }
 
     /**
@@ -482,17 +466,9 @@ public class VFSManager {
      * Close.
      */
     public void close() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("close() - entering");
-        }
-
         if (isOpened()) {
             standardFileSystemManager.close();
             open = false;
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("close() - exiting");
         }
     }
 
