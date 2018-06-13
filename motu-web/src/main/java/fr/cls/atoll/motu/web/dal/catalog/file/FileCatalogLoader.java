@@ -373,7 +373,10 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
      * @throws MotuException the motu exception
      */
     public static FileObject resolveFile(String uri) throws MotuException {
-        return new VFSManager().resolveFile(uri);
+        VFSManager v = new VFSManager();
+        FileObject fo = v.resolveFile(uri);
+        v.close();
+        return fo; // new VFSManager().resolveFile(uri);
     }
 
     /**
@@ -521,30 +524,34 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
      * @throws MotuException the motu exception
      */
     public static List<String> validateCatalogOLA(String xmlUri) throws MotuException {
+        try (InputStream inSchema = getUriAsInputStream(CATALOG_CONFIG_SCHEMA)) {
+            if (inSchema == null) {
+                throw new MotuException(
+                        ErrorType.LOADING_CATALOG,
+                        String.format("ERROR in Organiser.validateInventoryOLA - CatalogOLA  schema ('%s') not found:", CATALOG_CONFIG_SCHEMA));
+            }
 
-        InputStream inSchema = getUriAsInputStream(CATALOG_CONFIG_SCHEMA);
-        if (inSchema == null) {
-            throw new MotuException(
-                    ErrorType.LOADING_CATALOG,
-                    String.format("ERROR in Organiser.validateInventoryOLA - CatalogOLA  schema ('%s') not found:", CATALOG_CONFIG_SCHEMA));
+            try (InputStream inXml = getUriAsInputStream(xmlUri)) {
+
+                if (inXml == null) {
+                    throw new MotuException(
+                            ErrorType.LOADING_CATALOG,
+                            String.format("ERROR in Organiser.validateInventoryOLA - CatalogOLA  xml ('%s') not found:", xmlUri));
+                }
+
+                XMLErrorHandler errorHandler = XMLUtils.validateXML(inSchema, inXml);
+                if (errorHandler == null) {
+                    throw new MotuException(
+                            ErrorType.LOADING_CATALOG,
+                            "ERROR in Organiser.validateInventoryOLA - CatalogOLA schema : XMLErrorHandler is null");
+                }
+                return errorHandler.getErrors();
+            } catch (IOException e) {
+                throw new MotuException(ErrorType.SYSTEM, e);
+            }
+        } catch (IOException e1) {
+            throw new MotuException(ErrorType.SYSTEM, e1);
         }
-
-        InputStream inXml = getUriAsInputStream(xmlUri);
-
-        if (inXml == null) {
-            throw new MotuException(
-                    ErrorType.LOADING_CATALOG,
-                    String.format("ERROR in Organiser.validateInventoryOLA - CatalogOLA  xml ('%s') not found:", xmlUri));
-        }
-
-        XMLErrorHandler errorHandler = XMLUtils.validateXML(inSchema, inXml);
-
-        if (errorHandler == null) {
-            throw new MotuException(
-                    ErrorType.LOADING_CATALOG,
-                    "ERROR in Organiser.validateInventoryOLA - CatalogOLA schema : XMLErrorHandler is null");
-        }
-        return errorHandler.getErrors();
 
     }
 

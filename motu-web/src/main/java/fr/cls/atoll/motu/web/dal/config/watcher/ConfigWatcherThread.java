@@ -14,6 +14,7 @@ public abstract class ConfigWatcherThread extends Thread {
 
     public ConfigWatcherThread(File fMotuConfig_) {
         super("ConfigService watcher:" + fMotuConfig_.getName());
+        setDaemon(true);
         fMotuConfig = fMotuConfig_;
     }
 

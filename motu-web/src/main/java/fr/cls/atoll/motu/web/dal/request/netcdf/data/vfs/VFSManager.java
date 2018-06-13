@@ -86,13 +86,6 @@ public class VFSManager {
      * @return the opts
      */
     public FileSystemOptions getOpts() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getOpts() - entering");
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getOpts() - exiting");
-        }
         return opts;
     }
 
@@ -102,13 +95,6 @@ public class VFSManager {
      * @return the standard file system manager
      */
     public StandardFileSystemManager getStandardFileSystemManager() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getStandardFileSystemManager() - entering");
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getStandardFileSystemManager() - exiting");
-        }
         return standardFileSystemManager;
     }
 
@@ -121,15 +107,7 @@ public class VFSManager {
      * @param opts the new opts
      */
     public void setOpts(FileSystemOptions opts) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("setOpts(FileSystemOptions) - entering");
-        }
-
         this.opts = opts;
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("setOpts(FileSystemOptions) - exiting");
-        }
     }
 
     /** The open. */
@@ -141,13 +119,6 @@ public class VFSManager {
      * @return true, if is opened
      */
     public boolean isOpened() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isOpened() - entering");
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("isOpened() - exiting");
-        }
         return open;
     }
 
@@ -157,15 +128,7 @@ public class VFSManager {
      * @throws MotuException the motu exception
      */
     public void open() throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("open() - entering");
-        }
-
         open("", "", "", "");
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("open() - exiting");
-        }
     }
 
     /**
@@ -178,10 +141,6 @@ public class VFSManager {
      * @throws MotuException the motu exception
      */
     public void open(String user, String pwd, String scheme, String host) throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("open(String, String, String) - entering");
-        }
-
         if (isOpened()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("open(String, String, String) - exiting");
@@ -213,10 +172,6 @@ public class VFSManager {
 
         setUserInfo(user, pwd);
         setSchemeOpts(scheme, host);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("open(String, String, String) - exiting");
-        }
     }
 
     /**
@@ -511,17 +466,9 @@ public class VFSManager {
      * Close.
      */
     public void close() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("close() - entering");
-        }
-
         if (isOpened()) {
             standardFileSystemManager.close();
             open = false;
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("close() - exiting");
         }
     }
 
