@@ -22,8 +22,12 @@ import fr.cls.atoll.motu.web.common.utils.ProcessOutputLogguer.Type;
 import fr.cls.atoll.motu.web.dal.request.IDALRequestManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.tds.ncss.NetCdfSubsetService;
+import ucar.ma2.Array;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.unidata.geoloc.LatLonPointImpl;
 
 /**
  * <br>
@@ -103,6 +107,20 @@ public class CDOJob implements Runnable {
                     i++;
                 }
 
+                double lowerLeftLon = latlon.getLowerLeftLon();
+                if (filesPath.size() > 0) {
+                    NetcdfFile netcdffile = NetcdfFile.open(filesPath.get(0));
+                    Variable longitudeVariable = findVariableFromStdName("longitude", netcdffile.getVariables());
+                    if (longitudeVariable != null) {
+                        Array longitudeData = longitudeVariable.read();
+                        if (latlon.getLowerLeftLon() < 0) {
+                            lowerLeftLon = LatLonPointImpl.lonNormal(longitudeData.getDouble(0));
+                        } else {
+                            lowerLeftLon = longitudeData.getDouble(0);
+                        }
+                    }
+                }
+
                 if (currentFilePath != null) {
 
                     // Concatenate with NCO
@@ -111,7 +129,7 @@ public class CDOJob implements Runnable {
                     // Set the output file path
                     cmd += Paths.get(extractDirPath, fname).toString();
                     // Set the start point
-                    cmd += " " + latlon.getLowerLeftLon();
+                    cmd += " " + lowerLeftLon;
                     // Set the length
                     cmd += " " + rangesLength;
 
@@ -144,6 +162,21 @@ public class CDOJob implements Runnable {
         }
 
         onJobEnds();
+    }
+
+    private Variable findVariableFromStdName(String variableStdName, List<Variable> variables) {
+        Variable searchedVariable = null;
+        if (variableStdName != null && variables != null) {
+            for (Variable currentVariable : variables) {
+                ucar.nc2.Attribute stdNameAttribute = currentVariable.findAttribute("standard_name");
+                if (variableStdName.equals(stdNameAttribute.getValue(0))) {
+                    searchedVariable = currentVariable;
+                    break;
+                }
+            }
+        }
+
+        return searchedVariable;
     }
 
     /**
