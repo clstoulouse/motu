@@ -31,10 +31,10 @@ public interface IDALProductManager {
     /**
      * Retrieve the Size of the provided Product.
      * 
-     * @return The size of the product into kylobyte
+     * @return The size of the product into megabyte
      * @throws MotuExceptionBase
      */
-    double getProductDataSizeRequest(RequestDownloadStatus rds_) throws MotuException;
+    double getProductDataSizeRequestInMegabyte(RequestDownloadStatus rds_) throws MotuException;
 
     ProductMetaData updateMetadata(String catalogType, String productId, String locationData, ProductMetaData pmd) throws MotuException;
 }

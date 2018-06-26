@@ -33,10 +33,8 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jasig.cas.client.validation.Assertion;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInconsistencyException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
@@ -244,47 +242,6 @@ public class ExtractionParameters implements Cloneable {
 
     /** The protocol scheme. */
     protected String protocolScheme = null;
-
-    /** The assertion to manage CAS. */
-    protected Assertion assertion = null;
-
-    /**
-     * Gets the assertion.
-     * 
-     * @return the assertion
-     */
-    public Assertion getAssertion() {
-        return assertion;
-    }
-
-    /**
-     * Sets the assertion.
-     *
-     * @param assertion the new assertion
-     */
-    public void setAssertion(Assertion assertion) {
-        setAssertion(assertion, true);
-    }
-
-    /**
-     * Sets the assertion.
-     *
-     * @param assertion the new assertion
-     * @param overrideUserId : if true, override the user by the user in the stored in the assertion.
-     */
-    public void setAssertion(Assertion assertion, boolean overrideUserId) {
-        this.assertion = assertion;
-        // If assertion is not null
-        // --> get he user name from AttributePrincipal and set the user name
-        // --> set anonymous user to false
-        if (overrideUserId) {
-            String name = AssertionUtils.getAttributePrincipalName(assertion);
-            if (!StringUtils.isNullOrEmpty(name)) {
-                setUserId(name);
-                setAnonymousUser(false);
-            }
-        }
-    }
 
     /**
      * Test if a string is null or empty.

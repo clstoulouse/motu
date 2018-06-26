@@ -1,11 +1,10 @@
 package fr.cls.atoll.motu.web.bll.request;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.LogManager;
@@ -26,6 +25,11 @@ import fr.cls.atoll.motu.web.bll.request.queueserver.IQueueServerManager;
 import fr.cls.atoll.motu.web.bll.request.queueserver.QueueServerManager;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.log.QueueLogError;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.log.QueueLogInfo;
+import fr.cls.atoll.motu.web.bll.request.status.BLLRequestStatusManager;
+import fr.cls.atoll.motu.web.bll.request.status.IBLLRequestStatusManager;
+import fr.cls.atoll.motu.web.bll.request.status.data.DownloadStatus;
+import fr.cls.atoll.motu.web.bll.request.status.data.NormalStatus;
+import fr.cls.atoll.motu.web.bll.request.status.data.RequestStatus;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.TimeUtils;
 import fr.cls.atoll.motu.web.common.utils.UnitUtils;
@@ -34,7 +38,9 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueServerType;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData.CatalogType;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.dal.request.status.IDALRequestStatusManager;
 import fr.cls.atoll.motu.web.usl.request.actions.AbstractAction;
+import fr.cls.atoll.motu.web.usl.request.actions.DownloadProductAction;
 
 /**
  * <br>
@@ -58,21 +64,22 @@ public class BLLRequestManager implements IBLLRequestManager {
 
     public static final long REQUEST_TIMEOUT_MSEC = 3600000; // 1hour
 
-    private IRequestIdManager requestIdManager;
-    private Map<Long, RequestDownloadStatus> requestIdStatusMap;
-    private ConcurrentHashMap<Long, AbstractAction> actionMap;
-    private ConcurrentHashMap<Long, StatusModeType> actionStatus;
+    private IBLLRequestStatusManager bllRequestStatusManager;
+
+    private Map<String, RequestDownloadStatus> requestIdStatusMap;
+    private ConcurrentHashMap<String, AbstractAction> actionMap;
+    private ConcurrentHashMap<String, StatusModeType> actionStatus;
     private IQueueServerManager queueServerManager;
     private UserRequestCounter userRequestCounter;
     private RequestCleanerDaemonThread requestCleanerDaemonThread;
 
     public BLLRequestManager() {
-        requestIdManager = new RequestIdManager();
-        requestIdStatusMap = new HashMap<Long, RequestDownloadStatus>();
+        requestIdStatusMap = new HashMap<String, RequestDownloadStatus>();
         actionMap = new ConcurrentHashMap<>();
         actionStatus = new ConcurrentHashMap<>();
         userRequestCounter = new UserRequestCounter();
         queueServerManager = new QueueServerManager();
+        bllRequestStatusManager = new BLLRequestStatusManager();
     }
 
     @Override
@@ -113,29 +120,33 @@ public class BLLRequestManager implements IBLLRequestManager {
 
     /** {@inheritDoc} */
     @Override
-    public List<Long> getRequestIds() {
-        return new ArrayList<Long>(actionMap.keySet());
+    public Set<String> getRequestIds() {
+        return bllRequestStatusManager.getAllRequestId();
     }
 
     @Override
-    public RequestDownloadStatus getDownloadRequestStatus(Long requestId_) {
+    public RequestDownloadStatus getDownloadRequestStatus(String requestId_) {
         return requestIdStatusMap.get(requestId_);
     }
 
     @Override
-    public StatusModeType getRequestStatus(Long requestId_) {
+    public StatusModeType getRequestStatus(String requestId_) {
         return actionStatus.get(requestId_);
     }
 
     @Override
-    public AbstractAction getRequestAction(Long requestId_) {
+    public AbstractAction getRequestAction(String requestId_) {
         return actionMap.get(requestId_);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws MotuException
+     */
     @Override
-    public ProductResult download(ConfigService cs_, RequestProduct reqProduct_, AbstractAction action) {
-        long requestId = download(false, cs_, reqProduct_, action);
+    public ProductResult download(ConfigService cs_, RequestProduct reqProduct_, AbstractAction action) throws MotuException {
+        String requestId = download(false, cs_, reqProduct_, action);
 
         ProductResult p = new ProductResult();
         RequestDownloadStatus rds = getDownloadRequestStatus(requestId);
@@ -152,13 +163,18 @@ public class BLLRequestManager implements IBLLRequestManager {
         return p;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws MotuException
+     */
     @Override
-    public long downloadAsynchonously(ConfigService cs_, RequestProduct reqProduct_, AbstractAction action) {
+    public String downloadAsynchonously(ConfigService cs_, RequestProduct reqProduct_, AbstractAction action) throws MotuException {
         return download(true, cs_, reqProduct_, action);
     }
 
-    private long download(boolean isAsynchronous, final ConfigService cs_, final RequestProduct reqProduct_, AbstractAction action) {
+    private String download(boolean isAsynchronous, final ConfigService cs_, final RequestProduct reqProduct_, AbstractAction action)
+            throws MotuException {
         final RequestDownloadStatus rds = initRequest(reqProduct_, action);
         Thread t = new Thread("download isAsynchRqt=" + Boolean.toString(isAsynchronous) + " - " + rds.getRequestId()) {
 
@@ -188,7 +204,7 @@ public class BLLRequestManager implements IBLLRequestManager {
      */
     private void logQueueInfo(RequestDownloadStatus rds) {
         QueueLogInfo qli = new QueueLogInfo();
-        qli.setAmountDataSizeInMegaBytes(UnitUtils.bitsToMegaBytes(rds.getSizeInBits()));
+        qli.setAmountDataSizeInMegaBytes(UnitUtils.bitToMegaByte(rds.getSizeInBit()));
         qli.setCompressingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getCompressingTime()));
         qli.setCopyingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getCopyingTime()));
         qli.setReadingTime(TimeUtils.nanoToMillisec(rds.getDataBaseExtractionTimeCounter().getReadingTime()));
@@ -233,26 +249,74 @@ public class BLLRequestManager implements IBLLRequestManager {
         LOGGER.info(qli);
     }
 
-    private RequestDownloadStatus initRequest(RequestProduct requestProduct_, AbstractAction action) {
-        Long requestId = initRequest(action);
+    private RequestDownloadStatus initRequest(RequestProduct requestProduct_, AbstractAction action) throws MotuException {
+        String requestId = initRequest(action);
         RequestDownloadStatus requestDownloadStatus = new RequestDownloadStatus(requestId, requestProduct_);
         requestIdStatusMap.put(requestId, requestDownloadStatus);
+        setScriptVersionToRequestStatus(requestId, requestProduct_.getExtractionParameters().getScriptVersion());
         return requestDownloadStatus;
     }
 
     @Override
-    public Long initRequest(AbstractAction action) {
-        final long requestId = getNewRequestId();
+    public String initRequest(AbstractAction action) throws MotuException {
+        RequestStatus requestStatus = initRequestStatus(action);
+        IDALRequestStatusManager requestStatusManager = DALManager.getInstance().getRequestManager().getDalRequestStatusManager();
+        final String requestId = requestStatusManager.addNewRequestStatus(requestStatus);
         actionMap.putIfAbsent(requestId, action);
         actionStatus.putIfAbsent(requestId, StatusModeType.PENDING);
         return requestId;
     }
 
     @Override
-    public void setActionStatus(Long requestId, StatusModeType status) {
+    public void setActionStatus(String requestId, StatusModeType status) {
         if (actionMap.containsKey(requestId) && actionStatus.containsKey(requestId)) {
             actionStatus.put(requestId, status);
+            IDALRequestStatusManager requestStatusManager = DALManager.getInstance().getRequestManager().getDalRequestStatusManager();
+            RequestStatus requestStatus = requestStatusManager.getRequestStatus(requestId);
+            if (requestStatus != null) {
+                requestStatus.setStatus(status.name());
+                requestStatus.setStatusCode(Integer.toString(status.ordinal()));
+                requestStatusManager.updateRequestStatus(requestId, requestStatus);
+            }
         }
+    }
+
+    private void setScriptVersionToRequestStatus(String requestId, String scriptVersion) {
+        IDALRequestStatusManager requestStatusManager = DALManager.getInstance().getRequestManager().getDalRequestStatusManager();
+        RequestStatus requestStatus = requestStatusManager.getRequestStatus(requestId);
+        if (requestStatus != null) {
+            if (requestStatus instanceof DownloadStatus) {
+                DownloadStatus downloadStatus = (DownloadStatus) requestStatus;
+                downloadStatus.setScriptVersion(scriptVersion);
+            }
+        }
+        requestStatusManager.updateRequestStatus(requestId, requestStatus);
+    }
+
+    private RequestStatus initRequestStatus(AbstractAction action) {
+        RequestStatus requestStatus;
+
+        if (action.getActionName().equals(DownloadProductAction.ACTION_NAME)) {
+            requestStatus = new DownloadStatus();
+        } else {
+            NormalStatus normalStatus = new NormalStatus();
+            normalStatus.setParameters(action.getParameters());
+            requestStatus = normalStatus;
+        }
+        requestStatus.setStatus(StatusModeType.PENDING.name());
+        requestStatus.setStatusCode(Integer.toString(StatusModeType.PENDING.value()));
+        requestStatus.setActionName(action.getActionName());
+        requestStatus.setActionCode(action.getActionCode());
+
+        String userId = action.getUserId();
+        if (userId == null) {
+            userId = "Anonymous";
+        }
+        requestStatus.setUserId(userId);
+
+        requestStatus.setTime(Long.toString(System.currentTimeMillis()));
+
+        return requestStatus;
     }
 
     /**
@@ -311,8 +375,8 @@ public class BLLRequestManager implements IBLLRequestManager {
         try {
             try {
                 double requestSizeInByte = getProductDataSizeIntoByte(rds_);
-                rds_.setSizeInBits(new Double(UnitUtils.bytesToBits(requestSizeInByte)).longValue());
-                double requestSizeInMBytes = UnitUtils.toMegaBytes(requestSizeInByte);
+                rds_.setSizeInBits(Double.doubleToLongBits(UnitUtils.byteToBit(requestSizeInByte)));
+                double requestSizeInMBytes = UnitUtils.byteToMegaByte(requestSizeInByte);
 
                 checkNumberOfRunningRequestForUser(userId);
                 checkMaxSizePerFile(cs_.getCatalog().getType(), requestSizeInMBytes);
@@ -329,32 +393,30 @@ public class BLLRequestManager implements IBLLRequestManager {
         }
     }
 
-    private void checkFreeSpace(double fileSizeInMBytes) throws MotuException {
+    private void checkFreeSpace(double fileSizeInMegabyte) throws MotuException {
         File extractionDirectory = new File(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath());
         if (!extractionDirectory.exists()) {
             LOGGER.error("The extraction folder does not exists: " + extractionDirectory.exists());
             throw new MotuException(ErrorType.SYSTEM, "The extraction folder does not exists: " + extractionDirectory.exists());
         } else {
-            if (UnitUtils.toMegaBytes(extractionDirectory.getFreeSpace()) <= fileSizeInMBytes) {
+            if (UnitUtils.byteToMegaByte(extractionDirectory.getFreeSpace()) <= fileSizeInMegabyte) {
                 throw new NotEnoughSpaceException("There is not enough disk space available to generate the file result and to satisfy this request");
             }
         }
     }
 
     private void checkMaxSizePerFile(String catalogType, double fileSizeInMegaBytes) throws MotuException {
-        double maxSizePerFileInMegaBytes = -1;
-        if (CatalogType.FILE.name().toUpperCase().equals(catalogType.toUpperCase())) {
+        double maxSizePerFileInMegaBytes;
+        if (CatalogType.FILE.name().equalsIgnoreCase(catalogType.toUpperCase())) {
             maxSizePerFileInMegaBytes = BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFile().doubleValue();
         } else {
             maxSizePerFileInMegaBytes = BLLManager.getInstance().getConfigManager().getMotuConfig().getMaxSizePerFileSub().doubleValue();
         }
-        if (maxSizePerFileInMegaBytes < fileSizeInMegaBytes) {
+        if (fileSizeInMegaBytes > maxSizePerFileInMegaBytes) {
             throw new MotuException(
                     ErrorType.EXCEEDING_CAPACITY,
-                    "The result file size " + fileSizeInMegaBytes + "MBytes shall be less than " + maxSizePerFileInMegaBytes + "MBytes",
-                    new String[] {
-                            Integer.toString(new Double(fileSizeInMegaBytes).intValue()),
-                            Integer.toString(new Double(maxSizePerFileInMegaBytes).intValue()) });
+                    "",
+                    new String[] { Double.toString(Math.ceil(fileSizeInMegaBytes)), Double.toString(maxSizePerFileInMegaBytes) });
         }
     }
 
@@ -370,23 +432,17 @@ public class BLLRequestManager implements IBLLRequestManager {
      */
     @Override
     public double getProductDataSizeIntoByte(RequestProduct requestProduct_) throws MotuException {
-        return getProductDataSizeIntoByte(new RequestDownloadStatus(-1L, requestProduct_));
+        return getProductDataSizeIntoByte(new RequestDownloadStatus(null, requestProduct_));
     }
 
     private double getProductDataSizeIntoByte(RequestDownloadStatus rds_) throws MotuException {
-        return UnitUtils.toBytes(DALManager.getInstance().getCatalogManager().getProductManager().getProductDataSizeRequest(rds_));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getNewRequestId() {
-        return requestIdManager.getNewRequestId();
+        return UnitUtils.megabyteToByte(DALManager.getInstance().getCatalogManager().getProductManager().getProductDataSizeRequestInMegabyte(rds_));
     }
 
     /** {@inheritDoc} */
     @Override
     public double getProductMaxAllowedDataSizeIntoByte(Product product) throws MotuException {
-        return UnitUtils.toBytes(BLLManager.getInstance().getRequestManager().getQueueServerManager().getMaxDataThreshold());
+        return UnitUtils.megabyteToByte(BLLManager.getInstance().getRequestManager().getQueueServerManager().getMaxDataThresholdInMegabyte());
     }
 
     /** {@inheritDoc} */
@@ -421,10 +477,16 @@ public class BLLRequestManager implements IBLLRequestManager {
 
     /** {@inheritDoc} */
     @Override
-    public void deleteRequest(Long requestId) {
+    public void deleteRequest(String requestId) {
         requestIdStatusMap.remove(requestId);
         actionMap.remove(requestId);
         actionStatus.remove(requestId);
+        DALManager.getInstance().getRequestManager().getDalRequestStatusManager().removeRequestStatus(requestId);
+    }
+
+    @Override
+    public IBLLRequestStatusManager getBllRequestStatusManager() {
+        return bllRequestStatusManager;
     }
 
 }

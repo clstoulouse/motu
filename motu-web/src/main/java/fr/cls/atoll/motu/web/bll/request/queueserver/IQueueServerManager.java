@@ -6,6 +6,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.queueserver.queue.QueueManagement;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
+import fr.cls.atoll.motu.web.dal.config.xml.model.QueueServerType;
 import fr.cls.atoll.motu.web.dal.config.xml.model.QueueType;
 
 /**
@@ -56,7 +57,7 @@ public interface IQueueServerManager {
      * 
      * @return
      */
-    double getMaxDataThreshold();
+    double getMaxDataThresholdInMegabyte();
 
     /**
      * .
@@ -69,5 +70,7 @@ public interface IQueueServerManager {
      * .
      */
     void stop();
+
+    void onConfigUpdated(QueueServerType newQueueServerType);
 
 }

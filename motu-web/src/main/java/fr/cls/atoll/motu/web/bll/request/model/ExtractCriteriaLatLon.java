@@ -25,7 +25,6 @@
 package fr.cls.atoll.motu.web.bll.request.model;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Formatter;
 import java.util.List;
 
@@ -41,6 +40,7 @@ import fr.cls.atoll.motu.web.bll.exception.MotuNotImplementedException;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfWriter;
 import fr.cls.atoll.motu.web.dal.tds.ncss.model.SpatialRange;
+import ucar.ma2.ArrayDouble.D2;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
 import ucar.ma2.MAMath.MinMax;
@@ -89,11 +89,30 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
     public final static String LONGITUDE_MAX = "180";
 
     /**
+     * Bounding box for latitude/longitude points. This is a rectangle in lat/lon coordinates. Note that
+     * LatLonPoint always has lon in the range +/-180. *
+     * 
+     * @uml.property name="latLonRect"
+     */
+    private LatLonRect latLonRect = null;
+
+    private MAMath.MinMax minMaxXValue2D = null;
+    private MAMath.MinMax minMaxYValue2D = null;
+
+    /**
      * Default constructor.
      */
     public ExtractCriteriaLatLon() {
         // set a LatLonRect that covers the whole world.
         setLatLonRect(new LatLonRect());
+    }
+
+    public MAMath.MinMax getMinMaxXValue2D() {
+        return minMaxXValue2D;
+    }
+
+    public MAMath.MinMax getMinMaxYValue2D() {
+        return minMaxYValue2D;
     }
 
     /**
@@ -146,19 +165,6 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
     }
 
     /**
-     * Instantiates a new extract criteria lat lon.
-     * 
-     * @param latLow the lat low
-     * @param lonLow the lon low
-     * @param latHigh the lat high
-     * @param lonHigh the lon high
-     */
-    // public ExtractCriteriaLatLon(DecimalMeasure<?> latLow, DecimalMeasure<?> lonLow, DecimalMeasure<?>
-    // latHigh, DecimalMeasure<?> lonHigh) {
-    // setLatLonRect(latLow, lonLow, latHigh, lonHigh);
-    // }
-
-    /**
      * Constructor.
      * 
      * @param latLow latitude low
@@ -200,25 +206,6 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
             break;
         }
     }
-
-    protected MAMath.MinMax minMaxXValue2D = null;
-    protected MAMath.MinMax minMaxYValue2D = null;
-
-    public MAMath.MinMax getMinMaxXValue2D() {
-        return minMaxXValue2D;
-    }
-
-    public MAMath.MinMax getMinMaxYValue2D() {
-        return minMaxYValue2D;
-    }
-
-    /**
-     * Bounding box for latitude/longitude points. This is a rectangle in lat/lon coordinates. Note that
-     * LatLonPoint always has lon in the range +/-180. *
-     * 
-     * @uml.property name="latLonRect"
-     */
-    private LatLonRect latLonRect = null;
 
     /**
      * Getter of the property <tt>latLonRect</tt>.
@@ -460,51 +447,76 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      *         range.
      * @throws MotuNotImplementedException
      * @throws MotuException
+     * @throws InvalidRangeException
      */
     public List<List<Range>> toListRanges(CoordinateSystem cs, List<double[]> listRangeValueLat, List<double[]> listRangeValueLon)
-            throws MotuException, MotuInvalidLatLonRangeException, MotuNotImplementedException {
-
-        // NetCDF 2.2.16
-        // GridCoordSys gcs = new GridCoordSys(cs);
-        // NetCDF 2.2.18
+            throws MotuException, MotuInvalidLatLonRangeException, MotuNotImplementedException, InvalidRangeException {
         Formatter errMessages = new Formatter();
         GridCoordSys gcs = new GridCoordSys(cs, errMessages);
-        // NetCDF 2.2.16
-        // List<Range> listRange = (List<Range>) gcs.getLatLonBoundingBox(latLonRect);
-        // NetCDF 2.2.18
         List<List<Range>> listRanges = getListRangesFromLatLonRect(gcs, latLonRect);
-        // List<Range> listRange = getRangesFromLatLonRect(gcs, latLonRect);
-
         if (ExtractCriteriaLatLon.hasEmptyYXRanges(listRanges)) {
-            // return listRanges;
             throw new MotuInvalidLatLonRangeException(latLonRect, gcs.getLatLonBoundingBox());
         }
 
         removeEmptyYXRanges(listRanges);
 
-        if ((listRangeValueLat == null) && (listRangeValueLon == null)) {
-            return listRanges;
-        }
-        for (List<Range> ranges : listRanges) {
-            Range rangeLat = ranges.get(0);
-            Range rangeLon = ranges.get(1);
+        int latMin = Integer.MAX_VALUE;
+        int latMax = Integer.MIN_VALUE;
+        int lonMin = Integer.MAX_VALUE;
+        int lonMax = Integer.MIN_VALUE;
+        double[] rangeValueLat = new double[2];
+        rangeValueLat[0] = Double.MAX_VALUE;
+        rangeValueLat[1] = Double.MIN_VALUE;
+        double[] rangeValueLon = new double[2];
+        rangeValueLon[0] = Double.MAX_VALUE;
+        rangeValueLon[1] = Double.MIN_VALUE;
 
-            if (!(ExtractCriteriaLatLon.hasRange(ranges))) {
-                continue;
+        if (!((listRangeValueLat == null) && (listRangeValueLon == null))) {
+            for (List<Range> ranges : listRanges) {
+                Range rangeLat = ranges.get(0);
+                Range rangeLon = ranges.get(1);
+
+                if (ExtractCriteriaLatLon.hasRange(ranges)) {
+                    double[] curRangeValueLat = new double[2];
+                    curRangeValueLat[0] = Double.MAX_VALUE;
+                    curRangeValueLat[1] = Double.MIN_VALUE;
+                    double[] curRangeValueLon = new double[2];
+                    curRangeValueLon[0] = Double.MAX_VALUE;
+                    curRangeValueLon[1] = Double.MIN_VALUE;
+
+                    getRangeValues(gcs, rangeLat, rangeLon, curRangeValueLat, curRangeValueLon);
+
+                    if (rangeLon.first() < lonMin) {
+                        lonMin = rangeLon.first();
+                        rangeValueLon[0] = curRangeValueLon[0];
+                    }
+
+                    if (rangeLon.last() > lonMax) {
+                        lonMax = rangeLon.last();
+                        rangeValueLon[1] = curRangeValueLon[1];
+                    }
+
+                    if (rangeLat.first() < latMin) {
+                        latMin = rangeLat.first();
+                        rangeValueLat[0] = curRangeValueLat[0];
+                    }
+
+                    if (rangeLat.last() > latMax) {
+                        latMax = rangeLat.last();
+                        rangeValueLat[1] = curRangeValueLat[1];
+                    }
+                }
             }
-            double[] rangeValueLat = new double[2];
-            rangeValueLat[0] = Double.MAX_VALUE;
-            rangeValueLat[1] = Double.MAX_VALUE;
-
-            double[] rangeValueLon = new double[2];
-            rangeValueLon[0] = Double.MAX_VALUE;
-            rangeValueLon[1] = Double.MAX_VALUE;
-
-            getRangeValues(gcs, rangeLat, rangeLon, rangeValueLat, rangeValueLon);
-
-            listRangeValueLat.add(rangeValueLat);
-            listRangeValueLon.add(rangeValueLon);
         }
+
+        listRanges.clear();
+        List<Range> rL = new ArrayList<>();
+        rL.add(new Range(latMin, latMax));
+        rL.add(new Range(lonMin, lonMax));
+        listRanges.add(rL);
+
+        listRangeValueLat.add(rangeValueLat);
+        listRangeValueLon.add(rangeValueLon);
 
         return listRanges;
     }
@@ -635,7 +647,6 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      * @throws MotuException
      */
     private List<List<Range>> getListRangesFromLatLonRect(GridCoordSys gcs, LatLonRect rect) throws MotuNotImplementedException, MotuException {
-
         CoordinateAxis xaxis = gcs.getXHorizAxis();
         CoordinateAxis yaxis = gcs.getYHorizAxis();
 
@@ -655,15 +666,6 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                 rect = new LatLonRect(
                         new LatLonRect(new LatLonPointImpl(rect.getLatMin(), xMinMax.min), new LatLonPointImpl(rect.getLatMax(), xMinMax.max)));
             }
-            // } else {
-            // double minLonTmp = (xMinMax.min > rect.getLonMin() ? xMinMax.min : rect.getLonMin());
-            // double maxLonTmp = (xMinMax.max < rect.getLonMax() ? xMinMax.max : rect.getLonMax());
-            // rect = new LatLonRect(new LatLonRect(new LatLonPointImpl(rect.getLatMin(), minLonTmp), new
-            // LatLonPointImpl(
-            // rect.getLatMax(),
-            // maxLonTmp)));
-            //
-            // }
 
             // If geo criteria include Lat coord. system : set criteria to /Lat Coord. System
             LatLonRect gcsRectLat = new LatLonRect(new LatLonPointImpl(yMinMax.min, 0), new LatLonPointImpl(yMinMax.max, 0));
@@ -675,9 +677,9 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
 
         }
 
-        if (((xaxis instanceof CoordinateAxis2D) && (yaxis instanceof CoordinateAxis2D) && gcs.isLatLon())) {
+        if ((xaxis instanceof CoordinateAxis2D) && (yaxis instanceof CoordinateAxis2D) && gcs.isLatLon()) {
             return getListRangesFromLatLonRect2D(gcs, rect);
-        } else if (((xaxis instanceof CoordinateAxis1D) && (yaxis instanceof CoordinateAxis1D))) {
+        } else if ((xaxis instanceof CoordinateAxis1D) && (yaxis instanceof CoordinateAxis1D)) {
             return getListRangesFromLatLonRect1D(gcs, rect);
         } else {
             throw new MotuNotImplementedException(
@@ -730,7 +732,6 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      * @throws MotuException
      */
     public static void removeEmptyYXRanges(List<List<Range>> listRanges) throws MotuException {
-
         for (List<Range> ranges : listRanges) {
             if (!(ExtractCriteriaLatLon.hasRange(ranges))) {
                 listRanges.remove(ranges);
@@ -793,7 +794,8 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         // int minyIndex = yaxis1.findCoordElementBounded(miny);
         int minyIndex = findCoordElementBounded(yaxis1, miny, -1);
         // int maxxIndex = xaxis1.findCoordElementBounded(maxx);
-        int maxxIndex = findCoordElementBounded(xaxis1, maxx, minxIndex + 1);
+        // FIX JIRA MOTU-133: Replace findCoordElementBounded(xaxis1, maxx, minxIndex+1);
+        int maxxIndex = findCoordElementBounded(xaxis1, maxx, minxIndex);
         // int maxyIndex = yaxis1.findCoordElementBounded(maxy);
         int maxyIndex = findCoordElementBounded(yaxis1, maxy, -1);
 
@@ -845,10 +847,9 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                 listRanges.add(ranges);
 
                 minxIndex = 0;
-                // maxxIndex = xaxis1.findCoordElementBounded(maxx);
                 maxxIndex = findCoordElementBounded(xaxis1, maxx, -1);
                 if (maxxIndex >= 0) {
-                    ranges = new ArrayList<Range>();
+                    ranges = new ArrayList<>();
 
                     ranges.add(new Range(Math.min(minyIndex, maxyIndex), Math.max(minyIndex, maxyIndex)));
                     ranges.add(new Range(Math.min(minxIndex, maxxIndex), Math.max(minxIndex, maxxIndex)));
@@ -867,21 +868,59 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         return listRanges;
     }
 
-    public static final Comparator<Range> COMPARE_BY_RANGE = new Comparator<Range>() {
-        /**
-         * Introduce a comparision between metadata type by their range.
-         * 
-         * @param o1 first metadata type to compare
-         * @param o2 second metadata type to compare
-         * @return the comparison result.
-         */
-        @Override
-        public int compare(Range o1, Range o2) {
-            final Integer r1 = o1.first();
-            final Integer r2 = o2.first();
-            return r1.compareTo(r2);
+    private MinMax computeMinMaxX(Projection dataProjection, LatLonRect rect) {
+        LatLonPointImpl llpt = rect.getLowerLeftPoint();
+        LatLonPointImpl urpt = rect.getUpperRightPoint();
+        LatLonPointImpl lrpt = rect.getLowerRightPoint();
+        LatLonPointImpl ulpt = rect.getUpperLeftPoint();
+
+        MinMax mm = new MinMax(Double.MIN_VALUE, Double.MAX_VALUE);
+        mm.min = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
+        mm.max = getMinOrMaxLon(urpt.getLongitude(), lrpt.getLongitude(), false);
+
+        if (mm.min > mm.max) {
+            double longitudeCenter = mm.min + 180;
+            mm.max = LatLonPointImpl.lonNormal(mm.max, longitudeCenter);
         }
-    };
+        return mm;
+    }
+
+    private MinMax computeMinMaxY(Projection dataProjection, LatLonRect rect) {
+        LatLonPointImpl llpt = rect.getLowerLeftPoint();
+        LatLonPointImpl urpt = rect.getUpperRightPoint();
+        LatLonPointImpl lrpt = rect.getLowerRightPoint();
+        LatLonPointImpl ulpt = rect.getUpperLeftPoint();
+
+        MinMax mm = new MinMax(Double.MIN_VALUE, Double.MAX_VALUE);
+        mm.min = Math.min(llpt.getLatitude(), lrpt.getLatitude());
+        mm.max = Math.min(ulpt.getLatitude(), urpt.getLatitude());
+
+        return mm;
+    }
+
+    private MinMax[] computeMinMaxXY(Projection dataProjection, LatLonRect rect) {
+        return new MinMax[] { computeMinMaxX(dataProjection, rect), computeMinMaxY(dataProjection, rect) };
+    }
+
+    private void checkXYAxis(CoordinateAxis xaxis, CoordinateAxis yaxis, GridCoordSys gcs) throws MotuNotImplementedException {
+        if (!((xaxis instanceof CoordinateAxis2D) && (yaxis instanceof CoordinateAxis2D) && gcs.isLatLon())) {
+            throw new MotuNotImplementedException("ERROR in ExtractCriteriaLatLon - getListRangesFromLatLonRect2D - Only implemented for 2D/LatLon");
+        }
+    }
+
+    private double checkLon(double lon, double refXMin) {
+        double lonRes = lon;
+        if (Double.compare(lon, refXMin) < 0) {
+            double longitudeCenter = refXMin + 180;
+            lonRes = LatLonPointImpl.lonNormal(lon, longitudeCenter);
+        }
+        return lonRes;
+    }
+
+    private boolean isInside(double lat, double lon, MinMax minMaxX, MinMax minMaxY) {
+        return (Double.compare(lat, minMaxY.min) >= 0) && (Double.compare(lat, minMaxY.max) <= 0) && (Double.compare(lon, minMaxX.min) >= 0)
+                && (Double.compare(lon, minMaxX.max) <= 0);
+    }
 
     /**
      * Gets a list of Index Ranges for the given lat, lon bounding box. For projection, only an approximation
@@ -895,198 +934,107 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      * @throws MotuException
      */
     private List<List<Range>> getListRangesFromLatLonRect2D(GridCoordSys gcs, LatLonRect rect) throws MotuNotImplementedException, MotuException {
-
-        double minx;
-        double maxx;
-        double miny;
-        double maxy;
-
-        List<List<Range>> listRanges = new ArrayList<List<Range>>();
-
-        // SortedMap<Range, List<Double>> mapLonMinValueByLatRange = new TreeMap<Range,
-        // List<Double>>(ExtractCriteriaLatLon.COMPARE_BY_RANGE);
-        // SortedMap<Range, List<List<Range>>> mapRangeByLatRange = new TreeMap<Range,
-        // List<List<Range>>>(ExtractCriteriaLatLon.COMPARE_BY_RANGE);
-
-        LatLonPointImpl llpt = rect.getLowerLeftPoint();
-        LatLonPointImpl urpt = rect.getUpperRightPoint();
-        LatLonPointImpl lrpt = rect.getLowerRightPoint();
-        LatLonPointImpl ulpt = rect.getUpperLeftPoint();
-
-        if (gcs.isLatLon()) {
-            minx = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
-            miny = Math.min(llpt.getLatitude(), lrpt.getLatitude());
-            maxx = getMinOrMaxLon(urpt.getLongitude(), lrpt.getLongitude(), false);
-            maxy = Math.min(ulpt.getLatitude(), urpt.getLatitude());
-
-            if (minx > maxx) {
-                double longitudeCenter = minx + 180;
-                maxx = LatLonPointImpl.lonNormal(maxx, longitudeCenter);
-            }
-
-        } else {
-            Projection dataProjection = gcs.getProjection();
-            ProjectionPoint ll = dataProjection.latLonToProj(llpt, new ProjectionPointImpl());
-            ProjectionPoint ur = dataProjection.latLonToProj(urpt, new ProjectionPointImpl());
-            ProjectionPoint lr = dataProjection.latLonToProj(lrpt, new ProjectionPointImpl());
-            ProjectionPoint ul = dataProjection.latLonToProj(ulpt, new ProjectionPointImpl());
-
-            minx = Math.min(ll.getX(), ul.getX());
-            miny = Math.min(ll.getY(), lr.getY());
-            maxx = Math.max(ur.getX(), lr.getX());
-            maxy = Math.max(ul.getY(), ur.getY());
-        }
+        MinMax[] minMaxXYRectAr = computeMinMaxXY(gcs.getProjection(), rect);
+        MinMax minMaxX = minMaxXYRectAr[0];
+        MinMax minMaxY = minMaxXYRectAr[1];
 
         CoordinateAxis xaxis = gcs.getXHorizAxis();
         CoordinateAxis yaxis = gcs.getYHorizAxis();
-
-        if (!((xaxis instanceof CoordinateAxis2D) && (yaxis instanceof CoordinateAxis2D) && gcs.isLatLon())) {
-            throw new MotuNotImplementedException("ERROR in ExtractCriteriaLatLon - getListRangesFromLatLonRect2D - Only implemented for 2D/LatLon");
-        }
+        checkXYAxis(xaxis, yaxis, gcs);
 
         CoordinateAxis2D lonAxis = (CoordinateAxis2D) xaxis;
         CoordinateAxis2D latAxis = (CoordinateAxis2D) yaxis;
 
+        // lonAxis & latAxis have same shape, depending of X and Y coordinates
         int[] shape = lonAxis.getShape();
-        int nj = shape[0];
-        int ni = shape[1];
         int mini = Integer.MAX_VALUE;
         int minj = Integer.MAX_VALUE;
         int maxi = -1;
         int maxj = -1;
-        double lat = Double.NaN;
-        double lon = Double.NaN;
         boolean newRanges = false;
+
+        D2 latAxisCoord2D = latAxis.getCoordValuesArray();
+        D2 lonAxisCoord2D = lonAxis.getCoordValuesArray();
+        List<List<Range>> listRanges = new ArrayList<>();
         // get each continous ranges
-        for (int j = 0; j < nj; j++) {
-            for (int i = 0; i < ni; i++) {
-                lat = latAxis.getCoordValue(j, i);
-                lon = lonAxis.getCoordValue(j, i);
+        for (int j = 0; j < shape[0]; j++) {
+            for (int i = 0; i < shape[1]; i++) {
+                double lat = latAxisCoord2D.get(j, i);
+                double lon = lonAxisCoord2D.get(j, i);
 
-                if (latAxis.isMissing(lat)) {
-                    continue;
-                }
-                if (lonAxis.isMissing(lon)) {
-                    continue;
-                }
-                if (lon < minx) {
+                if (!(latAxis.isMissing(lat) || lonAxis.isMissing(lon))) {
+                    lon = checkLon(lon, minMaxX.min);
 
-                    double longitudeCenter = minx + 180;
-                    lon = LatLonPointImpl.lonNormal(lon, longitudeCenter);
-                }
-
-                if ((lat >= miny) && (lat <= maxy) && (lon >= minx) && (lon <= maxx)) {
-                    if (i > maxi) {
-                        maxi = i;
-                    }
-                    if (i < mini) {
-                        mini = i;
-                    }
-                    if (j > maxj) {
-                        maxj = j;
-                    }
-                    if (j < minj) {
-                        minj = j;
-                    }
-                    newRanges = true;
-                } else {
-                    if (newRanges) {
-                        List<Range> ranges = new ArrayList<Range>();
-                        try {
-                            Range rangeLat = new Range(minj, maxj);
-                            Range rangeLon = new Range(mini, maxi);
-                            ranges.add(rangeLat);
-                            ranges.add(rangeLon);
-                            listRanges.add(ranges);
-
-                            computeLatLonMinMax(latAxis, lonAxis, minj, mini, maxj, maxi, minx, maxx);
-
+                    if (isInside(lat, lon, minMaxX, minMaxY)) {
+                        if (i > maxi) {
+                            maxi = i;
+                        }
+                        if (i < mini) {
+                            mini = i;
+                        }
+                        if (j > maxj) {
+                            maxj = j;
+                        }
+                        if (j < minj) {
+                            minj = j;
+                        }
+                        newRanges = true;
+                    } else {
+                        if (newRanges) {
+                            onNewRange(listRanges, mini, minj, maxi, maxj, latAxis, lonAxis, minMaxX);
                             newRanges = false;
                             mini = Integer.MAX_VALUE;
                             minj = Integer.MAX_VALUE;
                             maxi = -1;
                             maxj = -1;
-
-                        } catch (InvalidRangeException e) {
-                            throw new MotuException(
-                                    ErrorType.INVALID_LAT_LON_RANGE,
-                                    "ERROR in ExtractCriteriaLatLon - getListRangesFromLatLonRect2D - while creating list of ranges",
-                                    e);
                         }
                     }
                 }
+
             }
 
             if (newRanges) {
-                List<Range> ranges = new ArrayList<Range>();
-                try {
-                    Range rangeLat = new Range(minj, maxj);
-                    Range rangeLon = new Range(mini, maxi);
-                    ranges.add(rangeLat);
-                    ranges.add(rangeLon);
-                    listRanges.add(ranges);
-
-                    computeLatLonMinMax(latAxis, lonAxis, minj, mini, maxj, maxi, minx, maxx);
-                    newRanges = false;
-                    mini = Integer.MAX_VALUE;
-                    minj = Integer.MAX_VALUE;
-                    maxi = -1;
-                    maxj = -1;
-
-                } catch (InvalidRangeException e) {
-                    throw new MotuException(
-                            ErrorType.BAD_PARAMETERS,
-                            "ERROR in ExtractCriteriaLatLon - getListRangesFromLatLonRect2D - while creating list of ranges",
-                            e);
-                }
+                onNewRange(listRanges, mini, minj, maxi, maxj, latAxis, lonAxis, minMaxX);
+                newRanges = false;
+                mini = Integer.MAX_VALUE;
+                minj = Integer.MAX_VALUE;
+                maxi = -1;
+                maxj = -1;
             }
         }
 
         if (newRanges) {
-            List<Range> ranges = new ArrayList<Range>();
-            try {
-                Range rangeLat = new Range(minj, maxj);
-                Range rangeLon = new Range(mini, maxi);
-                ranges.add(rangeLat);
-                ranges.add(rangeLon);
-                listRanges.add(ranges);
-
-                computeLatLonMinMax(latAxis, lonAxis, minj, mini, maxj, maxi, minx, maxx);
-            } catch (InvalidRangeException e) {
-                throw new MotuException(
-                        ErrorType.BAD_PARAMETERS,
-                        "ERROR in ExtractCriteriaLatLon - getListRangesFromLatLonRect2D - while creating list of ranges",
-                        e);
-            }
+            onNewRange(listRanges, mini, minj, maxi, maxj, latAxis, lonAxis, minMaxX);
         }
-
         return listRanges;
-
     }
 
-    /**
-     * Compute lat lon min max.
-     * 
-     * @param latAxis the lat axis
-     * @param lonAxis the lon axis
-     * @param minj the minj
-     * @param mini the mini
-     * @param maxj the maxj
-     * @param maxi the maxi
-     * @param minx the minx
-     * @throws MotuException the motu exception
-     */
-    public void computeLatLonMinMax(CoordinateAxis2D latAxis,
-                                    CoordinateAxis2D lonAxis,
-                                    int minj,
-                                    int mini,
-                                    int maxj,
-                                    int maxi,
-                                    double minx,
-                                    double maxx)
+    private void onNewRange(List<List<Range>> listRanges,
+                            int mini,
+                            int minj,
+                            int maxi,
+                            int maxj,
+                            CoordinateAxis2D latAxis,
+                            CoordinateAxis2D lonAxis,
+                            MinMax xMinMax)
             throws MotuException {
-        computeLonMinMax(lonAxis, minj, mini, maxj, maxi, minx, maxx);
-        computeLatMinMax(latAxis, minj, mini, maxj, maxi);
+        try {
+            listRanges.add(createRange(minj, maxj, mini, maxi));
+            minMaxYValue2D = computeLatMinMax(minMaxYValue2D, latAxis, minj, mini, maxj, maxi);
+            minMaxXValue2D = computeLonMinMax(minMaxXValue2D, lonAxis, minj, mini, maxj, maxi, xMinMax.min, xMinMax.max);
+        } catch (InvalidRangeException e) {
+            throw new MotuException(
+                    ErrorType.BAD_PARAMETERS,
+                    "ERROR in ExtractCriteriaLatLon - getListRangesFromLatLonRect2D - while creating list of ranges",
+                    e);
+        }
+    }
+
+    private List<Range> createRange(int minj, int maxj, int mini, int maxi) throws InvalidRangeException {
+        List<Range> rangeList = new ArrayList<>();
+        rangeList.add(new Range(minj, maxj));
+        rangeList.add(new Range(mini, maxi));
+        return rangeList;
     }
 
     /**
@@ -1100,8 +1048,15 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      * @param minx the minx
      * @throws MotuException the motu exception
      */
-    public void computeLonMinMax(CoordinateAxis2D lonAxis, int minj, int mini, int maxj, int maxi, double minx, double maxx) throws MotuException {
-
+    public MAMath.MinMax computeLonMinMax(MAMath.MinMax minMaxXValue2D,
+                                          CoordinateAxis2D lonAxis,
+                                          int minj,
+                                          int mini,
+                                          int maxj,
+                                          int maxi,
+                                          double minx,
+                                          double maxx)
+            throws MotuException {
         if (lonAxis == null) {
             throw new MotuException(
                     ErrorType.INVALID_LONGITUDE,
@@ -1111,7 +1066,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         if (lonAxis.getAxisType() != AxisType.Lon) {
             String msg = String.format(
                                        "ERROR in ExtractCriteriaLatLon#computeLonMinMax for CoordinateAxis2D: axis name '%s' - type is '%s' and expected type is '%s'",
-                                       lonAxis.getName(),
+                                       lonAxis.getFullName(),
                                        lonAxis.getAxisType().name(),
                                        AxisType.Lon.name());
             throw new MotuException(ErrorType.INVALID_LONGITUDE, msg);
@@ -1144,13 +1099,9 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
                     lonMin = lonMax;
                     lonMax = temp;
                 }
-
             }
-
         }
-
-        minMaxXValue2D = computeMinMax(minMaxXValue2D, new MinMax(lonMin, lonMax));
-
+        return computeMinMax(minMaxXValue2D, new MinMax(lonMin, lonMax));
     }
 
     /**
@@ -1163,8 +1114,8 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
      * @param maxi the maxi
      * @throws MotuException the motu exception
      */
-    public void computeLatMinMax(CoordinateAxis2D latAxis, int minj, int mini, int maxj, int maxi) throws MotuException {
-
+    public MAMath.MinMax computeLatMinMax(MAMath.MinMax minMaxYValue2D, CoordinateAxis2D latAxis, int minj, int mini, int maxj, int maxi)
+            throws MotuException {
         if (latAxis == null) {
             throw new MotuException(ErrorType.INVALID_LATITUDE, "ERROR in ExtractCriteriaLatLon#computeLatMinMax for CoordinateAxis2D: axis is null");
 
@@ -1172,7 +1123,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         if (latAxis.getAxisType() != AxisType.Lat) {
             String msg = String.format(
                                        "ERROR in ExtractCriteriaLatLon#computeLatMinMax for CoordinateAxis2D: axis name '%s' - type is '%s' and expected type is '%s'",
-                                       latAxis.getName(),
+                                       latAxis.getFullName(),
                                        latAxis.getAxisType().name(),
                                        AxisType.Lat.name());
             throw new MotuException(ErrorType.INVALID_LATITUDE, msg);
@@ -1182,24 +1133,19 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         for (int j = minj; j <= maxj; j++) {
             for (int i = mini; i <= maxi; i++) {
                 double value = latAxis.getCoordValue(j, i);
-
                 if (latMin > value) {
                     latMin = value;
                 }
                 if (latMax < value) {
                     latMax = value;
                 }
-
             }
-
         }
 
-        minMaxYValue2D = computeMinMax(minMaxYValue2D, new MinMax(latMin, latMax));
-
+        return computeMinMax(minMaxYValue2D, new MinMax(latMin, latMax));
     }
 
     public MinMax computeMinMax(MinMax ref, MinMax work) {
-
         if (ref == null) {
             ref = work;
         } else {

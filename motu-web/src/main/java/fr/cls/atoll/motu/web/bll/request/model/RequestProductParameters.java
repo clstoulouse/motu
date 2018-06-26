@@ -325,33 +325,19 @@ public class RequestProductParameters {
      * @return Normalized Min/Max of the Longitude ranges values
      */
     public static MinMax getMinMaxLonNormal(Range r1, Range r2, double[] r1Values, double[] r2Values) {
-        double min = Double.MAX_VALUE;
-        double max = Double.MIN_VALUE;
+        double min;
+        double max;
 
         if (r1.first() > r2.first()) {
             min = r1Values[0];
-            max = r2Values[1];
-            // double center = ((r1Values[0] != 0.) ? r1Values[0] : r1Values[1]);
             double center = r1Values[0] + 180;
             max = LatLonPointImpl.lonNormal(r2Values[1], center);
-
         } else {
             min = r2Values[0];
             max = r1Values[1];
         }
 
         return new MAMath.MinMax(min, max);
-
-    }
-
-    /**
-     * Compute average from a variable. A new variable containing the result of calculation is created and
-     * added to the variable's collection.
-     *
-     * @param variable variable to compute.
-     * @param dimensions dimensions on which to apply average.
-     */
-    public void computeAverage(VarData variable, String dimensions) {
 
     }
 

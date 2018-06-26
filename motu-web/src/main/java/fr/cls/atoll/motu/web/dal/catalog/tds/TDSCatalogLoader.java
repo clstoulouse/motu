@@ -19,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
-import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
@@ -138,9 +137,9 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      * 
      * @throws MotuException the motu exception
      */
-    private void loadTdsSubCatalog(String path, CatalogData cd) throws MotuException {
+    private void loadTdsSubCatalog(String catalogURL, CatalogData cd) throws MotuException {
         try {
-            Catalog catalogXml = getCatalogFromTDS(path);
+            Catalog catalogXml = getCatalogFromTDS(catalogURL);
 
             List<JAXBElement<? extends DatasetType>> list = catalogXml.getDataset();
 
@@ -883,7 +882,7 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
      */
     public CatalogData loadTdsCatalog(CatalogService catalogService) {
         try {
-            Catalog tdsCatalogXml = getCatalogFromTDS(catalogService);
+            Catalog tdsCatalogXml = getCatalogFromTDS(getCatalogURL(catalogService));
             CatalogData catalogData = new CatalogData();
             catalogData.setUrlSite(catalogService.getUrlSite());
             catalogData.setTitle(tdsCatalogXml.getName());
@@ -921,13 +920,9 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
 
     }
 
-    private Catalog getCatalogFromTDS(CatalogService catalogService) throws MalformedURLException, IOException, MotuCasException, JAXBException {
-        return getCatalogFromTDS(getCatalogURL(catalogService));
-    }
-
-    private Catalog getCatalogFromTDS(String catalogUrl) throws MalformedURLException, IOException, MotuCasException, JAXBException {
+    private Catalog getCatalogFromTDS(String catalogURL) throws MalformedURLException, IOException, JAXBException {
         Catalog catalog = null;
-        URL url = new URL(getUrlWithSSO(catalogUrl, false));
+        URL url = new URL(catalogURL);
         URLConnection conn = url.openConnection();
         InputStream in = conn.getInputStream();
         try {

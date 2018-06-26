@@ -1,6 +1,6 @@
 package fr.cls.atoll.motu.web.bll.catalog.product.cache;
 
-import java.util.Set;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +26,7 @@ public abstract class CatalogAndProductCacheRefreshThread extends StoppableDaemo
     /**
      * Save the list of configService to update automatically
      */
-    private Set<ConfigService> configServiceToUpdate;
+    private List<ConfigService> configServiceToUpdate;
 
     /**
      * 
@@ -34,7 +34,7 @@ public abstract class CatalogAndProductCacheRefreshThread extends StoppableDaemo
      * 
      * @param configServiceToUpdate_ The list of ConfigService that needs to be refresh automatically.
      */
-    public CatalogAndProductCacheRefreshThread(Set<ConfigService> configServiceToUpdate_) {
+    public CatalogAndProductCacheRefreshThread(List<ConfigService> configServiceToUpdate_) {
         super(
             "Product and Catalog Cache Thread Daemon",
             BLLManager.getInstance().getConfigManager().getMotuConfig().getDescribeProductCacheRefreshInMilliSec());

@@ -69,7 +69,7 @@ public class OpenDapProductMetadataReader {
         netCdfReader.open(true);
         try {
             // Gets global attribute 'title' if not set.
-            if (productMetaData.getTitle().equals("")) {
+            if ("".equals(productMetaData.getTitle())) {
                 String title = netCdfReader.getStringValue("title");
                 productMetaData.setTitle(title);
             }

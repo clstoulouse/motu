@@ -41,9 +41,9 @@ cd motu/products
 
 echo
 #echo "### Download Apache Tomcat"
-wget --no-cookies https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.69/bin/apache-tomcat-7.0.69.tar.gz
-tar xzf apache-tomcat-7.0.69.tar.gz
-rm apache-tomcat-7.0.69.tar.gz
+wget --no-cookies https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.8/bin/apache-tomcat-9.0.8.tar.gz
+tar xzf apache-tomcat-9.0.8.tar.gz
+rm apache-tomcat-9.0.8.tar.gz
 result=$?
 if [ $result -ne 0 ]; then
    echo "Impossible to retrieve Apache Tomcat"
@@ -54,8 +54,8 @@ echo
 echo "### Download Oracle JDK"
 #JDKArchiveFileName=jdk-8u102-linux-x64.tar.gz
 #JDKRemoteURL=http://download.oracle.com/otn-pub/java/jdk/8u102-b14/$JDKArchiveFileName
-JDKArchiveFileName=jdk-7u79-linux-x64.tar.gz
-JDKRemoteURL=http://download.oracle.com/otn-pub/java/jdk/7u79-b15/$JDKArchiveFileName
+JDKArchiveFileName=jdk-8u172-linux-x64.tar.gz
+JDKRemoteURL=http://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08//$JDKArchiveFileName
 wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" $JDKRemoteURL
 
 while [ ! -f $JDKArchiveFileName ]; do

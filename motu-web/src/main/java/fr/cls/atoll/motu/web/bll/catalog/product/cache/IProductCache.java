@@ -23,4 +23,6 @@ public interface IProductCache {
     Product getProduct(String configServiceName, String productId);
 
     void setProduct(String configServiceName, Product product);
+
+    void removeProduct(String configServiceName);
 }

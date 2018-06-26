@@ -1,10 +1,9 @@
 package fr.cls.atoll.motu.web.bll.config;
 
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import fr.cls.atoll.motu.web.bll.config.updater.ConfigServiceUpdater;
+import fr.cls.atoll.motu.web.bll.config.updater.IConfigUpdatedListener;
 import fr.cls.atoll.motu.web.bll.config.version.BLLVersionManager;
 import fr.cls.atoll.motu.web.bll.config.version.IBLLVersionManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
@@ -27,17 +26,25 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 public class BLLConfigManager implements IBLLConfigManager {
 
     private IDALConfigManager dalConfigManager;
-    private IBLLQueueServerConfigManager bllQueueServerConfigManager;
     private IBLLVersionManager bllVersionManager;
+    private ConfigServiceUpdater configServiceUpdater;
 
     public BLLConfigManager() {
+        configServiceUpdater = new ConfigServiceUpdater();
         dalConfigManager = DALManager.getInstance().getConfigManager();
-        bllQueueServerConfigManager = new BLLQueueServerConfigManager();
         bllVersionManager = new BLLVersionManager();
     }
 
     @Override
     public void init() throws MotuException {
+        dalConfigManager.setConfigUpdatedListener(new IConfigUpdatedListener() {
+
+            @Override
+            public void onMotuConfigUpdated(MotuConfig newMotuConfig) {
+                configServiceUpdater.onMotuConfigUpdated(newMotuConfig);
+            }
+
+        });
         dalConfigManager.init();
         bllVersionManager.init();
     }
@@ -62,16 +69,6 @@ public class BLLConfigManager implements IBLLConfigManager {
     @Override
     public List<StandardName> getStandardNameList() {
         return dalConfigManager.getStandardNameList();
-    }
-
-    /**
-     * Valeur de bllQueueServerConfig.
-     * 
-     * @return la valeur.
-     */
-    @Override
-    public IBLLQueueServerConfigManager getQueueServerConfigManager() {
-        return bllQueueServerConfigManager;
     }
 
     /** {@inheritDoc} */
@@ -99,24 +96,6 @@ public class BLLConfigManager implements IBLLConfigManager {
         return csResult;
     }
 
-    /**
-     * Gets the tDS dataset id.
-     * 
-     * @param locationData the location data
-     * 
-     * @return the tDS dataset id
-     */
-    private String catalogNameFromProductLocation(String locationData) {
-        String patternExpression = "(http://.*thredds/)(dodsC/)(.*)";
-
-        Pattern pattern = Pattern.compile(patternExpression);
-        Matcher matcher = pattern.matcher(locationData);
-
-        matcher.find();
-
-        return matcher.group(matcher.groupCount());
-    }
-
     /** {@inheritDoc} */
     @Override
     public String getMotuConfigurationFolderPath() {
@@ -127,10 +106,5 @@ public class BLLConfigManager implements IBLLConfigManager {
     @Override
     public IBLLVersionManager getVersionManager() {
         return bllVersionManager;
-    }
-
-    @Override
-    public Map<String, ConfigService> getConfigServiceMap() {
-        return dalConfigManager.getConfigServiceMap();
     }
 }

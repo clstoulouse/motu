@@ -64,7 +64,6 @@ public abstract class ExtractCriteria {
      * @return min an max value of the array
      */
     public static double[] getMinMax(double[] array) {
-
         double max = -Double.MAX_VALUE;
         double min = Double.MAX_VALUE;
         for (int i = 0; i < array.length; i++) {
@@ -75,10 +74,7 @@ public abstract class ExtractCriteria {
                 min = array[i];
             }
         }
-        double[] result = new double[2];
-        result[0] = min;
-        result[1] = max;
-        return result;
+        return new double[] { min, max };
     }
 
     /**
@@ -87,18 +83,8 @@ public abstract class ExtractCriteria {
      * @return index corresponding to the smallest value nearest in the array, or -1 if array is empty.
      * @throws MotuException
      */
-    static public int findMinIndex(double[] array, double value) {
-
+    public static int findMinIndex(double[] array, double value) {
         int index = -1;
-        // for (int i = 1; i < array.length; i++) {
-        // if (array[i] > value) {
-        // index = i - 1;
-        // break;
-        // } else if (array[i] == value) {
-        // index = i;
-        // break;
-        // }
-        // }
         for (int i = 0; i < array.length; i++) {
             if (array[i] >= value) {
                 index = i;
@@ -118,18 +104,8 @@ public abstract class ExtractCriteria {
      * @return index corresponding to the greatest value nearest in the array, or -1 if array is empty.
      * @throws MotuException
      */
-    static public int findMaxIndex(double[] array, double value) {
-
+    public static int findMaxIndex(double[] array, double value) {
         int index = -1;
-        // for (int i = array.length - 2; i >= 0; i--) {
-        // if (array[i] < value) {
-        // index = i + 1;
-        // break;
-        // } else if (array[i] == value) {
-        // index = i;
-        // break;
-        // }
-        // }
         for (int i = array.length - 1; i >= 0; i--) {
             if (array[i] <= value) {
                 index = i;
@@ -148,10 +124,10 @@ public abstract class ExtractCriteria {
      * @return index corresponding exactly to the value in the array, or -1 if not found
      * @throws MotuException
      */
-    static public int findExactIndex(double[] array, double value) {
+    public static int findExactIndex(double[] array, double value) {
         int index = -1;
         for (int i = 0; i < array.length; i++) {
-            if (array[i] == value) {
+            if (Double.compare(array[i], value) == 0) {
                 index = i;
                 break;
             }

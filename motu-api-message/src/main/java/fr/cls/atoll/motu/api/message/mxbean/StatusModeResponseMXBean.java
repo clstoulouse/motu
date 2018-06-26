@@ -20,7 +20,7 @@ public interface StatusModeResponseMXBean {
      * @return possible object is {@link Long }
      * 
      */
-    public Long getRequestId();
+    public String getRequestId();
 
     /**
      * Gets the value of the dateProc property.

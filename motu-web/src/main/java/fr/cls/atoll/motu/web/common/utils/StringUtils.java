@@ -50,20 +50,20 @@ public class StringUtils {
      */
     public static String getUniqueFileName(String prefix, String suffix) {
         // Gets a temporary fle name for the file to create.
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (prefix != null) {
-            stringBuffer.append(prefix);
+            sb.append(prefix);
         }
 
-        stringBuffer.append("_");
+        sb.append("_");
 
         long numId = generateUniqueId();
-        stringBuffer.append(Long.toString(numId));
+        sb.append(Long.toString(numId));
 
         if (suffix != null) {
-            stringBuffer.append(suffix);
+            sb.append(suffix);
         }
-        String temp = Zip.unAccent(stringBuffer.toString());
+        String temp = Zip.unAccent(sb.toString());
         // replace all non-words character except '.' by "-"
         return temp.replaceAll("[\\W&&[^\\.]]", "-");
     }

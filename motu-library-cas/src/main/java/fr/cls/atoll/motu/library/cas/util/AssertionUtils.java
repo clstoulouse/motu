@@ -81,11 +81,8 @@ public class AssertionUtils {
      * @return the attribute principal name
      */
     public static String getAttributePrincipalName(Assertion assertion) {
-
         AttributePrincipal attributePrincipal = AssertionUtils.getAttributePrincipal(assertion);
-
         String name = "";
-
         if (attributePrincipal != null) {
             name = attributePrincipal.getName();
         }

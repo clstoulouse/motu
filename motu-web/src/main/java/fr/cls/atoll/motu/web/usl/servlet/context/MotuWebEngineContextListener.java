@@ -26,7 +26,7 @@ package fr.cls.atoll.motu.web.usl.servlet.context;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.management.AttributeNotFoundException;
@@ -44,11 +44,12 @@ import org.apache.catalina.Container;
 import org.apache.catalina.Server;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
-import org.apache.catalina.deploy.FilterMap;
+import org.apache.catalina.core.StandardService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.tomcat.util.descriptor.web.FilterMap;
 
 import fr.cls.atoll.motu.api.message.xml.StatusModeResponse;
 import fr.cls.atoll.motu.api.message.xml.StatusModeType;
@@ -171,8 +172,8 @@ public class MotuWebEngineContextListener implements ServletContextListener {
     private int[] getPendingAnInProgressRequestNumber() throws MotuException {
         int pendingRequestNbr = 0;
         int inProgressRequestNbr = 0;
-        List<Long> requestIds = BLLManager.getInstance().getRequestManager().getRequestIds();
-        for (Long requestId : requestIds) {
+        Set<String> requestIds = BLLManager.getInstance().getRequestManager().getRequestIds();
+        for (String requestId : requestIds) {
             RequestDownloadStatus rds = BLLManager.getInstance().getRequestManager().getDownloadRequestStatus(requestId);
             if (rds != null) {
                 StatusModeResponse statusModeResponse = XMLConverter.convertStatusModeResponse(rds);
@@ -249,7 +250,7 @@ public class MotuWebEngineContextListener implements ServletContextListener {
                 try {
                     String logCasServerInWebXML = "activated";
                     if (!BLLManager.getInstance().getConfigManager().isCasActivated()) {
-                        removeAllCasFilters(getStandardContext(sce));
+                        removeAllCasFilters(sce);
                         logCasServerInWebXML = "disabled";
                     }
                     LOGGER.info("CAS Server filters in web.xml: " + logCasServerInWebXML);
@@ -262,23 +263,20 @@ public class MotuWebEngineContextListener implements ServletContextListener {
         t.start();
     }
 
-    private StandardContext getStandardContext(ServletContextEvent sce)
-            throws MalformedObjectNameException, AttributeNotFoundException, InstanceNotFoundException, MBeanException, ReflectionException {
+    private void removeAllCasFilters(ServletContextEvent sce)
+            throws AttributeNotFoundException, InstanceNotFoundException, MBeanException, ReflectionException, MalformedObjectNameException {
         MBeanServer mBeanServer = MBeanServerFactory.findMBeanServer(null).get(0);
         ObjectName name = new ObjectName("Catalina", "type", "Server");
         Server server = (Server) mBeanServer.getAttribute(name, "managedResource");
-        StandardEngine engine = (StandardEngine) server.findService("Catalina").getContainer();
+        StandardService catalinaService = (StandardService) server.findService("Catalina");
+        StandardEngine engine = (StandardEngine) catalinaService.getContainer();
         Container container = engine.findChild(engine.getDefaultHost());
         StandardContext context = (StandardContext) container.findChild(sce.getServletContext().getContextPath());
-        return context;
-    }
-
-    private void removeAllCasFilters(StandardContext context) {
         for (FilterMap fm : context.findFilterMaps()) {
             if (fm.getFilterName().startsWith("CAS")) {
                 context.removeFilterMap(fm);
             }
         }
-
     }
+
 }

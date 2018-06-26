@@ -15,7 +15,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jasig.cas.client.util.AssertionHolder;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
@@ -186,7 +185,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
 
     @Override
     public void process() throws MotuException {
-        MotuConfig mc = BLLManager.getInstance().getConfigManager().getMotuConfig();
         ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(serviceHTTPParameterValidator.getParameterValueValidated());
         if (checkConfigService(cs, serviceHTTPParameterValidator)) {
             CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache()
@@ -198,8 +196,10 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                     RequestProduct rp;
                     try {
                         rp = new RequestProduct(p, createExtractionParameters(p.getProductMetaData()));
-                        downloadProduct(mc, cs, cd, rp);
-                    } catch (InvalidHTTPParameterException | NetCdfVariableNotFoundException e) {
+                        downloadProduct(BLLManager.getInstance().getConfigManager().getMotuConfig(), cs, cd, rp);
+                    } catch (NetCdfVariableNotFoundException e) {
+                        onArgumentError(new MotuException(ErrorType.NETCDF_VARIABLE_NOT_FOUND, e.getMessage()));
+                    } catch (InvalidHTTPParameterException e) {
                         onArgumentError(new MotuException(ErrorType.NETCDF_VARIABLE_NOT_FOUND, e));
                     }
                 }
@@ -250,7 +250,7 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
     }
 
     private void onAsynchronousMode(ConfigService cs, RequestProduct requestProduct) throws MotuException {
-        long requestId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(cs, requestProduct, this);
+        String requestId = BLLManager.getInstance().getRequestManager().downloadAsynchonously(cs, requestProduct, this);
         try {
             String response = XMLConverter.toXMLString(requestId, getActionCode(), scriptVersionParameterValidator.getParameterValueValidated());
             writeResponse(response, HTTPUtils.CONTENT_TYPE_XML_UTF8);
@@ -335,8 +335,6 @@ public class DownloadProductAction extends AbstractAuthorizedAction {
                 USLManager.getInstance().getUserManager().isUserAnonymous(),
                 scriptVersionParameterValidator.getParameterValueValidated());
 
-        // Set assertion to manage CAS.
-        extractionParameters.setAssertion(AssertionHolder.getAssertion());
         return extractionParameters;
     }
 

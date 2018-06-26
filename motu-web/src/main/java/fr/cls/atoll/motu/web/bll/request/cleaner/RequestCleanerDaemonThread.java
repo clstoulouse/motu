@@ -27,6 +27,16 @@ public class RequestCleanerDaemonThread extends StoppableDaemonThread {
         requestCleaner = new RequestCleaner();
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * Overwrite because motu configuration paramater can be updated
+     */
+    @Override
+    public long getRefreshDelayInMSec() {
+        return BLLManager.getInstance().getConfigManager().getMotuConfig().getRunCleanInterval() * 60 * 1000;
+    }
+
     /** {@inheritDoc} */
     @Override
     public void runProcess() {

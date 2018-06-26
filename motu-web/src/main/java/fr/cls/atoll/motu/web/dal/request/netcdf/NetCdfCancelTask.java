@@ -48,6 +48,7 @@ public class NetCdfCancelTask implements CancelTask {
      * @return true if cancelled
      * @see ucar.nc2.util.CancelTask#isCancel()
      */
+    @Override
     public boolean isCancel() {
         return false;
     }
@@ -58,6 +59,7 @@ public class NetCdfCancelTask implements CancelTask {
      * @param msg error message to set
      * @see ucar.nc2.util.CancelTask#setError(java.lang.String)
      */
+    @Override
     public void setError(String msg) {
         this.error = msg;
     }
@@ -83,5 +85,9 @@ public class NetCdfCancelTask implements CancelTask {
     }
 
     private String error = null;
+
+    @Override
+    public void setProgress(String arg0, int arg1) {
+    }
 
 }

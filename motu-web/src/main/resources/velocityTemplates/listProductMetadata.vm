@@ -22,11 +22,7 @@
 		#end
 
 		<li>
-		#if($catalogType != "DGF")
-			<a href=?action=describeProduct&data=${product.getLocationData()}&xmlfile=${service.getCatalogLocation()}>
-		#else
-			<a href=?action=describeProduct&data=${product.getLocationMetaData()}>
-		#end
+		<a href=?action=describeProduct&service=${service.getNameEncoded()}&product=${productMetaData.getProductIdEncoded()}>
 		Dataset description
 		</a>	
 		</li>

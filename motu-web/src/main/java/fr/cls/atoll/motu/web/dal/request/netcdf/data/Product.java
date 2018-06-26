@@ -214,15 +214,16 @@ public class Product implements Comparator<Product> {
 
     /**
      * Constructs product id from location data (last element of the location data).
+     * 
+     * @see Product#getLocationData()
      */
     public void setProductIdFromLocation() {
-
-        if (productMetaData == null) {
+        if (getProductMetaData() == null) {
             productMetaData = new ProductMetaData();
 
             // Get productId
             // first replace all "\" by "/"
-            String productId = locationData.replace("\\", "/");
+            String productId = getLocationData().replace("\\", "/");
             String[] locationDataSplit = productId.split("/");
 
             if (locationDataSplit.length > 0) {
@@ -232,7 +233,7 @@ public class Product implements Comparator<Product> {
             if (pointDataSplit.length > 0) {
                 productId = pointDataSplit[0];
             }
-            productMetaData.setProductId(productId);
+            getProductMetaData().setProductId(productId);
         }
 
     }
@@ -243,7 +244,6 @@ public class Product implements Comparator<Product> {
      * @param productId the new product id
      */
     public void setProductId(String productId) {
-
         if (productMetaData == null) {
             productMetaData = new ProductMetaData();
         }
@@ -259,19 +259,9 @@ public class Product implements Comparator<Product> {
      * @throws NetCdfAttributeException the net cdf attribute exception
      */
     public void loadOpendapMetaData(String url) throws MotuException, NetCdfAttributeException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("loadOpendapMetaData() - entering");
-        }
-
         setLocationData(url);
-
         setProductIdFromLocation();
-
         loadOpendapMetaData();
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("loadOpendapMetaData() - exiting");
-        }
     }
 
     /**
@@ -280,10 +270,6 @@ public class Product implements Comparator<Product> {
      * @throws MotuException the motu exception
      */
     public void loadOpendapMetaData() throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("loadOpendapMetaData() - entering");
-        }
-
         if (locationData.equals("")) {
             throw new MotuException(
                     ErrorType.NETCDF_LOADING,
@@ -291,34 +277,7 @@ public class Product implements Comparator<Product> {
         }
         // Loads global metadata from opendap
         loadOpendapGlobalMetaData();
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("loadOpendapMetaData() - exiting");
-        }
     }
-
-    // /**
-    // * Reads product metadata from a XML file).
-    // *
-    // * @throws MotuException the motu exception
-    // */
-    // public void loadInventoryMetaData() throws MotuException {
-    // if (LOG.isDebugEnabled()) {
-    // LOG.debug("loadXmlMetaData() - entering");
-    // }
-    //
-    // if (locationMetaData.equals("")) {
-    // throw new
-    // MotuException("Error in loadInventoryMetaData - Unable to open XML file - url path is not set (is
-    // empty)");
-    // }
-    // // Loads global metadata from opendap
-    // loadInventoryGlobalMetaData();
-    //
-    // if (LOG.isDebugEnabled()) {
-    // LOG.debug("loadXmlMetaData() - exiting");
-    // }
-    // }
 
     /**
      * Reads product global metadata from an (NetCDF file).
@@ -326,10 +285,6 @@ public class Product implements Comparator<Product> {
      * @throws MotuException the motu exception
      */
     public void loadOpendapGlobalMetaData() throws MotuException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("loadOpendapGlobalMetaData() - entering");
-        }
-
         if (productMetaData == null) {
             throw new MotuException(ErrorType.SYSTEM, "Error in loadOpendapGlobalMetaData - Unable to load - productMetaData is null");
         }
@@ -340,7 +295,7 @@ public class Product implements Comparator<Product> {
 
         try {
             // Gets global attribute 'title' if not set.
-            if (productMetaData.getTitle().equals("")) {
+            if (productMetaData.getTitle().isEmpty()) {
                 String title = getNetCdfReader().getStringValue("title");
                 productMetaData.setTitle(title);
             }
@@ -390,182 +345,7 @@ public class Product implements Comparator<Product> {
 
         // Gets variables metadata.
         getOpendapVariableMetadata();
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("loadOpendapGlobalMetaData() - exiting");
-        }
     }
-
-    // /**
-    // * Load inventory meta data.
-    // *
-    // * @throws MotuException the motu exception
-    // */
-    // public void loadInventoryMetaData() throws MotuException {
-    // loadInventoryMetaData(this.getLocationMetaData());
-    // }
-    //
-    // /**
-    // * Load inventory meta data.
-    // *
-    // * @param xmlUri the xml uri
-    // * @throws MotuException the motu exception
-    // */
-    // public void loadInventoryMetaData(String xmlUri) throws MotuException {
-    // Inventory inventoryOLA = Organizer.getInventoryOLA(xmlUri);
-    // loadInventoryMetaData(inventoryOLA);
-    // }
-
-    // /**
-    // * Load inventory meta data.
-    // *
-    // * @param inventoryOLA the inventory ola
-    // * @throws MotuException the motu exception
-    // */
-    // public void loadInventoryMetaData(Inventory inventoryOLA) throws MotuException {
-    //
-    // if (inventoryOLA == null) {
-    // return;
-    // }
-    //
-    // Resource resource = inventoryOLA.getResource();
-    // Access access = resource.getAccess();
-    //
-    // if (productMetaData == null) {
-    // productMetaData = new ProductMetaData();
-    // }
-    //
-    // loadInventoryGlobalMetaData(inventoryOLA);
-    //
-    // URI accessUri = null;
-    // URI accessUriTemp = null;
-    // String login = access.getLogin();
-    // String password = access.getPassword();
-    // StringBuffer userInfo = null;
-    //
-    // if (password == null) {
-    // password = "";
-    // }
-    //
-    // if (!Organizer.isNullOrEmpty(login)) {
-    // userInfo = new StringBuffer();
-    // userInfo.append(login);
-    // userInfo.append(":");
-    // userInfo.append(password);
-    // }
-    //
-    // try {
-    // accessUriTemp = access.getUrlPath();
-    //
-    // if (userInfo != null) {
-    // accessUri = new URI(
-    // accessUriTemp.getScheme(),
-    // userInfo.toString(),
-    // accessUriTemp.getHost(),
-    // accessUriTemp.getPort(),
-    // accessUriTemp.getPath(),
-    // accessUriTemp.getQuery(),
-    // accessUriTemp.getFragment());
-    // } else {
-    // accessUri = accessUriTemp;
-    // }
-    //
-    // } catch (URISyntaxException e) {
-    // throw new MotuException(
-    // String.format("Invalid URI '%s' in inventory product '%s' at '%s.urlPath' tag.attribute",
-    // accessUri,
-    // productMetaData.getProductId(),
-    // access.getClass().toString()),
-    // e);
-    // }
-    //
-    // setLocationData(accessUri.toString());
-    //
-    // List<DataFile> dataFiles = CatalogData.loadFtpDataFiles(inventoryOLA);
-    //
-    // setDataFiles(dataFiles);
-    //
-    // }
-    //
-    // /**
-    // * Reads product global variable metadata from a NetCDF file.
-    // *
-    // * @param inventoryOLA the inventory ola
-    // *
-    // * @throws MotuException the motu exception
-    // */
-    //
-    // public void loadInventoryGlobalMetaData(Inventory inventoryOLA) throws MotuException {
-    // if (LOG.isDebugEnabled()) {
-    // LOG.debug("loadInventoryGlobalMetaData() - entering");
-    // }
-    //
-    // if (productMetaData == null) {
-    // throw new MotuException("Error in loadInventoryGlobalMetaData - Unable to load - productMetaData is
-    // null");
-    // }
-    //
-    // productMetaData.setProductId(inventoryOLA.getResource().getUrn().toString());
-    // productMetaData.setTitle(Organizer.getDatasetIdFromURI(inventoryOLA.getResource().getUrn().toString()));
-    // productMetaData.setLastUpdate(DateUtils.getDateTimeAsUTCString(inventoryOLA.getLastModificationDate(),
-    // DateUtils.DATETIME_PATTERN2));
-    //
-    // Resource resource = inventoryOLA.getResource();
-    //
-    // TimePeriod timePeriod = resource.getTimePeriod();
-    // if (timePeriod != null) {
-    // productMetaData.setTimeCoverage(timePeriod.getStart(), timePeriod.getEnd());
-    // }
-    //
-    // GeospatialCoverage geospatialCoverage = resource.getGeospatialCoverage();
-    // if (geospatialCoverage != null) {
-    // ExtractCriteriaLatLon criteriaLatLon = new ExtractCriteriaLatLon(geospatialCoverage);
-    // productMetaData.setGeoBBox(new LatLonRect(criteriaLatLon.getLatLonRect()));
-    // }
-    //
-    // DepthCoverage depthCoverage = resource.getDepthCoverage();
-    // if (depthCoverage != null) {
-    // productMetaData
-    // .setDepthCoverage(new MinMax(depthCoverage.getMin().getValue().doubleValue(),
-    // depthCoverage.getMax().getValue().doubleValue()));
-    // }
-    //
-    // // Gets variables metadata.
-    // fr.cls.atoll.motu.library.inventory.Variables variables = resource.getVariables();
-    // if (variables != null) {
-    //
-    // for (fr.cls.atoll.motu.library.inventory.Variable variable : variables.getVariable()) {
-    //
-    // ParameterMetaData parameterMetaData = new ParameterMetaData();
-    //
-    // parameterMetaData.setName(variable.getName());
-    // parameterMetaData.setLabel(variable.getName());
-    // parameterMetaData.setUnit(variable.getUnits());
-    // parameterMetaData.setUnitLong(variable.getUnits());
-    // parameterMetaData.setStandardName(variable.getVocabularyName());
-    //
-    // if (productMetaData.getParameterMetaDatas() == null) {
-    // productMetaData.setParameterMetaDatas(new HashMap<String, ParameterMetaData>());
-    // }
-    // productMetaData.putParameterMetaDatas(variable.getName(), parameterMetaData);
-    //
-    // }
-    // }
-    //
-    // // if (productMetaData.getDocumentations() == null) {
-    // // productMetaData.setDocumentations(new ArrayList<DocMetaData>());
-    // // }
-    // // productMetaData.clearDocumentations();
-    // //
-    // // DocMetaData docMetaData = new DocMetaData();
-    // // docMetaData.setTitle(ProductMetaData.MEDIA_KEY);
-    // // docMetaData.setResource(CatalogData.CatalogType.FTP.name());
-    // // productMetaData.addDocumentations(docMetaData);
-    //
-    // if (LOG.isDebugEnabled()) {
-    // LOG.debug("loadInventoryGlobalMetaData() - exiting");
-    // }
-    // }
 
     /**
      * Sets the media key.
@@ -903,10 +683,16 @@ public class Product implements Comparator<Product> {
 
         double datetime = 0.0;
 
-        for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
-            datetime = it.getDoubleNext();
+        for (int i = 0; i < array.getSize(); i++) {
+            datetime = array.getDouble(i);
             list.add(0, NetCdfReader.getDateAsGMTNoZeroTimeString(datetime, productMetaData.getTimeAxis().getUnitsString()));
         }
+
+        // for (IndexIterator it = array.getIndexIterator(); it.hasNext();) {
+        // datetime = it.getDoubleNext();
+        // list.add(0, NetCdfReader.getDateAsGMTNoZeroTimeString(datetime,
+        // productMetaData.getTimeAxis().getUnitsString()));
+        // }
 
         return list;
     }
@@ -1564,16 +1350,6 @@ public class Product implements Comparator<Product> {
      * @return the product id encoded
      */
     public String getProductIdEncoded() {
-        return getProductIdEncoded("UTF-8");
-    }
-
-    /**
-     * Gets the product id encoded.
-     * 
-     * @param enc the enc
-     * @return the product id encoded
-     */
-    public String getProductIdEncoded(String enc) {
         if (productMetaData != null) {
             return productMetaData.getProductIdEncoded();
         } else {

@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Default configuration file -->
 <motuConfig defaultService="" logFormat="xml" useProxy="false" proxyHost="" proxyPort="" proxyLogin="" proxyPwd="" 
-defaultActionIsListServices="true" useAuthentication="false" 
-dataBlockSize="1024000" 
-maxSizePerFile="1024" 
-maxSizePerFileSub="1024" 
-
-extractionPath="/data/motu/data-deliveries" 
-downloadHttpUrl="http://localhost:8080/motu/deliveries" 
-httpDocumentRoot="http://localhost:8080" 
-httpBaseRef="/motu-web" 
-
-cleanExtractionFileInterval="60" 
-cleanRequestInterval="60" 
-runCleanInterval="15" 
-
-extractionFilePatterns=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|.*\.extract$" 
-extractionFileCacheSize="10000" 
-runGCInterval="0"
-
-refreshCacheToken="changeIt"
+  defaultActionIsListServices="true" useAuthentication="false" 
+  dataBlockSize="1024000" 
+  maxSizePerFile="1024" 
+  maxSizePerFileSub="1024" 
+  
+  extractionPath="/data/motu/data-deliveries" 
+  downloadHttpUrl="http://localhost:8080/motu/deliveries" 
+  httpDocumentRoot="http://localhost:8080" 
+  httpBaseRef="/motu-web" 
+  
+  cleanExtractionFileInterval="60" 
+  cleanRequestInterval="60" 
+  runCleanInterval="15" 
+  
+  extractionFilePatterns=".*\.nc$|.*\.zip$|.*\.tar$|.*\.gz$|.*\.extract$" 
+  extractionFileCacheSize="10000" 
+  runGCInterval="0"
+  
+  refreshCacheToken="changeIt"
+  motuConfigReload="0"
 >
 
 	<!--======================================================================================-->

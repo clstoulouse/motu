@@ -74,12 +74,12 @@ public class VelocityModelConverter {
 
             @Override
             public String getGroup() {
-                return VelocityTemplateManager.encodeString(cs.getGroup());
+                return cs.getGroup();
             }
 
             @Override
             public String getDescription() {
-                return VelocityTemplateManager.encodeString(cs.getDescription());
+                return cs.getDescription();
             }
 
             @Override

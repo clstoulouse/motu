@@ -22,6 +22,7 @@ import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.messageserror.BLLMessagesErrorManager;
 import fr.cls.atoll.motu.web.bll.messageserror.IBLLMessagesErrorManager;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.common.utils.UnitUtils;
 
 /**
  * <br>
@@ -124,10 +125,12 @@ public class ExceptionUtils {
      */
     public static void setError(String actionCode, RequestSize requestSize, Exception e) {
         try {
-            double requestSizeD = (requestSize.getSize() == null) ? -1 : requestSize.getSize() * 1024;
-            double requestMaxAllowedSizeD = (requestSize.getMaxAllowedSize() == null) ? -1 : requestSize.getMaxAllowedSize() * 1024;
+            double requestSizeD = (requestSize.getSize() == null) ? -1 : requestSize.getSize();
+            double requestMaxAllowedSizeD = (requestSize.getMaxAllowedSize() == null) ? -1 : requestSize.getMaxAllowedSize();
             ErrorType errorType = getErrorType(e);
-            requestSize.setMsg(getErrorMessage(errorType, requestSizeD, requestMaxAllowedSizeD));
+            requestSize.setMsg(getErrorMessage(errorType,
+                                               Math.ceil(UnitUtils.kilobyteToMegabyte(requestSizeD)),
+                                               UnitUtils.kilobyteToMegabyte(requestMaxAllowedSizeD)));
             requestSize.setCode(StringUtils.getErrorCode(actionCode, errorType));
         } catch (MotuException errorMessageException) {
             requestSize.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
@@ -135,28 +138,6 @@ public class ExceptionUtils {
             LOGGER.error(StringUtils.getLogMessage(actionCode, BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
                          errorMessageException);
         }
-    }
-
-    /**
-     * Sets the error.
-     * 
-     * @param statusModeResponse the status mode response
-     * @param errorType the error type
-     */
-    public static void setError(String actionCode, StatusModeResponse statusModeResponse, ErrorType errorType) {
-        try {
-            statusModeResponse.setStatus(StatusModeType.ERROR);
-            String message = errorType.toString();
-            statusModeResponse.setMsg(getErrorMessage(errorType));
-            statusModeResponse.setCode(StringUtils.getErrorCode(actionCode, errorType));
-            LOGGER.error(StringUtils.getLogMessage(actionCode, errorType, message));
-        } catch (MotuException errorMessageException) {
-            statusModeResponse.setMsg(BLLManager.getInstance().getMessagesErrorManager().getMessageError(BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
-            statusModeResponse.setCode(StringUtils.getErrorCode(actionCode, BLLMessagesErrorManager.SYSTEM_ERROR_CODE));
-            LOGGER.error(StringUtils.getLogMessage(actionCode, BLLMessagesErrorManager.SYSTEM_ERROR_CODE, errorMessageException.getMessage()),
-                         errorMessageException);
-        }
-
     }
 
     /**

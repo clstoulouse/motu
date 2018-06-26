@@ -1,7 +1,11 @@
 package fr.cls.atoll.motu.web.usl.response.xml.converter;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -9,6 +13,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Interval;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import fr.cls.atoll.motu.api.message.xml.AvailableDepths;
 import fr.cls.atoll.motu.api.message.xml.AvailableTimes;
@@ -24,13 +30,13 @@ import fr.cls.atoll.motu.api.message.xml.VariableNameVocabulary;
 import fr.cls.atoll.motu.api.message.xml.VariableVocabulary;
 import fr.cls.atoll.motu.api.message.xml.Variables;
 import fr.cls.atoll.motu.api.message.xml.VariablesVocabulary;
-import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.ExceptionUtils;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.bll.exception.NetCdfVariableException;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
+import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.DataFile;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
@@ -87,8 +93,7 @@ public class ProductMetadataInfoConverter {
      * @throws MotuExceptionBase the motu exception base
      * @throws MotuException
      */
-    public static ProductMetadataInfo getProductMetadataInfo(Product product) throws MotuExceptionBase, MotuException {
-
+    public static ProductMetadataInfo getProductMetadataInfo(ConfigService cs, Product product) throws MotuExceptionBase, MotuException {
         ProductMetadataInfo productMetadataInfo = createProductMetadataInfo();
 
         if (product == null) {
@@ -104,7 +109,11 @@ public class ProductMetadataInfoConverter {
         productMetadataInfo.setId(product.getProductId());
         productMetadataInfo.setTitle(productMetaData.getTitle());
         productMetadataInfo.setLastUpdate(productMetaData.getLastUpdate());
-
+        String url = null;
+        if (cs != null) {
+            url = "enabled".equalsIgnoreCase(cs.getCatalog().getNcss()) ? product.getLocationDataNCSS() : product.getLocationData();
+        }
+        productMetadataInfo.setUrl(url);
         productMetadataInfo.setGeospatialCoverage(initGeospatialCoverage(productMetaData));
         productMetadataInfo.setProperties(initProperties(productMetaData));
         productMetadataInfo.setTimeCoverage(initTimeCoverage(productMetaData));
@@ -117,7 +126,6 @@ public class ProductMetadataInfoConverter {
 
         productMetadataInfo.setCode(Integer.toString(ErrorType.OK.value()));
         productMetadataInfo.setMsg(ErrorType.OK.toString());
-        productMetadataInfo.setUrl(product.getLocationMetaData());
 
         return productMetadataInfo;
     }
@@ -177,6 +185,18 @@ public class ProductMetadataInfoConverter {
         for (CoordinateAxis coordinateAxis : coordinateAxes) {
             axisList.add(initAxis(coordinateAxis, productMetaData));
         }
+        Collections.sort(axisList, new Comparator<Axis>() {
+
+            @Override
+            public int compare(Axis a1, Axis a2) {
+                int compareResult = 0;
+                if (a1 != null && a2 != null && a1.getName() != null) {
+                    compareResult = a1.getName().compareTo(a2.getName());
+                }
+                return compareResult;
+            }
+
+        });
 
         dataGeospatialCoverage.setCode(Integer.toString(ErrorType.OK.value()));
         dataGeospatialCoverage.setMsg(ErrorType.OK.toString());
@@ -339,6 +359,132 @@ public class ProductMetadataInfoConverter {
 
     }
 
+    static class AvailablePeriod {
+        private long startPeriod;
+        private long endPeriod;
+        private long stepPeriod;
+        private int stepsNumber;
+
+        public AvailablePeriod(long startPeriod, long endPeriod, long stepPeriod, int stepsNumber) {
+            super();
+            setStartPeriod(startPeriod);
+            setEndPeriod(endPeriod);
+            setStepPeriod(stepPeriod);
+            setStepsNumber(stepsNumber);
+        }
+
+        public int getStepsNumber() {
+            return stepsNumber;
+        }
+
+        public void setStepsNumber(int stepsNumber) {
+            this.stepsNumber = stepsNumber;
+        }
+
+        public long getStartPeriod() {
+            return startPeriod;
+        }
+
+        public void setStartPeriod(long startPeriod) {
+            this.startPeriod = startPeriod;
+        }
+
+        public long getEndPeriod() {
+            return endPeriod;
+        }
+
+        public void setEndPeriod(long endPeriod) {
+            this.endPeriod = endPeriod;
+        }
+
+        public long getStepPeriod() {
+            return stepPeriod;
+        }
+
+        public void setStepPeriod(long stepPeriod) {
+            this.stepPeriod = stepPeriod;
+        }
+
+        @Override
+        public String toString() {
+            return "AvailablePeriod [startPeriod=" + startPeriod + ", endPeriod=" + endPeriod + ", stepPeriod=" + stepPeriod + "]";
+        }
+
+        public String toString(String dateFormat) {
+            SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+            return sdf.format(new Date(startPeriod)) + "/" + sdf.format(new Date(endPeriod)) + "/" // + "R" +
+                                                                                                   // stepsNumber
+                                                                                                   // + "/"
+                    + fr.cls.atoll.motu.web.common.utils.DateUtils.getDurationISO8601(stepPeriod);
+            // + ", dataset duration="
+            // + fr.cls.atoll.motu.web.common.utils.DateUtils.getDurationDayHourMinSecMsec(endPeriod -
+            // startPeriod) + "]";
+        }
+    }
+
+    /**
+     * Used to create the durations with ISO_8601 format
+     * 
+     * @param listPeriods A list of string with format "yyyy-MM-dd HH:mm:ss" or "yyyy-MM-dd"
+     * @return Display the result on sysout
+     */
+    private static String buildDurations(List<Date> listPeriod) {
+        /** Date/time format. */
+        String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+        DateTimeFormatter dtf = DateTimeFormat.forPattern(DATETIME_FORMAT);
+
+        /** Date format. */
+        String DATE_FORMAT = "yyyy-MM-dd";
+        DateTimeFormatter df = DateTimeFormat.forPattern(DATE_FORMAT);
+        List<Long> timeList = new ArrayList<>();
+        List<AvailablePeriod> availablePeriodList = new ArrayList<>();
+        Long periodEnd = null;
+        Long periodStep = null;
+        int stepNumber = 0;
+        Long periodStart = null;
+        StringBuilder sb = new StringBuilder();
+        for (Date currentDate : listPeriod) {
+            Long dt = currentDate.getTime();
+            timeList.add(dt);
+        }
+        Collections.sort(timeList);
+        for (int i = 0; i < timeList.size(); i++) {
+            stepNumber++;
+            Long iTime = timeList.get(i);
+            if (periodStart == null) {
+                periodStart = iTime;
+                continue;
+            }
+
+            if (periodEnd == null) {
+                periodEnd = iTime;
+                periodStep = periodEnd - periodStart;
+                continue;
+            }
+
+            Long newPeriodStep = iTime - periodEnd;
+            if (newPeriodStep.equals(periodStep)) {
+                periodEnd = iTime;
+            } else {
+                availablePeriodList.add(new AvailablePeriod(periodStart, periodEnd, periodStep, stepNumber));
+                periodStart = iTime;
+                periodEnd = null;
+                periodStep = null;
+                stepNumber = 0;
+            }
+        }
+        // Last step
+        if (periodEnd != null) {
+            availablePeriodList.add(new AvailablePeriod(periodStart, periodEnd, periodStep, stepNumber));
+        }
+
+        for (AvailablePeriod ap : availablePeriodList) {
+            sb.append(ap.toString("yyyy-MM-dd'T'HH:mm:ss'Z'") + ",");
+        }
+
+        return sb.substring(0, sb.length() - 1);
+    }
+
     /**
      * Inits the available times.
      * 
@@ -356,42 +502,22 @@ public class ProductMetadataInfoConverter {
             return availableTimes;
         }
 
-        StringBuffer stringBuffer = new StringBuffer();
         List<DataFile> df = product.getDataFiles();
-
+        List<Date> dateList = null;
         // TDS catalog
         if (df == null) {
-            List<String> list = product.getTimeAxisDataAsString();
-            Iterator<String> i = list.iterator();
-
-            if (i.hasNext()) {
-                for (;;) {
-                    String value = i.next();
-                    stringBuffer.append(value);
-                    if (!i.hasNext()) {
-                        break;
-                    }
-                    stringBuffer.append(";");
-                }
-            }
+            dateList = product.getTimeAxisDataAsDate();
         }
         // FTP catalog
         else {
-            Iterator<DataFile> d = df.iterator();
+            dateList = new ArrayList<>();
 
-            if (d.hasNext()) {
-                for (;;) {
-                    String value = DateUtils.getDateTimeAsUTCString(d.next().getStartCoverageDate(), DateUtils.DATETIME_PATTERN2);
-                    stringBuffer.append(value);
-                    if (!d.hasNext()) {
-                        break;
-                    }
-                    stringBuffer.append(";");
-                }
+            for (DataFile currentDataFile : df) {
+                dateList.add(currentDataFile.getStartCoverageDate().toDate());
             }
         }
 
-        availableTimes.setValue(stringBuffer.toString());
+        availableTimes.setValue(buildDurations(dateList));
         availableTimes.setCode(Integer.toString(ErrorType.OK.value()));
         availableTimes.setMsg(ErrorType.OK.toString());
 
@@ -427,6 +553,19 @@ public class ProductMetadataInfoConverter {
         for (ParameterMetaData parameterMetaData : parameterMetaDataList) {
             variableList.add(initVariable(parameterMetaData));
         }
+
+        Collections.sort(variableList, new Comparator<Variable>() {
+
+            @Override
+            public int compare(Variable v1, Variable v2) {
+                int compareResult = 0;
+                if (v1 != null && v2 != null && v1.getName() != null) {
+                    compareResult = v1.getName().compareTo(v2.getName());
+                }
+                return compareResult;
+            }
+
+        });
 
         variables.setCode(Integer.toString(ErrorType.OK.value()));
         variables.setMsg(ErrorType.OK.toString());

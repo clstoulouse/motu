@@ -33,7 +33,7 @@ import ucar.ma2.MAMath;
 import ucar.ma2.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFileWriteable;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
@@ -57,11 +57,11 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
     /**
      * Map of each output Lat value and position (index).
      */
-    protected SortedMap<Double, Integer> mapLat = new TreeMap<Double, Integer>();
+    protected SortedMap<Double, Integer> mapLat;
     /**
      * Map of each output Lon value and position (index).
      */
-    protected SortedMap<Double, Integer> mapLon = new TreeMap<Double, Integer>();
+    protected SortedMap<Double, Integer> mapLon;
 
     /**
      * Input Lat variable.
@@ -123,27 +123,27 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
     /**
      * List of each adjacent Lat dimension range values.
      */
-    List<double[]> rangesLatValue = new ArrayList<double[]>();
+    private List<double[]> rangesLatValue;
     /**
      * List of each adjacent Lon dimension range values.
      */
-    List<double[]> rangesLonValue = new ArrayList<double[]>();
+    private List<double[]> rangesLonValue;
     /**
      * List of each adjacent Lat dimension range.
      */
-    List<List<Range>> listYXRanges = null;
+    // private List<List<Range>> listYXRanges = null;
 
     /**
      * Map of output dimensions.
      */
-    Map<String, Dimension> outputDims = new HashMap<String, Dimension>();
+    private Map<String, Dimension> outputDims;
     /**
      * Map of output variables.
      */
-    Map<String, Variable> outputVars = new HashMap<String, Variable>();
+    private Map<String, Variable> outputVars;
 
-    Array latArray = null;
-    Array lonArray = null;
+    private Array latArray = null;
+    private Array lonArray = null;
 
     /**
      * Constructeur.
@@ -152,6 +152,12 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
      */
     public DatasetGridXYLatLonManager(RequestDownloadStatus rds_) {
         super(rds_);
+        mapLat = new TreeMap<>();
+        mapLon = new TreeMap<>();
+        outputDims = new HashMap<>();
+        outputVars = new HashMap<>();
+        rangesLonValue = new ArrayList<>();
+        rangesLatValue = new ArrayList<>();
     }
 
     @Override
@@ -160,21 +166,24 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
             NetCdfVariableNotFoundException, IOException {
         initNetCdfExtraction();
 
-        netCdfWriter = new NetCdfWriter(getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getExtractLocationDataTemp(), true);
-        NetcdfFileWriteable ncFile = netCdfWriter.getNcfile();
+        netCdfWriter = new NetCdfWriter(
+                getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getExtractLocationDataTemp(),
+                getRequestDownloadStatus().getRequestProduct().getExtractionParameters().getDataOutputFormat());
+        NetcdfFile ncFile = netCdfWriter.getNcfileWriter().getNetcdfFile();
 
-        ExtractCriteriaLatLon extractCriteriaLatLon = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().findCriteriaLatLon();
+        ExtractCriteriaLatLon extractCriteriaLatLon = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters()
+                .findCriteriaLatLon();
         if (extractCriteriaLatLon == null) {
             getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getListCriteria().add(new ExtractCriteriaLatLon());
         }
 
         // gets global ranges to be extracted
-        getTimeRange();
-        getYXRange();
-        getZRange();
+        Range tRange = initTimeRange();
+        Range[] yxRange = getYXRange();
+        Range zRange = initZRange();
 
         // get each adjacent Lat/Lon ranges
-        getAdjacentYXRange();
+        List<List<Range>> listYXRanges = initAdjacentYXRange();
 
         if (hasOutputTimeDimension) {
             inputVarTime = getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getTimeAxis();
@@ -192,14 +201,14 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
         // -----------------------------
         // Reads and fills Lat/Lon values
         // -----------------------------
-        storeLatitudeMap();
-        storeLongitudeMap();
+        storeLatitudeMap(yxRange, listYXRanges);
+        storeLongitudeMap(yxRange, listYXRanges);
 
         // -----------------------------
         // Create output axis dimension and variable
         // -----------------------------
-        createTimeVariable();
-        createZVariable();
+        createTimeVariable(tRange);
+        createZVariable(zRange);
         createLatVariable();
         createLonVariable();
 
@@ -207,12 +216,8 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
         List<Attribute> globalFixedAttributes = initializeNetCdfFixedGlobalAttributes();
         List<Attribute> globalDynAttributes = initializeNetCdfDynGlobalAttributes();
 
-        // netCdfWriter.writeDimensions(outputDims.values());
-
         GridDataset gds = new GridDataset(getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReaderDataset());
-
         for (VarData varData : getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().getVariables().values()) {
-
             GeoGrid geoGrid = gds.findGridByName(varData.getVarName());
             if (geoGrid == null) {
                 throw new MotuNotImplementedException(
@@ -220,30 +225,24 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
                                       varData.getVarName()));
             }
             Variable inputVar = geoGrid.getVariable();
-            Variable outputVar = new Variable(ncFile, null, null, inputVar.getName());
-            List<Dimension> dims = new ArrayList<Dimension>();
+            Variable outputVar = new Variable(ncFile, null, null, inputVar.getShortName());
+            List<Dimension> dims = new ArrayList<>();
             List<CoordinateAxis> inputDims = geoGrid.getCoordinateSystem().getCoordinateAxes();
             for (CoordinateAxis inputDim : inputDims) {
-                Dimension dimToAdd = outputDims.get(inputDim.getName());
-                if (dimToAdd == null) {
-                    // throw new MotuException(String.format("ERROR - Input dimension %s not found (method
-                    // DatasetGridYXLatLon.extractDataNetcdf)",
-                    // inputDim.getName()));
-                    continue;
+                Dimension dimToAdd = outputDims.get(inputDim.getFullName());
+                if (dimToAdd != null) {
+                    dims.add(dimToAdd);
+                    netCdfWriter.putDimension(dimToAdd);
+                    netCdfWriter.putVariable(getCoordinateVariable(dimToAdd));
                 }
-                dims.add(dimToAdd);
-                netCdfWriter.putDimension(dimToAdd);
-                netCdfWriter.putVariable(getCoordinateVariable(dimToAdd));
             }
             outputVar.setDimensions(dims);
             outputVar.setDataType(inputVar.getDataType());
             NetCdfWriter.copyAttributes(inputVar, outputVar);
-            // outputVar.setIOVar(inputVar);
-            outputVars.put(outputVar.getName(), outputVar);
+            outputVars.put(outputVar.getFullName(), outputVar);
 
-            netCdfWriter.putVariables(outputVar.getName(), outputVar);
-            netCdfWriter.writeDependentVariables(outputVar, gds);
-            // netCdfWriter.writeVariable(outputVar, null);
+            netCdfWriter.putVariables(outputVar.getFullName(), outputVar);
+            netCdfWriter.initDependentVariablesInVariableList(outputVar, gds);
         }
 
         netCdfWriter.writeGlobalAttributes(globalFixedAttributes);
@@ -254,13 +253,9 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
         processTimeAttributes();
         processZAttributes();
 
-        netCdfWriter.create(VAR_ATTR_TO_REMOVE);
-        // netCdfWriter.finish(VAR_ATTR_TO_REMOVE);
+        netCdfWriter.writeVariableInNetCdfFileAndSetNetcdfFileInCreateMode(VAR_ATTR_TO_REMOVE);
         for (Variable outputVar : outputVars.values()) {
-
-            // Variable inputVar = outputVar.getIOVar();
-
-            writeVariable(outputVar, gds);
+            writeVariable(outputVar, gds, zRange, tRange, yxRange, listYXRanges);
         }
 
         try {
@@ -286,7 +281,7 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
                 }
                 netCdfWriter.writeVariableData(outputVarLon, data);
             }
-            netCdfWriter.getNcfile().close();
+            netCdfWriter.getNcfileWriter().close();
         } catch (IOException e) {
             throw new MotuException(ErrorType.SYSTEM, e);
         }
@@ -301,59 +296,58 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
      * @throws MotuException
      */
     @Override
-    public void getAdjacentYXRange() throws MotuException, MotuInvalidLatLonRangeException, MotuNotImplementedException {
-        listYXRanges = null;
+    public List<List<Range>> initAdjacentYXRange() throws MotuException, MotuInvalidLatLonRangeException, MotuNotImplementedException {
+        List<List<Range>> listYXRanges = null;
 
         if (getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().hasLatLonAxis()) {
-            ExtractCriteriaLatLon extractCriteriaLatLon = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters().findCriteriaLatLon();
+            ExtractCriteriaLatLon extractCriteriaLatLon = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters()
+                    .findCriteriaLatLon();
             if (extractCriteriaLatLon != null) {
                 CoordinateSystem cs = new CoordinateSystem(
                         getRequestDownloadStatus().getRequestProduct().getProduct().getNetCdfReaderDataset(),
                         getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().getLatLonAxis(),
                         null);
-                listYXRanges = extractCriteriaLatLon.toListRanges(cs, rangesLatValue, rangesLonValue);
+                try {
+                    listYXRanges = extractCriteriaLatLon.toListRanges(cs, rangesLatValue, rangesLonValue);
+                } catch (InvalidRangeException e) {
+                    throw new MotuException(ErrorType.SYSTEM, "Error while creating Range");
+                }
             }
         } else if (getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().hasGeoXYAxis()) {
             throw new MotuNotImplementedException("X/Y axis is not implemented (method DatasetGridXYLatLon.getAdjacentYXRange");
         }
-
+        return listYXRanges;
     }
 
     /**
      * Creates Time Dimension and Variable.
      */
-    public void createTimeVariable() {
+    public void createTimeVariable(Range tRange) {
         if (inputVarTime == null) {
             outputVarTime = null;
             return;
         }
         timeDim = new Dimension(inputVarTime.getShortName(), tRange.length(), true);
-        outputDims.put(timeDim.getName(), timeDim);
+        outputDims.put(timeDim.getFullName(), timeDim);
 
-        outputVarTime = new Variable(netCdfWriter.getNcfile(), null, null, timeDim.getName());
+        outputVarTime = new Variable(netCdfWriter.getNcfileWriter().getNetcdfFile(), null, null, timeDim.getShortName());
         NetCdfWriter.setDim(outputVarTime, timeDim);
         outputVarTime.setDataType(inputVarTime.getDataType());
         NetCdfWriter.copyAttributes(inputVarTime, outputVarTime);
-        // Netcdf 4.0 method Removed
-        // outputVarTime.setIsCoordinateAxis(timeDim);
-        // outputVarTime.setIOVar(inputVarTime);
-
-        // netCdfWriter.writeDimension(timeDim);
-        // netCdfWriter.writeVariable(outputVarTime, null);
     }
 
     /**
      * Creates Z (Depth) Dimension and Variable.
      */
-    public void createZVariable() {
+    public void createZVariable(Range zRange) {
         if (inputVarZ == null) {
             outputVarZ = null;
             return;
         }
         zDim = new Dimension(inputVarZ.getShortName(), zRange.length(), true);
-        outputDims.put(zDim.getName(), zDim);
+        outputDims.put(zDim.getFullName(), zDim);
 
-        outputVarZ = new Variable(netCdfWriter.getNcfile(), null, null, zDim.getName());
+        outputVarZ = new Variable(netCdfWriter.getNcfileWriter().getNetcdfFile(), null, null, zDim.getShortName());
         NetCdfWriter.setDim(outputVarZ, zDim);
         outputVarZ.setDataType(inputVarZ.getDataType());
         NetCdfWriter.copyAttributes(inputVarZ, outputVarZ);
@@ -374,8 +368,8 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
             return;
         }
         latDim = new Dimension(inputVarLat.getShortName(), mapLat.size(), true);
-        outputDims.put(latDim.getName(), latDim);
-        outputVarLat = new Variable(netCdfWriter.getNcfile(), null, null, latDim.getName());
+        outputDims.put(latDim.getFullName(), latDim);
+        outputVarLat = new Variable(netCdfWriter.getNcfileWriter().getNetcdfFile(), null, null, latDim.getShortName());
         NetCdfWriter.setDim(outputVarLat, latDim);
         outputVarLat.setDataType(inputVarLat.getDataType());
         NetCdfWriter.copyAttributes(inputVarLat, outputVarLat);
@@ -396,9 +390,9 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
             return;
         }
         lonDim = new Dimension(inputVarLon.getShortName(), mapLon.size(), true);
-        outputDims.put(lonDim.getName(), lonDim);
+        outputDims.put(lonDim.getFullName(), lonDim);
 
-        outputVarLon = new Variable(netCdfWriter.getNcfile(), null, null, lonDim.getName());
+        outputVarLon = new Variable(netCdfWriter.getNcfileWriter().getNetcdfFile(), null, null, lonDim.getShortName());
         NetCdfWriter.setDim(outputVarLon, lonDim);
         outputVarLon.setDataType(inputVarLon.getDataType());
         NetCdfWriter.copyAttributes(inputVarLon, outputVarLon);
@@ -416,7 +410,7 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
      * @throws MotuException
      * 
      */
-    protected void storeLatitudeMap() throws MotuException {
+    protected void storeLatitudeMap(Range[] yxRange, List<List<Range>> listYXRanges) throws MotuException {
         if (inputVarLat == null) {
             return;
         }
@@ -424,7 +418,7 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
         Array data = null;
         try {
             // Reads data corresponding to the global range.
-            List<Range> listRangeGlobal = new ArrayList<Range>();
+            List<Range> listRangeGlobal = new ArrayList<>();
             listRangeGlobal.add(yxRange[0]);
             listRangeGlobal.add(yxRange[1]);
             latArray = inputVarLat.read(listRangeGlobal);
@@ -469,49 +463,46 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
      * @throws MotuException
      * 
      */
-    protected void storeLongitudeMap() throws MotuException {
-        if (inputVarLon == null) {
-            return;
-        }
-
-        Array data = null;
-
-        try {
-            // Reads data corresponding to the global range.
-            List<Range> listRangeGlobal = new ArrayList<Range>();
-            listRangeGlobal.add(yxRange[0]);
-            listRangeGlobal.add(yxRange[1]);
-            lonArray = inputVarLon.read(listRangeGlobal);
-            // Reads and fills data or each adjacent ranges.
-            for (List<Range> listRange : listYXRanges) {
-                data = inputVarLon.read(listRange);
-                Index ima = data.getIndex();
-                int countPartialY = listRange.get(0).length();
-                int countPartialX = listRange.get(1).length();
-                // fills the sorted map with key = longitude and postition = null
-                for (int j = 0; j < countPartialY; j++) {
-                    for (int i = 0; i < countPartialX; i++) {
-                        Double value = data.getDouble(ima.set(j, i));
-                        mapLon.put(roundLatLon(value), null);
+    protected void storeLongitudeMap(Range[] yxRange, List<List<Range>> listYXRanges) throws MotuException {
+        if (inputVarLon != null) {
+            Array data = null;
+            try {
+                // Reads data corresponding to the global range.
+                List<Range> listRangeGlobal = new ArrayList<Range>();
+                listRangeGlobal.add(yxRange[0]);
+                listRangeGlobal.add(yxRange[1]);
+                lonArray = inputVarLon.read(listRangeGlobal);
+                // Reads and fills data or each adjacent ranges.
+                for (List<Range> listRange : listYXRanges) {
+                    data = inputVarLon.read(listRange);
+                    Index ima = data.getIndex();
+                    int countPartialY = listRange.get(0).length();
+                    int countPartialX = listRange.get(1).length();
+                    // fills the sorted map with key = longitude and postition = null
+                    for (int j = 0; j < countPartialY; j++) {
+                        for (int i = 0; i < countPartialX; i++) {
+                            Double value = data.getDouble(ima.set(j, i));
+                            mapLon.put(roundLatLon(value), null);
+                        }
                     }
                 }
-            }
-            // Run through the longitude map (sorted run) and compute the position (index)
-            Integer index = 0;
-            Set<Double> set = mapLon.keySet();
-            for (Double value : set) {
-                mapLon.put(value, index);
-                index++;
-            }
-        } catch (Exception e) {
-            throw new MotuException(ErrorType.BAD_PARAMETERS, "ERROR encountered in DatasetGridXYLatLon - fillLongitudeMap", e);
+                // Run through the longitude map (sorted run) and compute the position (index)
+                Integer index = 0;
+                Set<Double> set = mapLon.keySet();
+                for (Double value : set) {
+                    mapLon.put(value, index);
+                    index++;
+                }
+            } catch (Exception e) {
+                throw new MotuException(ErrorType.BAD_PARAMETERS, "ERROR encountered in DatasetGridXYLatLon - fillLongitudeMap", e);
 
+            }
+            // -----------------------------
+            // Sets the right Lon range values
+            // -----------------------------
+            xRangeValue[0] = mapLon.firstKey();
+            xRangeValue[1] = mapLon.lastKey();
         }
-        // -----------------------------
-        // Sets the right Lon range values
-        // -----------------------------
-        xRangeValue[0] = mapLon.firstKey();
-        xRangeValue[1] = mapLon.lastKey();
     }
 
     /**
@@ -801,15 +792,14 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
      * @throws MotuException
      * @throws MotuNotImplementedException
      */
-    public void writeVariable(Variable outputVar, GridDataset gds) throws MotuException, MotuNotImplementedException {
-
-        // Variable inputVar = outputVar.getIOVar();
+    public void writeVariable(Variable outputVar, GridDataset gds, Range zRange, Range tRange, Range[] yxRange, List<List<Range>> listYXRanges)
+            throws MotuException, MotuNotImplementedException {
         Variable inputVar = outputVar;
-        GeoGrid geoGrid = gds.findGridByName(inputVar.getName());
+        GeoGrid geoGrid = gds.findGridByName(inputVar.getFullName());
         if (geoGrid == null) {
             throw new MotuNotImplementedException(
                     String.format("Variable %s in not geo-referenced - Non-georeferenced data is not implemented (method DatasetGrid.extractData)",
-                                  inputVar.getName()));
+                                  inputVar.getFullName()));
         }
 
         GeoGrid geoGridSubset = null;
@@ -892,34 +882,13 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
                 if (NetCdfWriter.isReadByBlock(inputVarSubset)) {
                     fillDataByBlock(inputVarSubset, dataToFill);
                 } else {
-                    fillDataInOneGulp(inputVarSubset, dataToFill, origin, fillValue);
+                    fillDataInOneGulp(inputVarSubset, dataToFill, origin, fillValue, yxRange);
                 }
             }
-            // data = var.read(origin, shape);
             netCdfWriter.writeVariableData(outputVar, origin, dataToFill);
             dataToFill = null;
 
         }
-        // } catch (IOException e) {
-        // throw new MotuException("Error IOException in NetcdfWriter writeVariableByBlock", (Throwable) e);
-        // } catch (InvalidRangeException e) {
-        // throw new MotuException("Error InvalidRangeException in NetcdfWriter writeVariableByBlock",
-        // (Throwable) e);
-        // }
-
-        // for (List<Range> listYXRange : listYXRanges) {
-        // try {
-        // geoGridSubset = geoGrid.subset(tRange, zRange, listYXRange.get(0), listYXRange.get(1));
-        // } catch (InvalidRangeException e) {
-        // throw new MotuException("Error in subsetting geo grid", (Throwable) e);
-        // }
-        // inputVarSubset = (Variable) geoGridSubset.getVariable();
-        // if (netCdfWriter.isReadByBlock(inputVarSubset)) {
-        // fillDataByBlock(inputVarSubset, dataToFill);
-        // } else {
-        // fillDataInOneGulp(inputVarSubset, dataToFill);
-        // }
-        // }
     }
 
     /**
@@ -957,9 +926,7 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
                             "Error in DatasetGridXYLatLon fillDataByBlock - unable to find shape - (shape is null)");
                 }
                 // CSOON: StrictDuplicateCode
-
                 data = var.read(origin, shape);
-
                 // writeVariableData(var, data);
             }
         } catch (IOException e) {
@@ -979,7 +946,8 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
      * @param fillValue fillValue
      * @throws MotuException
      */
-    protected void fillDataInOneGulp(Variable varToRead, Array dataToFill, int[] originToFill, double fillValue) throws MotuException {
+    protected void fillDataInOneGulp(Variable varToRead, Array dataToFill, int[] originToFill, double fillValue, Range[] yxRange)
+            throws MotuException {
         Array dataRead = null;
         try {
             dataRead = varToRead.read();
@@ -992,7 +960,7 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
 
             break;
         case 2:
-            fillData2D(varToRead, dataRead, dataToFill, originToFill, fillValue);
+            fillData2D(varToRead, dataRead, dataToFill, originToFill, fillValue, yxRange);
             break;
         case 3:
 
@@ -1019,7 +987,7 @@ public class DatasetGridXYLatLonManager extends DatasetGridManager {
      * @param fillValue fillValue
      * @throws MotuException
      */
-    public void fillData2D(Variable varSrc, Array dataSrc, Array dataDest, int[] originDest, double fillValue) throws MotuException {
+    public void fillData2D(Variable varSrc, Array dataSrc, Array dataDest, int[] originDest, double fillValue, Range[] yxRange) throws MotuException {
         // Assumes that arrays are 2D first first dimension = y and second dimension = x
         // Assumes that data type is double.
         // List<Range> listRange = varSrc.getSectionRanges();

@@ -37,7 +37,7 @@ public class DALProductManager implements IDALProductManager {
      * @throws MotuExceptionBase
      */
     @Override
-    public double getProductDataSizeRequest(RequestDownloadStatus rds_) throws MotuException {
+    public double getProductDataSizeRequestInMegabyte(RequestDownloadStatus rds_) throws MotuException {
         double productDataSize = -1d;
         try {
             checkCatalogType(rds_);

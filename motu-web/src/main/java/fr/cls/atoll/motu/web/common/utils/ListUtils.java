@@ -14,8 +14,26 @@ import java.util.List;
  */
 public class ListUtils {
 
-    public static boolean isNullOrEmpty(List<?> value) {
-        return value == null || value.size() <= 0;
+    private ListUtils() {
     }
 
+    public static boolean isNullOrEmpty(List<?> value) {
+        return value == null || value.isEmpty();
+    }
+
+    public static double[] findMinMax(List<double[]> dArList) {
+        double min = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
+        for (double[] latValues : dArList) {
+            for (double value : latValues) {
+                if (value < min) {
+                    min = value;
+                } else if (value > max) {
+                    max = value;
+                }
+            }
+
+        }
+        return new double[] { min, max };
+    }
 }

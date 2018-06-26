@@ -26,17 +26,17 @@
 		<!-- Common properties -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> -->
-		<project.version.java>1.7</project.version.java>
+		<project.version.java>1.8</project.version.java>
 
 		<!-- Plugin versions -->
 		<plugin.version.compiler>3.2</plugin.version.compiler>
 
-		<jdk.source.version>1.7</jdk.source.version>
+		<jdk.source.version>1.8</jdk.source.version>
 		<jdk.source.encoding>UTF-8</jdk.source.encoding>
 
 		<dependencies.version.slf4j>1.7.21</dependencies.version.slf4j>
-		<dependencies.version.log4j>2.5</dependencies.version.log4j>
-		<dependencies.version.log4j-slf4j-impl>2.1</dependencies.version.log4j-slf4j-impl>
+		<dependencies.version.log4j>2.9.1</dependencies.version.log4j>
+		<dependencies.version.log4j-slf4j-impl>2.9.1</dependencies.version.log4j-slf4j-impl>
 		<dependencies.version.spring>2.5.6</dependencies.version.spring>
 		<dependencies.version.jersey>1.5</dependencies.version.jersey>
 		<dependencies.version.commons-io>1.4</dependencies.version.commons-io>
@@ -69,9 +69,9 @@
 		</dependency>
 
 		<dependency>
-		    <groupId>org.apache.logging.log4j</groupId>
-		    <artifactId>log4j-slf4j-impl</artifactId>
-		    <version>${dependencies.version.log4j-slf4j-impl}</version>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<version>${dependencies.version.log4j-slf4j-impl}</version>
 		</dependency>
 
 		<!-- Test dependencies -->
@@ -97,33 +97,20 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		
 		<dependency>
-			<groupId>ucar</groupId>
-			<artifactId>netcdf</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>stax-api</artifactId>
-					<groupId>stax</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>log4j</artifactId>
-					<groupId>log4j</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>slf4j-log4j12</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
+			    <groupId>edu.ucar</groupId>
+			    <artifactId>netcdfAll</artifactId>
 		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
 		<dependencies>
-        <dependency>
-		    <groupId>org.jvnet.ogc</groupId>
-		    <artifactId>wcs-v_2_0</artifactId>
-		    <version>${dependencies.version.ogc-schema}</version>
-		</dependency>
+			<dependency>
+				<groupId>org.jvnet.ogc</groupId>
+				<artifactId>wcs-v_2_0</artifactId>
+				<version>${dependencies.version.ogc-schema}</version>
+			</dependency>
 
 			<!-- XML -->
 			<dependency>
@@ -222,7 +209,7 @@
 			<dependency>
 				<groupId>joda-time</groupId>
 				<artifactId>joda-time</artifactId>
-				<version>1.6</version>
+				<version>2.9.9</version>
 			</dependency>
 
 			<dependency>
@@ -347,7 +334,7 @@
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-catalina</artifactId>
-				<version>7.0.69</version>
+				<version>9.0.8</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -383,19 +370,17 @@
 			<dependency>
 				<groupId>org.jasig.cas.client</groupId>
 				<artifactId>cas-client-core</artifactId>
-				<!--  Patch used to return LDAP attributes in Map<String, Object> attributes = principal.getAttributes(); in
-				/motu-web/src/main/java/fr/cls/atoll/motu/web/servlet/filter/Cas20ProxyReceivingTicketAuthorizationFilter.java
-				
-				This issue has not been fixed by 3.4.1
-				-->
-				<version>3.1.11-PATCH-CLS</version> 
-				<!-- <version>3.4.1</version>-->
+				<!-- Patch used to return LDAP attributes in Map<String, Object> attributes 
+					= principal.getAttributes(); in /motu-web/src/main/java/fr/cls/atoll/motu/web/servlet/filter/Cas20ProxyReceivingTicketAuthorizationFilter.java 
+					This issue has not been fixed by 3.4.1 -->
+				<version>3.1.11-PATCH-CLS</version>
+				<!-- <version>3.4.1</version> -->
 			</dependency>
 
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-vfs2</artifactId>
-				<version>2.0-PATCH-CLS</version>
+				<version>2.2</version>
 			</dependency>
 
 			<dependency>
@@ -427,21 +412,23 @@
 				<artifactId>velocity-tools</artifactId>
 				<version>1.3</version>
 			</dependency>
-
 			<dependency>
-				<groupId>ucar</groupId>
-				<artifactId>netcdf</artifactId>
-				<version>4.0.34</version>
-				<exclusions>
-					<exclusion>
-						<!-- In Java 1.6 it was not included in JRE, but in Java 1.7 it is 
-							so we exclude it -->
-						<groupId>stax</groupId>
-						<artifactId>stax-api</artifactId>
-					</exclusion>
-				</exclusions>
+				<groupId>redis.clients</groupId>
+				<artifactId>jedis</artifactId>
+				<version>2.9.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.jedis-lock</groupId>
+				<artifactId>jedis-lock</artifactId>
+				<version>1.0.0</version>
 			</dependency>
 
+			<dependency>
+			    <groupId>edu.ucar</groupId>
+			    <artifactId>netcdfAll</artifactId>
+			    <version>4.6.11</version>
+			</dependency>
+			
 			<!-- MOTU -->
 			<dependency>
 				<groupId>cls.motu</groupId>
@@ -458,14 +445,13 @@
 				<artifactId>motu-library-inventory</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			<!-- <dependency> <groupId>cls.motu</groupId> <artifactId>motu-library-misc</artifactId> 
-				<version>${project.version}</version> </dependency> -->
+			
 			<dependency>
 				<groupId>cls.motu</groupId>
 				<artifactId>motu-api-message</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			
+
 		</dependencies>
 	</dependencyManagement>
 
@@ -479,47 +465,47 @@
 
 		<!-- <module>../motu-library-misc</module> -->
 		<module>../motu-web</module>
-		
+
 		<module>../motu-scripts</module>
 		<module>../motu-distribution</module>
-		
+
 		<module>../motu-products</module>
 	</modules>
 
 	<build>
 		<plugins>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-toolchains-plugin</artifactId>
-			<version>1.1</version>
-			<executions>
-				<execution>
-					<goals>
-				  		<goal>toolchain</goal>
-					</goals>
-				</execution>
-			</executions>
-			<configuration>
-				<toolchains>
-					<jdk>
-						<version>${project.version.java}</version>
-						<vendor>sun</vendor>
-					</jdk>
-				</toolchains>
-			</configuration>
-		</plugin>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-compiler-plugin</artifactId>
-			<version>${plugin.version.compiler}</version>
-			<configuration>
-				<source>${project.version.java}</source>
-				<target>${project.version.java}</target>
-				<encoding>${project.build.sourceEncoding}</encoding>
-			</configuration>
-		</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-toolchains-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>toolchain</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<toolchains>
+						<jdk>
+							<version>${project.version.java}</version>
+							<vendor>sun</vendor>
+						</jdk>
+					</toolchains>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${plugin.version.compiler}</version>
+				<configuration>
+					<source>${project.version.java}</source>
+					<target>${project.version.java}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
 		</plugins>
 
 	</build>
-
+	
 </project>

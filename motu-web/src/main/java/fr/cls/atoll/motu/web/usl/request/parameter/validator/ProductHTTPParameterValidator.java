@@ -1,5 +1,8 @@
 package fr.cls.atoll.motu.web.usl.request.parameter.validator;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.NullOrEmptyInvalidHTTPParameterException;
@@ -37,7 +40,11 @@ public class ProductHTTPParameterValidator extends AbstractHTTPParameterValidato
         if (StringUtils.isNullOrEmpty(productStr)) {
             throw new NullOrEmptyInvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
         }
-        return productStr;
+        try {
+            return URLDecoder.decode(productStr, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new InvalidHTTPParameterException(getParameterName(), getParameterValue(), getParameterBoundaries());
+        }
     }
 
     @Override

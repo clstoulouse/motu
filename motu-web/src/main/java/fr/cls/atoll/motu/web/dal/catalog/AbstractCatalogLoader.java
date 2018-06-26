@@ -1,10 +1,5 @@
 package fr.cls.atoll.motu.web.dal.catalog;
 
-import java.io.IOException;
-
-import fr.cls.atoll.motu.library.cas.exception.MotuCasException;
-import fr.cls.atoll.motu.library.cas.util.AssertionUtils;
-import fr.cls.atoll.motu.library.cas.util.AuthenticationHolder;
 import fr.cls.atoll.motu.web.dal.config.xml.model.CatalogService;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
@@ -20,19 +15,6 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
 public class AbstractCatalogLoader {
-
-    protected String getUrlWithSSO(String path_, boolean useSSOAuthentication_) throws IOException, MotuCasException {
-        String newPath = path_;
-        if (useSSOAuthentication_) {
-            newPath = AssertionUtils.addCASTicket(path_);
-            if (!AssertionUtils.hasCASTicket(newPath)) {
-                newPath = AssertionUtils.addCASTicket(path_, AuthenticationHolder.getUser());
-            }
-        } else {
-            newPath = path_;
-        }
-        return newPath;
-    }
 
     protected String getCatalogURL(CatalogService catalogService) {
         String url = catalogService.getUrlSite();

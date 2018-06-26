@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.quartz.JobExecutionException;
 
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
@@ -36,17 +37,9 @@ public class RequestCleaner implements IRequestCleaner {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private IBLLRequestManager bllRequestManager;
-    private String extractionFilePattern;
-    private File folderExtractionPath;
-    private long cleanExtractionFileIntervalInMs;
-    private long cleanRequestIntervalInMs;
 
     public RequestCleaner() {
         bllRequestManager = BLLManager.getInstance().getRequestManager();
-        extractionFilePattern = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionFilePatterns();
-        folderExtractionPath = new File(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath());
-        cleanExtractionFileIntervalInMs = BLLManager.getInstance().getConfigManager().getMotuConfig().getCleanExtractionFileInterval() * 60 * 1000;
-        cleanRequestIntervalInMs = BLLManager.getInstance().getConfigManager().getMotuConfig().getCleanRequestInterval() * 60 * 1000;
     }
 
     /**
@@ -107,13 +100,13 @@ public class RequestCleaner implements IRequestCleaner {
         // gets disk space used by files (in Megabytes).
         int extractionFileCacheSize = BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionFileCacheSize();
         if (extractionFileCacheSize > 0) {
-            long length = Math.round(UnitUtils.toMegaBytes(getRecurseFileLength(folderExtractionPath)));
+            long length = Math.round(UnitUtils.byteToMegaByte(getRecurseFileLength(getFolderExtractionPath())));
             if (length > extractionFileCacheSize) {
                 File[] files = folderToScan.listFiles(new FileFilter() {
 
                     @Override
                     public boolean accept(File file) {
-                        return file.getName().matches(extractionFilePattern);
+                        return file.getName().matches(getExtractionFilePatterns());
                     }
                 });
                 if (files != null) {
@@ -124,7 +117,7 @@ public class RequestCleaner implements IRequestCleaner {
                     for (File fileToDelete : listFiles) {
                         boolean isDeleted = fileToDelete.delete();
                         LOGGER.info(String.format("deleteOlderFilesBeyondCacheSize - Deleting file '%s : %b' ", fileToDelete.getPath(), isDeleted));
-                        length = Math.round(UnitUtils.toMegaBytes(getRecurseFileLength(folderToScan)));
+                        length = Math.round(UnitUtils.byteToMegaByte(getRecurseFileLength(folderToScan)));
                         if (length <= extractionFileCacheSize) {
                             break;
                         }
@@ -143,20 +136,21 @@ public class RequestCleaner implements IRequestCleaner {
     public void cleanExtractedFile() {
         LOGGER.info("Start cleanExtractedFile");
         // This filter only returns directories
-        File[] files = folderExtractionPath.listFiles(new ExtractedFileToDeleteFilter(extractionFilePattern, cleanExtractionFileIntervalInMs));
+        File[] files = getFolderExtractionPath()
+                .listFiles(new ExtractedFileToDeleteFilter(getExtractionFilePatterns(), getCleanExtractionFileIntervalInMs()));
         if (files != null) {
             for (File fileToDelete : files) {
                 boolean isDeleted = fileToDelete.delete();
                 LOGGER.info(String.format("cleanExtractedFile - Deleting file '%s : %b' ", fileToDelete.getPath(), isDeleted));
             }
         }
-        deleteOlderFilesBeyondCacheSize(folderExtractionPath);
+        deleteOlderFilesBeyondCacheSize(getFolderExtractionPath());
     }
 
     @Override
     public void cleanJavaTempFile() {
         // This filter only returns directories
-        FileFilter fileFilter = new ExtractedFileToDeleteFilter(extractionFilePattern, cleanExtractionFileIntervalInMs);
+        FileFilter fileFilter = new ExtractedFileToDeleteFilter(getExtractionFilePatterns(), getCleanExtractionFileIntervalInMs());
         File javaTmpDirFolder = new File(System.getProperty("java.io.tmpdir"));
         File[] files = javaTmpDirFolder.listFiles(fileFilter);
 
@@ -178,9 +172,10 @@ public class RequestCleaner implements IRequestCleaner {
      */
     @Override
     public void cleanRequestStatus() {
-        for (Long requestId : getAllNonRunningRequestIds()) {
+        for (String requestId : getAllNonRunningRequestIds()) {
+            LOGGER.info("cleanRequestStatus - try to clean requestId=" + requestId);
             bllRequestManager.deleteRequest(requestId);
-            LOGGER.info("cleanRequestStatus - requestId=" + requestId);
+            LOGGER.info("cleanRequestStatus - clean done for requestId=" + requestId);
         }
     }
 
@@ -191,18 +186,34 @@ public class RequestCleaner implements IRequestCleaner {
      * 
      * @return
      */
-    private List<Long> getAllNonRunningRequestIds() {
-        List<Long> allNonRunningRequestIdList = new ArrayList<Long>();
-        for (long id : bllRequestManager.getRequestIds()) {
+    private List<String> getAllNonRunningRequestIds() {
+        List<String> allNonRunningRequestIdList = new ArrayList<String>();
+        for (String id : bllRequestManager.getRequestIds()) {
             RequestDownloadStatus rds = BLLManager.getInstance().getRequestManager().getDownloadRequestStatus(id);
             if (rds == null
                     || (rds.getEndProcessingDateTime() > 0
-                            && (rds.getEndProcessingDateTime() + cleanRequestIntervalInMs) < System.currentTimeMillis())
+                            && (rds.getEndProcessingDateTime() + getCleanRequestIntervalInMs()) < System.currentTimeMillis())
                     || ((rds.getCreationDateTime() + BLLRequestManager.REQUEST_TIMEOUT_MSEC) < System.currentTimeMillis())) {
                 allNonRunningRequestIdList.add(id);
             }
         }
         return allNonRunningRequestIdList;
+    }
+
+    private String getExtractionFilePatterns() {
+        return BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionFilePatterns();
+    }
+
+    private long getCleanExtractionFileIntervalInMs() {
+        return BLLManager.getInstance().getConfigManager().getMotuConfig().getCleanExtractionFileInterval() * 60 * 1000;
+    }
+
+    private long getCleanRequestIntervalInMs() {
+        return BLLManager.getInstance().getConfigManager().getMotuConfig().getCleanRequestInterval() * 60 * 1000;
+    }
+
+    private File getFolderExtractionPath() {
+        return new File(BLLManager.getInstance().getConfigManager().getMotuConfig().getExtractionPath());
     }
 
 }

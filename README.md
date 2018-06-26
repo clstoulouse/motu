@@ -14,6 +14,9 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
 # Summary
 * [Overview](#Overview)
 * [Architecture](#Architecture)
+  * [Overall](#ArchitectureOverall)
+       * [One instance](#ArchitectureOneInstance)  
+	   * [Scalability](#ArchitectureScalability)  
   * [Interfaces](#ArchitectureInterfaces)
      * [Server interfaces](#ArchitectureInterfacesServer)  
      * [External interfaces with other systems or tools](#ArchitectureInterfacesExternal)  
@@ -43,6 +46,7 @@ and also plugin for [notepadd++](https://github.com/Edditoria/markdown_npp_zenbu
   * [Security](#InstallSecurity)
      * [Run Motu as an HTTPS Web server](#InstallSecurityRunHTTPs)
 	 * [Motu and Single Sign On](#InstallSecuritySSO)
+  * [Install a scalable Motu over several instances](#InstallationScalability)
 * [Configuration](#Configuration)
   * [Configuration directory structure](#ConfigurationFolderStructure)
   * [Business settings](#ConfigurationBusiness)
@@ -83,14 +87,38 @@ Motu receives with authentication process user information, including a user pro
 Motu is configured to authorize or not the user to access the dataset or group of datasets which user is trying to access.  
 For administrators, Motu allows to monitor the usage of the server: the logs produced by Motu allow to know who (login) requests what (dataset) and when, with extraction criterias.
 
-
-
-
 # <a name="Architecture">Architecture</a>  
-Motu is a Java Web Application running inside the Apache Tomcat application server.
+Motu is a Java Web Application running inside the Apache Tomcat application server. Motu can be run as a [single application](#ArchitectureSingleInstance) or can be scaled over [several instances](#ArchitectureScalability).
 
-![Software architecture](./motu-parent/src/doc/softwareArchitecture.png "Motu software architecture")
 
+## <a name="ArchitectureOverall">Architecture overall</a>  
+
+### <a name="ArchitectureSingleInstance">Architecture single instance</a>  
+The clients ["motu-client-python"](#ClientPython) or an HTTP client like a [web browser](#ClientRESTAPI) are used to connect to Motu services.  
+A frontal web, [Apache HTTPd](#InstallFrontal) for example, is used as a reverse proxy to redirect request to Motu server and also to serve the [downloaded](#motuConfig-downloadHttpUrl) data from Motu [download folder](#motuConfig-extractionPath).  
+Motu server, runs on a Apache Tomcat server and can serve files either directly ["DGF"](#BSconfigServiceDatasetType) or by delegating extraction to Thredds server with NCSS or OpenDap [protocols](#BSconfigServiceDatasetType).  
+A NFS server is used to share the netcdf files between Thredds and Motu DGF when they are not deployed on the same host.  
+An (SSO CAS server)[#ConfigurationSystemCASSSO] is used for the authentication of users but Motu can also be deployed without any authentication system.  
+The Apache HTTPd, on the top right corner is used to [serve the graphic chart}(#InstallPublicFilesOnCentralServer) when several Motu Web server are deployed.
+
+The schema below shows an example of Motu scalability architecture. The "i1, i2" are the Motu server deployed. They have to share the same [business configuration file](#ConfigurationBusiness) and the [download folder](#motuConfig-extractionPath).      
+
+![Software architecture](./motu-parent/src/doc/softwareArchitecture.png "Motu software architecture, one instance")
+
+
+### <a name="ArchitectureScalability">Architecture scalability</a>  
+To run Motu over several instances, a [Redis server](#RedisServerConfig) has to be deployed in order to share to request id and status. The download folder of Motu has also to be shared between the different Motu instances.  
+If can be on a NFS server or a GLusterFS server.  
+The frontal web server "Apache HTTPd" must server the downloaded files and implements the load balencer between all Motu instances.   
+All other server, CAS, NFS remains as on the single instance architecture.   
+The same source code is used to run Motu with a single architecture or with several instances. It is just done by [configuration](#InstallationScalability).  
+When Motu is scalable, one Motu server instance can run a download request, another distinct Motu server instance can respond to a get status request and a last one can respond the URL on the result file. 
+
+![Software architecture](./motu-parent/src/doc/softwareArchitectureScalability.png "Motu software architecture, scalability")
+
+
+
+	   
 # <a name="ArchitectureInterfaces">Interfaces</a>  
 ## <a name="ArchitectureInterfacesServer">Server interfaces</a>  
 All ports are defined in [motu.properties](#ConfigurationSystem) configuration file.
@@ -111,7 +139,8 @@ Motu has interfaces with other systems:
 * __CDO command line tool__: [CDO](#InstallCDO) is used to deal with 2 types of download requests, which are not covered by NCSS service of Thredds Data Server:  
   * a download request on a __range of depths__,  
   * a download request that come __across the boundary__ of the datasets (for global datasets)  
-
+* __Redis__: Stores the request id and status into the Redis server when Motu is scaled over several instances.  
+  
 # <a name="ArchitectureDesign">Design</a>  
 The Motu application has been designed by implementing the Three-Layered Services Application design. It takes many advantages in maintenance cost efficiency and in the ease of its future evolutivity.  
 Three layers are set in the core "motu-web" project:  
@@ -182,7 +211,7 @@ requests that require CDO to be processed are in sequence and only one is proces
 ### <a name="ArchiAlgoDownloading1Point">Downloading 1 point</a>  
 Schema below displays a subset of a dataset variable as an array of 2 longitudes and 2 latitudes. At each intersection, we have got 1 real value (10, 11, 12, 13) as defined in the gridded data.  
 But which result value is returned by Motu when the request target a location between those longitudes and latitudes ?   
-As we can see below, 4 areas are display and the nearest value from the requested location is returned.
+As we can see below, 4 areas are displayed and the nearest value from the requested location is returned.
 
 ![Downloading 1 point](./motu-parent/src/doc/downwloading1point.png "Motu algorithm: Downloading 1 point")
 	 
@@ -366,7 +395,8 @@ cd target-ant/delivery/YYYYMMDDhhmmssSSS
 ## <a name="InstallPrerequisites">Prerequisites</a>  
 
 In this chapter some paths are set. For example "/opt/cmems-cis" is often written to talk about the installation path.
-You are free to install Motu in any other folder, so in the case, replace "/opt/cmems-cis" by your installation folder.
+You are free to install Motu in any other folder, so in the case, replace "/opt/cmems-cis" by your installation folder.  
+This installation is used to install Motu on a [single instance](#ArchitectureSingleInstance). To scale Motu on [several instances](#ArchitectureScalability), refers to [Install a scalable Motu over several instances](#InstallationScalability).
 
 ### <a name="InstallPrerequisitesHard">Motu host, hardware settings</a>
 OS target: Linux 64bits (Tested on centos-7.2.1511)
@@ -884,8 +914,14 @@ You have two choices:
 ### <a name="InstallSecuritySSO">Motu and Single Sign On</a>  
 In order to manage SSO (Single Sign On) connections to Motu web server, Motu uses an HTTPs client.  
 All documentation about how to setup is written in chapter [CAS SSO server](#ConfigurationSystemCASSSO).
-     
-     
+
+
+## <a name="InstallationScalability">Install a scalable Motu over several instances</a>  
+You have to install a [Redis server](https://redis.io/). (Motu has been tested with Redis version 4.0.8, 64 bit)
+To use Redis in order to share the request ids and status between all Motu instances, you just have to set the Redis settings in the [business configuration file](#RedisServerConfig). If this parameter is not set, the request id and status are stored in RAM.     
+You have to share the [download folder](#motuConfig-extractionPath) folder between all instances with a NFS mount, GlusterFS or any other file sharing system.   
+You have to set a frontal web server to server the [downloaded](#motuConfig-downloadHttpUrl) files from the Motu server and to load balance the requests between all Motu servers. 
+
 # <a name="Configuration">Configuration</a>  
 
 This chapter describes the Motu configuration settings.  
@@ -901,20 +937,22 @@ All the configuration files are set in the $installDir/motu/config folder.
 cd $installDir/motu/config
   
 * __config:__ Folder which contains the motu configuration files.
-  * __motu.properties:__ JVM memory, network ports of JVM (JMX, Debug) and Tomcat (HTTP, HTTPS, AJP, SHUTDOWN). CAS SSO server settings.
-  * __motuConfiguration.xml:__ Motu settings (Service, Catalog via Thredds, Proxy, Queues, ....)
-  * __log4j.xml:__ Log4j v2 configuration file
-  * __standardNames.xml:__ Contains the standard names [TBD]
+  * __[motu.properties](#ConfigurationSystem):__ JVM memory, network ports of JVM (JMX, Debug) and Tomcat (HTTP, HTTPS, AJP, SHUTDOWN). CAS SSO server settings.
+  * __[motuConfiguration.xml](#ConfigurationBusiness):__ Motu settings (Service, Catalog via Thredds, Proxy, Queues, ....)
+  * __[log4j.xml](#LogSettings):__ Log4j v2 configuration file
+  * __[standardNames.xml](#ConfigStandardNames):__ Contains the standard names
   * __version-configuration.txt:__ Contains the version of the current Motu configuration.
   
 ## <a name="ConfigurationBusiness">Business settings</a>  
 ### motuConfiguration.xml: Motu business settings  
+This file is watched and updated automatically. This means that when Motu is running, this file has to be written in a atomic way.  
 
 You can configure 3 main categories:  
 
 * [MotuConfig node : general settings](#BSmotuConfig)
 * [ConfigService node : catalog settings](#BSconfigService)
 * [QueueServerConfig node : request queue settings](#BSqueueServerConfig)
+* [RedisConfig node : Redis server config](#RedisServerConfig)
   
   
 If you have not this file, you can extract it (set the good version motu-web-X.Y.Z.jar):  
@@ -924,7 +962,7 @@ If you have not this file, you can extract it (set the good version motu-web-X.Y
     
   
 If you have this file from a version anterior to Motu v3.x, you can reuse it. In order to improve global performance, you have to upgrade some fields:  
-* [ncss](#BSmotuConfigNCSS) Set it to "enabled" to use a faster protocol named subsetter rather than OpenDap to communicate with TDS server. ncss must be enabled only with regular grid. The datasets using curvilinear coordinates (like ORCA grid) can not be published with ncss. Thus, ncss option must be set to disable or empty.    
+* [ncss](#BSmotuConfigNCSS) Set it to "enabled" to use a faster protocol named subsetter rather than OpenDap to communicate with TDS server. ncss must be enabled only with regular grid. The datasets using curvilinear coordinates (like ORCA grid) can not be published with ncss. Thus, ncss option must be set to disable or empty.  
 * [httpBaseRef](#motuConfig-httpBaseRef) shall be set to the ULR of the central repository to display the new theme  
 * [ExtractionFilePatterns](#BSmotuConfigExtractionFilePatterns) to give a custom name to the downloaded dataset file  
   
@@ -964,6 +1002,7 @@ For example: /opt/cmems-cis/motu/data/public/download
 It is recommended to set this folder on an hard drive with very good performances in write mode.
 It is recommended to have a dedicated partition disk to avoid freezing Motu if the hard drive is full.
 By default value is $MOTU_HOME/data/public/download, this folder can be a symbolic link to another folder.  
+String with format ${var} will be substituted with Java property variables. @See System.getProperty(var)  
 
 ##### <a name="motuConfig-downloadHttpUrl">downloadHttpUrl</a>
 Http URL used to download files stored in the "extractionPath" described above. It is used to allow users to download the result data files.  
@@ -1039,14 +1078,6 @@ They are sorted by config service which has taken the most time first.
 Example of archived data with several To of data. Cache is refreshed daily: describeProductCacheRefreshInMilliSec=86400000   
 Example of real time data with several Go of data. Cache is refreshed each minute: describeProductCacheRefreshInMilliSec=60000    
 
-
-##### updateCachePassPhrase
-Provide the pass phrase which is check if a request "updateCache" is received by the server.
-If the request passphrase is not the same as the configured passphrase, the update is not executed.
-If the passphrase is not filled, a default passphrase is used. This case doesn't stop the launching of the server but
-it's a security breach an error is generated in the error log.
-
-
 ##### runGCInterval
 @Deprecated from v3 This parameter is not used. 
 
@@ -1082,7 +1113,8 @@ tomcat-motu-jvm-javaOpts=-server -Xmx4096M  ... -Dhttp.proxyHost=monProxy.host.f
 
 This token is a key value which is checked to authorize the execution of the cache refresh when it is request by the administrator .
 If the token value provided by the administrator doesn't match the configured token value, the refresh is not executed and an error is returned.
-A default value is configured but it's hardly recommended to change this value. Even if this is a security breach.
+A default value "a7de6d69afa2111e7fa7038a0e89f7e2" is configured but it's hardly recommended to change this value. If this token is not changed, it is a security breach and 
+a log ERROR will be written while the configuration will be loaded.
 The value can contains the characters [A-Za-z] and specials listed here ( -_@$*!:;.,?()[] )
 It's recommended to configure a token with a length of 29 characters minimum.
 
@@ -1094,6 +1126,13 @@ Format of the file name result of a download request.
 * __@@productId@@__: this pattern will be replaced in the final file name by the id of the requested product.  
 
 If this attribute is not present, default value is: "@@productId@@_@@requestId@@.nc"
+
+##### motuConfigReload  
+Configure how motu configuration is reloaded.  
+Arguments are only 'inotify' or an 'integer in seconds'. 'inotify' is the default value.  
+* __'inotify'__: reload as soon as the file is updated (works only on local file system, not for NFS file system).  
+* __'integer in seconds'__: reload each X second the configuration in 'polling' mode. If this integer is equals or lower than 0, it disables the refresh of the configuration.  
+
 
 #### <a name="BSconfigService">Attributes defined in configService node</a>  
 
@@ -1206,7 +1245,7 @@ Default value is -1
 
 
 ##### Child node: dataThreshold
-Size in Mbytes. A request has a size. The queue in which this request will be processed is defined by the request size.
+Size in Megabyte. A request has a size. The queue in which this request will be processed is defined by the request size.
 All queues are sorted by size ascending. A request is put in the last queue which has a size lower than the request size.
 If the request size if higher than the bigger queue dataThreshold, request is not treated and an error message is returned.  
 This parameter is really useful when a Motu is used to server several kind of file size and you want to be sure that file with a specific size does no slow down request of small data size.  
@@ -1216,6 +1255,28 @@ process smallest requests by running the thread on the other processor core. Sp 
 
 ##### Child node: lowPriorityWaiting
 @Deprecated from v3 This parameter is not used.
+
+#### <a name="RedisServerConfig">Attributes defined in redisConfig node</a>  
+This optional node is used to run Motu in a [scalable architecture](#ArchitectureScalability). Do not add this node when you just run one single Motu instance.  
+Once this node is added, Motu stores all its request ids and status in Redis.  
+
+##### host
+Define the host (ip or server name) where is deployed the Redis server od Redis cluster used by Motu to share the RequestId and RequestStatus data.
+Default value is localhost
+
+##### port
+Define the port used by the Redis server or Redis cluster used by Motu to share the requestId and RequestStatus data.
+Default value is 6379  
+
+##### prefix
+Define the prefix used to build the RequestId value of the shared RequestStatus data.
+Default value is requestStatus
+
+##### isRedisCluster 
+Define if the redis server in in cluster mode.
+This is a boolean value.
+By default is set to false and the cluster mode is not activate.
+To activate the cluster, the value have to be set on true.
 
 ## <a name="ConfigurationSystem">System settings</a>  
 
@@ -1287,6 +1348,11 @@ How to build the file cacerts-with-cas-qt-ca.jks on Motu server?
   /opt/cmems-cis-validation/motu/products/jdk1.7.0_79/bin/keytool -import -v -trustcacerts -alias $CAS_HOST_NAME -file cas-qt-ca.crt -keystore cacerts-with-cas-qt-ca.jks -keypass XXX  
   ```  
 
+#### <a name="ConfigStandardNames">NetCdf standard names</a>  
+When NetCdf variables are read in data files, either by Threads or directly by Motu, Motu wait for a standard name metadata sttribute to be found for each variable as requiered by the [CF convention](#http://cfconventions.org/Data/cf-standard-names/docs/guidelines.html).
+Due to any production constraints, some netcdf files does not have any standard_name attribute.  
+In the case, you can add directly in the configuration folder, a file named standardNames.xml in order to map a standard_name to a netcdf variable name.  
+You can find an example in Motu source: /motu-web/src/main/resources/standardNames.xml  
 
 #### Supervision
 To enable the status supervision, set the parameter below:  
@@ -1529,7 +1595,7 @@ Tomcat log messages are generated in the tomcat-motu/logs folder.
 
 ## <a name="AdminDataSetAdd">Add a dataset</a>    
 In order to add a new Dataset, you have to add a new configService node in the [Motu business configuration](#ConfigurationBusiness).  
-When Motu read data through TDS (Opendap or NCSS service), the data shall be configured in TDS before this configuration in Motu. The TDS configuration is not explained here.  
+When Motu read data through TDS (Opendap or NCSS service) url, the data shall be configured in TDS before this configuration is saved in Motu. The [TDS configuration](https://www.unidata.ucar.edu/software/thredds/v4.6/tds/catalog/index.html) is not explained here.  
 
 Within CMEMS, the datasets are organized in a tree structure, where the product granularity appears above the dataset granularity.  
 To be noticed:  
@@ -2126,7 +2192,7 @@ __Parameters__:
 * __product__ [1]: The product id  
   
   
-#### Way 2   
+#### Way 2  (Deprecated) 
 
 __URL__: http://localhost:8080/motu-web/Motu?action=describeproduct&data=http://$tdsServer/thredds/dodsC/path_HR_MOD&xmlfile=http://$tdsServer/thredds/m_HR_MOD.xml  
 
@@ -2141,8 +2207,7 @@ __Return__: An XML document
 <productMetadataInfo code="OK" msg="OK" lastUpdate="Not Available" title="HR_MOD" id="HR_MOD">  
 <timeCoverage code="OK" msg="OK"/>  
 <availableTimes code="OK" msg="OK">  
-2012-12-26 12:00:00;2012-12-27 12:00:00;   
-...  
+1993-01-15T12:00:00ZP2D;2001-01-01T00:00:00ZPT12H;2012-03-01T00:00:00ZPT6H
 </availableTimes>  
 <availableDepths code="OK" msg="OK">  
 0.49402;1.54138;2.64567;...  
@@ -2163,6 +2228,48 @@ __Return__: An XML document
 </productMetadataInfo>  
 ```
 
+
+#### availableTimes XML tag 
+In the XML result file the tag "availableTimes" provides the list of date where data are available for the requested product.
+The format of the date follows the convention ISO_8601 used to represent the dates and times. (https://en.wikipedia.org/wiki/ISO_8601)
+Foreach available time period, the period definition format is "StartDatePeriod/EndDatePeriod/DurationBetweenEachAvailableData".
+The "availableTimes" contains a list of time period separated by a ",".
+* __StartDate__ : this the first date of the period where data are available.
+* __EndDate__ : this the last date of the period where data are available.
+* __DurationBetweenEachAvailableData__ : This the period duration between each available data in the interval defined by the the "StartDate" and "EndDate" date.
+
+##### StartDate and EndDate format
+The format of the StartDate and EndDate is YYYY-MM-DDThh:mm:ssZ where:
+* __YYYY__ : is the year defined on 4 digits
+* __MM__ : is the number of the month defined on 2 digits
+* __DD__: is the number of the day in the month on 2 digits
+* __hh__: is the hour of the day on 2 digits
+* __mm__: is the minutes of the hour on 2 digits
+* __ss__: is the seconds of the minutes on 2 digits
+
+Examples:
+* 1993-01-15T12:00:00Z
+* 2016-07-25T06:35:45Z
+* 2017-08-31T15:05:08Z
+
+##### DurationBetweenEachAvailableData
+The formation of the duration is P*nbyers*Y*nbmonths*M*nbdays*DT*nbhours*H*nbminutes*M*nbseconds*S.*nbmillisec* where:
+* __nbyears__ : is the number of years. The ISO_8601 is ambiguous on the number of days in the year. For the Motu project, the number of days is fixed to 365 as in the most of projects.
+* __nbmonths__ : is the number of month. The ISO_8601 is ambiguous on the number of days in the month. For the Motu project, the number of days is fixed to 30 as in the most of projects.
+* __nbdays__ : is the number of day. One day is 24 hours.
+* __nbhours__ : is the number of hours. One hour is 60 minutes.
+* __nbseconds__: is the number of seconds. One seconds is 1000 milliseconds.
+* __nbmillisec__ : is the number of milliseconds.
+
+By convention, P1M defines a duration of 1 month and PT1M defines a duration of 1 minutes.
+
+Examples:
+* each minutes => PT1M
+* each hours => PT1H
+* each 12 hours => PT12H
+* echo days => P1D
+* each 15 days => P15D
+* each 1 months => P1M
  
 ### <a name="ClientAPI_DownloadProduct">Download product</a>    
 Request used to download a product  
@@ -2182,8 +2289,8 @@ __Parameters__:
 * __x_hi__ [0,1]: high longitude of a geographic extraction. Default value is 180.  
 * __z_lo__ [0,1]: low vertical depth . Default value is 0.  
 * __z_hi__ [0,1]: high vertical depth. Default value is 180.  
-* __t_lo__ [0,1]: Start date of a temporal extraction. If not set, the default value is the first date/time available for the dataset. Format is "yyy-mm-dd" or "yyyy-dd h:m:s" or "yyyy-ddTh:m:s".  
-* __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is "yyy-mm-dd" or "yyyy-dd h:m:s" or "yyyy-ddTh:m:s".  
+* __t_lo__ [0,1]: Start date of a temporal extraction. If not set, the default value is the first date/time available for the dataset. Format is  "yyy-mm-dd" or "yyyy-mm-dd h:m:s" or "yyyy-mm-ddTh:m:s" and depends on the requested dataset.  
+* __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is "yyy-mm-dd" or "yyyy-mm-dd h:m:s" or "yyyy-mm-ddTh:m:s" and depends on the requested dataset.    
 * __output__ [0,1]: netcdf. Due to a TDS issue, only netcdf is available. netcdf4 will be available as soon as TDS will have resolved its issue.
 * __mode__ [0,1]: Specify the desired result mode. Enumeration value from [url, console, status] represented as a string. If no mode, "url" value is the default mode.  
 
@@ -2246,7 +2353,7 @@ Parameters below are exactly the same as for [Download product](#ClientAPI_Downl
 * __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is yyy-mm-dd or yyyy-dd h:m:s or yyyy-ddTh:m:s.  
   
 __Return__: An XML document.    
-The unit is "kb" means kilobits.
+The unit is "KB" means Kilobyte.
 Validated by the schema /motu-api-message/src/main/schema/XmlMessageModel.xsd#RequestSize  
 Example:  
 

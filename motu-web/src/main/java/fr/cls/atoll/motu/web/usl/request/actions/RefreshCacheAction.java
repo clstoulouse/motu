@@ -3,8 +3,6 @@ package fr.cls.atoll.motu.web.usl.request.actions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -103,11 +101,10 @@ public class RefreshCacheAction extends AbstractAction {
 
     private void checkConfigServiceList(String[] listOfConfigService, List<String> badConfigServiceList, List<ConfigService> configServiceToRefresh) {
         if (badConfigServiceList != null && configServiceToRefresh != null) {
-            Map<String, ConfigService> availableConfigServiceMap = BLLManager.getInstance().getConfigManager().getConfigServiceMap();
-            Set<String> availableConfigServiceNames = availableConfigServiceMap.keySet();
             for (String currentConfigServiceName : listOfConfigService) {
-                if (availableConfigServiceNames.contains(currentConfigServiceName)) {
-                    configServiceToRefresh.add(availableConfigServiceMap.get(currentConfigServiceName));
+                ConfigService cs = BLLManager.getInstance().getConfigManager().getConfigService(currentConfigServiceName);
+                if (cs != null) {
+                    configServiceToRefresh.add(cs);
                 } else {
                     badConfigServiceList.add(currentConfigServiceName);
                 }
