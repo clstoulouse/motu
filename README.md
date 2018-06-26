@@ -441,7 +441,7 @@ So bash shell is only required on the Linux host machine.
 ### <a name="InstallPrerequisitesExternalInterfaces">External interfaces</a>
 Motu is able to communicate with different external servers:  
 
-* __Unidata | THREDDS Data Server (TDS)__: Motu has been only tested with TDS v4.6.6 2016-06-13. The links to this server are set in the [Business settings](#ConfigurationBusiness) and are used to run OpenDap or subsetter interfaces. If Motu runs only with DGF, this server is not required.
+* __Unidata | THREDDS Data Server (TDS)__: Motu has been only tested with TDS v4.6.10 2016-04-20. The links to this server are set in the [Business settings](#ConfigurationBusiness) and are used to run OpenDap or subsetter interfaces. If Motu runs only with DGF, this server is not required.
 * __Single Sign-On - CAS__: The link to this server is set in the [System settings](#ConfigurationSystem). If Motu does not use SSO, this server is not required.
 
 The installation of these two servers is not detailed in this document. Refer to their official web site to know how to install them.
