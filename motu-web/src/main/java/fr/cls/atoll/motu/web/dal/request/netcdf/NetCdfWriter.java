@@ -927,7 +927,7 @@ public class NetCdfWriter {
 
         // process axis for the variable
         for (List<Variable> listAxis : mapAxis.values()) {
-            if (listAxis.isEmpty()) {
+            if (! listAxis.isEmpty()) {
                 List<Variable> vPreviouslyListAdded = getVariables().get(listAxis.get(0).getFullName());
                 if (vPreviouslyListAdded == null) {
                     getVariables().put(listAxis.get(0).getFullName(), listAxis);
