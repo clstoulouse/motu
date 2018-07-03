@@ -377,10 +377,10 @@ public class ExtractionParameters implements Cloneable {
         Date d1 = null;
         Date d2 = null;
         try {
-            d1 = NetCdfReader.parseDate(listTemporalCoverage.get(0));
+            d1 = NetCdfReader.parseDate(listTemporalCoverage.get(0), 0);
             d2 = d1;
             if (listTemporalCoverage.size() > 1) {
-                d2 = NetCdfReader.parseDate(listTemporalCoverage.get(1));
+                d2 = NetCdfReader.parseDate(listTemporalCoverage.get(1), 1);
             }
         } catch (MotuInvalidDateException e) {
             // Do Nothing

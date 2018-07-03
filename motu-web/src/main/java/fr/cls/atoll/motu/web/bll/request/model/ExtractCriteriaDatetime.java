@@ -120,18 +120,7 @@ public class ExtractCriteriaDatetime extends ExtractCriteria {
      * @uml.property name="from"
      */
     public void setFrom(String value) throws MotuInvalidDateException {
-        setFrom(NetCdfReader.parseDate(value));
-    }
-
-    /**
-     * Setter of the property <tt>from</tt>.
-     * 
-     * @param value The date string representation to set.
-     * @param format The format representaiton to set.
-     * @uml.property name="from"
-     */
-    public void setFrom(String value, String format) throws MotuInvalidDateException {
-        setFrom(NetCdfReader.parseDate(value, format));
+        setFrom(NetCdfReader.parseDate(value, 0));
     }
 
     /**
@@ -169,7 +158,7 @@ public class ExtractCriteriaDatetime extends ExtractCriteria {
      * @uml.property name="from"
      */
     public void setTo(String value) throws MotuInvalidDateException {
-        setTo(NetCdfReader.parseDate(value));
+        setTo(NetCdfReader.parseDate(value, 1));
     }
 
     /**
@@ -216,6 +205,7 @@ public class ExtractCriteriaDatetime extends ExtractCriteria {
         } catch (MotuInvalidDateException e) {
             invalidDate = e;
         }
+
         try {
             setFrom(start);
         } catch (MotuInvalidDateException e) {
@@ -228,7 +218,7 @@ public class ExtractCriteriaDatetime extends ExtractCriteria {
     }
 
     /**
-     * Adjust start date and end date accordding to their value. (start date always <= end date)
+     * Adjust start date and end date according to their values. (start date always <= end date)
      * 
      */
     private void adjust() {

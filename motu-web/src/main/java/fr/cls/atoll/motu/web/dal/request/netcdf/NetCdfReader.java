@@ -161,7 +161,6 @@ public class NetCdfReader {
     public final static String GLOBALATTRIBUTE_CREATEDBY = "CreatedBy";
 
     /** NetCdf global attribute "FileType". */
-
     public final static String GLOBALATTRIBUTE_FILETYPE = "FileType";
 
     /** NetCdf variable attribute "_FillValue". */
@@ -273,6 +272,8 @@ public class NetCdfReader {
 
     /** Date format without time (DATE_FORMAT). */
     public static final FastDateFormat DATE_TO_STRING_DEFAULT = FastDateFormat.getInstance(DATE_FORMAT, GMT_TIMEZONE);
+
+    private static final String[] DATE_FORMATS = new String[] { "yyyy-mm-dd h:m:s", "yyyy-mm-dd'T'h:m:s", "yyyy-mm-dd" };
 
     /** Names of possible longitude. */
     public static final String[] LONGITUDE_NAMES = { "longitude", "Longitude", "LONGITUDE", "lon", "Lon", "LON", };
@@ -1176,12 +1177,8 @@ public class NetCdfReader {
      * @throws MotuException the motu exception
      */
     public static String getDateAsGMTString(double value, String unitsString) throws MotuException {
-
         Date date = NetCdfReader.getDate(value, unitsString);
-
         return FastDateFormat.getInstance(DATETIME_FORMAT, GMT_TIMEZONE).format(date);
-        // return GMTDateFormat.TO_STRING_DEFAULT.format(date);
-        // return DateFormat.getInstance().format(date);
     }
 
     /**
@@ -1202,7 +1199,7 @@ public class NetCdfReader {
     }
 
     /**
-     * Returns a GMT string representation (yyyy-MM-dd HH:mm:ss) without time if 0 ((yyyy-MM-dd) from a date
+     * Returns a GMT string representation (yyyy-MM-dd HH:mm:ss) without time if 0 (yyyy-MM-dd) from a date
      * value and an udunits string.
      * 
      * @param date Date object to convert
@@ -1555,57 +1552,47 @@ public class NetCdfReader {
      * 
      * @throws MotuInvalidDateException the motu invalid date exception
      */
-    public static Date parseDate(String source) throws MotuInvalidDateException {
-
-        // GMTDateFormat fmt = new GMTDateFormat(DATETIME_FORMAT);
+    public static Date parseDate(String source, int setTimeTo0ForBeginOfDays1ForEndOfDayNegativeForNow) throws MotuInvalidDateException {
         Date date = null;
-        try {
-            date = parseDate(source, DATETIME_FORMAT);
-        } catch (Exception e) {
+        int i = 0;
+        while (date == null && i < DATE_FORMATS.length) {
+            date = parseDate(source, DATE_FORMATS[i]);
+            i++;
+        }
 
-            try {
-                date = parseDate(source, DATE_FORMAT);
-            } catch (Exception e2) {
-                throw new MotuInvalidDateException(source, e2);
+        if (date == null) {
+            throw new MotuInvalidDateException(source);
+        } else {
+            // this is a only a DAY format
+            if (DATE_FORMAT == DATE_FORMATS[i - 1]) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(date);
+                if (setTimeTo0ForBeginOfDays1ForEndOfDayNegativeForNow == 0) {
+                    cal.set(Calendar.HOUR_OF_DAY, 0);
+                    cal.set(Calendar.MINUTE, 0);
+                    cal.set(Calendar.SECOND, 0);
+                    cal.set(Calendar.MILLISECOND, 0);
+                } else if (setTimeTo0ForBeginOfDays1ForEndOfDayNegativeForNow == 1) {
+                    cal.set(Calendar.HOUR_OF_DAY, 23);
+                    cal.set(Calendar.MINUTE, 59);
+                    cal.set(Calendar.SECOND, 59);
+                    cal.set(Calendar.MILLISECOND, 999);
+                }
+                date = cal.getTime();
             }
         }
+
         return date;
     }
 
-    /**
-     * Parses text from the beginning of the given string to produce a date. The method may not use the entire
-     * text of the given string.
-     * <p>
-     * See the {@link java.text.DateFormat#parse(String, ParsePosition)} method for more information on date
-     * parsing.
-     * 
-     * @param source A <code>String</code> whose beginning should be parsed.
-     * @param format format date representation.
-     * 
-     * @return A <code>Date</code> parsed from the string.
-     * 
-     * @throws MotuInvalidDateException the motu invalid date exception
-     */
-    public static Date parseDate(String source, String format) throws MotuInvalidDateException {
-
-        if (format == null) {
-            return parseDate(source);
-        }
-        if (format.equalsIgnoreCase("")) {
-            return parseDate(source);
-        }
-
-        SimpleDateFormat fmt = new SimpleDateFormat(format);
-        // Force GMT time zone
-        fmt.setTimeZone(GMT_TIMEZONE);
+    public static Date parseDate(String dateStr_, String dateFormat_) {
+        SimpleDateFormat fmt = new SimpleDateFormat(dateFormat_);
         Date date = null;
         try {
-            // fmt.setLenient(true);
-            date = fmt.parse(source);
+            date = fmt.parse(dateStr_);
         } catch (Exception e) {
-            throw new MotuInvalidDateException(source, e);
+            // noop
         }
-
         return date;
     }
 

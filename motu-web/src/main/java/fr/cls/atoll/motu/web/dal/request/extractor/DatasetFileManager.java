@@ -254,7 +254,6 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
      * @return the list< data file>
      */
     protected List<DataFile> selectDataFile() {
-
         ExtractCriteriaDatetime extractCriteriaDatetime = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters()
                 .findCriteriaDatetime();
         if (extractCriteriaDatetime == null) {
