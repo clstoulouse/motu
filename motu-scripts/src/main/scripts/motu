@@ -201,6 +201,8 @@ __addCatalinaOpt() {
    fi
 }
 
+
+
 __initJavaConfig() {
    tomcatDirName=$1
    motuPropertiesFilePath="$MOTU_CONF_DIR_NAME/motu.properties"
@@ -217,6 +219,17 @@ __initJavaConfig() {
    __addCatalinaOpt "$JVM_ADDRESS_DEBUG" "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=$JVM_ADDRESS_DEBUG"
    
    export JAVA_OPTS=$JAVA_OPTS_ORIG
+   
+   JVM_UMASK=$(grep "$tomcatDirName-jvm-umask=" $motuPropertiesFilePath | grep -v "#" | cut -d= -f2-)
+   if [ "$JVM_UMASK" = "tomcat" ]; then
+     echo "[INFO] Apache Tomcat runs with umask defined by Apache Tomcat"  
+   else
+       if [ -z "$JVM_UMASK" ] || [ "$JVM_UMASK" = "umask" ]; then
+         JVM_UMASK=`umask`
+       fi
+       export UMASK=$JVM_UMASK
+       echo "[INFO] Apache Tomcat runs with umask=$UMASK"
+   fi
 }
 
 __initConfig() {

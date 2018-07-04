@@ -1285,12 +1285,24 @@ To activate the cluster, the value have to be set on true.
 System settings are configured in file config/motu.properties  
 All parameters can be updated in the file.  
 
-#### Java options
+* [Java options](#ConfigurationSystemJavaOptions)
+* [Tomcat network ports](#ConfigurationSystemTomcatNetworkPorts)
+* [CAS SSO server](#ConfigurationSystemCASSSO)
+
+#### <a name="ConfigurationSystemJavaOptions">Java options</a>
 The three parameters below are used to tune the Java Virtual Machine:  
    &#35; -server: tells the Hostspot compiler to run the JVM in "server" mode (for performance)  
 __tomcat-motu-jvm-javaOpts__=-server -Xmx4096M -Xms512M -XX:PermSize=128M -XX:MaxPermSize=512M  
 __tomcat-motu-jvm-port-jmx__=9010  
 __tomcat-motu-jvm-address-debug__=9090  
+__tomcat-motu-jvm-umask__=tomcat|umask|0000 [(More details...)](#ConfigurationSystemTomcatUmask)
+
+##### <a name="ConfigurationSystemTomcatUmask">Tomcat umask</a>
+By default, if tomcat-motu-jvm-umask is not set, motu sets the umask with result of the command `umask`  
+__tomcat-motu-jvm-umask__=umask|tomcat|0000  
+* __umask__:  By default, if tomcat-motu-jvm-umask is not set, motu sets the umask with result of the command `umask`  
+* __tomcat__: Apache Tomcat process forces umask to 0027 (https://tomcat.apache.org/tomcat-8.5-doc/security-howto.html)  
+* __0000__:   Custom umask value  
 
 
 #### <a name="ConfigurationSystemTomcatNetworkPorts">Tomcat network ports</a>
@@ -1303,7 +1315,6 @@ __tomcat-motu-port-http__=9080
 __tomcat-motu-port-https__=9443  
 __tomcat-motu-port-ajp__=9009  
 __tomcat-motu-port-shutdown__=9005  
-
 
 #### <a name="ConfigurationSystemCASSSO">CAS SSO server</a>
 
