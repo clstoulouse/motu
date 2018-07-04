@@ -290,7 +290,7 @@ public class WCSGetCoverageAction extends AbstractAction {
         ExtractionParameters extractionParameters = new ExtractionParameters(
                 serviceName,
                 null,
-                new ArrayList(),
+                new ArrayList<String>(),
                 computeDate(subsetTimeLowValue),
                 computeDate(subsetTimeHighValue),
                 -90,

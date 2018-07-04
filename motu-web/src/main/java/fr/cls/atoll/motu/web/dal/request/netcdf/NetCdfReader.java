@@ -260,7 +260,7 @@ public class NetCdfReader {
     public final static String Z_ZEROVALUE = "Surface";
 
     /** Date/time format. */
-    public final static String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /** Date format. */
     public final static String DATE_FORMAT = "yyyy-MM-dd";
@@ -273,7 +273,7 @@ public class NetCdfReader {
     /** Date format without time (DATE_FORMAT). */
     public static final FastDateFormat DATE_TO_STRING_DEFAULT = FastDateFormat.getInstance(DATE_FORMAT, GMT_TIMEZONE);
 
-    private static final String[] DATE_FORMATS = new String[] { "yyyy-mm-dd h:m:s", "yyyy-mm-dd'T'h:m:s", "yyyy-mm-dd" };
+    private static final String[] DATE_FORMATS = new String[] { "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd" };
 
     /** Names of possible longitude. */
     public static final String[] LONGITUDE_NAMES = { "longitude", "Longitude", "LONGITUDE", "lon", "Lon", "LON", };
