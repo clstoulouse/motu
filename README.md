@@ -441,7 +441,7 @@ So bash shell is only required on the Linux host machine.
 ### <a name="InstallPrerequisitesExternalInterfaces">External interfaces</a>
 Motu is able to communicate with different external servers:  
 
-* __Unidata | THREDDS Data Server (TDS)__: Motu has been only tested with TDS v4.6.6 2016-06-13. The links to this server are set in the [Business settings](#ConfigurationBusiness) and are used to run OpenDap or subsetter interfaces. If Motu runs only with DGF, this server is not required.
+* __Unidata | THREDDS Data Server (TDS)__: Motu has been only tested with TDS v4.6.10 2016-04-20. The links to this server are set in the [Business settings](#ConfigurationBusiness) and are used to run OpenDap or subsetter interfaces. If Motu runs only with DGF, this server is not required.
 * __Single Sign-On - CAS__: The link to this server is set in the [System settings](#ConfigurationSystem). If Motu does not use SSO, this server is not required.
 
 The installation of these two servers is not detailed in this document. Refer to their official web site to know how to install them.
@@ -1195,7 +1195,7 @@ Optional parameter used to enable or disable the use of NetCDF Subset Service (N
 ncss must be enabled only with regular grid. The datasets using curvilinear coordinates (like ORCA grid) can not be published with ncss. Thus, ncss option must be set to disable or empty.
 Without this attribute or when empty, Motu connects to TDS with Opendap protocol. If this attribute is set to "enabled" Motu connects to TDS with NCSS protocol in order to improve performance.   
 We recommend to use "enabled" for regular grid datasets. 
-Values are: "enabled", "disable" or empty.
+Values are: "enabled", "disabled" or empty.
 
 ##### urlSite
 * TDS URL  
@@ -1285,13 +1285,25 @@ To activate the cluster, the value have to be set on true.
 System settings are configured in file config/motu.properties  
 All parameters can be updated in the file.  
 
-#### Java options
+* [Java options](#ConfigurationSystemJavaOptions)
+* [Tomcat network ports](#ConfigurationSystemTomcatNetworkPorts)
+* [CAS SSO server](#ConfigurationSystemCASSSO)
+
+#### <a name="ConfigurationSystemJavaOptions">Java options</a>
 The three parameters below are used to tune the Java Virtual Machine:  
    &#35; -server: tells the Hostspot compiler to run the JVM in "server" mode (for performance)  
 __tomcat-motu-jvm-javaOpts__=-server -Xmx4096M -Xms512M -XX:PermSize=128M -XX:MaxPermSize=512M  
 __tomcat-motu-jvm-port-jmx__=9010  
 __tomcat-motu-jvm-address-debug__=9090  
+__tomcat-motu-jvm-umask__=tomcat|umask|0000 [(More details...)](#ConfigurationSystemTomcatUmask)
 
+##### <a name="ConfigurationSystemTomcatUmask">Tomcat umask</a>
+By default, if tomcat-motu-jvm-umask is not set, motu sets the umask with result of the command `umask`  
+__tomcat-motu-jvm-umask__=umask|tomcat|0000  
+* __umask__:  By default, if tomcat-motu-jvm-umask is not set, motu sets the umask with result of the command `umask`  
+* __tomcat__: Apache Tomcat process forces umask to 0027 (https://tomcat.apache.org/tomcat-8.5-doc/security-howto.html)  
+* __0000__:   Custom umask value  
+Values 0002 or umask are recommended if Motu download results are served by a frontal web server
 
 #### <a name="ConfigurationSystemTomcatNetworkPorts">Tomcat network ports</a>
 The parameters below are used to set the different network ports used by Apache Tomcat.  
@@ -1303,7 +1315,6 @@ __tomcat-motu-port-http__=9080
 __tomcat-motu-port-https__=9443  
 __tomcat-motu-port-ajp__=9009  
 __tomcat-motu-port-shutdown__=9005  
-
 
 #### <a name="ConfigurationSystemCASSSO">CAS SSO server</a>
 
@@ -1562,9 +1573,9 @@ Tomcat log messages are generated in the tomcat-motu/logs folder.
      * Field details
          * queueId, queueDesc: Queue used to process the request. Id and description found in config/motuConfiguration.xml
          * requestId: A timestamp representing the request id.
-         * inQueueTime: Timestamp with format "yyyy-mm-dd' 'hh:mm:ss.SSS" when the request has been put in the queue
-         * startTime: Timestamp with format "yyyy-mm-dd' 'hh:mm:ss.SSS" when the request has been started to be processed
-         * endTime: Timestamp with format "yyyy-mm-dd' 'hh:mm:ss.SSS" when the request has been ended to be processed
+         * inQueueTime: Timestamp with format "yyyy-MM-dd' 'HH:mm:ss.SSS" when the request has been put in the queue
+         * startTime: Timestamp with format "yyyy-MM-dd' 'HH:mm:ss.SSS" when the request has been started to be processed
+         * endTime: Timestamp with format "yyyy-MM-dd' 'HH:mm:ss.SSS" when the request has been ended to be processed
          * elapsedWaitQueueTime: Duration in milliseconds, [startTime - inQueueTime]
          * elapsedRunTime: Duration in milliseconds, [endTime - startTime]
          * elapsedTotalTime: Duration in milliseconds, [endTime - inQueueTime]
@@ -2060,6 +2071,7 @@ __Parameters__:
 	```
 	SUBSET=Time(lowTimeValue,highTimeValue)
 	```
+	Unit is epoch since 1st January 1970, in UTC. E.g. Thu Dec 01 2016 00:00:00 is set to 1480550400000.  
 	* To define multiple filtering parameters, the following format have to be respected:<br/>
 	For the Latitude and the Longitue:
 	```
@@ -2289,8 +2301,8 @@ __Parameters__:
 * __x_hi__ [0,1]: high longitude of a geographic extraction. Default value is 180.  
 * __z_lo__ [0,1]: low vertical depth . Default value is 0.  
 * __z_hi__ [0,1]: high vertical depth. Default value is 180.  
-* __t_lo__ [0,1]: Start date of a temporal extraction. If not set, the default value is the first date/time available for the dataset. Format is  "yyy-mm-dd" or "yyyy-mm-dd h:m:s" or "yyyy-mm-ddTh:m:s" and depends on the requested dataset.  
-* __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is "yyy-mm-dd" or "yyyy-mm-dd h:m:s" or "yyyy-mm-ddTh:m:s" and depends on the requested dataset.    
+* __t_lo__ [0,1]: Start date of a temporal extraction. If not set, the default value is the first date/time available for the dataset. Format is  "yyy-MM-dd" or "yyyy-MM-dd HH:mm:ss" or "yyyy-MM-ddTHH:mm:ss" and depends on the requested dataset.  
+* __t_hi__ [0,1]: End date of a temporal extraction. If not set, the default value is the last date/time available for the dataset. Format is "yyy-MM-dd" or "yyyy-MM-dd HH:mm:ss" or "yyyy-MM-ddTHH:mm:ss" and depends on the requested dataset.    
 * __output__ [0,1]: netcdf. Due to a TDS issue, only netcdf is available. netcdf4 will be available as soon as TDS will have resolved its issue.
 * __mode__ [0,1]: Specify the desired result mode. Enumeration value from [url, console, status] represented as a string. If no mode, "url" value is the default mode.  
 

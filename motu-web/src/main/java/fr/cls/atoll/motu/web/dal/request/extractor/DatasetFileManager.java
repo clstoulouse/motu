@@ -254,7 +254,6 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
      * @return the list< data file>
      */
     protected List<DataFile> selectDataFile() {
-
         ExtractCriteriaDatetime extractCriteriaDatetime = getRequestDownloadStatus().getRequestProduct().getRequestProductParameters()
                 .findCriteriaDatetime();
         if (extractCriteriaDatetime == null) {
@@ -304,7 +303,7 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
     protected List<String> extractPrepare(boolean removeUserLogin, boolean removeUserPwd, boolean checkMaxSize)
             throws MotuException, MotuExceedingCapacityException {
 
-        List<String> listUrls = new ArrayList<String>();
+        List<String> listUrls = new ArrayList<>();
 
         List<DataFile> dataFiles = selectDataFile();
 
@@ -315,7 +314,7 @@ public class DatasetFileManager extends DALAbstractDatasetManager {
         if (ListUtils.isNullOrEmpty(dataFiles)) {
             throw new MotuException(
                     ErrorType.BAD_PARAMETERS,
-                    String.format("No data files corresponding to the selection criteria have been found for product '%s'",
+                    String.format("No data file corresponding to the selection criteria have been found for product '%s'",
                                   getRequestDownloadStatus().getRequestProduct().getProduct().getProductId()));
         }
 

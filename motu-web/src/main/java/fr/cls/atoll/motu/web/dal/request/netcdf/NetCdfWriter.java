@@ -927,7 +927,7 @@ public class NetCdfWriter {
 
         // process axis for the variable
         for (List<Variable> listAxis : mapAxis.values()) {
-            if (listAxis.isEmpty()) {
+            if (!listAxis.isEmpty()) {
                 List<Variable> vPreviouslyListAdded = getVariables().get(listAxis.get(0).getFullName());
                 if (vPreviouslyListAdded == null) {
                     getVariables().put(listAxis.get(0).getFullName(), listAxis);
@@ -2098,8 +2098,12 @@ public class NetCdfWriter {
                         getNcfileWriter().write(varToWrite, data);
                     } else {
                         int[] originOut = computeOriginOut(var, origin);
+                        // TODO read all data for source, detect the _FillValue
+                        // apply if present the "add_offset" and "scale_factor"
+                        Array dataDest = data.copy();
+                        applyScaleFactorOrAddOffset(varToWrite, dataDest);
                         d1 = System.nanoTime();
-                        getNcfileWriter().write(varToWrite, originOut, data);
+                        getNcfileWriter().write(varToWrite, originOut, dataDest);
                     }
                     getNcfileWriter().flush();
                     long d2 = System.nanoTime();
@@ -2112,6 +2116,53 @@ public class NetCdfWriter {
             } catch (Exception e) {
                 LOG.error("writeVariableData()", e);
                 throw new MotuException(ErrorType.NETCDF_GENERATION, "Error in NetcdfWriter writeVariableData", e);
+            }
+        }
+    }
+
+    private void applyScaleFactorOrAddOffset(Variable varToWrite, Array dataDest) {
+        Attribute scaleFactorAttr = varToWrite.findAttribute("scale_factor");
+        Attribute addOffsetAttr = varToWrite.findAttribute("add_offset");
+        if (scaleFactorAttr != null || addOffsetAttr != null) {
+            Number scaleFactorNumber = scaleFactorAttr.getNumericValue();
+            Number addOffsetNumber = addOffsetAttr.getNumericValue();
+            if (scaleFactorNumber != null || addOffsetNumber != null) {
+                IndexIterator aii = dataDest.getIndexIterator();
+                int index = 0;
+                double scaleFactor = 1.0;
+                if (scaleFactorNumber != null) {
+                    scaleFactor = 1 / scaleFactorNumber.doubleValue();
+                }
+
+                double addOffset = 0;
+                if (scaleFactorNumber != null) {
+                    addOffset = addOffsetNumber.doubleValue();
+                }
+                while (aii.hasNext()) {
+                    Object v = aii.next();
+                    if (v instanceof Float) {
+                        Float f = (Float) v;
+                        f = (float) (f * scaleFactor + addOffset);
+                        dataDest.setFloat(index, f);
+                    } else if (v instanceof Double) {
+                        Double f = (Double) v;
+                        f = f * scaleFactor + addOffset;
+                        dataDest.setDouble(index, f);
+                    } else if (v instanceof Integer) {
+                        Integer f = (Integer) v;
+                        f = (int) (f * scaleFactor + addOffset);
+                        dataDest.setInt(index, f);
+                    } else if (v instanceof Long) {
+                        Long f = (Long) v;
+                        f = (long) (f * scaleFactor + addOffset);
+                        dataDest.setLong(index, f);
+                    } else if (v instanceof Short) {
+                        Short f = (Short) v;
+                        f = (short) (f * scaleFactor + addOffset);
+                        dataDest.setShort(index, f);
+                    }
+                    index++;
+                }
             }
         }
     }

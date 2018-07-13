@@ -78,7 +78,7 @@ public abstract class ConfigWatcher {
 
             @Override
             public void fileChanged(FileChangeEvent arg0) throws Exception {
-                File f = new File(arg0.getFile().getPublicURIString());
+                File f = new File(arg0.getFile().getURL().getPath());
                 onFileChanged(f);
             }
 
