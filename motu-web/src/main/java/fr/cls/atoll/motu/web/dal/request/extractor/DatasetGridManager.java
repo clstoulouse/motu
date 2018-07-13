@@ -28,6 +28,7 @@ import fr.cls.atoll.motu.web.bll.request.model.RequestDownloadStatus;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProductParameters;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProductParameters.RangeComparator;
 import fr.cls.atoll.motu.web.bll.request.model.metadata.DataProvider;
+import fr.cls.atoll.motu.web.common.utils.CoordinateUtils;
 import fr.cls.atoll.motu.web.common.utils.ListUtils;
 import fr.cls.atoll.motu.web.dal.DALManager;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
@@ -851,8 +852,8 @@ public class DatasetGridManager extends DALAbstractDatasetManager {
             yRangeValue[0] = minMaxLat.min;
             yRangeValue[1] = minMaxLat.max;
 
-            xRangeValue[0] = minMaxLon.min;
-            xRangeValue[1] = minMaxLon.max;
+            xRangeValue[0] = CoordinateUtils.getLongitudeM180P180(minMaxLon.min);
+            xRangeValue[1] = CoordinateUtils.getLongitudeM180P180(minMaxLon.max);
         } else if (getRequestDownloadStatus().getRequestProduct().getProduct().getProductMetaData().hasGeoXYAxis()) {
             throw new MotuNotImplementedException(
                     "Extraction with X/Y axes and without Lat/Lon data are not implemented (method DatasetGrid#getAdjacentYXRange");

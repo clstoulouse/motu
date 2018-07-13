@@ -1195,7 +1195,7 @@ Optional parameter used to enable or disable the use of NetCDF Subset Service (N
 ncss must be enabled only with regular grid. The datasets using curvilinear coordinates (like ORCA grid) can not be published with ncss. Thus, ncss option must be set to disable or empty.
 Without this attribute or when empty, Motu connects to TDS with Opendap protocol. If this attribute is set to "enabled" Motu connects to TDS with NCSS protocol in order to improve performance.   
 We recommend to use "enabled" for regular grid datasets. 
-Values are: "enabled", "disable" or empty.
+Values are: "enabled", "disabled" or empty.
 
 ##### urlSite
 * TDS URL  
