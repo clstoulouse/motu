@@ -8,12 +8,15 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="motu-library-inventory-3.9.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-library-inventory/motu-library-inventory">
+<<<<<<< HEAD
+=======
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="motu-library-cas-3.9.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-library-cas/motu-library-cas">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="motu-api-message-3.9.00-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/motu-api-message/motu-api-message">
+>>>>>>> release/3.9.00
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/motu-web/build/classes"/>
