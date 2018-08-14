@@ -1292,7 +1292,7 @@ All parameters can be updated in the file.
 #### <a name="ConfigurationSystemJavaOptions">Java options</a>
 The three parameters below are used to tune the Java Virtual Machine:  
    &#35; -server: tells the Hostspot compiler to run the JVM in "server" mode (for performance)  
-__tomcat-motu-jvm-javaOpts__=-server -Xmx4096M -Xms512M -XX:PermSize=128M -XX:MaxPermSize=512M  
+__tomcat-motu-jvm-javaOpts__=-server -Xmx4096M -Xms512M -XX:MetaspaceSize=128M -XX:MaxMetaspaceSize=512M  
 __tomcat-motu-jvm-port-jmx__=9010  
 __tomcat-motu-jvm-address-debug__=9090  
 __tomcat-motu-jvm-umask__=tomcat|umask|0000 [(More details...)](#ConfigurationSystemTomcatUmask)
@@ -1339,7 +1339,7 @@ __cas-validationFilter-proxyCallbackUrl__=https://$motuServerIp:$motuServerHttps
 __IMPORTANT__: Motu uses a Java HTTPs client to communicate with the CAS server. When the CAS server has an untrusted SSL certificate, you have to add it to Java default certificates or to add the Java property named "javax.net.ssl.trustStore" to target a CA keystore which contains the CAS Server SSL CA public key.
 For example, add this property by setting Java option [tomcat-motu-jvm-javaOpts](#ConfigurationSystem):  
 ```
-tomcat-motu-jvm-javaOpts=-server -Xmx4096M -Xms512M -XX:PermSize=128M -XX:MaxPermSize=512M -Djavax.net.ssl.trustStore=/opt/cmems-cis/motu/config/security/cacerts-with-cas-qt-ca.jks
+tomcat-motu-jvm-javaOpts=-server -Xmx4096M -Xms512M -XX:MetaspaceSize=128M -XX:MaxMetaspaceSize=512M -Djavax.net.ssl.trustStore=/opt/cmems-cis/motu/config/security/cacerts-with-cas-qt-ca.jks
 ```
 
 The following part is not relevant in the CMEMS context as the SSO CAS server has been signed by a known certification authority.  
