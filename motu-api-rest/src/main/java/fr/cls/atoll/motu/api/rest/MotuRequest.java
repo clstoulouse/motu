@@ -131,26 +131,16 @@ public class MotuRequest {
      * @throws MotuRequestException the motu request exception
      */
     private static synchronized void initJAXB() throws MotuRequestException {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("initJAXB() - entering");
+        if (MotuRequest.jaxbContextMotuMsg == null) {
+            try {
+                MotuRequest.jaxbContextMotuMsg = JAXBContext.newInstance(MotuMsgConstant.MOTU_MSG_SCHEMA_PACK_NAME);
+                MotuRequest.unmarshallerMotuMsg = MotuRequest.jaxbContextMotuMsg.createUnmarshaller();
+            } catch (JAXBException e) {
+                LOGGER.error("initJAXB()", e);
+                throw new MotuRequestException("Error in initJAXB ", e);
+            }
         }
 
-        if (MotuRequest.jaxbContextMotuMsg != null) {
-            return;
-        }
-
-        try {
-            MotuRequest.jaxbContextMotuMsg = JAXBContext.newInstance(MotuMsgConstant.MOTU_MSG_SCHEMA_PACK_NAME);
-            MotuRequest.unmarshallerMotuMsg = MotuRequest.jaxbContextMotuMsg.createUnmarshaller();
-        } catch (JAXBException e) {
-            LOGGER.error("initJAXB()", e);
-            throw new MotuRequestException("Error in initJAXB ", e);
-
-        }
-
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("initJAXB() - exiting");
-        }
     }
 
     /**

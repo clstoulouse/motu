@@ -48,12 +48,10 @@ public class JAXBOpenDapModel {
      * @throws MotuException the motu exception
      */
     public void init() throws JAXBException {
-        if (unmarshallerOpendapConfig != null) {
-            return;
+        if (unmarshallerOpendapConfig == null) {
+            JAXBContext jaxbContextOpenDapModel = JAXBContext.newInstance(Catalog.class.getPackage().getName());
+            unmarshallerOpendapConfig = jaxbContextOpenDapModel.createUnmarshaller();
         }
-
-        JAXBContext jaxbContextOpenDapModel = JAXBContext.newInstance(Catalog.class.getPackage().getName());
-        unmarshallerOpendapConfig = jaxbContextOpenDapModel.createUnmarshaller();
     }
 
     /**

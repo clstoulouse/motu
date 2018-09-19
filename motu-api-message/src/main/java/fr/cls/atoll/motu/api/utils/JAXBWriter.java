@@ -42,7 +42,6 @@ public class JAXBWriter {
     private Marshaller marshallerMotuMsg = null;
 
     private JAXBWriter() {
-
     }
 
     /**
@@ -53,20 +52,11 @@ public class JAXBWriter {
      * @throws MotuException the motu exception
      */
     public void init() throws JAXBException {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("initJAXBMotuMsg() - entering");
-        }
-        if (jaxbContextMotuMsg != null) {
-            return;
-        }
-
-        jaxbContextMotuMsg = JAXBContext.newInstance(MotuMsgConstant.MOTU_MSG_SCHEMA_PACK_NAME);
-        marshallerMotuMsg = jaxbContextMotuMsg.createMarshaller();
-        marshallerMotuMsg.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshallerMotuMsg.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("initJAXBMotuMsg() - exiting");
+        if (jaxbContextMotuMsg == null) {
+            jaxbContextMotuMsg = JAXBContext.newInstance(MotuMsgConstant.MOTU_MSG_SCHEMA_PACK_NAME);
+            marshallerMotuMsg = jaxbContextMotuMsg.createMarshaller();
+            marshallerMotuMsg.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshallerMotuMsg.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
         }
     }
 

@@ -55,12 +55,10 @@ public class JAXBTDSModel {
      * @throws MotuException the motu exception
      */
     public void init() throws JAXBException {
-        if (unmarshallerTdsModel != null) {
-            return;
+        if (unmarshallerTdsModel == null) {
+            JAXBContext jaxbContextTDSModel = JAXBContext.newInstance(Catalog.class.getPackage().getName());
+            unmarshallerTdsModel = jaxbContextTDSModel.createUnmarshaller();
         }
-
-        JAXBContext jaxbContextTDSModel = JAXBContext.newInstance(Catalog.class.getPackage().getName());
-        unmarshallerTdsModel = jaxbContextTDSModel.createUnmarshaller();
     }
 
     /**
