@@ -88,7 +88,7 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
     }
 
     private void writeResponseWithVelocity(MotuConfig mc_, ConfigService cs_, CatalogData cd, RequestProduct requestProduct) throws MotuException {
-        Map<String, Object> velocityContext = new HashMap<String, Object>(2);
+        Map<String, Object> velocityContext = new HashMap<>(2);
         velocityContext.put("service", VelocityModelConverter.convertToService(mc_, cs_, cd));
         velocityContext.put("product", VelocityModelConverter.convertToProduct(requestProduct));
 

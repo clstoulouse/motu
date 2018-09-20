@@ -242,16 +242,9 @@ public class NetCdfWriter {
      */
     public void putDimension(Dimension dim) {
         if (!dimensionMap.containsKey(dim.getFullName())) {
-            int length = -1;
-            if (!dim.isUnlimited()) {
-                length = dim.getLength();
-            }
-            Dimension newDim = getNcfileWriter().addDimension(null,
-                                                              dim.getFullName(),
-                                                              length,
-                                                              dim.isShared(),
-                                                              dim.isUnlimited(),
-                                                              dim.isVariableLength());
+            int length = dim.getLength();
+            Dimension newDim = getNcfileWriter()
+                    .addDimension(null, dim.getFullName(), length, dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
             dimensionMap.put(newDim.getFullName(), newDim);
         }
     }
