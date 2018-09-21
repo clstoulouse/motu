@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.velocity.Template;
 
 import fr.cls.atoll.motu.api.message.MotuRequestParametersConstant;
@@ -49,6 +51,12 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
 
     public static final String ACTION_NAME = "describecoverage";
 
+    /** Logger for this class. */
+    private static final Logger LOGGER = LogManager.getLogger();
+    /**
+     * Lock used to avoid NullPointerException in Apache Velocity which is not thread safe
+     */
+    private static final Object lock = new Object();
     private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
     private ProductHTTPParameterValidator productHTTPParameterValidator;
 
@@ -92,14 +100,15 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
         Map<String, Object> velocityContext = new HashMap<>(2);
         velocityContext.put("service", VelocityModelConverter.convertToService(mc_, cs_, cd));
         velocityContext.put("product", VelocityModelConverter.convertToProduct(requestProduct));
-
-        try {
-            String templateName = VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG, true);
-            Template template = VelocityTemplateManager.getInstance().getVelocityEngine().getTemplate(templateName);
-            String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, template);
-            writeResponse(response, HTTPUtils.CONTENT_TYPE_XML_UTF8);
-        } catch (Exception e) {
-            throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
+        synchronized (lock) {
+            try {
+                String templateName = VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG, true);
+                Template template = VelocityTemplateManager.getInstance().getVelocityEngine().getTemplate(templateName);
+                String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, template);
+                writeResponse(response, HTTPUtils.CONTENT_TYPE_XML_UTF8);
+            } catch (Exception e) {
+                throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
+            }
         }
     }
 

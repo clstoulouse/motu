@@ -42,6 +42,10 @@ import fr.cls.atoll.motu.web.usl.response.velocity.model.converter.VelocityModel
 public class ListCatalogAction extends AbstractAuthorizedAction {
 
     public static final String ACTION_NAME = "listcatalog";
+    /**
+     * Lock used to avoid NullPointerException in Apache Velocity which is not thread safe
+     */
+    private static final Object lock = new Object();
 
     private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
 
@@ -78,11 +82,13 @@ public class ListCatalogAction extends AbstractAuthorizedAction {
         velocityContext.put("service", VelocityModelConverter.convertToService(mc_, cs_, cd));
         velocityContext.put("user", USLManager.getInstance().getUserManager().getUserName());
 
-        String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, cs_.getVeloTemplatePrefix());
-        try {
-            writeResponse(response);
-        } catch (Exception e) {
-            throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
+        synchronized (lock) {
+            String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, cs_.getVeloTemplatePrefix());
+            try {
+                writeResponse(response);
+            } catch (Exception e) {
+                throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
+            }
         }
     }
 
