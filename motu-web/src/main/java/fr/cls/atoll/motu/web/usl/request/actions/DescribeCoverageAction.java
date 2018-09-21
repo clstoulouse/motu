@@ -18,6 +18,7 @@ import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
 import fr.cls.atoll.motu.web.dal.config.xml.model.MotuConfig;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.CatalogData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.data.Product;
+import fr.cls.atoll.motu.web.usl.common.utils.HTTPUtils;
 import fr.cls.atoll.motu.web.usl.request.parameter.CommonHTTPParameters;
 import fr.cls.atoll.motu.web.usl.request.parameter.exception.InvalidHTTPParameterException;
 import fr.cls.atoll.motu.web.usl.request.parameter.validator.ProductHTTPParameterValidator;
@@ -93,10 +94,10 @@ public class DescribeCoverageAction extends AbstractAuthorizedAction {
         velocityContext.put("product", VelocityModelConverter.convertToProduct(requestProduct));
 
         try {
-            Template template = VelocityTemplateManager.getInstance().getVelocityEngine()
-                    .getTemplate(VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG, true));
+            String templateName = VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG, true);
+            Template template = VelocityTemplateManager.getInstance().getVelocityEngine().getTemplate(templateName);
             String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, template);
-            writeResponse(response);
+            writeResponse(response, HTTPUtils.CONTENT_TYPE_XML_UTF8);
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
         }
