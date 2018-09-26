@@ -13,12 +13,12 @@
             <directory>src/main/scripts</directory>
             <outputDirectory>/</outputDirectory>
             <filtered>false</filtered>
-            <!-- rwx rwx r-x -->
+            <!-- rwx rw- r-x -->
             <fileMode>0764</fileMode>
             <directoryMode>0775</directoryMode>
             <lineEnding>unix</lineEnding>
             <includes>
-                <include>*</include>
+                <include>**</include>
             </includes>
         </fileSet>
     </fileSets>

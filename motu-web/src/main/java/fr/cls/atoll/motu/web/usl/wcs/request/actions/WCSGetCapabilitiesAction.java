@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
@@ -40,6 +43,9 @@ import fr.cls.atoll.motu.web.usl.wcs.responses.Capabilities;
  * @version $Revision: 1.1 $ - $Date: 2007-05-22 16:56:28 $
  */
 public class WCSGetCapabilitiesAction extends AbstractAction {
+
+    /** Logger for this class. */
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ACTION_NAME = "GetCapabilities";
 
@@ -102,10 +108,14 @@ public class WCSGetCapabilitiesAction extends AbstractAction {
         for (ConfigService cs : configService) {
             CatalogData cd = BLLManager.getInstance().getCatalogManager().getCatalogAndProductCacheManager().getCatalogCache()
                     .getCatalog(cs.getName());
-            Map<String, Product> mapOfProduct = cd.getProducts();
-            for (Map.Entry<String, Product> currentProduct : mapOfProduct.entrySet()) {
-                productList.add(cs.getName() + "@" + currentProduct.getValue().getProductId());
-                subTypeList.add(SubTypeCoverage.GRID_COVERAGE);
+            if (cd == null) {
+                LOGGER.error("[WCS GetCapabilities] Catalog is null for configService=" + cs.getName());
+            } else {
+                Map<String, Product> mapOfProduct = cd.getProducts();
+                for (Map.Entry<String, Product> currentProduct : mapOfProduct.entrySet()) {
+                    productList.add(cs.getName() + "@" + currentProduct.getValue().getProductId());
+                    subTypeList.add(SubTypeCoverage.GRID_COVERAGE);
+                }
             }
         }
         List<String> profiles = new ArrayList<>();

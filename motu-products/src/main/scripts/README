@@ -5,13 +5,16 @@
 # --- How to install this archive?
 #     Copy archive motu-products-x.y.tar.gz to /opt/cmems-cis
 #     Extract this archive: cd /opt/cmems-cis; tar xvzf motu-products-x.y.tar.gz
-
+cd "$(dirname "$0")"
+PRODUCT_INSTALL_DIR=$(pwd)
+source "$PRODUCT_INSTALL_DIR/cots-versions.sh"
 # --- How to rebuild this archive from scratch?
 #     gcc, gcc-c++ and m4 libraries have to be installed on the system.
 #
 #     First set the version variable:
-MOTU_PRODUCTS_VERSION=3.6.0
-#     Then run this file as a shell script to build this archive: ./README
+#     Then run this file as a shell script to build this archive: 
+#     chmod a+x ./README ./cots-versions.sh ./cdo-group/*
+#     ./README
 #     WARN: You need an Internet Access to download products. So optionally, set your proxy parameters:
 #         vi ~/.wgetrc
 #         --
@@ -33,29 +36,15 @@ if [ -f motu-products-$MOTU_PRODUCTS_VERSION.tar.gz ]; then
   exit 2
 fi
 
-cd "$(dirname "$0")"
-PRODUCT_INSTALL_DIR=$(pwd)
-
 mkdir -p motu/products
 cd motu/products
 
-echo
-#echo "### Download Apache Tomcat"
-wget --no-cookies https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.8/bin/apache-tomcat-9.0.8.tar.gz
-tar xzf apache-tomcat-9.0.8.tar.gz
-rm apache-tomcat-9.0.8.tar.gz
-result=$?
-if [ $result -ne 0 ]; then
-   echo "Impossible to retrieve Apache Tomcat"
-   exit 3
-fi
+
 
 echo
 echo "### Download Oracle JDK"
-#JDKArchiveFileName=jdk-8u102-linux-x64.tar.gz
-#JDKRemoteURL=http://download.oracle.com/otn-pub/java/jdk/8u102-b14/$JDKArchiveFileName
-JDKArchiveFileName=jdk-8u172-linux-x64.tar.gz
-JDKRemoteURL=http://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08//$JDKArchiveFileName
+JDKArchiveFileName=jdk-$ORACLE_JDK_VERSION-linux-x64.tar.gz
+JDKRemoteURL=http://download.oracle.com/otn-pub/java/jdk/$ORACLE_JDK_VERSION-b$ORACLE_JDK_BUILD/96a7b8442fe848ef90c96a2fad6ed6d1/$JDKArchiveFileName
 wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" $JDKRemoteURL
 
 while [ ! -f $JDKArchiveFileName ]; do
@@ -73,6 +62,23 @@ rm $JDKArchiveFileName
 
 
 echo
+#echo "### Download Apache Tomcat"
+wget --no-cookies https://archive.apache.org/dist/tomcat/tomcat-${APACHE_TOMCAT_VERSION:0:1}/v$APACHE_TOMCAT_VERSION/bin/apache-tomcat-$APACHE_TOMCAT_VERSION.tar.gz
+tar xzf apache-tomcat-$APACHE_TOMCAT_VERSION.tar.gz
+rm apache-tomcat-$APACHE_TOMCAT_VERSION.tar.gz
+result=$?
+if [ $result -ne 0 ]; then
+   echo "Impossible to retrieve Apache Tomcat"
+   exit 3
+fi
+
+#echo "### Download Apache Tomcat libtcnative"
+wget http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/t/tomcat-native-$LIBTCNATIVE_VERSION.rpm
+rpm2cpio tomcat-native-$LIBTCNATIVE_VERSION.rpm | cpio -idmv
+cp ./usr/lib64/libtcnative-1.so* apache-tomcat-$APACHE_TOMCAT_VERSION/lib/
+rm -rf ./usr/
+
+echo
 echo "### Download CDO tools"
 mkdir cdo-group
 cd cdo-group
@@ -81,23 +87,23 @@ cp $PRODUCT_INSTALL_DIR/cdo-group/merge.sh ./
 cp $PRODUCT_INSTALL_DIR/cdo-group/install-cdo.sh ./
 
 echo "- download zlib"
-wget http://zlib.net/zlib-1.2.11.tar.gz
-tar xvf zlib-1.2.11.tar.gz
+wget http://zlib.net/zlib-$ZLIB_VERSION.tar.gz
+tar xvf zlib-$ZLIB_VERSION.tar.gz
 echo
 
 echo "- download hdf5"
-wget https://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.17/src/hdf5-1.8.17.tar.gz
-tar xvzf hdf5-1.8.17.tar.gz
+wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_VERSION:0:4}/hdf5-$HDF5_VERSION/src/hdf5-$HDF5_VERSION.tar.gz
+tar xvzf hdf5-$HDF5_VERSION.tar.gz
 echo
 
 echo "- download netcdf"
-wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.4.1.tar.gz
-tar xvzf netcdf-4.4.1.tar.gz
+wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-$NETCDF_VERSION.tar.gz
+tar xvzf netcdf-$NETCDF_VERSION.tar.gz
 echo
 
 echo "- download cdo"
-wget https://code.zmaw.de/attachments/download/14271/cdo-1.8.1.tar.gz
-tar xvzf cdo-1.8.1.tar.gz
+wget https://code.mpimet.mpg.de/attachments/download/18264/cdo-$CDO_VERSION.tar.gz
+tar xvzf cdo-$CDO_VERSION.tar.gz
 echo
 
 
@@ -109,8 +115,8 @@ if (( $GLIBC_SYSTEM_VESION >= 15 )); then
   echo "GLIBC version=$GLIBC_SYSTEM_VESION"
 else
   echo "- download GLIBC"
-  wget http://ftp.gnu.org/gnu/glibc/glibc-2.14.tar.gz 
-  tar xvzf glibc-2.14.tar.gz
+  wget http://ftp.gnu.org/gnu/glibc/glibc-$GLIBC_VERSION.tar.gz 
+  tar xvzf glibc-$GLIBC_VERSION.tar.gz
   result=$?
   if [ $result -ne 0 ]; then
      echo "Impossible to retrieve the GLIBC"
@@ -136,10 +142,10 @@ echo $MOTU_PRODUCTS_VERSION > version-products.txt
 
 
 echo
-echo "### Copy README file"
+echo "### Copy README and cots-versions.sh files"
 cd $PRODUCT_INSTALL_DIR
 cp README motu/products/
-
+cp cots-versions.sh motu/products/
 
 echo
 echo "### Create archive motu-products-$MOTU_PRODUCTS_VERSION.tar.gz"
