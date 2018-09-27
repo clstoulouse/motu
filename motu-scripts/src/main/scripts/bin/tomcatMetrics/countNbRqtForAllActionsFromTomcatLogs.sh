@@ -30,13 +30,22 @@ if [ -z "$SEARCH_DATE" ]; then
 	SEARCH_DATE=$YYYY-$MM-$DD
 fi
 
-
-echo "--- $SEARCH_DATE"
-for actionName in describecoverage describeproduct getreqstatus getsize gettimecov productdownload productdownloadhome httperror; do
+DT=`date --iso-8601=s`
+echo "--- $SEARCH_DATE, generated the $DT" 
+for actionName in debug describecoverage describeproduct getreqstatus getsize gettimecov httperror listcatalog listservices root productdownload productdownloadhome  welcome; do
   countAction=`./countNbRqtFor1ActionFromTomcatLogs.sh $actionName $SEARCH_DATE`
   if [ $? != 0 ]; then
   	./countNbRqtFor1ActionFromTomcatLogs.sh $actionName $SEARCH_DATE
   	exit $?
   fi
-  echo $actionName=$countAction
+ 
+  if [ "$actionName" == "root" ]; then
+    printf "%25s%s%4d\n" " ( /Motu ) listservices" "=" "$countAction"
+  else
+  	sufix=""
+  	if [ "$actionName" == "productdownload" ]; then
+  		sufix="**"
+  	fi
+    printf "%25s%s%4d %s\n" "$prefix$actionName" "=" "$countAction" "$sufix"
+  fi
 done

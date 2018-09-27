@@ -12,7 +12,12 @@ FILE_NAME=$FILE_NAME_PREFIX$2.txt
 
 TOMCAT_FILE_PATH="$MOTU_INSTALL_DIR/tomcat-motu/logs/$FILE_NAME"
 if [ -f $TOMCAT_FILE_PATH ]; then
-   grep "action=" $TOMCAT_FILE_PATH | sed -E 's/action/@/g' | cut -d'@' -f 2 | cut -d'&' -f 1 | cut -c 2- | sort | grep -i "$SEARCH_ACTION" | wc -l
+	nbCurAction=`grep "action=" $TOMCAT_FILE_PATH | sed -E 's/action/@/g' | cut -d'@' -f 2 | cut -d'&' -f 1 | cut -c 2- | sort | grep -i "$SEARCH_ACTION" | wc -l`
+	if [ "$SEARCH_ACTION" == "root" ]; then
+		nbCurAction=`grep "/Motu " $TOMCAT_FILE_PATH | wc -l`
+	fi
+    total=$((nbCurAction + nbDefault))
+    echo $total
 else
    echo "ERROR: File $TOMCAT_FILE_PATH does not exists."
    echo
