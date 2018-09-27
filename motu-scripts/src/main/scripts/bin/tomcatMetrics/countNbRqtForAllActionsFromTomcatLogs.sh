@@ -42,9 +42,10 @@ for actionName in debug describecoverage describeproduct getreqstatus getsize ge
   if [ "$actionName" == "root" ]; then
     printf "%25s%s%4d\n" " ( /Motu ) listservices" "=" "$countAction"
   else
+  	#Just to put in evidence the download action
   	sufix=""
   	if [ "$actionName" == "productdownload" ]; then
-  		sufix="**"
+  		sufix=" // is the download action"
   	fi
     printf "%25s%s%4d %s\n" "$prefix$actionName" "=" "$countAction" "$sufix"
   fi
