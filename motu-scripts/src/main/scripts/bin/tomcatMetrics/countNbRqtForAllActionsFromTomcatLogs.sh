@@ -3,6 +3,8 @@
 # $1=empty(i.e. Today)|DD|MM-DD|YYYY-MM-DD
 #SEARCH_DATE=2018-09-18
 
+cd "$(dirname "$0")"
+
 TODAY=`date --iso-8601`
 YYYY=${TODAY:0:4}
 MM=${TODAY:5:2}
