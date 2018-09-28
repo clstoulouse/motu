@@ -1,5 +1,5 @@
           <wcs:CoverageSummary>
-              <wcs:CoverageId>@@CoverageId@@</wcs:CoverageId />
+              <wcs:CoverageId>@@CoverageId@@</wcs:CoverageId>
               <wcs:CoverageSubtype>@@CoverageSubtype@@</wcs:CoverageSubtype>
           </wcs:CoverageSummary>
           
