@@ -831,7 +831,7 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
         // int maxyIndex = yaxis1.findCoordElementBounded(maxy);
         int maxyIndex = findCoordElementBounded(yaxis1, maxy, -1);
 
-        List<Range> ranges = new ArrayList<Range>();
+        List<Range> ranges = new ArrayList<>();
 
         try {
             // has latitude range ?
@@ -1082,11 +1082,11 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
 
         }
         if (lonAxis.getAxisType() != AxisType.Lon) {
-            String msg = String.format(
-                                       "ERROR in ExtractCriteriaLatLon#computeLonMinMax for CoordinateAxis2D: axis name '%s' - type is '%s' and expected type is '%s'",
-                                       lonAxis.getFullName(),
-                                       lonAxis.getAxisType().name(),
-                                       AxisType.Lon.name());
+            String msg = String
+                    .format("ERROR in ExtractCriteriaLatLon#computeLonMinMax for CoordinateAxis2D: axis name '%s' - type is '%s' and expected type is '%s'",
+                            lonAxis.getFullName(),
+                            lonAxis.getAxisType().name(),
+                            AxisType.Lon.name());
             throw new MotuException(ErrorType.INVALID_LONGITUDE, msg);
         }
 
@@ -1139,11 +1139,11 @@ public class ExtractCriteriaLatLon extends ExtractCriteriaGeo {
 
         }
         if (latAxis.getAxisType() != AxisType.Lat) {
-            String msg = String.format(
-                                       "ERROR in ExtractCriteriaLatLon#computeLatMinMax for CoordinateAxis2D: axis name '%s' - type is '%s' and expected type is '%s'",
-                                       latAxis.getFullName(),
-                                       latAxis.getAxisType().name(),
-                                       AxisType.Lat.name());
+            String msg = String
+                    .format("ERROR in ExtractCriteriaLatLon#computeLatMinMax for CoordinateAxis2D: axis name '%s' - type is '%s' and expected type is '%s'",
+                            latAxis.getFullName(),
+                            latAxis.getAxisType().name(),
+                            AxisType.Lat.name());
             throw new MotuException(ErrorType.INVALID_LATITUDE, msg);
         }
         double latMin = Double.MAX_VALUE;
