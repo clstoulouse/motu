@@ -39,8 +39,8 @@ public class UnitUtils {
         return sizeInByte / 1000000;
     }
 
-    public static double kilobyteToByte(double sizeInKilobyte) {
-        return sizeInKilobyte * 1000;
+    public static long kilobyteToByte(long sizeInKilobyte) {
+        return sizeInKilobyte * 1024;
     }
 
     public static double kilobyteToMegabyte(double sizeInKilobyte) {

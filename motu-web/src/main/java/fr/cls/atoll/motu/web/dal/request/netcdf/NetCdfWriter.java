@@ -2584,7 +2584,7 @@ public class NetCdfWriter {
         if (byteSize <= 0) {
             byteSize = 1;
         }
-        return UnitUtils.bytetoKilobyte(BLLManager.getInstance().getConfigManager().getMotuConfig().getDataBlockSize().intValue()) / (byteSize);
+        return UnitUtils.kilobyteToByte(BLLManager.getInstance().getConfigManager().getMotuConfig().getDataBlockSize().intValue()) / (byteSize);
     }
 
     /**
