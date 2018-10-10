@@ -13,7 +13,7 @@
             <directory>src/main/scripts</directory>
             <outputDirectory>/motu/products</outputDirectory>
             <filtered>false</filtered>
-            <!-- rwx rwx r-x -->
+            <!-- rwx rw- r-x -->
             <fileMode>0764</fileMode>
             <directoryMode>0775</directoryMode>
             <lineEnding>unix</lineEnding>

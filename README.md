@@ -441,7 +441,13 @@ So bash shell is only required on the Linux host machine.
 ### <a name="InstallPrerequisitesExternalInterfaces">External interfaces</a>
 Motu is able to communicate with different external servers:  
 
-* __Unidata | THREDDS Data Server (TDS)__: Motu has been only tested with TDS v4.6.10 2016-04-20. The links to this server are set in the [Business settings](#ConfigurationBusiness) and are used to run OpenDap or subsetter interfaces. If Motu runs only with DGF, this server is not required.
+* __Unidata | THREDDS Data Server (TDS)__: Motu has been only tested with TDS v4.6.10 2016-04-20. The links to this server are set in the [Business settings](#ConfigurationBusiness) and are used to run OpenDap or subsetter interfaces. If Motu runs only with DGF, this server is not required.  
+Note that some specific characters have to be relaxed, e.g. when TDS is installed on Apache Tomcat, add attribute relaxedQueryChars="&lt;&gt;[\]{|}" in the connector node by editing conf/server.xml from your TDS tomcat installation folder:  
+```  
+<Connector relaxedQueryChars="&lt;&gt;[\]{|}" port="8080" ...  
+```
+as reported in this [forum topic](https://groups.google.com/a/opendap.org/d/msg/support/ixTqhDXoLZQ/IT0lvZQ7CAAJ).  
+ 
 * __Single Sign-On - CAS__: The link to this server is set in the [System settings](#ConfigurationSystem). If Motu does not use SSO, this server is not required.
 
 The installation of these two servers is not detailed in this document. Refer to their official web site to know how to install them.
@@ -1879,6 +1885,13 @@ Available Web Services are:
 * [Describe coverage](#DescribeCoverage)
 * [Get coverage](#GetCoverage)
 
+Parameters can be added to each request and they are described with their cardinality [x,y].  
+
+* [0,1] is an optional parameter.   
+* [1] is a mandatory parameter.  
+* [0,n] is an optional parameter which can be set several times.  
+* [1,n] is a mandatory parameter which can be set several times. 
+
 ### <a name="GetCapabilities">WCS: Get Capabilities</a>
 
 The GetCapabilities request retrieves all available products defined on Motu server.
@@ -1888,9 +1901,9 @@ __URL__: http://localhost:8080/motu-web/wcs?service=WCS&version=2.0.1&request=Ge
 
 __Parameters__:  
 
-* __service:__ Value is fixed to "WCS"
-* __version:__ Value is fixed to "2.0.1"
-* __request:__ Value is fixed to "GetCapabilties"
+* __service [1]:__ Value is fixed to "WCS"
+* __version [1]:__ Value is fixed to "2.0.1"
+* __request [1]:__ Value is fixed to "GetCapabilties"
 
 __Return__: 
 A XML document as shown below:
@@ -1957,10 +1970,10 @@ __URL__: http://localhost:8080/motu-web/wcs?service=WCS&version=2.0.1&request=De
 
 __Parameters__:  
 
-* __service:__ Value is fixed to "WCS"
-* __version:__ Value is fixed to "2.0.1"
-* __request:__ Value is fixed to "DescribeCoverage"
-* __coverageId:__ list of identifiers of the required coverages. Each coverage identifiers are separated by a comma (,). CoverageId are returned by the [GetCapabilities](#GetCapabilities) service.
+* __service [1]:__ Value is fixed to "WCS"
+* __version [1]:__ Value is fixed to "2.0.1"
+* __request [1]:__ Value is fixed to "DescribeCoverage"
+* __coverageId [1]:__ list of identifiers of the required coverages. Each coverage identifiers are separated by a comma (,). CoverageId are returned by the [GetCapabilities](#GetCapabilities) service.
 
 __Return__: 
 A XML document as shown below:
@@ -2061,11 +2074,11 @@ __URL__:
 
 __Parameters__:   
 
-* __service:__ Value is fixed to "WCS"
-* __version:__ Value is fixed to "2.0.1"
-* __request:__ Value is fixed to "GetCoverage"
-* __coverageId:__ the identifier of the required coverage. CoverageId are returned by the [GetCapabilities](#GetCapabilities) service.
-* __subset:__ the list of filtering parameters.  
+* __service [1]:__ Value is fixed to "WCS"
+* __version [1]:__ Value is fixed to "2.0.1"
+* __request [1]:__ Value is fixed to "GetCoverage"
+* __coverageId [1]:__ the identifier of the required coverage. CoverageId are returned by the [GetCapabilities](#GetCapabilities) service.
+* __subset [1,n]:__ the list of filtering parameters.  
 	* To define one filtering parameter, the following format have to be respected:<br/>
 	For the Time parameter:
 	```
@@ -2085,19 +2098,16 @@ A Netcdf file. When you request for one point, a specific algorithm is used, see
 
 
 ## <a name="ClientRESTAPI">MOTU REST API</a>   
-__MOTU REST API__ lets you use Motu server services.  
+__MOTU REST API__ defines a set of services accessible from an HTTP URLs.  
 All URLs have always the same pattern: http://motuServer/${context}/Motu?action=$actionName  
-__$actionName__ is an action in the list below:
-Other parameters are used. They are described with their cardinality [x,y].  
+Other parameters can be added and they are described with their cardinality [x,y].  
 
 * [0,1] is an optional parameter.   
 * [1] is a mandatory parameter.  
 * [0,n] is an optional parameter which can be set several times.  
 * [1,n] is a mandatory parameter which can be set several times.  
 
-
-  
-__Summary of all actions:__   
+__$actionName is an action, they are all listed below:__  
   
 * XML API
    * [Describe coverage](#ClientAPI_DescribeCoverage)  

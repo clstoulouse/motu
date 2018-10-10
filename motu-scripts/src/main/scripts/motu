@@ -23,9 +23,10 @@ RUN_ONLY_TOMCAT_MOTU=true
 
 cd "$(dirname "$0")"
 MOTU_INSTALL_DIR=$(pwd)
-
-MOTU_PRODUCTS_JAVA_DIR=$MOTU_INSTALL_DIR/products/jdk1.8.0_172
-MOTU_PRODUCTS_TOMCAT_DIR=$MOTU_INSTALL_DIR/products/apache-tomcat-9.0.8
+source "$MOTU_INSTALL_DIR/products/cots-versions.sh"
+ #1.8.0_172
+MOTU_PRODUCTS_JAVA_DIR=$MOTU_INSTALL_DIR/products/jdk$ORACLE_JDK_INSTALLED_VERSION
+MOTU_PRODUCTS_TOMCAT_DIR=$MOTU_INSTALL_DIR/products/apache-tomcat-$APACHE_TOMCAT_VERSION
 MOTU_PRODUCTS_CDO_HOME_DIR=$MOTU_INSTALL_DIR/products/cdo-group/
 
 APP_NAME_MOTU=tomcat-motu
@@ -53,6 +54,7 @@ __setApacheTomcatCatalinaEnvVar() {
   
   #For specific Tomcat instances
   export CATALINA_BASE=$MOTU_INSTALL_DIR/$1
+  export LD_LIBRARY_PATH=$MOTU_PRODUCTS_TOMCAT_DIR/lib:$LD_LIBRARY_PATH
   export CATALINA_PID=$MOTU_PID_DIR/$1.pid
   #export CATALINA_OUT=$MOTU_LOG_DIR/$1-catalina.out
   export CATALINA_TMPDIR=$MOTU_INSTALL_DIR/$1/temp

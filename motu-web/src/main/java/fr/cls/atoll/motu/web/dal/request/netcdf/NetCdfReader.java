@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -49,6 +50,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.util.datetime.FastDateFormat;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.library.converter.DateUtils;
 import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuInvalidDateException;
@@ -273,7 +275,8 @@ public class NetCdfReader {
     /** Date format without time (DATE_FORMAT). */
     public static final FastDateFormat DATE_TO_STRING_DEFAULT = FastDateFormat.getInstance(DATE_FORMAT, GMT_TIMEZONE);
 
-    private static final String[] DATE_FORMATS = new String[] { "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd" };
+    private static final String[] DATE_FORMATS = new String[] {
+            "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd", "yyyy-MM-dd'T'HH:mm:ss,SSS" };
 
     /** Names of possible longitude. */
     public static final String[] LONGITUDE_NAMES = { "longitude", "Longitude", "LONGITUDE", "lon", "Lon", "LON", };
@@ -1586,12 +1589,25 @@ public class NetCdfReader {
     }
 
     public static Date parseDate(String dateStr_, String dateFormat_) {
-        SimpleDateFormat fmt = new SimpleDateFormat(dateFormat_);
         Date date = null;
-        try {
-            date = fmt.parse(dateStr_);
-        } catch (Exception e) {
-            // noop
+        if (dateFormat_ != null) {
+            SimpleDateFormat fmt = new SimpleDateFormat(dateFormat_);
+            try {
+                date = fmt.parse(dateStr_);
+            } catch (Exception e) {
+                // noop return null if an issue is raised
+                // LOG.error("Error while paring date: " + dateStr_, e);
+            }
+        } else {
+            Iterator<String> itFormat = DateUtils.DATETIME_FORMATTERS.keySet().iterator();
+            while (date == null && itFormat.hasNext()) {
+                SimpleDateFormat fmt = new SimpleDateFormat(itFormat.next());
+                try {
+                    date = fmt.parse(dateStr_);
+                } catch (Exception e) {
+                    // noop
+                }
+            }
         }
         return date;
     }

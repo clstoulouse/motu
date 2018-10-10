@@ -7,8 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.JAXBException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,6 +48,7 @@ public class DALConfigManager implements IDALConfigManager {
     public static final String FILENAME_FORMAT_PRODUCT_ID = "@@productId@@";
 
     private IConfigUpdatedListener configUpdatedListener;
+    private StdNameReader stdNameReader;
 
     public DALConfigManager() {
         dalVersionManager = new DALVersionManager();
@@ -58,11 +58,17 @@ public class DALConfigManager implements IDALConfigManager {
     @Override
     public void init() throws MotuException {
         if (motuConfig == null) {
+            try {
+                MotuConfigJAXB.getInstance().init();
+            } catch (JAXBException e) {
+                LOGGER.error("Error while initializing MotuConfigJAXB", e);
+            }
             File fMotuConfig = new File(getMotuConfigurationFolderPath(), "motuConfiguration.xml");
             motuConfig = loadMotuConfig(fMotuConfig, false);
             startConfigWatcherThread(fMotuConfig);
         }
         if (standardNameList == null) {
+            stdNameReader = new StdNameReader();
             standardNameList = loadStandardNameList();
         }
     }
@@ -84,7 +90,7 @@ public class DALConfigManager implements IDALConfigManager {
      */
     private List<StandardName> loadStandardNameList() throws MotuException {
         List<StandardName> curStandardNameList = null;
-        StandardNames sn = new StdNameReader().getStdNameEquiv();
+        StandardNames sn = stdNameReader.getStdNameEquiv();
         if (sn != null) {
             curStandardNameList = sn.getStandardName();
         } else {
@@ -176,9 +182,7 @@ public class DALConfigManager implements IDALConfigManager {
     private MotuConfig parseMotuConfig(InputStream in) throws MotuException {
         MotuConfig curMotuConfig;
         try {
-            JAXBContext jc = JAXBContext.newInstance(MotuConfig.class.getPackage().getName());
-            Unmarshaller unmarshaller = jc.createUnmarshaller();
-            curMotuConfig = (MotuConfig) unmarshaller.unmarshal(in);
+            curMotuConfig = (MotuConfig) MotuConfigJAXB.getInstance().getUnmarshaller().unmarshal(in);
             curMotuConfig.setExtractionPath(PropertiesUtilities.replaceSystemVariable(curMotuConfig.getExtractionPath()));
             curMotuConfig.setDownloadHttpUrl(PropertiesUtilities.replaceSystemVariable(curMotuConfig.getDownloadHttpUrl()));
         } catch (Exception e) {

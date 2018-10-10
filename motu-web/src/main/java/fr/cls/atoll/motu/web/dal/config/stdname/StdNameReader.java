@@ -5,8 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.JAXBException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,6 +28,14 @@ public class StdNameReader {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    public StdNameReader() {
+        try {
+            StandardNamesJAXB.getInstance().init();
+        } catch (JAXBException e) {
+            LOGGER.error("", e);
+        }
+    }
+
     public StandardNames getStdNameEquiv() throws MotuException {
         StandardNames stdNameEquiv = null;
         String fileName = "standardNames.xml";
@@ -36,9 +43,7 @@ public class StdNameReader {
         try {
             in = new FileInputStream(new File(BLLManager.getInstance().getConfigManager().getMotuConfigurationFolderPath(), fileName));
             if (in != null) {
-                JAXBContext jc = JAXBContext.newInstance(StandardNames.class.getPackage().getName());
-                Unmarshaller unmarshaller = jc.createUnmarshaller();
-                stdNameEquiv = (StandardNames) unmarshaller.unmarshal(in);
+                stdNameEquiv = (StandardNames) StandardNamesJAXB.getInstance().getUnmarshaller().unmarshal(in);
             }
         } catch (Exception e) {
         } finally {

@@ -242,16 +242,9 @@ public class NetCdfWriter {
      */
     public void putDimension(Dimension dim) {
         if (!dimensionMap.containsKey(dim.getFullName())) {
-            int length = -1;
-            if (!dim.isUnlimited()) {
-                length = dim.getLength();
-            }
-            Dimension newDim = getNcfileWriter().addDimension(null,
-                                                              dim.getFullName(),
-                                                              length,
-                                                              dim.isShared(),
-                                                              dim.isUnlimited(),
-                                                              dim.isVariableLength());
+            int length = dim.getLength();
+            Dimension newDim = getNcfileWriter()
+                    .addDimension(null, dim.getFullName(), length, dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
             dimensionMap.put(newDim.getFullName(), newDim);
         }
     }
@@ -2576,7 +2569,7 @@ public class NetCdfWriter {
      * Returns (max. size of a block in bytes to be process * 1024) / (byte size of the variable datatype).
      * 
      * The max. size of a block in Kilo-bytes to be process is in the Motu configuration file (dataBlocksize
-     * attribute of MotuConfig) for variable whose datatype size is not known, byte size is set tot 1.
+     * attribute of MotuConfig) for variable whose datatype size is not known, byte size is set to 1.
      *
      * @param varShape variable's shape to process.
      * @param datatype variable's data type to process
@@ -2591,7 +2584,7 @@ public class NetCdfWriter {
         if (byteSize <= 0) {
             byteSize = 1;
         }
-        return UnitUtils.bytetoKilobyte(BLLManager.getInstance().getConfigManager().getMotuConfig().getDataBlockSize().intValue()) / (byteSize);
+        return UnitUtils.kilobyteToByte(BLLManager.getInstance().getConfigManager().getMotuConfig().getDataBlockSize().intValue()) / (byteSize);
     }
 
     /**
@@ -2912,7 +2905,7 @@ public class NetCdfWriter {
      */
     public static Map<int[], int[]> parseOriginAndShape3Dim(int[] varShape, int blockSize) throws MotuException {
 
-        Map<int[], int[]> map = new HashMap<int[], int[]>();
+        Map<int[], int[]> map = new HashMap<>();
         if (varShape.length != 3) {
             throw new MotuException(
                     ErrorType.INVALID_LAT_LON_RANGE,

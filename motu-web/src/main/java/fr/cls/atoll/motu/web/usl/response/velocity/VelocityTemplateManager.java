@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.velocity.Template;
@@ -269,8 +270,8 @@ public class VelocityTemplateManager implements IVelocityTemplateManager {
         String response = null;
         VelocityContext context = VelocityTemplateManager.getPrepopulatedVelocityContext();
         if (velocityContext_ != null && velocityContext_.size() > 0) {
-            for (String k : velocityContext_.keySet()) {
-                context.put(k, velocityContext_.get(k));
+            for (Entry<String, Object> entry : velocityContext_.entrySet()) {
+                context.put(entry.getKey(), entry.getValue());
             }
         }
 

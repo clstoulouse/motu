@@ -10,9 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
 import org.apache.commons.vfs2.FileObject;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
@@ -57,10 +54,6 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
     private static final String INVENTORY_CONFIG_SCHEMA = "fr/cls/atoll/motu/library/inventory/Inventory.xsd";
 
     private static final String CATALOG_CONFIG_SCHEMA = "fr/cls/atoll/motu/library/inventory/CatalogOLA.xsd";
-
-    private static final String INVENTORY_OLA_SCHEMA_PACK_NAME = "fr.cls.atoll.motu.library.inventory";
-
-    private static final String CATALOG_OLA_SCHEMA_PACK_NAME = INVENTORY_OLA_SCHEMA_PACK_NAME;
 
     /**
      * Load ftp catalog.
@@ -121,9 +114,8 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
         InputStream in = getUriAsInputStream(xmlUri);
 
         try {
-            JAXBContext jc = JAXBContext.newInstance(CATALOG_OLA_SCHEMA_PACK_NAME);
-            Unmarshaller unmarshaller = jc.createUnmarshaller();
-            catalogOLA = (CatalogOLA) unmarshaller.unmarshal(in);
+            CatalogueOLAJAXB.getInstance().init();
+            catalogOLA = (CatalogOLA) CatalogueOLAJAXB.getInstance().getUnmarshaller().unmarshal(in);
         } catch (Exception e) {
             throw new MotuException(ErrorType.LOADING_CATALOG, "Error in getCatalogOLA", e);
         }
@@ -253,7 +245,6 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
      * @throws MotuException the motu exception
      */
     public static Inventory getInventoryOLA(String xmlUri) throws MotuException {
-
         if (StringUtils.isNullOrEmpty(xmlUri)) {
             throw new MotuException(ErrorType.LOADING_CATALOG, "ERROR - Organizer#getInventoryOLA - Inventory  url '%s' is null or empty");
         }
@@ -275,9 +266,8 @@ public class FileCatalogLoader extends AbstractCatalogLoader {
         InputStream in = getUriAsInputStream(xmlUri);
 
         try {
-            JAXBContext jc = JAXBContext.newInstance(INVENTORY_OLA_SCHEMA_PACK_NAME);
-            Unmarshaller unmarshaller = jc.createUnmarshaller();
-            inventoryOLA = (Inventory) unmarshaller.unmarshal(in);
+            CatalogueOLAJAXB.getInstance().init();
+            inventoryOLA = (Inventory) CatalogueOLAJAXB.getInstance().getUnmarshaller().unmarshal(in);
         } catch (Exception e) {
             throw new MotuException(ErrorType.LOADING_CATALOG, "Error in getInventoryOLA", e);
         }

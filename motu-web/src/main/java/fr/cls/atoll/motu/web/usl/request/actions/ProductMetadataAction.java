@@ -47,6 +47,10 @@ import fr.cls.atoll.motu.web.usl.response.velocity.model.converter.VelocityModel
 public class ProductMetadataAction extends AbstractAuthorizedAction {
 
     public static final String ACTION_NAME = "listproductmetadata";
+    /**
+     * Lock used to avoid NullPointerException in Apache Velocity which is not thread safe
+     */
+    private static final Object lock = new Object();
 
     private ServiceHTTPParameterValidator serviceHTTPParameterValidator;
     private ProductHTTPParameterValidator productHTTPParameterValidator;
@@ -95,11 +99,13 @@ public class ProductMetadataAction extends AbstractAuthorizedAction {
         velocityContext.put("user", USLManager.getInstance().getUserManager().getUserName());
         velocityContext.put("product", VelocityModelConverter.convertToProduct(reqProduct_));
 
-        String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, cs_.getVeloTemplatePrefix());
-        try {
-            writeResponse(response, HTTPUtils.CONTENT_TYPE_HTML_UTF8);
-        } catch (Exception e) {
-            throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
+        synchronized (lock) {
+            String response = VelocityTemplateManager.getInstance().getResponseWithVelocity(velocityContext, null, cs_.getVeloTemplatePrefix());
+            try {
+                writeResponse(response, HTTPUtils.CONTENT_TYPE_HTML_UTF8);
+            } catch (Exception e) {
+                throw new MotuException(ErrorType.SYSTEM, "Error while using velocity template", e);
+            }
         }
     }
 
