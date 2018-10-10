@@ -10,7 +10,7 @@
 
 	<groupId>cls.motu</groupId>
 	<artifactId>motu-products-distrib</artifactId>
-	<version>3.8.0</version>
+	<version>3.10.0</version>
 	<name>Motu-products-distrib</name>
 	<packaging>pom</packaging>
 
