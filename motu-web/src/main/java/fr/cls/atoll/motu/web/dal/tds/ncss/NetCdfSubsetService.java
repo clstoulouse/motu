@@ -346,7 +346,7 @@ public class NetCdfSubsetService {
             Set<String> depthVariable = new HashSet<>();
             Set<String> noDepthVariable = new HashSet<>();
 
-            CoordinateAxis heigthCoordAxis = productMetadata.getCoordinateAxes().get(AxisType.Height);
+            CoordinateAxis heigthCoordAxis = productMetadata.getCoordinateAxisMap().get(AxisType.Height);
 
             for (String currentVariableName : varSubset) {
                 ParameterMetaData currentVariable = productMetadata.findVariable(currentVariableName);
@@ -403,7 +403,7 @@ public class NetCdfSubsetService {
         Set<String> depthVariable = new HashSet<>();
         Set<String> noDepthVariable = new HashSet<>();
 
-        CoordinateAxis heigthCoordAxis = productMetadata.getCoordinateAxes().get(AxisType.Height);
+        CoordinateAxis heigthCoordAxis = productMetadata.getCoordinateAxisMap().get(AxisType.Height);
 
         for (String currentVariableName : varSubset) {
             ParameterMetaData currentVariable = productMetadata.findVariable(currentVariableName);

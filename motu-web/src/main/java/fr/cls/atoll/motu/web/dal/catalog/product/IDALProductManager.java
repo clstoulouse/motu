@@ -18,17 +18,6 @@ import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
 public interface IDALProductManager {
 
     /**
-     * .
-     * 
-     * @param productId
-     * @param locationData
-     * @param useSSO
-     * @return
-     * @throws MotuException
-     */
-    ProductMetaData getMetadata(String catalogType, String productId, String locationData) throws MotuException;
-
-    /**
      * Retrieve the Size of the provided Product.
      * 
      * @return The size of the product into megabyte

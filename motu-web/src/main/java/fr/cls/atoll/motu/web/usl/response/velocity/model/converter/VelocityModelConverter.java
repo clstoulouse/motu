@@ -457,7 +457,7 @@ public class VelocityModelConverter {
 
             @Override
             public boolean isCoordinateAxesEmpty() {
-                return productMetaData_.isCoordinateAxesEmpty();
+                return productMetaData_.getCoordinateAxisMap().isEmpty();
             }
 
             @Override

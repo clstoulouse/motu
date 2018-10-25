@@ -94,7 +94,7 @@ public class ProductDownloadHomeAction extends AbstractAuthorizedAction {
 
     public static String getResponseWithVelocity(MotuConfig mc_, ConfigService cs_, CatalogData cd_, RequestProduct reqProduct_)
             throws MotuException {
-        Map<String, Object> velocityContext = new HashMap<String, Object>(2);
+        Map<String, Object> velocityContext = new HashMap<>(2);
         velocityContext.put("body_template", VelocityTemplateManager.getTemplatePath(ACTION_NAME, VelocityTemplateManager.DEFAULT_LANG));
         velocityContext.put("service", VelocityModelConverter.convertToService(mc_, cs_, cd_));
         velocityContext.put("user", USLManager.getInstance().getUserManager().getUserName());

@@ -241,7 +241,7 @@ public class WCSDescribeCoverageAction extends AbstractAction {
         // p.getTimeAxisData()
 
         for (AxisType currentAxisType : Constants.SUBSETTER_AVAILABLE_AXIS) {
-            CoordinateAxis currentCoordinateAxis = product.getProductMetaData().getCoordinateAxes().get(currentAxisType);
+            CoordinateAxis currentCoordinateAxis = product.getProductMetaData().getCoordinateAxisMap().get(currentAxisType);
             if (currentCoordinateAxis != null) {
                 BigInteger minValue = BigInteger
                         .valueOf(BigDecimal.valueOf(currentCoordinateAxis.getMinValue()).setScale(0, BigDecimal.ROUND_HALF_DOWN).intValue());
@@ -256,7 +256,7 @@ public class WCSDescribeCoverageAction extends AbstractAction {
             }
         }
 
-        CoordinateAxis currentCoordinateAxis = product.getProductMetaData().getCoordinateAxes().get(AxisType.Time);
+        CoordinateAxis currentCoordinateAxis = product.getProductMetaData().getCoordinateAxisMap().get(AxisType.Time);
         labels.add(Constants.TIME_AXIS.name());
         uomLabels.add(DATE_DESCRIPTION);
         currentCoordinateAxis.getMinValue();
@@ -266,7 +266,7 @@ public class WCSDescribeCoverageAction extends AbstractAction {
         lowerValues.add(BigInteger.valueOf(product.getProductMetaData().getTimeAxisMinValue().getTime() / 1000));
         upperValues.add(BigInteger.valueOf(product.getProductMetaData().getTimeAxisMaxValue().getTime() / 1000));
 
-        Map<String, ParameterMetaData> parameters = product.getProductMetaData().getParameterMetaDatas();
+        Map<String, ParameterMetaData> parameters = product.getProductMetaData().getParameterMetaDataMap();
 
         List<String> fieldNames = new ArrayList<>();
         List<String> fieldUoms = new ArrayList<>();

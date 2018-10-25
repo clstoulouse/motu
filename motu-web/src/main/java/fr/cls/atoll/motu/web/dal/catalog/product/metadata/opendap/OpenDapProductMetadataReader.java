@@ -1,14 +1,13 @@
 package fr.cls.atoll.motu.web.dal.catalog.product.metadata.opendap;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
-import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeException;
-import fr.cls.atoll.motu.web.bll.exception.NetCdfAttributeNotFoundException;
 import fr.cls.atoll.motu.web.dal.request.netcdf.NetCdfReader;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ParameterMetaData;
 import fr.cls.atoll.motu.web.dal.request.netcdf.metadata.ProductMetaData;
@@ -33,6 +32,9 @@ public class OpenDapProductMetadataReader {
     /** Contains variables names of 'gridded' product that are hidden to the user. */
     private static final String[] UNUSED_VARIABLES_GRIDS = new String[] { "LatLonMin", "LatLonStep", "LatLon", };
 
+    /** Logger for this class. */
+    private static final Logger LOGGER = LogManager.getLogger();
+
     /** NetCdfReader object. */
     private NetCdfReader netCdfReader = null;
     private String productId;
@@ -52,14 +54,49 @@ public class OpenDapProductMetadataReader {
         return productId;
     }
 
-    public ProductMetaData loadMetaData() throws MotuException {
-        return loadMetaData(null);
+    private void initProductMetaDataTitle(ProductMetaData productMetaData) {
+        if (productMetaData.getTitle() != null && productMetaData.getTitle().length() <= 0) {
+            String title = netCdfReader.getStringValue("title");
+            if (title != null) {
+                productMetaData.setTitle(title);
+            } else {
+                productMetaData.setTitle(getProductId());
+                LOGGER.warn("Unable to get dataset title of product=" + getProductId() + ", set title with productId");
+            }
+        }
+    }
+
+    private void initProductMetaDataFileType(ProductMetaData productMetaData) {
+        String fileType = netCdfReader.getStringValue("filetype");
+        if (fileType != null) {
+            productMetaData.setProductCategory(fileType);
+        } else {
+            LOGGER.warn("Unable to get dataset filetype of product=" + getProductId());
+        }
+    }
+
+    private void initProductMetaDataCoordinateAxes(ProductMetaData productMetaData) throws MotuException {
+        // Gets coordinate axes metadata.
+        List<CoordinateAxis> coordinateAxes = netCdfReader.getCoordinateAxes();
+        for (Iterator<CoordinateAxis> it = coordinateAxes.iterator(); it.hasNext();) {
+            CoordinateAxis coordinateAxis = it.next();
+            AxisType axisType = coordinateAxis.getAxisType();
+            if (axisType != null) {
+                productMetaData.getCoordinateAxisMap().put(axisType, coordinateAxis);
+            }
+        }
+
+        if (productMetaData.hasTimeAxis()) {
+            productMetaData.setTimeCoverage(productMetaData.getTimeAxisMinValue(), productMetaData.getTimeAxisMaxValue());
+        }
     }
 
     /**
      * Reads product global metadata from an (NetCDF file).
      * 
-     * @throws MotuException the motu exception
+     * @param productMetaDataOnlyForUpdate if null initialize a new ProductMetaData object
+     * @return
+     * @throws MotuException
      */
     public ProductMetaData loadMetaData(ProductMetaData productMetaDataOnlyForUpdate) throws MotuException {
         ProductMetaData productMetaData = productMetaDataOnlyForUpdate != null ? productMetaDataOnlyForUpdate : new ProductMetaData();
@@ -67,50 +104,13 @@ public class OpenDapProductMetadataReader {
         productMetaData.setTitle(getProductId());
 
         netCdfReader.open(true);
-        try {
-            // Gets global attribute 'title' if not set.
-            if ("".equals(productMetaData.getTitle())) {
-                String title = netCdfReader.getStringValue("title");
-                productMetaData.setTitle(title);
-            }
-        } catch (Exception e) {
-            throw new MotuException(ErrorType.LOADING_CATALOG, "Error in loadOpendapGlobalMetaData", e);
-        }
-
-        // Gets global attribute 'FileType'.
-        try {
-            // Gets global attribute 'FileType'.
-            String fileType = netCdfReader.getStringValue("filetype");
-            productMetaData.setProductCategory(fileType);
-        } catch (NetCdfAttributeException e) {
-            throw new MotuException(ErrorType.LOADING_CATALOG, "Error in loadOpendapGlobalMetaData", e);
-        } catch (NetCdfAttributeNotFoundException e) {
-            // Do nothing
-        }
-
-        // Gets coordinate axes metadata.
-        List<CoordinateAxis> coordinateAxes = netCdfReader.getCoordinateAxes();
-
-        if (productMetaData.getCoordinateAxes() == null) {
-            productMetaData.setCoordinateAxes(new HashMap<AxisType, CoordinateAxis>());
-        }
-
-        for (Iterator<CoordinateAxis> it = coordinateAxes.iterator(); it.hasNext();) {
-            CoordinateAxis coordinateAxis = it.next();
-            AxisType axisType = coordinateAxis.getAxisType();
-            if (axisType != null) {
-                productMetaData.putCoordinateAxes(axisType, coordinateAxis);
-            }
-        }
-
-        if (productMetaData.hasTimeAxis()) {
-            productMetaData.setTimeCoverage(productMetaData.getTimeAxisMinValue(), productMetaData.getTimeAxisMaxValue());
-        }
-
-        getOpendapVariableMetadata(productMetaData);
-
+        initProductMetaDataTitle(productMetaData);
+        initProductMetaDataFileType(productMetaData);
+        initProductMetaDataCoordinateAxes(productMetaData);
+        initProductVariablesParameterMetaDatas(productMetaData);
         initGeoYAxisWithLatEquivalence(productMetaData);
         initGeoXAxisWithLatEquivalence(productMetaData);
+        netCdfReader.close();
 
         return productMetaData;
     }
@@ -168,80 +168,54 @@ public class OpenDapProductMetadataReader {
         }
     }
 
-    /**
-     * Gets the opendap variable metadata.
-     *
-     * @return the opendap variable metadata
-     * @throws MotuException the motu exception
-     */
-    private void getOpendapVariableMetadata(ProductMetaData productMetaData) throws MotuException {
-        // Gets variables metadata.
-        String unitLong;
-        String standardName;
-        String longName;
+    private boolean isVariableACoordinateAxisAndNotACoordinateAxis2D(Variable variable) {
+        return variable != null && (variable instanceof CoordinateAxis) && ((CoordinateAxis) variable).getAxisType() != null
+                && !(((CoordinateAxis) variable) instanceof CoordinateAxis2D);
+    }
 
+    private boolean isAUnusedVariable(Variable variable) {
+        int i = 0;
+        while (i < UNUSED_VARIABLES_GRIDS.length && !variable.getFullName().equalsIgnoreCase(UNUSED_VARIABLES_GRIDS[i])) {
+            i++;
+        }
+        return i < UNUSED_VARIABLES_GRIDS.length;
+    }
+
+    private ParameterMetaData createParameterMetaData(Variable variable) {
+        ParameterMetaData parameterMetaData = new ParameterMetaData();
+        parameterMetaData.setName(variable.getFullName());
+        parameterMetaData.setLabel(variable.getDescription());
+        parameterMetaData.setUnit(variable.getUnitsString());
+        parameterMetaData.setDimensions(variable.getDimensions());
+
+        try {
+            parameterMetaData.setUnitLong(NetCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_UNIT_LONG));
+        } catch (MotuExceptionBase e) {
+            parameterMetaData.setUnitLong("");
+        }
+        try {
+            parameterMetaData.setStandardName(NetCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_STANDARD_NAME));
+        } catch (MotuExceptionBase e) {
+            parameterMetaData.setStandardName("");
+        }
+        try {
+            parameterMetaData.setLongName(NetCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_LONG_NAME));
+        } catch (MotuExceptionBase e) {
+            parameterMetaData.setLongName("");
+        }
+
+        return parameterMetaData;
+    }
+
+    private void initProductVariablesParameterMetaDatas(ProductMetaData productMetaData) {
         List<Variable> variables = netCdfReader.getVariables();
         for (Iterator<Variable> it = variables.iterator(); it.hasNext();) {
             Variable variable = it.next();
-
             // Don't get coordinate variables which are in coordinate axes collection
             // (which have a known AxisType).
-            if (variable instanceof CoordinateAxis) {
-                CoordinateAxis coordinateAxis = (CoordinateAxis) variable;
-                if (coordinateAxis.getAxisType() != null) {
-                    if (!(coordinateAxis instanceof CoordinateAxis2D)) {
-                        continue;
-                    }
-                }
+            if (variable != null && !isVariableACoordinateAxisAndNotACoordinateAxis2D(variable) && !isAUnusedVariable(variable)) {
+                productMetaData.getParameterMetaDataMap().put(variable.getFullName(), createParameterMetaData(variable));
             }
-
-            boolean isUnusedVar = false;
-            String[] unusedVariables = null;
-            unusedVariables = UNUSED_VARIABLES_GRIDS;
-            for (String unused : unusedVariables) {
-                if (variable.getName().equalsIgnoreCase(unused)) {
-                    isUnusedVar = true;
-                    break;
-                }
-            }
-
-            if (isUnusedVar) {
-                continue;
-            }
-
-            ParameterMetaData parameterMetaData = new ParameterMetaData();
-
-            parameterMetaData.setName(variable.getName());
-            parameterMetaData.setLabel(variable.getDescription());
-            parameterMetaData.setUnit(variable.getUnitsString());
-            parameterMetaData.setDimensions(variable.getDimensions());
-
-            unitLong = "";
-            try {
-                unitLong = NetCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_UNIT_LONG);
-                parameterMetaData.setUnitLong(unitLong);
-            } catch (MotuExceptionBase e) {
-                parameterMetaData.setUnitLong(unitLong);
-            }
-            standardName = "";
-            try {
-                standardName = NetCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_STANDARD_NAME);
-                parameterMetaData.setStandardName(standardName);
-            } catch (MotuExceptionBase e) {
-                parameterMetaData.setStandardName(standardName);
-            }
-            longName = "";
-            try {
-                longName = NetCdfReader.getStringValue(variable, NetCdfReader.VARIABLEATTRIBUTE_LONG_NAME);
-                parameterMetaData.setLongName(longName);
-            } catch (MotuExceptionBase e) {
-                parameterMetaData.setLongName(longName);
-            }
-
-            if (productMetaData.getParameterMetaDatas() == null) {
-                productMetaData.setParameterMetaDatas(new HashMap<String, ParameterMetaData>());
-            }
-            productMetaData.putParameterMetaDatas(variable.getName(), parameterMetaData);
         }
     }
 

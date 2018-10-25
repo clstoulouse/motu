@@ -913,7 +913,6 @@ public class TDSCatalogLoader extends AbstractCatalogLoader {
         } catch (Exception e) {
             LOGGER.error("Error while reading catalog from TDS", e);
             return null;
-            // throw new MotuException(ErrorType.LOADING_CATALOG, "Error while reading catalog from TDS", e);
         }
 
     }
