@@ -2170,15 +2170,16 @@ public class NetCdfWriter {
      */
     public static MAMath.MinMax getMinMaxSkipMissingData(CoordinateAxis axis, MAMath.MinMax minMax, NetCdfWriter netCdfWriter) {
         MAMath.MinMax minMaxWork = new MAMath.MinMax(Double.MAX_VALUE, -Double.MAX_VALUE);
-        if (!axis.hasMissing()) {
-            minMaxWork.min = axis.getMinValue();
-            minMaxWork.max = axis.getMaxValue();
-        } else {
-            try {
+        try {
+            if (!axis.hasMissing()) {
+                minMaxWork.min = axis.getMinValue();
+                minMaxWork.max = axis.getMaxValue();
+            } else {
                 Array data = NetCdfWriter.read(axis, netCdfWriter);
                 minMaxWork = NetCdfWriter.getMinMaxSkipMissingData(data, axis, false);
-            } catch (IOException ioe) { /* what ?? */
             }
+        } catch (Exception e) {
+            LOG.warn("Unable to compute MinMax for axis: '" + axis.getFullName() + "', err=" + e.getMessage());
         }
 
         if (minMax == null) {

@@ -70,8 +70,6 @@ public class OpenDapProductMetadataReader {
         String fileType = netCdfReader.getStringValue("filetype");
         if (fileType != null) {
             productMetaData.setProductCategory(fileType);
-        } else {
-            LOGGER.warn("Unable to get dataset filetype of product=" + getProductId());
         }
     }
 
@@ -110,7 +108,7 @@ public class OpenDapProductMetadataReader {
         initProductVariablesParameterMetaDatas(productMetaData);
         initGeoYAxisWithLatEquivalence(productMetaData);
         initGeoXAxisWithLatEquivalence(productMetaData);
-        netCdfReader.close();
+        // TODO If closed cannot compute MinMax for StereoGraphicProjection netCdfReader.close();
 
         return productMetaData;
     }

@@ -85,6 +85,15 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
     }
 
     /**
+     * Return the cache of the catalog .
+     * 
+     * @return the catalog cache
+     */
+    public ICatalogCache getCatalogCache() {
+        return catalogCache;
+    }
+
+    /**
      * This method is used to add new ConfigService to refresh to the cache resfresh scheduler. If a
      * ConfigService on the provided list is already on the waiting list of the scheduler, only one occurrence
      * it's saved. .
@@ -95,7 +104,7 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
         synchronized (waitingConfigServiceToUpdate) {
             for (ConfigService configService : configServiceToUpadte) {
                 if (!waitingConfigServiceToUpdate.contains(configService)) {
-                    LOGGER.info("add to refresh list : " + configService.getName());
+                    LOGGER.info("Add '" + configService.getName() + "' to the cache refresh list");
                     waitingConfigServiceToUpdate.add(configService);
                 }
             }
@@ -103,15 +112,6 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
         synchronized (this) {
             notify();
         }
-    }
-
-    /**
-     * Return the cache of the catalog .
-     * 
-     * @return the catalog cache
-     */
-    public ICatalogCache getCatalogCache() {
-        return catalogCache;
     }
 
     /**
@@ -128,6 +128,7 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
         if (!waitingConfigServiceToUpdate.isEmpty()) {
             long startRefresh = System.currentTimeMillis();
             ConfigService currentConfigService = null;
+            int configServiceRefeshedCount = 0;
             do {
                 synchronized (waitingConfigServiceToUpdate) {
                     // Retrieve the next ConfigService to update in the FIFO stack
@@ -138,12 +139,13 @@ public class CacheRefreshScheduler extends StoppableDaemonThread {
                     long startConfigServiceRefresh = System.currentTimeMillis();
                     // Launch the refresh of the ConfiService
                     refreshService.updateConfigService(currentConfigService);
-                    LOGGER.info("Refresh " + currentConfigService.getName() + " cache in: "
+                    configServiceRefeshedCount++;
+                    LOGGER.info("Refresh '" + currentConfigService.getName() + "' cache duration: "
                             + DateUtils.getDurationMinSecMsec((System.currentTimeMillis() - startConfigServiceRefresh)));
                 }
-
             } while (currentConfigService != null && !isDaemonStoppedASAP());
-            LOGGER.info("Refresh cache of the waiting list in: " + DateUtils.getDurationMinSecMsec((System.currentTimeMillis() - startRefresh)));
+            LOGGER.info("Total refresh cache duration (x" + Integer.toString(configServiceRefeshedCount) + "): "
+                    + DateUtils.getDurationMinSecMsec((System.currentTimeMillis() - startRefresh)));
         }
     }
 
