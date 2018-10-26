@@ -662,7 +662,7 @@ public class VelocityModelConverter {
                     @Override
                     public String getName() {
                         try {
-                            return productMetaData_.getGeoYAxisAsLat(orginalProduct_).getName();
+                            return productMetaData_.getGeoYAxisAsLat(orginalProduct_).getFullName();
                         } catch (Exception e) {
                             LOGGER.error("Converting Product metadata to be used in Velocity", e);
                         }
@@ -724,7 +724,7 @@ public class VelocityModelConverter {
                     @Override
                     public String getName() {
                         try {
-                            return productMetaData_.getGeoXAxisAsLon(orginalProduct_).getName();
+                            return productMetaData_.getGeoXAxisAsLon(orginalProduct_).getFullName();
                         } catch (Exception e) {
                             LOGGER.error("Converting Product metadata to be used in Velocity", e);
                         }
@@ -949,7 +949,7 @@ public class VelocityModelConverter {
 
             @Override
             public String getName() {
-                return timeAxis.getName();
+                return timeAxis.getFullName();
             }
 
         };
@@ -1027,7 +1027,7 @@ public class VelocityModelConverter {
 
             @Override
             public String getName() {
-                return zAxis.getName();
+                return zAxis.getFullName();
             }
 
             @Override
