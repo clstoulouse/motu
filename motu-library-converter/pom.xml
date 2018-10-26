@@ -13,6 +13,11 @@
     <description>This package holds the miscellaneous converters (jaxb for instance) of the Motu server.</description>
 
     <dependencies>
+    
+        <dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+		</dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>

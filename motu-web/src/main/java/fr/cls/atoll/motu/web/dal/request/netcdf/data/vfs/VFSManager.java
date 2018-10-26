@@ -52,6 +52,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Period;
 
 import fr.cls.atoll.motu.api.message.xml.ErrorType;
+import fr.cls.atoll.motu.web.bll.BLLManager;
 import fr.cls.atoll.motu.web.bll.exception.MotuException;
 import fr.cls.atoll.motu.web.bll.exception.MotuExceptionBase;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
@@ -287,10 +288,6 @@ public class VFSManager {
         }
 
         FileSystemConfigBuilder fscb = null;
-        MotuConfigFileSystemWrapper<Boolean> wrapperBoolean = new MotuConfigFileSystemWrapper<Boolean>();
-        MotuConfigFileSystemWrapper<Period> wrapperPeriod = new MotuConfigFileSystemWrapper<Period>();
-        MotuConfigFileSystemWrapper<String> wrapperString = new MotuConfigFileSystemWrapper<String>();
-
         try {
             try {
                 fscb = standardFileSystemManager.getFileSystemConfigBuilder(scheme);
@@ -302,19 +299,19 @@ public class VFSManager {
 
             if (fscb instanceof FtpFileSystemConfigBuilder) {
                 FtpFileSystemConfigBuilder ftpFscb = (FtpFileSystemConfigBuilder) fscb;
-                Boolean userDirIsRoot = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPUSERDIRISROOT);
+                Boolean userDirIsRoot = BLLManager.getInstance().getConfigManager().getMotuConfig().getFtpUserDirIsRoot();
                 if (userDirIsRoot != null) {
                     ftpFscb.setUserDirIsRoot(opts, userDirIsRoot);
                 } else {
                     ftpFscb.setUserDirIsRoot(opts, false);
                 }
 
-                Boolean passiveMode = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPPASSIVEMODE);
+                Boolean passiveMode = BLLManager.getInstance().getConfigManager().getMotuConfig().getFtpPassiveMode();
                 ;
                 if (passiveMode != null) {
                     ftpFscb.setPassiveMode(opts, passiveMode);
                 }
-                Period dataTimeOut = wrapperPeriod.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_FTPDATATIMEOUT);
+                Period dataTimeOut = BLLManager.getInstance().getConfigManager().getMotuConfig().getFtpDataTimeOut();
                 if (dataTimeOut != null) {
                     long value = dataTimeOut.toStandardDuration().getMillis();
                     if (value > Integer.MAX_VALUE) {
@@ -333,10 +330,10 @@ public class VFSManager {
             if (fscb instanceof HttpFileSystemConfigBuilder) {
                 HttpFileSystemConfigBuilder httpFscb = (HttpFileSystemConfigBuilder) fscb;
 
-                Boolean isUseProxy = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_USEHTTPPROXY);
+                Boolean isUseProxy = BLLManager.getInstance().getConfigManager().getMotuConfig().getUseProxy();
                 if ((isUseProxy != null) && (isUseProxy)) {
-                    String proxyHost = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_HTTPPROXYHOST);
-                    String proxyPort = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_HTTPPROXYPORT);
+                    String proxyHost = BLLManager.getInstance().getConfigManager().getMotuConfig().getProxyHost();
+                    String proxyPort = BLLManager.getInstance().getConfigManager().getMotuConfig().getProxyPort();
                     httpFscb.setProxyHost(opts, proxyHost);
                     httpFscb.setProxyPort(opts, Integer.parseInt(proxyPort));
                 }
@@ -346,19 +343,19 @@ public class VFSManager {
             if (fscb instanceof SftpFileSystemConfigBuilder) {
                 SftpFileSystemConfigBuilder sftpFscb = (SftpFileSystemConfigBuilder) fscb;
 
-                Boolean userDirIsRoot = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPUSERDIRISROOT);
+                Boolean userDirIsRoot = BLLManager.getInstance().getConfigManager().getMotuConfig().getSftpUserDirIsRoot();
                 if (userDirIsRoot != null) {
                     sftpFscb.setUserDirIsRoot(opts, userDirIsRoot);
                 } else {
                     sftpFscb.setUserDirIsRoot(opts, false);
                 }
 
-                String strictHostKeyChecking = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_STRICTHOSTKEYCHECKING);
+                String strictHostKeyChecking = BLLManager.getInstance().getConfigManager().getMotuConfig().getStrictHostKeyChecking();
                 if (strictHostKeyChecking != null) {
                     sftpFscb.setStrictHostKeyChecking(opts, strictHostKeyChecking);
                 }
 
-                Period SftpSessionTimeOut = wrapperPeriod.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPSESSIONTIMEOUT);
+                Period SftpSessionTimeOut = BLLManager.getInstance().getConfigManager().getMotuConfig().getSftpSessionTimeOut();
                 if (SftpSessionTimeOut != null) {
                     long value = SftpSessionTimeOut.toStandardDuration().getMillis();
                     if (value > Integer.MAX_VALUE) {
@@ -373,10 +370,10 @@ public class VFSManager {
                     }
                 }
 
-                Boolean isUseProxy = wrapperBoolean.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_USESFTPPROXY);
+                Boolean isUseProxy = BLLManager.getInstance().getConfigManager().getMotuConfig().getUseFtpProxy();
                 if ((isUseProxy != null) && (isUseProxy)) {
-                    String proxyHost = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPPROXYHOST);
-                    String proxyPort = wrapperString.getFieldValue(host, MotuConfigFileSystemWrapper.PROP_SFTPPROXYPORT);
+                    String proxyHost = BLLManager.getInstance().getConfigManager().getMotuConfig().getFtpProxyHost();
+                    String proxyPort = BLLManager.getInstance().getConfigManager().getMotuConfig().getFtpProxyPort();
                     sftpFscb.setProxyHost(opts, proxyHost);
                     sftpFscb.setProxyPort(opts, Integer.parseInt(proxyPort));
                 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -34,74 +35,14 @@
 		<jdk.source.version>1.8</jdk.source.version>
 		<jdk.source.encoding>UTF-8</jdk.source.encoding>
 
-		<dependencies.version.slf4j>1.7.21</dependencies.version.slf4j>
-		<dependencies.version.log4j>2.9.1</dependencies.version.log4j>
-		<dependencies.version.log4j-slf4j-impl>2.9.1</dependencies.version.log4j-slf4j-impl>
-		<dependencies.version.spring>2.5.6</dependencies.version.spring>
-		<dependencies.version.jersey>1.5</dependencies.version.jersey>
-		<dependencies.version.commons-io>1.4</dependencies.version.commons-io>
-		<dependencies.version.jaxb2-basics-jaxb-xjc>2.1.13.MR3</dependencies.version.jaxb2-basics-jaxb-xjc>
-		<dependencies.version.jaxb2_commons>0.6.1</dependencies.version.jaxb2_commons>
+		<dependencies.version.log4j>2.11.1</dependencies.version.log4j>
+		<dependencies.version.jersey>1.19.4</dependencies.version.jersey>
+		<dependencies.version.commons-io>2.6</dependencies.version.commons-io>
+		<dependencies.version.jaxb2_commons>2.2.4-1</dependencies.version.jaxb2_commons>
 		<dependencies.version.ogc-schema>2.6.1</dependencies.version.ogc-schema>
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${dependencies.version.slf4j}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<version>${dependencies.version.slf4j}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${dependencies.version.log4j}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${dependencies.version.log4j}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>${dependencies.version.log4j-slf4j-impl}</version>
-		</dependency>
-
-		<!-- Test dependencies -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-			<type>jar</type>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity-tools</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>servlet-api</artifactId>
-					<groupId>javax.servlet</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>log4j</artifactId>
-					<groupId>log4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		
-		<dependency>
-			    <groupId>edu.ucar</groupId>
-			    <artifactId>netcdfAll</artifactId>
-		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -134,32 +75,19 @@
 			<dependency>
 				<groupId>org.jvnet.jaxb2_commons</groupId>
 				<artifactId>jaxb2-basics-jaxb-xjc</artifactId>
-				<version>${dependencies.version.jaxb2-basics-jaxb-xjc}</version>
+				<version>${dependencies.version.jaxb2_commons}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jvnet.jaxb2_commons</groupId>
+				<artifactId>jaxb2-basics-ant</artifactId>
+				<version>1.11.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jvnet.jaxb2_commons</groupId>
+				<artifactId>jaxb2-basics</artifactId>
+				<version>1.11.1</version>
 			</dependency>
 
-			<!-- Spring -->
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-core</artifactId>
-				<version>${dependencies.version.spring}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-beans</artifactId>
-				<version>${dependencies.version.spring}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
 
 			<!-- Commons -->
 			<dependency>
@@ -197,15 +125,13 @@
 				<artifactId>commons-codec</artifactId>
 				<version>1.3</version>
 			</dependency>
-
 			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>1.3.2</version>
+				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>1.9.3</version>
 			</dependency>
 
 			<!-- Others -->
-
 			<dependency>
 				<groupId>joda-time</groupId>
 				<artifactId>joda-time</artifactId>
@@ -424,11 +350,23 @@
 			</dependency>
 
 			<dependency>
-			    <groupId>edu.ucar</groupId>
-			    <artifactId>netcdfAll</artifactId>
-			    <version>4.6.11</version>
+				<groupId>edu.ucar</groupId>
+				<artifactId>netcdfAll</artifactId>
+				<version>4.6.11</version>
 			</dependency>
-			
+
+			<!-- LOG4J -->
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-api</artifactId>
+				<version>${dependencies.version.log4j}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>${dependencies.version.log4j}</version>
+			</dependency>
+
 			<!-- MOTU -->
 			<dependency>
 				<groupId>cls.motu</groupId>
@@ -445,13 +383,21 @@
 				<artifactId>motu-library-inventory</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>cls.motu</groupId>
 				<artifactId>motu-api-message</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
+			<!-- Test dependencies -->
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.12</version>
+				<scope>test</scope>
+				<type>jar</type>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -507,5 +453,5 @@
 		</plugins>
 
 	</build>
-	
+
 </project>

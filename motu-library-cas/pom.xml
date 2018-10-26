@@ -33,9 +33,16 @@
 		   <groupId>org.jasig.cas.client</groupId>
 		   <artifactId>cas-client-core</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>cls.motu</groupId>
 			<artifactId>motu-api-message</artifactId>
+		</dependency>
+		
+		<!-- Test dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
 		</dependency>
 	</dependencies>
     

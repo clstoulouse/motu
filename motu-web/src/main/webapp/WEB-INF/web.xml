@@ -2,7 +2,10 @@
 <!--	
 ${project.name} - v. ${project.version}
 -->
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
+<web-app id="motu-web" version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 	
     <display-name>Motu</display-name>
 	<description>Motu</description>
@@ -11,7 +14,7 @@ ${project.name} - v. ${project.version}
         <description>Common (Log4j, CAS), USL, BLL and DAL layers initialization</description>
         <listener-class>fr.cls.atoll.motu.web.usl.servlet.context.MotuWebEngineContextListener</listener-class>
     </listener>
-	
+    
     <!-- ####################################### -->
 	<!-- ############# MOTU   ################## -->
 	<!-- ####################################### -->

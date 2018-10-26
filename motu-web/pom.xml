@@ -19,6 +19,28 @@
 	</properties>
 	<dependencies>
 		<dependency>
+			<groupId>cls.motu</groupId>
+			<artifactId>motu-library-converter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cls.motu</groupId>
+			<artifactId>motu-library-inventory</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cls.motu</groupId>
+			<artifactId>motu-library-cas</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cls.motu</groupId>
+			<artifactId>motu-api-message</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jasig.cas.client</groupId>
+			<artifactId>cas-client-core</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>org.jvnet.ogc</groupId>
 			<artifactId>wcs-v_2_0</artifactId>
 		</dependency>
@@ -40,28 +62,6 @@
 			<artifactId>joda-time</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>cls.motu</groupId>
-			<artifactId>motu-library-converter</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>cls.motu</groupId>
-			<artifactId>motu-library-inventory</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>cls.motu</groupId>
-			<artifactId>motu-library-cas</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.jasig.cas.client</groupId>
-			<artifactId>cas-client-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>cls.motu</groupId>
-			<artifactId>motu-api-message</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>org.jolokia</groupId>
 			<artifactId>jolokia-core</artifactId>
 		</dependency>
@@ -82,10 +82,6 @@
 			<artifactId>commons-vfs2</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
 		</dependency>
@@ -101,7 +97,37 @@
 			<groupId>com.github.jedis-lock</groupId>
 			<artifactId>jedis-lock</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>edu.ucar</groupId>
+			<artifactId>netcdfAll</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity-tools</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>servlet-api</artifactId>
+					<groupId>javax.servlet</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>log4j</artifactId>
+					<groupId>log4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- Test dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
