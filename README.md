@@ -1087,10 +1087,12 @@ Example of real time data with several Go of data. Cache is refreshed each minut
 ##### runGCInterval
 @Deprecated from v3 This parameter is not used. 
 
-
 ##### httpDocumentRoot
 @Deprecated from v3 This parameter is not used. 
-Document root of the servlet server.       
+Document root of the servlet server.   
+
+##### wcsDcpUrl 
+Provide the full URL to set into the WCS parameter DCP for a GetCapabilities request.   
         
 ##### useAuthentication
 @Deprecated from v3 This parameter is not used. It is redundant with parameter config/motu.properties#cas-activated.
