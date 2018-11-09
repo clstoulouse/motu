@@ -185,7 +185,9 @@ public class DALConfigManager implements IDALConfigManager {
             curMotuConfig = (MotuConfig) MotuConfigJAXB.getInstance().getUnmarshaller().unmarshal(in);
             curMotuConfig.setExtractionPath(PropertiesUtilities.replaceSystemVariable(curMotuConfig.getExtractionPath()));
             curMotuConfig.setDownloadHttpUrl(PropertiesUtilities.replaceSystemVariable(curMotuConfig.getDownloadHttpUrl()));
-            curMotuConfig.setWcsDcpUrl(PropertiesUtilities.replaceSystemVariable(curMotuConfig.getWcsDcpUrl()));
+            if (curMotuConfig.getWcsDcpUrl() != null) {
+                curMotuConfig.setWcsDcpUrl(PropertiesUtilities.replaceSystemVariable(curMotuConfig.getWcsDcpUrl()));
+            }
         } catch (Exception e) {
             throw new MotuException(ErrorType.SYSTEM, "Error in getMotuConfigInstance", e);
         }
