@@ -142,7 +142,7 @@ public class ProductMetaData {
         setTdsUrlPath("");
         setProductType("");
         setCoordinateAxes(new HashMap<AxisType, CoordinateAxis>());
-        parameterMetaDatasMap = new HashMap<String, ParameterMetaData>();
+        parameterMetaDatasMap = new HashMap<>();
     }
 
     /**

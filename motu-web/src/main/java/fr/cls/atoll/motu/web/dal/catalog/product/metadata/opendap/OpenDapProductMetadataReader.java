@@ -109,8 +109,8 @@ public class OpenDapProductMetadataReader {
         initGeoYAxisWithLatEquivalence(productMetaData);
         initGeoXAxisWithLatEquivalence(productMetaData);
 
-        // netCdfReader.close();
-        // TODO If netCdfReader is closed cannot compute MinMax for StereoGraphicProjection
+        netCdfReader.close();
+        // TODO SMY If netCdfReader is closed cannot compute MinMax for StereoGraphicProjection
         // @See fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon#toListRanges(CoordinateSystem
         // cs, List<double[]> listRangeValueLat, List<double[]> listRangeValueLon)
         // GridCoordSys gcs = new GridCoordSys(cs, errMessages);
@@ -172,7 +172,7 @@ public class OpenDapProductMetadataReader {
     }
 
     private boolean isVariableACoordinateAxisAndNotACoordinateAxis2D(Variable variable) {
-        return variable != null && (variable instanceof CoordinateAxis) && ((CoordinateAxis) variable).getAxisType() != null
+        return (variable instanceof CoordinateAxis) && ((CoordinateAxis) variable).getAxisType() != null
                 && !(((CoordinateAxis) variable) instanceof CoordinateAxis2D);
     }
 

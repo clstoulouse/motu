@@ -15,6 +15,7 @@ import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDatetime;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaDepth;
 import fr.cls.atoll.motu.web.bll.request.model.ExtractCriteriaLatLon;
 import fr.cls.atoll.motu.web.bll.request.model.RequestProduct;
+import fr.cls.atoll.motu.web.common.utils.CoordinateUtils;
 import fr.cls.atoll.motu.web.common.utils.StringUtils;
 import fr.cls.atoll.motu.web.common.utils.URLUtils;
 import fr.cls.atoll.motu.web.dal.config.xml.model.ConfigService;
@@ -821,7 +822,7 @@ public class VelocityModelConverter {
 
             @Override
             public String getLonNormalAxisMaxValue() {
-                return Double.toString(productMetaData_.getLonNormalAxisMaxValue());
+                return Double.toString(CoordinateUtils.getLongitudeM180P180(productMetaData_.getLonNormalAxisMaxValue()));
             }
 
             @Override
